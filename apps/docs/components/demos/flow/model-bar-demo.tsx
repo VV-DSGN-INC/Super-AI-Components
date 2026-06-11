@@ -73,12 +73,29 @@ const VIDEO_SEGMENTS: ModelBarSegment[] = [
       { value: "1080p", label: "1080p" },
     ],
   },
-  { kind: "duration", id: "duration", value: 4, options: [4, 6, 8] },
+  {
+    kind: "duration",
+    id: "duration",
+    value: "4",
+    options: [
+      { value: "4", label: "4s" },
+      { value: "6", label: "6s" },
+      { value: "8", label: "8s" },
+    ],
+  },
   { kind: "toggle", id: "mute", label: "Mute", value: false },
 ];
 
 const SFX_SEGMENTS: ModelBarSegment[] = [
+  // Single-option model still renders a working (if short) dropdown menu.
+  {
+    kind: "model",
+    id: "model",
+    value: "eleven-sfx",
+    options: [{ value: "eleven-sfx", label: "Eleven SFX" }],
+  },
   { kind: "toggle", id: "loop", label: "Loop", value: false },
+  // Duration rings always end on an "auto" stop: 4 → 6 → 8 → Auto → 4.
   { kind: "duration", id: "duration", value: "auto", options: [4, 6, 8] },
   { kind: "percent", id: "influence", label: "Prompt influence", value: 30 },
 ];
@@ -110,7 +127,9 @@ const LLM_SEGMENTS: ModelBarSegment[] = [
 function DemoBar({ caption, initial }: { caption: string; initial: ModelBarSegment[] }) {
   const [segments, setSegments] = React.useState(initial);
   const onChange = React.useCallback((patch: ModelBarPatch) => {
-    setSegments((prev) => prev.map((s) => (s.id === patch.id ? { ...s, value: patch.value } : s)));
+    setSegments((prev) =>
+      prev.map((s) => (s.id === patch.id ? ({ ...s, value: patch.value } as ModelBarSegment) : s)),
+    );
   }, []);
   return (
     <div className="flex flex-col items-start gap-1.5">
