@@ -19,7 +19,7 @@ function CostChip({ amount, unit = "credits", className, children, ...props }: C
       {...props}
     >
       <Coins aria-hidden className="size-3" />
-      <span data-slot="cost-chip-amount">
+      <span data-slot="cost-chip-amount" dir="ltr">
         {amount} {unit}
       </span>
       {children}
