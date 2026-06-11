@@ -72,6 +72,7 @@ function ThreadListItem({
   // onOpenChangeComplete (fired AFTER close animations finish and focus has settled).
   // This guarantees the input mounts only when the menu has fully closed and focus
   // return is complete, so the onBlur guard fires correctly thereafter.
+  // IMPORTANT: if you replace DropdownMenu, replicate this defer in your trigger's after-close callback.
   const pendingRenameRef = React.useRef(false);
 
   if (renaming) {
@@ -94,7 +95,7 @@ function ThreadListItem({
           }}
           onBlur={() => {
             setRenaming(false);
-            setDraft(title);
+            if (draft !== title) onRename?.(id, draft);
           }}
           className="h-8"
         />
@@ -150,7 +151,7 @@ function ThreadListItem({
               variant="ghost"
               size="icon-sm"
               aria-label="Thread actions"
-              className="size-7 opacity-0 group-hover/thread:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100"
+              className="size-7 opacity-0 group-hover/thread:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 pointer-coarse:opacity-100"
             />
           }
         >
@@ -159,7 +160,7 @@ function ThreadListItem({
         <DropdownMenuContent align="start">
           {/* Base UI adaptation: MenuItem uses onClick (not onSelect). The menu
               closes automatically (closeOnClick default true), which triggers
-              onOpenChangeComplete where we commit the rename. */}
+              onOpenChangeComplete where we enter rename mode. */}
           <DropdownMenuItem
             onClick={() => {
               pendingRenameRef.current = true;
