@@ -9,7 +9,7 @@ importers:
   .:
     devDependencies:
       turbo:
-        specifier: ^2.9.17
+        specifier: 2.9.17
         version: 2.9.17
 
 packages:

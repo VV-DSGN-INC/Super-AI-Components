@@ -12,6 +12,6 @@
     "build:registry": "turbo run build:registry"
   },
   "devDependencies": {
-    "turbo": "^2.9.17"
+    "turbo": "2.9.17"
   }
 }
