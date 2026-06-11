@@ -156,6 +156,8 @@ pnpm dlx shadcn@latest add --yes button input dialog dropdown-menu alert-dialog 
 ```
 Expected: `components.json`, `lib/utils.ts`, `components/ui/{button,input,dialog,dropdown-menu,alert-dialog,separator}.tsx` exist; `app/globals.css` contains the shadcn CSS-variable theme.
 
+> **Execution notes (recorded):** shadcn's `--base-color` flag was replaced by `--defaults` (result verified: `"baseColor": "neutral"`). The current default style is `base-nova`, whose components build on `@base-ui/react` (Base UI), **not Radix** — `shadcn add` installs that dependency automatically. pnpm 11 also required `allowBuilds: { sharp, unrs-resolver }` in root `pnpm-workspace.yaml` to permit those packages' postinstall builds. Components in later tasks must code against the actual props of the generated `components/ui/*` wrappers, not remembered Radix APIs.
+
 - [ ] **Step 3: Wire workspace scripts into apps/docs/package.json**
 
 Edit `apps/docs/package.json` scripts to exactly:
@@ -222,7 +224,7 @@ export default defineConfig({
 ```ts
 import "@testing-library/jest-dom/vitest";
 
-// Radix UI shims for jsdom
+// Base UI / floating-ui shims for jsdom (shadcn base-nova components use @base-ui/react)
 class ResizeObserverStub {
   observe() {}
   unobserve() {}
@@ -269,7 +271,7 @@ Run: `pnpm format` → Expected: files formatted, exit 0.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add -A && git commit -m "chore: vitest + RTL + radix jsdom shims + prettier"
+git add -A && git commit -m "chore: vitest + RTL + base-ui jsdom shims + prettier"
 ```
 
 ---
@@ -1217,6 +1219,8 @@ describe("ThreadList", () => {
 - [ ] **Step 6: Run to verify failure** — Expected: FAIL (module not found).
 
 - [ ] **Step 7: Implement thread-list**
+
+> **CAUTION (Base UI, not Radix):** the generated `components/ui/dropdown-menu.tsx` / `alert-dialog.tsx` wrappers are built on `@base-ui/react`. Before implementing, read those wrapper files and use their actual exported parts and props. Radix-only props like `onCloseAutoFocus` may not exist — if absent, prevent the close-restores-focus-then-blurs-the-rename-input problem by the wrapper's equivalent mechanism (e.g. its final-focus/`onOpenChangeComplete` hook) or by deferring `setRenaming(true)` until after menu close completes. The behavioral contract in the tests is what must hold; adapt the mechanism.
 
 `thread-list.tsx`:
 ```tsx
