@@ -2,6 +2,8 @@
 
 _Inventory & spec draft · June 10, 2026 · derived from Flow Builder (Nick's repo), the "Flows" product screenshots (light, Higgsfield-style), and the "Flow AI" screenshots (dark, curated local-ComfyUI canvas)_
 
+> **State naming:** this document predates the master state contract. Read `running` as `streaming` and `error` as `failed` per the master spec (`idle | queued | streaming | done | failed | locked`); the [wave spec](superpowers/specs/2026-06-11-flow-kit-design.md) is authoritative on states.
+
 ## Problem
 
 Every AI creation tool is converging on the same surface: a node canvas where prompts, media, and models get wired together and run. Higgsfield Flows, Krea Nodes, Flora, Freepik Spaces, ComfyUI, OpenArt — all ship a variant of it, and every team builds it from scratch on top of React Flow.
