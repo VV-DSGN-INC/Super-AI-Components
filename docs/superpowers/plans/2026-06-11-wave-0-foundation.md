@@ -64,7 +64,7 @@ Naming/API rules that apply to every component task (from spec §6): exports Pas
 {
   "name": "super-ai-components",
   "private": true,
-  "packageManager": "pnpm@10.12.1",
+  "packageManager": "pnpm@11.1.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
@@ -1734,6 +1734,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
+        with: { version: 11.1.0 }
       - uses: actions/setup-node@v4
         with: { node-version: 24, cache: pnpm }
       - run: pnpm install --frozen-lockfile
