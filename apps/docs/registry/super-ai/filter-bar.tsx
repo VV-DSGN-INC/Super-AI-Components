@@ -17,45 +17,41 @@ interface FilterChipProps extends React.ComponentProps<"button"> {
 }
 
 function FilterChip({ active = false, onRemove, className, children, ...props }: FilterChipProps) {
+  const label = typeof children === "string" ? children : "";
   return (
-    <button
-      type="button"
-      aria-pressed={active}
+    <span
       data-slot="filter-chip"
       data-state={active ? "on" : "off"}
       className={cn(
-        "hover:bg-accent inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm transition-colors",
+        "inline-flex items-center rounded-full border text-sm transition-colors",
         active && "bg-secondary text-secondary-foreground",
         className,
       )}
-      {...props}
     >
-      {children}
+      <button
+        type="button"
+        aria-pressed={active}
+        data-slot="filter-chip-toggle"
+        className={cn(
+          "hover:bg-accent inline-flex items-center gap-1 rounded-full px-3 py-1",
+          onRemove && "pr-1",
+        )}
+        {...props}
+      >
+        {children}
+      </button>
       {onRemove ? (
-        <span
-          role="button"
-          tabIndex={0}
-          aria-label={`Remove ${typeof children === "string" ? children : ""} filter`
-            .replace(/\s+/g, " ")
-            .trim()}
+        <button
+          type="button"
+          aria-label={`Remove ${label} filter`.replace(/\s+/g, " ").trim()}
           data-slot="filter-chip-remove"
-          className="hover:text-foreground text-muted-foreground -mr-1 rounded-full p-0.5"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              e.stopPropagation();
-              onRemove();
-            }
-          }}
+          onClick={onRemove}
+          className="hover:text-foreground text-muted-foreground focus-visible:ring-ring mr-1 rounded-full p-0.5 focus-visible:ring-2 focus-visible:outline-none"
         >
           <X aria-hidden className="size-3" />
-        </span>
+        </button>
       ) : null}
-    </button>
+    </span>
   );
 }
 
