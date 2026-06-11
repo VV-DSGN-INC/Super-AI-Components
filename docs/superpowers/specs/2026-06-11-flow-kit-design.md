@@ -8,13 +8,13 @@ Ship the **Flow Kit** — 25 components + `useFlowRunner` — as registry items 
 
 ## Decisions (locked in brainstorm, 2026-06-11)
 
-| Decision | Choice |
-|---|---|
-| Build target | Component kit + demo — the registry is the product |
-| Scope | All of F1–F3 (master waves 2, 3, 4 combined) |
-| Demo realism | Stub-first; real providers activate per env key |
-| Sequencing | Flow Kit before Wave 1 (App Shell); requires **Wave 0 complete** (in flight on `wave-0-foundation`) |
-| Execution | Subagent-driven, wave-parallel, on a branch cut from Wave 0's result |
+| Decision     | Choice                                                                                              |
+| ------------ | --------------------------------------------------------------------------------------------------- |
+| Build target | Component kit + demo — the registry is the product                                                  |
+| Scope        | All of F1–F3 (master waves 2, 3, 4 combined)                                                        |
+| Demo realism | Stub-first; real providers activate per env key                                                     |
+| Sequencing   | Flow Kit before Wave 1 (App Shell); requires **Wave 0 complete** (in flight on `wave-0-foundation`) |
+| Execution    | Subagent-driven, wave-parallel, on a branch cut from Wave 0's result                                |
 
 ## Conformance to the master spec
 
@@ -31,7 +31,7 @@ Flow-specific applications:
 
 ## Deviation from master defaults (flagged for review)
 
-The master spec set `useFlowRunner` v1 = naive full-graph topological runs, "output caching later." **This wave upgrades caching to in-scope.** Rationale: the 2026-06-11 ElevenLabs Flows docs review established *partial generation* (edit one node → only it + dirty downstream re-run) as the product's core economic behavior, not polish — every reference product meters generation. Cache = output hash keyed on (node data + upstream output ids); cheap to build into the runner now, disruptive to retrofit.
+The master spec set `useFlowRunner` v1 = naive full-graph topological runs, "output caching later." **This wave upgrades caching to in-scope.** Rationale: the 2026-06-11 ElevenLabs Flows docs review established _partial generation_ (edit one node → only it + dirty downstream re-run) as the product's core economic behavior, not polish — every reference product meters generation. Cache = output hash keyed on (node data + upstream output ids); cheap to build into the runner now, disruptive to retrofit.
 
 All other master defaults stand: plain names, no `flow-` prefix; edge color derives from source handle; `node-prompt` standalone; `track-timeline` view-only with per-track mute.
 
@@ -54,8 +54,8 @@ Six routes in the docs app, one interface:
 
 ```ts
 interface GenerateAdapter {
-  kind: "image" | "video" | "speech" | "sfx" | "music" | "llm"
-  generate(req: GenerateRequest, signal: AbortSignal): Promise<GenerateResult>
+  kind: "image" | "video" | "speech" | "sfx" | "music" | "llm";
+  generate(req: GenerateRequest, signal: AbortSignal): Promise<GenerateResult>;
 }
 ```
 
