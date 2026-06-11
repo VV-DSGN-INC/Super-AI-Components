@@ -35,6 +35,10 @@ The master spec set `useFlowRunner` v1 = naive full-graph topological runs, "out
 
 All other master defaults stand: plain names, no `flow-` prefix; edge color derives from source handle; `node-prompt` standalone; `track-timeline` view-only with per-track mute.
 
+**Deferred inventory behaviors (recorded at Wave 2 review — deliberate cuts, not omissions):** `typed-handle` keyboard-connect flow + `role="button"` semantics (needs focusable handles and Enter/arrow wiring — schedule with a dedicated a11y pass after Wave 4); compatible-highlight drag wiring (the `data-flow-compatible` hook ships in Wave 2; the host wiring and the "incompatible dims to 40%" companion are Wave 4 canvas-glue work); `maxConnections` per handle (needs a connection-count validator hook — design when a preset actually needs it; extend via an ANDed extra validator, never by re-exposing `isValidConnection`); hover `label` on handles. Validation-wiring coverage (that `isValidConnection` is actually attached) is owned by the Wave 4 Playwright flow journey.
+
+**Further Wave 2 review decisions (recorded):** `run-button`'s locked state shows a disabled "Upgrade to run" — a real upgrade affordance (`onUpgrade` callback) completes the locked CTA story in a later wave; `ai-node` owns the CTA-replaced locked card via `lockedCta` (shipped). `model-bar` number options normalize to string patch values (`String(v)`) — hosts needing numbers convert back. Percent slider and typed seed entry belong to the Wave 4 `node-inspector`, not the strip. `gen-settings-bar` (Wave 0-owned) lacks the ARIA toolbar roving-tabindex pattern — flow's `model-bar` inherits this; record against the Wave 0 component. `useFlowRunner` persisted-cache (across reloads) is wave 3+; in-memory cache uses content hashing (shipped).
+
 ## `useFlowRunner` (flow L2, headless)
 
 ```ts

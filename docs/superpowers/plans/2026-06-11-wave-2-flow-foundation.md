@@ -158,16 +158,21 @@ export const handleTypeKeys = () => [...registry.keys()];
 export function handleId(nodeId: string, dataType: string, dir: "in" | "out") {
   return `${nodeId}:${dataType}:${dir}`;
 }
-export function parseHandleId(id: string | null | undefined) {
+export function parseHandleId(id: string | null | undefined): { nodeId: string; dataType: string; dir: "in" | "out" } | null {
   if (!id) return null;
-  const [nodeId, dataType, dir] = id.split(":");
+  // End-anchored parse: node ids may contain ":" (user-controlled); dir/dataType never do.
+  const parts = id.split(":");
+  if (parts.length < 3) return null;
+  const dir = parts.pop()!;
+  const dataType = parts.pop()!;
+  const nodeId = parts.join(":");
   if (!nodeId || !dataType || (dir !== "in" && dir !== "out")) return null;
-  return { nodeId, dataType, dir } as const;
+  return { nodeId, dataType, dir };
 }
 export function isValidFlowConnection(c: { sourceHandle?: string | null; targetHandle?: string | null }) {
   const s = parseHandleId(c.sourceHandle);
   const t = parseHandleId(c.targetHandle);
-  return !!s && !!t && s.dataType === t.dataType;
+  return !!s && !!t && s.dir === "out" && t.dir === "in" && s.dataType === t.dataType;
 }
 
 export type NodeSize = "sm" | "md" | "lg";
@@ -192,6 +197,7 @@ export const NODE_WIDTH: Record<NodeSize, number> = { sm: 280, md: 320, lg: 420 
   --flow-image: oklch(0.71 0.16 259.8);
   --flow-video: oklch(0.71 0.18 292.7);
   --flow-audio: oklch(0.73 0.19 354.3);
+  --flow-streaming: oklch(0.71 0.16 259.8); /* keep synced with dark --flow-image (blue family) */
   --flow-done: oklch(0.77 0.15 162.5);
 }
 ```
@@ -199,7 +205,7 @@ export const NODE_WIDTH: Record<NodeSize, number> = { sm: 280, md: 320, lg: 420 
 - [ ] **Step 5: Wire into app + registry + deps**
   - `apps/docs/app/globals.css`: add `@import "../registry/super-ai/flow/flow-tokens.css";` next to existing imports.
   - `pnpm --filter docs add @xyflow/react`
-  - `apps/docs/scripts/gen-registry.mts`: read the file; append flow items following its existing shape. `flow-types` = `type: "registry:lib"`, files `[flow/flow-types.ts, flow/flow-tokens.css]`, no registryDependencies. Add a `FLOW_AI_ELEMENTS` const mapping `canvas|node|edge|connection|controls|panel|toolbar` → `https://registry.ai-sdk.dev/{name}.json` (verify exact URL base from https://ai-sdk.dev/elements/overview#installation if reachable; otherwise leave the const with this value — the consumer-install test in Wave 4 validates it).
+  - `apps/docs/scripts/gen-registry.mts`: read the file; append flow items following its existing shape. `flow-types` = `type: "registry:lib"`, files `[flow/flow-types.ts, flow/flow-tokens.css]`, no registryDependencies. **Install targets must be `components/super-ai/flow/<file>` for every flow item** — flow components import `./flow-types` relatively and the shadcn CLI does not rewrite relative imports, so all flow files must install as siblings. Add a `FLOW_AI_ELEMENTS` const mapping `canvas|node|edge|connection|controls|panel|toolbar` → `https://registry.ai-sdk.dev/{name}.json` (verify exact URL base from https://ai-sdk.dev/elements/overview#installation if reachable; otherwise leave the const with this value — the consumer-install test in Wave 4 validates it).
 
 - [ ] **Step 6: Tests + tokens green** — `pnpm --filter docs test -- --run flow-types` PASS · `pnpm check:tokens` PASS (raw oklch lives in the css token file; confirm the script scopes to `*.tsx` or whitelists token css — read `check-tokens.mjs`; if it scans css too, add `flow-tokens.css` to its allowlist array, which exists for `globals.css`).
 
@@ -392,7 +398,7 @@ export function typedEdgeStyle(opts: {
     stroke: edgeColorFromHandle(opts.sourceHandle),
     className: cn(
       "transition-[stroke-width]",
-      opts.streaming && "[stroke-dasharray:6_4] animate-[dash_1s_linear_infinite]",
+      opts.streaming && "[stroke-dasharray:6_4] animate-[flow-dash_1s_linear_infinite]",
       opts.selected ? "[stroke-width:2.5]" : "[stroke-width:1.5]",
     ),
   };
@@ -410,7 +416,7 @@ export function TypedEdge(props: TypedEdgeProps) {
 }
 ```
 
-Add the `dash` keyframes once to `flow-tokens.css`: `@keyframes dash { to { stroke-dashoffset: -20; } }`.
+The `@keyframes flow-dash { to { stroke-dashoffset: -20; } }` keyframes live in `flow-tokens.css` (namespaced `flow-` to avoid colliding with consumer apps' own `dash` keyframes).
 
 - [ ] **Step 4: Tests pass.** **Step 5: Demo** (two connected node pairs, one edge `data.streaming=true`). **Step 6: Register** (deps: flow-types; npm: @xyflow/react) + rebuild. **Step 7: Commit** `feat(flow): typed-edge — source-typed colored edge`.
 

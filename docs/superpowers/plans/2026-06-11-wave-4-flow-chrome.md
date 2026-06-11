@@ -12,6 +12,8 @@
 
 **Contract source (READ BEFORE ANY TASK):** [`docs/superpowers/plans/2026-06-11-wave-2-flow-foundation.md`](2026-06-11-wave-2-flow-foundation.md) is authoritative for: the `flow-types` exports (`FlowStatus`, `FLOW_STATUSES`, `handleId`/`parseHandleId`/`isValidFlowConnection`, `getHandleType`/`handleTypeKeys`, `NODE_WIDTH`), the `RunnerNode`/`NodeOutput`/`useFlowRunner` API, the file layout (`apps/docs/registry/super-ai/flow/`), the `gen-registry.mts` item shape + `REGISTRY_URL`/`FLOW_AI_ELEMENTS` consts, and the worktree/branch protocol. Wave 4 **adds files only**; it never edits Wave 2's component sources.
 
+> **Catalog-shape alignment (recorded at Wave 2 review):** `node-palette`'s `PaletteEntry` must `extend` Wave 2's `NodeCatalogEntry` (exported by `connection-hint`, flow-L2 — a legal import) rather than redefine the shape, so one host catalog feeds both the palette and the connection hint without casts. `PaletteEntry` adds `icon`/`category` on top; `in`/`out` stay required per the base type.
+
 ---
 
 ## Conventions (binding for every component task — restated from Wave 2/3)

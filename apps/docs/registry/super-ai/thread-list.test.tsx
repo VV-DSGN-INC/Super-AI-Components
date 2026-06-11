@@ -38,6 +38,16 @@ describe("ThreadList", () => {
     await userEvent.type(input, "New title{Enter}");
     expect(h.onRename).toHaveBeenCalledWith("t1", "New title");
   });
+  it("blur commits the draft when it changed", async () => {
+    const h = renderList();
+    await userEvent.click(screen.getByRole("button", { name: "Thread actions" }));
+    await userEvent.click(await screen.findByRole("menuitem", { name: "Rename" }));
+    const input = await screen.findByRole("textbox", { name: "Thread title" });
+    await userEvent.clear(input);
+    await userEvent.type(input, "Edited elsewhere");
+    await userEvent.tab();
+    expect(h.onRename).toHaveBeenCalledWith("t1", "Edited elsewhere");
+  });
   it("escape cancels rename without firing onRename", async () => {
     const h = renderList();
     await userEvent.click(screen.getByRole("button", { name: "Thread actions" }));

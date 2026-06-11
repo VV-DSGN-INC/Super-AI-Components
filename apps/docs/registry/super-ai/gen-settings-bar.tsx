@@ -13,6 +13,7 @@ interface GenSettingsBarProps extends React.ComponentProps<"div"> {
 function GenSettingsBar({ disabled = false, className, ...props }: GenSettingsBarProps) {
   return (
     <GenSettingsBarContext.Provider value={{ disabled }}>
+      {/* TODO: arrow-key roving tabIndex (role=toolbar APG pattern; v1 ships Tab-per-item) */}
       <div
         role="toolbar"
         data-slot="gen-settings-bar"
@@ -35,7 +36,7 @@ function GenSettingsItem({ className, disabled, ...props }: React.ComponentProps
       data-slot="gen-settings-item"
       disabled={disabled ?? ctx.disabled}
       className={cn(
-        "hover:bg-accent hover:text-accent-foreground inline-flex items-center gap-1 rounded px-2 py-1 transition-colors disabled:pointer-events-none disabled:opacity-50",
+        "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none inline-flex items-center gap-1 rounded px-2 py-1 transition-colors disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       {...props}

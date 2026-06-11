@@ -1,0 +1,27 @@
+name: CI
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.1.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm check:tokens
+      - run: pnpm test
+      - run: pnpm build:registry
+      - run: pnpm build
+      - name: Playwright smoke
+        run: |
+          pnpm --filter docs exec playwright install --with-deps chromium
+          pnpm --filter docs exec playwright test
+      - name: Consumer install test
+        run: apps/docs/scripts/consumer-test.sh

@@ -7,11 +7,12 @@ import { cn } from "@/lib/utils";
 interface FieldRowProps extends Omit<React.ComponentProps<"div">, "children"> {
   label: string;
   hint?: string;
-  children: React.ReactNode | ((controlId: string) => React.ReactNode);
+  children: (controlId: string, describedBy?: string) => React.ReactNode;
 }
 
 function FieldRow({ label, hint, className, children, ...props }: FieldRowProps) {
   const id = React.useId();
+  const hintId = hint ? `${id}-hint` : undefined;
   return (
     <div data-slot="field-row" className={cn("space-y-1", className)} {...props}>
       <div className="grid grid-cols-[6rem_1fr] items-center gap-3">
@@ -19,11 +20,11 @@ function FieldRow({ label, hint, className, children, ...props }: FieldRowProps)
           {label}
         </label>
         <div data-slot="field-row-control" className="flex items-center gap-2">
-          {typeof children === "function" ? children(id) : children}
+          {children(id, hintId)}
         </div>
       </div>
       {hint ? (
-        <p data-slot="field-row-hint" className="text-muted-foreground text-xs">
+        <p id={hintId} data-slot="field-row-hint" className="text-muted-foreground text-xs">
           {hint}
         </p>
       ) : null}
@@ -56,6 +57,7 @@ function UnitInput({ unit, onValueChange, onChange, className, ...props }: UnitI
         }}
         {...props}
       />
+      {/* TODO: click-to-focus the input from the unit suffix */}
       <span data-slot="unit-input-unit" className="text-muted-foreground pr-2 text-xs">
         {unit}
       </span>

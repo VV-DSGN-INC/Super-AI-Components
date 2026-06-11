@@ -42,12 +42,12 @@ function ShortcutsSheet({
       {trigger ? <DialogTrigger render={trigger} /> : null}
       <DialogContent
         data-slot="shortcuts-sheet"
-        className={cn("max-h-[80vh] overflow-y-auto sm:max-w-md", className)}
+        className={cn("flex max-h-[80vh] flex-col sm:max-w-md", className)}
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-5">
+        <div className="flex-1 space-y-5 overflow-y-auto">
           {sections.map((section) => (
             <section key={section.title} data-slot="shortcuts-section" className="space-y-1">
               <h3 className="text-sm font-semibold">{section.title}</h3>
@@ -60,8 +60,8 @@ function ShortcutsSheet({
                   >
                     <span>{shortcut.label}</span>
                     <KbdGroup>
-                      {shortcut.keys.map((key) => (
-                        <Kbd key={key}>{key}</Kbd>
+                      {shortcut.keys.map((key, i) => (
+                        <Kbd key={`${i}-${key}`}>{key}</Kbd>
                       ))}
                     </KbdGroup>
                   </li>

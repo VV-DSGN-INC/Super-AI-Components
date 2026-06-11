@@ -1,12 +1,30 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "tasks": {
-    "dev": { "cache": false, "persistent": true },
-    "build": { "dependsOn": ["^build"], "outputs": [".next/**", "!.next/cache/**"] },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
     "lint": {},
     "typecheck": {},
     "test": {},
     "check:tokens": {},
-    "build:registry": { "outputs": ["public/r/**"] }
+    "build:registry": {
+      "outputs": [
+        "public/r/**"
+      ],
+      "env": [
+        "REGISTRY_URL"
+      ]
+    }
   }
 }
