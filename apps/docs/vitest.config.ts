@@ -5,9 +5,11 @@ import path from "node:path";
 export default defineConfig({
   plugins: [react()],
   test: {
+    // RTL auto-cleanup needs a global afterEach
+    globals: true,
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
-    include: ["registry/**/*.test.tsx"],
+    include: ["registry/**/*.test.{ts,tsx}"],
     css: false,
   },
   resolve: {

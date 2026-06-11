@@ -2,3 +2,6 @@ pnpm-lock.yaml
 apps/docs/public/r/
 apps/docs/.next/
 node_modules/
+.turbo/
+playwright-report/
+test-results/
