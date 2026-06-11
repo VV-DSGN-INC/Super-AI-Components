@@ -177,7 +177,7 @@ const items: Item[] = [
     name: "model-bar",
     title: "Model Bar",
     description: "Node-docked params strip: model menu, cycling segments, toggles, Auto values.",
-    registryDependencies: ["dropdown-menu", self("gen-settings-bar"), self("flow-types")],
+    registryDependencies: ["dropdown-menu", self("gen-settings-bar")],
     dependencies: ["lucide-react"],
     files: [flowFile("model-bar")],
   },

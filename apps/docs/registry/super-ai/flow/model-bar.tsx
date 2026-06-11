@@ -11,7 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
+// Relative cross-kit import: resolves identically pre-install (registry/super-ai/flow/ →
+// registry/super-ai/) and post-install (components/super-ai/flow/ → components/super-ai/).
+import { GenSettingsBar, GenSettingsItem } from "../gen-settings-bar";
 
 /**
  * ModelBar — node-docked presentation of the gen-settings-bar engine.
