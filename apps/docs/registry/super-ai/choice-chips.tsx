@@ -48,7 +48,7 @@ interface ChoiceChipProps extends React.ComponentProps<"button"> {
   value: string;
 }
 
-function ChoiceChip({ value, className, ...props }: ChoiceChipProps) {
+function ChoiceChip({ value, className, onClick, ...props }: ChoiceChipProps) {
   const ctx = React.useContext(ChoiceChipsContext);
   if (!ctx) throw new Error("ChoiceChip must be used within ChoiceChips");
   const selected = ctx.value === value;
@@ -59,7 +59,10 @@ function ChoiceChip({ value, className, ...props }: ChoiceChipProps) {
       aria-checked={selected}
       data-slot="choice-chip"
       data-state={selected ? "on" : "off"}
-      onClick={() => ctx.setValue(value)}
+      onClick={(e) => {
+        ctx.setValue(value);
+        onClick?.(e);
+      }}
       className={cn(
         "hover:bg-accent hover:text-accent-foreground rounded-lg border px-3 py-1.5 text-sm transition-colors",
         selected && "ring-ring border-ring ring-2",

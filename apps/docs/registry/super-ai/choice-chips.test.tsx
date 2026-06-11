@@ -29,4 +29,20 @@ describe("ChoiceChips", () => {
     expect(screen.getByRole("radio", { name: "b" })).toHaveAttribute("aria-checked", "true");
     expect(screen.getByRole("radio", { name: "a" })).toHaveAttribute("aria-checked", "false");
   });
+
+  it("composes a consumer onClick instead of replacing selection", async () => {
+    const onValueChange = vi.fn();
+    const onClick = vi.fn();
+    render(
+      <ChoiceChips defaultValue="a" onValueChange={onValueChange}>
+        <ChoiceChip value="a">a</ChoiceChip>
+        <ChoiceChip value="b" onClick={onClick}>
+          b
+        </ChoiceChip>
+      </ChoiceChips>,
+    );
+    await userEvent.click(screen.getByRole("radio", { name: "b" }));
+    expect(onValueChange).toHaveBeenCalledWith("b");
+    expect(onClick).toHaveBeenCalledOnce();
+  });
 });
