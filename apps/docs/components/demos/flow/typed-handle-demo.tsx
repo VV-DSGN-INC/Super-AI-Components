@@ -22,6 +22,7 @@ export default function TypedHandleDemo() {
     <div className="h-52 rounded-lg border">
       <ReactFlow
         defaultNodes={nodes}
+        defaultEdges={[]}
         nodeTypes={{ demo: DemoNode }}
         fitView
         proOptions={{ hideAttribution: true }}
