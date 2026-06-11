@@ -4,8 +4,8 @@ import "@xyflow/react/dist/style.css";
 import { TypedEdge } from "@/registry/super-ai/flow/typed-edge";
 import { handleId } from "@/registry/super-ai/flow/flow-types";
 
-// Fix 2: inline node type with real handles so RF can find matching handle ids.
-// Do NOT import typed-handle (parallel branch). Use raw Handle + handleId codec.
+// Inline node type with real handles so React Flow can resolve the edges' handle ids;
+// raw Handle + the handleId codec keep this demo independent of typed-handle.
 function DemoNode({ id }: NodeProps) {
   return (
     <div className="rounded-md border bg-card px-4 py-3 text-xs">

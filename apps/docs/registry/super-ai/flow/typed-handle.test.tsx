@@ -11,7 +11,7 @@ describe("TypedHandle", () => {
     const port = screen.getByLabelText("Image input port");
     expect(port).toHaveStyle({ background: "var(--flow-image)" });
     expect(port).toHaveAttribute("data-slot", "typed-handle");
-    // Fix 4a: default position — target renders on the left
+    // Default position: targets render on the left.
     expect(port).toHaveAttribute("data-handlepos", "left");
   });
   it("encodes node id, type and direction in the handle id", () => {

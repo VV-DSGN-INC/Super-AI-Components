@@ -41,7 +41,7 @@ function statusRingClass(status: FlowStatus): string {
   return STATUS_RING[status];
 }
 
-interface NodeStatusBadgeProps extends React.ComponentProps<"span"> {
+export interface NodeStatusBadgeProps extends React.ComponentProps<"span"> {
   status: FlowStatus;
   /** Dot/spinner only — label is visually hidden (sr-only) with a `title` tooltip. */
   compact?: boolean;

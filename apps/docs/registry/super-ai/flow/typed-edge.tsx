@@ -3,14 +3,15 @@ import { BaseEdge, getBezierPath, type Edge, type EdgeProps } from "@xyflow/reac
 import { cn } from "@/lib/utils";
 import { parseHandleId } from "./flow-types";
 
-// Fix 3: fallback to var(--flow-text) so registered-but-untokened types degrade visibly
+/** Edge stroke color for a source handle id; falls back to var(--flow-text) so registered-but-untokened types degrade visibly. */
 export function edgeColorFromHandle(sourceHandle?: string | null) {
   const parsed = parseHandleId(sourceHandle);
   return `var(--flow-${parsed?.dataType ?? "text"}, var(--flow-text))`;
 }
 
-// Fix 1: strokeWidth inline (Tailwind v4 cascade layers make utility classes inert against
-// unlayered React Flow stylesheet). motion-safe: prefix added (prefers-reduced-motion).
+// stroke/strokeWidth are inline styles on purpose: Tailwind v4 emits utilities inside cascade
+// layers, which lose to React Flow's unlayered stylesheet. The streaming dash animation is
+// gated behind motion-safe (prefers-reduced-motion).
 export function typedEdgeStyle(opts: {
   sourceHandle?: string | null;
   streaming?: boolean;
@@ -28,7 +29,6 @@ export function typedEdgeStyle(opts: {
   };
 }
 
-// Fix 4: Export TypedEdgeType and use EdgeProps<TypedEdgeType>
 export type TypedEdgeType = Edge<{ streaming?: boolean }, "typed">;
 /** @deprecated use TypedEdgeType */
 export type TypedEdgeProps = EdgeProps<TypedEdgeType>;
@@ -44,7 +44,6 @@ export function TypedEdge({
   sourceHandleId,
   selected,
   data,
-  // Fix 4: forward markerEnd, markerStart and per-edge style
   style,
   markerEnd,
   markerStart,
@@ -55,9 +54,9 @@ export function TypedEdge({
     streaming: data?.streaming,
     selected,
   });
-  // Fix 4: per-edge style first so typed stroke/strokeWidth (type semantics) win.
-  // JSDoc: stroke and strokeWidth are owned by the type system (same stance as typed-handle color).
-  // Everything else (markers, opacity, filters) is forwarded unchanged.
+  // Per-edge style spreads first so the typed stroke/strokeWidth win: stroke color and width
+  // are owned by the type system (same stance as typed-handle color). Everything else
+  // (markers, opacity, filters) is forwarded unchanged.
   return (
     <BaseEdge
       id={id}

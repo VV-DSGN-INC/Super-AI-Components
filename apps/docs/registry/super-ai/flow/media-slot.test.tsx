@@ -25,6 +25,10 @@ describe("MediaSlot", () => {
     render(<MediaSlot kind="image" status="idle" emptyText="Drop image here" />);
     expect(screen.getByText("Drop image here")).toBeInTheDocument();
   });
+  it("failed renders the unified Failed fallback", () => {
+    render(<MediaSlot kind="image" status="failed" />);
+    expect(screen.getByText("Failed")).toBeInTheDocument();
+  });
   it("audio + streaming shows shimmer AND the audio empty copy", () => {
     render(<MediaSlot kind="audio" status="streaming" />);
     expect(

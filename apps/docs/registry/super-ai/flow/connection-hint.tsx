@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useId } from "react";
+import * as React from "react";
+
 import { cn } from "@/lib/utils";
 import { getHandleType } from "./flow-types";
 
@@ -16,7 +17,7 @@ export function compatibleTargets(dataType: string, catalog: NodeCatalogEntry[])
   return catalog.filter((entry) => entry.in.includes(dataType));
 }
 
-export interface ConnectionHintProps {
+export interface ConnectionHintProps extends Omit<React.ComponentProps<"div">, "children"> {
   dataType: string;
   catalog: NodeCatalogEntry[];
   position: { x: number; y: number };
@@ -44,11 +45,13 @@ export function ConnectionHint({
   onPick,
   onDismiss,
   className,
+  style,
+  ...props
 }: ConnectionHintProps) {
   const matches = compatibleTargets(dataType, catalog);
-  const headingId = useId();
+  const headingId = React.useId();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!onDismiss) return;
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key !== "Escape" || e.defaultPrevented) return;
@@ -65,7 +68,8 @@ export function ConnectionHint({
       aria-labelledby={headingId}
       data-slot="connection-hint"
       className={cn("absolute z-50 min-w-[160px] rounded-lg border bg-popover p-2 shadow-md", className)}
-      style={{ left: position.x, top: position.y }}
+      style={{ left: position.x, top: position.y, ...style }}
+      {...props}
     >
       <p id={headingId} className="mb-1.5 px-1 text-xs text-muted-foreground">
         Add compatible node

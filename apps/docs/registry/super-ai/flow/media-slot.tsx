@@ -32,6 +32,21 @@ const KIND_ICON: Record<MediaKind, React.ComponentType<{ className?: string }>> 
   text: Type,
 };
 
+/**
+ * Aspect-locked media preview for a flow node, driven by the kind × status matrix:
+ *
+ * - `done` + content — `image` renders `<img src>`, `video` renders `<video controls>`,
+ *   `audio` renders `<audio controls>` in a compact row, `text` renders `children`.
+ * - `failed` — a unified "Failed" fallback, identical across all kinds.
+ * - `streaming` — a shimmer overlay on top of the empty-state copy (all kinds).
+ * - `idle` / `queued` / `locked` — the empty state (kind icon + copy). queued and locked
+ *   deliberately fall through here: their affordances (status badge, locked CTA) are owned
+ *   by the node shell (ai-node), not the media slot.
+ *
+ * `emptyText` is the extension point for the empty-state copy — hosts override the per-kind
+ * default (e.g. "Drop image here") without touching the state logic. `audio` is a compact
+ * fixed-height row; every other kind is aspect-locked via `aspect` (video | square | auto).
+ */
 export function MediaSlot({
   kind,
   status,

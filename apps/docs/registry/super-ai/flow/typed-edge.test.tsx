@@ -4,13 +4,13 @@ import { Position } from "@xyflow/react";
 import { edgeColorFromHandle, typedEdgeStyle, TypedEdge } from "./typed-edge";
 
 describe("typed-edge helpers", () => {
-  // Fix 3: expected strings updated for the new double-fallback form
+  // Colors use the double-fallback form: var(--flow-<type>, var(--flow-text)).
   it("derives stroke color from the source handle id", () => {
     expect(edgeColorFromHandle("n1:video:out")).toBe("var(--flow-video, var(--flow-text))");
     expect(edgeColorFromHandle("garbage")).toBe("var(--flow-text, var(--flow-text))");
   });
 
-  // Fix 1: stroke moved into style object; selected branch returns strokeWidth 2.5
+  // stroke/strokeWidth live in the style object (inline beats React Flow's unlayered CSS).
   it("puts stroke and strokeWidth inside the style object", () => {
     const result = typedEdgeStyle({ sourceHandle: "n1:image:out", selected: false });
     expect(result.style.stroke).toBe("var(--flow-image, var(--flow-text))");
@@ -22,14 +22,12 @@ describe("typed-edge helpers", () => {
     expect(result.style.strokeWidth).toBe(2.5);
   });
 
-  // Fix 4: strengthen streaming-class assertion to include "flow-dash"
   it("streaming edges get the dash animation class", () => {
     const result = typedEdgeStyle({ sourceHandle: "n1:image:out", streaming: true });
     expect(result.className).toContain("flow-dash");
   });
 });
 
-// Fix 4: smoke test — TypedEdge renders path with data-slot, correct stroke, and strokeWidth
 describe("TypedEdge smoke test", () => {
   it("renders data-slot, typed stroke color and strokeWidth on the path", () => {
     const { container } = render(

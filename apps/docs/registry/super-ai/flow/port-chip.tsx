@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { cn } from "@/lib/utils";
 import { getHandleType } from "./flow-types";
 
@@ -32,7 +34,7 @@ function Row({ label, types, satisfied }: { label: "IN" | "OUT"; types: string[]
   );
 }
 
-export interface PortChipsProps {
+export interface PortChipsProps extends Omit<React.ComponentProps<"div">, "children"> {
   in?: string[];
   out?: string[];
   satisfied?: string[];
@@ -45,9 +47,9 @@ export interface PortChipsProps {
  * The `data-satisfied` attribute is always present on each chip (either `"true"` or `"false"`).
  * CSS consumers should select satisfied chips via `[data-satisfied="true"]`, not bare `[data-satisfied]`.
  */
-export function PortChips({ in: ins = [], out = [], satisfied, className }: PortChipsProps) {
+export function PortChips({ in: ins = [], out = [], satisfied, className, ...props }: PortChipsProps) {
   return (
-    <div data-slot="port-chips" className={cn("flex flex-col gap-1", className)}>
+    <div data-slot="port-chips" className={cn("flex flex-col gap-1", className)} {...props}>
       <Row label="IN" types={ins} satisfied={satisfied} />
       <Row label="OUT" types={out} satisfied={satisfied} />
     </div>

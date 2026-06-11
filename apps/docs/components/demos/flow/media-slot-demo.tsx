@@ -1,4 +1,4 @@
-import { MediaSlot } from "@/registry/super-ai/flow/media-slot"
+import { MediaSlot } from "@/registry/super-ai/flow/media-slot";
 
 export default function MediaSlotDemo() {
   return (
@@ -18,23 +18,14 @@ export default function MediaSlotDemo() {
       {/* Image – done with source */}
       <div className="space-y-1">
         <p className="text-xs text-muted-foreground">Image · done</p>
-        <MediaSlot
-          kind="image"
-          status="done"
-          src="https://images.unsplash.com/photo-1682686581580-d99b0230064e?w=800&q=80"
-          alt="AI generated landscape"
-        />
+        <MediaSlot kind="image" status="done" src="/stubs/image-1.webp" alt="Generated image stub" />
       </div>
 
-      {/* Audio – done with native player */}
+      {/* Video – done with native player */}
       <div className="space-y-1">
-        <p className="text-xs text-muted-foreground">Audio · done</p>
-        <MediaSlot
-          kind="audio"
-          status="done"
-          src="https://www.w3schools.com/html/horse.ogg"
-        />
+        <p className="text-xs text-muted-foreground">Video · done</p>
+        <MediaSlot kind="video" status="done" src="/stubs/video-1.mp4" />
       </div>
     </div>
-  )
+  );
 }
