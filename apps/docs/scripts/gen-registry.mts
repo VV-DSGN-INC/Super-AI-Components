@@ -2,6 +2,8 @@ import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
+import { CATALOG_ITEMS } from "../lib/catalog";
+
 const REGISTRY_URL = (process.env.REGISTRY_URL ?? "https://super-ai-components.vercel.app").replace(
   /\/$/,
   "",
@@ -22,54 +24,23 @@ type Item = {
   dependencies?: string[];
 };
 
-const items: Item[] = [
-  { name: "kbd", title: "Kbd", description: "Keycap chip for keyboard shortcuts." },
-  {
-    name: "cost-chip",
-    title: "Cost Chip",
-    description: "Per-action credit cost chip (e.g. 17 credits, 900 credits/min).",
-    dependencies: ["lucide-react"],
-  },
-  {
-    name: "date-section",
-    title: "Date Section",
-    description: "Date-grouped section header for lists and grids.",
-  },
-  {
-    name: "choice-chips",
-    title: "Choice Chips",
-    description: "Ring-selected chip group for visual and numeric parameters.",
-  },
-  {
-    name: "filter-bar",
-    title: "Filter Bar",
-    description: "Category chips, add-filter chip, and filters button.",
-    dependencies: ["lucide-react"],
-  },
-  {
-    name: "field-row",
-    title: "Field Row",
-    description: "Label + control inspector row with unit-suffixed value input.",
-  },
-  {
-    name: "gen-settings-bar",
-    title: "Gen Settings Bar",
-    description: "Compact model/aspect/resolution/duration/batch strip.",
-  },
-  {
-    name: "shortcuts-sheet",
-    title: "Shortcuts Sheet",
-    description: "Keyboard shortcuts cheatsheet dialog.",
-    registryDependencies: ["dialog", self("kbd")],
-  },
-  {
-    name: "thread-list",
-    title: "Thread List",
-    description: "Date-grouped conversation list with rename, delete, and pin.",
+// Per-item extras (deps/registryDeps) keyed by name
+const extras: Record<string, { dependencies?: string[]; registryDependencies?: string[] }> = {
+  "cost-chip": { dependencies: ["lucide-react"] },
+  "filter-bar": { dependencies: ["lucide-react"] },
+  "shortcuts-sheet": { registryDependencies: ["dialog", self("kbd")] },
+  "thread-list": {
     registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],
     dependencies: ["lucide-react"],
   },
-];
+};
+
+const items: Item[] = CATALOG_ITEMS.map((i) => ({
+  name: i.name,
+  title: i.title,
+  description: i.description,
+  ...extras[i.name],
+}));
 
 const names = items.map((i) => i.name);
 const dupes = names.filter((n, i) => names.indexOf(n) !== i);

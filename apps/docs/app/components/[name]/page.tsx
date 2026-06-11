@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { notFound } from "next/navigation";
 
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
@@ -9,7 +12,8 @@ import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
-import { CATALOG, type CatalogName } from "@/lib/catalog";
+import { PreviewTabs } from "@/components/preview-tabs";
+import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 
 const demos: Record<CatalogName, React.ComponentType> = {
   kbd: KbdDemo,
@@ -30,16 +34,30 @@ export function generateStaticParams() {
 export default async function ComponentPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
   if (!CATALOG.includes(name as CatalogName)) notFound();
+
+  const item = CATALOG_ITEMS.find((i) => i.name === name)!;
   const Demo = demos[name as CatalogName];
+
+  const demoSource = fs.readFileSync(
+    path.join(process.cwd(), "components/demos", `${name}-demo.tsx`),
+    "utf8",
+  );
+
   return (
-    <main className="mx-auto max-w-2xl space-y-6 p-10">
-      <h1 className="text-2xl font-bold">{name}</h1>
-      <div className="flex min-h-40 items-center justify-center rounded-xl border p-8">
-        <Demo />
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">{item.title}</h1>
+        <p className="text-muted-foreground mt-2">{item.description}</p>
       </div>
-      <pre className="bg-muted overflow-x-auto rounded-lg p-3 text-xs">
-        <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
-      </pre>
-    </main>
+
+      <PreviewTabs preview={<Demo />} code={demoSource} />
+
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold">Installation</h2>
+        <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
+          <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
+        </pre>
+      </div>
+    </div>
   );
 }

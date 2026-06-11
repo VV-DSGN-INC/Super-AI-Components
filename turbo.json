@@ -6,25 +6,16 @@
       "persistent": true
     },
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
-      "outputs": [
-        ".next/**",
-        "!.next/cache/**"
-      ]
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "!.next/cache/**", "public/r/**"]
     },
     "lint": {},
     "typecheck": {},
     "test": {},
     "check:tokens": {},
     "build:registry": {
-      "outputs": [
-        "public/r/**"
-      ],
-      "env": [
-        "REGISTRY_URL"
-      ]
+      "outputs": ["public/r/**"],
+      "env": ["REGISTRY_URL"]
     }
   }
 }
