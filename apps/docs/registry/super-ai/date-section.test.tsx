@@ -13,4 +13,9 @@ describe("DateSection", () => {
     expect(section).toContainElement(screen.getByText("item"));
     expect(section).toHaveAttribute("data-slot", "date-section");
   });
+
+  it("passes className through to the wrapper", () => {
+    render(<DateSection label="X" className="my-custom" />);
+    expect(screen.getByRole("group", { name: "X" })).toHaveClass("my-custom");
+  });
 });
