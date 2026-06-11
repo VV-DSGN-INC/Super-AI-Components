@@ -173,13 +173,28 @@ Three tiers: **primitives** (shared DNA), **components** (leaf installables), **
 | `track-list` | Library table: artwork, tags, inline waveform, BPM; compact results variant with favorite |
 | `voice-clone-recorder`* | Guided sample recording |
 
-### Media shared (3)
+### Media shared (2)
 
 | Name | One-liner |
 |---|---|
 | `compare-viewer` | Labeled numbered panes, side/single/wipe modes, synced zoom/transport; absorbs before/after slider |
 | `transport-controls` | Play/skip/speed/elapsed; frame-accurate variant with timecode, frame-step, in/out |
-| `gen-node` | Media generation node (image/video/audio/prompt variants) for AI Elements' canvas: preview, prompt, settings strip, typed ports, run |
+
+### Flow Kit (25 + 1 hook)
+
+The node-canvas creation surface, built on top of AI Elements' `canvas`/`node`/`edge` (extended, never forked). **Detailed component specs live in the companion document [`docs/flow-kit-inventory.md`](../../flow-kit-inventory.md)** — props, states matrix, deep specs for the five load-bearing components, and reference decompositions (Flow Builder repo, Flows light reference, Flow AI dark reference).
+
+| Group | Items |
+|---|---|
+| Wiring (4) | `typed-handle` · `typed-edge` · `port-chip` · `connection-hint` |
+| Node anatomy (6) | `ai-node` · `node-status` · `model-bar` · `run-button` · `media-slot` · `node-prompt` |
+| Modality presets (10) | `text-node` · `llm-node` · `image-node` · `video-node` · `tts-node` · `sfx-node` · `music-node` · `composition-node` + `track-timeline` · `asset-output-node` · `reference-node` |
+| Canvas chrome (5) | `node-palette` · `canvas-omnibar` · `run-controls` · `node-inspector` · `env-status` |
+| Headless (1) | `useFlowRunner` — topological execution, per-node status, cancellation; UI-independent, executor-swappable |
+
+Integration notes: `model-bar` is the node-docked presentation of the `gen-settings-bar` segment engine (one engine, two presentations). `tts-node` shares the voice row with `tts-composer`; `node-prompt` shares mention-chip machinery with `context-chips`. `env-status` complements `credits-indicator` (reachability vs spend).
+
+Decisions on the inventory's open questions (defaults, revisitable at wave planning): registry-scoped plain names under `@super-ai` (no `flow-` prefix); edge color derives from source handle in v1; `node-prompt` is standalone rather than built on AI Elements' chat-shaped `prompt-input`; `track-timeline` ships view-only with per-track mute; `useFlowRunner` v1 does naive full-graph topological runs (output caching later).
 
 ### Model & object tooling (5)
 
@@ -247,7 +262,7 @@ Three tiers: **primitives** (shared DNA), **components** (leaf installables), **
 | `generation-panel` | SD-style side panel: mode tabs, model, prompts, params, batch, credits line, Generate |
 | `tool-panel` | Modality panel recipe: search + curated/history lists + docked prompt box |
 
-**Totals: 7 primitives + 73 components + 4 blocks = 84 registry items.**
+**Totals: 7 primitives + 72 components + 25 Flow Kit items + 4 blocks + 1 headless hook = 109 registry items.**
 
 ## 6. Architecture
 
@@ -265,7 +280,7 @@ Chosen approach: **primitives + contracts + automated checks** (over framework-i
 
 ### Contracts
 
-- **Token contract:** styling uses shadcn CSS variables exclusively (`--background`, `--primary`, etc.). No raw hex/oklch, no arbitrary Tailwind color values. Enforced by `check:tokens`.
+- **Token contract:** styling uses shadcn CSS variables exclusively (`--background`, `--primary`, etc.). No raw hex/oklch, no arbitrary Tailwind color values inside components. Kit-scoped semantic tokens (the Flow Kit's `--flow-*` type and execution colors) are defined once, centrally, with light and dark values, and consumed as variables. Enforced by `check:tokens`.
 - **State contract:** every generation-aware component implements `idle | queued | streaming | done | failed | locked` with shared visual conventions (shimmer while streaming, inline failed card, CTA-replaced locked state).
 - **Approval contract:** artifact approval surfaces expose Confirm/Edit/Regenerate/Skip callbacks.
 - **Cost contract:** components that trigger spend accept optional cost props rendering as chip (per action), line (pre-commit), or defer to the app-level ring.
@@ -294,6 +309,7 @@ super-ai-components/
 │   └── registry/
 │       ├── src/primitives/            # L2
 │       ├── src/components/<kit>/      # L3, one file per component
+│       ├── src/flow/                  # Flow Kit (wiring, anatomy, presets, chrome, useFlowRunner)
 │       ├── src/blocks/                # L4
 │       └── registry.json
 ├── apps/
@@ -328,14 +344,19 @@ One spec (this document); one implementation plan per wave.
 |---|---|
 | 0 — Foundation | Repo, tooling, CI, registry pipeline, all 7 primitives, two pilot components end-to-end (`shortcuts-sheet`, `thread-list`), docs shell |
 | 1 — App Shell & Nav | Remaining App Shell kit + composer/context trio + `app-shell` block |
-| 2 — Writing | Writing kit |
-| 3 — Image | Image kit + `media-prompt-bar` + `generation-panel` block + `model-card`, `parameter-panel` |
-| 4 — Feedback & Evals | Feedback kit + `compare-viewer` |
-| 5 — Audio | Audio kit + `transport-controls` |
-| 6 — Video | Video kit + `gen-node` + `studio-shell` and `tool-panel` blocks + `context-toolbar`, `property-inspector`, `ai-tools-menu` |
-| 7 — Observability | Observability kit |
-| 8 — RAG & Library | RAG kit + `asset-library`, `filter-panel`, `explore-gallery` |
-| 9 — Monetization | Monetization kit (note: `credits-indicator` ships in Wave 1 with the shell) |
+| 2 — Flow Kit F1 | Wiring + node anatomy (7 items) + `useFlowRunner`; demo: rebuild Flow Builder's image→video chain on the registry |
+| 3 — Flow Kit F2 | The 10 modality node presets; demo: the full reference flow incl. TTS + SFX + Music into composition |
+| 4 — Flow Kit F3 | Canvas chrome (palette, omnibar, run-controls, inspector, env-status); demo: Flow AI-style shell |
+| 5 — Writing | Writing kit |
+| 6 — Image | Image kit + `media-prompt-bar` + `generation-panel` block + `model-card`, `parameter-panel` |
+| 7 — Feedback & Evals | Feedback kit + `compare-viewer` |
+| 8 — Audio | Audio kit + `transport-controls` |
+| 9 — Video | Video kit + `studio-shell` and `tool-panel` blocks + `context-toolbar`, `property-inspector`, `ai-tools-menu` |
+| 10 — Observability | Observability kit |
+| 11 — RAG & Library | RAG kit + `asset-library`, `filter-panel`, `explore-gallery` |
+| 12 — Monetization | Monetization kit (note: `credits-indicator` ships in Wave 1 with the shell) |
+
+Flow Kit placement rationale: it has a working reference implementation (Flow Builder) to lift from, the strongest differentiation story, and its own detailed spec — lowest risk, highest momentum. Reorderable at review.
 
 Stretch items (`*`) ship last within their wave and may slip to a cleanup wave without blocking.
 
