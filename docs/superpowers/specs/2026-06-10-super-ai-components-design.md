@@ -36,53 +36,59 @@ Success criteria: components install cleanly into a fresh shadcn app, inherit th
 Thirty-seven patterns observed across real AI products. These are binding design rules for the catalog.
 
 ### Generation and asset lifecycle
+
 1. The model+params settings strip is universal — one primitive (`gen-settings-bar`), embedded everywhere (nodes, prompt bars, detail views).
-3. Provenance travels with every asset — prompt, model, params, age follow the artifact (recipe card pattern).
-7. Everything previews inline — waveforms in rows, frames in slots; no asset row without a glanceable preview.
-8. Save-to-library is universal — every result component exposes save/favorite callbacks.
-9. The asset lifecycle is the spine of creative AI apps: generate → result → library → referenced back into new prompts.
-20. Failure is a first-class state, rendered inline where the result would have been — never only a toast.
-34. Heavy media work is staged and visible: input → preview → export pipelines.
+2. Provenance travels with every asset — prompt, model, params, age follow the artifact (recipe card pattern).
+3. Everything previews inline — waveforms in rows, frames in slots; no asset row without a glanceable preview.
+4. Save-to-library is universal — every result component exposes save/favorite callbacks.
+5. The asset lifecycle is the spine of creative AI apps: generate → result → library → referenced back into new prompts.
+6. Failure is a first-class state, rendered inline where the result would have been — never only a toast.
+7. Heavy media work is staged and visible: input → preview → export pipelines.
 
 ### Money
+
 6. Credits surface at the point of spend — embeddable chips, not buried billing pages.
-12. AI pricing is quota pricing — GPU-hours, concurrency, speed tiers, commercial terms; not seats.
-13. Gate at the point of creation — the prompt bar itself becomes the paywall (`locked` state).
-19. Cost disclosure has three forms: persistent ring, per-action chip, pre-action line.
-30. Cost confirmation precedes commit — "Need 4 credits, you have 55" beside the Generate button.
-33. Preview-before-commit economics — cheap samples (15s preview render) before expensive full runs.
+7. AI pricing is quota pricing — GPU-hours, concurrency, speed tiers, commercial terms; not seats.
+8. Gate at the point of creation — the prompt bar itself becomes the paywall (`locked` state).
+9. Cost disclosure has three forms: persistent ring, per-action chip, pre-action line.
+10. Cost confirmation precedes commit — "Need 4 credits, you have 55" beside the Generate button.
+11. Preview-before-commit economics — cheap samples (15s preview render) before expensive full runs.
 
 ### Selection and objects
+
 4. Cross-tool handoff is the signature interaction — action stacks chain tools ("Extend → Upscale → Use in Lip sync").
-21. AI actions attach to objects, not just chats — the selection is the prompt context.
-22. Editor fields carry units — %, s, × suffixes in compact inputs paired with sliders.
-28. Selection surfaces form a family: floating toolbar (quick) + inspector (deep) + AI tools menu (AI).
-35. The four verbs of artifact approval: Confirm · Edit · Regenerate · Skip.
-36. AI edits arrive as track changes with rationale — on any structured artifact, not just prose.
-37. The composer is a context-assembly surface — selections become quotes, entities become chips, @-mentions resolve to references.
+5. AI actions attach to objects, not just chats — the selection is the prompt context.
+6. Editor fields carry units — %, s, × suffixes in compact inputs paired with sliders.
+7. Selection surfaces form a family: floating toolbar (quick) + inspector (deep) + AI tools menu (AI).
+8. The four verbs of artifact approval: Confirm · Edit · Regenerate · Skip.
+9. AI edits arrive as track changes with rationale — on any structured artifact, not just prose.
+10. The composer is a context-assembly surface — selections become quotes, entities become chips, @-mentions resolve to references.
 
 ### Parameters and pickers
+
 5. Parameters speak human — "More variable ↔ More stable", never raw floats.
-25. Visual parameters get visual pickers — preview chips with selection rings, never dropdowns.
-26. Media models are organized by task signature (text→video, image→video) with conditioning badges.
-27. Local vs cloud is first-class UI — runtime pills and hardware requirements on model cards.
-29. Parameters teach inline — one-line explanations under sliders.
-31. AI enhancement is a module stack — named, purpose-tagged models toggled per feature.
+6. Visual parameters get visual pickers — preview chips with selection rings, never dropdowns.
+7. Media models are organized by task signature (text→video, image→video) with conditioning badges.
+8. Local vs cloud is first-class UI — runtime pills and hardware requirements on model cards.
+9. Parameters teach inline — one-line explanations under sliders.
+10. AI enhancement is a module stack — named, purpose-tagged models toggled per feature.
 
 ### Layout and shell
+
 2. Announcements come in three sizes (modal, anchored popover, inline card) plus a changelog variant.
-11. Announcement heroes can embed live components.
-17. Modality tool panels share one anatomy: search → curated/explore → history → docked prompt box.
-18. The agent moved into the workspace — docked copilot panels, not just standalone chat apps.
-24. Pro tools earn keyboard UI — shortcuts cheatsheet and keycap chips are table stakes.
-32. Compare is a workspace mode — labeled panes, view-mode toggles, synced transport.
+3. Announcement heroes can embed live components.
+4. Modality tool panels share one anatomy: search → curated/explore → history → docked prompt box.
+5. The agent moved into the workspace — docked copilot panels, not just standalone chat apps.
+6. Pro tools earn keyboard UI — shortcuts cheatsheet and keycap chips are table stakes.
+7. Compare is a workspace mode — labeled panes, view-mode toggles, synced transport.
 
 ### Finding and sharing
+
 10. Filter bars are a shared primitive — category chips, add-filter chips, filter button.
-14. Date is the universal grouper — threads, generations, inboxes.
-15. Two galleries, two jobs — personal archive (dense, faceted) vs community explore (masonry, trending).
-16. Filtering has a scale ladder — chips for libraries, faceted rail with saved searches for power archives.
-23. Access is a matrix, not a toggle — separate scopes (workspace/public), each with levels.
+11. Date is the universal grouper — threads, generations, inboxes.
+12. Two galleries, two jobs — personal archive (dense, faceted) vs community explore (masonry, trending).
+13. Filtering has a scale ladder — chips for libraries, faceted rail with saved searches for power archives.
+14. Access is a matrix, not a toggle — separate scopes (workspace/public), each with levels.
 
 ## 5. Catalog
 
@@ -90,107 +96,107 @@ Three tiers: **primitives** (shared DNA), **components** (leaf installables), **
 
 ### Primitives (7)
 
-| Name | One-liner |
-|---|---|
-| `field-row` | Label + control row: slider with unit-input (%, s, ×), select, toggle, color; the inspector DNA |
-| `choice-chips` | Ring-selected chip group; numeric, text, and preview-content variants |
-| `filter-bar` | Category chips + add-filter chip + filters button |
-| `gen-settings-bar` | Compact model · aspect · resolution · duration · batch strip |
-| `date-section` | Date-grouped section headers for lists and grids |
-| `kbd` | Keycap chip |
-| `cost-chip` | Per-action credit cost ("17 credits", "900 credits/min") |
+| Name               | One-liner                                                                                       |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| `field-row`        | Label + control row: slider with unit-input (%, s, ×), select, toggle, color; the inspector DNA |
+| `choice-chips`     | Ring-selected chip group; numeric, text, and preview-content variants                           |
+| `filter-bar`       | Category chips + add-filter chip + filters button                                               |
+| `gen-settings-bar` | Compact model · aspect · resolution · duration · batch strip                                    |
+| `date-section`     | Date-grouped section headers for lists and grids                                                |
+| `kbd`              | Keycap chip                                                                                     |
+| `cost-chip`        | Per-action credit cost ("17 credits", "900 credits/min")                                        |
 
 ### App Shell & Navigation (13)
 
-| Name | One-liner |
-|---|---|
-| `app-sidebar` | Assembled product sidebar on shadcn sidebar: switcher top, nav, promo, footer links |
-| `workspace-switcher` | Avatar/logo + name dropdown; workspace and multi-product variants with description rows |
-| `sidebar-nav` | Sectioned icon+label nav: badges, dots, pinned groups, overflow item |
-| `promo-card` | Sidebar CTA card (upgrade / invite variants) |
-| `thread-list` | Date-grouped conversations: pin, inline rename, delete-confirm, active/unread |
-| `thread-search` | ⌘K dialog across threads and messages |
-| `chat-header` | Title, model badge, share trigger, panel toggles |
-| `chat-empty-state` | Welcome hero with suggestion chips (composes `@ai-elements/suggestion`) |
-| `share-dialog` | People search, invite row, scoped access matrix, copy link; conversation + project flavors |
-| `feature-announcement` | Modal / popover / inline-card / changelog variants; version + stage badges; dual CTA |
-| `shortcuts-sheet` | Sectioned shortcuts cheatsheet built on `kbd` |
-| `agent-panel` | Docked copilot: header + modes (Create/Plan), empty state, history; composes AI Elements conversation |
-| `credits-indicator` | Persistent credits ring/counter for top bars |
+| Name                   | One-liner                                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------------------------- |
+| `app-sidebar`          | Assembled product sidebar on shadcn sidebar: switcher top, nav, promo, footer links                   |
+| `workspace-switcher`   | Avatar/logo + name dropdown; workspace and multi-product variants with description rows               |
+| `sidebar-nav`          | Sectioned icon+label nav: badges, dots, pinned groups, overflow item                                  |
+| `promo-card`           | Sidebar CTA card (upgrade / invite variants)                                                          |
+| `thread-list`          | Date-grouped conversations: pin, inline rename, delete-confirm, active/unread                         |
+| `thread-search`        | ⌘K dialog across threads and messages                                                                 |
+| `chat-header`          | Title, model badge, share trigger, panel toggles                                                      |
+| `chat-empty-state`     | Welcome hero with suggestion chips (composes `@ai-elements/suggestion`)                               |
+| `share-dialog`         | People search, invite row, scoped access matrix, copy link; conversation + project flavors            |
+| `feature-announcement` | Modal / popover / inline-card / changelog variants; version + stage badges; dual CTA                  |
+| `shortcuts-sheet`      | Sectioned shortcuts cheatsheet built on `kbd`                                                         |
+| `agent-panel`          | Docked copilot: header + modes (Create/Plan), empty state, history; composes AI Elements conversation |
+| `credits-indicator`    | Persistent credits ring/counter for top bars                                                          |
 
 ### Composer & context (3)
 
-| Name | One-liner |
-|---|---|
+| Name               | One-liner                                                                                                                                                                                 |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `media-prompt-bar` | The media-gen omnibox: mode tabs, typed ref slots (start/end frame, refs), preset chips, negative prompt, settings strip, credits, @-mentions, `locked` state; floating + docked variants |
-| `quote-reply` | Select content → Reply → quoted context block in composer |
-| `context-chips` | Removable entity/range/file reference chips in the composer |
+| `quote-reply`      | Select content → Reply → quoted context block in composer                                                                                                                                 |
+| `context-chips`    | Removable entity/range/file reference chips in the composer                                                                                                                               |
 
 ### Writing kit (6)
 
-| Name | One-liner |
-|---|---|
-| `selection-toolbar` | The ✨ menu on selected text: improve, shorten, expand, tone |
-| `inline-suggestion` | Ghost-text completion with Tab-to-accept |
-| `diff-review` | Inline accept/reject track changes with per-change rationale slot |
-| `rewrite-panel` | N alternative rewrites side-by-side |
-| `outline-builder` | AI outline with drag-reorder and expand-section |
-| `tone-selector` | Tone/length chips |
+| Name                | One-liner                                                         |
+| ------------------- | ----------------------------------------------------------------- |
+| `selection-toolbar` | The ✨ menu on selected text: improve, shorten, expand, tone      |
+| `inline-suggestion` | Ghost-text completion with Tab-to-accept                          |
+| `diff-review`       | Inline accept/reject track changes with per-change rationale slot |
+| `rewrite-panel`     | N alternative rewrites side-by-side                               |
+| `outline-builder`   | AI outline with drag-reorder and expand-section                   |
+| `tone-selector`     | Tone/length chips                                                 |
 
 ### Image kit (7)
 
-| Name | One-liner |
-|---|---|
-| `generation-grid` | Batch gallery with date sections, vary/upscale/save actions, failed cards |
-| `generation-queue` | Pending slots with progress shimmer |
+| Name                | One-liner                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------ |
+| `generation-grid`   | Batch gallery with date sections, vary/upscale/save actions, failed cards            |
+| `generation-queue`  | Pending slots with progress shimmer                                                  |
 | `generation-detail` | Lightbox: media viewer + metadata rail (prompt, model, specs) + handoff action stack |
-| `style-picker` | Style preset chips with thumbnails |
-| `palette-picker` | Palette chips of color-dot previews |
-| `brush-controls` | Tool toggles, size slider, swatch grid, custom color |
-| `inpaint-canvas`* | Brush-mask editor over an image |
+| `style-picker`      | Style preset chips with thumbnails                                                   |
+| `palette-picker`    | Palette chips of color-dot previews                                                  |
+| `brush-controls`    | Tool toggles, size slider, swatch grid, custom color                                 |
+| `inpaint-canvas`\*  | Brush-mask editor over an image                                                      |
 
 ### Video kit (8)
 
-| Name | One-liner |
-|---|---|
-| `storyboard` | Scene/shot cards with per-shot prompts |
-| `shot-controls` | Camera motion/angle/duration chips |
-| `video-gen-card` | Generation progress with frame previews |
-| `transcript-editor` | Edit video by editing text |
-| `frame-picker` | Keyframe/thumbnail strip selector |
-| `timeline-editor`* | Multi-track timeline: ruler, filmstrip/waveform/text tracks, playhead, in/out ranges, per-track mute |
-| `enhancement-stack` | Toggleable AI post-processing modules with per-module params and purpose-tagged models |
-| `render-queue` | Staged jobs: inputs → preview renders → exports, spec-carrying rows |
+| Name                | One-liner                                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------------------------- |
+| `storyboard`        | Scene/shot cards with per-shot prompts                                                               |
+| `shot-controls`     | Camera motion/angle/duration chips                                                                   |
+| `video-gen-card`    | Generation progress with frame previews                                                              |
+| `transcript-editor` | Edit video by editing text                                                                           |
+| `frame-picker`      | Keyframe/thumbnail strip selector                                                                    |
+| `timeline-editor`\* | Multi-track timeline: ruler, filmstrip/waveform/text tracks, playhead, in/out ranges, per-track mute |
+| `enhancement-stack` | Toggleable AI post-processing modules with per-module params and purpose-tagged models               |
+| `render-queue`      | Staged jobs: inputs → preview renders → exports, spec-carrying rows                                  |
 
 ### Audio kit (6)
 
-| Name | One-liner |
-|---|---|
-| `tts-composer` | Script editor with per-segment voice + emotion tags |
-| `music-brief` | Genre/mood/tempo/duration controls |
-| `waveform-editor` | Editor-grade waveform: regions, scrub, zoom |
-| `stem-mixer` | Track lanes with mute/solo/volume |
-| `track-list` | Library table: artwork, tags, inline waveform, BPM; compact results variant with favorite |
-| `voice-clone-recorder`* | Guided sample recording |
+| Name                     | One-liner                                                                                 |
+| ------------------------ | ----------------------------------------------------------------------------------------- |
+| `tts-composer`           | Script editor with per-segment voice + emotion tags                                       |
+| `music-brief`            | Genre/mood/tempo/duration controls                                                        |
+| `waveform-editor`        | Editor-grade waveform: regions, scrub, zoom                                               |
+| `stem-mixer`             | Track lanes with mute/solo/volume                                                         |
+| `track-list`             | Library table: artwork, tags, inline waveform, BPM; compact results variant with favorite |
+| `voice-clone-recorder`\* | Guided sample recording                                                                   |
 
 ### Media shared (2)
 
-| Name | One-liner |
-|---|---|
-| `compare-viewer` | Labeled numbered panes, side/single/wipe modes, synced zoom/transport; absorbs before/after slider |
-| `transport-controls` | Play/skip/speed/elapsed; frame-accurate variant with timecode, frame-step, in/out |
+| Name                 | One-liner                                                                                          |
+| -------------------- | -------------------------------------------------------------------------------------------------- |
+| `compare-viewer`     | Labeled numbered panes, side/single/wipe modes, synced zoom/transport; absorbs before/after slider |
+| `transport-controls` | Play/skip/speed/elapsed; frame-accurate variant with timecode, frame-step, in/out                  |
 
 ### Flow Kit (25 + 1 hook)
 
 The node-canvas creation surface, built on top of AI Elements' `canvas`/`node`/`edge` (extended, never forked). **Detailed component specs live in the companion document [`docs/flow-kit-inventory.md`](../../flow-kit-inventory.md)** — props, states matrix, deep specs for the five load-bearing components, and reference decompositions (Flow Builder repo, Flows light reference, Flow AI dark reference).
 
-| Group | Items |
-|---|---|
-| Wiring (4) | `typed-handle` · `typed-edge` · `port-chip` · `connection-hint` |
-| Node anatomy (6) | `ai-node` · `node-status` · `model-bar` · `run-button` · `media-slot` · `node-prompt` |
+| Group                 | Items                                                                                                                                                                            |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Wiring (4)            | `typed-handle` · `typed-edge` · `port-chip` · `connection-hint`                                                                                                                  |
+| Node anatomy (6)      | `ai-node` · `node-status` · `model-bar` · `run-button` · `media-slot` · `node-prompt`                                                                                            |
 | Modality presets (10) | `text-node` · `llm-node` · `image-node` · `video-node` · `tts-node` · `sfx-node` · `music-node` · `composition-node` + `track-timeline` · `asset-output-node` · `reference-node` |
-| Canvas chrome (5) | `node-palette` · `canvas-omnibar` · `run-controls` · `node-inspector` · `env-status` |
-| Headless (1) | `useFlowRunner` — topological execution, per-node status, cancellation; UI-independent, executor-swappable |
+| Canvas chrome (5)     | `node-palette` · `canvas-omnibar` · `run-controls` · `node-inspector` · `env-status`                                                                                             |
+| Headless (1)          | `useFlowRunner` — topological execution, per-node status, cancellation; UI-independent, executor-swappable                                                                       |
 
 Integration notes: `model-bar` is the node-docked presentation of the `gen-settings-bar` segment engine (one engine, two presentations). `tts-node` shares the voice row with `tts-composer`; `node-prompt` shares mention-chip machinery with `context-chips`. `env-status` complements `credits-indicator` (reachability vs spend).
 
@@ -198,69 +204,69 @@ Decisions on the inventory's open questions (defaults, revisitable at wave plann
 
 ### Model & object tooling (5)
 
-| Name | One-liner |
-|---|---|
-| `model-card` | Sample-output hero, runtime + conditioning badges, requirements footer; grouped by task signature |
-| `parameter-panel` | Generation params: plain-language slider endpoints, inline education, picker rows, reset |
-| `property-inspector` | Object styling rows (font, size, alignment, color, animation) on `field-row` |
-| `ai-tools-menu` | Object-scoped AI actions: icon + title + description rows |
-| `context-toolbar` | Selection-following floating toolbar; type-specific variants with embedded AI actions |
+| Name                 | One-liner                                                                                         |
+| -------------------- | ------------------------------------------------------------------------------------------------- |
+| `model-card`         | Sample-output hero, runtime + conditioning badges, requirements footer; grouped by task signature |
+| `parameter-panel`    | Generation params: plain-language slider endpoints, inline education, picker rows, reset          |
+| `property-inspector` | Object styling rows (font, size, alignment, color, animation) on `field-row`                      |
+| `ai-tools-menu`      | Object-scoped AI actions: icon + title + description rows                                         |
+| `context-toolbar`    | Selection-following floating toolbar; type-specific variants with embedded AI actions             |
 
 ### Feedback & evals (6)
 
-| Name | One-liner |
-|---|---|
-| `feedback` | Thumbs + reason popover + submitted state |
-| `model-compare` | Side-by-side responses, synced scroll, vote bar |
-| `response-diff` | Word-level diff of two responses |
-| `review-queue` | Human-in-the-loop queue: list + detail + verbs |
+| Name            | One-liner                                                                 |
+| --------------- | ------------------------------------------------------------------------- |
+| `feedback`      | Thumbs + reason popover + submitted state                                 |
+| `model-compare` | Side-by-side responses, synced scroll, vote bar                           |
+| `response-diff` | Word-level diff of two responses                                          |
+| `review-queue`  | Human-in-the-loop queue: list + detail + verbs                            |
 | `approval-card` | Single-artifact approval: Confirm/Edit/Regenerate/Skip + truncated detail |
-| `eval-board` | Score cards + pass/fail matrix |
+| `eval-board`    | Score cards + pass/fail matrix                                            |
 
 ### Agent observability (5)
 
-| Name | One-liner |
-|---|---|
-| `trace-timeline` | Waterfall of steps/tool calls/LLM calls |
-| `run-inspector` | Span detail: I/O, tokens, cost, errors |
-| `usage-dashboard` | Aggregate cost/token/latency cards |
-| `memory-viewer` | Browse/edit agent memory with provenance |
-| `agent-board` | Multi-agent fleet status grid |
+| Name              | One-liner                                |
+| ----------------- | ---------------------------------------- |
+| `trace-timeline`  | Waterfall of steps/tool calls/LLM calls  |
+| `run-inspector`   | Span detail: I/O, tokens, cost, errors   |
+| `usage-dashboard` | Aggregate cost/token/latency cards       |
+| `memory-viewer`   | Browse/edit agent memory with provenance |
+| `agent-board`     | Multi-agent fleet status grid            |
 
 ### RAG & knowledge (4)
 
-| Name | One-liner |
-|---|---|
-| `ingestion-dropzone` | Upload with per-file pipeline status (parsing → chunking → embedding → ready/failed) |
-| `knowledge-base` | Document flavor of `asset-library` with ingestion-status columns |
-| `retrieval-inspector` | Query → ranked chunks with scores |
-| `chunk-highlighter`* | Source doc with chunk boundaries highlighted |
+| Name                  | One-liner                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| `ingestion-dropzone`  | Upload with per-file pipeline status (parsing → chunking → embedding → ready/failed) |
+| `knowledge-base`      | Document flavor of `asset-library` with ingestion-status columns                     |
+| `retrieval-inspector` | Query → ranked chunks with scores                                                    |
+| `chunk-highlighter`\* | Source doc with chunk boundaries highlighted                                         |
 
 ### Library & discovery (3)
 
-| Name | One-liner |
-|---|---|
-| `asset-library` | Header actions, search, filter chips, list/grid toggle, folder+file table, row menus |
-| `filter-panel` | Faceted rail: checkbox groups, see-more, collapsible sections, saved searches |
-| `explore-gallery` | Masonry community feed with sort tabs and type pills |
+| Name              | One-liner                                                                            |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `asset-library`   | Header actions, search, filter chips, list/grid toggle, folder+file table, row menus |
+| `filter-panel`    | Faceted rail: checkbox groups, see-more, collapsible sections, saved searches        |
+| `explore-gallery` | Masonry community feed with sort tabs and type pills                                 |
 
 ### Monetization (4)
 
-| Name | One-liner |
-|---|---|
-| `pricing-table` | Billing toggle + plan cards: anchor pricing, quota/concurrency feature rows with emphasis and info tooltips |
-| `quota-meter` | Plan usage + reset countdown |
-| `credit-balance` | Balance + top-up |
-| `rate-limit-banner` | Cooldown countdown |
+| Name                | One-liner                                                                                                   |
+| ------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `pricing-table`     | Billing toggle + plan cards: anchor pricing, quota/concurrency feature rows with emphasis and info tooltips |
+| `quota-meter`       | Plan usage + reset countdown                                                                                |
+| `credit-balance`    | Balance + top-up                                                                                            |
+| `rate-limit-banner` | Cooldown countdown                                                                                          |
 
 ### Blocks (4)
 
-| Name | One-liner |
-|---|---|
-| `app-shell` | Chat-app frame: sidebar + main + inspector panel, mobile drawer |
-| `studio-shell` | Creative-studio frame: top bar, modality rail, tool panel, canvas, agent dock, timeline slot |
-| `generation-panel` | SD-style side panel: mode tabs, model, prompts, params, batch, credits line, Generate |
-| `tool-panel` | Modality panel recipe: search + curated/history lists + docked prompt box |
+| Name               | One-liner                                                                                    |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| `app-shell`        | Chat-app frame: sidebar + main + inspector panel, mobile drawer                              |
+| `studio-shell`     | Creative-studio frame: top bar, modality rail, tool panel, canvas, agent dock, timeline slot |
+| `generation-panel` | SD-style side panel: mode tabs, model, prompts, params, batch, credits line, Generate        |
+| `tool-panel`       | Modality panel recipe: search + curated/history lists + docked prompt box                    |
 
 **Totals: 7 primitives + 72 components + 25 Flow Kit items + 4 blocks + 1 headless hook = 109 registry items.**
 
@@ -340,21 +346,21 @@ Next.js app on Vercel. Per-component pages: live demo, install command, props ta
 
 One spec (this document); one implementation plan per wave.
 
-| Wave | Scope |
-|---|---|
-| 0 — Foundation | Repo, tooling, CI, registry pipeline, all 7 primitives, two pilot components end-to-end (`shortcuts-sheet`, `thread-list`), docs shell |
-| 1 — App Shell & Nav | Remaining App Shell kit + composer/context trio + `app-shell` block |
-| 2 — Flow Kit F1 | Wiring + node anatomy (7 items) + `useFlowRunner`; demo: rebuild Flow Builder's image→video chain on the registry |
-| 3 — Flow Kit F2 | The 10 modality node presets; demo: the full reference flow incl. TTS + SFX + Music into composition |
-| 4 — Flow Kit F3 | Canvas chrome (palette, omnibar, run-controls, inspector, env-status); demo: Flow AI-style shell |
-| 5 — Writing | Writing kit |
-| 6 — Image | Image kit + `media-prompt-bar` + `generation-panel` block + `model-card`, `parameter-panel` |
-| 7 — Feedback & Evals | Feedback kit + `compare-viewer` |
-| 8 — Audio | Audio kit + `transport-controls` |
-| 9 — Video | Video kit + `studio-shell` and `tool-panel` blocks + `context-toolbar`, `property-inspector`, `ai-tools-menu` |
-| 10 — Observability | Observability kit |
-| 11 — RAG & Library | RAG kit + `asset-library`, `filter-panel`, `explore-gallery` |
-| 12 — Monetization | Monetization kit (note: `credits-indicator` ships in Wave 1 with the shell) |
+| Wave                 | Scope                                                                                                                                  |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 0 — Foundation       | Repo, tooling, CI, registry pipeline, all 7 primitives, two pilot components end-to-end (`shortcuts-sheet`, `thread-list`), docs shell |
+| 1 — App Shell & Nav  | Remaining App Shell kit + composer/context trio + `app-shell` block                                                                    |
+| 2 — Flow Kit F1      | Wiring + node anatomy (7 items) + `useFlowRunner`; demo: rebuild Flow Builder's image→video chain on the registry                      |
+| 3 — Flow Kit F2      | The 10 modality node presets; demo: the full reference flow incl. TTS + SFX + Music into composition                                   |
+| 4 — Flow Kit F3      | Canvas chrome (palette, omnibar, run-controls, inspector, env-status); demo: Flow AI-style shell                                       |
+| 5 — Writing          | Writing kit                                                                                                                            |
+| 6 — Image            | Image kit + `media-prompt-bar` + `generation-panel` block + `model-card`, `parameter-panel`                                            |
+| 7 — Feedback & Evals | Feedback kit + `compare-viewer`                                                                                                        |
+| 8 — Audio            | Audio kit + `transport-controls`                                                                                                       |
+| 9 — Video            | Video kit + `studio-shell` and `tool-panel` blocks + `context-toolbar`, `property-inspector`, `ai-tools-menu`                          |
+| 10 — Observability   | Observability kit                                                                                                                      |
+| 11 — RAG & Library   | RAG kit + `asset-library`, `filter-panel`, `explore-gallery`                                                                           |
+| 12 — Monetization    | Monetization kit (note: `credits-indicator` ships in Wave 1 with the shell)                                                            |
 
 Flow Kit placement rationale: it has a working reference implementation (Flow Builder) to lift from, the strongest differentiation story, and its own detailed spec — lowest risk, highest momentum. Reorderable at review.
 

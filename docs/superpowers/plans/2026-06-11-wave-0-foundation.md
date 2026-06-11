@@ -9,6 +9,7 @@
 **Tech Stack:** TypeScript · React 19 · Next.js (App Router) · Tailwind v4 (CSS variables) · shadcn CLI · pnpm + Turborepo · Vitest + React Testing Library · Playwright · GitHub Actions.
 
 **Recorded deviations from spec §8 (surfaced for approval at execution):**
+
 1. Registry sources live in `apps/docs/registry/super-ai/` instead of `packages/registry/src/`. Reason: `shadcn build` and `@/components/ui/*` import resolution work out-of-the-box inside the host app; extracting a separate package before a second consumer exists is speculative structure (YAGNI). The pnpm/turbo workspace is still set up, so extraction later is mechanical.
 2. `thread-list` composes plain shadcn primitives (button/input/dropdown-menu/alert-dialog), not the shadcn `sidebar` system. The sidebar coupling arrives with `app-sidebar` in Wave 1; keeping `thread-list` host-agnostic makes it usable inside any container.
 3. Registry items reference sibling items via **relative imports** (`./kbd`) with a shared install target (`components/super-ai/`), so no import rewriting is needed; `registryDependencies` URLs guarantee siblings install together.
@@ -55,11 +56,13 @@ Naming/API rules that apply to every component task (from spec §6): exports Pas
 ### Task 1: Monorepo scaffold
 
 **Files:**
+
 - Create: `package.json`, `pnpm-workspace.yaml`, `turbo.json`, `.gitignore`, `.nvmrc`
 
 - [ ] **Step 1: Write root config files**
 
 `package.json`:
+
 ```json
 {
   "name": "super-ai-components",
@@ -79,6 +82,7 @@ Naming/API rules that apply to every component task (from spec §6): exports Pas
 ```
 
 `pnpm-workspace.yaml`:
+
 ```yaml
 packages:
   - "apps/*"
@@ -86,6 +90,7 @@ packages:
 ```
 
 `turbo.json`:
+
 ```json
 {
   "$schema": "https://turbo.build/schema.json",
@@ -102,6 +107,7 @@ packages:
 ```
 
 `.gitignore`:
+
 ```
 node_modules/
 .next/
@@ -114,6 +120,7 @@ playwright-report/
 ```
 
 `.nvmrc`:
+
 ```
 24
 ```
@@ -137,23 +144,28 @@ git add -A && git commit -m "chore: scaffold pnpm + turborepo workspace"
 ### Task 2: Docs app + shadcn init
 
 **Files:**
+
 - Create: `apps/docs/*` (generated), `apps/docs/components.json` (generated)
 
 - [ ] **Step 1: Scaffold the Next.js app**
 
 Run from repo root:
+
 ```bash
 mkdir -p apps && cd apps && pnpm dlx create-next-app@latest docs --ts --tailwind --app --no-src-dir --import-alias "@/*" --eslint --turbopack --use-pnpm --yes
 ```
+
 Expected: `apps/docs` exists with `app/`, `package.json` (React 19, Next 16, Tailwind v4), dev server boots.
 
 - [ ] **Step 2: Initialize shadcn and add the base primitives Wave 0 composes**
 
 Run from `apps/docs`:
+
 ```bash
 pnpm dlx shadcn@latest init --yes --base-color neutral
 pnpm dlx shadcn@latest add --yes button input dialog dropdown-menu alert-dialog separator
 ```
+
 Expected: `components.json`, `lib/utils.ts`, `components/ui/{button,input,dialog,dropdown-menu,alert-dialog,separator}.tsx` exist; `app/globals.css` contains the shadcn CSS-variable theme.
 
 > **Execution notes (recorded):** shadcn's `--base-color` flag was replaced by `--defaults` (result verified: `"baseColor": "neutral"`). The current default style is `base-nova`, whose components build on `@base-ui/react` (Base UI), **not Radix** — `shadcn add` installs that dependency automatically. pnpm 11 also required `allowBuilds: { sharp, unrs-resolver }` in root `pnpm-workspace.yaml` to permit those packages' postinstall builds. Components in later tasks must code against the actual props of the generated `components/ui/*` wrappers, not remembered Radix APIs.
@@ -161,6 +173,7 @@ Expected: `components.json`, `lib/utils.ts`, `components/ui/{button,input,dialog
 - [ ] **Step 3: Wire workspace scripts into apps/docs/package.json**
 
 Edit `apps/docs/package.json` scripts to exactly:
+
 ```json
 {
   "scripts": {
@@ -175,11 +188,13 @@ Edit `apps/docs/package.json` scripts to exactly:
   }
 }
 ```
+
 (`tsx`, `shadcn`, `vitest` get installed in Tasks 3–4.)
 
 - [ ] **Step 4: Verify dev boots and commit**
 
 Run: `pnpm --filter docs dev` → open http://localhost:3000, expect the Next starter page, Ctrl-C.
+
 ```bash
 git add -A && git commit -m "chore: scaffold docs app with shadcn (tailwind v4, neutral)"
 ```
@@ -189,11 +204,13 @@ git add -A && git commit -m "chore: scaffold docs app with shadcn (tailwind v4, 
 ### Task 3: Test infrastructure (Vitest + RTL + Radix jsdom shims)
 
 **Files:**
+
 - Create: `apps/docs/vitest.config.ts`, `apps/docs/vitest.setup.ts`
 
 - [ ] **Step 1: Install test dependencies**
 
 Run from `apps/docs`:
+
 ```bash
 pnpm add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-library/user-event @testing-library/jest-dom tsx shadcn
 ```
@@ -201,6 +218,7 @@ pnpm add -D vitest @vitejs/plugin-react jsdom @testing-library/react @testing-li
 - [ ] **Step 2: Write vitest config + setup (Radix needs jsdom shims)**
 
 `apps/docs/vitest.config.ts`:
+
 ```ts
 import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
@@ -221,6 +239,7 @@ export default defineConfig({
 ```
 
 `apps/docs/vitest.setup.ts`:
+
 ```ts
 import "@testing-library/jest-dom/vitest";
 
@@ -236,9 +255,13 @@ window.HTMLElement.prototype.hasPointerCapture ??= () => false;
 window.HTMLElement.prototype.setPointerCapture ??= () => {};
 window.HTMLElement.prototype.releasePointerCapture ??= () => {};
 window.matchMedia ??= ((query: string) => ({
-  matches: false, media: query, onchange: null,
-  addListener: () => {}, removeListener: () => {},
-  addEventListener: () => {}, removeEventListener: () => {},
+  matches: false,
+  media: query,
+  onchange: null,
+  addListener: () => {},
+  removeListener: () => {},
+  addEventListener: () => {},
+  removeEventListener: () => {},
   dispatchEvent: () => false,
 })) as unknown as typeof window.matchMedia;
 ```
@@ -246,6 +269,7 @@ window.matchMedia ??= ((query: string) => ({
 - [ ] **Step 3: Verify the runner works with a throwaway test**
 
 Create `apps/docs/registry/super-ai/smoke.test.tsx`:
+
 ```tsx
 import { describe, expect, it } from "vitest";
 describe("vitest", () => {
@@ -254,6 +278,7 @@ describe("vitest", () => {
   });
 });
 ```
+
 Run: `pnpm --filter docs test` → Expected: 1 passed. Then delete `smoke.test.tsx`.
 
 - [ ] **Step 4: Add Prettier (spec §8: ESLint + Prettier)**
@@ -261,6 +286,7 @@ Run: `pnpm --filter docs test` → Expected: 1 passed. Then delete `smoke.test.t
 Run from repo root: `pnpm add -D -w prettier`
 
 Create `.prettierrc.json` at repo root:
+
 ```json
 { "semi": true, "singleQuote": false, "trailingComma": "all", "printWidth": 110 }
 ```
@@ -279,11 +305,13 @@ git add -A && git commit -m "chore: vitest + RTL + base-ui jsdom shims + prettie
 ### Task 4: check:tokens script (token-contract enforcement)
 
 **Files:**
+
 - Create: `apps/docs/scripts/check-tokens.mjs`
 
 - [ ] **Step 1: Write a failing check (script first, with a seeded violation)**
 
 `apps/docs/scripts/check-tokens.mjs`:
+
 ```js
 import { globSync, readFileSync } from "node:fs";
 
@@ -291,7 +319,10 @@ const FILES = globSync("registry/super-ai/**/*.tsx", { exclude: (f) => f.include
 const PATTERNS = [
   { re: /#[0-9a-fA-F]{3,8}\b/g, why: "raw hex color" },
   { re: /\boklch\(/g, why: "raw oklch()" },
-  { re: /\b(?:bg|text|border|ring|fill|stroke|from|via|to|outline|decoration|divide|accent|caret|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/g, why: "tailwind palette class" },
+  {
+    re: /\b(?:bg|text|border|ring|fill|stroke|from|via|to|outline|decoration|divide|accent|caret|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b/g,
+    why: "tailwind palette class",
+  },
 ];
 
 let violations = 0;
@@ -299,12 +330,18 @@ for (const file of FILES) {
   const lines = readFileSync(file, "utf8").split("\n");
   lines.forEach((line, i) => {
     for (const { re, why } of PATTERNS) {
-      if (re.test(line)) { violations++; console.error(`${file}:${i + 1} — ${why}: ${line.trim()}`); }
+      if (re.test(line)) {
+        violations++;
+        console.error(`${file}:${i + 1} — ${why}: ${line.trim()}`);
+      }
       re.lastIndex = 0;
     }
   });
 }
-if (violations) { console.error(`\ncheck:tokens — ${violations} violation(s). Use shadcn CSS variables.`); process.exit(1); }
+if (violations) {
+  console.error(`\ncheck:tokens — ${violations} violation(s). Use shadcn CSS variables.`);
+  process.exit(1);
+}
 console.log(`check:tokens — ${FILES.length} file(s) clean.`);
 ```
 
@@ -325,33 +362,79 @@ git add -A && git commit -m "feat: check:tokens script enforcing the token contr
 ### Task 5: Registry generator + build pipeline
 
 **Files:**
+
 - Create: `apps/docs/scripts/gen-registry.mts`
 
 - [ ] **Step 1: Write the generator with the full Wave 0 item list**
 
 `apps/docs/scripts/gen-registry.mts`:
+
 ```ts
 import { writeFileSync } from "node:fs";
 
 const REGISTRY_URL = process.env.REGISTRY_URL ?? "https://super-ai-components.vercel.app";
 const self = (name: string) => `${REGISTRY_URL}/r/${name}.json`;
-const file = (name: string) => ({ path: `registry/super-ai/${name}.tsx`, type: "registry:component", target: `components/super-ai/${name}.tsx` });
+const file = (name: string) => ({
+  path: `registry/super-ai/${name}.tsx`,
+  type: "registry:component",
+  target: `components/super-ai/${name}.tsx`,
+});
 
 type Item = {
-  name: string; title: string; description: string;
-  registryDependencies?: string[]; dependencies?: string[];
+  name: string;
+  title: string;
+  description: string;
+  registryDependencies?: string[];
+  dependencies?: string[];
 };
 
 const items: Item[] = [
   { name: "kbd", title: "Kbd", description: "Keycap chip for keyboard shortcuts." },
-  { name: "cost-chip", title: "Cost Chip", description: "Per-action credit cost chip (e.g. 17 credits, 900 credits/min).", dependencies: ["lucide-react"] },
-  { name: "date-section", title: "Date Section", description: "Date-grouped section header for lists and grids." },
-  { name: "choice-chips", title: "Choice Chips", description: "Ring-selected chip group for visual and numeric parameters." },
-  { name: "filter-bar", title: "Filter Bar", description: "Category chips, add-filter chip, and filters button.", dependencies: ["lucide-react"] },
-  { name: "field-row", title: "Field Row", description: "Label + control inspector row with unit-suffixed value input." },
-  { name: "gen-settings-bar", title: "Gen Settings Bar", description: "Compact model/aspect/resolution/duration/batch strip." },
-  { name: "shortcuts-sheet", title: "Shortcuts Sheet", description: "Keyboard shortcuts cheatsheet dialog.", registryDependencies: ["dialog", self("kbd")] },
-  { name: "thread-list", title: "Thread List", description: "Date-grouped conversation list with rename, delete, and pin.", registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")], dependencies: ["lucide-react"] },
+  {
+    name: "cost-chip",
+    title: "Cost Chip",
+    description: "Per-action credit cost chip (e.g. 17 credits, 900 credits/min).",
+    dependencies: ["lucide-react"],
+  },
+  {
+    name: "date-section",
+    title: "Date Section",
+    description: "Date-grouped section header for lists and grids.",
+  },
+  {
+    name: "choice-chips",
+    title: "Choice Chips",
+    description: "Ring-selected chip group for visual and numeric parameters.",
+  },
+  {
+    name: "filter-bar",
+    title: "Filter Bar",
+    description: "Category chips, add-filter chip, and filters button.",
+    dependencies: ["lucide-react"],
+  },
+  {
+    name: "field-row",
+    title: "Field Row",
+    description: "Label + control inspector row with unit-suffixed value input.",
+  },
+  {
+    name: "gen-settings-bar",
+    title: "Gen Settings Bar",
+    description: "Compact model/aspect/resolution/duration/batch strip.",
+  },
+  {
+    name: "shortcuts-sheet",
+    title: "Shortcuts Sheet",
+    description: "Keyboard shortcuts cheatsheet dialog.",
+    registryDependencies: ["dialog", self("kbd")],
+  },
+  {
+    name: "thread-list",
+    title: "Thread List",
+    description: "Date-grouped conversation list with rename, delete, and pin.",
+    registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],
+    dependencies: ["lucide-react"],
+  },
 ];
 
 const registry = {
@@ -359,8 +442,12 @@ const registry = {
   name: "super-ai",
   homepage: REGISTRY_URL,
   items: items.map((i) => ({
-    name: i.name, type: "registry:component", title: i.title, description: i.description,
-    dependencies: i.dependencies ?? [], registryDependencies: i.registryDependencies ?? [],
+    name: i.name,
+    type: "registry:component",
+    title: i.title,
+    description: i.description,
+    dependencies: i.dependencies ?? [],
+    registryDependencies: i.registryDependencies ?? [],
     files: [file(i.name)],
   })),
 };
@@ -386,11 +473,13 @@ git add -A && git commit -m "feat: registry.json generator with REGISTRY_URL-par
 ### Task 6: `kbd` primitive (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/kbd.tsx`, `apps/docs/registry/super-ai/kbd.test.tsx`
 
 - [ ] **Step 1: Write the failing test**
 
 `kbd.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -404,7 +493,12 @@ describe("Kbd", () => {
     expect(el).toHaveClass("extra");
   });
   it("KbdGroup renders children in order", () => {
-    render(<KbdGroup data-testid="g"><Kbd>⌘</Kbd><Kbd>K</Kbd></KbdGroup>);
+    render(
+      <KbdGroup data-testid="g">
+        <Kbd>⌘</Kbd>
+        <Kbd>K</Kbd>
+      </KbdGroup>,
+    );
     expect(screen.getByTestId("g").textContent).toBe("⌘K");
   });
 });
@@ -415,6 +509,7 @@ describe("Kbd", () => {
 - [ ] **Step 3: Implement**
 
 `kbd.tsx`:
+
 ```tsx
 import { cn } from "@/lib/utils";
 
@@ -449,11 +544,13 @@ export { Kbd, KbdGroup };
 ### Task 7: `cost-chip` primitive (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/cost-chip.tsx`, `.../cost-chip.test.tsx`
 
 - [ ] **Step 1: Write the failing test**
 
 `cost-chip.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -476,6 +573,7 @@ describe("CostChip", () => {
 - [ ] **Step 3: Implement**
 
 `cost-chip.tsx`:
+
 ```tsx
 import { Coins } from "lucide-react";
 
@@ -497,7 +595,9 @@ function CostChip({ amount, unit = "credits", className, children, ...props }: C
       {...props}
     >
       <Coins aria-hidden className="size-3" />
-      <span data-slot="cost-chip-amount">{amount} {unit}</span>
+      <span data-slot="cost-chip-amount">
+        {amount} {unit}
+      </span>
       {children}
     </span>
   );
@@ -514,11 +614,13 @@ export { CostChip };
 ### Task 8: `date-section` primitive (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/date-section.tsx`, `.../date-section.test.tsx`
 
 - [ ] **Step 1: Write the failing test**
 
 `date-section.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
@@ -526,7 +628,11 @@ import { DateSection } from "./date-section";
 
 describe("DateSection", () => {
   it("renders a labeled section containing its children", () => {
-    render(<DateSection label="Today"><p>item</p></DateSection>);
+    render(
+      <DateSection label="Today">
+        <p>item</p>
+      </DateSection>,
+    );
     const section = screen.getByRole("group", { name: "Today" });
     expect(section).toContainElement(screen.getByText("item"));
   });
@@ -538,6 +644,7 @@ describe("DateSection", () => {
 - [ ] **Step 3: Implement**
 
 `date-section.tsx`:
+
 ```tsx
 import * as React from "react";
 
@@ -550,8 +657,18 @@ interface DateSectionProps extends React.ComponentProps<"section"> {
 function DateSection({ label, className, children, ...props }: DateSectionProps) {
   const id = React.useId();
   return (
-    <section data-slot="date-section" role="group" aria-labelledby={id} className={cn("space-y-1", className)} {...props}>
-      <h3 id={id} data-slot="date-section-label" className="text-muted-foreground px-2 py-1 text-xs font-medium">
+    <section
+      data-slot="date-section"
+      role="group"
+      aria-labelledby={id}
+      className={cn("space-y-1", className)}
+      {...props}
+    >
+      <h3
+        id={id}
+        data-slot="date-section-label"
+        className="text-muted-foreground px-2 py-1 text-xs font-medium"
+      >
         {label}
       </h3>
       {children}
@@ -570,11 +687,13 @@ export { DateSection };
 ### Task 9: `choice-chips` primitive (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/choice-chips.tsx`, `.../choice-chips.test.tsx`
 
 - [ ] **Step 1: Write the failing test**
 
 `choice-chips.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -613,6 +732,7 @@ describe("ChoiceChips", () => {
 - [ ] **Step 3: Implement**
 
 `choice-chips.tsx`:
+
 ```tsx
 "use client";
 
@@ -632,7 +752,13 @@ interface ChoiceChipsProps extends Omit<React.ComponentProps<"div">, "defaultVal
   onValueChange?: (value: string) => void;
 }
 
-function ChoiceChips({ value: valueProp, defaultValue, onValueChange, className, ...props }: ChoiceChipsProps) {
+function ChoiceChips({
+  value: valueProp,
+  defaultValue,
+  onValueChange,
+  className,
+  ...props
+}: ChoiceChipsProps) {
   const [internal, setInternal] = React.useState(defaultValue);
   const value = valueProp ?? internal;
   const setValue = React.useCallback(
@@ -644,7 +770,12 @@ function ChoiceChips({ value: valueProp, defaultValue, onValueChange, className,
   );
   return (
     <ChoiceChipsContext.Provider value={{ value, setValue }}>
-      <div role="radiogroup" data-slot="choice-chips" className={cn("flex flex-wrap gap-2", className)} {...props} />
+      <div
+        role="radiogroup"
+        data-slot="choice-chips"
+        className={cn("flex flex-wrap gap-2", className)}
+        {...props}
+      />
     </ChoiceChipsContext.Provider>
   );
 }
@@ -686,11 +817,13 @@ export { ChoiceChip, ChoiceChips };
 ### Task 10: `filter-bar` primitive (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/filter-bar.tsx`, `.../filter-bar.test.tsx`
 
 - [ ] **Step 1: Write the failing test**
 
 `filter-bar.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -714,7 +847,9 @@ describe("FilterBar", () => {
     const onOpen = vi.fn();
     render(
       <FilterBar>
-        <FilterChip active onRemove={onRemove}>Owner</FilterChip>
+        <FilterChip active onRemove={onRemove}>
+          Owner
+        </FilterChip>
         <AddFilterChip onClick={onAdd}>Owner</AddFilterChip>
         <FiltersButton onClick={onOpen} />
       </FilterBar>,
@@ -734,6 +869,7 @@ describe("FilterBar", () => {
 - [ ] **Step 3: Implement**
 
 `filter-bar.tsx`:
+
 ```tsx
 "use client";
 
@@ -743,7 +879,9 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 function FilterBar({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="filter-bar" className={cn("flex flex-wrap items-center gap-2", className)} {...props} />;
+  return (
+    <div data-slot="filter-bar" className={cn("flex flex-wrap items-center gap-2", className)} {...props} />
+  );
 }
 
 interface FilterChipProps extends React.ComponentProps<"button"> {
@@ -770,11 +908,22 @@ function FilterChip({ active = false, onRemove, className, children, ...props }:
         <span
           role="button"
           tabIndex={0}
-          aria-label={`Remove ${typeof children === "string" ? children : ""} filter`.replace(/\s+/g, " ").trim()}
+          aria-label={`Remove ${typeof children === "string" ? children : ""} filter`
+            .replace(/\s+/g, " ")
+            .trim()}
           data-slot="filter-chip-remove"
           className="hover:text-foreground text-muted-foreground -mr-1 rounded-full p-0.5"
-          onClick={(e) => { e.stopPropagation(); onRemove(); }}
-          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.stopPropagation(); onRemove(); } }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }
+          }}
         >
           <X aria-hidden className="size-3" />
         </span>
@@ -829,11 +978,13 @@ export { AddFilterChip, FilterBar, FilterChip, FiltersButton };
 ### Task 11: `field-row` primitive (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/field-row.tsx`, `.../field-row.test.tsx`
 
 - [ ] **Step 1: Write the failing test**
 
 `field-row.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -870,6 +1021,7 @@ describe("UnitInput", () => {
 - [ ] **Step 3: Implement**
 
 `field-row.tsx`:
+
 ```tsx
 "use client";
 
@@ -946,11 +1098,13 @@ export { FieldRow, UnitInput };
 ### Task 12: `gen-settings-bar` primitive (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/gen-settings-bar.tsx`, `.../gen-settings-bar.test.tsx`
 
 - [ ] **Step 1: Write the failing test**
 
 `gen-settings-bar.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -986,6 +1140,7 @@ describe("GenSettingsBar", () => {
 - [ ] **Step 3: Implement**
 
 `gen-settings-bar.tsx`:
+
 ```tsx
 "use client";
 
@@ -1043,12 +1198,14 @@ export { GenSettingsBar, GenSettingsItem };
 ### Task 13: Pilot components `shortcuts-sheet` and `thread-list` (TDD)
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/shortcuts-sheet.tsx`, `.../shortcuts-sheet.test.tsx`
 - Create: `apps/docs/registry/super-ai/thread-list.tsx`, `.../thread-list.test.tsx`
 
 - [ ] **Step 1: Write the failing shortcuts-sheet test**
 
 `shortcuts-sheet.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -1077,6 +1234,7 @@ describe("ShortcutsSheet", () => {
 - [ ] **Step 3: Implement shortcuts-sheet**
 
 `shortcuts-sheet.tsx`:
+
 ```tsx
 "use client";
 
@@ -1105,11 +1263,21 @@ interface ShortcutsSheetProps {
   className?: string;
 }
 
-function ShortcutsSheet({ sections, title = "Keyboard Shortcuts", trigger, open, onOpenChange, className }: ShortcutsSheetProps) {
+function ShortcutsSheet({
+  sections,
+  title = "Keyboard Shortcuts",
+  trigger,
+  open,
+  onOpenChange,
+  className,
+}: ShortcutsSheetProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {trigger ? <DialogTrigger asChild>{trigger}</DialogTrigger> : null}
-      <DialogContent data-slot="shortcuts-sheet" className={cn("max-h-[80vh] overflow-y-auto sm:max-w-md", className)}>
+      <DialogContent
+        data-slot="shortcuts-sheet"
+        className={cn("max-h-[80vh] overflow-y-auto sm:max-w-md", className)}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
@@ -1150,6 +1318,7 @@ export type { Shortcut, ShortcutSection };
 - [ ] **Step 5: Write the failing thread-list test**
 
 `thread-list.test.tsx`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -1223,6 +1392,7 @@ describe("ThreadList", () => {
 > **CAUTION (Base UI, not Radix):** the generated `components/ui/dropdown-menu.tsx` / `alert-dialog.tsx` wrappers are built on `@base-ui/react`. Before implementing, read those wrapper files and use their actual exported parts and props. Radix-only props like `onCloseAutoFocus` may not exist — if absent, prevent the close-restores-focus-then-blurs-the-rename-input problem by the wrapper's equivalent mechanism (e.g. its final-focus/`onOpenChangeComplete` hook) or by deferring `setRenaming(true)` until after menu close completes. The behavioral contract in the tests is what must hold; adapt the mechanism.
 
 `thread-list.tsx`:
+
 ```tsx
 "use client";
 
@@ -1230,12 +1400,21 @@ import { MoreHorizontal, Pencil, Pin, PinOff, Trash2 } from "lucide-react";
 import * as React from "react";
 
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
-  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -1263,8 +1442,17 @@ interface ThreadListItemProps extends Omit<React.ComponentProps<"div">, "id" | "
 }
 
 function ThreadListItem({
-  id, title, active = false, unread = false, pinned = false,
-  onSelect, onRename, onDelete, onTogglePin, className, ...props
+  id,
+  title,
+  active = false,
+  unread = false,
+  pinned = false,
+  onSelect,
+  onRename,
+  onDelete,
+  onTogglePin,
+  className,
+  ...props
 }: ThreadListItemProps) {
   const [renaming, setRenaming] = React.useState(false);
   const [draft, setDraft] = React.useState(title);
@@ -1279,10 +1467,19 @@ function ThreadListItem({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") { setRenaming(false); onRename?.(id, draft); }
-            if (e.key === "Escape") { setRenaming(false); setDraft(title); }
+            if (e.key === "Enter") {
+              setRenaming(false);
+              onRename?.(id, draft);
+            }
+            if (e.key === "Escape") {
+              setRenaming(false);
+              setDraft(title);
+            }
           }}
-          onBlur={() => { setRenaming(false); setDraft(title); }}
+          onBlur={() => {
+            setRenaming(false);
+            setDraft(title);
+          }}
           className="h-8"
         />
       </div>
@@ -1305,7 +1502,13 @@ function ThreadListItem({
           active && "font-medium",
         )}
       >
-        {unread ? <span data-slot="thread-unread" aria-label="Unread" className="bg-primary size-2 shrink-0 rounded-full" /> : null}
+        {unread ? (
+          <span
+            data-slot="thread-unread"
+            aria-label="Unread"
+            className="bg-primary size-2 shrink-0 rounded-full"
+          />
+        ) : null}
         {pinned ? <Pin aria-hidden className="text-muted-foreground size-3 shrink-0" /> : null}
         <span className="truncate">{title}</span>
       </button>
@@ -1324,7 +1527,12 @@ function ThreadListItem({
         {/* preventDefault stops Radix restoring focus to the trigger, which would
             instantly blur (and cancel) the rename input that opens on Rename */}
         <DropdownMenuContent align="start" onCloseAutoFocus={(e) => e.preventDefault()}>
-          <DropdownMenuItem onSelect={() => { setDraft(title); setRenaming(true); }}>
+          <DropdownMenuItem
+            onSelect={() => {
+              setDraft(title);
+              setRenaming(true);
+            }}
+          >
             <Pencil /> Rename
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => onTogglePin?.(id)}>
@@ -1367,15 +1575,24 @@ Expected: all suites pass, tokens clean, no type errors.
 ### Task 14: Demo pages, catalog index, registry build
 
 **Files:**
+
 - Create: `apps/docs/components/demos/<name>-demo.tsx` (9 files), `apps/docs/lib/catalog.ts`, `apps/docs/app/page.tsx` (replace), `apps/docs/app/components/[name]/page.tsx`
 
 - [ ] **Step 1: Create the catalog list**
 
 `apps/docs/lib/catalog.ts`:
+
 ```ts
 export const CATALOG = [
-  "kbd", "cost-chip", "date-section", "choice-chips", "filter-bar",
-  "field-row", "gen-settings-bar", "shortcuts-sheet", "thread-list",
+  "kbd",
+  "cost-chip",
+  "date-section",
+  "choice-chips",
+  "filter-bar",
+  "field-row",
+  "gen-settings-bar",
+  "shortcuts-sheet",
+  "thread-list",
 ] as const;
 export type CatalogName = (typeof CATALOG)[number];
 ```
@@ -1385,55 +1602,81 @@ export type CatalogName = (typeof CATALOG)[number];
 Each demo is a client component default-exporting a rendered example. Complete contents:
 
 `components/demos/kbd-demo.tsx`:
+
 ```tsx
 import { Kbd, KbdGroup } from "@/registry/super-ai/kbd";
 export default function KbdDemo() {
-  return <KbdGroup><Kbd>⌘</Kbd><Kbd>⇧</Kbd><Kbd>Z</Kbd></KbdGroup>;
+  return (
+    <KbdGroup>
+      <Kbd>⌘</Kbd>
+      <Kbd>⇧</Kbd>
+      <Kbd>Z</Kbd>
+    </KbdGroup>
+  );
 }
 ```
 
 `components/demos/cost-chip-demo.tsx`:
+
 ```tsx
 import { CostChip } from "@/registry/super-ai/cost-chip";
 export default function CostChipDemo() {
-  return <div className="flex gap-2"><CostChip amount={17} /><CostChip amount={900} unit="credits/min" /></div>;
+  return (
+    <div className="flex gap-2">
+      <CostChip amount={17} />
+      <CostChip amount={900} unit="credits/min" />
+    </div>
+  );
 }
 ```
 
 `components/demos/date-section-demo.tsx`:
+
 ```tsx
 import { DateSection } from "@/registry/super-ai/date-section";
 export default function DateSectionDemo() {
   return (
     <div className="w-64 space-y-3">
-      <DateSection label="Today"><p className="px-2 text-sm">Brand video script</p></DateSection>
-      <DateSection label="Yesterday"><p className="px-2 text-sm">Logo explorations</p></DateSection>
+      <DateSection label="Today">
+        <p className="px-2 text-sm">Brand video script</p>
+      </DateSection>
+      <DateSection label="Yesterday">
+        <p className="px-2 text-sm">Logo explorations</p>
+      </DateSection>
     </div>
   );
 }
 ```
 
 `components/demos/choice-chips-demo.tsx`:
+
 ```tsx
 "use client";
 import { ChoiceChip, ChoiceChips } from "@/registry/super-ai/choice-chips";
 export default function ChoiceChipsDemo() {
   return (
     <ChoiceChips defaultValue="4">
-      {["1", "2", "3", "4"].map((n) => <ChoiceChip key={n} value={n}>{n}</ChoiceChip>)}
+      {["1", "2", "3", "4"].map((n) => (
+        <ChoiceChip key={n} value={n}>
+          {n}
+        </ChoiceChip>
+      ))}
     </ChoiceChips>
   );
 }
 ```
 
 `components/demos/filter-bar-demo.tsx`:
+
 ```tsx
 "use client";
 import { AddFilterChip, FilterBar, FilterChip, FiltersButton } from "@/registry/super-ai/filter-bar";
 export default function FilterBarDemo() {
   return (
     <FilterBar>
-      <FilterChip active onRemove={() => {}}>Genre</FilterChip>
+      <FilterChip active onRemove={() => {}}>
+        Genre
+      </FilterChip>
       <FilterChip>Instrument</FilterChip>
       <FilterChip>Mood</FilterChip>
       <AddFilterChip>Owner</AddFilterChip>
@@ -1444,6 +1687,7 @@ export default function FilterBarDemo() {
 ```
 
 `components/demos/field-row-demo.tsx`:
+
 ```tsx
 "use client";
 import { FieldRow, UnitInput } from "@/registry/super-ai/field-row";
@@ -1451,13 +1695,16 @@ export default function FieldRowDemo() {
   return (
     <div className="w-80 space-y-3">
       <FieldRow label="Volume">{(id) => <UnitInput id={id} unit="%" defaultValue={100} />}</FieldRow>
-      <FieldRow label="Speed" hint="Playback rate of the clip.">{(id) => <UnitInput id={id} unit="x" defaultValue={1} />}</FieldRow>
+      <FieldRow label="Speed" hint="Playback rate of the clip.">
+        {(id) => <UnitInput id={id} unit="x" defaultValue={1} />}
+      </FieldRow>
     </div>
   );
 }
 ```
 
 `components/demos/gen-settings-bar-demo.tsx`:
+
 ```tsx
 "use client";
 import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
@@ -1475,6 +1722,7 @@ export default function GenSettingsBarDemo() {
 ```
 
 `components/demos/shortcuts-sheet-demo.tsx`:
+
 ```tsx
 "use client";
 import { Button } from "@/components/ui/button";
@@ -1484,7 +1732,13 @@ export default function ShortcutsSheetDemo() {
     <ShortcutsSheet
       trigger={<Button variant="outline">Keyboard Shortcuts</Button>}
       sections={[
-        { title: "Editor", shortcuts: [{ label: "Undo", keys: ["⌘", "Z"] }, { label: "Redo", keys: ["⌘", "⇧", "Z"] }] },
+        {
+          title: "Editor",
+          shortcuts: [
+            { label: "Undo", keys: ["⌘", "Z"] },
+            { label: "Redo", keys: ["⌘", "⇧", "Z"] },
+          ],
+        },
         { title: "Player", shortcuts: [{ label: "Play/Pause", keys: ["Space"] }] },
       ]}
     />
@@ -1493,6 +1747,7 @@ export default function ShortcutsSheetDemo() {
 ```
 
 `components/demos/thread-list-demo.tsx`:
+
 ```tsx
 "use client";
 import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-ai/thread-list";
@@ -1516,6 +1771,7 @@ export default function ThreadListDemo() {
 - [ ] **Step 3: Replace the home page and add per-component pages**
 
 `apps/docs/app/page.tsx`:
+
 ```tsx
 import Link from "next/link";
 import { CATALOG } from "@/lib/catalog";
@@ -1524,11 +1780,16 @@ export default function Home() {
   return (
     <main className="mx-auto max-w-2xl space-y-6 p-10">
       <h1 className="text-2xl font-bold">Super-AI-Components</h1>
-      <p className="text-muted-foreground">The missing half of AI Elements — components for AI applications.</p>
+      <p className="text-muted-foreground">
+        The missing half of AI Elements — components for AI applications.
+      </p>
       <ul className="grid grid-cols-2 gap-2">
         {CATALOG.map((name) => (
           <li key={name}>
-            <Link className="hover:bg-accent block rounded-md border px-3 py-2 text-sm" href={`/components/${name}`}>
+            <Link
+              className="hover:bg-accent block rounded-md border px-3 py-2 text-sm"
+              href={`/components/${name}`}
+            >
               {name}
             </Link>
           </li>
@@ -1540,6 +1801,7 @@ export default function Home() {
 ```
 
 `apps/docs/app/components/[name]/page.tsx`:
+
 ```tsx
 import { notFound } from "next/navigation";
 
@@ -1555,7 +1817,7 @@ import ThreadListDemo from "@/components/demos/thread-list-demo";
 import { CATALOG, type CatalogName } from "@/lib/catalog";
 
 const demos: Record<CatalogName, React.ComponentType> = {
-  "kbd": KbdDemo,
+  kbd: KbdDemo,
   "cost-chip": CostChipDemo,
   "date-section": DateSectionDemo,
   "choice-chips": ChoiceChipsDemo,
@@ -1580,7 +1842,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
       <div className="flex min-h-40 items-center justify-center rounded-xl border p-8">
         <Demo />
       </div>
-      <pre className="bg-muted overflow-x-auto rounded-lg p-3 text-xs"><code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code></pre>
+      <pre className="bg-muted overflow-x-auto rounded-lg p-3 text-xs">
+        <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
+      </pre>
     </main>
   );
 }
@@ -1599,6 +1863,7 @@ Run: `pnpm --filter docs build` → Expected: Next build succeeds, `/components/
 ### Task 15: Playwright smoke suite
 
 **Files:**
+
 - Create: `apps/docs/playwright.config.ts`, `apps/docs/e2e/smoke.spec.ts`
 
 - [ ] **Step 1: Install and configure**
@@ -1606,6 +1871,7 @@ Run: `pnpm --filter docs build` → Expected: Next build succeeds, `/components/
 Run from `apps/docs`: `pnpm add -D @playwright/test && pnpm exec playwright install chromium`
 
 `apps/docs/playwright.config.ts`:
+
 ```ts
 import { defineConfig } from "@playwright/test";
 
@@ -1619,6 +1885,7 @@ export default defineConfig({
 - [ ] **Step 2: Write the smoke test**
 
 `apps/docs/e2e/smoke.spec.ts`:
+
 ```ts
 import { expect, test } from "@playwright/test";
 import { CATALOG } from "../lib/catalog";
@@ -1632,7 +1899,9 @@ for (const name of CATALOG) {
   test(`/components/${name} renders without console errors`, async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
     await page.goto(`/components/${name}`);
     await expect(page.getByRole("heading", { level: 1, name })).toBeVisible();
     expect(errors).toEqual([]);
@@ -1649,11 +1918,13 @@ for (const name of CATALOG) {
 ### Task 16: Consumer install test
 
 **Files:**
+
 - Create: `apps/docs/scripts/consumer-test.sh` (chmod +x)
 
 - [ ] **Step 1: Write the script**
 
 `apps/docs/scripts/consumer-test.sh`:
+
 ```bash
 #!/usr/bin/env bash
 # Proves the registry actually installs into a fresh app — the product-proving test.
@@ -1722,6 +1993,7 @@ Run: `chmod +x apps/docs/scripts/consumer-test.sh`
 ### Task 17: CI workflow
 
 **Files:**
+
 - Create: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Write the workflow**
@@ -1768,6 +2040,7 @@ Expected: every step exits 0.
 ### Task 18: README + wrap-up
 
 **Files:**
+
 - Modify: `README.md`
 
 - [ ] **Step 1: Write the README**
@@ -1789,11 +2062,11 @@ npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
 
 \`\`\`bash
 pnpm install
-pnpm dev              # docs site = component workbench
-pnpm test             # vitest behavior tests
-pnpm check:tokens     # token-contract lint
-pnpm build:registry   # emit public/r/*.json
-apps/docs/scripts/consumer-test.sh   # install into a fresh app
+pnpm dev # docs site = component workbench
+pnpm test # vitest behavior tests
+pnpm check:tokens # token-contract lint
+pnpm build:registry # emit public/r/\*.json
+apps/docs/scripts/consumer-test.sh # install into a fresh app
 \`\`\`
 
 Design spec: `docs/superpowers/specs/2026-06-10-super-ai-components-design.md`

@@ -9,9 +9,12 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "check:tokens": "turbo run check:tokens",
-    "build:registry": "turbo run build:registry"
+    "build:registry": "turbo run build:registry",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "prettier": "^3.8.4",
     "turbo": "2.9.17"
   }
 }
