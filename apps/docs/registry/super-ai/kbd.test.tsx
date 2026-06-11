@@ -8,6 +8,7 @@ describe("Kbd", () => {
     const el = screen.getByText("⌘");
     expect(el.tagName).toBe("KBD");
     expect(el).toHaveClass("extra");
+    expect(el).toHaveAttribute("data-slot", "kbd");
   });
   it("KbdGroup renders children in order", () => {
     render(
@@ -17,5 +18,6 @@ describe("Kbd", () => {
       </KbdGroup>,
     );
     expect(screen.getByTestId("g").textContent).toBe("⌘K");
+    expect(screen.getByTestId("g")).toHaveAttribute("data-slot", "kbd-group");
   });
 });
