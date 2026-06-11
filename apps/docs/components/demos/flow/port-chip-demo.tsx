@@ -1,4 +1,4 @@
-import { PortChips } from "@/registry/super-ai/flow/port-chip"
+import { PortChips } from "@/registry/super-ai/flow/port-chip";
 
 export default function PortChipDemo() {
   return (
@@ -12,5 +12,5 @@ export default function PortChipDemo() {
         <PortChips in={["text", "image"]} out={["video"]} satisfied={["text"]} />
       </div>
     </div>
-  )
+  );
 }
