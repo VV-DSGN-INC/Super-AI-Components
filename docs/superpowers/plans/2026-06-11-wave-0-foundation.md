@@ -227,9 +227,10 @@ import path from "node:path";
 export default defineConfig({
   plugins: [react()],
   test: {
+    globals: true, // RTL auto-cleanup needs a global afterEach
     environment: "jsdom",
     setupFiles: ["./vitest.setup.ts"],
-    include: ["registry/**/*.test.tsx"],
+    include: ["registry/**/*.test.{ts,tsx}"],
     css: false,
   },
   resolve: {
