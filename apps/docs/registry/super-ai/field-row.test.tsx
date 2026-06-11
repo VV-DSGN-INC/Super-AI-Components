@@ -14,6 +14,15 @@ describe("FieldRow", () => {
     expect(screen.getByText("Loudness of the clip")).toBeInTheDocument();
     expect(screen.getByTestId("row")).toHaveAttribute("data-slot", "field-row");
   });
+  it("wires aria-describedby to the hint", () => {
+    render(
+      <FieldRow label="Speed" hint="Playback rate">
+        {(id, describedBy) => <input id={id} aria-describedby={describedBy} />}
+      </FieldRow>,
+    );
+    const input = screen.getByLabelText("Speed");
+    expect(input).toHaveAccessibleDescription("Playback rate");
+  });
 });
 
 describe("UnitInput", () => {

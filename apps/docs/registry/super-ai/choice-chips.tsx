@@ -65,7 +65,7 @@ function ChoiceChip({ value, className, onClick, ...props }: ChoiceChipProps) {
         onClick?.(e);
       }}
       className={cn(
-        "hover:bg-accent hover:text-accent-foreground rounded-lg border px-3 py-1.5 text-sm transition-colors",
+        "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none rounded-lg border px-3 py-1.5 text-sm transition-colors",
         selected && "ring-ring border-ring ring-2",
         className,
       )}
