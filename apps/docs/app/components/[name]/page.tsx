@@ -1,3 +1,6 @@
+import fs from "node:fs";
+import path from "node:path";
+
 import { notFound } from "next/navigation";
 
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
@@ -5,23 +8,25 @@ import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
-import { AiNodeDemo } from "@/components/demos/flow/ai-node-demo";
+import AiNodeDemo from "@/components/demos/flow/ai-node-demo";
 import ConnectionHintDemo from "@/components/demos/flow/connection-hint-demo";
-import { MediaSlotDemo } from "@/components/demos/flow/media-slot-demo";
+import MediaSlotDemo from "@/components/demos/flow/media-slot-demo";
 import ModelBarDemo from "@/components/demos/flow/model-bar-demo";
 import NodePromptDemo from "@/components/demos/flow/node-prompt-demo";
-import { NodeStatusDemo } from "@/components/demos/flow/node-status-demo";
+import NodeStatusDemo from "@/components/demos/flow/node-status-demo";
 import PortChipDemo from "@/components/demos/flow/port-chip-demo";
-import { RunButtonDemo } from "@/components/demos/flow/run-button-demo";
+import RunButtonDemo from "@/components/demos/flow/run-button-demo";
 import TypedEdgeDemo from "@/components/demos/flow/typed-edge-demo";
 import TypedHandleDemo from "@/components/demos/flow/typed-handle-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
-import { CATALOG, FLOW_CATALOG, FLOW_NOTES, type CatalogName, type FlowCatalogName } from "@/lib/catalog";
+import { PreviewTabs } from "@/components/preview-tabs";
+import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 
-const demos: Record<CatalogName, React.ComponentType> = {
+/* Demo-less items (flow-types, use-flow-runner) are absent here and render a usage snippet instead. */
+const demos: Partial<Record<CatalogName, React.ComponentType>> = {
   kbd: KbdDemo,
   "cost-chip": CostChipDemo,
   "date-section": DateSectionDemo,
@@ -31,10 +36,6 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "gen-settings-bar": GenSettingsBarDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
-};
-
-/* Flow Kit demos — flow-types and use-flow-runner are doc-only (code snippet instead). */
-const flowDemos: Partial<Record<FlowCatalogName, React.ComponentType>> = {
   "typed-handle": TypedHandleDemo,
   "typed-edge": TypedEdgeDemo,
   "port-chip": PortChipDemo,
@@ -47,7 +48,8 @@ const flowDemos: Partial<Record<FlowCatalogName, React.ComponentType>> = {
   "node-prompt": NodePromptDemo,
 };
 
-const flowSnippets: Partial<Record<FlowCatalogName, string>> = {
+/* Usage snippets for the doc-only Flow Kit items (no demo component). */
+const snippets: Partial<Record<CatalogName, string>> = {
   "flow-types": `import {
   FLOW_STATUSES,
   getHandleType,
@@ -97,34 +99,44 @@ runner.errors; // Record<nodeId, Error> — failed branches only`,
 };
 
 export function generateStaticParams() {
-  return [...CATALOG, ...FLOW_CATALOG].map((name) => ({ name }));
+  return CATALOG.map((name) => ({ name }));
 }
 
 export default async function ComponentPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
-  const isWave0 = CATALOG.includes(name as CatalogName);
-  const isFlow = FLOW_CATALOG.includes(name as FlowCatalogName);
-  if (!isWave0 && !isFlow) notFound();
-  const Demo = isWave0 ? demos[name as CatalogName] : flowDemos[name as FlowCatalogName];
-  const note = isFlow ? FLOW_NOTES[name as FlowCatalogName] : undefined;
-  const snippet = isFlow ? flowSnippets[name as FlowCatalogName] : undefined;
+  if (!CATALOG.includes(name as CatalogName)) notFound();
+
+  const item = CATALOG_ITEMS.find((i) => i.name === name)!;
+  const Demo = demos[name as CatalogName];
+  const snippet = snippets[name as CatalogName];
+
+  // Flow Kit demos live under components/demos/flow/; everything else sits in components/demos/.
+  const demoDir = item.group === "Flow Kit" ? "components/demos/flow" : "components/demos";
+  const demoSource = Demo
+    ? fs.readFileSync(path.join(process.cwd(), demoDir, `${name}-demo.tsx`), "utf8")
+    : null;
+
   return (
-    <main className="mx-auto max-w-2xl space-y-6 p-10">
-      <h1 className="text-2xl font-bold">{name}</h1>
-      {note && <p className="text-muted-foreground text-sm">{note}</p>}
-      {Demo && (
-        <div className="flex min-h-40 items-center justify-center rounded-xl border p-8">
-          <Demo />
-        </div>
-      )}
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">{item.title}</h1>
+        <p className="text-muted-foreground mt-2">{item.description}</p>
+        {item.note && <p className="text-muted-foreground mt-2 text-sm">{item.note}</p>}
+      </div>
+
+      {Demo && demoSource && <PreviewTabs preview={<Demo />} code={demoSource} />}
       {snippet && (
-        <pre className="bg-muted overflow-x-auto rounded-lg p-3 text-xs">
+        <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
           <code>{snippet}</code>
         </pre>
       )}
-      <pre className="bg-muted overflow-x-auto rounded-lg p-3 text-xs">
-        <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
-      </pre>
-    </main>
+
+      <div className="space-y-2">
+        <h2 className="text-lg font-semibold">Installation</h2>
+        <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
+          <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
+        </pre>
+      </div>
+    </div>
   );
 }

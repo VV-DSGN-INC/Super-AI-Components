@@ -1,6 +1,6 @@
 import { MediaSlot } from "@/registry/super-ai/flow/media-slot"
 
-export function MediaSlotDemo() {
+export default function MediaSlotDemo() {
   return (
     <div className="flex flex-col gap-4 p-4">
       {/* Image – empty state */}

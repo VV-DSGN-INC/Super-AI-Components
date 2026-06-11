@@ -2,6 +2,8 @@ import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
+import { CATALOG_ITEMS } from "../lib/catalog";
+
 const REGISTRY_URL = (process.env.REGISTRY_URL ?? "https://super-ai-components.vercel.app").replace(
   /\/$/,
   "",
@@ -45,59 +47,19 @@ const FLOW_AI_ELEMENTS: Record<string, string> = Object.fromEntries(
   ]),
 );
 
-const items: Item[] = [
-  { name: "kbd", title: "Kbd", description: "Keycap chip for keyboard shortcuts." },
-  {
-    name: "cost-chip",
-    title: "Cost Chip",
-    description: "Per-action credit cost chip (e.g. 17 credits, 900 credits/min).",
-    dependencies: ["lucide-react"],
-  },
-  {
-    name: "date-section",
-    title: "Date Section",
-    description: "Date-grouped section header for lists and grids.",
-  },
-  {
-    name: "choice-chips",
-    title: "Choice Chips",
-    description: "Ring-selected chip group for visual and numeric parameters.",
-  },
-  {
-    name: "filter-bar",
-    title: "Filter Bar",
-    description: "Category chips, add-filter chip, and filters button.",
-    dependencies: ["lucide-react"],
-  },
-  {
-    name: "field-row",
-    title: "Field Row",
-    description: "Label + control inspector row with unit-suffixed value input.",
-  },
-  {
-    name: "gen-settings-bar",
-    title: "Gen Settings Bar",
-    description: "Compact model/aspect/resolution/duration/batch strip.",
-  },
-  {
-    name: "shortcuts-sheet",
-    title: "Shortcuts Sheet",
-    description: "Keyboard shortcuts cheatsheet dialog.",
-    registryDependencies: ["dialog", self("kbd")],
-  },
-  {
-    name: "thread-list",
-    title: "Thread List",
-    description: "Date-grouped conversation list with rename, delete, and pin.",
+// Per-item extras (type/deps/registryDeps/files) keyed by name; name/title/description
+// come from CATALOG_ITEMS. Items without a `files` entry default to file(name).
+const extras: Record<string, Pick<Item, "type" | "dependencies" | "registryDependencies" | "files">> = {
+  "cost-chip": { dependencies: ["lucide-react"] },
+  "filter-bar": { dependencies: ["lucide-react"] },
+  "shortcuts-sheet": { registryDependencies: ["dialog", self("kbd")] },
+  "thread-list": {
     registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],
     dependencies: ["lucide-react"],
   },
   // Flow Kit items
-  {
-    name: "flow-types",
-    title: "Flow Types",
-    description: "Flow Kit shared contracts: handle-type registry, statuses, id codec.",
-    type: "registry:lib" as const,
+  "flow-types": {
+    type: "registry:lib",
     files: [
       {
         path: "registry/super-ai/flow/flow-types.ts",
@@ -111,92 +73,66 @@ const items: Item[] = [
       },
     ],
   },
-  {
-    name: "typed-handle",
-    title: "Typed Handle",
-    description: "Colored, validated React Flow port — same-type out→in connections only.",
+  "typed-handle": {
     registryDependencies: [self("flow-types")],
     dependencies: ["@xyflow/react"],
     files: [flowFile("typed-handle")],
   },
-  {
-    name: "typed-edge",
-    title: "Typed Edge",
-    description: "Edge colored by its source handle's data type, with streaming animation.",
+  "typed-edge": {
     registryDependencies: [self("flow-types")],
     dependencies: ["@xyflow/react"],
     files: [flowFile("typed-edge")],
   },
-  {
-    name: "port-chip",
-    title: "Port Chips",
-    description: "IN/OUT typed port pills for dense node faces.",
+  "port-chip": {
     registryDependencies: [self("flow-types")],
     files: [flowFile("port-chip")],
   },
-  {
-    name: "connection-hint",
-    title: "Connection Hint",
-    description: "Drop-on-empty-canvas mini palette filtered to compatible node types.",
+  "connection-hint": {
     registryDependencies: [self("flow-types")],
     files: [flowFile("connection-hint")],
   },
-  {
-    name: "node-status",
-    title: "Node Status",
-    description: "Status badge and ring map for the six-state generation contract.",
+  "node-status": {
     registryDependencies: [self("flow-types")],
     dependencies: ["lucide-react"],
     files: [flowFile("node-status")],
   },
-  {
-    name: "ai-node",
-    title: "AI Node",
-    description: "Base canvas node card: header, media/body/error/footer slots, locked CTA state.",
+  "ai-node": {
     registryDependencies: [self("flow-types"), self("node-status")],
     dependencies: ["lucide-react"],
     files: [flowFile("ai-node")],
   },
-  {
-    name: "media-slot",
-    title: "Media Slot",
-    description: "Aspect-locked media preview with empty, shimmer, output, and failed states.",
+  "media-slot": {
     registryDependencies: [self("flow-types")],
     dependencies: ["lucide-react"],
     files: [flowFile("media-slot")],
   },
-  {
-    name: "run-button",
-    title: "Run Button",
-    description: "Split run control: status-driven primary plus run-scope menu and cost chip.",
+  "run-button": {
     registryDependencies: ["button", "dropdown-menu", self("flow-types")],
     dependencies: ["lucide-react"],
     files: [flowFile("run-button")],
   },
-  {
-    name: "model-bar",
-    title: "Model Bar",
-    description: "Node-docked params strip: model menu, cycling segments, toggles, Auto values.",
+  "model-bar": {
     registryDependencies: ["dropdown-menu", self("gen-settings-bar")],
     dependencies: ["lucide-react"],
     files: [flowFile("model-bar")],
   },
-  {
-    name: "node-prompt",
-    title: "Node Prompt",
-    description: "In-node prompt textarea with reference chips and collapsed summary mode.",
+  "node-prompt": {
     registryDependencies: [self("flow-types")],
     files: [flowFile("node-prompt")],
   },
-  {
-    name: "use-flow-runner",
-    title: "useFlowRunner",
-    description: "Headless topological executor with dirty-tracking cache and branch-local failure.",
-    type: "registry:hook" as const,
+  "use-flow-runner": {
+    type: "registry:hook",
     registryDependencies: [self("flow-types")],
     files: [flowFile("use-flow-runner", "registry:hook")],
   },
-];
+};
+
+const items: Item[] = CATALOG_ITEMS.map((i) => ({
+  name: i.name,
+  title: i.title,
+  description: i.description,
+  ...extras[i.name],
+}));
 
 const names = items.map((i) => i.name);
 const dupes = names.filter((n, i) => names.indexOf(n) !== i);

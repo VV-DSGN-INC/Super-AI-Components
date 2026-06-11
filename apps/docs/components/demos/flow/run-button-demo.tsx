@@ -4,7 +4,7 @@ import * as React from "react";
 import { RunButton } from "@/registry/super-ai/flow/run-button";
 import type { FlowStatus } from "@/registry/super-ai/flow/flow-types";
 
-export function RunButtonDemo() {
+export default function RunButtonDemo() {
   const [status, setStatus] = React.useState<FlowStatus>("idle");
 
   return (

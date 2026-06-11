@@ -4,7 +4,7 @@ function MediaPlaceholder() {
   return <div className="aspect-video w-full rounded-md bg-muted" />;
 }
 
-export function AiNodeDemo() {
+export default function AiNodeDemo() {
   return (
     <div className="grid grid-cols-1 justify-items-start gap-4 sm:grid-cols-2 xl:grid-cols-3">
       <AiNode id="demo-idle" title="Prompt" modelLabel="GPT-5 mini" runtime="cloud" status="idle" size="sm">
