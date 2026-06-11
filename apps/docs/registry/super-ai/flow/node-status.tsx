@@ -2,13 +2,14 @@
 // Status badge + ring map for flow nodes. UI copy may diverge from the
 // contract state (streaming renders as "Running") — the FlowStatus union
 // in flow-types.ts stays the master vocabulary.
+import * as React from "react";
 import { Loader2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 import type { FlowStatus } from "./flow-types";
 
-const STATUS_LABEL: Record<FlowStatus, string> = {
+export const STATUS_LABEL: Record<FlowStatus, string> = {
   idle: "Idle",
   queued: "Queued",
   streaming: "Running",
@@ -40,14 +41,13 @@ function statusRingClass(status: FlowStatus): string {
   return STATUS_RING[status];
 }
 
-interface NodeStatusBadgeProps {
+interface NodeStatusBadgeProps extends React.ComponentProps<"span"> {
   status: FlowStatus;
-  /** Dot/spinner only — no label; the label moves into a `title` tooltip. */
+  /** Dot/spinner only — label is visually hidden (sr-only) with a `title` tooltip. */
   compact?: boolean;
-  className?: string;
 }
 
-function NodeStatusBadge({ status, compact, className }: NodeStatusBadgeProps) {
+function NodeStatusBadge({ status, compact, className, ...props }: NodeStatusBadgeProps) {
   const label = STATUS_LABEL[status];
   return (
     <span
@@ -56,6 +56,7 @@ function NodeStatusBadge({ status, compact, className }: NodeStatusBadgeProps) {
       aria-live="polite"
       title={compact ? label : undefined}
       className={cn("inline-flex items-center gap-1", className)}
+      {...props}
     >
       {status === "streaming" ? (
         <Loader2
@@ -70,11 +71,12 @@ function NodeStatusBadge({ status, compact, className }: NodeStatusBadgeProps) {
           className={cn("size-1.5 rounded-full", STATUS_DOT[status])}
         />
       )}
-      {!compact && (
-        <span data-slot="node-status-label" className="text-[10px] text-muted-foreground">
-          {label}
-        </span>
-      )}
+      <span
+        data-slot="node-status-label"
+        className={cn("text-[10px] text-muted-foreground", compact && "sr-only")}
+      >
+        {label}
+      </span>
     </span>
   );
 }

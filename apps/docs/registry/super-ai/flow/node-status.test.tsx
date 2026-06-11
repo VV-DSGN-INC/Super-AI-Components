@@ -17,9 +17,14 @@ describe("node-status", () => {
     render(<NodeStatusBadge status="locked" />);
     expect(screen.getByText("Upgrade to run")).toBeInTheDocument();
   });
-  it("compact hides the label text but keeps it as a title tooltip", () => {
+  it("compact renders the label visually hidden (sr-only) with title tooltip on wrapper", () => {
     render(<NodeStatusBadge status="locked" compact />);
-    expect(screen.queryByText("Upgrade to run")).not.toBeInTheDocument();
+    // Label text must still exist in the DOM for screen-reader announcement
+    const label = screen.getByText("Upgrade to run");
+    expect(label).toBeInTheDocument();
+    // But it must be visually hidden via sr-only
+    expect(label).toHaveClass("sr-only");
+    // The wrapper carries the title for sighted hover
     expect(screen.getByTitle("Upgrade to run")).toHaveAttribute("data-slot", "node-status");
   });
 });

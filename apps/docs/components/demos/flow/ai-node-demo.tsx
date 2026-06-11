@@ -54,9 +54,8 @@ export function AiNodeDemo() {
         runtime="cloud"
         status="locked"
         size="sm"
-      >
-        <p className="text-xs text-muted-foreground">Available on the Pro plan.</p>
-      </AiNode>
+        lockedCta={<span className="text-xs">Available on the Pro plan.</span>}
+      />
     </div>
   );
 }
