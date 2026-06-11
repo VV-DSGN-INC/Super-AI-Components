@@ -12,6 +12,16 @@ const file = (name: string) => ({
   type: "registry:component",
   target: `components/super-ai/${name}.tsx`,
 });
+// Flow Kit sources install as siblings under components/super-ai/flow/ so their
+// relative `./flow-types` imports resolve identically pre- and post-install.
+const flowFile = (name: string, type: "registry:component" | "registry:hook" = "registry:component") => {
+  const ext = type === "registry:hook" ? "ts" : "tsx";
+  return {
+    path: `registry/super-ai/flow/${name}.${ext}`,
+    type,
+    target: `components/super-ai/flow/${name}.${ext}`,
+  };
+};
 
 type Item = {
   name: string;
@@ -100,6 +110,91 @@ const items: Item[] = [
         target: "components/super-ai/flow/flow-tokens.css",
       },
     ],
+  },
+  {
+    name: "typed-handle",
+    title: "Typed Handle",
+    description: "Colored, validated React Flow port — same-type out→in connections only.",
+    registryDependencies: [self("flow-types")],
+    dependencies: ["@xyflow/react"],
+    files: [flowFile("typed-handle")],
+  },
+  {
+    name: "typed-edge",
+    title: "Typed Edge",
+    description: "Edge colored by its source handle's data type, with streaming animation.",
+    registryDependencies: [self("flow-types")],
+    dependencies: ["@xyflow/react"],
+    files: [flowFile("typed-edge")],
+  },
+  {
+    name: "port-chip",
+    title: "Port Chips",
+    description: "IN/OUT typed port pills for dense node faces.",
+    registryDependencies: [self("flow-types")],
+    files: [flowFile("port-chip")],
+  },
+  {
+    name: "connection-hint",
+    title: "Connection Hint",
+    description: "Drop-on-empty-canvas mini palette filtered to compatible node types.",
+    registryDependencies: [self("flow-types")],
+    files: [flowFile("connection-hint")],
+  },
+  {
+    name: "node-status",
+    title: "Node Status",
+    description: "Status badge and ring map for the six-state generation contract.",
+    registryDependencies: [self("flow-types")],
+    dependencies: ["lucide-react"],
+    files: [flowFile("node-status")],
+  },
+  {
+    name: "ai-node",
+    title: "AI Node",
+    description: "Base canvas node card: header, media/body/error/footer slots, locked CTA state.",
+    registryDependencies: [self("flow-types"), self("node-status")],
+    dependencies: ["lucide-react"],
+    files: [flowFile("ai-node")],
+  },
+  {
+    name: "media-slot",
+    title: "Media Slot",
+    description: "Aspect-locked media preview with empty, shimmer, output, and failed states.",
+    registryDependencies: [self("flow-types")],
+    dependencies: ["lucide-react"],
+    files: [flowFile("media-slot")],
+  },
+  {
+    name: "run-button",
+    title: "Run Button",
+    description: "Split run control: status-driven primary plus run-scope menu and cost chip.",
+    registryDependencies: ["button", "dropdown-menu", self("flow-types")],
+    dependencies: ["lucide-react"],
+    files: [flowFile("run-button")],
+  },
+  {
+    name: "model-bar",
+    title: "Model Bar",
+    description: "Node-docked params strip: model menu, cycling segments, toggles, Auto values.",
+    registryDependencies: ["dropdown-menu", self("gen-settings-bar"), self("flow-types")],
+    dependencies: ["lucide-react"],
+    files: [flowFile("model-bar")],
+  },
+  {
+    name: "node-prompt",
+    title: "Node Prompt",
+    description: "In-node prompt textarea with reference chips and collapsed summary mode.",
+    registryDependencies: [self("flow-types")],
+    files: [flowFile("node-prompt")],
+  },
+  {
+    name: "use-flow-runner",
+    title: "useFlowRunner",
+    description: "Headless topological executor with dirty-tracking cache and branch-local failure.",
+    type: "registry:hook" as const,
+    registryDependencies: [self("flow-types")],
+    files: [flowFile("use-flow-runner", "registry:hook")],
   },
 ];
 
