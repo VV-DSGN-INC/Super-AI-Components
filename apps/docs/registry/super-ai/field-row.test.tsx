@@ -26,4 +26,22 @@ describe("UnitInput", () => {
     await userEvent.type(input, "2");
     expect(onValueChange).toHaveBeenLastCalledWith(2);
   });
+  it("composes a consumer onChange with onValueChange", async () => {
+    const onValueChange = vi.fn();
+    const onChange = vi.fn();
+    render(
+      <UnitInput
+        aria-label="V"
+        unit="%"
+        defaultValue={1}
+        onValueChange={onValueChange}
+        onChange={onChange}
+      />,
+    );
+    const input = screen.getByLabelText("V");
+    await userEvent.clear(input);
+    await userEvent.type(input, "5");
+    expect(onValueChange).toHaveBeenLastCalledWith(5);
+    expect(onChange).toHaveBeenCalled();
+  });
 });

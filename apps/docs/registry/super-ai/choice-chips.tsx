@@ -52,11 +52,12 @@ function ChoiceChip({ value, className, onClick, ...props }: ChoiceChipProps) {
   const ctx = React.useContext(ChoiceChipsContext);
   if (!ctx) throw new Error("ChoiceChip must be used within ChoiceChips");
   const selected = ctx.value === value;
+  // TODO: roving tabIndex per ARIA radiogroup pattern (v1 ships Tab-per-chip)
   return (
     <button
       type="button"
       role="radio"
-      aria-checked={selected}
+      aria-checked={selected ? "true" : "false"}
       data-slot="choice-chip"
       data-state={selected ? "on" : "off"}
       onClick={(e) => {

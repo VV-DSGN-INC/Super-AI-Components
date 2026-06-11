@@ -31,12 +31,12 @@ function FieldRow({ label, hint, className, children, ...props }: FieldRowProps)
   );
 }
 
-interface UnitInputProps extends Omit<React.ComponentProps<"input">, "onChange" | "type"> {
+interface UnitInputProps extends Omit<React.ComponentProps<"input">, "type"> {
   unit: string;
   onValueChange?: (value: number) => void;
 }
 
-function UnitInput({ unit, onValueChange, className, ...props }: UnitInputProps) {
+function UnitInput({ unit, onValueChange, onChange, className, ...props }: UnitInputProps) {
   return (
     <span
       data-slot="unit-input"
@@ -52,6 +52,7 @@ function UnitInput({ unit, onValueChange, className, ...props }: UnitInputProps)
         onChange={(e) => {
           const n = e.target.valueAsNumber;
           if (!Number.isNaN(n)) onValueChange?.(n);
+          onChange?.(e);
         }}
         {...props}
       />
