@@ -78,6 +78,7 @@ git commit --allow-empty -m "chore(flow): open wave-2 branch from wave-0-foundat
 ### Task 1: `flow-types` + tokens + registry plumbing
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/flow/flow-types.ts`
 - Create: `apps/docs/registry/super-ai/flow/flow-tokens.css`
 - Test: `apps/docs/registry/super-ai/flow/flow-types.test.ts`
@@ -89,34 +90,37 @@ git commit --allow-empty -m "chore(flow): open wave-2 branch from wave-0-foundat
 
 ```ts
 // apps/docs/registry/super-ai/flow/flow-types.test.ts
-import { describe, expect, it } from "vitest"
+import { describe, expect, it } from "vitest";
 import {
-  FLOW_STATUSES, getHandleType, handleId, isValidFlowConnection,
-  registerHandleType, type FlowStatus,
-} from "./flow-types"
+  FLOW_STATUSES,
+  getHandleType,
+  handleId,
+  isValidFlowConnection,
+  registerHandleType,
+  type FlowStatus,
+} from "./flow-types";
 
 describe("handle type registry", () => {
   it("ships the four built-in types", () => {
-    for (const t of ["text", "image", "video", "audio"])
-      expect(getHandleType(t)?.cssVar).toBe(`--flow-${t}`)
-  })
+    for (const t of ["text", "image", "video", "audio"]) expect(getHandleType(t)?.cssVar).toBe(`--flow-${t}`);
+  });
   it("registers custom types", () => {
-    registerHandleType("style", { label: "Style" })
-    expect(getHandleType("style")?.cssVar).toBe("--flow-style")
-  })
+    registerHandleType("style", { label: "Style" });
+    expect(getHandleType("style")?.cssVar).toBe("--flow-style");
+  });
   it("encodes and validates same-type connections from handle ids", () => {
-    const a = handleId("node1", "image", "out")
-    const b = handleId("node2", "image", "in")
-    const c = handleId("node3", "audio", "in")
-    expect(isValidFlowConnection({ sourceHandle: a, targetHandle: b })).toBe(true)
-    expect(isValidFlowConnection({ sourceHandle: a, targetHandle: c })).toBe(false)
-    expect(isValidFlowConnection({ sourceHandle: null, targetHandle: b })).toBe(false)
-  })
+    const a = handleId("node1", "image", "out");
+    const b = handleId("node2", "image", "in");
+    const c = handleId("node3", "audio", "in");
+    expect(isValidFlowConnection({ sourceHandle: a, targetHandle: b })).toBe(true);
+    expect(isValidFlowConnection({ sourceHandle: a, targetHandle: c })).toBe(false);
+    expect(isValidFlowConnection({ sourceHandle: null, targetHandle: b })).toBe(false);
+  });
   it("exposes the contract statuses", () => {
-    const all: FlowStatus[] = ["idle", "queued", "streaming", "done", "failed", "locked"]
-    expect(FLOW_STATUSES).toEqual(all)
-  })
-})
+    const all: FlowStatus[] = ["idle", "queued", "streaming", "done", "failed", "locked"];
+    expect(FLOW_STATUSES).toEqual(all);
+  });
+});
 ```
 
 - [ ] **Step 2: Run to verify failure** — `pnpm --filter docs test -- --run flow-types` → FAIL (module not found).
@@ -128,13 +132,13 @@ describe("handle type registry", () => {
 // Flow Kit shared contracts: handle-type registry, statuses, id codec.
 // Status vocabulary is the master state contract — do not add states here.
 
-export const FLOW_STATUSES = ["idle", "queued", "streaming", "done", "failed", "locked"] as const
-export type FlowStatus = (typeof FLOW_STATUSES)[number]
+export const FLOW_STATUSES = ["idle", "queued", "streaming", "done", "failed", "locked"] as const;
+export type FlowStatus = (typeof FLOW_STATUSES)[number];
 
 export interface HandleTypeDef {
-  label: string
+  label: string;
   /** CSS custom property carrying the type color; defined in flow-tokens.css */
-  cssVar: `--flow-${string}`
+  cssVar: `--flow-${string}`;
 }
 
 const registry = new Map<string, HandleTypeDef>(
@@ -142,35 +146,32 @@ const registry = new Map<string, HandleTypeDef>(
     k,
     { label: k[0].toUpperCase() + k.slice(1), cssVar: `--flow-${k}` },
   ]),
-)
+);
 
 export function registerHandleType(key: string, def: Partial<HandleTypeDef> & { label: string }) {
-  registry.set(key, { label: def.label, cssVar: def.cssVar ?? `--flow-${key}` })
+  registry.set(key, { label: def.label, cssVar: def.cssVar ?? `--flow-${key}` });
 }
-export const getHandleType = (key: string) => registry.get(key)
-export const handleTypeKeys = () => [...registry.keys()]
+export const getHandleType = (key: string) => registry.get(key);
+export const handleTypeKeys = () => [...registry.keys()];
 
 /** Handle id codec: `{nodeId}:{dataType}:{in|out}` (Flow Builder pattern, direction added). */
 export function handleId(nodeId: string, dataType: string, dir: "in" | "out") {
-  return `${nodeId}:${dataType}:${dir}`
+  return `${nodeId}:${dataType}:${dir}`;
 }
 export function parseHandleId(id: string | null | undefined) {
-  if (!id) return null
-  const [nodeId, dataType, dir] = id.split(":")
-  if (!nodeId || !dataType || (dir !== "in" && dir !== "out")) return null
-  return { nodeId, dataType, dir } as const
+  if (!id) return null;
+  const [nodeId, dataType, dir] = id.split(":");
+  if (!nodeId || !dataType || (dir !== "in" && dir !== "out")) return null;
+  return { nodeId, dataType, dir } as const;
 }
-export function isValidFlowConnection(c: {
-  sourceHandle?: string | null
-  targetHandle?: string | null
-}) {
-  const s = parseHandleId(c.sourceHandle)
-  const t = parseHandleId(c.targetHandle)
-  return !!s && !!t && s.dataType === t.dataType
+export function isValidFlowConnection(c: { sourceHandle?: string | null; targetHandle?: string | null }) {
+  const s = parseHandleId(c.sourceHandle);
+  const t = parseHandleId(c.targetHandle);
+  return !!s && !!t && s.dataType === t.dataType;
 }
 
-export type NodeSize = "sm" | "md" | "lg"
-export const NODE_WIDTH: Record<NodeSize, number> = { sm: 280, md: 320, lg: 420 }
+export type NodeSize = "sm" | "md" | "lg";
+export const NODE_WIDTH: Record<NodeSize, number> = { sm: 280, md: 320, lg: 420 };
 ```
 
 - [ ] **Step 4: Create `flow-tokens.css`** (the ONLY place flow colors exist — components consume vars)
@@ -209,6 +210,7 @@ export const NODE_WIDTH: Record<NodeSize, number> = { sm: 280, md: 320, lg: 420 
 ### Task 2: `typed-handle`
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/flow/typed-handle.tsx`
 - Test: `apps/docs/registry/super-ai/flow/typed-handle.test.tsx`
 - Create: `apps/docs/components/demos/flow/typed-handle-demo.tsx`
@@ -217,25 +219,25 @@ export const NODE_WIDTH: Record<NodeSize, number> = { sm: 280, md: 320, lg: 420 
 
 ```tsx
 // apps/docs/registry/super-ai/flow/typed-handle.test.tsx
-import { render, screen } from "@testing-library/react"
-import { ReactFlowProvider } from "@xyflow/react"
-import { describe, expect, it } from "vitest"
-import { TypedHandle } from "./typed-handle"
+import { render, screen } from "@testing-library/react";
+import { ReactFlowProvider } from "@xyflow/react";
+import { describe, expect, it } from "vitest";
+import { TypedHandle } from "./typed-handle";
 
-const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>)
+const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
 
 describe("TypedHandle", () => {
   it("renders a port with type color var and aria label", () => {
-    wrap(<TypedHandle nodeId="n1" dataType="image" type="target" />)
-    const port = screen.getByLabelText("Image input port")
-    expect(port).toHaveStyle({ background: "var(--flow-image)" })
-    expect(port).toHaveAttribute("data-slot", "typed-handle")
-  })
+    wrap(<TypedHandle nodeId="n1" dataType="image" type="target" />);
+    const port = screen.getByLabelText("Image input port");
+    expect(port).toHaveStyle({ background: "var(--flow-image)" });
+    expect(port).toHaveAttribute("data-slot", "typed-handle");
+  });
   it("encodes node id, type and direction in the handle id", () => {
-    wrap(<TypedHandle nodeId="n1" dataType="audio" type="source" />)
-    expect(document.querySelector('[data-handleid="n1:audio:out"]')).toBeTruthy()
-  })
-})
+    wrap(<TypedHandle nodeId="n1" dataType="audio" type="source" />);
+    expect(document.querySelector('[data-handleid="n1:audio:out"]')).toBeTruthy();
+  });
+});
 ```
 
 Note: `Handle` outside `<ReactFlow>` needs the provider; if `@xyflow/react` warns about missing node context in jsdom, mock per their testing docs — add a `vi.mock` ONLY if the provider alone is insufficient (try provider first).
@@ -246,27 +248,36 @@ Note: `Handle` outside `<ReactFlow>` needs the provider; if `@xyflow/react` warn
 
 ```tsx
 // apps/docs/registry/super-ai/flow/typed-handle.tsx
-"use client"
-import { Handle, Position, type HandleProps } from "@xyflow/react"
-import { cn } from "@/lib/utils"
-import { getHandleType, handleId, isValidFlowConnection } from "./flow-types"
+"use client";
+import { Handle, Position, type HandleProps } from "@xyflow/react";
+import { cn } from "@/lib/utils";
+import { getHandleType, handleId, isValidFlowConnection } from "./flow-types";
 
-export interface TypedHandleProps
-  extends Omit<HandleProps, "type" | "position" | "id" | "isValidConnection"> {
-  nodeId: string
-  dataType: string
-  type: "source" | "target"
-  position?: Position
+export interface TypedHandleProps extends Omit<
+  HandleProps,
+  "type" | "position" | "id" | "isValidConnection"
+> {
+  nodeId: string;
+  dataType: string;
+  type: "source" | "target";
+  position?: Position;
   /** vertical offset when stacking multiple ports on one side */
-  top?: number
-  className?: string
+  top?: number;
+  className?: string;
 }
 
 export function TypedHandle({
-  nodeId, dataType, type, position, top, className, style, ...rest
+  nodeId,
+  dataType,
+  type,
+  position,
+  top,
+  className,
+  style,
+  ...rest
 }: TypedHandleProps) {
-  const def = getHandleType(dataType)
-  const dir = type === "source" ? "out" : "in"
+  const def = getHandleType(dataType);
+  const dir = type === "source" ? "out" : "in";
   return (
     <Handle
       id={handleId(nodeId, dataType, dir)}
@@ -284,7 +295,7 @@ export function TypedHandle({
       style={{ background: `var(${def?.cssVar ?? "--flow-text"})`, ...(top != null && { top }), ...style }}
       {...rest}
     />
-  )
+  );
 }
 ```
 
@@ -294,10 +305,10 @@ export function TypedHandle({
 
 ```tsx
 // apps/docs/components/demos/flow/typed-handle-demo.tsx
-"use client"
-import { Background, ReactFlow, type Node, type NodeProps } from "@xyflow/react"
-import "@xyflow/react/dist/style.css"
-import { TypedHandle } from "@/registry/super-ai/flow/typed-handle"
+"use client";
+import { Background, ReactFlow, type Node, type NodeProps } from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { TypedHandle } from "@/registry/super-ai/flow/typed-handle";
 
 function DemoNode({ id }: NodeProps) {
   return (
@@ -307,20 +318,25 @@ function DemoNode({ id }: NodeProps) {
       <TypedHandle nodeId={id} dataType="audio" type="target" top={28} />
       <TypedHandle nodeId={id} dataType="image" type="source" />
     </div>
-  )
+  );
 }
 const nodes: Node[] = [
   { id: "a", position: { x: 20, y: 40 }, data: {}, type: "demo" },
   { id: "b", position: { x: 220, y: 80 }, data: {}, type: "demo" },
-]
+];
 export default function TypedHandleDemo() {
   return (
     <div className="h-52 rounded-lg border">
-      <ReactFlow defaultNodes={nodes} nodeTypes={{ demo: DemoNode }} fitView proOptions={{ hideAttribution: true }}>
+      <ReactFlow
+        defaultNodes={nodes}
+        nodeTypes={{ demo: DemoNode }}
+        fitView
+        proOptions={{ hideAttribution: true }}
+      >
         <Background />
       </ReactFlow>
     </div>
-  )
+  );
 }
 ```
 
@@ -331,6 +347,7 @@ export default function TypedHandleDemo() {
 ### Task 3: `typed-edge`
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/flow/typed-edge.tsx`
 - Test: `apps/docs/registry/super-ai/flow/typed-edge.test.tsx`
 - Create: `apps/docs/components/demos/flow/typed-edge-demo.tsx`
@@ -339,34 +356,38 @@ export default function TypedHandleDemo() {
 
 ```tsx
 // apps/docs/registry/super-ai/flow/typed-edge.test.tsx
-import { describe, expect, it } from "vitest"
-import { edgeColorFromHandle, typedEdgeStyle } from "./typed-edge"
+import { describe, expect, it } from "vitest";
+import { edgeColorFromHandle, typedEdgeStyle } from "./typed-edge";
 
 describe("typed-edge helpers", () => {
   it("derives stroke color from the source handle id", () => {
-    expect(edgeColorFromHandle("n1:video:out")).toBe("var(--flow-video)")
-    expect(edgeColorFromHandle("garbage")).toBe("var(--flow-text)")
-  })
+    expect(edgeColorFromHandle("n1:video:out")).toBe("var(--flow-video)");
+    expect(edgeColorFromHandle("garbage")).toBe("var(--flow-text)");
+  });
   it("streaming edges get the dash animation class", () => {
-    expect(typedEdgeStyle({ sourceHandle: "n1:image:out", streaming: true }).className).toContain("animate")
-  })
-})
+    expect(typedEdgeStyle({ sourceHandle: "n1:image:out", streaming: true }).className).toContain("animate");
+  });
+});
 ```
 
 - [ ] **Step 2: Run** → FAIL. **Step 3: Implement** — `TypedEdge` as a React Flow custom edge (`BaseEdge` + `getBezierPath`), exporting pure helpers tested above:
 
 ```tsx
 // apps/docs/registry/super-ai/flow/typed-edge.tsx
-"use client"
-import { BaseEdge, getBezierPath, type EdgeProps } from "@xyflow/react"
-import { cn } from "@/lib/utils"
-import { parseHandleId } from "./flow-types"
+"use client";
+import { BaseEdge, getBezierPath, type EdgeProps } from "@xyflow/react";
+import { cn } from "@/lib/utils";
+import { parseHandleId } from "./flow-types";
 
 export function edgeColorFromHandle(sourceHandle?: string | null) {
-  const parsed = parseHandleId(sourceHandle)
-  return `var(--flow-${parsed?.dataType ?? "text"})`
+  const parsed = parseHandleId(sourceHandle);
+  return `var(--flow-${parsed?.dataType ?? "text"})`;
 }
-export function typedEdgeStyle(opts: { sourceHandle?: string | null; streaming?: boolean; selected?: boolean }) {
+export function typedEdgeStyle(opts: {
+  sourceHandle?: string | null;
+  streaming?: boolean;
+  selected?: boolean;
+}) {
   return {
     stroke: edgeColorFromHandle(opts.sourceHandle),
     className: cn(
@@ -374,16 +395,18 @@ export function typedEdgeStyle(opts: { sourceHandle?: string | null; streaming?:
       opts.streaming && "[stroke-dasharray:6_4] animate-[dash_1s_linear_infinite]",
       opts.selected ? "[stroke-width:2.5]" : "[stroke-width:1.5]",
     ),
-  }
+  };
 }
 
-export type TypedEdgeProps = EdgeProps & { data?: { streaming?: boolean } }
+export type TypedEdgeProps = EdgeProps & { data?: { streaming?: boolean } };
 export function TypedEdge(props: TypedEdgeProps) {
-  const [path] = getBezierPath(props)
+  const [path] = getBezierPath(props);
   const { stroke, className } = typedEdgeStyle({
-    sourceHandle: props.sourceHandleId, streaming: props.data?.streaming, selected: props.selected,
-  })
-  return <BaseEdge id={props.id} path={path} className={className} style={{ stroke }} />
+    sourceHandle: props.sourceHandleId,
+    streaming: props.data?.streaming,
+    selected: props.selected,
+  });
+  return <BaseEdge id={props.id} path={path} className={className} style={{ stroke }} />;
 }
 ```
 
@@ -399,58 +422,76 @@ Add the `dash` keyframes once to `flow-tokens.css`: `@keyframes dash { to { stro
 
 ```tsx
 // apps/docs/registry/super-ai/flow/port-chip.test.tsx
-import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
-import { PortChips } from "./port-chip"
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { PortChips } from "./port-chip";
 
 describe("PortChips", () => {
   it("renders IN and OUT rows with one chip per port", () => {
-    render(<PortChips in={["text", "image"]} out={["video"]} />)
-    expect(screen.getByText("IN").parentElement?.querySelectorAll("[data-slot=port-chip]")).toHaveLength(2)
-    expect(screen.getByText("OUT").parentElement?.querySelectorAll("[data-slot=port-chip]")).toHaveLength(1)
-    expect(screen.getByText("Video")).toBeInTheDocument()
-  })
+    render(<PortChips in={["text", "image"]} out={["video"]} />);
+    expect(screen.getByText("IN").parentElement?.querySelectorAll("[data-slot=port-chip]")).toHaveLength(2);
+    expect(screen.getByText("OUT").parentElement?.querySelectorAll("[data-slot=port-chip]")).toHaveLength(1);
+    expect(screen.getByText("Video")).toBeInTheDocument();
+  });
   it("marks satisfied ports", () => {
-    render(<PortChips in={["text"]} satisfied={["text"]} />)
-    expect(screen.getByText("Text").closest("[data-slot=port-chip]")).toHaveAttribute("data-satisfied", "true")
-  })
-})
+    render(<PortChips in={["text"]} satisfied={["text"]} />);
+    expect(screen.getByText("Text").closest("[data-slot=port-chip]")).toHaveAttribute(
+      "data-satisfied",
+      "true",
+    );
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement to green.** Chips: rounded pill, dot colored `var(--flow-<type>)`, label from `getHandleType`, muted until `data-satisfied`. Rows hidden when prop omitted. Component:
 
 ```tsx
 // apps/docs/registry/super-ai/flow/port-chip.tsx
-import { cn } from "@/lib/utils"
-import { getHandleType } from "./flow-types"
+import { cn } from "@/lib/utils";
+import { getHandleType } from "./flow-types";
 
 function Row({ label, types, satisfied }: { label: "IN" | "OUT"; types: string[]; satisfied?: string[] }) {
-  if (!types.length) return null
+  if (!types.length) return null;
   return (
     <div className="flex items-center gap-1.5">
       <span className="text-[10px] font-medium text-muted-foreground">{label}</span>
       {types.map((t) => {
-        const ok = satisfied?.includes(t) ?? false
+        const ok = satisfied?.includes(t) ?? false;
         return (
-          <span key={t} data-slot="port-chip" data-satisfied={ok}
-            className={cn("inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px]",
-              ok ? "border-transparent bg-secondary" : "opacity-70")}>
-            <span aria-hidden className="size-1.5 rounded-full" style={{ background: `var(${getHandleType(t)?.cssVar ?? "--flow-text"})` }} />
+          <span
+            key={t}
+            data-slot="port-chip"
+            data-satisfied={ok}
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px]",
+              ok ? "border-transparent bg-secondary" : "opacity-70",
+            )}
+          >
+            <span
+              aria-hidden
+              className="size-1.5 rounded-full"
+              style={{ background: `var(${getHandleType(t)?.cssVar ?? "--flow-text"})` }}
+            />
             {getHandleType(t)?.label ?? t}
           </span>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
-export interface PortChipsProps { in?: string[]; out?: string[]; satisfied?: string[]; className?: string }
+export interface PortChipsProps {
+  in?: string[];
+  out?: string[];
+  satisfied?: string[];
+  className?: string;
+}
 export function PortChips({ in: ins = [], out = [], satisfied, className }: PortChipsProps) {
   return (
     <div data-slot="port-chips" className={cn("flex flex-col gap-1", className)}>
       <Row label="IN" types={ins} satisfied={satisfied} />
       <Row label="OUT" types={out} satisfied={satisfied} />
     </div>
-  )
+  );
 }
 ```
 
@@ -464,26 +505,26 @@ export function PortChips({ in: ins = [], out = [], satisfied, className }: Port
 
 ```tsx
 // apps/docs/registry/super-ai/flow/node-status.test.tsx
-import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
-import { NodeStatusBadge, statusRingClass } from "./node-status"
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { NodeStatusBadge, statusRingClass } from "./node-status";
 
 describe("node-status", () => {
   it("announces status politely", () => {
-    render(<NodeStatusBadge status="streaming" />)
-    const badge = screen.getByText("Running")
-    expect(badge.closest("[data-slot=node-status]")).toHaveAttribute("aria-live", "polite")
-  })
+    render(<NodeStatusBadge status="streaming" />);
+    const badge = screen.getByText("Running");
+    expect(badge.closest("[data-slot=node-status]")).toHaveAttribute("aria-live", "polite");
+  });
   it("maps statuses to ring classes; idle gets none", () => {
-    expect(statusRingClass("idle")).toBe("")
-    expect(statusRingClass("streaming")).toContain("ring-2")
-    expect(statusRingClass("failed")).toContain("ring-2")
-  })
+    expect(statusRingClass("idle")).toBe("");
+    expect(statusRingClass("streaming")).toContain("ring-2");
+    expect(statusRingClass("failed")).toContain("ring-2");
+  });
   it("locked renders lock label", () => {
-    render(<NodeStatusBadge status="locked" />)
-    expect(screen.getByText("Upgrade to run")).toBeInTheDocument()
-  })
-})
+    render(<NodeStatusBadge status="locked" />);
+    expect(screen.getByText("Upgrade to run")).toBeInTheDocument();
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement.** Labels: idle→`Idle`, queued→`Queued`, streaming→`Running`, done→`Done`, failed→`Failed`, locked→`Upgrade to run` (UI copy may say Running while the contract state stays `streaming`). `statusRingClass(status)` returns `""` (idle/done) · `ring-2 ring-[var(--flow-queued)]/40` (queued) · `ring-2 ring-[var(--flow-streaming)]/50` (streaming) · `ring-2 ring-[var(--flow-failed)]/60` (failed) · `ring-2 ring-[var(--flow-queued)]/40` (locked). Badge = dot + label, spinner (`animate-spin` lucide `Loader2`) when streaming.
@@ -497,28 +538,30 @@ describe("node-status", () => {
 
 ```tsx
 // apps/docs/registry/super-ai/flow/media-slot.test.tsx
-import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
-import { MediaSlot } from "./media-slot"
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { MediaSlot } from "./media-slot";
 
 describe("MediaSlot", () => {
   it("empty state copy follows the convention", () => {
-    render(<MediaSlot kind="audio" status="idle" />)
-    expect(screen.getByText("Your audio will appear here")).toBeInTheDocument()
-  })
+    render(<MediaSlot kind="audio" status="idle" />);
+    expect(screen.getByText("Your audio will appear here")).toBeInTheDocument();
+  });
   it("streaming shows shimmer", () => {
-    render(<MediaSlot kind="image" status="streaming" />)
-    expect(document.querySelector("[data-slot=media-slot][data-status=streaming] [data-shimmer]")).toBeTruthy()
-  })
+    render(<MediaSlot kind="image" status="streaming" />);
+    expect(
+      document.querySelector("[data-slot=media-slot][data-status=streaming] [data-shimmer]"),
+    ).toBeTruthy();
+  });
   it("renders image output", () => {
-    render(<MediaSlot kind="image" status="done" src="/x.png" alt="result" />)
-    expect(screen.getByAltText("result")).toHaveAttribute("src", "/x.png")
-  })
+    render(<MediaSlot kind="image" status="done" src="/x.png" alt="result" />);
+    expect(screen.getByAltText("result")).toHaveAttribute("src", "/x.png");
+  });
   it("video kind uses generation copy", () => {
-    render(<MediaSlot kind="video" status="idle" />)
-    expect(screen.getByText("Your generation will appear here")).toBeInTheDocument()
-  })
-})
+    render(<MediaSlot kind="video" status="idle" />);
+    expect(screen.getByText("Your generation will appear here")).toBeInTheDocument();
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement.** Props: `kind: "image" | "video" | "audio" | "text"`, `status: FlowStatus`, `src?`, `alt?`, `aspect?: "video" | "square" | "auto"` (default `video`; audio renders a compact waveform-player row: play button placeholder, duration, `<audio>` when src). Empty copy map: image/video→`Your generation will appear here`, audio→`Your audio will appear here`, text→`Generated text will appear here` (callers override via `emptyText` prop — sfx/music need their specific strings). Shimmer = absolutely-positioned `animate-pulse bg-muted` layer with `data-shimmer`. Failed → muted slot + small `Failed` text (the node banner carries the message).
@@ -532,37 +575,38 @@ describe("MediaSlot", () => {
 
 ```tsx
 // apps/docs/registry/super-ai/flow/run-button.test.tsx
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
-import { RunButton } from "./run-button"
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { RunButton } from "./run-button";
 
 describe("RunButton", () => {
   it("fires onRun, and shows Stop while streaming", async () => {
-    const onRun = vi.fn(); const onStop = vi.fn()
-    const { rerender } = render(<RunButton status="idle" onRun={onRun} onStop={onStop} />)
-    await userEvent.click(screen.getByRole("button", { name: "Run" }))
-    expect(onRun).toHaveBeenCalledOnce()
-    rerender(<RunButton status="streaming" onRun={onRun} onStop={onStop} />)
-    await userEvent.click(screen.getByRole("button", { name: "Stop" }))
-    expect(onStop).toHaveBeenCalledOnce()
-  })
+    const onRun = vi.fn();
+    const onStop = vi.fn();
+    const { rerender } = render(<RunButton status="idle" onRun={onRun} onStop={onStop} />);
+    await userEvent.click(screen.getByRole("button", { name: "Run" }));
+    expect(onRun).toHaveBeenCalledOnce();
+    rerender(<RunButton status="streaming" onRun={onRun} onStop={onStop} />);
+    await userEvent.click(screen.getByRole("button", { name: "Stop" }));
+    expect(onStop).toHaveBeenCalledOnce();
+  });
   it("locked disables and relabels", () => {
-    render(<RunButton status="locked" onRun={() => {}} />)
-    expect(screen.getByRole("button", { name: "Upgrade to run" })).toBeDisabled()
-  })
+    render(<RunButton status="locked" onRun={() => {}} />);
+    expect(screen.getByRole("button", { name: "Upgrade to run" })).toBeDisabled();
+  });
   it("renders scope menu items when handlers provided", async () => {
-    const onRunFrom = vi.fn()
-    render(<RunButton status="idle" onRun={() => {}} onRunFrom={onRunFrom} />)
-    await userEvent.click(screen.getByRole("button", { name: "Run options" }))
-    await userEvent.click(await screen.findByText("Run from here"))
-    expect(onRunFrom).toHaveBeenCalledOnce()
-  })
+    const onRunFrom = vi.fn();
+    render(<RunButton status="idle" onRun={() => {}} onRunFrom={onRunFrom} />);
+    await userEvent.click(screen.getByRole("button", { name: "Run options" }));
+    await userEvent.click(await screen.findByText("Run from here"));
+    expect(onRunFrom).toHaveBeenCalledOnce();
+  });
   it("shows cost chip on hover via title", () => {
-    render(<RunButton status="idle" onRun={() => {}} cost={{ amount: 12, unit: "credits" }} />)
-    expect(screen.getByRole("button", { name: "Run" })).toHaveAttribute("title", "~12 credits")
-  })
-})
+    render(<RunButton status="idle" onRun={() => {}} cost={{ amount: 12, unit: "credits" }} />);
+    expect(screen.getByRole("button", { name: "Run" })).toHaveAttribute("title", "~12 credits");
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement.** Split button: primary (shadcn `Button` size sm, `Play`/`Loader2`/`Square` icon per status) + optional `DropdownMenu` trigger (`aria-label="Run options"`, `ChevronDown`) rendered only when any of `onRunFrom/onRunSelection/onRunAll` present; menu items `Run from here` / `Run selection` / `Run all`. `status="streaming"` → primary becomes Stop (calls `onStop`). `queued` → disabled `Queued…`. `cost` prop → `title={`~${amount} ${unit}`}` (cost-contract chip presentation).
@@ -576,9 +620,9 @@ describe("RunButton", () => {
 
 ```tsx
 // apps/docs/registry/super-ai/flow/ai-node.test.tsx
-import { render, screen } from "@testing-library/react"
-import { describe, expect, it } from "vitest"
-import { AiNode } from "./ai-node"
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+import { AiNode } from "./ai-node";
 
 describe("AiNode", () => {
   it("renders title, model label, runtime suffix and status group semantics", () => {
@@ -586,57 +630,77 @@ describe("AiNode", () => {
       <AiNode id="n1" title="Video" modelLabel="LTX 2.3" runtime="local" status="idle" size="md">
         body
       </AiNode>,
-    )
-    const node = screen.getByRole("group", { name: "Video node, idle" })
-    expect(node).toHaveStyle({ width: "320px" })
-    expect(screen.getByText("LTX 2.3 · Local")).toBeInTheDocument()
-  })
+    );
+    const node = screen.getByRole("group", { name: "Video node, idle" });
+    expect(node).toHaveStyle({ width: "320px" });
+    expect(screen.getByText("LTX 2.3 · Local")).toBeInTheDocument();
+  });
   it("failed shows inline error banner", () => {
-    render(<AiNode id="n1" title="Image" status="failed" error="Provider exploded">x</AiNode>)
-    expect(screen.getByText("Provider exploded")).toBeInTheDocument()
-  })
+    render(
+      <AiNode id="n1" title="Image" status="failed" error="Provider exploded">
+        x
+      </AiNode>,
+    );
+    expect(screen.getByText("Provider exploded")).toBeInTheDocument();
+  });
   it("selected applies ring, slots render in order", () => {
     render(
-      <AiNode id="n1" title="T" status="idle" selected
-        media={<div data-testid="media" />} footer={<div data-testid="footer" />}>
+      <AiNode
+        id="n1"
+        title="T"
+        status="idle"
+        selected
+        media={<div data-testid="media" />}
+        footer={<div data-testid="footer" />}
+      >
         <div data-testid="body" />
       </AiNode>,
-    )
-    const order = ["media", "body", "footer"].map((t) => screen.getByTestId(t))
-    expect(order[0].compareDocumentPosition(order[1]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-    expect(order[1].compareDocumentPosition(order[2]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-  })
-})
+    );
+    const order = ["media", "body", "footer"].map((t) => screen.getByTestId(t));
+    expect(order[0].compareDocumentPosition(order[1]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(order[1].compareDocumentPosition(order[2]) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement.**
 
 ```tsx
 // apps/docs/registry/super-ai/flow/ai-node.tsx
-"use client"
-import { cn } from "@/lib/utils"
-import { AlertCircle } from "lucide-react"
-import { NODE_WIDTH, type FlowStatus, type NodeSize } from "./flow-types"
-import { NodeStatusBadge, statusRingClass } from "./node-status"
+"use client";
+import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
+import { NODE_WIDTH, type FlowStatus, type NodeSize } from "./flow-types";
+import { NodeStatusBadge, statusRingClass } from "./node-status";
 
 export interface AiNodeProps {
-  id: string
-  title: string
-  status: FlowStatus
-  modelLabel?: string
-  runtime?: "local" | "cloud"
-  error?: string
-  selected?: boolean
-  size?: NodeSize
-  media?: React.ReactNode
-  footer?: React.ReactNode
-  children?: React.ReactNode
-  className?: string
+  id: string;
+  title: string;
+  status: FlowStatus;
+  modelLabel?: string;
+  runtime?: "local" | "cloud";
+  error?: string;
+  selected?: boolean;
+  size?: NodeSize;
+  media?: React.ReactNode;
+  footer?: React.ReactNode;
+  children?: React.ReactNode;
+  className?: string;
 }
 
 export function AiNode({
-  id, title, status, modelLabel, runtime, error, selected, size = "md",
-  media, footer, children, className,
+  id,
+  title,
+  status,
+  modelLabel,
+  runtime,
+  error,
+  selected,
+  size = "md",
+  media,
+  footer,
+  children,
+  className,
 }: AiNodeProps) {
   return (
     <div
@@ -652,30 +716,50 @@ export function AiNode({
       )}
       style={{ width: NODE_WIDTH[size] }}
     >
-      <div data-slot="ai-node-header" className="flex items-center justify-between gap-2 px-3 pt-2 text-[11px] text-muted-foreground">
+      <div
+        data-slot="ai-node-header"
+        className="flex items-center justify-between gap-2 px-3 pt-2 text-[11px] text-muted-foreground"
+      >
         <span className="font-medium">{title}</span>
         <span className="flex items-center gap-2">
           {modelLabel && (
-            <span>{modelLabel}{runtime === "local" ? " · Local" : ""}</span>
+            <span>
+              {modelLabel}
+              {runtime === "local" ? " · Local" : ""}
+            </span>
           )}
           <NodeStatusBadge status={status} compact />
         </span>
       </div>
-      {media && <div data-slot="ai-node-media" className="px-3 pt-2">{media}</div>}
-      {children && <div data-slot="ai-node-body" className="px-3 py-2">{children}</div>}
+      {media && (
+        <div data-slot="ai-node-media" className="px-3 pt-2">
+          {media}
+        </div>
+      )}
+      {children && (
+        <div data-slot="ai-node-body" className="px-3 py-2">
+          {children}
+        </div>
+      )}
       {status === "failed" && error && (
-        <div data-slot="ai-node-error" className="mx-3 mb-2 flex items-start gap-1.5 rounded-md bg-destructive/10 px-2 py-1.5 text-[11px] text-destructive">
+        <div
+          data-slot="ai-node-error"
+          className="mx-3 mb-2 flex items-start gap-1.5 rounded-md bg-destructive/10 px-2 py-1.5 text-[11px] text-destructive"
+        >
           <AlertCircle aria-hidden className="mt-0.5 size-3 shrink-0" />
           <span className="line-clamp-3">{error}</span>
         </div>
       )}
       {footer && (
-        <div data-slot="ai-node-footer" className="flex items-center justify-between gap-2 border-t px-3 py-2">
+        <div
+          data-slot="ai-node-footer"
+          className="flex items-center justify-between gap-2 border-t px-3 py-2"
+        >
           {footer}
         </div>
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -688,6 +772,7 @@ export function AiNode({
 **Pre-check:** after rebase, `test -f apps/docs/registry/super-ai/gen-settings-bar.tsx || (echo SKIP && exit 0)` — if absent, move on and return later.
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/flow/model-bar.tsx`, test, demo
 - Modify: `apps/docs/registry/super-ai/gen-settings-bar.tsx` — ONLY if its segment union lacks needed kinds; extend additively (new segment kinds: `toggle`, `percent`, plus `"auto"` value support on numeric segments). Read its API first; mirror its naming exactly.
 
@@ -695,36 +780,41 @@ export function AiNode({
 
 ```tsx
 // apps/docs/registry/super-ai/flow/model-bar.test.tsx
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
-import { ModelBar } from "./model-bar"
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { ModelBar } from "./model-bar";
 
 const segments = [
-  { kind: "model" as const, id: "model", value: "eleven-sfx", options: [{ value: "eleven-sfx", label: "Eleven SFX" }] },
+  {
+    kind: "model" as const,
+    id: "model",
+    value: "eleven-sfx",
+    options: [{ value: "eleven-sfx", label: "Eleven SFX" }],
+  },
   { kind: "toggle" as const, id: "loop", label: "Loop", value: false },
   { kind: "duration" as const, id: "duration", value: "auto" as const, options: [4, 6, 8] },
   { kind: "percent" as const, id: "influence", label: "Prompt influence", value: 30 },
-]
+];
 
 describe("ModelBar", () => {
   it("renders the SFX stress-test bar", () => {
-    render(<ModelBar segments={segments} onChange={() => {}} />)
-    expect(screen.getByText("Eleven SFX")).toBeInTheDocument()
-    expect(screen.getByText("Auto")).toBeInTheDocument()
-    expect(screen.getByText("30%")).toBeInTheDocument()
-  })
+    render(<ModelBar segments={segments} onChange={() => {}} />);
+    expect(screen.getByText("Eleven SFX")).toBeInTheDocument();
+    expect(screen.getByText("Auto")).toBeInTheDocument();
+    expect(screen.getByText("30%")).toBeInTheDocument();
+  });
   it("emits patch on toggle", async () => {
-    const onChange = vi.fn()
-    render(<ModelBar segments={segments} onChange={onChange} />)
-    await userEvent.click(screen.getByRole("switch", { name: "Loop" }))
-    expect(onChange).toHaveBeenCalledWith({ id: "loop", value: true })
-  })
+    const onChange = vi.fn();
+    render(<ModelBar segments={segments} onChange={onChange} />);
+    await userEvent.click(screen.getByRole("switch", { name: "Loop" }));
+    expect(onChange).toHaveBeenCalledWith({ id: "loop", value: true });
+  });
   it("disabled while parent streams", () => {
-    render(<ModelBar segments={segments} onChange={() => {}} disabled />)
-    expect(screen.getByRole("toolbar")).toHaveAttribute("aria-disabled", "true")
-  })
-})
+    render(<ModelBar segments={segments} onChange={() => {}} disabled />);
+    expect(screen.getByRole("toolbar")).toHaveAttribute("aria-disabled", "true");
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement** as the node-docked presentation of the gen-settings-bar engine: `ModelBar` renders `role="toolbar"` pill strip (border, rounded-lg, bg-card, divider between segments, overflow `⋯` menu past 6 segments) and delegates each segment to the shared engine's segment renderer if exported; if the engine exports only a composed bar, extract its segment renderer into `gen-settings-bar.tsx` as a named export (`SettingsSegment`) and use it from both — additive refactor, keep its tests green (`pnpm --filter docs test -- --run gen-settings-bar` must pass unchanged).
@@ -738,34 +828,37 @@ describe("ModelBar", () => {
 
 ```tsx
 // apps/docs/registry/super-ai/flow/node-prompt.test.tsx
-import { render, screen } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { describe, expect, it, vi } from "vitest"
-import { NodePrompt } from "./node-prompt"
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { NodePrompt } from "./node-prompt";
 
 describe("NodePrompt", () => {
   it("controlled value + onChange", async () => {
-    const onChange = vi.fn()
-    render(<NodePrompt value="a cat" onChange={onChange} placeholder="Describe the image…" />)
-    await userEvent.type(screen.getByPlaceholderText("Describe the image…"), "!")
-    expect(onChange).toHaveBeenLastCalledWith("a cat!")
-  })
+    const onChange = vi.fn();
+    render(<NodePrompt value="a cat" onChange={onChange} placeholder="Describe the image…" />);
+    await userEvent.type(screen.getByPlaceholderText("Describe the image…"), "!");
+    expect(onChange).toHaveBeenLastCalledWith("a cat!");
+  });
   it("renders reference chips with type dot and remove", async () => {
-    const onRemove = vi.fn()
+    const onRemove = vi.fn();
     render(
-      <NodePrompt value="" onChange={() => {}}
+      <NodePrompt
+        value=""
+        onChange={() => {}}
         references={[{ id: "r1", label: "@Image 1", dataType: "image", thumbnailUrl: "/t.png" }]}
-        onRemoveReference={onRemove} />,
-    )
-    await userEvent.click(screen.getByRole("button", { name: "Remove @Image 1" }))
-    expect(onRemove).toHaveBeenCalledWith("r1")
-  })
+        onRemoveReference={onRemove}
+      />,
+    );
+    await userEvent.click(screen.getByRole("button", { name: "Remove @Image 1" }));
+    expect(onRemove).toHaveBeenCalledWith("r1");
+  });
   it("collapses to summary when collapsed", () => {
-    render(<NodePrompt value="long prompt text here" onChange={() => {}} collapsed />)
-    expect(screen.queryByRole("textbox")).toBeNull()
-    expect(screen.getByText("long prompt text here")).toBeInTheDocument()
-  })
-})
+    render(<NodePrompt value="long prompt text here" onChange={() => {}} collapsed />);
+    expect(screen.queryByRole("textbox")).toBeNull();
+    expect(screen.getByText("long prompt text here")).toBeInTheDocument();
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement.** Textarea (auto-rows 3, text-xs, focus ring) + chip row above when `references` non-empty (chip = thumbnail 16px rounded if `thumbnailUrl`, type dot, label, × button `aria-label="Remove {label}"`). `collapsed` renders a one-line truncated text button (Flora pattern) — clicking it calls `onExpand?.()`. Standalone — no AI Elements prompt-input dependency (per master decision).
@@ -779,27 +872,27 @@ describe("NodePrompt", () => {
 
 ```tsx
 // apps/docs/registry/super-ai/flow/connection-hint.test.tsx
-import { render, screen } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
-import userEvent from "@testing-library/user-event"
-import { compatibleTargets, ConnectionHint } from "./connection-hint"
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { compatibleTargets, ConnectionHint } from "./connection-hint";
 
 const catalog = [
   { kind: "video-node", label: "Video", in: ["image", "text"], out: ["video"] },
   { kind: "tts-node", label: "Text to Speech", in: ["text"], out: ["audio"] },
-]
+];
 
 describe("connection-hint", () => {
   it("filters catalog by compatible input type", () => {
-    expect(compatibleTargets("image", catalog).map((c) => c.kind)).toEqual(["video-node"])
-  })
+    expect(compatibleTargets("image", catalog).map((c) => c.kind)).toEqual(["video-node"]);
+  });
   it("renders options and fires onPick", async () => {
-    const onPick = vi.fn()
-    render(<ConnectionHint dataType="text" catalog={catalog} position={{ x: 10, y: 10 }} onPick={onPick} />)
-    await userEvent.click(screen.getByText("Text to Speech"))
-    expect(onPick).toHaveBeenCalledWith("tts-node")
-  })
-})
+    const onPick = vi.fn();
+    render(<ConnectionHint dataType="text" catalog={catalog} position={{ x: 10, y: 10 }} onPick={onPick} />);
+    await userEvent.click(screen.getByText("Text to Speech"));
+    expect(onPick).toHaveBeenCalledWith("tts-node");
+  });
+});
 ```
 
 - [ ] **Step 2 → 4: Implement** (absolute-positioned card at `position`, heading `Add compatible node`, button list; Esc → `onDismiss`). The drag-end wiring (`onConnectEnd` with no target → show hint) is demo/app-level glue, documented in the component JSDoc and exercised in the Wave 2 demo page.
@@ -808,6 +901,7 @@ describe("connection-hint", () => {
 ### Task 12: `use-flow-runner`
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/flow/use-flow-runner.ts`
 - Test: `apps/docs/registry/super-ai/flow/use-flow-runner.test.ts`
 
@@ -815,17 +909,20 @@ describe("connection-hint", () => {
 
 ```ts
 // apps/docs/registry/super-ai/flow/use-flow-runner.test.ts
-import { act, renderHook, waitFor } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
-import { useFlowRunner, type RunnerNode } from "./use-flow-runner"
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
+import { useFlowRunner, type RunnerNode } from "./use-flow-runner";
 
-const node = (id: string, data: Record<string, unknown> = {}): RunnerNode => ({ id, data })
-const edge = (s: string, t: string) => ({ id: `${s}-${t}`, source: s, target: t })
+const node = (id: string, data: Record<string, unknown> = {}): RunnerNode => ({ id, data });
+const edge = (s: string, t: string) => ({ id: `${s}-${t}`, source: s, target: t });
 
 function setup(opts?: Partial<Parameters<typeof useFlowRunner>[0]>) {
-  const order: string[] = []
-  const execute = vi.fn(async (n: RunnerNode) => { order.push(n.id); return { url: `out-${n.id}` } })
-  const statuses: Array<[string, string]> = []
+  const order: string[] = [];
+  const execute = vi.fn(async (n: RunnerNode) => {
+    order.push(n.id);
+    return { url: `out-${n.id}` };
+  });
+  const statuses: Array<[string, string]> = [];
   const hook = renderHook(() =>
     useFlowRunner({
       nodes: [node("a"), node("b"), node("c")],
@@ -834,193 +931,243 @@ function setup(opts?: Partial<Parameters<typeof useFlowRunner>[0]>) {
       onStatus: (id, s) => statuses.push([id, s]),
       ...opts,
     }),
-  )
-  return { hook, order, execute, statuses }
+  );
+  return { hook, order, execute, statuses };
 }
 
 describe("useFlowRunner", () => {
   it("runs in topological order and reports contract statuses", async () => {
-    const { hook, order, statuses } = setup()
-    await act(() => hook.result.current.run())
-    expect(order).toEqual(["a", "b", "c"])
-    expect(statuses.filter(([id]) => id === "b").map(([, s]) => s)).toEqual(["queued", "streaming", "done"])
-  })
+    const { hook, order, statuses } = setup();
+    await act(() => hook.result.current.run());
+    expect(order).toEqual(["a", "b", "c"]);
+    expect(statuses.filter(([id]) => id === "b").map(([, s]) => s)).toEqual(["queued", "streaming", "done"]);
+  });
   it("caches clean nodes; re-run only executes dirtied + downstream", async () => {
-    const { hook, order, execute } = setup()
-    await act(() => hook.result.current.run())
-    execute.mockClear(); order.length = 0
-    act(() => hook.result.current.markDirty("b"))
-    await act(() => hook.result.current.run())
-    expect(order).toEqual(["b", "c"])                       // a served from cache
-    expect(execute).toHaveBeenCalledTimes(2)
-  })
+    const { hook, order, execute } = setup();
+    await act(() => hook.result.current.run());
+    execute.mockClear();
+    order.length = 0;
+    act(() => hook.result.current.markDirty("b"));
+    await act(() => hook.result.current.run());
+    expect(order).toEqual(["b", "c"]); // a served from cache
+    expect(execute).toHaveBeenCalledTimes(2);
+  });
   it("feeds upstream outputs as inputs", async () => {
-    const { hook, execute } = setup()
-    await act(() => hook.result.current.run())
-    const callForC = execute.mock.calls.find(([n]) => n.id === "c")!
-    expect(callForC[1]).toEqual({ b: { url: "out-b" } })
-  })
+    const { hook, execute } = setup();
+    await act(() => hook.result.current.run());
+    const callForC = execute.mock.calls.find(([n]) => n.id === "c")!;
+    expect(callForC[1]).toEqual({ b: { url: "out-b" } });
+  });
   it("branch-local failure: independent branches still finish", async () => {
     const execute = vi.fn(async (n: RunnerNode) => {
-      if (n.id === "b") throw new Error("boom")
-      return { url: n.id }
-    })
-    const statuses: Array<[string, string]> = []
+      if (n.id === "b") throw new Error("boom");
+      return { url: n.id };
+    });
+    const statuses: Array<[string, string]> = [];
     const hook = renderHook(() =>
       useFlowRunner({
-        nodes: [node("a"), node("b"), node("c"), node("x")],   // a→b→c, x independent
+        nodes: [node("a"), node("b"), node("c"), node("x")], // a→b→c, x independent
         edges: [edge("a", "b"), edge("b", "c")],
-        execute, onStatus: (id, s) => statuses.push([id, s]),
+        execute,
+        onStatus: (id, s) => statuses.push([id, s]),
       }),
-    )
-    await act(() => hook.result.current.run())
-    expect(statuses).toContainEqual(["b", "failed"])
-    expect(statuses).not.toContainEqual(["c", "streaming"])    // downstream skipped
-    expect(statuses).toContainEqual(["x", "done"])             // sibling branch ran
-    expect(hook.result.current.errors.b?.message).toBe("boom")
-  })
+    );
+    await act(() => hook.result.current.run());
+    expect(statuses).toContainEqual(["b", "failed"]);
+    expect(statuses).not.toContainEqual(["c", "streaming"]); // downstream skipped
+    expect(statuses).toContainEqual(["x", "done"]); // sibling branch ran
+    expect(hook.result.current.errors.b?.message).toBe("boom");
+  });
   it("stop() aborts in-flight executes", async () => {
-    let abortSeen = false
-    const execute = vi.fn((n: RunnerNode, _i: unknown, signal: AbortSignal) =>
-      new Promise((resolve, reject) => {
-        signal.addEventListener("abort", () => { abortSeen = true; reject(new DOMException("aborted", "AbortError")) })
-      }))
+    let abortSeen = false;
+    const execute = vi.fn(
+      (n: RunnerNode, _i: unknown, signal: AbortSignal) =>
+        new Promise((resolve, reject) => {
+          signal.addEventListener("abort", () => {
+            abortSeen = true;
+            reject(new DOMException("aborted", "AbortError"));
+          });
+        }),
+    );
     const hook = renderHook(() =>
       useFlowRunner({ nodes: [node("a")], edges: [], execute, onStatus: () => {} }),
-    )
-    act(() => { void hook.result.current.run() })
-    await waitFor(() => expect(execute).toHaveBeenCalled())
-    act(() => hook.result.current.stop())
-    await waitFor(() => expect(abortSeen).toBe(true))
-  })
+    );
+    act(() => {
+      void hook.result.current.run();
+    });
+    await waitFor(() => expect(execute).toHaveBeenCalled());
+    act(() => hook.result.current.stop());
+    await waitFor(() => expect(abortSeen).toBe(true));
+  });
   it("runFrom(id) dirties id + downstream then runs", async () => {
-    const { hook, order } = setup()
-    await act(() => hook.result.current.run())
-    order.length = 0
-    await act(() => hook.result.current.runFrom("b"))
-    expect(order).toEqual(["b", "c"])
-  })
-})
+    const { hook, order } = setup();
+    await act(() => hook.result.current.run());
+    order.length = 0;
+    await act(() => hook.result.current.runFrom("b"));
+    expect(order).toEqual(["b", "c"]);
+  });
+});
 ```
 
 - [ ] **Step 2: Run** → FAIL. **Step 3: Implement**
 
 ```ts
 // apps/docs/registry/super-ai/flow/use-flow-runner.ts
-"use client"
-import { useCallback, useRef, useState } from "react"
-import type { FlowStatus } from "./flow-types"
+"use client";
+import { useCallback, useRef, useState } from "react";
+import type { FlowStatus } from "./flow-types";
 
-export interface RunnerNode { id: string; data: Record<string, unknown> }
-export interface RunnerEdge { id: string; source: string; target: string }
-export type NodeOutput = Record<string, unknown>
+export interface RunnerNode {
+  id: string;
+  data: Record<string, unknown>;
+}
+export interface RunnerEdge {
+  id: string;
+  source: string;
+  target: string;
+}
+export type NodeOutput = Record<string, unknown>;
 
 export interface UseFlowRunnerOptions {
-  nodes: RunnerNode[]
-  edges: RunnerEdge[]
-  execute: (node: RunnerNode, inputs: Record<string, NodeOutput>, signal: AbortSignal) => Promise<NodeOutput>
-  onStatus?: (nodeId: string, status: FlowStatus) => void
+  nodes: RunnerNode[];
+  edges: RunnerEdge[];
+  execute: (node: RunnerNode, inputs: Record<string, NodeOutput>, signal: AbortSignal) => Promise<NodeOutput>;
+  onStatus?: (nodeId: string, status: FlowStatus) => void;
 }
 
 function topoOrder(nodes: RunnerNode[], edges: RunnerEdge[]): string[] {
-  const indeg = new Map(nodes.map((n) => [n.id, 0]))
-  for (const e of edges) indeg.set(e.target, (indeg.get(e.target) ?? 0) + 1)
-  const queue = nodes.filter((n) => !indeg.get(n.id)).map((n) => n.id)
-  const out: string[] = []
+  const indeg = new Map(nodes.map((n) => [n.id, 0]));
+  for (const e of edges) indeg.set(e.target, (indeg.get(e.target) ?? 0) + 1);
+  const queue = nodes.filter((n) => !indeg.get(n.id)).map((n) => n.id);
+  const out: string[] = [];
   while (queue.length) {
-    const id = queue.shift()!
-    out.push(id)
-    for (const e of edges) if (e.source === id) {
-      const d = indeg.get(e.target)! - 1
-      indeg.set(e.target, d)
-      if (d === 0) queue.push(e.target)
-    }
+    const id = queue.shift()!;
+    out.push(id);
+    for (const e of edges)
+      if (e.source === id) {
+        const d = indeg.get(e.target)! - 1;
+        indeg.set(e.target, d);
+        if (d === 0) queue.push(e.target);
+      }
   }
-  return out
+  return out;
 }
 const downstreamOf = (ids: string[], edges: RunnerEdge[]) => {
-  const seen = new Set(ids)
-  let grew = true
+  const seen = new Set(ids);
+  let grew = true;
   while (grew) {
-    grew = false
-    for (const e of edges) if (seen.has(e.source) && !seen.has(e.target)) { seen.add(e.target); grew = true }
+    grew = false;
+    for (const e of edges)
+      if (seen.has(e.source) && !seen.has(e.target)) {
+        seen.add(e.target);
+        grew = true;
+      }
   }
-  return seen
-}
+  return seen;
+};
 const cacheKey = (node: RunnerNode, upstreamOutputIds: string[]) =>
-  JSON.stringify([node.data, upstreamOutputIds])
+  JSON.stringify([node.data, upstreamOutputIds]);
 
 export function useFlowRunner({ nodes, edges, execute, onStatus }: UseFlowRunnerOptions) {
-  const cache = useRef(new Map<string, { key: string; output: NodeOutput }>())
-  const dirty = useRef(new Set<string>())
-  const controller = useRef<AbortController | null>(null)
-  const [statuses, setStatuses] = useState<Record<string, FlowStatus>>({})
-  const [errors, setErrors] = useState<Record<string, Error>>({})
-  const [outputs, setOutputs] = useState<Record<string, NodeOutput>>({})
+  const cache = useRef(new Map<string, { key: string; output: NodeOutput }>());
+  const dirty = useRef(new Set<string>());
+  const controller = useRef<AbortController | null>(null);
+  const [statuses, setStatuses] = useState<Record<string, FlowStatus>>({});
+  const [errors, setErrors] = useState<Record<string, Error>>({});
+  const [outputs, setOutputs] = useState<Record<string, NodeOutput>>({});
 
-  const setStatus = useCallback((id: string, s: FlowStatus) => {
-    setStatuses((prev) => ({ ...prev, [id]: s }))
-    onStatus?.(id, s)
-  }, [onStatus])
+  const setStatus = useCallback(
+    (id: string, s: FlowStatus) => {
+      setStatuses((prev) => ({ ...prev, [id]: s }));
+      onStatus?.(id, s);
+    },
+    [onStatus],
+  );
 
-  const runScope = useCallback(async (scope: Set<string> | null) => {
-    controller.current?.abort()
-    const ctl = new AbortController()
-    controller.current = ctl
-    setErrors({})
-    const order = topoOrder(nodes, edges).filter((id) => !scope || scope.has(id))
-    const failedBranch = new Set<string>()
-    const runOutputs = new Map<string, NodeOutput>(
-      [...cache.current.entries()].map(([id, v]) => [id, v.output]),
-    )
-    for (const id of order) if (!failedBranch.has(id)) setStatus(id, "queued")
-    for (const id of order) {
-      if (ctl.signal.aborted) break
-      if (failedBranch.has(id)) { setStatus(id, "idle"); continue }
-      const node = nodes.find((n) => n.id === id)!
-      const upstream = edges.filter((e) => e.target === id)
-      const inputs: Record<string, NodeOutput> = {}
-      for (const e of upstream) {
-        const out = runOutputs.get(e.source)
-        if (out) inputs[e.source] = out
+  const runScope = useCallback(
+    async (scope: Set<string> | null) => {
+      controller.current?.abort();
+      const ctl = new AbortController();
+      controller.current = ctl;
+      setErrors({});
+      const order = topoOrder(nodes, edges).filter((id) => !scope || scope.has(id));
+      const failedBranch = new Set<string>();
+      const runOutputs = new Map<string, NodeOutput>(
+        [...cache.current.entries()].map(([id, v]) => [id, v.output]),
+      );
+      for (const id of order) if (!failedBranch.has(id)) setStatus(id, "queued");
+      for (const id of order) {
+        if (ctl.signal.aborted) break;
+        if (failedBranch.has(id)) {
+          setStatus(id, "idle");
+          continue;
+        }
+        const node = nodes.find((n) => n.id === id)!;
+        const upstream = edges.filter((e) => e.target === id);
+        const inputs: Record<string, NodeOutput> = {};
+        for (const e of upstream) {
+          const out = runOutputs.get(e.source);
+          if (out) inputs[e.source] = out;
+        }
+        const key = cacheKey(
+          node,
+          upstream.map((e) => String(runOutputs.get(e.source)?.url ?? e.source)),
+        );
+        const cached = cache.current.get(id);
+        if (cached && cached.key === key && !dirty.current.has(id)) {
+          runOutputs.set(id, cached.output);
+          setStatus(id, "done");
+          continue;
+        }
+        setStatus(id, "streaming");
+        try {
+          const output = await execute(node, inputs, ctl.signal);
+          cache.current.set(id, { key, output });
+          dirty.current.delete(id);
+          runOutputs.set(id, output);
+          setOutputs((prev) => ({ ...prev, [id]: output }));
+          setStatus(id, "done");
+        } catch (err) {
+          if (ctl.signal.aborted) {
+            setStatus(id, "idle");
+            break;
+          }
+          setErrors((prev) => ({ ...prev, [id]: err as Error }));
+          setStatus(id, "failed");
+          for (const d of downstreamOf([id], edges)) if (d !== id) failedBranch.add(d);
+        }
       }
-      const key = cacheKey(node, upstream.map((e) => String(runOutputs.get(e.source)?.url ?? e.source)))
-      const cached = cache.current.get(id)
-      if (cached && cached.key === key && !dirty.current.has(id)) {
-        runOutputs.set(id, cached.output)
-        setStatus(id, "done")
-        continue
-      }
-      setStatus(id, "streaming")
-      try {
-        const output = await execute(node, inputs, ctl.signal)
-        cache.current.set(id, { key, output })
-        dirty.current.delete(id)
-        runOutputs.set(id, output)
-        setOutputs((prev) => ({ ...prev, [id]: output }))
-        setStatus(id, "done")
-      } catch (err) {
-        if (ctl.signal.aborted) { setStatus(id, "idle"); break }
-        setErrors((prev) => ({ ...prev, [id]: err as Error }))
-        setStatus(id, "failed")
-        for (const d of downstreamOf([id], edges)) if (d !== id) failedBranch.add(d)
-      }
-    }
-  }, [nodes, edges, execute, setStatus])
+    },
+    [nodes, edges, execute, setStatus],
+  );
 
-  const markDirty = useCallback((id: string) => {
-    for (const d of downstreamOf([id], edges)) dirty.current.add(d)
-  }, [edges])
+  const markDirty = useCallback(
+    (id: string) => {
+      for (const d of downstreamOf([id], edges)) dirty.current.add(d);
+    },
+    [edges],
+  );
 
   return {
-    statuses, errors, outputs,
+    statuses,
+    errors,
+    outputs,
     run: () => runScope(null),
-    runNode: (id: string) => { dirty.current.add(id); return runScope(new Set([id])) },
-    runFrom: (id: string) => { markDirty(id); return runScope(downstreamOf([id], edges)) },
-    runSelection: (ids: string[]) => { ids.forEach((i) => dirty.current.add(i)); return runScope(new Set(ids)) },
+    runNode: (id: string) => {
+      dirty.current.add(id);
+      return runScope(new Set([id]));
+    },
+    runFrom: (id: string) => {
+      markDirty(id);
+      return runScope(downstreamOf([id], edges));
+    },
+    runSelection: (ids: string[]) => {
+      ids.forEach((i) => dirty.current.add(i));
+      return runScope(new Set(ids));
+    },
     stop: () => controller.current?.abort(),
     markDirty,
-  }
+  };
 }
 ```
 
@@ -1030,6 +1177,7 @@ export function useFlowRunner({ nodes, edges, execute, onStatus }: UseFlowRunner
 ### Task 13: Wave 2 demo page — image→video chain
 
 **Files:**
+
 - Create: `apps/docs/app/flow/page.tsx` (server shell) + `apps/docs/app/flow/flow-demo.tsx` (client)
 - Create: `apps/docs/lib/flow/stub-execute.ts`
 
@@ -1037,20 +1185,27 @@ export function useFlowRunner({ nodes, edges, execute, onStatus }: UseFlowRunner
 
 ```ts
 // apps/docs/lib/flow/stub-execute.ts
-import type { NodeOutput, RunnerNode } from "@/registry/super-ai/flow/use-flow-runner"
+import type { NodeOutput, RunnerNode } from "@/registry/super-ai/flow/use-flow-runner";
 
 const STUBS: Record<string, NodeOutput> = {
   image: { url: "/stubs/image-1.webp", kind: "image" },
   video: { url: "/stubs/video-1.mp4", kind: "video" },
-}
-export async function stubExecute(node: RunnerNode, _inputs: unknown, signal: AbortSignal): Promise<NodeOutput> {
+};
+export async function stubExecute(
+  node: RunnerNode,
+  _inputs: unknown,
+  signal: AbortSignal,
+): Promise<NodeOutput> {
   await new Promise((res, rej) => {
-    const t = setTimeout(res, 800 + Math.random() * 1200)
-    signal.addEventListener("abort", () => { clearTimeout(t); rej(new DOMException("aborted", "AbortError")) })
-  })
-  const kind = String(node.data.kind ?? "image")
-  if (node.data.failPlease) throw new Error("Stub failure (demo)")
-  return STUBS[kind] ?? STUBS.image
+    const t = setTimeout(res, 800 + Math.random() * 1200);
+    signal.addEventListener("abort", () => {
+      clearTimeout(t);
+      rej(new DOMException("aborted", "AbortError"));
+    });
+  });
+  const kind = String(node.data.kind ?? "image");
+  if (node.data.failPlease) throw new Error("Stub failure (demo)");
+  return STUBS[kind] ?? STUBS.image;
 }
 ```
 
@@ -1063,6 +1218,7 @@ Add two small placeholder assets under `apps/docs/public/stubs/` (any committed 
 ### Task 14: Catalog pages + wave wrap-up
 
 **Files:**
+
 - Create: `apps/docs/app/components/[name]` entries for the 11 new items following the Wave 0 Task 14 pattern exactly (read one existing page first; copy its structure: live demo import, install command with `REGISTRY_URL`, props table, states showcase).
 - Modify: catalog index page — add a "Flow Kit" group listing the 11 items.
 
@@ -1074,16 +1230,18 @@ Add two small placeholder assets under `apps/docs/public/stubs/` (any committed 
 
 ## Dispatcher notes (subagent-driven execution)
 
-| Group | Tasks | Parallel? |
-|---|---|---|
-| G0 | 0, 1 | sequential — everything depends on flow-types |
-| G1 | 2, 3, 4 (wiring) | parallel after G0 |
-| G2 | 5 → 8 (node-status then ai-node), 6, 7, 10, 11 | 6/7/10/11 parallel after G0; 8 after 5 |
-| G3 | 9 (model-bar) | when Wave 0 Task 12 lands; parallelizable with G2 |
-| G4 | 12 (runner) | parallel with G1/G2 after G0 |
-| G5 | 13, 14 | sequential, after all above |
+| Group | Tasks                                          | Parallel?                                         |
+| ----- | ---------------------------------------------- | ------------------------------------------------- |
+| G0    | 0, 1                                           | sequential — everything depends on flow-types     |
+| G1    | 2, 3, 4 (wiring)                               | parallel after G0                                 |
+| G2    | 5 → 8 (node-status then ai-node), 6, 7, 10, 11 | 6/7/10/11 parallel after G0; 8 after 5            |
+| G3    | 9 (model-bar)                                  | when Wave 0 Task 12 lands; parallelizable with G2 |
+| G4    | 12 (runner)                                    | parallel with G1/G2 after G0                      |
+| G5    | 13, 14                                         | sequential, after all above                       |
 
 Each subagent receives: this plan's task text (self-contained), plus paths to the wave spec, inventory, and master spec §6 conventions. Subagents work ONLY in the worktree. Rebase onto `wave-0-foundation` between groups.
+
+**Execution addendum (recorded at dispatch):** parallel implementers each work in their own ephemeral worktree branched from `wave-2-flow-foundation` and **skip their task's `gen-registry.mts` registration step** — seven agents appending to one shared file would conflict on merge. The orchestrator merges reviewed branches sequentially (disjoint files, no conflicts) and lands all registrations in one `chore(flow): register wave-2 items` commit before Task 13. Spec reviewers must treat the missing registration step as deferred-by-design, not MISSING.
 
 ## Self-review checklist (run before dispatch)
 
