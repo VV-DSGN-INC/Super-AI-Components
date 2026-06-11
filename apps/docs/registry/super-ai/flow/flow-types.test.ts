@@ -5,6 +5,7 @@ import {
   getHandleType,
   handleId,
   isValidFlowConnection,
+  parseHandleId,
   registerHandleType,
   type FlowStatus,
 } from "./flow-types";
@@ -28,5 +29,21 @@ describe("handle type registry", () => {
   it("exposes the contract statuses", () => {
     const all: FlowStatus[] = ["idle", "queued", "streaming", "done", "failed", "locked"];
     expect(FLOW_STATUSES).toEqual(all);
+  });
+  it("rejects malformed and trailing-segment ids", () => {
+    expect(parseHandleId("garbage")).toBeNull();
+    expect(parseHandleId("a:b:in:extra")).toBeNull();
+    expect(parseHandleId(null)).toBeNull();
+  });
+  it("round-trips node ids containing colons", () => {
+    const id = handleId("group:1", "image", "out");
+    expect(parseHandleId(id)).toEqual({ nodeId: "group:1", dataType: "image", dir: "out" });
+  });
+  it("validates direction: only out→in connects", () => {
+    const out = handleId("n1", "image", "out");
+    const inn = handleId("n2", "image", "in");
+    expect(isValidFlowConnection({ sourceHandle: out, targetHandle: inn })).toBe(true);
+    expect(isValidFlowConnection({ sourceHandle: out, targetHandle: out })).toBe(false);
+    expect(isValidFlowConnection({ sourceHandle: inn, targetHandle: inn })).toBe(false);
   });
 });

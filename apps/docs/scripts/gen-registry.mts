@@ -20,8 +20,20 @@ type Item = {
   type?: "registry:component" | "registry:hook" | "registry:lib";
   registryDependencies?: string[];
   dependencies?: string[];
-  files?: { path: string; type: string; target?: string }[];
+  files?: {
+    path: string;
+    type: "registry:lib" | "registry:component" | "registry:hook" | "registry:file";
+    target?: string;
+  }[];
 };
+
+// Reference URLs for Flow AI elements (consumed by later wave items).
+const FLOW_AI_ELEMENTS: Record<string, string> = Object.fromEntries(
+  ["canvas", "node", "edge", "connection", "controls", "panel", "toolbar"].map((name) => [
+    name,
+    `https://registry.ai-sdk.dev/${name}.json`,
+  ]),
+);
 
 const items: Item[] = [
   { name: "kbd", title: "Kbd", description: "Keycap chip for keyboard shortcuts." },
@@ -77,11 +89,15 @@ const items: Item[] = [
     description: "Flow Kit shared contracts: handle-type registry, statuses, id codec.",
     type: "registry:lib" as const,
     files: [
-      { path: "registry/super-ai/flow/flow-types.ts", type: "registry:lib", target: "lib/flow-types.ts" },
+      {
+        path: "registry/super-ai/flow/flow-types.ts",
+        type: "registry:lib",
+        target: "components/super-ai/flow/flow-types.ts",
+      },
       {
         path: "registry/super-ai/flow/flow-tokens.css",
         type: "registry:file",
-        target: "styles/flow-tokens.css",
+        target: "components/super-ai/flow/flow-tokens.css",
       },
     ],
   },
@@ -110,10 +126,5 @@ const OUT = join(dirname(fileURLToPath(import.meta.url)), "../registry.json");
 writeFileSync(OUT, JSON.stringify(registry, null, 2) + "\n");
 console.log(`registry.json — ${items.length} items (base: ${REGISTRY_URL})`);
 
-// Reference URLs for Flow AI elements (consumed by later wave items).
-export const FLOW_AI_ELEMENTS: Record<string, string> = Object.fromEntries(
-  ["canvas", "node", "edge", "connection", "controls", "panel", "toolbar"].map((name) => [
-    name,
-    `https://registry.ai-sdk.dev/${name}.json`,
-  ]),
-);
+// Suppress unused-variable lint: FLOW_AI_ELEMENTS is exported for downstream wave items.
+void FLOW_AI_ELEMENTS;

@@ -13,9 +13,10 @@
   --flow-image: oklch(0.71 0.16 259.8);
   --flow-video: oklch(0.71 0.18 292.7);
   --flow-audio: oklch(0.73 0.19 354.3);
+  --flow-streaming: oklch(0.71 0.16 259.8);
   --flow-done: oklch(0.77 0.15 162.5);
 }
-@keyframes dash {
+@keyframes flow-dash {
   to {
     stroke-dashoffset: -20;
   }

@@ -18,7 +18,20 @@ const registry = new Map<string, HandleTypeDef>(
   ]),
 );
 
+/**
+ * Register a custom handle type.
+ *
+ * `key` must match `/^[a-z][a-z0-9-]*$/`:
+ *   - No colons — they would break the handle-id codec (`{nodeId}:{dataType}:{dir}`).
+ *   - No spaces — they would break the CSS custom-property name (`--flow-{key}`).
+ *
+ * Call at module scope (not inside a React effect) so server and client render identically.
+ * Re-registering an existing key overwrites its definition.
+ */
 export function registerHandleType(key: string, def: Partial<HandleTypeDef> & { label: string }) {
+  if (process.env.NODE_ENV !== "production" && !/^[a-z][a-z0-9-]*$/.test(key)) {
+    console.warn(`registerHandleType: invalid key "${key}" — use lowercase letters, digits, hyphens`);
+  }
   registry.set(key, { label: def.label, cssVar: def.cssVar ?? `--flow-${key}` });
 }
 export const getHandleType = (key: string) => registry.get(key);
@@ -30,14 +43,18 @@ export function handleId(nodeId: string, dataType: string, dir: "in" | "out") {
 }
 export function parseHandleId(id: string | null | undefined) {
   if (!id) return null;
-  const [nodeId, dataType, dir] = id.split(":");
+  const parts = id.split(":");
+  if (parts.length < 3) return null;
+  const dir = parts.pop()!;
+  const dataType = parts.pop()!;
+  const nodeId = parts.join(":");
   if (!nodeId || !dataType || (dir !== "in" && dir !== "out")) return null;
-  return { nodeId, dataType, dir } as const;
+  return { nodeId, dataType, dir } as { nodeId: string; dataType: string; dir: "in" | "out" };
 }
 export function isValidFlowConnection(c: { sourceHandle?: string | null; targetHandle?: string | null }) {
   const s = parseHandleId(c.sourceHandle);
   const t = parseHandleId(c.targetHandle);
-  return !!s && !!t && s.dataType === t.dataType;
+  return !!s && !!t && s.dir === "out" && t.dir === "in" && s.dataType === t.dataType;
 }
 
 export type NodeSize = "sm" | "md" | "lg";
