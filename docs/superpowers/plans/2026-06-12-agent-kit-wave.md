@@ -16,6 +16,8 @@
 - Full checks (used in verification steps): from repo root `pnpm test`, `pnpm check:tokens`, `pnpm typecheck`, `pnpm lint`.
 - Token contract: never use raw hex, `oklch()`, or Tailwind palette classes (`bg-slate-100`…). Only CSS-variable utilities (`bg-muted`, `text-muted-foreground`, `border-destructive/50`, …).
 - Every component: `"use client"`, `data-slot` attributes, props extend the host element's props, `cn()` from `@/lib/utils` for className merging.
+- **Demos map (learned in Task 1 review):** `apps/docs/app/components/[name]/page.tsx` holds a static `demos` record mapping every catalog name to its demo component. EVERY task that adds a catalog entry must also import its demo there and add a `"{name}": {Name}Demo,` record entry (match existing import style/ordering), and include that file in the task's commit. Skipping this breaks `pnpm build` at prerender. Verify each component task with `cd apps/docs && pnpm build` if in doubt; Tasks 10/11/13 run the full build regardless.
+- Registry typing decision (Task 1 review): `agent-types` ships as `registry:component` like everything else — uniform install target beats semantic `registry:lib` purity here. Do not "fix" this.
 - Commit style: `{type}({scope}): {description}` (see `git log --oneline`).
 
 ---
@@ -805,9 +807,9 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-import type { GoalStatus } from "./agent-types";
+import type { GoalState, GoalStatus } from "./agent-types";
 
-const STATE_CLASS: Record<GoalStatus["state"], string> = {
+const STATE_CLASS: Record<GoalState, string> = {
   "on-track": "bg-primary/10 text-primary",
   "at-risk": "bg-muted text-foreground",
   stalled: "bg-destructive/10 text-destructive",
