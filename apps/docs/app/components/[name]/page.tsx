@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { notFound } from "next/navigation";
 
+import AgentTypesDemo from "@/components/demos/agent-types-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
@@ -25,6 +26,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "gen-settings-bar": GenSettingsBarDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
+  "agent-types": AgentTypesDemo,
 };
 
 export function generateStaticParams() {
