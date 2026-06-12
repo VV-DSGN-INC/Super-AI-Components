@@ -9,3 +9,4 @@ playwright-report/
 .env*.local
 .DS_Store
 .env
+.worktrees/
