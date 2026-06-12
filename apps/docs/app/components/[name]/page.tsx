@@ -10,6 +10,7 @@ import DateSectionDemo from "@/components/demos/date-section-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
+import GoalCardDemo from "@/components/demos/goal-card-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import PlanApprovalDemo from "@/components/demos/plan-approval-demo";
 import PlanTimelineDemo from "@/components/demos/plan-timeline-demo";
@@ -26,6 +27,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "filter-bar": FilterBarDemo,
   "field-row": FieldRowDemo,
   "gen-settings-bar": GenSettingsBarDemo,
+  "goal-card": GoalCardDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
   "agent-types": AgentTypesDemo,

@@ -73,6 +73,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Pre-execution gate: edit and reorder proposed steps, approve, or reject with a reason.",
     group: "Agent Kit",
   },
+  {
+    name: "goal-card",
+    title: "Goal Card",
+    description: "Declared goal with success criteria, monitor state, budget spend, and stop control.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);
