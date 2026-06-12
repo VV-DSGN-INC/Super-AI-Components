@@ -67,6 +67,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Multi-step agent plan with per-step status, collapsible substeps, duration and cost.",
     group: "Agent Kit",
   },
+  {
+    name: "plan-approval",
+    title: "Plan Approval",
+    description: "Pre-execution gate: edit and reorder proposed steps, approve, or reject with a reason.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);
