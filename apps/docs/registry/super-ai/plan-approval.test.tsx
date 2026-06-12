@@ -43,4 +43,22 @@ describe("PlanApproval", () => {
     await userEvent.click(confirm);
     expect(onReject).toHaveBeenCalledWith("Do not email externally");
   });
+
+  it("cancel exits reject mode with the step list intact", async () => {
+    render(<PlanApproval steps={steps} onApprove={vi.fn()} onReject={vi.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: "Reject plan" }));
+    await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+    expect(screen.getByRole("button", { name: "Approve plan" })).toBeInTheDocument();
+    expect(screen.getByText("Search the web")).toBeInTheDocument();
+    expect(screen.getByText("Email the report to the team")).toBeInTheDocument();
+    expect(screen.getByText("Archive sources")).toBeInTheDocument();
+  });
+
+  it("disables Approve when every step is removed", async () => {
+    render(<PlanApproval steps={steps} onApprove={vi.fn()} onReject={vi.fn()} />);
+    await userEvent.click(screen.getByRole("button", { name: "Remove Search the web" }));
+    await userEvent.click(screen.getByRole("button", { name: "Remove Email the report to the team" }));
+    await userEvent.click(screen.getByRole("button", { name: "Remove Archive sources" }));
+    expect(screen.getByRole("button", { name: "Approve plan" })).toBeDisabled();
+  });
 });

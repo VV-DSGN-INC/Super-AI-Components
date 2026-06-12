@@ -17,6 +17,7 @@ export default function PlanApprovalDemo() {
   return (
     <div className="flex w-full max-w-md flex-col gap-2">
       <PlanApproval
+        key="proposal-1"
         steps={proposed}
         onApprove={(steps) => setResult(`Approved ${steps.length} steps`)}
         onReject={(reason) => setResult(`Rejected: ${reason}`)}

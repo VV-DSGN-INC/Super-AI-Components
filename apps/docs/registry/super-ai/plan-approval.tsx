@@ -23,6 +23,8 @@ function PlanApproval({
   className,
   ...props
 }: PlanApprovalProps) {
+  // One-shot snapshot of the proposed plan: edits live here, not in the host.
+  // Remount with a new `key` (e.g. key={planId}) to present a different proposal.
   const [steps, setSteps] = React.useState(initialSteps);
   const [rejecting, setRejecting] = React.useState(false);
   const [reason, setReason] = React.useState("");
