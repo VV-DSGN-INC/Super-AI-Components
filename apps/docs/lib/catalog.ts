@@ -79,6 +79,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Declared goal with success criteria, monitor state, budget spend, and stop control.",
     group: "Agent Kit",
   },
+  {
+    name: "critique-panel",
+    title: "Critique Panel",
+    description: "Producer/critic reflection cycle: draft and critique panes, iteration stepper, verdict, accept or iterate.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);
