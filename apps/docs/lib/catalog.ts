@@ -61,6 +61,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Shared TypeScript contracts for Agent Kit components: plan steps, routing decisions, handoffs, guardrails, goals, connectors.",
     group: "Agent Kit",
   },
+  {
+    name: "plan-timeline",
+    title: "Plan Timeline",
+    description: "Multi-step agent plan with per-step status, collapsible substeps, duration and cost.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

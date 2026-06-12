@@ -11,6 +11,7 @@ import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
+import PlanTimelineDemo from "@/components/demos/plan-timeline-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import { PreviewTabs } from "@/components/preview-tabs";
@@ -27,6 +28,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
   "agent-types": AgentTypesDemo,
+  "plan-timeline": PlanTimelineDemo,
 };
 
 export function generateStaticParams() {

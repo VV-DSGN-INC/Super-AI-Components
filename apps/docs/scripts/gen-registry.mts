@@ -33,6 +33,10 @@ const extras: Record<string, { dependencies?: string[]; registryDependencies?: s
     registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],
     dependencies: ["lucide-react"],
   },
+  "plan-timeline": {
+    dependencies: ["lucide-react"],
+    registryDependencies: [self("agent-types")],
+  },
 };
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({
