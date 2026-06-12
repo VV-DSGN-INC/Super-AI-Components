@@ -2,7 +2,7 @@ export interface CatalogItem {
   name: string;
   title: string;
   description: string;
-  group: "Primitives" | "Components";
+  group: "Primitives" | "Components" | "Agent Kit";
 }
 
 export const CATALOG_ITEMS: CatalogItem[] = [
@@ -54,6 +54,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     title: "Thread List",
     description: "Date-grouped conversation list with rename, delete, and pin.",
     group: "Components",
+  },
+  {
+    name: "agent-types",
+    title: "Agent Types",
+    description: "Shared TypeScript contracts for Agent Kit components: plan steps, routing decisions, handoffs, guardrails, goals, connectors.",
+    group: "Agent Kit",
   },
 ] as const;
 
