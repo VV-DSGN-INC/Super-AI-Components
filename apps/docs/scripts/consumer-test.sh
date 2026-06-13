@@ -38,8 +38,8 @@ WSEOF
 pnpm install
 pnpm dlx shadcn@latest init --defaults
 
-echo "==> Installing all 19 items from the local registry"
-ITEMS=(kbd cost-chip date-section choice-chips filter-bar field-row gen-settings-bar shortcuts-sheet thread-list agent-types plan-timeline plan-approval goal-card critique-panel decision-trace refusal-card handoff-indicator connector-status agent-console)
+echo "==> Installing all 21 items from the local registry"
+ITEMS=(kbd cost-chip date-section choice-chips filter-bar field-row gen-settings-bar shortcuts-sheet thread-list agent-types plan-timeline plan-approval goal-card critique-panel decision-trace refusal-card handoff-indicator connector-status agent-console safety-banner task-queue)
 URLS=()
 for item in "${ITEMS[@]}"; do URLS+=("http://127.0.0.1:$PORT/r/$item.json"); done
 pnpm dlx shadcn@latest add --yes --overwrite "${URLS[@]}"
@@ -61,6 +61,8 @@ import { HandoffStack } from "@/components/super-ai/handoff-indicator";
 import { PlanApproval } from "@/components/super-ai/plan-approval";
 import { PlanTimeline } from "@/components/super-ai/plan-timeline";
 import { RefusalCard } from "@/components/super-ai/refusal-card";
+import { SafetyBanner } from "@/components/super-ai/safety-banner";
+import { TaskQueue } from "@/components/super-ai/task-queue";
 
 export default function Page() {
   return (
@@ -90,6 +92,8 @@ export default function Page() {
         decisions={[]}
         handoffs={[]}
       />
+      <SafetyBanner kind="refusal" policy="external-communication" blocked="Email" />
+      <TaskQueue tasks={[{ id: "t1", title: "Task one", status: "pending" }]} />
     </main>
   );
 }

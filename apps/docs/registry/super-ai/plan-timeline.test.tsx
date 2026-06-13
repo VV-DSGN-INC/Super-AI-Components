@@ -73,4 +73,9 @@ describe("PlanTimeline", () => {
     await userEvent.click(screen.getByRole("button", { name: "Toggle substeps for Level 1" }));
     expect(screen.getByText("Level 2")).toBeInTheDocument();
   });
+
+  it("renders an empty state with no steps", () => {
+    render(<PlanTimeline steps={[]} />);
+    expect(screen.getByText("No plan steps yet.")).toBeInTheDocument();
+  });
 });

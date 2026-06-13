@@ -40,18 +40,22 @@ function GoalCard({ status, onStop, className, ...props }: GoalCardProps) {
           <span className="tabular-nums">{`$${status.spentUsd.toFixed(2)} / $${status.budgetUsd.toFixed(2)}`}</span>
         )}
       </div>
-      <ul role="list" className="flex flex-col gap-1">
-        {status.criteria.map((c) => (
-          <li key={c.id} data-met={c.met} className="flex items-center gap-2 text-sm">
-            {c.met ? (
-              <Check className="size-3.5 text-primary" aria-hidden />
-            ) : (
-              <CircleDashed className="size-3.5 text-muted-foreground" aria-hidden />
-            )}
-            <span className={cn(!c.met && "text-muted-foreground")}>{c.label}</span>
-          </li>
-        ))}
-      </ul>
+      {status.criteria.length > 0 ? (
+        <ul role="list" className="flex flex-col gap-1">
+          {status.criteria.map((c) => (
+            <li key={c.id} data-met={c.met} className="flex items-center gap-2 text-sm">
+              {c.met ? (
+                <Check className="size-3.5 text-primary" aria-hidden />
+              ) : (
+                <CircleDashed className="size-3.5 text-muted-foreground" aria-hidden />
+              )}
+              <span className={cn(!c.met && "text-muted-foreground")}>{c.label}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-sm text-muted-foreground">No success criteria defined.</p>
+      )}
       {onStop && (
         <div className="flex justify-end">
           <Button type="button" variant="outline" size="sm" aria-label="Stop agent" onClick={onStop}>

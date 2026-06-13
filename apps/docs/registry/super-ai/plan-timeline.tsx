@@ -38,6 +38,14 @@ interface PlanTimelineProps extends Omit<React.ComponentProps<"ol">, "onSelect">
 }
 
 function PlanTimeline({ steps, onStepSelect, className, ...props }: PlanTimelineProps) {
+  if (steps.length === 0) {
+    return (
+      <ol data-slot="plan-timeline" role="list" className={cn("flex flex-col gap-0.5", className)} {...props}>
+        <li className="px-2 py-1.5 text-sm text-muted-foreground">No plan steps yet.</li>
+      </ol>
+    );
+  }
+
   return (
     <ol data-slot="plan-timeline" role="list" className={cn("flex flex-col gap-0.5", className)} {...props}>
       {steps.map((step) => (

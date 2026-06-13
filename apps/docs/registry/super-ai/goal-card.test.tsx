@@ -39,4 +39,10 @@ describe("GoalCard", () => {
     render(<GoalCard status={goal} />);
     expect(screen.getByText("$1.40 / $2.00")).toBeInTheDocument();
   });
+
+  it("renders a placeholder when no criteria are defined", () => {
+    render(<GoalCard status={{ goal: "Ship it", state: "on-track", criteria: [] }} />);
+    expect(screen.getByText("No success criteria defined.")).toBeInTheDocument();
+    expect(screen.getByText("0/0 criteria met")).toBeInTheDocument();
+  });
 });
