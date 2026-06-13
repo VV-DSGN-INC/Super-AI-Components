@@ -133,6 +133,13 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Agent Kit",
     patternSlug: "human-oversight-and-reliability",
   },
+  {
+    name: "task-queue",
+    title: "Task Queue",
+    description: "Prioritized agent work queue with rank-change and preemption indicators.",
+    group: "Agent Kit",
+    patternSlug: "operations-and-cognition",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

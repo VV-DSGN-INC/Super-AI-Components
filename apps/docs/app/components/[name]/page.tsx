@@ -23,6 +23,7 @@ import PlanTimelineDemo from "@/components/demos/plan-timeline-demo";
 import RefusalCardDemo from "@/components/demos/refusal-card-demo";
 import SafetyBannerDemo from "@/components/demos/safety-banner-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
+import TaskQueueDemo from "@/components/demos/task-queue-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
@@ -42,6 +43,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "handoff-indicator": HandoffIndicatorDemo,
   "safety-banner": SafetyBannerDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
+  "task-queue": TaskQueueDemo,
   "thread-list": ThreadListDemo,
   "agent-console": AgentConsoleDemo,
   "agent-types": AgentTypesDemo,
