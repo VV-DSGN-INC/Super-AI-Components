@@ -109,6 +109,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "MCP server and connector health chips with expandable tool count and latency detail.",
     group: "Agent Kit",
   },
+  {
+    name: "agent-console",
+    title: "Agent Console",
+    description: "Composed 'watch the agent work' surface: goal, plan, decisions, handoffs, interrupts, run cost.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

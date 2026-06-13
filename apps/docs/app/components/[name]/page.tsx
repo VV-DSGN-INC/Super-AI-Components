@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { notFound } from "next/navigation";
 
+import AgentConsoleDemo from "@/components/demos/agent-console-demo";
 import AgentTypesDemo from "@/components/demos/agent-types-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import ConnectorStatusDemo from "@/components/demos/connector-status-demo";
@@ -39,6 +40,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "handoff-indicator": HandoffIndicatorDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
+  "agent-console": AgentConsoleDemo,
   "agent-types": AgentTypesDemo,
   "plan-approval": PlanApprovalDemo,
   "plan-timeline": PlanTimelineDemo,

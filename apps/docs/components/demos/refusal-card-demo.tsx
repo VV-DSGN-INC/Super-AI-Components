@@ -1,3 +1,5 @@
+"use client";
+
 import type { GuardrailEvent } from "@/registry/super-ai/agent-types";
 import { RefusalCard } from "@/registry/super-ai/refusal-card";
 

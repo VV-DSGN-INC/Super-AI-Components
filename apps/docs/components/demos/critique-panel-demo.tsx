@@ -1,3 +1,5 @@
+"use client";
+
 import { CritiquePanel, type CritiqueIteration } from "@/registry/super-ai/critique-panel";
 
 const iterations: CritiqueIteration[] = [

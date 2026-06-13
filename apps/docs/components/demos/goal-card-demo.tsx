@@ -1,3 +1,5 @@
+"use client";
+
 import type { GoalStatus } from "@/registry/super-ai/agent-types";
 import { GoalCard } from "@/registry/super-ai/goal-card";
 
