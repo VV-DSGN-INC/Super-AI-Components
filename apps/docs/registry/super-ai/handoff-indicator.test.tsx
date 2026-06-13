@@ -36,4 +36,9 @@ describe("HandoffIndicator", () => {
     expect(screen.getAllByRole("listitem")).toHaveLength(2);
     expect(screen.getByText("Critic")).toBeInTheDocument();
   });
+
+  it("renders an empty state when there are no handoffs", () => {
+    render(<HandoffStack handoffs={[]} />);
+    expect(screen.getByText("No handoffs yet.")).toBeInTheDocument();
+  });
 });

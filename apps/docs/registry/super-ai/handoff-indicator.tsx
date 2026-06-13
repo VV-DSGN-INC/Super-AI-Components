@@ -44,6 +44,14 @@ interface HandoffStackProps extends React.ComponentProps<"ul"> {
 }
 
 function HandoffStack({ handoffs, className, ...props }: HandoffStackProps) {
+  if (handoffs.length === 0) {
+    return (
+      <ul data-slot="handoff-stack" role="list" className={cn("flex flex-col gap-1.5", className)} {...props}>
+        <li className="text-sm text-muted-foreground">No handoffs yet.</li>
+      </ul>
+    );
+  }
+
   return (
     <ul data-slot="handoff-stack" role="list" className={cn("flex flex-col gap-1.5", className)} {...props}>
       {handoffs.map((h) => (
