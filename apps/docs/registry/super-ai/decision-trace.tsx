@@ -18,6 +18,18 @@ interface DecisionTraceProps extends React.ComponentProps<"div"> {
 function DecisionTrace({ decisions, className, ...props }: DecisionTraceProps) {
   const [openId, setOpenId] = React.useState<string | null>(null);
 
+  if (decisions.length === 0) {
+    return (
+      <div
+        data-slot="decision-trace"
+        className={cn("rounded-lg border bg-card p-4 text-sm text-muted-foreground", className)}
+        {...props}
+      >
+        No routing decisions yet.
+      </div>
+    );
+  }
+
   return (
     <div data-slot="decision-trace" className={cn("flex flex-col gap-1", className)} {...props}>
       <div className="flex flex-wrap items-center gap-1">
@@ -56,8 +68,8 @@ function DecisionTrace({ decisions, className, ...props }: DecisionTraceProps) {
             )}
             <p className="text-xs text-muted-foreground">Rejected alternatives</p>
             <ul role="list" className="mt-1 flex flex-col gap-1">
-              {d.alternatives.map((a) => (
-                <li key={a.route} className="flex items-center justify-between text-sm text-muted-foreground">
+              {d.alternatives.map((a, i) => (
+                <li key={`${a.route}-${i}`} className="flex items-center justify-between text-sm text-muted-foreground">
                   <span>{a.route}</span>
                   <span className="tabular-nums">{pct(a.confidence)}</span>
                 </li>

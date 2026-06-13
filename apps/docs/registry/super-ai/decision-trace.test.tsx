@@ -38,4 +38,19 @@ describe("DecisionTrace", () => {
     expect(screen.getByText("31%")).toBeInTheDocument();
     expect(screen.getByText("92%")).toBeInTheDocument();
   });
+
+  it("closes an open decision on second click", async () => {
+    render(<DecisionTrace decisions={decisions} />);
+    const toggle = screen.getByRole("button", { name: "Toggle decision detail for web-search" });
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(screen.queryByText("Fresh sources required")).not.toBeInTheDocument();
+  });
+
+  it("renders an empty state instead of a bare container with no decisions", () => {
+    render(<DecisionTrace decisions={[]} />);
+    expect(screen.getByText("No routing decisions yet.")).toBeInTheDocument();
+  });
 });
