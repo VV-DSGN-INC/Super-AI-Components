@@ -37,4 +37,11 @@ describe("RefusalCard", () => {
     await userEvent.click(screen.getByRole("button", { name: "Request override" }));
     expect(onRequestOverride).toHaveBeenCalledWith("g1");
   });
+
+  it("renders without optional fields or callbacks", () => {
+    render(<RefusalCard event={{ id: "g2", kind: "refusal", policy: "tool-safety" }} />);
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByText("tool-safety")).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

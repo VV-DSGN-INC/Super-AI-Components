@@ -49,4 +49,28 @@ describe("PlanTimeline", () => {
     expect(screen.getByText("8.0s")).toBeInTheDocument();
     expect(screen.getByText("$0.010")).toBeInTheDocument();
   });
+
+  it("renders substep detail and deep nesting without dropping content", async () => {
+    const deep: PlanStep[] = [
+      {
+        id: "d1",
+        title: "Level 0",
+        status: "running",
+        substeps: [
+          {
+            id: "d2",
+            title: "Level 1",
+            status: "running",
+            detail: "level-1 detail",
+            substeps: [{ id: "d3", title: "Level 2", status: "pending" }],
+          },
+        ],
+      },
+    ];
+    render(<PlanTimeline steps={deep} />);
+    await userEvent.click(screen.getByRole("button", { name: "Toggle substeps for Level 0" }));
+    expect(screen.getByText("level-1 detail")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Toggle substeps for Level 1" }));
+    expect(screen.getByText("Level 2")).toBeInTheDocument();
+  });
 });

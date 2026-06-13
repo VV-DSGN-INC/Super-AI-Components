@@ -14,6 +14,8 @@ interface RefusalCardProps extends React.ComponentProps<"div"> {
   onRequestOverride?: (id: string) => void;
 }
 
+// Renders the "refusal" guardrail kind. System-level states (degraded/sandbox/filter)
+// are safety-banner's job — see the Human Oversight & Reliability pattern page.
 function RefusalCard({ event, onEscalate, onRequestOverride, className, ...props }: RefusalCardProps) {
   const [revealed, setRevealed] = React.useState(false);
 

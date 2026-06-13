@@ -48,17 +48,28 @@ export default async function PatternPage({ params }: { params: Promise<{ slug: 
         <table className="mt-3 w-full text-left text-sm">
           <thead>
             <tr className="border-b text-xs uppercase text-muted-foreground">
-              <th className="py-2 pr-4 font-medium">Component</th>
-              <th className="py-2 font-medium">When to use</th>
+              <th scope="col" className="py-2 pr-4 font-medium">Component</th>
+              <th scope="col" className="py-2 font-medium">When to use</th>
             </tr>
           </thead>
           <tbody>
             {page.mappings.map((m) => (
               <tr key={m.component} className="border-b last:border-0 align-top">
                 <td className="py-2 pr-4">
-                  <Link href={m.href} className="underline underline-offset-4 hover:text-foreground">
-                    {m.component}
-                  </Link>
+                  {m.href.startsWith("http") ? (
+                    <a
+                      href={m.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline underline-offset-4 hover:text-foreground"
+                    >
+                      {m.component}
+                    </a>
+                  ) : (
+                    <Link href={m.href} className="underline underline-offset-4 hover:text-foreground">
+                      {m.component}
+                    </Link>
+                  )}
                 </td>
                 <td className="py-2 text-muted-foreground">{m.when}</td>
               </tr>

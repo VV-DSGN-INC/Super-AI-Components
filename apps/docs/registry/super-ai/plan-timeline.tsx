@@ -62,10 +62,8 @@ function PlanTimelineStep({
   return (
     <li data-slot="plan-timeline-step" data-status={step.status} className="flex flex-col">
       <div
-        className={cn(
-          "group/step flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent",
-          depth > 0 && "ml-6",
-        )}
+        className="group/step flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent"
+        style={depth > 0 ? { marginInlineStart: depth * 24 } : undefined}
       >
         {STATUS_ICON[step.status]}
         <button
@@ -93,8 +91,10 @@ function PlanTimelineStep({
           </button>
         )}
       </div>
-      {step.detail && depth === 0 && (
-        <p className="ml-8 text-xs text-muted-foreground">{step.detail}</p>
+      {step.detail && (
+        <p className="text-xs text-muted-foreground" style={{ marginInlineStart: depth * 24 + 32 }}>
+          {step.detail}
+        </p>
       )}
       {hasSubsteps && expanded && (
         <ol role="list" className="flex flex-col gap-0.5">
