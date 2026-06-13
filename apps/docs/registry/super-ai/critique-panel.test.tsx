@@ -33,4 +33,15 @@ describe("CritiquePanel", () => {
     await userEvent.click(screen.getByRole("button", { name: "Run another iteration" }));
     expect(onIterate).toHaveBeenCalledOnce();
   });
+
+  it("renders an empty state instead of crashing with no iterations", () => {
+    render(<CritiquePanel iterations={[]} onAccept={vi.fn()} onIterate={vi.fn()} />);
+    expect(screen.getByText("No iterations yet.")).toBeInTheDocument();
+  });
+
+  it("disables stepper buttons at the bounds", () => {
+    render(<CritiquePanel iterations={iterations} onAccept={vi.fn()} onIterate={vi.fn()} />);
+    expect(screen.getByRole("button", { name: "Next iteration" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Previous iteration" })).toBeEnabled();
+  });
 });

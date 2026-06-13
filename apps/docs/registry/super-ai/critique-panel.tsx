@@ -19,8 +19,22 @@ interface CritiquePanelProps extends React.ComponentProps<"div"> {
 }
 
 function CritiquePanel({ iterations, onAccept, onIterate, className, ...props }: CritiquePanelProps) {
+  // Index snapshots the latest iteration at mount (one-shot, like plan-approval):
+  // remount with a new `key` — or lift index state — to follow a live reflection loop.
   const [index, setIndex] = React.useState(iterations.length - 1);
-  const current = iterations[index];
+  const current = iterations[Math.min(index, iterations.length - 1)];
+
+  if (!current) {
+    return (
+      <div
+        data-slot="critique-panel"
+        className={cn("rounded-lg border bg-card p-4 text-sm text-muted-foreground", className)}
+        {...props}
+      >
+        No iterations yet.
+      </div>
+    );
+  }
 
   return (
     <div
