@@ -76,6 +76,10 @@ const extras: Record<string, { dependencies?: string[]; registryDependencies?: s
       self("refusal-card"),
     ],
   },
+  "safety-banner": {
+    dependencies: ["lucide-react"],
+    registryDependencies: ["button", self("agent-types")],
+  },
 };
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({

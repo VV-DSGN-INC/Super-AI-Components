@@ -126,6 +126,13 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Agent Kit",
     patternSlug: "collaboration",
   },
+  {
+    name: "safety-banner",
+    title: "Safety Banner",
+    description: "System-level guardrail state: degraded mode, sandboxed execution, content filter active.",
+    group: "Agent Kit",
+    patternSlug: "human-oversight-and-reliability",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

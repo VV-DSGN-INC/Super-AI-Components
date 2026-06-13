@@ -21,6 +21,7 @@ import KbdDemo from "@/components/demos/kbd-demo";
 import PlanApprovalDemo from "@/components/demos/plan-approval-demo";
 import PlanTimelineDemo from "@/components/demos/plan-timeline-demo";
 import RefusalCardDemo from "@/components/demos/refusal-card-demo";
+import SafetyBannerDemo from "@/components/demos/safety-banner-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import { PreviewTabs } from "@/components/preview-tabs";
@@ -39,6 +40,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "gen-settings-bar": GenSettingsBarDemo,
   "goal-card": GoalCardDemo,
   "handoff-indicator": HandoffIndicatorDemo,
+  "safety-banner": SafetyBannerDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
   "agent-console": AgentConsoleDemo,
