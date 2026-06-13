@@ -91,6 +91,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Routing breadcrumb: chosen route per decision with expandable rationale and rejected alternatives.",
     group: "Agent Kit",
   },
+  {
+    name: "refusal-card",
+    title: "Refusal Card",
+    description: "Structured guardrail refusal: blocked action, policy, redacted preview, escalate and override-request verbs.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

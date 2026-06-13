@@ -16,6 +16,7 @@ import GoalCardDemo from "@/components/demos/goal-card-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import PlanApprovalDemo from "@/components/demos/plan-approval-demo";
 import PlanTimelineDemo from "@/components/demos/plan-timeline-demo";
+import RefusalCardDemo from "@/components/demos/refusal-card-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import { PreviewTabs } from "@/components/preview-tabs";
@@ -37,6 +38,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "agent-types": AgentTypesDemo,
   "plan-approval": PlanApprovalDemo,
   "plan-timeline": PlanTimelineDemo,
+  "refusal-card": RefusalCardDemo,
 };
 
 export function generateStaticParams() {
