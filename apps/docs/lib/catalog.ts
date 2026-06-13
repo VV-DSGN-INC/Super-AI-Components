@@ -97,6 +97,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Structured guardrail refusal: blocked action, policy, redacted preview, escalate and override-request verbs.",
     group: "Agent Kit",
   },
+  {
+    name: "handoff-indicator",
+    title: "Handoff Indicator",
+    description: "Agent-to-agent handoff chip with reason and payload detail; stackable sequence.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);
