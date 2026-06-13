@@ -50,7 +50,7 @@ uncontrolled fallbacks, shadcn CSS variables only.
 | Name | Pattern(s) | One-liner |
 | --- | --- | --- |
 | `plan-timeline` | Planning; Prompt Chaining | Multi-step plan: per-step status (pending/running/done/failed/skipped/needs-approval), collapsible substeps, optional per-step duration + cost. Application-side surface — richer than AI Elements' in-chat `task` list. |
-| `plan-approval` | Planning; Human-in-the-Loop | Pre-execution gate: proposed steps as an editable list (remove/reorder/annotate), approve / reject-with-reason verbs. Complements `approval-card` (per-artifact, post-hoc) by gating *before* execution. |
+| `plan-approval` | Planning; Human-in-the-Loop | Pre-execution gate: proposed steps as an editable list (remove/reorder; annotate deferred to a later wave), approve / reject-with-reason verbs. Complements `approval-card` (per-artifact, post-hoc) by gating *before* execution. |
 | `goal-card` | Goal Setting & Monitoring | Declared goal, success criteria checklist, monitor state (on-track / at-risk / stalled), elapsed/budget meters, stop control. |
 | `critique-panel` | Reflection; Self-Correction | Producer/critic cycle: draft ↔ critique ↔ revision panes, iteration counter, verdict chip (e.g. approved / needs-work), accept / iterate verbs. |
 | `decision-trace` | Routing | Compact breadcrumb of routing decisions; each node expands to chosen route + rejected alternatives with confidence and rationale. |

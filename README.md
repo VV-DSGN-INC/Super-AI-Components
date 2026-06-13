@@ -1,7 +1,7 @@
 # Super-AI-Components
 
 The missing half of [AI Elements](https://elements.ai-sdk.dev): a shadcn registry of components
-for AI applications — app shells, creative studios, flow canvases, feedback loops, observability,
+for AI applications — app shells, creative studios, flow canvases, agent consoles, feedback loops, observability,
 and monetization UI. AI Elements gives you the conversation; this gives you the application.
 
 ## Install (any shadcn app)

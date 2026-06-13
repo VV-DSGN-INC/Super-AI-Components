@@ -350,6 +350,7 @@ One spec (this document); one implementation plan per wave.
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | 0 — Foundation       | Repo, tooling, CI, registry pipeline, all 7 primitives, two pilot components end-to-end (`shortcuts-sheet`, `thread-list`), docs shell |
 | 1 — App Shell & Nav  | Remaining App Shell kit + composer/context trio + `app-shell` block                                                                    |
+| AK — Agent Kit       | Agent Kit components (plan, goal, critique, decision, refusal, handoff, connector) + `agent-console` block + Patterns docs section. Spec: `2026-06-12-agent-kit-design.md`. Slots after Wave 1 by priority; flow-wave plan docs keep their numbering. |
 | 2 — Flow Kit F1      | Wiring + node anatomy (7 items) + `useFlowRunner`; demo: rebuild Flow Builder's image→video chain on the registry                      |
 | 3 — Flow Kit F2      | The 10 modality node presets; demo: the full reference flow incl. TTS + SFX + Music into composition                                   |
 | 4 — Flow Kit F3      | Canvas chrome (palette, omnibar, run-controls, inspector, env-status); demo: Flow AI-style shell                                       |
