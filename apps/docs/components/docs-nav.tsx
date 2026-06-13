@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { CATALOG_ITEMS } from "@/lib/catalog";
+import { PATTERN_PAGES } from "@/lib/patterns";
 
-const GROUPS = ["Primitives", "Components"] as const;
+const GROUPS = ["Primitives", "Components", "Agent Kit"] as const;
 
 export function DocsNav() {
   const pathname = usePathname();
@@ -42,6 +43,30 @@ export function DocsNav() {
           </div>
         );
       })}
+      {/* Patterns section — static pages, not catalog items */}
+      <div data-slot="docs-nav-group">
+        <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">Patterns</p>
+        <ul className="space-y-0.5">
+          {PATTERN_PAGES.map((p) => {
+            const href = `/patterns/${p.slug}`;
+            const isActive = pathname === href;
+            return (
+              <li key={p.slug}>
+                <Link
+                  href={href}
+                  className={`block rounded-md px-2 py-1.5 text-sm transition-colors ${
+                    isActive
+                      ? "bg-accent text-accent-foreground font-medium"
+                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  }`}
+                >
+                  {p.title}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 }

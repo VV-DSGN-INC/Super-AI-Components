@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import AgentConsoleDemo from "@/components/demos/agent-console-demo";
@@ -68,6 +69,13 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
       <div>
         <h1 className="text-3xl font-bold">{item.title}</h1>
         <p className="text-muted-foreground mt-2">{item.description}</p>
+        {item.patternSlug && (
+          <p className="mt-2 text-sm">
+            <Link href={`/patterns/${item.patternSlug}`} className="text-muted-foreground underline underline-offset-4 hover:text-foreground">
+              Pattern background
+            </Link>
+          </p>
+        )}
       </div>
 
       <PreviewTabs preview={<Demo />} code={demoSource} />

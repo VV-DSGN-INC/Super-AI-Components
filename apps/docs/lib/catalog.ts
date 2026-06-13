@@ -3,6 +3,7 @@ export interface CatalogItem {
   title: string;
   description: string;
   group: "Primitives" | "Components" | "Agent Kit";
+  patternSlug?: string; // links the component page to /patterns/{slug}
 }
 
 export const CATALOG_ITEMS: CatalogItem[] = [
@@ -60,60 +61,70 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     title: "Agent Types",
     description: "Shared TypeScript contracts for Agent Kit components: plan steps, routing decisions, handoffs, guardrails, goals, connectors.",
     group: "Agent Kit",
+    patternSlug: "execution-and-decomposition",
   },
   {
     name: "plan-timeline",
     title: "Plan Timeline",
     description: "Multi-step agent plan with per-step status, collapsible substeps, duration and cost.",
     group: "Agent Kit",
+    patternSlug: "execution-and-decomposition",
   },
   {
     name: "plan-approval",
     title: "Plan Approval",
     description: "Pre-execution gate: edit and reorder proposed steps, approve, or reject with a reason.",
     group: "Agent Kit",
+    patternSlug: "human-oversight-and-reliability",
   },
   {
     name: "goal-card",
     title: "Goal Card",
     description: "Declared goal with success criteria, monitor state, budget spend, and stop control.",
     group: "Agent Kit",
+    patternSlug: "human-oversight-and-reliability",
   },
   {
     name: "critique-panel",
     title: "Critique Panel",
     description: "Producer/critic reflection cycle: draft and critique panes, iteration stepper, verdict, accept or iterate.",
     group: "Agent Kit",
+    patternSlug: "state-and-self-improvement",
   },
   {
     name: "decision-trace",
     title: "Decision Trace",
     description: "Routing breadcrumb: chosen route per decision with expandable rationale and rejected alternatives.",
     group: "Agent Kit",
+    patternSlug: "execution-and-decomposition",
   },
   {
     name: "refusal-card",
     title: "Refusal Card",
     description: "Structured guardrail refusal: blocked action, policy, redacted preview, escalate and override-request verbs.",
     group: "Agent Kit",
+    patternSlug: "human-oversight-and-reliability",
   },
   {
     name: "handoff-indicator",
     title: "Handoff Indicator",
     description: "Agent-to-agent handoff chip with reason and payload detail; stackable sequence.",
     group: "Agent Kit",
+    patternSlug: "collaboration",
   },
   {
     name: "connector-status",
     title: "Connector Status",
     description: "MCP server and connector health chips with expandable tool count and latency detail.",
     group: "Agent Kit",
+    patternSlug: "external-world",
   },
   {
     name: "agent-console",
     title: "Agent Console",
     description: "Composed 'watch the agent work' surface: goal, plan, decisions, handoffs, interrupts, run cost.",
     group: "Agent Kit",
+    patternSlug: "collaboration",
   },
 ] as const;
 
