@@ -8,6 +8,7 @@ import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CritiquePanelDemo from "@/components/demos/critique-panel-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
+import DecisionTraceDemo from "@/components/demos/decision-trace-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
@@ -25,6 +26,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "cost-chip": CostChipDemo,
   "critique-panel": CritiquePanelDemo,
   "date-section": DateSectionDemo,
+  "decision-trace": DecisionTraceDemo,
   "choice-chips": ChoiceChipsDemo,
   "filter-bar": FilterBarDemo,
   "field-row": FieldRowDemo,
