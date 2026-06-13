@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import AgentTypesDemo from "@/components/demos/agent-types-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
+import ConnectorStatusDemo from "@/components/demos/connector-status-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CritiquePanelDemo from "@/components/demos/critique-panel-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
@@ -25,11 +26,12 @@ import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 
 const demos: Record<CatalogName, React.ComponentType> = {
   kbd: KbdDemo,
+  "choice-chips": ChoiceChipsDemo,
+  "connector-status": ConnectorStatusDemo,
   "cost-chip": CostChipDemo,
   "critique-panel": CritiquePanelDemo,
   "date-section": DateSectionDemo,
   "decision-trace": DecisionTraceDemo,
-  "choice-chips": ChoiceChipsDemo,
   "filter-bar": FilterBarDemo,
   "field-row": FieldRowDemo,
   "gen-settings-bar": GenSettingsBarDemo,

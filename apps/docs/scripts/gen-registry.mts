@@ -61,6 +61,10 @@ const extras: Record<string, { dependencies?: string[]; registryDependencies?: s
     dependencies: ["lucide-react"],
     registryDependencies: [self("agent-types")],
   },
+  "connector-status": {
+    dependencies: ["lucide-react"],
+    registryDependencies: ["button", self("agent-types")],
+  },
 };
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({

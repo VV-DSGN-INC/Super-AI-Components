@@ -103,6 +103,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Agent-to-agent handoff chip with reason and payload detail; stackable sequence.",
     group: "Agent Kit",
   },
+  {
+    name: "connector-status",
+    title: "Connector Status",
+    description: "MCP server and connector health chips with expandable tool count and latency detail.",
+    group: "Agent Kit",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);
