@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.turbo/
+apps/docs/public/r/
+apps/docs/registry.json
+test-results/
+playwright-report/
+*.tsbuildinfo
+.env*.local
+.DS_Store
+.env
