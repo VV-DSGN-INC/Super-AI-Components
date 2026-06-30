@@ -1,0 +1,38 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Overview" />
+
+# Super AI Components — Storybook
+
+The component workbench for **[Super AI Components](https://github.com/weeeha/Super-AI-Components)** —
+the missing half of [AI Elements](https://elements.ai-sdk.dev). AI Elements gives you the
+conversation; this gives you the application.
+
+This Storybook showcases three layers, all on the same shadcn **base-nova** (Base UI) theme with a
+light/dark toggle in the toolbar:
+
+## Super AI
+
+The curated registry — primitives and components purpose-built for AI apps: cost chips, choice
+chips, filter bars, gen-settings bars, field rows, date sections, keyboard hints, a shortcuts sheet,
+and a thread list. These are the components published to the shadcn registry.
+
+```bash
+npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
+```
+
+## AI Elements
+
+All **30** components from [elements.ai-sdk.dev](https://elements.ai-sdk.dev) — conversation,
+message, reasoning, tool, sources, code-block, prompt-input, plus the flow/canvas toolkit
+(`canvas`, `node`, `edge`, `controls`) for agent workflow graphs. Shown here with static mock data.
+
+## shadcn/ui
+
+All **60** shadcn primitives in the Base UI "base-nova" style — the foundation everything else
+composes on top of.
+
+---
+
+Use the sidebar to browse. Every story is fully static (no backend), and the **Theme** control in
+the toolbar flips between the design system's light and dark tokens.
