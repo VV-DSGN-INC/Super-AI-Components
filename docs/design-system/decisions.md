@@ -1,0 +1,214 @@
+# Decisions and open questions
+
+---
+
+## 1. Decisions taken in this analysis
+
+These were resolved while deriving the catalog. Each is revisitable, but each has a stated reason.
+
+### D1 · The inclusion test
+
+A component earns registry status only if it appears in **three or more unrelated products** on the
+reference board. Anything appearing in one product is a demo, not a registry item.
+
+This is what holds the catalog at 110 items while adding an entire missing family (first-run) and
+five new primitives.
+
+### D2 · Organise by app type × pattern, not by modality kit
+
+The approved spec's Writing / Image / Audio / Video kits are four descriptions of the same three
+components with different content poured in. Re-cutting along the board's own axes captures that
+permanently instead of relying on discipline to avoid duplication.
+
+### D3 · Promote shared pieces to L2 rather than importing sideways
+
+L3 components never depend on each other. If two need the same piece, it moves up. This produced
+A8–A12, five primitives that were previously hidden inside leaf components.
+
+### D4 · Flow Kit collapses from 25 items to 9 + 1 hook
+
+The 10 modality node presets (`text-node`, `llm-node`, `image-node`, …) are `ai-node` +
+`node-prompt` + `node-result` + `model-bar` configured per type. They ship as **demo recipes**, not
+registry items. This is the single largest saving in the recut.
+
+### D5 · The four modality kits collapse into E + F
+
+`style-picker`, `palette-picker`, `tone-selector`, `shot-controls`, `music-brief` and
+`brush-controls` are all `preset-grid` + `parameter-panel` with different data. `video-gen-card`,
+`generation-queue` slots and failed-card variants are all `result-card` states.
+
+### D6 · `timeline-editor` is a block, not a component
+
+It is `transport-controls` + `time-ruler` + `track-lane` composed. Shipping the parts means a single
+track lane can be used standalone.
+
+### D7 · Two new contracts
+
+**Empty** and **Provenance**, both derived from the board rather than from the spec. See
+[concept-model.md](concept-model.md#4-cross-cutting-contracts).
+
+### D8 · `chat-header` is absorbed by `app-topbar`
+
+A chat title bar is `app-topbar` with fewer slots filled. Same for `credits-indicator`, which moves
+into the monetization family as M2.
+
+---
+
+## 2. Components dropped from the approved spec
+
+Each appears in at most one product on the reference board.
+
+| Dropped | Reason |
+| ------- | ------ |
+| `rewrite-panel` | Single product; N alternatives side-by-side is a `generation-grid` of text results |
+| `outline-builder` | Single product |
+| `inline-suggestion` | Ghost-text completion is an editor concern, not a registry component |
+| `chunk-highlighter` | Single product |
+| `retrieval-inspector` | Covered by `run-inspector` (N5) in practice |
+| `memory-viewer` | Single product |
+| `agent-board` | Single product |
+| `eval-board` | Single product |
+| `model-compare` | `compare-viewer` (F5) covers the surface; the voting bar is app logic |
+| `response-diff` | `diff-review` (K3) covers it |
+| `review-queue` | `approval-card` (F7) plus a list; not a distinct component |
+| `voice-clone-recorder` | Single product |
+| `inpaint-canvas` | `drawing-tools` (I5) mask mode covers the input; the canvas is a host concern |
+| `timeline-editor` | Promoted to a block (D6) |
+| 10 Flow Kit node presets | Demo recipes on `ai-node` (D4) |
+| 6 modality picker/param components | `preset-grid` + `parameter-panel` (D5) |
+
+---
+
+## 3. Components added
+
+28 items with no equivalent in the approved spec.
+
+**Primitives (5):** `preview-tile` · `entity-row` · `stat-readout` · `reset-affordance` ·
+`section-header`
+
+**First-run family (6):** `empty-state` · `coach-mark` · `feature-announcement` (expanded) ·
+`whats-new` · `onboarding-wizard` · (plus `shortcuts-sheet`, already shipped)
+
+**Home & launcher (5):** `hero-omnibox` · `feature-card-row` · `recent-grid` ·
+`recommendation-card` · (plus `suggestion-chips`, already specced)
+
+**Shell & account (4):** `modality-rail` · `app-topbar` · `account-menu` · `settings-dialog`
+
+**Composer (3):** `reference-strip` · `mode-tabs` · `skill-menu`
+
+**Results & canvas (4):** `action-stack` · `node-result` · `canvas-toolbar` · `generation-wizard`
+
+**Library & docs (5):** `artifact-grid` · `record-list` · `template-detail` · `source-panel` ·
+`citation-ref`
+
+**Timeline (3):** `time-ruler` · `track-lane` · `frame-strip`
+
+**Trust & plan (3):** `paywall-message` · `trust-dialog` · `disclaimer-note` · `member-gate-row`
+
+**Editor (1):** `drawing-tools`
+
+---
+
+## 4. Findings that change the plan, not just the drawings
+
+### F1 · Monetization cannot be Wave 12
+
+The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is
+a **state** on components that ship in waves 1–6:
+
+- `paywall-message` (M5) lives inside the chat stream → needed with the chat shell
+- `member-gate-row` (E7) is a settings row → needed with settings
+- `run-button` (E5) insufficient-credits state → needed with the first generation surface
+- `promo-card` (B5) → needed with the sidebar
+
+Deferring means building those components twice. **Recommendation:** move the cost contract and its
+four placements into the wave where each host component ships.
+
+### F2 · `preview-tile` must be prototyped before anything else
+
+Eleven consumers across six families inherit its API. The open question on its card: does one
+component genuinely cover colour swatches and 3D models, or is it two primitives sharing a name?
+
+### F3 · `gen-settings-bar` and `model-bar` are one engine
+
+A7 renders inline in a panel; G6 renders docked in a node with a Run split-button. Building them
+separately is the most likely source of drift in the catalog.
+
+### F4 · Empty states are the default view
+
+NotebookLM's three simultaneously-empty panes make this concrete. The approved spec has no
+`empty-state` component at all, which means every one of the 84 components would invent its own.
+
+---
+
+## 5. Revised sequencing proposal
+
+Replaces §11 of the approved spec. Each wave ships components plus the block that proves them.
+
+| Wave | Scope | Rationale |
+| ---- | ----- | --------- |
+| **0** | *Shipped* — repo, CI, registry pipeline, 7 primitives, `shortcuts-sheet`, `thread-list` | — |
+| **1** | New primitives A8–A12, starting with `preview-tile` | Eleven components depend on A8; validate the API first |
+| **2** | B (app shell) + C (home) + `home-shell` | Fewest new dependencies; produces a demonstrable page fastest |
+| **3** | D (composer) + N1/N3 + `chat-shell` | Composes AI Elements; second-cheapest shell |
+| **4** | E + F + `generation-shell` + the cost contract placements | The lifecycle core; monetization states land here, not in Wave 12 |
+| **5** | G + `useFlowRunner` + `flow-shell` | Strongest differentiation, working reference implementation to lift from |
+| **6** | I + H + `studio-shell` + `timeline-shell` | The heaviest shells; two blocks from one component set |
+| **7** | J + `library-shell` + `explore-shell` + `artifact-shell` | Three shells from one family |
+| **8** | K + `notebook-shell` + `docs-shell` | Documents and grounding |
+| **9** | L (first-run) applied across everything shipped so far | Empty states are retrofitted once, deliberately |
+| **10** | M + `settings-shell` | Plan management UI; the states already exist from Wave 4 |
+| **11** | N4–N6 (observability) + `records-shell` | Team-facing surfaces |
+| **12** | `auth-shell`, if kept | Pending the open question below |
+
+**Departure from the approved spec:** it sequences Flow Kit first (waves 2–4). This proposal puts
+home and chat first because they need the fewest new primitives and yield a demonstrable, installable
+page soonest; Flow moves to Wave 5. Both orderings are defensible — see open question Q3.
+
+---
+
+## 6. Open questions
+
+These need a decision before implementation starts.
+
+### Q1 · Promote this over §5 of the approved spec?
+
+The catalog here replaces §5 and §11 of
+[the design spec](../superpowers/specs/2026-06-10-super-ai-components-design.md). Options: promote it,
+revise it first, or keep both and reconcile later.
+
+**Recommendation:** promote. Keeping two catalogs guarantees they diverge.
+
+### Q2 · All 14 shells, or a defensible 6?
+
+Fourteen blocks is the most work in the catalog and the strongest differentiator. A defensible
+subset is six: `home-shell`, `chat-shell`, `studio-shell`, `flow-shell`, `library-shell`,
+`settings-shell`.
+
+**No recommendation** — this is a scope call, not a design call.
+
+### Q3 · Build order — home-first or flow-first?
+
+The proposal above is home-first. The approved spec argues flow-first because Flow Builder exists as
+a reference implementation to lift from, which is a real de-risking argument.
+
+**Recommendation:** home-first, because Wave 2 then produces something installable and demonstrable
+with almost no new primitives. But flow-first is a legitimate choice if momentum from an existing
+implementation matters more.
+
+### Q4 · Does `auth-shell` belong in this registry?
+
+It is the one archetype with no AI content at all. UI-only is consistent with the non-goals, but a
+sign-in screen is not what anyone installs an AI component registry for.
+
+**Recommendation:** cut it. It costs catalog credibility more than it adds.
+
+### Q5 · Is `preview-tile` one primitive or two?
+
+Does one API genuinely cover image, video, colour swatch, text excerpt and 3D model content?
+Prototype before Wave 1 commits to it.
+
+### Q6 · Board sections with no coverage
+
+`Presentation Apps` and `Text Editor` are empty sections on the reference board. This work assumes
+they are covered by `studio-shell` + the K family. Confirm, or collect references.

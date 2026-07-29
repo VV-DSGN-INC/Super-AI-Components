@@ -29,3 +29,6 @@ apps/docs/scripts/consumer-test.sh   # install everything into a fresh app
 - Design spec: `docs/superpowers/specs/2026-06-10-super-ai-components-design.md`
 - Flow Kit spec: `docs/superpowers/specs/2026-06-11-flow-kit-design.md` + `docs/flow-kit-inventory.md`
 - Wave 0 plan: `docs/superpowers/plans/2026-06-11-wave-0-foundation.md`
+- **Proposed catalog re-cut:** `docs/design-system/` — catalog, concept model, per-component specs
+  and open questions, derived from a reference board of real AI products. Supersedes §5 and §11 of
+  the design spec if approved.
