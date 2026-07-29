@@ -1,16 +1,47 @@
 "use client"
 
+import * as React from "react"
+
 import { PreviewCard as PreviewCardPrimitive } from "@base-ui/react/preview-card"
 
 import { cn } from "@/lib/utils"
 
-function HoverCard({ ...props }: PreviewCardPrimitive.Root.Props) {
-  return <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />
+// Base UI moved delay/closeDelay from PreviewCard.Root to PreviewCard.Trigger.
+// Restore the Radix-era Root API (openDelay/closeDelay) that AI Elements code
+// expects by threading the values to the trigger via context.
+const HoverCardDelayContext = React.createContext<{
+  delay?: number
+  closeDelay?: number
+}>({})
+
+function HoverCard({
+  openDelay,
+  closeDelay,
+  ...props
+}: PreviewCardPrimitive.Root.Props & {
+  openDelay?: number
+  closeDelay?: number
+}) {
+  const delays = React.useMemo(
+    () => ({ delay: openDelay, closeDelay }),
+    [openDelay, closeDelay],
+  )
+  return (
+    <HoverCardDelayContext.Provider value={delays}>
+      <PreviewCardPrimitive.Root data-slot="hover-card" {...props} />
+    </HoverCardDelayContext.Provider>
+  )
 }
 
 function HoverCardTrigger({ ...props }: PreviewCardPrimitive.Trigger.Props) {
+  const { delay, closeDelay } = React.useContext(HoverCardDelayContext)
   return (
-    <PreviewCardPrimitive.Trigger data-slot="hover-card-trigger" {...props} />
+    <PreviewCardPrimitive.Trigger
+      data-slot="hover-card-trigger"
+      delay={delay}
+      closeDelay={closeDelay}
+      {...props}
+    />
   )
 }
 
