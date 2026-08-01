@@ -9,6 +9,7 @@ describe("PulsatingButton", () => {
     render(<PulsatingButton>Claim access</PulsatingButton>);
     const button = screen.getByRole("button", { name: "Claim access" });
     expect(button).toHaveAttribute("data-slot", "pulsating-button");
+    expect(button).toHaveAttribute("type", "button");
   });
   it("renders an aria-hidden halo and exposes the duration knob", () => {
     render(<PulsatingButton duration={2}>Go</PulsatingButton>);

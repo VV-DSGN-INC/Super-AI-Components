@@ -18,10 +18,11 @@ function PulsatingButton({
 }: PulsatingButtonProps) {
   return (
     <button
+      type="button"
       data-slot="pulsating-button"
       style={{ "--marketing-pulse-duration": duration, ...style } as React.CSSProperties}
       className={cn(
-        "bg-primary text-primary-foreground relative inline-flex cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-sm font-medium",
+        "bg-primary text-primary-foreground group relative inline-flex cursor-pointer items-center justify-center rounded-lg px-4 py-2 text-sm font-medium disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       {...props}
@@ -30,7 +31,7 @@ function PulsatingButton({
       <span
         data-slot="pulsating-button-halo"
         aria-hidden="true"
-        className="marketing-pulse-halo absolute inset-0 rounded-[inherit]"
+        className="marketing-pulse-halo absolute inset-0 rounded-[inherit] group-disabled:hidden"
       />
     </button>
   );
