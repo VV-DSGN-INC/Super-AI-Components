@@ -24,8 +24,7 @@ const rainbowButtonVariants = cva(
 );
 
 interface RainbowButtonProps
-  extends React.ComponentProps<"button">,
-    VariantProps<typeof rainbowButtonVariants> {
+  extends React.ComponentProps<"button">, VariantProps<typeof rainbowButtonVariants> {
   /** Gradient sweep duration, e.g. "3s". */
   speed?: string;
 }

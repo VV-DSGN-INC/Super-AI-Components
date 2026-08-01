@@ -166,7 +166,10 @@ function cssTextToObject(cssText: string): Record<string, unknown> {
 // Parsed once into shadcn's cssVars shape; leading `--` is stripped from each
 // prop (shadcn's installer re-adds it). Light currently carries 13 keys, dark
 // 11 (pulse/ripple colors only exist in :root) — that asymmetry is correct.
-function parseSharedCssVars(sharedText: string): { light: Record<string, string>; dark: Record<string, string> } {
+function parseSharedCssVars(sharedText: string): {
+  light: Record<string, string>;
+  dark: Record<string, string>;
+} {
   const topLevel = (postcss.parse(sharedText).nodes ?? []).filter((n) => n.type !== "comment");
   const isRootRule = (n: postcss.ChildNode): n is postcss.Rule => n.type === "rule" && n.selector === ":root";
   const isDarkRule = (n: postcss.ChildNode): n is postcss.Rule => n.type === "rule" && n.selector === ".dark";

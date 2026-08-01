@@ -16,38 +16,38 @@
 
 **Created (docs app — source of truth):**
 
-| Path | Responsibility |
-| --- | --- |
-| `apps/docs/app/marketing.css` | All marketing keyframes, structural classes, palette custom props, reduced-motion gates. Marker comments (`/* == <name> == */`) delimit per-item slices for the registry generator. |
-| `apps/docs/registry/marketing/<name>.tsx` ×15 | Component source of truth |
-| `apps/docs/registry/marketing/<name>.test.tsx` ×15 | Co-located vitest tests |
-| `apps/docs/components/demos/<name>-demo.tsx` ×15 | Docs page demo (also read as the code tab) |
-| `apps/docs/lib/marketing-catalog.ts` | `MarketingItem` type + `MARKETING_ITEMS` list (grows one entry per component task) |
+| Path                                               | Responsibility                                                                                                                                                                      |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/docs/app/marketing.css`                      | All marketing keyframes, structural classes, palette custom props, reduced-motion gates. Marker comments (`/* == <name> == */`) delimit per-item slices for the registry generator. |
+| `apps/docs/registry/marketing/<name>.tsx` ×15      | Component source of truth                                                                                                                                                           |
+| `apps/docs/registry/marketing/<name>.test.tsx` ×15 | Co-located vitest tests                                                                                                                                                             |
+| `apps/docs/components/demos/<name>-demo.tsx` ×15   | Docs page demo (also read as the code tab)                                                                                                                                          |
+| `apps/docs/lib/marketing-catalog.ts`               | `MarketingItem` type + `MARKETING_ITEMS` list (grows one entry per component task)                                                                                                  |
 
 **Created (storybook app — showcase copies):**
 
-| Path | Responsibility |
-| --- | --- |
-| `apps/storybook/src/marketing.css` | Verbatim copy of `apps/docs/app/marketing.css` |
-| `apps/storybook/src/components/marketing/<name>.tsx` ×15 | Verbatim copy of registry component |
-| `apps/storybook/src/components/marketing/demos/<name>-demo.tsx` ×15 | Verbatim copy of demo |
-| `apps/storybook/src/stories/marketing/<Name>.stories.tsx` ×15 | Story: `Marketing/<Group>/<Name>` |
+| Path                                                                | Responsibility                                 |
+| ------------------------------------------------------------------- | ---------------------------------------------- |
+| `apps/storybook/src/marketing.css`                                  | Verbatim copy of `apps/docs/app/marketing.css` |
+| `apps/storybook/src/components/marketing/<name>.tsx` ×15            | Verbatim copy of registry component            |
+| `apps/storybook/src/components/marketing/demos/<name>-demo.tsx` ×15 | Verbatim copy of demo                          |
+| `apps/storybook/src/stories/marketing/<Name>.stories.tsx` ×15       | Story: `Marketing/<Group>/<Name>`              |
 
 **Modified:**
 
-| Path | Change |
-| --- | --- |
-| `apps/docs/package.json` | + `motion`, `canvas-confetti`, `@types/canvas-confetti` |
-| `apps/storybook/package.json` | + `canvas-confetti`, `@types/canvas-confetti` (motion already present) |
-| `apps/docs/app/globals.css` | `@import "../app/marketing.css"` → actually `@import "./marketing.css";` after the existing imports |
-| `apps/storybook/src/index.css` | `@import "./marketing.css";` after the existing imports |
-| `apps/docs/lib/catalog.ts` | untouched — marketing gets its own module to keep the Super AI catalog clean |
-| `apps/docs/components/docs-nav.tsx` | Render `Marketing · <Group>` sidebar groups from `MARKETING_ITEMS` |
-| `apps/docs/app/components/[name]/page.tsx` | Route over super-ai + marketing names; `marketingDemos` map (one entry per component task) |
-| `apps/docs/scripts/gen-registry.mts` | Second pass over `MARKETING_ITEMS`; item-level `css` support (sliced from marketing.css); marketing extras (npm deps) |
-| `apps/docs/scripts/check-tokens.mjs` | Glob widens to `registry/{super-ai,marketing}` |
-| `apps/docs/vitest.setup.ts` | + `IntersectionObserver` stub (same `??=` shim pattern) |
-| `apps/storybook/.storybook/preview.tsx` | `storySort.order` + `"Marketing"` |
+| Path                                       | Change                                                                                                                |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `apps/docs/package.json`                   | + `motion`, `canvas-confetti`, `@types/canvas-confetti`                                                               |
+| `apps/storybook/package.json`              | + `canvas-confetti`, `@types/canvas-confetti` (motion already present)                                                |
+| `apps/docs/app/globals.css`                | `@import "../app/marketing.css"` → actually `@import "./marketing.css";` after the existing imports                   |
+| `apps/storybook/src/index.css`             | `@import "./marketing.css";` after the existing imports                                                               |
+| `apps/docs/lib/catalog.ts`                 | untouched — marketing gets its own module to keep the Super AI catalog clean                                          |
+| `apps/docs/components/docs-nav.tsx`        | Render `Marketing · <Group>` sidebar groups from `MARKETING_ITEMS`                                                    |
+| `apps/docs/app/components/[name]/page.tsx` | Route over super-ai + marketing names; `marketingDemos` map (one entry per component task)                            |
+| `apps/docs/scripts/gen-registry.mts`       | Second pass over `MARKETING_ITEMS`; item-level `css` support (sliced from marketing.css); marketing extras (npm deps) |
+| `apps/docs/scripts/check-tokens.mjs`       | Glob widens to `registry/{super-ai,marketing}`                                                                        |
+| `apps/docs/vitest.setup.ts`                | + `IntersectionObserver` stub (same `??=` shim pattern)                                                               |
+| `apps/storybook/.storybook/preview.tsx`    | `storySort.order` + `"Marketing"`                                                                                     |
 
 **Component build order** (easiest first to prove the pattern): dot-pattern → pulsating-button → ripple-button → rainbow-button → marquee → orbiting-circles → border-beam → aurora-text → bento-grid → number-ticker → typing-animation → text-animate → terminal → hero-video-dialog → confetti.
 
@@ -92,6 +92,7 @@ And the `page.tsx` wiring always means: add `import <Name>Demo from "@/component
 ### Task 1: Dependencies
 
 **Files:**
+
 - Modify: `apps/docs/package.json`
 - Modify: `apps/storybook/package.json`
 
@@ -122,6 +123,7 @@ git commit -m "chore(marketing): add motion + canvas-confetti deps for wave 1"
 ### Task 2: marketing.css (palette, keyframes, reduced-motion gates)
 
 **Files:**
+
 - Create: `apps/docs/app/marketing.css`
 - Create: `apps/storybook/src/marketing.css` (copy)
 - Modify: `apps/docs/app/globals.css` (add import line)
@@ -159,12 +161,20 @@ in one place later without touching any TSX.
 
 /* == marquee == */
 @keyframes marketing-marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(calc(-100% - var(--marketing-marquee-gap, 1rem))); }
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--marketing-marquee-gap, 1rem)));
+  }
 }
 @keyframes marketing-marquee-vertical {
-  from { transform: translateY(0); }
-  to { transform: translateY(calc(-100% - var(--marketing-marquee-gap, 1rem))); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--marketing-marquee-gap, 1rem)));
+  }
 }
 .marketing-marquee-track {
   animation: marketing-marquee var(--marketing-marquee-duration, 40s) linear infinite;
@@ -179,7 +189,9 @@ in one place later without touching any TSX.
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
-  .marketing-marquee-track { animation: none; }
+  .marketing-marquee-track {
+    animation: none;
+  }
 }
 
 /* == orbiting-circles == */
@@ -199,32 +211,42 @@ in one place later without touching any TSX.
   animation: marketing-orbit calc(var(--marketing-orbit-duration, 20) * 1s) linear infinite;
   animation-delay: calc(var(--marketing-orbit-delay, 0) * 1s);
 }
-.marketing-orbit-item[data-reverse="true"] { animation-direction: reverse; }
+.marketing-orbit-item[data-reverse="true"] {
+  animation-direction: reverse;
+}
 @media (prefers-reduced-motion: reduce) {
-  .marketing-orbit-item { animation: none; }
+  .marketing-orbit-item {
+    animation: none;
+  }
 }
 
 /* == border-beam == */
-@keyframes marketing-border-beam { to { offset-distance: 100%; } }
+@keyframes marketing-border-beam {
+  to {
+    offset-distance: 100%;
+  }
+}
 .marketing-border-beam {
   offset-path: rect(0 auto auto 0 round var(--marketing-beam-radius, 12px));
-  background: linear-gradient(
-    to left,
-    var(--marketing-beam-from),
-    var(--marketing-beam-to),
-    transparent
-  );
+  background: linear-gradient(to left, var(--marketing-beam-from), var(--marketing-beam-to), transparent);
   animation: marketing-border-beam calc(var(--marketing-beam-duration, 6) * 1s) linear infinite;
   animation-delay: calc(var(--marketing-beam-delay, 0) * 1s);
 }
 @media (prefers-reduced-motion: reduce) {
-  .marketing-border-beam { display: none; }
+  .marketing-border-beam {
+    display: none;
+  }
 }
 
 /* == aurora-text == */
 @keyframes marketing-aurora {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 .marketing-aurora-text {
   background-image: linear-gradient(
@@ -242,13 +264,23 @@ in one place later without touching any TSX.
   animation: marketing-aurora calc(var(--marketing-aurora-duration, 8) * 1s) ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .marketing-aurora-text { animation: none; }
+  .marketing-aurora-text {
+    animation: none;
+  }
 }
 
 /* == rainbow-button == */
 @keyframes marketing-rainbow {
-  from { background-position: 0 0, 0% 0; }
-  to { background-position: 0 0, 200% 0; }
+  from {
+    background-position:
+      0 0,
+      0% 0;
+  }
+  to {
+    background-position:
+      0 0,
+      200% 0;
+  }
 }
 .marketing-rainbow-button {
   border: 2px solid transparent;
@@ -264,7 +296,9 @@ in one place later without touching any TSX.
         var(--marketing-rainbow-1)
       )
       border-box;
-  background-size: 100% 100%, 200% 100%;
+  background-size:
+    100% 100%,
+    200% 100%;
   animation: marketing-rainbow var(--marketing-rainbow-speed, 3s) linear infinite;
 }
 .marketing-rainbow-button[data-variant="outline"] {
@@ -280,7 +314,9 @@ in one place later without touching any TSX.
         var(--marketing-rainbow-1)
       )
       border-box;
-  background-size: 100% 100%, 200% 100%;
+  background-size:
+    100% 100%,
+    200% 100%;
 }
 .marketing-rainbow-glow {
   background: linear-gradient(
@@ -298,25 +334,39 @@ in one place later without touching any TSX.
   opacity: 0.5;
 }
 @media (prefers-reduced-motion: reduce) {
-  .marketing-rainbow-button, .marketing-rainbow-glow { animation: none; }
+  .marketing-rainbow-button,
+  .marketing-rainbow-glow {
+    animation: none;
+  }
 }
 
 /* == pulsating-button == */
 @keyframes marketing-pulse {
-  from { transform: scale(1); opacity: 0.6; }
-  to { transform: scale(1.35); opacity: 0; }
+  from {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1.35);
+    opacity: 0;
+  }
 }
 .marketing-pulse-halo {
   background: var(--marketing-pulse-color);
   animation: marketing-pulse calc(var(--marketing-pulse-duration, 1.5) * 1s) ease-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-  .marketing-pulse-halo { display: none; }
+  .marketing-pulse-halo {
+    display: none;
+  }
 }
 
 /* == ripple-button == */
 @keyframes marketing-ripple {
-  to { transform: scale(4); opacity: 0; }
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
 }
 .marketing-ripple {
   position: absolute;
@@ -370,6 +420,7 @@ git commit -m "feat(marketing): shared marketing.css — palette knobs, keyframe
 ### Task 3: Marketing catalog module + docs nav + component page routing
 
 **Files:**
+
 - Create: `apps/docs/lib/marketing-catalog.ts`
 - Modify: `apps/docs/components/docs-nav.tsx`
 - Modify: `apps/docs/app/components/[name]/page.tsx`
@@ -494,14 +545,14 @@ export function generateStaticParams() {
 ```
 
 ```tsx
-  const { name } = await params;
-  const isMarketing = MARKETING.includes(name);
-  if (!CATALOG.includes(name as CatalogName) && !isMarketing) notFound();
+const { name } = await params;
+const isMarketing = MARKETING.includes(name);
+if (!CATALOG.includes(name as CatalogName) && !isMarketing) notFound();
 
-  const item = isMarketing
-    ? MARKETING_ITEMS.find((i) => i.name === name)!
-    : CATALOG_ITEMS.find((i) => i.name === name)!;
-  const Demo = isMarketing ? marketingDemos[name] : demos[name as CatalogName];
+const item = isMarketing
+  ? MARKETING_ITEMS.find((i) => i.name === name)!
+  : CATALOG_ITEMS.find((i) => i.name === name)!;
+const Demo = isMarketing ? marketingDemos[name] : demos[name as CatalogName];
 ```
 
 (The rest of the page — demo source read, `PreviewTabs`, install snippet — already works
@@ -518,8 +569,7 @@ class IntersectionObserverStub {
     return [];
   }
 }
-globalThis.IntersectionObserver ??=
-  IntersectionObserverStub as unknown as typeof IntersectionObserver;
+globalThis.IntersectionObserver ??= IntersectionObserverStub as unknown as typeof IntersectionObserver;
 ```
 
 - [ ] **Step 3.5: Verify**
@@ -539,6 +589,7 @@ git commit -m "feat(marketing): catalog module, sidebar groups, page routing (em
 ### Task 4: Registry generator — marketing pass + per-item css slices
 
 **Files:**
+
 - Modify: `apps/docs/scripts/gen-registry.mts`
 
 - [ ] **Step 4.1: Extend the generator.** Replace the file's content below the existing `extras` block (keep imports, `REGISTRY_URL`, `self`, `file`, `Item`, super-ai `extras` exactly as they are) with:
@@ -630,7 +681,7 @@ const registry = {
 
 (Delete the old `names`/`dupes` block and the old inline `items.map` inside `registry` —
 they're replaced by the above. Keep the trailing `writeFileSync`/`console.log`, but update
-the log line to `` console.log(`registry.json — ${allItems.length} items (base: ${REGISTRY_URL})`); ``.)
+the log line to ``console.log(`registry.json — ${allItems.length} items (base: ${REGISTRY_URL})`);``.)
 
 Note on the shadcn schema: item-level `css` in the v4 registry-item schema is an
 **object** keyed by at-rule/selector in some CLI versions and a plain string in others.
@@ -666,6 +717,7 @@ git commit -m "feat(marketing): registry generator marketing pass with css slice
 ### Task 5: Storybook section registration
 
 **Files:**
+
 - Modify: `apps/storybook/.storybook/preview.tsx`
 
 - [ ] **Step 5.1:** In `preview.tsx`, change the `storySort` order to:
@@ -689,6 +741,7 @@ git commit -m "feat(marketing): storybook Marketing section in sort order"
 ### Task 6: dot-pattern (Effects)
 
 **Files:**
+
 - Test: `apps/docs/registry/marketing/dot-pattern.test.tsx`
 - Create: `apps/docs/registry/marketing/dot-pattern.tsx`
 - Create: `apps/docs/components/demos/dot-pattern-demo.tsx`
@@ -921,13 +974,7 @@ interface PulsatingButtonProps extends React.ComponentProps<"button"> {
   duration?: number;
 }
 
-function PulsatingButton({
-  duration = 1.5,
-  className,
-  children,
-  style,
-  ...props
-}: PulsatingButtonProps) {
+function PulsatingButton({ duration = 1.5, className, children, style, ...props }: PulsatingButtonProps) {
   return (
     <button
       data-slot="pulsating-button"
@@ -1093,13 +1140,7 @@ interface RippleButtonProps extends React.ComponentProps<"button"> {
   rippleDuration?: number;
 }
 
-function RippleButton({
-  rippleDuration = 600,
-  className,
-  children,
-  onClick,
-  ...props
-}: RippleButtonProps) {
+function RippleButton({ rippleDuration = 600, className, children, onClick, ...props }: RippleButtonProps) {
   const [ripples, setRipples] = React.useState<Ripple[]>([]);
   const nextId = React.useRef(0);
   const reducedMotion = React.useRef(false);
@@ -1261,8 +1302,7 @@ const rainbowButtonVariants = cva(
 );
 
 interface RainbowButtonProps
-  extends React.ComponentProps<"button">,
-    VariantProps<typeof rainbowButtonVariants> {
+  extends React.ComponentProps<"button">, VariantProps<typeof rainbowButtonVariants> {
   /** Gradient sweep duration, e.g. "3s". */
   speed?: string;
 }
@@ -1494,10 +1534,7 @@ export default function MarqueeDemo() {
     <div className="w-full max-w-xl">
       <Marquee pauseOnHover duration={30}>
         {brands.map((brand) => (
-          <span
-            key={brand}
-            className="text-muted-foreground flex items-center gap-2 text-lg font-semibold"
-          >
+          <span key={brand} className="text-muted-foreground flex items-center gap-2 text-lg font-semibold">
             <span className="bg-muted size-6 rounded-md" aria-hidden="true" />
             {brand}
           </span>
@@ -1610,10 +1647,7 @@ function OrbitingCircles({
           ...style,
         } as React.CSSProperties
       }
-      className={cn(
-        "pointer-events-none absolute inset-0 flex items-center justify-center",
-        className,
-      )}
+      className={cn("pointer-events-none absolute inset-0 flex items-center justify-center", className)}
       {...props}
     >
       {path && (
@@ -1622,13 +1656,7 @@ function OrbitingCircles({
           data-slot="orbiting-circles-path"
           className="pointer-events-none absolute inset-0 size-full"
         >
-          <circle
-            className="stroke-border fill-none"
-            cx="50%"
-            cy="50%"
-            r={radius}
-            strokeDasharray="4 4"
-          />
+          <circle className="stroke-border fill-none" cx="50%" cy="50%" r={radius} strokeDasharray="4 4" />
         </svg>
       )}
       {items.map((child, i) => (
@@ -1972,9 +2000,7 @@ describe("BentoCard", () => {
     expect(screen.getByTestId("bg")).toBeInTheDocument();
   });
   it("exposes the card slot and renders an icon node when given", () => {
-    const { container } = render(
-      <BentoCard name="X" description="Y" icon={<svg data-testid="icon" />} />,
-    );
+    const { container } = render(<BentoCard name="X" description="Y" icon={<svg data-testid="icon" />} />);
     expect(container.querySelector('[data-slot="bento-card"]')).not.toBeNull();
     expect(container.querySelector('[data-slot="bento-card-icon"]')).not.toBeNull();
   });
@@ -2561,12 +2587,7 @@ describe("TextAnimate", () => {
 ```tsx
 "use client";
 
-import {
-  motion,
-  useReducedMotion,
-  type HTMLMotionProps,
-  type Variants,
-} from "motion/react";
+import { motion, useReducedMotion, type HTMLMotionProps, type Variants } from "motion/react";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
@@ -2614,11 +2635,7 @@ function TextAnimate({
 
   if (reducedMotion) {
     return (
-      <span
-        data-slot="text-animate"
-        className={cn(className)}
-        {...(props as React.ComponentProps<"span">)}
-      >
+      <span data-slot="text-animate" className={cn(className)} {...(props as React.ComponentProps<"span">)}>
         {children}
       </span>
     );
@@ -2631,9 +2648,7 @@ function TextAnimate({
       aria-label={children}
       className={cn("inline-block", className)}
       initial="hidden"
-      {...(startOnView
-        ? { whileInView: "show", viewport: { once: true } }
-        : { animate: "show" })}
+      {...(startOnView ? { whileInView: "show", viewport: { once: true } } : { animate: "show" })}
       transition={{ staggerChildren: stagger, delayChildren: delay }}
       {...props}
     >
@@ -2749,11 +2764,8 @@ describe("Terminal", () => {
 
     it("types its line over time and instantly under reduced motion", () => {
       stubReducedMotion(false);
-      const { container, unmount } = render(
-        <TerminalTyping duration={50}>$ npx create</TerminalTyping>,
-      );
-      const visible = () =>
-        container.querySelector('[data-slot="terminal-typing"]')!.textContent;
+      const { container, unmount } = render(<TerminalTyping duration={50}>$ npx create</TerminalTyping>);
+      const visible = () => container.querySelector('[data-slot="terminal-typing"]')!.textContent;
       expect(visible()).toBe("");
       act(() => vi.advanceTimersByTime(50 * 12 + 50));
       expect(visible()).toBe("$ npx create");
@@ -2837,13 +2849,7 @@ interface TerminalTypingProps extends React.ComponentProps<"span"> {
 /** Standalone typewriter line for Terminal — self-contained per registry convention
     (registry items install as single files, so this is deliberately not shared with
     typing-animation). */
-function TerminalTyping({
-  children,
-  delay = 0,
-  duration = 40,
-  className,
-  ...props
-}: TerminalTypingProps) {
+function TerminalTyping({ children, delay = 0, duration = 40, className, ...props }: TerminalTypingProps) {
   const [visibleChars, setVisibleChars] = React.useState(0);
 
   React.useEffect(() => {
@@ -2871,12 +2877,7 @@ function TerminalTyping({
   }, [children, duration, delay]);
 
   return (
-    <span
-      data-slot="terminal-typing"
-      aria-label={children}
-      className={cn("block", className)}
-      {...props}
-    >
+    <span data-slot="terminal-typing" aria-label={children} className={cn("block", className)} {...props}>
       <span aria-hidden="true">{children.slice(0, visibleChars)}</span>
     </span>
   );
@@ -2993,10 +2994,7 @@ import { cn } from "@/lib/utils";
 
 type HeroVideoAnimation = "from-center" | "from-bottom" | "fade";
 
-const dialogVariants: Record<
-  HeroVideoAnimation,
-  { initial: object; animate: object; exit: object }
-> = {
+const dialogVariants: Record<HeroVideoAnimation, { initial: object; animate: object; exit: object }> = {
   "from-center": {
     initial: { scale: 0.6, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
@@ -3157,7 +3155,7 @@ export default function HeroVideoDialogDemo() {
 }
 ```
 
-(Raw hex lives only in the demo's inline SVG *image data* — demos aren't registry files,
+(Raw hex lives only in the demo's inline SVG _image data_ — demos aren't registry files,
 and the lint doesn't scan `components/demos/`. The component itself stays token-pure.)
 
 `page.tsx`: import + `"hero-video-dialog": HeroVideoDialogDemo,`. Copy + story
@@ -3374,5 +3372,3 @@ git add -A && git commit -m "chore(marketing): wave-1 acceptance fixups" || echo
   code; §4 plumbing → Tasks 1–5; §5 testing → step 1 of every component task; §6
   acceptance → Task 21. The spec's `cssVars` mention is satisfied by the generator's `css`
   emission (cssVars-shaped payloads ride the same field; see Task 4 schema note).
-
-

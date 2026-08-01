@@ -50,7 +50,8 @@ function TextAnimate({
   // elsewhere in this codebase — and its test stubs — keys off the explicit
   // ": reduce" value (see number-ticker.tsx), so this matches that convention.
   // useSyncExternalStore keeps server and first client render identical (animated
-  // branch), avoiding hydration mismatch; reduced clients switch before paint.
+  // branch), avoiding hydration mismatch; reduced clients switch in the first
+  // post-hydration commit.
   const reducedMotion = React.useSyncExternalStore(
     (onStoreChange) => {
       const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -63,11 +64,7 @@ function TextAnimate({
 
   if (reducedMotion) {
     return (
-      <span
-        data-slot="text-animate"
-        className={cn(className)}
-        {...(props as React.ComponentProps<"span">)}
-      >
+      <span data-slot="text-animate" className={cn(className)} {...(props as React.ComponentProps<"span">)}>
         {children}
       </span>
     );
@@ -79,9 +76,7 @@ function TextAnimate({
       data-slot="text-animate"
       className={cn("inline-block", className)}
       initial="hidden"
-      {...(startOnView
-        ? { whileInView: "show", viewport: { once: true } }
-        : { animate: "show" })}
+      {...(startOnView ? { whileInView: "show", viewport: { once: true } } : { animate: "show" })}
       transition={{ staggerChildren: stagger, delayChildren: delay, ...transition }}
       {...props}
     >

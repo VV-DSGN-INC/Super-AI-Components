@@ -37,10 +37,7 @@ function OrbitingCircles({
           ...style,
         } as React.CSSProperties
       }
-      className={cn(
-        "pointer-events-none absolute inset-0 flex items-center justify-center",
-        className,
-      )}
+      className={cn("pointer-events-none absolute inset-0 flex items-center justify-center", className)}
       {...props}
     >
       {path && (
@@ -49,13 +46,7 @@ function OrbitingCircles({
           data-slot="orbiting-circles-path"
           className="pointer-events-none absolute inset-0 size-full"
         >
-          <circle
-            className="stroke-border fill-none"
-            cx="50%"
-            cy="50%"
-            r={radius}
-            strokeDasharray="4 4"
-          />
+          <circle className="stroke-border fill-none" cx="50%" cy="50%" r={radius} strokeDasharray="4 4" />
         </svg>
       )}
       {items.map((child, i) => (

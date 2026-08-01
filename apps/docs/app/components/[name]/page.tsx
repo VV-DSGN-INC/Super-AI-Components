@@ -76,9 +76,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
     : CATALOG_ITEMS.find((i) => i.name === name)!;
   const Demo = isMarketing ? marketingDemos[name] : demos[name as CatalogName];
   if (!Demo) {
-    throw new Error(
-      `No demo registered for "${name}" in ${isMarketing ? "marketingDemos" : "demos"}`,
-    );
+    throw new Error(`No demo registered for "${name}" in ${isMarketing ? "marketingDemos" : "demos"}`);
   }
 
   const demoSource = fs.readFileSync(

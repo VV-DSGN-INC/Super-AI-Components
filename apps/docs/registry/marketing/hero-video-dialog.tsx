@@ -8,8 +8,8 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 /** Hydration-safe prefers-reduced-motion read: server and first client render
-    agree (false), reduced clients switch before commit and react to live
-    preference changes. motion's useReducedMotion is deliberately not used —
+    agree (false), reduced clients switch in the first post-hydration
+    commit and react to live preference changes. motion's useReducedMotion is deliberately not used —
     it queries "(prefers-reduced-motion)" without a value, which this repo's
     exact-string matchMedia handling doesn't recognize (see number-ticker.tsx). */
 function usePrefersReducedMotion() {
@@ -75,9 +75,17 @@ function HeroVideoDialog({
     if (!open) return;
     closeButtonRef.current?.focus();
     const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    // Hiding the scrollbar widens the viewport; pad by exactly the width it occupied
+    // so fixed/centred content doesn't jump. 0 on overlay-scrollbar platforms (and jsdom).
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     document.body.style.overflow = "hidden";
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
     };
   }, [open]);
 
@@ -88,9 +96,7 @@ function HeroVideoDialog({
       if (e.key === "Tab") {
         e.preventDefault();
         const next =
-          document.activeElement === closeButtonRef.current
-            ? iframeRef.current
-            : closeButtonRef.current;
+          document.activeElement === closeButtonRef.current ? iframeRef.current : closeButtonRef.current;
         next?.focus();
       }
     };

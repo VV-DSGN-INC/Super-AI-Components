@@ -43,6 +43,32 @@ describe("RippleButton", () => {
     expect(button.querySelectorAll('[data-slot="ripple-button-ripple"]')).toHaveLength(0);
   });
 
+  it("centers the ripple for keyboard activation and couples animation duration to the prop", () => {
+    stubReducedMotion(false);
+    render(<RippleButton rippleDuration={1500}>Go</RippleButton>);
+    const button = screen.getByRole("button");
+    vi.spyOn(button, "getBoundingClientRect").mockReturnValue({
+      x: 0,
+      y: 0,
+      top: 0,
+      left: 0,
+      right: 100,
+      bottom: 40,
+      width: 100,
+      height: 40,
+      toJSON: () => ({}),
+    } as DOMRect);
+    fireEvent.click(button, { detail: 0 });
+    const keyboardRipple = button.querySelector<HTMLElement>('[data-slot="ripple-button-ripple"]')!;
+    expect(keyboardRipple.style.left).toBe("0px");
+    expect(keyboardRipple.style.top).toBe("-30px");
+    expect(keyboardRipple.style.animationDuration).toBe("1500ms");
+    fireEvent.click(button, { detail: 1, clientX: 20, clientY: 15 });
+    const ripples = button.querySelectorAll<HTMLElement>('[data-slot="ripple-button-ripple"]');
+    expect(ripples[1].style.left).toBe("-30px");
+    expect(ripples[1].style.top).toBe("-35px");
+  });
+
   it("does not spawn ripples under prefers-reduced-motion but still fires onClick", () => {
     stubReducedMotion(true);
     const onClick = vi.fn();

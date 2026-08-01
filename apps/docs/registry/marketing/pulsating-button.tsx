@@ -9,13 +9,7 @@ interface PulsatingButtonProps extends React.ComponentProps<"button"> {
   duration?: number;
 }
 
-function PulsatingButton({
-  duration = 1.5,
-  className,
-  children,
-  style,
-  ...props
-}: PulsatingButtonProps) {
+function PulsatingButton({ duration = 1.5, className, children, style, ...props }: PulsatingButtonProps) {
   return (
     <button
       type="button"

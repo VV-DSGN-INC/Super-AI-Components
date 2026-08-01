@@ -35,9 +35,7 @@ describe("BentoCard", () => {
     expect(screen.getByTestId("bg")).toBeInTheDocument();
   });
   it("exposes the card slot and renders an icon node when given", () => {
-    const { container } = render(
-      <BentoCard name="X" description="Y" icon={<svg data-testid="icon" />} />,
-    );
+    const { container } = render(<BentoCard name="X" description="Y" icon={<svg data-testid="icon" />} />);
     expect(container.querySelector('[data-slot="bento-card"]')).not.toBeNull();
     expect(container.querySelector('[data-slot="bento-card-icon"]')).not.toBeNull();
   });

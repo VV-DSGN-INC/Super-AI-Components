@@ -57,5 +57,9 @@ describe("HeroVideoDialog", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     expect(document.body.style.overflow).toBe("");
+    // Scrollbar-shift compensation must not leak once the lock is released. (The
+    // padding's magnitude is not asserted: jsdom has no layout, so
+    // documentElement.clientWidth is 0 and the computed width is meaningless here.)
+    expect(document.body.style.paddingRight).toBe("");
   });
 });

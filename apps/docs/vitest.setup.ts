@@ -30,5 +30,4 @@ class IntersectionObserverStub {
     return [];
   }
 }
-globalThis.IntersectionObserver ??=
-  IntersectionObserverStub as unknown as typeof IntersectionObserver;
+globalThis.IntersectionObserver ??= IntersectionObserverStub as unknown as typeof IntersectionObserver;

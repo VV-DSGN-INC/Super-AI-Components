@@ -16,13 +16,7 @@ interface RippleButtonProps extends React.ComponentProps<"button"> {
   rippleDuration?: number;
 }
 
-function RippleButton({
-  rippleDuration = 600,
-  className,
-  children,
-  onClick,
-  ...props
-}: RippleButtonProps) {
+function RippleButton({ rippleDuration = 600, className, children, onClick, ...props }: RippleButtonProps) {
   const [ripples, setRipples] = React.useState<Ripple[]>([]);
   const nextId = React.useRef(0);
   const reducedMotion = React.useRef(false);

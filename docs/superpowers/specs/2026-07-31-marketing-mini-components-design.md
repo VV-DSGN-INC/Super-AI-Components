@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-31
 **Status:** Approved (pending final spec review)
-**Reference:** [Magic UI](https://magicui.design) used as *behavioral reference only* — all components are rebuilt from scratch to this repo's standards. No Magic UI source is copied.
+**Reference:** [Magic UI](https://magicui.design) used as _behavioral reference only_ — all components are rebuilt from scratch to this repo's standards. No Magic UI source is copied.
 
 ## 1. Context & Goal
 
@@ -14,13 +14,13 @@ that don't dilute the "AI application components" positioning.
 
 **Decisions made during brainstorming:**
 
-| Decision | Choice |
-| --- | --- |
-| Destination | Storybook section **and** published in the registry (installable), under a separate namespace |
-| Scope | Wave 1 = 15 flagship components; 17 more parked for wave 2 |
-| Naming | **Marketing** — Storybook section `Marketing/`, dirs `components/marketing/`, registry dir `registry/marketing/` |
-| Sourcing | **Rebuild to repo standards** — Magic UI is the behavioral spec, not the source |
-| Testing | **Full per-component tests** — one co-located `.test.tsx` per component, Super AI convention |
+| Decision    | Choice                                                                                                           |
+| ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| Destination | Storybook section **and** published in the registry (installable), under a separate namespace                    |
+| Scope       | Wave 1 = 15 flagship components; 17 more parked for wave 2                                                       |
+| Naming      | **Marketing** — Storybook section `Marketing/`, dirs `components/marketing/`, registry dir `registry/marketing/` |
+| Sourcing    | **Rebuild to repo standards** — Magic UI is the behavioral spec, not the source                                  |
+| Testing     | **Full per-component tests** — one co-located `.test.tsx` per component, Super AI convention                     |
 
 ## 2. Wave-1 Catalog (15 components)
 
@@ -29,38 +29,38 @@ new "Marketing" group.
 
 ### Layout
 
-| Name | Description | Animation strategy | New deps |
-| --- | --- | --- | --- |
-| `bento-grid` | Responsive feature grid: `BentoGrid` container + `BentoCard` with icon, title, description, hover CTA reveal | CSS transitions only | — |
-| `marquee` | Infinite horizontal/vertical scroller for logos/testimonials; `pauseOnHover`, `reverse`, `repeat` props | CSS keyframes (duplicated track, `translate` loop) | — |
-| `terminal` | Fake terminal window playing a scripted session: `Terminal` shell + `TypingLine` / `AnimatedSpan` children with sequenced delays | JS sequencing (React state + timeouts); `motion` for line entrance | — |
-| `hero-video-dialog` | Video thumbnail with play button that opens a full-screen lightbox; animation-style variants (e.g. `from-center`, `top-in-bottom-out`) | `motion` (`AnimatePresence`) | — |
+| Name                | Description                                                                                                                            | Animation strategy                                                 | New deps |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | -------- |
+| `bento-grid`        | Responsive feature grid: `BentoGrid` container + `BentoCard` with icon, title, description, hover CTA reveal                           | CSS transitions only                                               | —        |
+| `marquee`           | Infinite horizontal/vertical scroller for logos/testimonials; `pauseOnHover`, `reverse`, `repeat` props                                | CSS keyframes (duplicated track, `translate` loop)                 | —        |
+| `terminal`          | Fake terminal window playing a scripted session: `Terminal` shell + `TypingLine` / `AnimatedSpan` children with sequenced delays       | JS sequencing (React state + timeouts); `motion` for line entrance | —        |
+| `hero-video-dialog` | Video thumbnail with play button that opens a full-screen lightbox; animation-style variants (e.g. `from-center`, `top-in-bottom-out`) | `motion` (`AnimatePresence`)                                       | —        |
 
 ### Text
 
-| Name | Description | Animation strategy | New deps |
-| --- | --- | --- | --- |
-| `number-ticker` | Animates a number from `startValue` to `value` on viewport entry; `decimalPlaces`, `delay`, direction | `motion` spring + `useInView` | — |
-| `text-animate` | General-purpose text entrance: split by character/word/line, presets (`blurInUp`, `fadeIn`, `slideUp`…), stagger | `motion` variants + stagger | — |
-| `typing-animation` | Typewriter effect with optional caret, `duration` per char, start-on-view | JS interval (React state) | — |
-| `aurora-text` | Gradient text with slow drifting aurora hues | CSS keyframes over `background-position`; hues from CSS custom props | — |
+| Name               | Description                                                                                                      | Animation strategy                                                   | New deps |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- | -------- |
+| `number-ticker`    | Animates a number from `startValue` to `value` on viewport entry; `decimalPlaces`, `delay`, direction            | `motion` spring + `useInView`                                        | —        |
+| `text-animate`     | General-purpose text entrance: split by character/word/line, presets (`blurInUp`, `fadeIn`, `slideUp`…), stagger | `motion` variants + stagger                                          | —        |
+| `typing-animation` | Typewriter effect with optional caret, `duration` per char, start-on-view                                        | JS interval (React state)                                            | —        |
+| `aurora-text`      | Gradient text with slow drifting aurora hues                                                                     | CSS keyframes over `background-position`; hues from CSS custom props | —        |
 
 ### Buttons
 
-| Name | Description | Animation strategy | New deps |
-| --- | --- | --- | --- |
-| `rainbow-button` | CTA button with animated multi-stop gradient border/glow; `variant` (default/outline), `size` set via `cva` | CSS keyframes; 5 stops from CSS custom props | — |
-| `ripple-button` | Button emitting a click-point ripple | JS-lite (span injected at click coords) + CSS keyframe | — |
-| `pulsating-button` | Button with a soft expanding pulse halo | CSS keyframes; halo color from custom prop defaulting to `var(--primary)` | — |
+| Name               | Description                                                                                                 | Animation strategy                                                        | New deps |
+| ------------------ | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
+| `rainbow-button`   | CTA button with animated multi-stop gradient border/glow; `variant` (default/outline), `size` set via `cva` | CSS keyframes; 5 stops from CSS custom props                              | —        |
+| `ripple-button`    | Button emitting a click-point ripple                                                                        | JS-lite (span injected at click coords) + CSS keyframe                    | —        |
+| `pulsating-button` | Button with a soft expanding pulse halo                                                                     | CSS keyframes; halo color from custom prop defaulting to `var(--primary)` | —        |
 
 ### Effects
 
-| Name | Description | Animation strategy | New deps |
-| --- | --- | --- | --- |
-| `border-beam` | A light "beam" tracing a container's border; `size`, `duration`, `delay`, colors | CSS `offset-path: rect()` keyframe | — |
-| `orbiting-circles` | Children orbit a center at `radius` with `duration`/`delay`/`reverse`; optional path ring | CSS keyframes (rotate on wrapper, counter-rotate content) | — |
-| `dot-pattern` | SVG dot background, sized/faded via props; commonly masked with a radial fade | Static SVG (optional CSS fade) | — |
-| `confetti` | Imperative confetti: `Confetti` canvas component + `ConfettiButton`; ref-triggerable | `canvas-confetti` | `canvas-confetti`, `@types/canvas-confetti` |
+| Name               | Description                                                                               | Animation strategy                                        | New deps                                    |
+| ------------------ | ----------------------------------------------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------- |
+| `border-beam`      | A light "beam" tracing a container's border; `size`, `duration`, `delay`, colors          | CSS `offset-path: rect()` keyframe                        | —                                           |
+| `orbiting-circles` | Children orbit a center at `radius` with `duration`/`delay`/`reverse`; optional path ring | CSS keyframes (rotate on wrapper, counter-rotate content) | —                                           |
+| `dot-pattern`      | SVG dot background, sized/faded via props; commonly masked with a radial fade             | Static SVG (optional CSS fade)                            | —                                           |
+| `confetti`         | Imperative confetti: `Confetti` canvas component + `ConfettiButton`; ref-triggerable      | `canvas-confetti`                                         | `canvas-confetti`, `@types/canvas-confetti` |
 
 ## 3. Component Standards (the contract)
 
@@ -132,10 +132,14 @@ marks in demos are neutral placeholder shapes, not real company logos.
 
 ```ts
 export interface MarketingItem {
-  name: string; title: string; description: string;
+  name: string;
+  title: string;
+  description: string;
   group: "Layout" | "Text" | "Buttons" | "Effects";
 }
-export const MARKETING_ITEMS: MarketingItem[] = [ /* 15 entries */ ];
+export const MARKETING_ITEMS: MarketingItem[] = [
+  /* 15 entries */
+];
 ```
 
 plus a merged `ALL_ITEMS` (name-uniqueness asserted) used by:
@@ -154,7 +158,7 @@ plus a merged `ALL_ITEMS` (name-uniqueness asserted) used by:
   (shadcn v4 registry schema supports both). Each marketing item declares exactly the
   keyframes/vars it needs; `marketing.css` is the human-readable mirror of those blocks.
 - `extras` gains `confetti: { dependencies: ["canvas-confetti"] }` and `dependencies:
-  ["motion"]` for the motion-using items.
+["motion"]` for the motion-using items.
 
 **Token lint** (`scripts/check-tokens.mjs`): glob widens to
 `registry/{super-ai,marketing}/**/*.tsx`. No new exception mechanism — marketing

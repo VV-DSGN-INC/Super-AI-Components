@@ -6,8 +6,8 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /** Hydration-safe prefers-reduced-motion read: server and first client render
-    agree (false), reduced clients switch before commit and react to live
-    preference changes. motion's useReducedMotion is deliberately not used —
+    agree (false), reduced clients switch in the first post-hydration
+    commit and react to live preference changes. motion's useReducedMotion is deliberately not used —
     it queries "(prefers-reduced-motion)" without a value, which this repo's
     exact-string matchMedia handling doesn't recognize (see number-ticker.tsx). */
 function usePrefersReducedMotion() {
@@ -80,13 +80,7 @@ interface TerminalTypingProps extends React.ComponentProps<"span"> {
 /** Standalone typewriter line for Terminal — self-contained per registry convention
     (registry items install as single files, so this is deliberately not shared with
     typing-animation). */
-function TerminalTyping({
-  children,
-  delay = 0,
-  duration = 40,
-  className,
-  ...props
-}: TerminalTypingProps) {
+function TerminalTyping({ children, delay = 0, duration = 40, className, ...props }: TerminalTypingProps) {
   const reducedMotion = usePrefersReducedMotion();
   const [visibleChars, setVisibleChars] = React.useState(0);
 
