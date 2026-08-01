@@ -6,8 +6,9 @@
 /* == shared == */
 /* Signature palette — THE designer knob. Values are deliberate defaults, not
    theme-derived: this theme's --chart-* ramp is neutral, which would render the
-   rainbow/aurora effects grey. Retune freely; keep mid-lightness (oklch L
-   0.55–0.72) so gradients stay legible on both light and dark surfaces.
+   rainbow/aurora effects grey. OKLCH lightness does not predict contrast
+   across hues — after retuning, check stops used for text (aurora) against
+   both --background values (target 3:1 at display sizes, 4.5:1 below 24px).
    Unit conventions consumed by component styles:
    - unitless numbers: --marketing-orbit-angle/-radius/-duration/-delay,
      --marketing-beam-duration/-delay, --marketing-pulse-duration,
@@ -21,10 +22,10 @@
   --marketing-rainbow-4: oklch(0.62 0.21 255);
   --marketing-rainbow-5: oklch(0.6 0.25 305);
   --marketing-aurora-1: oklch(0.62 0.21 255);
-  --marketing-aurora-2: oklch(0.65 0.2 200);
+  --marketing-aurora-2: oklch(0.55 0.2 200);
   --marketing-aurora-3: oklch(0.6 0.25 305);
   --marketing-aurora-4: oklch(0.66 0.23 340);
-  --marketing-beam-from: oklch(0.65 0.2 200);
+  --marketing-beam-from: oklch(0.55 0.2 200);
   --marketing-beam-to: oklch(0.6 0.25 305);
   --marketing-pulse-color: var(--primary);
   --marketing-ripple-color: var(--primary);
@@ -115,12 +116,13 @@
     animation: marketing-border-beam calc(var(--marketing-beam-duration, 6) * 1s) linear infinite;
     animation-delay: calc(var(--marketing-beam-delay, 0) * 1s);
   }
-  @media (prefers-reduced-motion: reduce) {
-    .marketing-border-beam { display: none; }
-  }
-  @supports not (offset-path: rect(0 auto auto 0)) {
-    .marketing-border-beam { display: none; }
-  }
+}
+/* gates deliberately unlayered — utility classes must not defeat them */
+@media (prefers-reduced-motion: reduce) {
+  .marketing-border-beam { display: none; }
+}
+@supports not (offset-path: rect(0 auto auto 0)) {
+  .marketing-border-beam { display: none; }
 }
 
 /* == aurora-text == */
@@ -228,9 +230,10 @@
     background: var(--marketing-pulse-color);
     animation: marketing-pulse calc(var(--marketing-pulse-duration, 1.5) * 1s) ease-out infinite;
   }
-  @media (prefers-reduced-motion: reduce) {
-    .marketing-pulse-halo { display: none; }
-  }
+}
+/* gates deliberately unlayered — utility classes must not defeat them */
+@media (prefers-reduced-motion: reduce) {
+  .marketing-pulse-halo { display: none; }
 }
 
 /* == ripple-button == */
