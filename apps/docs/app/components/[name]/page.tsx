@@ -12,6 +12,7 @@ import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
+import RippleButtonDemo from "@/components/demos/ripple-button-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import { PreviewTabs } from "@/components/preview-tabs";
@@ -34,6 +35,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
 const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "dot-pattern": DotPatternDemo,
   "pulsating-button": PulsatingButtonDemo,
+  "ripple-button": RippleButtonDemo,
 };
 
 export function generateStaticParams() {

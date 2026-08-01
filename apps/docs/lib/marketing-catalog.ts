@@ -22,6 +22,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Primary button with a soft expanding pulse halo.",
     group: "Buttons",
   },
+  {
+    name: "ripple-button",
+    title: "Ripple Button",
+    description: "Button that ripples out from the click point.",
+    group: "Buttons",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
