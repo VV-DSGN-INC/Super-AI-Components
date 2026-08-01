@@ -6,7 +6,7 @@ export default function BorderBeamDemo() {
       <p className="text-muted-foreground mt-1 text-sm">
         Everything in Free, plus the parts you actually came for.
       </p>
-      <BorderBeam />
+      <BorderBeam borderRadius={14} />
     </div>
   );
 }
