@@ -41,6 +41,12 @@ describe("BentoCard", () => {
     expect(container.querySelector('[data-slot="bento-card"]')).not.toBeNull();
     expect(container.querySelector('[data-slot="bento-card-icon"]')).not.toBeNull();
   });
+  it("reveals the CTA on keyboard focus, not just hover", () => {
+    const { container } = render(<BentoCard name="X" description="Y" />);
+    const cta = container.querySelector('[data-slot="bento-card-cta"]')!;
+    expect(cta.className).toContain("group-focus-within:opacity-100");
+    expect(cta.className).toContain("group-focus-within:translate-y-0");
+  });
 });
 
 describe("ref forwarding", () => {

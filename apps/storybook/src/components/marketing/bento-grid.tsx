@@ -52,7 +52,7 @@ function BentoCard({
           {background}
         </div>
       )}
-      <div className="z-10 flex flex-col gap-1 p-5 transition-all duration-300 group-hover:-translate-y-8">
+      <div className="z-10 flex flex-col gap-1 p-5 transition-all duration-300 group-hover:-translate-y-8 group-focus-within:-translate-y-8">
         {icon && (
           <div data-slot="bento-card-icon" className="text-muted-foreground mb-2 [&>svg]:size-8">
             {icon}
@@ -63,7 +63,7 @@ function BentoCard({
       </div>
       <div
         data-slot="bento-card-cta"
-        className="absolute bottom-0 z-10 flex w-full translate-y-2 items-center p-5 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+        className="absolute bottom-0 z-10 flex w-full translate-y-2 items-center p-5 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"
       >
         <a href={href} className="text-primary inline-flex items-center gap-1 text-sm font-medium">
           {cta}
