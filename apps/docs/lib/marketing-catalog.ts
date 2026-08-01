@@ -88,6 +88,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Fake terminal window that plays a scripted session.",
     group: "Layout",
   },
+  {
+    name: "hero-video-dialog",
+    title: "Hero Video Dialog",
+    description: "Thumbnail that opens a full-screen video lightbox.",
+    group: "Layout",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;

@@ -13,6 +13,7 @@ import DotPatternDemo from "@/components/demos/dot-pattern-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
+import HeroVideoDialogDemo from "@/components/demos/hero-video-dialog-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import MarqueeDemo from "@/components/demos/marquee-demo";
 import NumberTickerDemo from "@/components/demos/number-ticker-demo";
@@ -56,6 +57,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "typing-animation": TypingAnimationDemo,
   "text-animate": TextAnimateDemo,
   terminal: TerminalDemo,
+  "hero-video-dialog": HeroVideoDialogDemo,
 };
 
 export function generateStaticParams() {
