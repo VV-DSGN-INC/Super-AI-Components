@@ -82,6 +82,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Staggered text entrances — blur, slide, scale — by word or character.",
     group: "Text",
   },
+  {
+    name: "terminal",
+    title: "Terminal",
+    description: "Fake terminal window that plays a scripted session.",
+    group: "Layout",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;

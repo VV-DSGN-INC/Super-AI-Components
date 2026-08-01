@@ -21,6 +21,7 @@ import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
+import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import TypingAnimationDemo from "@/components/demos/typing-animation-demo";
@@ -54,6 +55,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "number-ticker": NumberTickerDemo,
   "typing-animation": TypingAnimationDemo,
   "text-animate": TextAnimateDemo,
+  terminal: TerminalDemo,
 };
 
 export function generateStaticParams() {
