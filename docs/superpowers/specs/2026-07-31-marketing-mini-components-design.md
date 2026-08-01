@@ -60,7 +60,7 @@ new "Marketing" group.
 | `border-beam`      | A light "beam" tracing a container's border; `size`, `duration`, `delay`, colors          | CSS `offset-path: rect()` keyframe                        | —                                           |
 | `orbiting-circles` | Children orbit a center at `radius` with `duration`/`delay`/`reverse`; optional path ring | CSS keyframes (rotate on wrapper, counter-rotate content) | —                                           |
 | `dot-pattern`      | SVG dot background, sized/faded via props; commonly masked with a radial fade             | Static SVG (optional CSS fade)                            | —                                           |
-| `confetti`         | Imperative confetti: `Confetti` canvas component + `ConfettiButton`; ref-triggerable      | `canvas-confetti`                                         | `canvas-confetti`, `@types/canvas-confetti` |
+| `confetti`         | Imperative confetti: `fireConfetti()` helper + `ConfettiButton` (see §8)                  | `canvas-confetti`                                         | `canvas-confetti`, `@types/canvas-confetti` |
 
 ## 3. Component Standards (the contract)
 
@@ -219,3 +219,34 @@ shells or stay Storybook-only; that call is deferred, not implied by this spec.
 
 Also out of scope for wave 1: e2e coverage beyond the existing smoke test, docs-site search,
 and any promotion of marketing items into the Super AI catalog groups.
+
+## 8. Post-Implementation Notes (wave 1 shipped)
+
+Recorded at final review so this spec stays readable as the design of record. Where the
+shipped code differs from §2–§5 above, **the code is correct** and the reason is here.
+
+- **`confetti` scope (§2).** Ships `fireConfetti(options?)` + `ConfettiButton`, not a mounted
+  `Confetti` canvas component with a ref handle. `canvas-confetti` manages its own canvas, so a
+  wrapper component would only re-expose what the function already does; the imperative pair
+  covers the celebrate-on-click case. Noted in `registry/marketing/confetti.tsx`.
+- **Reduced-motion mechanism (§3).** No component uses `motion`'s `useReducedMotion()`. That
+  hook queries `(prefers-reduced-motion)` in boolean context; every check in this repo (and its
+  test stubs) keys off the explicit `: reduce` value, so all JS-tier components read
+  `matchMedia("(prefers-reduced-motion: reduce)")` directly. Four shapes, chosen per need:
+  `useSyncExternalStore` where the value affects rendered output and must survive hydration
+  (`text-animate`, `terminal`, `hero-video-dialog`); a one-shot read where it only gates an
+  effect or handler (`number-ticker`, `typing-animation`, `ripple-button`); a call-time read in
+  `fireConfetti`. CSS-tier components are gated in `marketing.css` as specified.
+- **Catalog location (§4).** `MARKETING_ITEMS` lives in its own `lib/marketing-catalog.ts`
+  rather than being added to `lib/catalog.ts`, keeping the two tiers decoupled; the merged
+  `ALL_ITEMS` union became a name-collision assertion plus a runtime demo-map guard in
+  `app/components/[name]/page.tsx`, which fails the build if a marketing item has no demo.
+- **`storySort.order` (§4).** Written as `["Overview", "Super AI", "AI Elements", "shadcn",
+["ui"], "Marketing", ["Layout", "Text", "Buttons", "Effects"]]` — entries match a single title
+  segment, so the literal `"shadcn/ui"` from §4 would have matched nothing.
+- **`hero-video-dialog` variants (§2).** Ships `from-center | from-bottom | fade`.
+
+Known gap, deferred: `check:tokens` lints `registry/{super-ai,marketing}/**/*.tsx` only, so the
+demos in `components/demos/` are not covered by the gate §4 asks them to pass. One demo
+(`hero-video-dialog-demo.tsx`) carries raw hex inside an SVG data-URI placeholder thumbnail,
+which cannot read CSS custom properties in any case.
