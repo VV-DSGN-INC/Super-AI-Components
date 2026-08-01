@@ -15,7 +15,7 @@ const preview: Preview = {
     backgrounds: { disable: true },
     options: {
       storySort: {
-        order: ["Overview", "Super AI", "AI Elements", "shadcn/ui"],
+        order: ["Overview", "Super AI", "AI Elements", "shadcn/ui", "Marketing"],
       },
     },
   },
