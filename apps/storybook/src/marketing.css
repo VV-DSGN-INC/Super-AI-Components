@@ -1,7 +1,10 @@
 /* Marketing components — shared stylesheet.
    Sliced into per-registry-item css by scripts/gen-registry.mts using marker
    comments (slash-star, two equals signs, block name, two equals signs,
-   star-slash). The shared block ships with every marketing item. */
+   star-slash). The shared block ships with every marketing item.
+   Generator constraints: within one rule, a property may appear only once (no
+   progressive-enhancement fallback pairs) and rules cannot nest; the shared block
+   must contain only :root/.dark custom-property declarations. */
 
 /* == shared == */
 /* Signature palette — THE designer knob. Values are deliberate defaults, not
