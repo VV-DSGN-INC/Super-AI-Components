@@ -4,6 +4,23 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
+/** Hydration-safe prefers-reduced-motion read: server and first client render
+    agree (false), reduced clients switch in the first post-hydration
+    commit and react to live preference changes. motion's useReducedMotion is deliberately not used —
+    it queries "(prefers-reduced-motion)" without a value, which this repo's
+    exact-string matchMedia handling doesn't recognize (see number-ticker.tsx). */
+function usePrefersReducedMotion() {
+  return React.useSyncExternalStore(
+    (onStoreChange) => {
+      const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mql.addEventListener("change", onStoreChange);
+      return () => mql.removeEventListener("change", onStoreChange);
+    },
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
+}
+
 interface TypingAnimationProps extends React.ComponentProps<"span"> {
   children: string;
   /** ms per character. */
@@ -22,24 +39,25 @@ function TypingAnimation({
   className,
   ...props
 }: TypingAnimationProps) {
-  const [visibleChars, setVisibleChars] = React.useState(0);
+  const [typing, setTyping] = React.useState({ source: children, visible: 0 });
+  if (typing.source !== children) {
+    setTyping({ source: children, visible: 0 });
+  }
+  const reducedMotion = usePrefersReducedMotion();
+  const visibleChars = reducedMotion ? children.length : Math.min(typing.visible, children.length);
   const done = visibleChars >= children.length;
 
   React.useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setVisibleChars(children.length);
-      return;
-    }
-    setVisibleChars(0);
+    if (reducedMotion) return;
     let interval: number | undefined;
     const start = window.setTimeout(() => {
       interval = window.setInterval(() => {
-        setVisibleChars((prev) => {
-          if (prev >= children.length) {
+        setTyping((prev) => {
+          if (prev.source !== children || prev.visible >= children.length) {
             if (interval) window.clearInterval(interval);
             return prev;
           }
-          return prev + 1;
+          return { ...prev, visible: prev.visible + 1 };
         });
       }, duration);
     }, delay);
@@ -47,7 +65,7 @@ function TypingAnimation({
       window.clearTimeout(start);
       if (interval) window.clearInterval(interval);
     };
-  }, [children, duration, delay]);
+  }, [children, duration, delay, reducedMotion]);
 
   return (
     <span data-slot="typing-animation" className={cn("whitespace-pre-wrap", className)} {...props}>

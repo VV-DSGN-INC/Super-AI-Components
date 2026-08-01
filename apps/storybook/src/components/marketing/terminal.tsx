@@ -82,23 +82,23 @@ interface TerminalTypingProps extends React.ComponentProps<"span"> {
     typing-animation). */
 function TerminalTyping({ children, delay = 0, duration = 40, className, ...props }: TerminalTypingProps) {
   const reducedMotion = usePrefersReducedMotion();
-  const [visibleChars, setVisibleChars] = React.useState(0);
+  const [typing, setTyping] = React.useState({ source: children, visible: 0 });
+  if (typing.source !== children) {
+    setTyping({ source: children, visible: 0 });
+  }
+  const visibleChars = reducedMotion ? children.length : Math.min(typing.visible, children.length);
 
   React.useEffect(() => {
-    if (reducedMotion) {
-      setVisibleChars(children.length);
-      return;
-    }
-    setVisibleChars(0);
+    if (reducedMotion) return;
     let interval: number | undefined;
     const start = window.setTimeout(() => {
       interval = window.setInterval(() => {
-        setVisibleChars((prev) => {
-          if (prev >= children.length) {
+        setTyping((prev) => {
+          if (prev.source !== children || prev.visible >= children.length) {
             if (interval) window.clearInterval(interval);
             return prev;
           }
-          return prev + 1;
+          return { ...prev, visible: prev.visible + 1 };
         });
       }, duration);
     }, delay);
