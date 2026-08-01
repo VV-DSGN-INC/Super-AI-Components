@@ -12,7 +12,7 @@ interface Ripple {
 }
 
 interface RippleButtonProps extends React.ComponentProps<"button"> {
-  /** Ripple lifetime in ms — keep in sync with the marketing-ripple keyframe (600ms). */
+  /** Ripple lifetime in ms — drives both the animation duration and DOM removal. */
   rippleDuration?: number;
 }
 
@@ -36,10 +36,15 @@ function RippleButton({
     if (reducedMotion.current) return;
     const rect = event.currentTarget.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height);
+    // detail === 0 → keyboard activation; center the ripple instead of using (0,0) client coords
+    const { x, y } =
+      event.detail === 0
+        ? { x: rect.width / 2 - size / 2, y: rect.height / 2 - size / 2 }
+        : { x: event.clientX - rect.left - size / 2, y: event.clientY - rect.top - size / 2 };
     const ripple: Ripple = {
       id: nextId.current++,
-      x: event.clientX - rect.left - size / 2,
-      y: event.clientY - rect.top - size / 2,
+      x,
+      y,
       size,
     };
     setRipples((prev) => [...prev, ripple]);
@@ -69,7 +74,13 @@ function RippleButton({
           data-slot="ripple-button-ripple"
           aria-hidden="true"
           className="marketing-ripple"
-          style={{ left: r.x, top: r.y, width: r.size, height: r.size }}
+          style={{
+            left: r.x,
+            top: r.y,
+            width: r.size,
+            height: r.size,
+            animationDuration: `${rippleDuration}ms`,
+          }}
         />
       ))}
     </button>

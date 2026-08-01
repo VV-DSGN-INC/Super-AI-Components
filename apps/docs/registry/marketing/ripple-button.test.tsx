@@ -29,7 +29,10 @@ describe("RippleButton", () => {
     stubReducedMotion(false);
     render(<RippleButton>Go</RippleButton>);
     const button = screen.getByRole("button", { name: "Go" });
-    fireEvent.click(button, { clientX: 10, clientY: 10 });
+    // detail: 1 marks a real pointer click (jsdom defaults detail to 0, which the
+    // component now reads as keyboard activation) so this exercises the
+    // clientX/clientY ripple-placement math, not the keyboard-centering branch.
+    fireEvent.click(button, { clientX: 10, clientY: 10, detail: 1 });
     expect(button.querySelectorAll('[data-slot="ripple-button-ripple"]')).toHaveLength(1);
     // The removal fires from a plain setTimeout callback (not a React event), so
     // React schedules it via its normal automatic-batching path — act() is needed
