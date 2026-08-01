@@ -64,6 +64,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Feature grid of cards with hover-revealed CTAs.",
     group: "Layout",
   },
+  {
+    name: "number-ticker",
+    title: "Number Ticker",
+    description: "Counts a stat up (or down) when it scrolls into view.",
+    group: "Text",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;

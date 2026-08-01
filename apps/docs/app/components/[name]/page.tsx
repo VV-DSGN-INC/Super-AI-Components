@@ -15,6 +15,7 @@ import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import MarqueeDemo from "@/components/demos/marquee-demo";
+import NumberTickerDemo from "@/components/demos/number-ticker-demo";
 import OrbitingCirclesDemo from "@/components/demos/orbiting-circles-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
@@ -48,6 +49,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "border-beam": BorderBeamDemo,
   "aurora-text": AuroraTextDemo,
   "bento-grid": BentoGridDemo,
+  "number-ticker": NumberTickerDemo,
 };
 
 export function generateStaticParams() {
