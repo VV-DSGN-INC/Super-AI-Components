@@ -27,7 +27,7 @@ the approved spec and was dropped without justification. They should be restored
 | # | Component | What it does | Why it was wrongly dropped |
 |---|-----------|--------------|----------------------------|
 | R1 | `env-status` | Per-provider reachability: ok · degraded · key-invalid · not-running | The approved spec pairs it explicitly with `credits-indicator` ("reachability vs spend"). A flow can fail with credits available because a key expired. |
-| R2 | `run-controls` | Graph-level execution toolbar: run all, stop, step, current-node indicator | Folded into G6 `model-bar` and G8 `canvas-toolbar`, neither of which covers graph-level intent. Run-this-node and run-whole-graph are different actions. |
+| R2 | `run-controls` | Graph-level execution toolbar: run all, stop, step, current-node indicator | Folded into G6 `model-bar` and G8 `canvas-toolbar`, neither of which covers graph-level intent. Run-this-node and run-whole-graph are different actions. **Moot since D9 (2026-07-31): the node builder was cut — do not restore.** |
 | R3 | `waveform-editor` | Region selection, sample-level zoom, scrub, region actions | Collapsed into H3 `track-lane`, which selects whole clips. Region selection has no equivalent there, and H2's ruler tops out at frames rather than samples. |
 | R4 | `stem-mixer` | Track lanes with mute/solo/volume/pan and live meters | Exclusive-vs-additive solo is a real behavioural decision H3 does not model. Stem lineage back to the source must stay visible. |
 | R5 | `track-list` | Music library: artwork, tags, inline waveform, BPM, key | Folded into J1 `asset-library`, whose generic metadata cannot express BPM and key — the facets that actually matter for music. |
@@ -154,8 +154,8 @@ as a settings shell rather than as a component family.
 
 Not "add 32 components." Three moves, in order:
 
-1. **Restore R1–R7 now.** These are recovered errors, not new scope. R1 and R2 in particular leave
-   the Flow Kit incomplete against its own approved spec.
+1. **Restore R1 and R3–R7 now** — six items; R2 is moot since the node builder was cut
+   ([decisions.md](decisions.md) D9). These are recovered errors, not new scope.
 2. **Add T1 `permission-prompt` and T5 `connection-manager`.** Both are trust surfaces where absence
    is a defect rather than a scope decision, and both are cheap.
 3. **Collect a second reference board** covering voice, extraction, vision, data, search and coding —

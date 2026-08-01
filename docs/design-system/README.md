@@ -3,6 +3,8 @@
 **Status:** Proposed. Not yet approved; supersedes nothing until §5 of the
 [design spec](../superpowers/specs/2026-06-10-super-ai-components-design.md) is formally replaced.
 **Date:** 2026-07-28
+**2026-07-31:** the node builder — family G, `useFlowRunner`, O5 `flow-shell` — was **cut from
+scope** (decision D9 in [decisions.md](decisions.md)). Active catalog: **99 items** (was 110).
 
 This directory documents a re-derivation of the component catalog from a reference board of real AI
 products, together with the concept model, per-component requirements, and the Figma artifacts that
@@ -30,8 +32,8 @@ far fewer near-duplicate leaves, and 14 layout archetypes instead of 4.
 | ---- | -------- |
 | [reference-board-analysis.md](reference-board-analysis.md) | What the reference board contains, section by section; the products observed; the anatomy extracted from each app type and pattern family |
 | [concept-model.md](concept-model.md) | The layer model (L0–L4), primitive fan-out, the asset lifecycle loop, and the six cross-cutting contracts |
-| [catalog.md](catalog.md) | The full 110-item catalog: name, purpose, key states/variants, shadcn base, per family |
-| [component-specs.md](component-specs.md) | Per-component design requirements for families A–N (96 items: 12 primitives + 84 components) |
+| [catalog.md](catalog.md) | The full catalog — 99 active items after D9: name, purpose, key states/variants, shadcn base, per family |
+| [component-specs.md](component-specs.md) | Per-component design requirements for families A–N (86 active items: 12 primitives + 74 components; G retained as a cut record) |
 | [block-specs.md](block-specs.md) | Per-block requirements for family O — the 14 layout archetypes |
 | [figma-board-map.md](figma-board-map.md) | What lives where on the Figma boards, and how to navigate them |
 | [decisions.md](decisions.md) | Decisions taken, decisions still open, and a revised sequencing proposal |

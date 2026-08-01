@@ -1,8 +1,9 @@
 # Catalog
 
-110 items: 12 primitives · 95 components · 14 blocks (`useFlowRunner` counted among the 95 as a
-headless item). Per-component requirements are in [component-specs.md](component-specs.md) and
-[block-specs.md](block-specs.md).
+**99 active items: 12 primitives · 74 components · 13 blocks.** Family G (canvas & nodes, incl.
+the headless `useFlowRunner`) and O5 `flow-shell` were **cut 2026-07-31** — see
+[decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Per-component
+requirements are in [component-specs.md](component-specs.md) and [block-specs.md](block-specs.md).
 
 `NEW` = not in the approved spec. `KEEP` = already shipped in Wave 0.
 
@@ -89,7 +90,10 @@ headless item). Per-component requirements are in [component-specs.md](component
 | F6 | `render-queue` | Staged jobs: inputs → preview → export | per-row spec · progress · retry · cancel · download | Table, Progress |
 | F7 | `approval-card` | Single-artifact approval | Confirm · Edit · Regenerate · Skip; submitting; resolved with undo | Card, Button-group |
 
-## G · Canvas & nodes — 9 + 1 hook
+## G · Canvas & nodes — CUT 2026-07-31
+
+> **Cut from scope** ([decisions.md](decisions.md) D9). Not registry items; table kept as a record.
+> Working code is parked unmerged on `wave-2-flow-foundation`.
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -197,7 +201,7 @@ single-product patterns on this board.
 | O2 | `chat-shell` | Chat / agent workspace |
 | O3 | `studio-shell` | Creative studio editor |
 | O4 | `timeline-shell` | Timeline-dominant editor (variant of O3) |
-| O5 | `flow-shell` | Node / flow canvas |
+| O5 | ~~`flow-shell`~~ | Node / flow canvas — cut (D9) |
 | O6 | `generation-shell` | Single-purpose tool app |
 | O7 | `library-shell` | Personal archive |
 | O8 | `explore-shell` | Community gallery |
@@ -220,7 +224,7 @@ single-product patterns on this board.
 | D — Composer & context | 6 |
 | E — Generation & parameters | 8 |
 | F — Results & assets | 7 |
-| G — Canvas & nodes | 9 + `useFlowRunner` = 10 |
+| G — Canvas & nodes | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9) |
 | H — Timeline & transport | 5 |
 | I — Editor surfaces | 5 |
 | J — Library, filtering & discovery | 6 |
@@ -228,11 +232,12 @@ single-product patterns on this board.
 | L — First-run & onboarding | 6 |
 | M — Account, plan & monetization | 6 |
 | N — Feedback, trust & observability | 6 |
-| **B–N subtotal (L3)** | **84** |
-| O — Blocks (L4) | 14 |
-| **Total registry items** | **110** |
+| **B–N subtotal (L3)** | **74** (84 before D9) |
+| O — Blocks (L4) | 13 (O5 cut) |
+| **Total registry items** | **99** (110 before D9) |
 
-`typed-handle` and `typed-edge` ship as one registry item (G3). `useFlowRunner` is headless and has
-no wireframe, which is why the Figma board carries 109 cards rather than 110.
+The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
+as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109
+cards.)
 
 See [decisions.md](decisions.md) for what changed against the approved spec.

@@ -1,7 +1,8 @@
 # Block specifications — family O
 
-The 14 layout archetypes. Each block is a composition of L0–L3 components and doubles as the demo
-that proves them.
+The 14 layout archetypes — **13 active** since O5 `flow-shell` was cut on 2026-07-31
+([decisions.md](decisions.md) D9). Each block is a composition of L0–L3 components and doubles as
+the demo that proves them.
 
 Derived from the reference board's `App Types/Layout` strip plus the individual app-type sections —
 see [reference-board-analysis.md](reference-board-analysis.md#4-layout-archetypes-extracted).
@@ -71,6 +72,8 @@ H4 `transcript-editor` · I2 · F6 `render-queue`
 **Evidence:** CapCut, Descript, Topaz. The variant relationship to O3 removes an entire duplicate shell from the catalog.
 
 ## O5 `flow-shell` — node / flow canvas
+
+> **CUT 2026-07-31** ([decisions.md](decisions.md) D9) — retained as a record.
 
 **Regions:** palette · topbar · canvas · omnibar · tool dock · inspector
 
