@@ -53,4 +53,13 @@ describe("TextAnimate", () => {
     render(<TextAnimate ref={ref}>Hey</TextAnimate>);
     expect(ref.current?.getAttribute("data-slot")).toBe("text-animate");
   });
+  it("keeps whitespace segments inline so newlines can break lines", () => {
+    stubReducedMotion(false);
+    const { container } = render(<TextAnimate by="word">{"a\nb"}</TextAnimate>);
+    const segments = container.querySelectorAll('[data-slot="text-animate-segment"]');
+    expect(segments).toHaveLength(3);
+    expect(segments[0].classList.contains("inline-block")).toBe(true);
+    expect(segments[1].classList.contains("inline-block")).toBe(false);
+    expect(segments[1].classList.contains("whitespace-pre")).toBe(true);
+  });
 });

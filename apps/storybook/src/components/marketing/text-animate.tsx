@@ -42,17 +42,24 @@ function TextAnimate({
   delay = 0,
   startOnView = true,
   className,
+  transition,
   ...props
 }: TextAnimateProps) {
   // Not motion's own useReducedMotion(): that hook queries "(prefers-reduced-motion)"
   // in boolean context (correct in real browsers), but every reduced-motion check
   // elsewhere in this codebase — and its test stubs — keys off the explicit
   // ": reduce" value (see number-ticker.tsx), so this matches that convention.
-  const reducedMotion = React.useState(
-    () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-  )[0];
+  // useSyncExternalStore keeps server and first client render identical (animated
+  // branch), avoiding hydration mismatch; reduced clients switch before paint.
+  const reducedMotion = React.useSyncExternalStore(
+    (onStoreChange) => {
+      const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+      mql.addEventListener("change", onStoreChange);
+      return () => mql.removeEventListener("change", onStoreChange);
+    },
+    () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    () => false,
+  );
 
   if (reducedMotion) {
     return (
@@ -75,7 +82,7 @@ function TextAnimate({
       {...(startOnView
         ? { whileInView: "show", viewport: { once: true } }
         : { animate: "show" })}
-      transition={{ staggerChildren: stagger, delayChildren: delay }}
+      transition={{ staggerChildren: stagger, delayChildren: delay, ...transition }}
       {...props}
     >
       <span className="sr-only">{children}</span>
@@ -84,7 +91,7 @@ function TextAnimate({
           key={i}
           aria-hidden="true"
           data-slot="text-animate-segment"
-          className="inline-block whitespace-pre"
+          className={cn("whitespace-pre", !/^\s+$/.test(segment) && "inline-block")}
           variants={presets[animation]}
         >
           {segment}
