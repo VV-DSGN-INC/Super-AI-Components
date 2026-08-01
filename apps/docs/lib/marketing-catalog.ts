@@ -34,6 +34,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "CTA with an animated five-stop gradient border and glow.",
     group: "Buttons",
   },
+  {
+    name: "marquee",
+    title: "Marquee",
+    description: "Infinite scroller for logos and testimonials.",
+    group: "Layout",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;

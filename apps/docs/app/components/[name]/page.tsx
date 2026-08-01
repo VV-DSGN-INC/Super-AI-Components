@@ -11,6 +11,7 @@ import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
+import MarqueeDemo from "@/components/demos/marquee-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
@@ -38,6 +39,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "pulsating-button": PulsatingButtonDemo,
   "ripple-button": RippleButtonDemo,
   "rainbow-button": RainbowButtonDemo,
+  marquee: MarqueeDemo,
 };
 
 export function generateStaticParams() {
