@@ -3,6 +3,7 @@
 import { Play, X } from "lucide-react";
 import { AnimatePresence, motion, type TargetAndTransition } from "motion/react";
 import * as React from "react";
+import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/utils";
 
@@ -60,6 +61,8 @@ function HeroVideoDialog({
 }: HeroVideoDialogProps) {
   const [open, setOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLButtonElement>(null);
+  const closeButtonRef = React.useRef<HTMLButtonElement>(null);
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
   const reducedMotion = usePrefersReducedMotion();
   const variants = reducedMotion ? dialogVariants.fade : dialogVariants[animationStyle];
 
@@ -70,8 +73,26 @@ function HeroVideoDialog({
 
   React.useEffect(() => {
     if (!open) return;
+    closeButtonRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") close();
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const next =
+          document.activeElement === closeButtonRef.current
+            ? iframeRef.current
+            : closeButtonRef.current;
+        next?.focus();
+      }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -99,46 +120,52 @@ function HeroVideoDialog({
           </span>
         </span>
       </button>
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            data-slot="hero-video-dialog-overlay"
-            role="dialog"
-            aria-modal="true"
-            aria-label={thumbnailAlt}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="bg-background/80 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
-            onClick={close}
-          >
-            <motion.div
-              data-slot="hero-video-dialog-content"
-              {...variants}
-              transition={{ duration: 0.25 }}
-              className="relative aspect-video w-full max-w-3xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                aria-label="Close video"
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {open && (
+              <motion.div
+                data-slot="hero-video-dialog-overlay"
+                role="dialog"
+                aria-modal="true"
+                aria-label={thumbnailAlt}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="bg-background/80 fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm"
                 onClick={close}
-                className="bg-background text-foreground absolute -top-12 right-0 flex size-9 cursor-pointer items-center justify-center rounded-full border"
               >
-                <X className="size-4" aria-hidden="true" />
-              </button>
-              <iframe
-                data-slot="hero-video-dialog-iframe"
-                src={videoSrc}
-                title="Video player"
-                className="size-full rounded-xl border"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </motion.div>
-          </motion.div>
+                <motion.div
+                  data-slot="hero-video-dialog-content"
+                  {...variants}
+                  transition={{ duration: 0.25 }}
+                  className="relative aspect-video max-h-[calc(100dvh-6rem)] w-full max-w-3xl"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    ref={closeButtonRef}
+                    type="button"
+                    aria-label="Close video"
+                    onClick={close}
+                    className="bg-background text-foreground absolute top-2 right-2 flex size-9 cursor-pointer items-center justify-center rounded-full border sm:-top-12 sm:right-0"
+                  >
+                    <X className="size-4" aria-hidden="true" />
+                  </button>
+                  <iframe
+                    ref={iframeRef}
+                    data-slot="hero-video-dialog-iframe"
+                    src={videoSrc}
+                    title="Video player"
+                    className="size-full rounded-xl border"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>,
+          document.body,
         )}
-      </AnimatePresence>
     </div>
   );
 }

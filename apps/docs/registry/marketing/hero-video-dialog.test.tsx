@@ -41,4 +41,21 @@ describe("HeroVideoDialog", () => {
     render(<HeroVideoDialog {...props} ref={ref} />);
     expect(ref.current?.getAttribute("data-slot")).toBe("hero-video-dialog");
   });
+
+  it("moves focus into the dialog, loops it, and locks body scroll", async () => {
+    render(<HeroVideoDialog {...props} />);
+    fireEvent.click(screen.getByRole("button", { name: "Play video" }));
+    const closeButton = screen.getByRole("button", { name: "Close video" });
+    await waitFor(() => expect(document.activeElement).toBe(closeButton));
+    expect(document.body.style.overflow).toBe("hidden");
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(document.activeElement?.tagName).toBe("IFRAME");
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(document.activeElement).toBe(closeButton);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.parentElement).toBe(document.body);
+    fireEvent.keyDown(document, { key: "Escape" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(document.body.style.overflow).toBe("");
+  });
 });
