@@ -46,6 +46,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Icons orbiting a center on a dashed path.",
     group: "Effects",
   },
+  {
+    name: "border-beam",
+    title: "Border Beam",
+    description: "A light beam tracing a container's border.",
+    group: "Effects",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;

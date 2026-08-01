@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { notFound } from "next/navigation";
 
+import BorderBeamDemo from "@/components/demos/border-beam-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
@@ -42,6 +43,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "rainbow-button": RainbowButtonDemo,
   marquee: MarqueeDemo,
   "orbiting-circles": OrbitingCirclesDemo,
+  "border-beam": BorderBeamDemo,
 };
 
 export function generateStaticParams() {
