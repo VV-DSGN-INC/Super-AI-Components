@@ -1,6 +1,8 @@
 import { globSync, readFileSync } from "node:fs";
 
-const FILES = globSync("registry/super-ai/**/*.tsx", { exclude: (f) => f.includes(".test.") });
+const FILES = globSync("registry/{super-ai,marketing}/**/*.tsx", {
+  exclude: (f) => f.includes(".test."),
+});
 
 // One entry per token-contract rule (design spec §6). Known limitation: issue refs
 // like "#1234" in comments can false-positive as hex — use GH-1234 in registry sources.
