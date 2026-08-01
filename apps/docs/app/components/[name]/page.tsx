@@ -14,6 +14,7 @@ import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
+import { MARKETING, MARKETING_ITEMS, type MarketingName } from "@/lib/marketing-catalog";
 
 const demos: Record<CatalogName, React.ComponentType> = {
   kbd: KbdDemo,
@@ -27,16 +28,22 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "thread-list": ThreadListDemo,
 };
 
+// Grows one entry per component task (Tasks 6–20).
+const marketingDemos: Record<MarketingName, React.ComponentType> = {};
+
 export function generateStaticParams() {
-  return CATALOG.map((name) => ({ name }));
+  return [...CATALOG, ...MARKETING].map((name) => ({ name }));
 }
 
 export default async function ComponentPage({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
-  if (!CATALOG.includes(name as CatalogName)) notFound();
+  const isMarketing = MARKETING.includes(name);
+  if (!CATALOG.includes(name as CatalogName) && !isMarketing) notFound();
 
-  const item = CATALOG_ITEMS.find((i) => i.name === name)!;
-  const Demo = demos[name as CatalogName];
+  const item = isMarketing
+    ? MARKETING_ITEMS.find((i) => i.name === name)!
+    : CATALOG_ITEMS.find((i) => i.name === name)!;
+  const Demo = isMarketing ? marketingDemos[name] : demos[name as CatalogName];
 
   const demoSource = fs.readFileSync(
     path.join(process.cwd(), "components/demos", `${name}-demo.tsx`),
