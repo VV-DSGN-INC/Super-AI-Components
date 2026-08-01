@@ -40,6 +40,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Infinite scroller for logos and testimonials.",
     group: "Layout",
   },
+  {
+    name: "orbiting-circles",
+    title: "Orbiting Circles",
+    description: "Icons orbiting a center on a dashed path.",
+    group: "Effects",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
