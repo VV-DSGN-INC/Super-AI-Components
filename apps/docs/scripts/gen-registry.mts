@@ -55,13 +55,17 @@ const marketingFile = (name: string) => ({
   target: `components/marketing/${name}.tsx`,
 });
 
-// npm deps per marketing item (only items that need them)
-const marketingExtras: Record<string, { dependencies?: string[] }> = {
+// npm deps per marketing item (only items that need them). `devDependencies` is
+// for packages a consumer needs to *compile* but not to run: canvas-confetti
+// ships no bundled types, so a TypeScript consumer's `next build` fails on the
+// implicit-any import unless @types/canvas-confetti installs alongside it.
+// motion, lucide-react and class-variance-authority all bundle their own types.
+const marketingExtras: Record<string, { dependencies?: string[]; devDependencies?: string[] }> = {
   "number-ticker": { dependencies: ["motion"] },
   "text-animate": { dependencies: ["motion"] },
   terminal: { dependencies: ["motion"] },
   "hero-video-dialog": { dependencies: ["motion", "lucide-react"] },
-  confetti: { dependencies: ["canvas-confetti"] },
+  confetti: { dependencies: ["canvas-confetti"], devDependencies: ["@types/canvas-confetti"] },
   "rainbow-button": { dependencies: ["class-variance-authority"] },
   "bento-grid": { dependencies: ["lucide-react"] },
 };
@@ -96,6 +100,17 @@ const cssBlocks = new Map<string, string>();
 // AST (not string-sliced further), so nesting/at-rules/comments are handled
 // structurally rather than by pattern-matching text.
 // ---------------------------------------------------------------------------
+// Selectors, at-rule params and declaration values keep whatever line breaks and
+// indentation the author (or Prettier) left in marketing.css, and postcss hands
+// them over verbatim — so `0%,\n  100%` becomes a JSON key and a wrapped
+// linear-gradient becomes a multi-line JSON value, both of which the shadcn
+// installer writes straight into the consumer's stylesheet. Collapsing
+// newline+indent runs to a single space makes the emitted payload independent of
+// how the stylesheet happens to be formatted. Only newline runs are touched:
+// a CSS string literal can never contain a raw newline, so quoted content
+// (e.g. `[data-variant="outline"]`, font stacks) is untouched.
+const collapseWrapping = (text: string) => text.replace(/\s*\n\s*/g, " ");
+
 function setUniqueKey(target: Record<string, unknown>, key: string, value: unknown, path: string) {
   if (Object.prototype.hasOwnProperty.call(target, key)) {
     throw new Error(`css conversion: duplicate key "${key}" at ${path}`);
@@ -110,7 +125,7 @@ function declsToObject(nodes: postcss.ChildNode[] | undefined, path: string): Re
     if (node.type !== "decl") {
       throw new Error(`css conversion: expected only declarations at ${path}, found "${node.type}"`);
     }
-    setUniqueKey(out, node.prop, node.value, path);
+    setUniqueKey(out, node.prop, collapseWrapping(node.value), path);
   }
   return out;
 }
@@ -133,12 +148,13 @@ function containerToObject(nodes: postcss.ChildNode[] | undefined, path: string)
           `css conversion: rule "${node.selector}" at ${path} contains a nested rule/at-rule — not supported`,
         );
       }
-      setUniqueKey(out, node.selector, declsToObject(node.nodes, `${path} > ${node.selector}`), path);
+      const selector = collapseWrapping(node.selector);
+      setUniqueKey(out, selector, declsToObject(node.nodes, `${path} > ${selector}`), path);
       continue;
     }
 
     if (node.type === "atrule") {
-      const key = `@${node.name} ${node.params}`.trim();
+      const key = collapseWrapping(`@${node.name} ${node.params}`).trim();
       const childPath = `${path} > ${key}`;
       const children = node.nodes ?? [];
       const nonComment = children.filter((n) => n.type !== "comment");
@@ -194,7 +210,7 @@ function parseSharedCssVars(sharedText: string): {
           `shared css block: "${rule.selector}" must contain only custom-property declarations, found "${child.type}"`,
         );
       }
-      setUniqueKey(out, child.prop.slice(2), child.value, `shared > ${rule.selector}`);
+      setUniqueKey(out, child.prop.slice(2), collapseWrapping(child.value), `shared > ${rule.selector}`);
     }
     return out;
   };
@@ -215,6 +231,9 @@ const marketingItems = MARKETING_ITEMS.map((i) => {
     title: i.title,
     description: i.description,
     dependencies: marketingExtras[i.name]?.dependencies ?? [],
+    ...(marketingExtras[i.name]?.devDependencies
+      ? { devDependencies: marketingExtras[i.name]!.devDependencies }
+      : {}),
     registryDependencies: [],
     files: [marketingFile(i.name)],
     ...(ownBlockText ? { cssVars: sharedCssVars, css: cssTextToObject(ownBlockText) } : {}),

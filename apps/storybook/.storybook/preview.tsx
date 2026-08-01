@@ -15,7 +15,11 @@ const preview: Preview = {
     backgrounds: { disable: true },
     options: {
       storySort: {
-        order: ["Overview", "Super AI", "AI Elements", "shadcn/ui", "Marketing"],
+        // Entries match one title segment each, so the shadcn section is "shadcn"
+        // (its stories are titled "shadcn/ui/<Name>") — spelling it "shadcn/ui"
+        // matches nothing and drops the whole section into the unordered tail,
+        // which silently pushed it below Marketing. Nested arrays order children.
+        order: ["Overview", "Super AI", "AI Elements", "shadcn", ["ui"], "Marketing"],
       },
     },
   },
