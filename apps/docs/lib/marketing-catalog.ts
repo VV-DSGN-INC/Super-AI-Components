@@ -16,6 +16,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "SVG dot grid backdrop with optional radial fade.",
     group: "Effects",
   },
+  {
+    name: "pulsating-button",
+    title: "Pulsating Button",
+    description: "Primary button with a soft expanding pulse halo.",
+    group: "Buttons",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
