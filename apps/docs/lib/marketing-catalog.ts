@@ -70,6 +70,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Counts a stat up (or down) when it scrolls into view.",
     group: "Text",
   },
+  {
+    name: "typing-animation",
+    title: "Typing Animation",
+    description: "Typewriter text with an optional caret.",
+    group: "Text",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
