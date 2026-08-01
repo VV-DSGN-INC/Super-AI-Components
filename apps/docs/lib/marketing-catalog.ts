@@ -58,6 +58,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Gradient text with slowly drifting aurora hues.",
     group: "Text",
   },
+  {
+    name: "bento-grid",
+    title: "Bento Grid",
+    description: "Feature grid of cards with hover-revealed CTAs.",
+    group: "Layout",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
