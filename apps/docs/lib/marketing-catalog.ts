@@ -9,7 +9,14 @@ export interface MarketingItem {
 }
 
 // Grows one entry per component task (Tasks 6–20). Order within a group = sidebar order.
-export const MARKETING_ITEMS: MarketingItem[] = [];
+export const MARKETING_ITEMS: MarketingItem[] = [
+  {
+    name: "dot-pattern",
+    title: "Dot Pattern",
+    description: "SVG dot grid backdrop with optional radial fade.",
+    group: "Effects",
+  },
+];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
 export const MARKETING = MARKETING_ITEMS.map((i) => i.name);

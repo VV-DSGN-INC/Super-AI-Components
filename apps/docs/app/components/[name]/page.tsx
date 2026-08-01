@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
+import DotPatternDemo from "@/components/demos/dot-pattern-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
@@ -29,7 +30,9 @@ const demos: Record<CatalogName, React.ComponentType> = {
 };
 
 // Grows one entry per component task (Tasks 6–20).
-const marketingDemos: Record<MarketingName, React.ComponentType> = {};
+const marketingDemos: Record<MarketingName, React.ComponentType> = {
+  "dot-pattern": DotPatternDemo,
+};
 
 export function generateStaticParams() {
   return [...CATALOG, ...MARKETING].map((name) => ({ name }));
