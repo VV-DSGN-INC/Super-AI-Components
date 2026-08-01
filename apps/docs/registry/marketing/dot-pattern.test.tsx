@@ -1,3 +1,5 @@
+import * as React from "react";
+
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { DotPattern } from "./dot-pattern";
@@ -19,5 +21,25 @@ describe("DotPattern", () => {
     const svg = container.querySelector('[data-slot="dot-pattern"]')!;
     expect(svg.classList.contains("marketing-dot-fade")).toBe(true);
     expect(svg.classList.contains("opacity-50")).toBe(true);
+  });
+  it("links the rect fill to the generated pattern id, uniquely per instance", () => {
+    const { container } = render(
+      <>
+        <DotPattern />
+        <DotPattern />
+      </>,
+    );
+    const patterns = [...container.querySelectorAll("pattern")];
+    const rects = [...container.querySelectorAll("rect")];
+    expect(patterns).toHaveLength(2);
+    expect(new Set(patterns.map((p) => p.id)).size).toBe(2);
+    rects.forEach((rect, i) => {
+      expect(rect.getAttribute("fill")).toBe(`url(#${patterns[i].id})`);
+    });
+  });
+  it("forwards ref to the svg element", () => {
+    const ref = React.createRef<SVGSVGElement>();
+    render(<DotPattern ref={ref} />);
+    expect(ref.current?.tagName).toBe("svg");
   });
 });

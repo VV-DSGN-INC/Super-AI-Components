@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-interface DotPatternProps extends React.ComponentProps<"svg"> {
+interface DotPatternProps extends Omit<React.ComponentProps<"svg">, "children"> {
   /** Distance between dot centers, px. */
   size?: number;
   /** Dot radius, px. */
