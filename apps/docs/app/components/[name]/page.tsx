@@ -7,6 +7,7 @@ import AuroraTextDemo from "@/components/demos/aurora-text-demo";
 import BentoGridDemo from "@/components/demos/bento-grid-demo";
 import BorderBeamDemo from "@/components/demos/border-beam-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
+import ConfettiDemo from "@/components/demos/confetti-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import DotPatternDemo from "@/components/demos/dot-pattern-demo";
@@ -58,6 +59,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "text-animate": TextAnimateDemo,
   terminal: TerminalDemo,
   "hero-video-dialog": HeroVideoDialogDemo,
+  confetti: ConfettiDemo,
 };
 
 export function generateStaticParams() {

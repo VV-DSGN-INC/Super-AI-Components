@@ -94,6 +94,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Thumbnail that opens a full-screen video lightbox.",
     group: "Layout",
   },
+  {
+    name: "confetti",
+    title: "Confetti",
+    description: "Confetti burst on click — celebration for CTAs and success states.",
+    group: "Effects",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
