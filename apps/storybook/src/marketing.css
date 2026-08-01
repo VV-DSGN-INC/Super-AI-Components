@@ -1,0 +1,197 @@
+/* Marketing components — shared stylesheet.
+   Sliced into per-registry-item css by scripts/gen-registry.mts using the
+   `== name ==` markers. `== shared ==` ships with every marketing item. */
+
+/* == shared == */
+:root {
+  --marketing-rainbow-1: var(--chart-1);
+  --marketing-rainbow-2: var(--chart-2);
+  --marketing-rainbow-3: var(--chart-3);
+  --marketing-rainbow-4: var(--chart-4);
+  --marketing-rainbow-5: var(--chart-5);
+  --marketing-aurora-1: var(--chart-1);
+  --marketing-aurora-2: var(--chart-2);
+  --marketing-aurora-3: var(--chart-4);
+  --marketing-aurora-4: var(--chart-5);
+  --marketing-beam-from: var(--chart-2);
+  --marketing-beam-to: var(--chart-5);
+  --marketing-pulse-color: var(--primary);
+  --marketing-ripple-color: var(--primary);
+}
+
+/* == marquee == */
+@keyframes marketing-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--marketing-marquee-gap, 1rem))); }
+}
+@keyframes marketing-marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--marketing-marquee-gap, 1rem))); }
+}
+.marketing-marquee-track {
+  animation: marketing-marquee var(--marketing-marquee-duration, 40s) linear infinite;
+}
+.marketing-marquee-track[data-orientation="vertical"] {
+  animation-name: marketing-marquee-vertical;
+}
+.marketing-marquee-track[data-reverse="true"] {
+  animation-direction: reverse;
+}
+[data-slot="marquee"][data-pause-on-hover="true"]:hover .marketing-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-marquee-track { animation: none; }
+}
+
+/* == orbiting-circles == */
+@keyframes marketing-orbit {
+  from {
+    transform: rotate(calc(var(--marketing-orbit-angle, 0) * 1deg))
+      translateY(calc(var(--marketing-orbit-radius, 80) * 1px))
+      rotate(calc(var(--marketing-orbit-angle, 0) * -1deg));
+  }
+  to {
+    transform: rotate(calc(var(--marketing-orbit-angle, 0) * 1deg + 360deg))
+      translateY(calc(var(--marketing-orbit-radius, 80) * 1px))
+      rotate(calc(var(--marketing-orbit-angle, 0) * -1deg - 360deg));
+  }
+}
+.marketing-orbit-item {
+  animation: marketing-orbit calc(var(--marketing-orbit-duration, 20) * 1s) linear infinite;
+  animation-delay: calc(var(--marketing-orbit-delay, 0) * 1s);
+}
+.marketing-orbit-item[data-reverse="true"] { animation-direction: reverse; }
+@media (prefers-reduced-motion: reduce) {
+  .marketing-orbit-item { animation: none; }
+}
+
+/* == border-beam == */
+@keyframes marketing-border-beam { to { offset-distance: 100%; } }
+.marketing-border-beam {
+  offset-path: rect(0 auto auto 0 round var(--marketing-beam-radius, 12px));
+  background: linear-gradient(
+    to left,
+    var(--marketing-beam-from),
+    var(--marketing-beam-to),
+    transparent
+  );
+  animation: marketing-border-beam calc(var(--marketing-beam-duration, 6) * 1s) linear infinite;
+  animation-delay: calc(var(--marketing-beam-delay, 0) * 1s);
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-border-beam { display: none; }
+}
+
+/* == aurora-text == */
+@keyframes marketing-aurora {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.marketing-aurora-text {
+  background-image: linear-gradient(
+    90deg,
+    var(--marketing-aurora-1),
+    var(--marketing-aurora-2),
+    var(--marketing-aurora-3),
+    var(--marketing-aurora-4),
+    var(--marketing-aurora-1)
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: marketing-aurora calc(var(--marketing-aurora-duration, 8) * 1s) ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-aurora-text { animation: none; }
+}
+
+/* == rainbow-button == */
+@keyframes marketing-rainbow {
+  from { background-position: 0 0, 0% 0; }
+  to { background-position: 0 0, 200% 0; }
+}
+.marketing-rainbow-button {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(var(--primary), var(--primary)) padding-box,
+    linear-gradient(
+        90deg,
+        var(--marketing-rainbow-1),
+        var(--marketing-rainbow-2),
+        var(--marketing-rainbow-3),
+        var(--marketing-rainbow-4),
+        var(--marketing-rainbow-5),
+        var(--marketing-rainbow-1)
+      )
+      border-box;
+  background-size: 100% 100%, 200% 100%;
+  animation: marketing-rainbow var(--marketing-rainbow-speed, 3s) linear infinite;
+}
+.marketing-rainbow-button[data-variant="outline"] {
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(
+        90deg,
+        var(--marketing-rainbow-1),
+        var(--marketing-rainbow-2),
+        var(--marketing-rainbow-3),
+        var(--marketing-rainbow-4),
+        var(--marketing-rainbow-5),
+        var(--marketing-rainbow-1)
+      )
+      border-box;
+  background-size: 100% 100%, 200% 100%;
+}
+.marketing-rainbow-glow {
+  background: linear-gradient(
+    90deg,
+    var(--marketing-rainbow-1),
+    var(--marketing-rainbow-2),
+    var(--marketing-rainbow-3),
+    var(--marketing-rainbow-4),
+    var(--marketing-rainbow-5),
+    var(--marketing-rainbow-1)
+  );
+  background-size: 200% 100%;
+  animation: marketing-rainbow var(--marketing-rainbow-speed, 3s) linear infinite;
+  filter: blur(0.75rem);
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-rainbow-button, .marketing-rainbow-glow { animation: none; }
+}
+
+/* == pulsating-button == */
+@keyframes marketing-pulse {
+  from { transform: scale(1); opacity: 0.6; }
+  to { transform: scale(1.35); opacity: 0; }
+}
+.marketing-pulse-halo {
+  background: var(--marketing-pulse-color);
+  animation: marketing-pulse calc(var(--marketing-pulse-duration, 1.5) * 1s) ease-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marketing-pulse-halo { display: none; }
+}
+
+/* == ripple-button == */
+@keyframes marketing-ripple {
+  to { transform: scale(4); opacity: 0; }
+}
+.marketing-ripple {
+  position: absolute;
+  border-radius: 9999px;
+  background: var(--marketing-ripple-color);
+  opacity: 0.3;
+  transform: scale(0);
+  animation: marketing-ripple 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+/* == dot-pattern == */
+.marketing-dot-fade {
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+}
