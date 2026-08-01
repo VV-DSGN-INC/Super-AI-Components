@@ -28,6 +28,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Button that ripples out from the click point.",
     group: "Buttons",
   },
+  {
+    name: "rainbow-button",
+    title: "Rainbow Button",
+    description: "CTA with an animated five-stop gradient border and glow.",
+    group: "Buttons",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
