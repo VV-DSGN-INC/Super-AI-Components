@@ -52,6 +52,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "A light beam tracing a container's border.",
     group: "Effects",
   },
+  {
+    name: "aurora-text",
+    title: "Aurora Text",
+    description: "Gradient text with slowly drifting aurora hues.",
+    group: "Text",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;

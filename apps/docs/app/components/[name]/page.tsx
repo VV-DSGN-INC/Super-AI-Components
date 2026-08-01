@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { notFound } from "next/navigation";
 
+import AuroraTextDemo from "@/components/demos/aurora-text-demo";
 import BorderBeamDemo from "@/components/demos/border-beam-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
@@ -44,6 +45,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   marquee: MarqueeDemo,
   "orbiting-circles": OrbitingCirclesDemo,
   "border-beam": BorderBeamDemo,
+  "aurora-text": AuroraTextDemo,
 };
 
 export function generateStaticParams() {
