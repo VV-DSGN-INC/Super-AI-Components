@@ -44,10 +44,7 @@ function ConfettiButton({ options, className, children, onClick, ...props }: Con
   );
 }
 
-// Scope note vs the reference library: Magic UI also ships a `<Confetti>` canvas
-// component; wave 1 deliberately ships only the imperative `fireConfetti` +
-// `ConfettiButton` pair — the marketing use case is "celebrate on a click", and a
-// managed canvas adds surface without a demo we'd show. Revisit in wave 2 if a use
-// appears.
+// Deliberately imperative-only: `fireConfetti` + `ConfettiButton` cover the
+// celebrate-on-click use case; a managed canvas component is out of scope here.
 export { ConfettiButton, fireConfetti };
 export type { ConfettiButtonProps };
