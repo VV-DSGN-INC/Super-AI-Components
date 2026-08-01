@@ -50,12 +50,8 @@ function TypingAnimation({
   }, [children, duration, delay]);
 
   return (
-    <span
-      data-slot="typing-animation"
-      aria-label={children}
-      className={cn("whitespace-pre-wrap", className)}
-      {...props}
-    >
+    <span data-slot="typing-animation" className={cn("whitespace-pre-wrap", className)} {...props}>
+      <span className="sr-only">{children}</span>
       <span aria-hidden="true" data-slot="typing-animation-visible">
         {children.slice(0, visibleChars)}
         {showCursor && !done && (

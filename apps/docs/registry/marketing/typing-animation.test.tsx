@@ -41,8 +41,9 @@ describe("TypingAnimation", () => {
   it("exposes the full text to assistive tech from the start", () => {
     stubReducedMotion(false);
     const { container } = render(<TypingAnimation>Ship faster</TypingAnimation>);
-    const root = container.querySelector('[data-slot="typing-animation"]')!;
-    expect(root).toHaveAttribute("aria-label", "Ship faster");
+    const srText = container.querySelector('[data-slot="typing-animation"] .sr-only')!;
+    expect(srText.textContent).toBe("Ship faster");
+    expect(srText).not.toHaveAttribute("aria-hidden");
   });
 
   it("renders the full text instantly under prefers-reduced-motion", () => {
