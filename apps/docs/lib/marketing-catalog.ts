@@ -76,6 +76,12 @@ export const MARKETING_ITEMS: MarketingItem[] = [
     description: "Typewriter text with an optional caret.",
     group: "Text",
   },
+  {
+    name: "text-animate",
+    title: "Text Animate",
+    description: "Staggered text entrances — blur, slide, scale — by word or character.",
+    group: "Text",
+  },
 ];
 
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;

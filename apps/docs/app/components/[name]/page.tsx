@@ -21,6 +21,7 @@ import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
+import TextAnimateDemo from "@/components/demos/text-animate-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import TypingAnimationDemo from "@/components/demos/typing-animation-demo";
 import { PreviewTabs } from "@/components/preview-tabs";
@@ -52,6 +53,7 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   "bento-grid": BentoGridDemo,
   "number-ticker": NumberTickerDemo,
   "typing-animation": TypingAnimationDemo,
+  "text-animate": TextAnimateDemo,
 };
 
 export function generateStaticParams() {
