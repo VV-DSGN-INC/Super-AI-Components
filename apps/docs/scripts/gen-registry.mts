@@ -2,6 +2,9 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
+import postcss from "postcss";
+import { registrySchema } from "shadcn/schema";
+
 import { CATALOG_ITEMS } from "../lib/catalog";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
 
@@ -64,10 +67,9 @@ const marketingExtras: Record<string, { dependencies?: string[] }> = {
 };
 
 // Slice app/marketing.css into named blocks by `/* == name == */` markers (the
-// markers sit alone on their own line at column 0). `shared` is prepended to
-// every item that has its own block; items without a block (pure-token
-// components) ship no css. Each block is treated as opaque contiguous text —
-// this does not parse or restructure the CSS inside a block.
+// markers sit alone on their own line at column 0). `shared` is not shipped as
+// raw text — it's parsed into shadcn `cssVars` below. Items without a block
+// (pure-token components) ship no css/cssVars at all.
 const marketingCssSource = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), "../app/marketing.css"),
   "utf8",
@@ -83,22 +85,138 @@ const cssBlocks = new Map<string, string>();
     cssBlocks.set(entry.name, marketingCssSource.slice(entry.start, end).trim());
   });
 }
-const sharedCss = cssBlocks.get("shared") ?? "";
-const marketingCss = (name: string) => {
-  const own = cssBlocks.get(name);
-  return own ? [sharedCss, own].join("\n\n") : undefined;
-};
 
-const marketingItems = MARKETING_ITEMS.map((i) => ({
-  name: i.name,
-  type: "registry:component" as const,
-  title: i.title,
-  description: i.description,
-  dependencies: marketingExtras[i.name]?.dependencies ?? [],
-  registryDependencies: [],
-  files: [marketingFile(i.name)],
-  ...(marketingCss(i.name) ? { css: marketingCss(i.name) } : {}),
-}));
+// ---------------------------------------------------------------------------
+// css text -> structured object, matching shadcn v4's registry-item `css`
+// schema: Record<selector-or-at-rule, declarations | nested-record>. A plain
+// string fails `shadcn build` ("Expected object, received string"); wrapping
+// raw text under an at-rule key passes schema validation but the CLI's
+// install-time writer silently drops nested rule blocks in that shape — only
+// a fully nested object round-trips. Each block is walked as a real postcss
+// AST (not string-sliced further), so nesting/at-rules/comments are handled
+// structurally rather than by pattern-matching text.
+// ---------------------------------------------------------------------------
+function setUniqueKey(target: Record<string, unknown>, key: string, value: unknown, path: string) {
+  if (Object.prototype.hasOwnProperty.call(target, key)) {
+    throw new Error(`css conversion: duplicate key "${key}" at ${path}`);
+  }
+  target[key] = value;
+}
+
+function declsToObject(nodes: postcss.ChildNode[] | undefined, path: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const node of nodes ?? []) {
+    if (node.type === "comment") continue;
+    if (node.type !== "decl") {
+      throw new Error(`css conversion: expected only declarations at ${path}, found "${node.type}"`);
+    }
+    setUniqueKey(out, node.prop, node.value, path);
+  }
+  return out;
+}
+
+function containerToObject(nodes: postcss.ChildNode[] | undefined, path: string): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const node of nodes ?? []) {
+    if (node.type === "comment") continue;
+
+    if (node.type === "decl") {
+      throw new Error(
+        `css conversion: bare declaration "${node.prop}" at ${path} (expected inside a rule or at-rule)`,
+      );
+    }
+
+    if (node.type === "rule") {
+      const hasNestedContainer = (node.nodes ?? []).some((n) => n.type === "rule" || n.type === "atrule");
+      if (hasNestedContainer) {
+        throw new Error(
+          `css conversion: rule "${node.selector}" at ${path} contains a nested rule/at-rule — not supported`,
+        );
+      }
+      setUniqueKey(out, node.selector, declsToObject(node.nodes, `${path} > ${node.selector}`), path);
+      continue;
+    }
+
+    if (node.type === "atrule") {
+      const key = `@${node.name} ${node.params}`.trim();
+      const childPath = `${path} > ${key}`;
+      const children = node.nodes ?? [];
+      const nonComment = children.filter((n) => n.type !== "comment");
+      // An at-rule containing only decls (none expected today, e.g. a bare
+      // @font-face-style block) yields a flat decls object instead of being
+      // forced through the nested-container shape.
+      const value =
+        nonComment.length > 0 && nonComment.every((n) => n.type === "decl")
+          ? declsToObject(children, childPath)
+          : containerToObject(children, childPath);
+      setUniqueKey(out, key, value, path);
+      continue;
+    }
+
+    throw new Error(`css conversion: unsupported node type "${(node as { type: string }).type}" at ${path}`);
+  }
+  return out;
+}
+
+function cssTextToObject(cssText: string): Record<string, unknown> {
+  return containerToObject(postcss.parse(cssText).nodes, "root");
+}
+
+// The `shared` block is exactly `:root { --custom-props } .dark { --custom-props }`.
+// Parsed once into shadcn's cssVars shape; leading `--` is stripped from each
+// prop (shadcn's installer re-adds it). Light currently carries 13 keys, dark
+// 11 (pulse/ripple colors only exist in :root) — that asymmetry is correct.
+function parseSharedCssVars(sharedText: string): { light: Record<string, string>; dark: Record<string, string> } {
+  const topLevel = (postcss.parse(sharedText).nodes ?? []).filter((n) => n.type !== "comment");
+  const isRootRule = (n: postcss.ChildNode): n is postcss.Rule => n.type === "rule" && n.selector === ":root";
+  const isDarkRule = (n: postcss.ChildNode): n is postcss.Rule => n.type === "rule" && n.selector === ".dark";
+  if (
+    topLevel.length !== 2 ||
+    !topLevel.every((n) => n.type === "rule") ||
+    !topLevel.some(isRootRule) ||
+    !topLevel.some(isDarkRule)
+  ) {
+    throw new Error(
+      `shared css block: expected exactly ":root" and ".dark" rules, got: ${topLevel
+        .map((n) => (n.type === "rule" ? n.selector : n.type))
+        .join(", ")}`,
+    );
+  }
+  const extractVars = (rule: postcss.Rule): Record<string, string> => {
+    const out: Record<string, string> = {};
+    for (const child of rule.nodes ?? []) {
+      if (child.type === "comment") continue;
+      if (child.type !== "decl" || !child.prop.startsWith("--")) {
+        throw new Error(
+          `shared css block: "${rule.selector}" must contain only custom-property declarations, found "${child.type}"`,
+        );
+      }
+      setUniqueKey(out, child.prop.slice(2), child.value, `shared > ${rule.selector}`);
+    }
+    return out;
+  };
+  return {
+    light: extractVars(topLevel.find(isRootRule)!),
+    dark: extractVars(topLevel.find(isDarkRule)!),
+  };
+}
+
+const sharedCssVars = parseSharedCssVars(cssBlocks.get("shared") ?? "");
+
+const marketingItems = MARKETING_ITEMS.map((i) => {
+  const ownBlockText = cssBlocks.get(i.name);
+  console.log(`  ${i.name}${ownBlockText ? " +css" : " (no css)"}`);
+  return {
+    name: i.name,
+    type: "registry:component" as const,
+    title: i.title,
+    description: i.description,
+    dependencies: marketingExtras[i.name]?.dependencies ?? [],
+    registryDependencies: [],
+    files: [marketingFile(i.name)],
+    ...(ownBlockText ? { cssVars: sharedCssVars, css: cssTextToObject(ownBlockText) } : {}),
+  };
+});
 
 const superAiItems = items.map((i) => ({
   name: i.name,
@@ -122,6 +240,13 @@ const registry = {
   items: allItems,
 };
 
+// Validate against shadcn's own zod schema at generation time so a bad shape
+// (e.g. a css field the CLI's installer can't round-trip) fails here, with a
+// precise path, instead of surfacing later inside `shadcn build`.
+const validatedRegistry = registrySchema.parse(registry);
+
 const OUT = join(dirname(fileURLToPath(import.meta.url)), "../registry.json");
-writeFileSync(OUT, JSON.stringify(registry, null, 2) + "\n");
-console.log(`registry.json — ${allItems.length} items (base: ${REGISTRY_URL})`);
+writeFileSync(OUT, JSON.stringify(validatedRegistry, null, 2) + "\n");
+console.log(
+  `registry.json — ${superAiItems.length} super-ai + ${marketingItems.length} marketing items (base: ${REGISTRY_URL})`,
+);
