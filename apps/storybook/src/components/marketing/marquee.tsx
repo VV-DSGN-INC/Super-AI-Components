@@ -51,6 +51,7 @@ function Marquee({
         <div
           key={i}
           aria-hidden={i > 0 || undefined}
+          inert={i > 0 || undefined}
           data-slot="marquee-track"
           data-orientation={vertical ? "vertical" : "horizontal"}
           data-reverse={reverse}

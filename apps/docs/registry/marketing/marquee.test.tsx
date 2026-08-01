@@ -15,6 +15,8 @@ describe("Marquee", () => {
     expect(tracks).toHaveLength(4);
     expect(tracks[0]).not.toHaveAttribute("aria-hidden");
     [...tracks].slice(1).forEach((t) => expect(t).toHaveAttribute("aria-hidden", "true"));
+    [...tracks].slice(1).forEach((t) => expect(t).toHaveAttribute("inert"));
+    expect(tracks[0]).not.toHaveAttribute("inert");
   });
   it("reflects direction, reverse, and pause-on-hover in the DOM contract", () => {
     const { container } = render(
