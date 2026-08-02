@@ -19,4 +19,12 @@ describe("PreviewTile", () => {
     });
     expect(new Set(frames).size).toBe(1);
   });
+
+  it("applies a ring when selected and never a border", () => {
+    const { rerender } = render(<PreviewTile selected={false} />);
+    expect(frameClassName()).not.toMatch(/\bring-2\b/);
+    rerender(<PreviewTile selected />);
+    expect(frameClassName()).toMatch(/\bring-2\b/);
+    expect(frameClassName()).not.toMatch(/\bborder-2\b/);
+  });
 });

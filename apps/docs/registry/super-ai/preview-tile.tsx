@@ -17,11 +17,13 @@ const ASPECT: Record<PreviewTileAspect, string> = {
 interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   aspect?: PreviewTileAspect;
   state?: PreviewTileState;
+  selected?: boolean;
 }
 
 function PreviewTile({
   aspect = "square",
   state = "default",
+  selected = false,
   className,
   children,
   ...props
@@ -35,7 +37,14 @@ function PreviewTile({
     >
       <div
         data-slot="preview-tile-frame"
-        className={cn("bg-muted relative w-full overflow-hidden rounded-lg", ASPECT[aspect])}
+        className={cn(
+          "bg-muted relative w-full overflow-hidden rounded-lg",
+          ASPECT[aspect],
+          // A ring is a box-shadow: zero layout contribution, so selecting never
+          // reflows the grid. A border would add 2px per side. This is the reason
+          // E4 preset-grid and H5 frame-strip both specify a ring.
+          selected && "ring-ring ring-offset-background ring-2 ring-offset-2",
+        )}
       >
         {children}
       </div>
