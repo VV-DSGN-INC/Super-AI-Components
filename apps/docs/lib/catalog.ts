@@ -44,6 +44,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Primitives",
   },
   {
+    name: "preview-tile",
+    title: "Preview Tile",
+    description: "Fixed-aspect media tile with label, badge, selection ring and states.",
+    group: "Primitives",
+  },
+  {
     name: "shortcuts-sheet",
     title: "Shortcuts Sheet",
     description: "Keyboard shortcuts cheatsheet dialog.",

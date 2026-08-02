@@ -96,7 +96,10 @@ Wireframes for every entry are on the working board, column 4 — see
   a ring and not a border.
 - `locked` / `loading` / `failed` replace the content, never the frame. Grid geometry stays stable.
 
-**Evidence:** Eleven consumers across six families. Prototype before anything else — see [decisions.md](decisions.md) Q5.
+**Consumers:** E4 `preset-grid` · H5 `frame-strip` · I1 `tool-panel` · F1 `result-card` ·
+C4 `recent-grid` (· F2 transitively through F1). Label placement is a variant: `overlay` for dense
+grids (E4), `below` for title-under-thumbnail (C4), `none` for frame strips (H5). Audio previews are
+out of scope — see gaps.md §4 and D11.
 
 ## A9 `entity-row` — icon + title + description
 **Base:** Item · **Variants:** plain · selectable · with-badge · with-chevron · with-switch · disabled
@@ -258,7 +261,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** Descript, Zapier, CapCut, Spline.
 
 ## C4 `recent-grid` `NEW`
-**Base:** Card, Aspect-ratio
+**Built on:** A8 · **Base:** Card
 
 - Thumbnail · title · edited-ago · duration badge. All optional except the title; card height fixed
   regardless.
@@ -424,7 +427,7 @@ Wireframes for every entry are on the working board, column 4 — see
 # F · Results & assets
 
 ## F1 `result-card` `NEW`
-**Base:** Card, Aspect-ratio · **States:** idle · streaming · done · failed · locked
+**Built on:** A8 · **Base:** Card · **States:** idle · streaming · done · failed · locked
 
 - Card geometry is identical in all states. Only the media slot and footer change, so grids never
   reflow when a result resolves.
@@ -724,6 +727,8 @@ Wireframes for every entry are on the working board, column 4 — see
 - Masonry, not a grid. Community feeds are browsed for surprise; equal-height rows suppress it.
 - The docked prompt bar sits above the feed so inspiration converts without a navigation step.
 - Sort tabs and type pills are different axes and must stay separate.
+- Cannot be built on A8: masonry needs variable heights, and A8 exists to fix the frame. This
+  component owns its own tile.
 
 **Evidence:** Midjourney Explore, Spline Community, Pixlr, Canva templates.
 
@@ -733,6 +738,7 @@ Wireframes for every entry are on the working board, column 4 — see
 - Excerpt is the load-bearing field. Auto-generated titles are unreliable; first lines are not.
 - Type badge is a filter facet as well as a label, driven by the same value in both places.
 - Privacy icon and view count sit together in the footer.
+- Not an A8 consumer: this is a text card. The excerpt is the content, not a thumbnail.
 
 **Evidence:** Claude Artifacts, Manus Library. A new archetype with no equivalent in the spec.
 
