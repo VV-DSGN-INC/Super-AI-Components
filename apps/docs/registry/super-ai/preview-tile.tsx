@@ -18,12 +18,18 @@ interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect">
   aspect?: PreviewTileAspect;
   state?: PreviewTileState;
   selected?: boolean;
+  label?: React.ReactNode;
+  labelPlacement?: "overlay" | "below" | "none";
+  badge?: React.ReactNode;
 }
 
 function PreviewTile({
   aspect = "square",
   state = "default",
   selected = false,
+  label,
+  labelPlacement = "overlay",
+  badge,
   className,
   children,
   ...props
@@ -47,7 +53,25 @@ function PreviewTile({
         )}
       >
         {children}
+        {badge ? (
+          <span data-slot="preview-tile-badge" className="absolute top-2 right-2">
+            {badge}
+          </span>
+        ) : null}
+        {label && labelPlacement === "overlay" ? (
+          <span
+            data-slot="preview-tile-label"
+            className="bg-background/80 text-foreground absolute inset-x-0 bottom-0 truncate px-2 py-1 text-xs backdrop-blur-sm"
+          >
+            {label}
+          </span>
+        ) : null}
       </div>
+      {label && labelPlacement === "below" ? (
+        <span data-slot="preview-tile-label" className="text-foreground truncate text-sm">
+          {label}
+        </span>
+      ) : null}
     </div>
   );
 }

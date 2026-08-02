@@ -27,4 +27,26 @@ describe("PreviewTile", () => {
     expect(frameClassName()).toMatch(/\bring-2\b/);
     expect(frameClassName()).not.toMatch(/\bborder-2\b/);
   });
+
+  it("places the label per labelPlacement", () => {
+    const frame = () => document.querySelector('[data-slot="preview-tile-frame"]')!;
+
+    const overlay = render(<PreviewTile label="Neon noir" labelPlacement="overlay" />);
+    expect(frame().textContent).toContain("Neon noir");
+    overlay.unmount();
+
+    const below = render(<PreviewTile label="Neon noir" labelPlacement="below" />);
+    expect(frame().textContent).not.toContain("Neon noir");
+    expect(screen.getByText("Neon noir")).toBeInTheDocument();
+    below.unmount();
+
+    render(<PreviewTile label="Neon noir" labelPlacement="none" />);
+    expect(screen.queryByText("Neon noir")).not.toBeInTheDocument();
+  });
+
+  it("renders the badge inside the frame", () => {
+    render(<PreviewTile badge={<span>17 credits</span>} />);
+    const frame = document.querySelector('[data-slot="preview-tile-frame"]')!;
+    expect(frame.textContent).toContain("17 credits");
+  });
 });
