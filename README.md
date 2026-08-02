@@ -14,6 +14,15 @@ Wave 0 ships 7 primitives (`kbd`, `cost-chip`, `date-section`, `choice-chips`, `
 `field-row`, `gen-settings-bar`) and 2 pilot components (`shortcuts-sheet`, `thread-list`).
 Full catalog and roadmap: see the design spec below.
 
+**Marketing wave 1** adds a second registry namespace — 15 landing-page mini-components
+(`bento-grid`, `marquee`, `terminal`, `hero-video-dialog`, `number-ticker`, `text-animate`,
+`typing-animation`, `aurora-text`, `rainbow-button`, `ripple-button`, `pulsating-button`,
+`border-beam`, `orbiting-circles`, `dot-pattern`, `confetti`) rebuilt to the same standards:
+shadcn CSS variables for chrome, tunable `--marketing-*` custom properties for signature
+palettes, `prefers-reduced-motion` honored by every animated component, and one test file each.
+They install the same way (`/r/<name>.json`) and land in `components/marketing/`, with their
+keyframes and palette variables shipped into the consumer's stylesheet by the registry.
+
 ## Develop
 
 ```bash
@@ -29,6 +38,8 @@ apps/docs/scripts/consumer-test.sh   # install everything into a fresh app
 - Design spec: `docs/superpowers/specs/2026-06-10-super-ai-components-design.md`
 - Flow Kit spec: `docs/superpowers/specs/2026-06-11-flow-kit-design.md` + `docs/flow-kit-inventory.md`
 - Wave 0 plan: `docs/superpowers/plans/2026-06-11-wave-0-foundation.md`
+- Marketing wave 1: `docs/superpowers/specs/2026-07-31-marketing-mini-components-design.md` +
+  `docs/superpowers/plans/2026-07-31-marketing-mini-components-wave-1.md`
 - **Proposed catalog re-cut:** `docs/design-system/` — catalog, concept model, per-component specs
   and open questions, derived from a reference board of real AI products. Supersedes §5 and §11 of
   the design spec if approved.

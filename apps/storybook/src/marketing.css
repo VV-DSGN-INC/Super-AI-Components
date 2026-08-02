@@ -1,0 +1,321 @@
+/* Marketing components — shared stylesheet.
+   Sliced into per-registry-item css by scripts/gen-registry.mts using marker
+   comments (slash-star, two equals signs, block name, two equals signs,
+   star-slash). The shared block ships with every marketing item.
+   Generator constraints: within one rule, a property may appear only once (no
+   progressive-enhancement fallback pairs) and rules cannot nest; the shared block
+   must contain only :root/.dark custom-property declarations. */
+
+/* == shared == */
+/* Signature palette — THE designer knob. Values are deliberate defaults, not
+   theme-derived: this theme's --chart-* ramp is neutral, which would render the
+   rainbow/aurora effects grey. OKLCH lightness does not predict contrast
+   across hues — after retuning, check stops used for text (aurora) against
+   both --background values (target 3:1 at display sizes, 4.5:1 below 24px).
+   Unit conventions consumed by component styles:
+   - unitless numbers: --marketing-orbit-angle/-radius/-duration/-delay,
+     --marketing-beam-duration/-delay, --marketing-pulse-duration,
+     --marketing-aurora-duration (multiplied by 1deg/1px/1s in calc())
+   - full CSS values: --marketing-marquee-duration/-gap (e.g. 40s / 1rem),
+     --marketing-rainbow-speed (e.g. 3s), --marketing-beam-radius (e.g. 12px) */
+:root {
+  --marketing-rainbow-1: oklch(0.66 0.23 25);
+  --marketing-rainbow-2: oklch(0.72 0.19 65);
+  --marketing-rainbow-3: oklch(0.68 0.2 145);
+  --marketing-rainbow-4: oklch(0.62 0.21 255);
+  --marketing-rainbow-5: oklch(0.6 0.25 305);
+  --marketing-aurora-1: oklch(0.62 0.21 255);
+  --marketing-aurora-2: oklch(0.55 0.2 200);
+  --marketing-aurora-3: oklch(0.6 0.25 305);
+  --marketing-aurora-4: oklch(0.66 0.23 340);
+  --marketing-beam-from: oklch(0.55 0.2 200);
+  --marketing-beam-to: oklch(0.6 0.25 305);
+  --marketing-pulse-color: var(--primary);
+  --marketing-ripple-color: var(--primary);
+}
+.dark {
+  --marketing-rainbow-1: oklch(0.7 0.21 25);
+  --marketing-rainbow-2: oklch(0.76 0.17 65);
+  --marketing-rainbow-3: oklch(0.72 0.18 145);
+  --marketing-rainbow-4: oklch(0.68 0.19 255);
+  --marketing-rainbow-5: oklch(0.66 0.22 305);
+  --marketing-aurora-1: oklch(0.68 0.19 255);
+  --marketing-aurora-2: oklch(0.71 0.18 200);
+  --marketing-aurora-3: oklch(0.66 0.22 305);
+  --marketing-aurora-4: oklch(0.7 0.2 340);
+  --marketing-beam-from: oklch(0.71 0.18 200);
+  --marketing-beam-to: oklch(0.66 0.22 305);
+}
+
+/* == marquee == */
+/* Loop is seamless only if the track's flex gap equals --marketing-marquee-gap; the Marquee component sets both from its gap prop. */
+@keyframes marketing-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--marketing-marquee-gap, 1rem)));
+  }
+}
+@keyframes marketing-marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--marketing-marquee-gap, 1rem)));
+  }
+}
+@layer components {
+  .marketing-marquee-track {
+    animation: marketing-marquee var(--marketing-marquee-duration, 40s) linear infinite;
+  }
+  .marketing-marquee-track[data-orientation="vertical"] {
+    animation-name: marketing-marquee-vertical;
+  }
+  .marketing-marquee-track[data-reverse="true"] {
+    animation-direction: reverse;
+  }
+  [data-slot="marquee"][data-pause-on-hover="true"]:hover .marketing-marquee-track {
+    animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marketing-marquee-track.marketing-marquee-track {
+      animation: none;
+    }
+  }
+}
+
+/* == orbiting-circles == */
+@keyframes marketing-orbit {
+  from {
+    transform: rotate(calc(var(--marketing-orbit-angle, 0) * 1deg))
+      translateY(calc(var(--marketing-orbit-radius, 80) * 1px))
+      rotate(calc(var(--marketing-orbit-angle, 0) * -1deg));
+  }
+  to {
+    transform: rotate(calc(var(--marketing-orbit-angle, 0) * 1deg + 360deg))
+      translateY(calc(var(--marketing-orbit-radius, 80) * 1px))
+      rotate(calc(var(--marketing-orbit-angle, 0) * -1deg - 360deg));
+  }
+}
+@layer components {
+  .marketing-orbit-item {
+    animation: marketing-orbit calc(var(--marketing-orbit-duration, 20) * 1s) linear infinite;
+    animation-delay: calc(var(--marketing-orbit-delay, 0) * 1s);
+  }
+  .marketing-orbit-item[data-reverse="true"] {
+    animation-direction: reverse;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marketing-orbit-item.marketing-orbit-item {
+      animation: none;
+      transform: rotate(calc(var(--marketing-orbit-angle, 0) * 1deg))
+        translateY(calc(var(--marketing-orbit-radius, 80) * 1px))
+        rotate(calc(var(--marketing-orbit-angle, 0) * -1deg));
+    }
+  }
+}
+
+/* == border-beam == */
+@keyframes marketing-border-beam {
+  to {
+    offset-distance: 100%;
+  }
+}
+@layer components {
+  .marketing-border-beam {
+    position: absolute;
+    offset-path: rect(0 auto auto 0 round var(--marketing-beam-radius, 12px));
+    background: linear-gradient(to left, var(--marketing-beam-from), var(--marketing-beam-to), transparent);
+    animation: marketing-border-beam calc(var(--marketing-beam-duration, 6) * 1s) linear infinite;
+    animation-delay: calc(var(--marketing-beam-delay, 0) * 1s);
+  }
+}
+/* gates deliberately unlayered — utility classes must not defeat them */
+@media (prefers-reduced-motion: reduce) {
+  .marketing-border-beam {
+    display: none;
+  }
+}
+@supports not (offset-path: rect(0 auto auto 0)) {
+  .marketing-border-beam {
+    display: none;
+  }
+}
+
+/* == aurora-text == */
+@keyframes marketing-aurora {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@layer components {
+  .marketing-aurora-text {
+    background-image: linear-gradient(
+      90deg,
+      var(--marketing-aurora-1),
+      var(--marketing-aurora-2),
+      var(--marketing-aurora-3),
+      var(--marketing-aurora-4),
+      var(--marketing-aurora-1)
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: marketing-aurora calc(var(--marketing-aurora-duration, 8) * 1s) ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marketing-aurora-text {
+      animation: none;
+    }
+  }
+  @media (forced-colors: active) {
+    .marketing-aurora-text {
+      background: none;
+      color: CanvasText;
+      -webkit-text-fill-color: currentColor;
+    }
+  }
+}
+
+/* == rainbow-button == */
+@keyframes marketing-rainbow {
+  from {
+    background-position:
+      0 0,
+      0% 0;
+  }
+  to {
+    background-position:
+      0 0,
+      200% 0;
+  }
+}
+@keyframes marketing-rainbow-glow {
+  from {
+    background-position: 0% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+@layer components {
+  .marketing-rainbow-button {
+    border: 2px solid transparent;
+    background:
+      linear-gradient(var(--primary), var(--primary)) padding-box,
+      linear-gradient(
+          90deg,
+          var(--marketing-rainbow-1),
+          var(--marketing-rainbow-2),
+          var(--marketing-rainbow-3),
+          var(--marketing-rainbow-4),
+          var(--marketing-rainbow-5),
+          var(--marketing-rainbow-1)
+        )
+        border-box;
+    background-size:
+      100% 100%,
+      200% 100%;
+    animation: marketing-rainbow var(--marketing-rainbow-speed, 3s) linear infinite;
+  }
+  .marketing-rainbow-button[data-variant="outline"] {
+    background:
+      linear-gradient(var(--background), var(--background)) padding-box,
+      linear-gradient(
+          90deg,
+          var(--marketing-rainbow-1),
+          var(--marketing-rainbow-2),
+          var(--marketing-rainbow-3),
+          var(--marketing-rainbow-4),
+          var(--marketing-rainbow-5),
+          var(--marketing-rainbow-1)
+        )
+        border-box;
+    background-size:
+      100% 100%,
+      200% 100%;
+  }
+  .marketing-rainbow-glow {
+    background: linear-gradient(
+      90deg,
+      var(--marketing-rainbow-1),
+      var(--marketing-rainbow-2),
+      var(--marketing-rainbow-3),
+      var(--marketing-rainbow-4),
+      var(--marketing-rainbow-5),
+      var(--marketing-rainbow-1)
+    );
+    background-size: 200% 100%;
+    animation: marketing-rainbow-glow var(--marketing-rainbow-speed, 3s) linear infinite;
+    filter: blur(0.75rem);
+    opacity: 0.5;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marketing-rainbow-button,
+    .marketing-rainbow-glow {
+      animation: none;
+    }
+  }
+}
+
+/* == pulsating-button == */
+@keyframes marketing-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+@layer components {
+  .marketing-pulse-halo {
+    background: var(--marketing-pulse-color);
+    animation: marketing-pulse calc(var(--marketing-pulse-duration, 1.5) * 1s) ease-out infinite;
+  }
+}
+/* gates deliberately unlayered — utility classes must not defeat them */
+@media (prefers-reduced-motion: reduce) {
+  .marketing-pulse-halo {
+    display: none;
+  }
+}
+
+/* == ripple-button == */
+@keyframes marketing-ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+@layer components {
+  .marketing-ripple {
+    position: absolute;
+    border-radius: 9999px;
+    background: var(--marketing-ripple-color);
+    opacity: 0.3;
+    transform: scale(0);
+    animation: marketing-ripple 0.6s ease-out forwards;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marketing-ripple {
+      animation: none;
+    }
+  }
+}
+
+/* == dot-pattern == */
+@layer components {
+  .marketing-dot-fade {
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  }
+}

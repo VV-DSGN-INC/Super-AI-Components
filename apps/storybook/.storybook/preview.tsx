@@ -15,7 +15,22 @@ const preview: Preview = {
     backgrounds: { disable: true },
     options: {
       storySort: {
-        order: ["Overview", "Super AI", "AI Elements", "shadcn/ui"],
+        // Entries match one title segment each, so the shadcn section is "shadcn"
+        // (its stories are titled "shadcn/ui/<Name>") — spelling it "shadcn/ui"
+        // matches nothing and drops the whole section into the unordered tail,
+        // which silently pushed it below Marketing. Nested arrays order children.
+        // Marketing's subgroups are ordered explicitly so the Storybook sidebar
+        // matches the docs sidebar (lib/marketing-catalog.ts MARKETING_GROUPS);
+        // left unordered they fall into story-file order (Text/Layout/Effects/Buttons).
+        order: [
+          "Overview",
+          "Super AI",
+          "AI Elements",
+          "shadcn",
+          ["ui"],
+          "Marketing",
+          ["Layout", "Text", "Buttons", "Effects"],
+        ],
       },
     },
   },

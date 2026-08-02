@@ -38,11 +38,40 @@ WSEOF
 pnpm install
 pnpm dlx shadcn@latest init --defaults
 
-echo "==> Installing all 9 items from the local registry"
-ITEMS=(kbd cost-chip date-section choice-chips filter-bar field-row gen-settings-bar shortcuts-sheet thread-list)
+echo "==> Deriving installed item list from registry.json"
+ITEMS=()
+while IFS= read -r name; do
+  ITEMS+=("$name")
+done < <(node -e "
+const fs = require('fs');
+const registry = JSON.parse(fs.readFileSync(process.argv[1], 'utf8'));
+for (const item of registry.items) console.log(item.name);
+" "$DOCS_DIR/registry.json")
+if [ "${#ITEMS[@]}" -eq 0 ]; then
+  echo "CONSUMER INSTALL TEST: FAIL — derived zero items from $DOCS_DIR/registry.json" >&2
+  exit 1
+fi
+echo "==> Installing all ${#ITEMS[@]} items from the local registry: ${ITEMS[*]}"
 URLS=()
 for item in "${ITEMS[@]}"; do URLS+=("http://127.0.0.1:$PORT/r/$item.json"); done
 pnpm dlx shadcn@latest add --yes --overwrite "${URLS[@]}"
+
+echo "==> Verifying marketing css landed in the consumer app's global stylesheet"
+GLOBAL_CSS="app/globals.css"
+if [ ! -f "$GLOBAL_CSS" ]; then
+  echo "CONSUMER INSTALL TEST: FAIL — expected shadcn's global stylesheet at $GLOBAL_CSS, not found" >&2
+  exit 1
+fi
+if ! grep -qF -e ".marketing-dot-fade" "$GLOBAL_CSS"; then
+  echo "CONSUMER INSTALL TEST: FAIL — $GLOBAL_CSS is missing .marketing-dot-fade (dot-pattern's css block did not install)" >&2
+  exit 1
+fi
+echo "  found .marketing-dot-fade in $GLOBAL_CSS"
+if ! grep -qF -e "--marketing-rainbow-1" "$GLOBAL_CSS"; then
+  echo "CONSUMER INSTALL TEST: FAIL — $GLOBAL_CSS is missing --marketing-rainbow-1 (dot-pattern's cssVars did not install)" >&2
+  exit 1
+fi
+echo "  found --marketing-rainbow-1 in $GLOBAL_CSS"
 
 echo "==> Using the components in a page"
 cat > app/page.tsx <<'EOF'
