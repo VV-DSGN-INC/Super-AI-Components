@@ -11,6 +11,7 @@ import ConfettiDemo from "@/components/demos/confetti-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import DotPatternDemo from "@/components/demos/dot-pattern-demo";
+import EntityRowDemo from "@/components/demos/entity-row-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
@@ -41,6 +42,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "field-row": FieldRowDemo,
   "gen-settings-bar": GenSettingsBarDemo,
   "preview-tile": PreviewTileDemo,
+  "entity-row": EntityRowDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
 };

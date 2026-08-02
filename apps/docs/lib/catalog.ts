@@ -50,6 +50,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Primitives",
   },
   {
+    name: "entity-row",
+    title: "Entity Row",
+    description: "Icon, title, description and trailing slot in a fixed-height row.",
+    group: "Primitives",
+  },
+  {
     name: "shortcuts-sheet",
     title: "Shortcuts Sheet",
     description: "Keyboard shortcuts cheatsheet dialog.",
