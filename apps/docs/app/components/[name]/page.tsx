@@ -24,6 +24,7 @@ import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
+import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
@@ -43,6 +44,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "gen-settings-bar": GenSettingsBarDemo,
   "preview-tile": PreviewTileDemo,
   "entity-row": EntityRowDemo,
+  "section-header": SectionHeaderDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
 };
