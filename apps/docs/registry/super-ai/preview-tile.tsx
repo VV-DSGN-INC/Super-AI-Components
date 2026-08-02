@@ -22,6 +22,7 @@ interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect">
   labelPlacement?: "overlay" | "below" | "none";
   badge?: React.ReactNode;
   onSelect?: () => void;
+  action?: React.ReactNode;
 }
 
 function PreviewTile({
@@ -32,6 +33,7 @@ function PreviewTile({
   labelPlacement = "overlay",
   badge,
   onSelect,
+  action,
   className,
   children,
   ...props
@@ -63,7 +65,30 @@ function PreviewTile({
           selected && "ring-ring ring-offset-background ring-2 ring-offset-2",
         )}
       >
-        {children}
+        {state === "loading" ? (
+          <div data-slot="preview-tile-loading" className="bg-muted h-full w-full animate-pulse" />
+        ) : state === "failed" ? (
+          <div
+            data-slot="preview-tile-failed"
+            className="text-destructive absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs"
+          >
+            {action}
+          </div>
+        ) : (
+          <>
+            {children}
+            {state === "locked" ? (
+              // F1: locked shows the shape of what would have been made, then the
+              // CTA — never an empty box with a padlock. Children stay, scrim over.
+              <div
+                data-slot="preview-tile-locked"
+                className="bg-background/60 absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs backdrop-blur-[2px]"
+              >
+                {action}
+              </div>
+            ) : null}
+          </>
+        )}
         {badge ? (
           <span data-slot="preview-tile-badge" className="absolute top-2 right-2">
             {badge}

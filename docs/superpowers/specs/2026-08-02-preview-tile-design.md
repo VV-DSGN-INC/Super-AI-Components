@@ -111,8 +111,12 @@ primitive" answer in §3.
 | --- | --- | --- |
 | `default` | `children` | unchanged |
 | `loading` | pulse skeleton (`animate-pulse bg-muted`) | unchanged |
-| `locked` | locked treatment + `action` | unchanged |
+| `locked` | `children` retained under a scrim + `action` overlaid | unchanged |
 | `failed` | failure treatment + `action` | unchanged |
+
+`locked` deliberately retains `children` rather than replacing them. F1 requires that locked shows
+the shape of what would have been made before the CTA; replacing the content would produce exactly
+the empty box with a padlock that F1 forbids.
 
 The frame's box is identical in all four. This is the whole reason the aspect is fixed: a grid of
 tiles must not reflow when one result resolves, fails, or begins loading.

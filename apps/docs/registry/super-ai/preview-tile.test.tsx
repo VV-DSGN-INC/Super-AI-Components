@@ -73,4 +73,37 @@ describe("PreviewTile", () => {
     render(<PreviewTile label="Static" />);
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
+
+  it("loading and failed replace children; locked keeps them", () => {
+    const child = <span>CHILD</span>;
+
+    const loading = render(<PreviewTile state="loading">{child}</PreviewTile>);
+    expect(screen.queryByText("CHILD")).not.toBeInTheDocument();
+    loading.unmount();
+
+    const failed = render(<PreviewTile state="failed">{child}</PreviewTile>);
+    expect(screen.queryByText("CHILD")).not.toBeInTheDocument();
+    failed.unmount();
+
+    render(<PreviewTile state="locked">{child}</PreviewTile>);
+    expect(screen.getByText("CHILD")).toBeInTheDocument();
+  });
+
+  it("renders the action slot in locked and failed, and keeps label and badge in every state", () => {
+    const locked = render(
+      <PreviewTile
+        state="locked"
+        label="Tile"
+        badge={<span>PRO</span>}
+        action={<button>Upgrade</button>}
+      />,
+    );
+    expect(screen.getByRole("button", { name: "Upgrade" })).toBeInTheDocument();
+    expect(screen.getByText("Tile")).toBeInTheDocument();
+    expect(screen.getByText("PRO")).toBeInTheDocument();
+    locked.unmount();
+
+    render(<PreviewTile state="failed" action={<button>Retry</button>} />);
+    expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
+  });
 });
