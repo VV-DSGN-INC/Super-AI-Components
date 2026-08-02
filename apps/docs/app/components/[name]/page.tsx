@@ -19,6 +19,7 @@ import KbdDemo from "@/components/demos/kbd-demo";
 import MarqueeDemo from "@/components/demos/marquee-demo";
 import NumberTickerDemo from "@/components/demos/number-ticker-demo";
 import OrbitingCirclesDemo from "@/components/demos/orbiting-circles-demo";
+import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
@@ -39,6 +40,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "filter-bar": FilterBarDemo,
   "field-row": FieldRowDemo,
   "gen-settings-bar": GenSettingsBarDemo,
+  "preview-tile": PreviewTileDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
 };
