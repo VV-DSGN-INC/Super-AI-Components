@@ -26,32 +26,20 @@ function EntityRow({
   ...props
 }: EntityRowProps) {
   const interactive = typeof onSelect === "function";
-  const Row = interactive ? "button" : "div";
 
-  return (
-    <Row
-      {...(interactive
-        ? {
-            type: "button" as const,
-            onClick: disabled ? undefined : onSelect,
-            disabled,
-            "aria-pressed": selected,
-          }
-        : {})}
-      data-slot="entity-row"
-      data-state={selected ? "on" : "off"}
-      // min-h keeps a description-less row the same height as one with a
-      // description, so a menu of mixed rows never looks ragged.
-      className={cn(
-        "flex min-h-14 w-full items-center gap-3 rounded-lg px-3 py-2 text-left",
-        interactive && "hover:bg-accent hover:text-accent-foreground transition-colors",
-        interactive && "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
-        selected && "bg-accent text-accent-foreground",
-        disabled && "pointer-events-none opacity-50",
-        className,
-      )}
-      {...props}
-    >
+  // min-h keeps a description-less row the same height as one with a description,
+  // so a menu of mixed rows never looks ragged.
+  const rowClassName = cn(
+    "flex min-h-14 w-full items-center gap-3 rounded-lg px-3 py-2 text-left",
+    interactive && "hover:bg-accent hover:text-accent-foreground transition-colors",
+    interactive && "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
+    selected && "bg-accent text-accent-foreground",
+    disabled && "pointer-events-none opacity-50",
+    className,
+  );
+
+  const content = (
+    <>
       {icon ? (
         <span data-slot="entity-row-icon" className="text-muted-foreground shrink-0">
           {icon}
@@ -75,7 +63,37 @@ function EntityRow({
           {trailing}
         </span>
       ) : null}
-    </Row>
+    </>
+  );
+
+  // Rendered as two explicit branches rather than a dynamic tag: `disabled` is
+  // button-only, so a union element type cannot be checked against div props.
+  if (interactive) {
+    return (
+      <button
+        type="button"
+        onClick={disabled ? undefined : onSelect}
+        disabled={disabled}
+        aria-pressed={selected}
+        data-slot="entity-row"
+        data-state={selected ? "on" : "off"}
+        className={rowClassName}
+        {...(props as React.ComponentProps<"button">)}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div
+      data-slot="entity-row"
+      data-state={selected ? "on" : "off"}
+      className={rowClassName}
+      {...props}
+    >
+      {content}
+    </div>
   );
 }
 
