@@ -152,6 +152,31 @@ Consequence: **the catalog is not final.** Families the new categories touch —
 family the second board produces — should not be treated as closed until the re-sampling is done.
 Primitives (A) and shell/composer families (B, C, D) are unaffected and safe to build now.
 
+### D13 · The fan-out table is derived and drifts — 2026-08-02
+
+Auditing A9–A12 before building them found **three of four rows wrong**, in three distinct ways:
+
+- **A9** — wrong membership. `sidebar-nav` uses A12 not A9, and `recommendation-card` never declared
+  it. The actual consumers are `feature-card-row` (*"Cards are A9 in a card layout"*) and
+  `workspace-switcher` (*"A9 rows with descriptions"*). Still six, a different six.
+- **A10** — listed G5 `node-result`, which D9 cut. D9 never propagated to this table.
+- **A11** — had **no row at all**.
+- **A12** — five consumers claimed, one declared, plus an unlisted one (B3 `sidebar-nav`).
+
+Combined with the A8 audit in D11, **every primitive fan-out row checked so far has been wrong.**
+
+**The table in [concept-model.md](concept-model.md) is a derived summary, not a source of truth.**
+The per-component entries in [component-specs.md](component-specs.md) are authoritative. Every
+future component must audit its consumers against those entries before its API is designed; the
+fan-out row is a hint about where to look, nothing more.
+
+The A11 audit also surfaced that **A6 `field-row` shipped in Wave 0 without the reset slot its own
+spec requires.** Fixed additively: `field-row` gains an optional `reset` prop and, with it, its
+first `registryDependency`. This is safe because shadcn registries copy code into consumer apps, so
+a registry change never affects an already-installed component — only new installs see it. That
+property makes "ship incomplete, complete later" a legitimate strategy here in a way it would not be
+in a conventional component library.
+
 ---
 
 ## 2. Components dropped from the approved spec
