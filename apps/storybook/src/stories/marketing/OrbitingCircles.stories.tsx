@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import OrbitingCirclesDemo from "@/components/marketing/demos/orbiting-circles-demo";
+import OrbitingCirclesDemo from "@/components/demos/orbiting-circles-demo";
 
 const meta: Meta<typeof OrbitingCirclesDemo> = {
   title: "Marketing/Effects/Orbiting Circles",

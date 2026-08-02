@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import NumberTickerDemo from "@/components/marketing/demos/number-ticker-demo";
+import NumberTickerDemo from "@/components/demos/number-ticker-demo";
 
 const meta: Meta<typeof NumberTickerDemo> = {
   title: "Marketing/Text/Number Ticker",

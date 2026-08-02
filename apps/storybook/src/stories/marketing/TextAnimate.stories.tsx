@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import TextAnimateDemo from "@/components/marketing/demos/text-animate-demo";
+import TextAnimateDemo from "@/components/demos/text-animate-demo";
 
 const meta: Meta<typeof TextAnimateDemo> = {
   title: "Marketing/Text/Text Animate",

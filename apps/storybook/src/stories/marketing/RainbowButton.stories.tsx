@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import RainbowButtonDemo from "@/components/marketing/demos/rainbow-button-demo";
+import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 
 const meta: Meta<typeof RainbowButtonDemo> = {
   title: "Marketing/Buttons/Rainbow Button",

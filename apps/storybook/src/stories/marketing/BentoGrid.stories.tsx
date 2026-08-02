@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import BentoGridDemo from "@/components/marketing/demos/bento-grid-demo";
+import BentoGridDemo from "@/components/demos/bento-grid-demo";
 
 const meta: Meta<typeof BentoGridDemo> = {
   title: "Marketing/Layout/Bento Grid",

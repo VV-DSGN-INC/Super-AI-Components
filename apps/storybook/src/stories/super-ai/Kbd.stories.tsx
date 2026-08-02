@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import KbdDemo from "@/components/super-ai/demos/kbd-demo";
+import KbdDemo from "@/components/demos/kbd-demo";
 
 const meta: Meta<typeof KbdDemo> = {
   title: "Super AI/Kbd",

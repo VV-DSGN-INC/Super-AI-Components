@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import TypingAnimationDemo from "@/components/marketing/demos/typing-animation-demo";
+import TypingAnimationDemo from "@/components/demos/typing-animation-demo";
 
 const meta: Meta<typeof TypingAnimationDemo> = {
   title: "Marketing/Text/Typing Animation",

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import AuroraTextDemo from "@/components/marketing/demos/aurora-text-demo";
+import AuroraTextDemo from "@/components/demos/aurora-text-demo";
 
 const meta: Meta<typeof AuroraTextDemo> = {
   title: "Marketing/Text/Aurora Text",

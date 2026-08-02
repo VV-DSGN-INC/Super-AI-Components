@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import FilterBarDemo from "@/components/super-ai/demos/filter-bar-demo";
+import FilterBarDemo from "@/components/demos/filter-bar-demo";
 
 const meta: Meta<typeof FilterBarDemo> = {
   title: "Super AI/Filter Bar",

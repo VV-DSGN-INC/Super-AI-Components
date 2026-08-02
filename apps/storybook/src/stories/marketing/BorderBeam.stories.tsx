@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import BorderBeamDemo from "@/components/marketing/demos/border-beam-demo";
+import BorderBeamDemo from "@/components/demos/border-beam-demo";
 
 const meta: Meta<typeof BorderBeamDemo> = {
   title: "Marketing/Effects/Border Beam",

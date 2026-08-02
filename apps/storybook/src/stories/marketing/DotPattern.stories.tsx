@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import DotPatternDemo from "@/components/marketing/demos/dot-pattern-demo";
+import DotPatternDemo from "@/components/demos/dot-pattern-demo";
 
 const meta: Meta<typeof DotPatternDemo> = {
   title: "Marketing/Effects/Dot Pattern",

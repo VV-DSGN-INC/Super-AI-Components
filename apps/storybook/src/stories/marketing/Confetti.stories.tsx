@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import ConfettiDemo from "@/components/marketing/demos/confetti-demo";
+import ConfettiDemo from "@/components/demos/confetti-demo";
 
 const meta: Meta<typeof ConfettiDemo> = {
   title: "Marketing/Effects/Confetti",

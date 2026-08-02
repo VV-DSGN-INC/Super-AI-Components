@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import ThreadListDemo from "@/components/super-ai/demos/thread-list-demo";
+import ThreadListDemo from "@/components/demos/thread-list-demo";
 
 const meta: Meta<typeof ThreadListDemo> = {
   title: "Super AI/Thread List",

@@ -15,8 +15,11 @@
     "verbatimModuleSyntax": false,
     "baseUrl": ".",
     "paths": {
+      "@/registry/*": ["../docs/registry/*"],
+      "@/components/demos/*": ["../docs/components/demos/*"],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", ".storybook"]
+  "include": ["src", ".storybook"],
+  "exclude": ["../docs/**/*.test.tsx"]
 }

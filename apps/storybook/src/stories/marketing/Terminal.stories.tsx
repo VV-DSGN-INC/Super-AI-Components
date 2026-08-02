@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import TerminalDemo from "@/components/marketing/demos/terminal-demo";
+import TerminalDemo from "@/components/demos/terminal-demo";
 
 const meta: Meta<typeof TerminalDemo> = {
   title: "Marketing/Layout/Terminal",

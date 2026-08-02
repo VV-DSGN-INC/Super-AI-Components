@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import MarqueeDemo from "@/components/marketing/demos/marquee-demo";
+import MarqueeDemo from "@/components/demos/marquee-demo";
 
 const meta: Meta<typeof MarqueeDemo> = {
   title: "Marketing/Layout/Marquee",

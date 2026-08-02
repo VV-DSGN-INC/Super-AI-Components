@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import HeroVideoDialogDemo from "@/components/marketing/demos/hero-video-dialog-demo";
+import HeroVideoDialogDemo from "@/components/demos/hero-video-dialog-demo";
 
 const meta: Meta<typeof HeroVideoDialogDemo> = {
   title: "Marketing/Layout/Hero Video Dialog",

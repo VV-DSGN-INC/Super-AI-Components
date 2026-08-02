@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import StatReadoutDemo from "@/components/super-ai/demos/stat-readout-demo";
+import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 
 const meta: Meta<typeof StatReadoutDemo> = {
   title: "Super AI/Stat Readout",
