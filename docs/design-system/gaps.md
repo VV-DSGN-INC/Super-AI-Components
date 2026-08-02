@@ -1,7 +1,17 @@
 # Gaps — what the catalog is missing
 
-**Status:** Analysis. Nothing here is approved, and most of it is explicitly *not* validated.
-Wireframes for all 32 items are on the working board, column 5 (`MISSING R/T/U1/U2`).
+**Status:** Analysis. Wireframes for all 32 items are on the working board, column 5
+(`MISSING R/T/U1/U2`).
+
+**2026-08-02 (D12) — §6 actioned.** Moves 1 and 2 are done: R1 and R3–R7 are restored, and T1
+`permission-prompt` and T5 `connection-manager` are added. All eight are now in
+[catalog.md](catalog.md), marked `RESTORED`; the catalog stands at 107 items. R2 `run-controls` was
+**not** restored — D9 made it moot.
+
+Move 3 is accepted and outstanding: a second reference board covering voice, extraction, vision,
+data, search and coding will be collected, and the 3+ inclusion test re-run against the combined
+population. Until that happens the twenty U-items in §4 remain candidates, not commitments, and the
+sampling-bias limitation in §1 still stands.
 
 ---
 

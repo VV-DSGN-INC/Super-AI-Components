@@ -114,6 +114,44 @@ requires masonry — which contradicts A8's fixed frame outright. J3 and J4 each
 component. Full reasoning in
 [the preview-tile spec](../superpowers/specs/2026-08-02-preview-tile-design.md) §2–3.
 
+### D12 · Scope settled — 13 blocks, 8 restorations, broaden the sampling — 2026-08-02
+
+Nick's calls on the four remaining open questions. Active catalog moves from **99 to 107 items**.
+
+**Q2 — all thirteen blocks ship.** Full archetype coverage is the point; blocks are the strongest
+differentiator in the catalog. This is the largest remaining chunk of work and the last that can be
+started, since each block composes 5–10 finished components.
+
+**Q4 — `auth-shell` is kept**, as a consequence of Q2. The recommendation to cut it stands on
+record as the first candidate if block scope is ever revisited.
+
+**gaps.md §6 — all eight restorations are actioned (+8 items).** Six are recovered errors rather
+than new scope, and the audio family was the worst of the consolidation:
+
+| # | Component | Family |
+| --- | --- | --- |
+| R1 | `env-status` | N (observability) |
+| R3 | `waveform-editor` | H (timeline) |
+| R4 | `stem-mixer` | H (timeline) |
+| R5 | `track-list` | J (library) |
+| R6 | `tts-composer` | new audio surface |
+| R7 | `voice-clone-recorder` | new audio surface |
+| T1 | `permission-prompt` | N (trust) |
+| T5 | `connection-manager` | M (account) |
+
+R2 `run-controls` is **not** restored — D9 made it moot. T1 is recorded in gaps.md as the single
+most important missing component in the catalog: every tool-calling agent needs it, and it is a
+safety surface rather than a convenience one.
+
+**gaps.md §7 — broaden the sampling rather than narrow the positioning.** A second reference board
+covering voice, extraction, vision, data, search and coding will be collected, and the 3+ inclusion
+test re-run against the combined population. Until then the catalog's scope statement stays as
+written and the twenty U-items in gaps.md §4 remain **candidates, not commitments**.
+
+Consequence: **the catalog is not final.** Families the new categories touch — J, K, N, and any new
+family the second board produces — should not be treated as closed until the re-sampling is done.
+Primitives (A) and shell/composer families (B, C, D) are unaffected and safe to build now.
+
 ---
 
 ## 2. Components dropped from the approved spec
@@ -254,6 +292,9 @@ subset is six: `home-shell`, `chat-shell`, `studio-shell`, `flow-shell`, `librar
 **Post-D9:** `flow-shell` is cut, so the choice is now thirteen blocks vs five: `home-shell`,
 `chat-shell`, `studio-shell`, `library-shell`, `settings-shell`.
 
+**Resolved 2026-08-02 (D12): all thirteen ship.** Nick's call. Blocks are the strongest
+differentiator and full archetype coverage is the point of the catalog.
+
 ### Q3 · Build order — home-first or flow-first?
 
 The proposal above is home-first. The approved spec argues flow-first because Flow Builder exists as
@@ -265,12 +306,16 @@ implementation matters more.
 
 **Resolved by D9 (2026-07-31):** the node builder is cut — home-first by elimination.
 
-### Q4 · Does `auth-shell` belong in this registry?
+### Q4 · Does `auth-shell` belong in this registry? — RESOLVED
 
 It is the one archetype with no AI content at all. UI-only is consistent with the non-goals, but a
 sign-in screen is not what anyone installs an AI component registry for.
 
 **Recommendation:** cut it. It costs catalog credibility more than it adds.
+
+**Resolved 2026-08-02 (D12): kept.** Follows from the Q2 answer — all thirteen blocks ship, and
+O14 is one of them. The recommendation above is overridden, not withdrawn: if block scope is ever
+revisited, `auth-shell` is the first candidate to drop.
 
 ### Q5 · Is `preview-tile` one primitive or two? — RESOLVED
 
