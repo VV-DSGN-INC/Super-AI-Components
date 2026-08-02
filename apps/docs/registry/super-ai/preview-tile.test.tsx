@@ -11,7 +11,7 @@ describe("PreviewTile", () => {
     const frames = states.map((state) => {
       const { unmount } = render(
         <PreviewTile state={state}>
-          <img alt="" src="data:," />
+          <div data-testid="content" />
         </PreviewTile>,
       );
       const className = frameClassName();
