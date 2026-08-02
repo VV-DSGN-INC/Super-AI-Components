@@ -2,7 +2,9 @@
 
 **Date:** 2026-06-10
 **Repo:** https://github.com/weeeha/Super-AI-Components
-**Status:** Approved design, pending final review
+**Status:** Approved design. **§5 (Catalog) and §11 (Implementation sequencing) were superseded
+2026-08-02** by [`docs/design-system/`](../../design-system/README.md) — see decision D10. All other
+sections remain current.
 
 ## 1. Overview
 
@@ -91,6 +93,11 @@ Thirty-seven patterns observed across real AI products. These are binding design
 14. Access is a matrix, not a toggle — separate scopes (workspace/public), each with levels.
 
 ## 5. Catalog
+
+> **SUPERSEDED 2026-08-02** by [`docs/design-system/catalog.md`](../../design-system/catalog.md)
+> (decision D10 in [decisions.md](../../design-system/decisions.md), resolving Q1). The active
+> catalog is **99 items**: 12 primitives · 74 components · 13 blocks. This section is retained as a
+> record of the original derivation — do not build from it.
 
 Three tiers: **primitives** (shared DNA), **components** (leaf installables), **blocks** (composed templates). Stretch items marked `*` ship last within their wave.
 
@@ -343,6 +350,11 @@ Stack: TypeScript, React 19, Tailwind v4 (CSS variables mode), Next.js (App Rout
 Next.js app on Vercel. Per-component pages: live demo, install command, props table, states showcase, composition notes (which AI Elements/shadcn pieces it builds on). Catalog index grouped by kit; public roadmap page listing unshipped waves. Functional and clean at launch; a distinctive visual brand pass is a later, separate design effort.
 
 ## 11. Implementation sequencing
+
+> **SUPERSEDED 2026-08-02** by §5 of
+> [`docs/design-system/decisions.md`](../../design-system/decisions.md) (decision D10, resolving
+> Q1). The active sequencing is home-first with Wave 5 struck — see D9. This section is retained as
+> a record.
 
 One spec (this document); one implementation plan per wave.
 

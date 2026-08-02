@@ -12,7 +12,7 @@ npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
 
 Wave 0 ships 7 primitives (`kbd`, `cost-chip`, `date-section`, `choice-chips`, `filter-bar`,
 `field-row`, `gen-settings-bar`) and 2 pilot components (`shortcuts-sheet`, `thread-list`).
-Full catalog and roadmap: see the design spec below.
+Full catalog and roadmap: `docs/design-system/` (see below).
 
 **Marketing wave 1** adds a second registry namespace — 15 landing-page mini-components
 (`bento-grid`, `marquee`, `terminal`, `hero-video-dialog`, `number-ticker`, `text-animate`,
@@ -35,11 +35,13 @@ pnpm build            # build the docs site
 apps/docs/scripts/consumer-test.sh   # install everything into a fresh app
 ```
 
-- Design spec: `docs/superpowers/specs/2026-06-10-super-ai-components-design.md`
+- **Catalog and roadmap (authoritative):** `docs/design-system/` — 99-item catalog, concept model,
+  per-component specs, decisions and open questions, derived from a reference board of real AI
+  products. Approved 2026-08-02 (D10); supersedes §5 and §11 of the design spec.
+- Design spec: `docs/superpowers/specs/2026-06-10-super-ai-components-design.md` — current except
+  §5 and §11, which are retained there as superseded records.
 - Flow Kit spec: `docs/superpowers/specs/2026-06-11-flow-kit-design.md` + `docs/flow-kit-inventory.md`
+  — **cut from scope 2026-07-31** (D9); retained as a record.
 - Wave 0 plan: `docs/superpowers/plans/2026-06-11-wave-0-foundation.md`
 - Marketing wave 1: `docs/superpowers/specs/2026-07-31-marketing-mini-components-design.md` +
   `docs/superpowers/plans/2026-07-31-marketing-mini-components-wave-1.md`
-- **Proposed catalog re-cut:** `docs/design-system/` — catalog, concept model, per-component specs
-  and open questions, derived from a reference board of real AI products. Supersedes §5 and §11 of
-  the design spec if approved.
