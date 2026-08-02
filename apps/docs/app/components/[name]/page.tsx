@@ -23,6 +23,7 @@ import OrbitingCirclesDemo from "@/components/demos/orbiting-circles-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
+import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
@@ -45,6 +46,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "preview-tile": PreviewTileDemo,
   "entity-row": EntityRowDemo,
   "section-header": SectionHeaderDemo,
+  "reset-affordance": ResetAffordanceDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
 };

@@ -62,6 +62,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Primitives",
   },
   {
+    name: "reset-affordance",
+    title: "Reset Affordance",
+    description: "The reset control beside every editable value; row and group scope.",
+    group: "Primitives",
+  },
+  {
     name: "shortcuts-sheet",
     title: "Shortcuts Sheet",
     description: "Keyboard shortcuts cheatsheet dialog.",

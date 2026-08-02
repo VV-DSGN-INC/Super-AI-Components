@@ -7,10 +7,15 @@ import { cn } from "@/lib/utils";
 interface FieldRowProps extends Omit<React.ComponentProps<"div">, "children"> {
   label: string;
   hint?: string;
+  /**
+   * Optional trailing slot, normally a `reset-affordance` (A11). It is what makes
+   * a row feel bound to a value. Omitting it renders exactly what shipped before.
+   */
+  reset?: React.ReactNode;
   children: (controlId: string, describedBy?: string) => React.ReactNode;
 }
 
-function FieldRow({ label, hint, className, children, ...props }: FieldRowProps) {
+function FieldRow({ label, hint, reset, className, children, ...props }: FieldRowProps) {
   const id = React.useId();
   const hintId = hint ? `${id}-hint` : undefined;
   return (
@@ -21,6 +26,7 @@ function FieldRow({ label, hint, className, children, ...props }: FieldRowProps)
         </label>
         <div data-slot="field-row-control" className="flex items-center gap-2">
           {children(id, hintId)}
+          {reset ? <span data-slot="field-row-reset">{reset}</span> : null}
         </div>
       </div>
       {hint ? (
