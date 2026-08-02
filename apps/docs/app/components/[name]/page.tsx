@@ -27,6 +27,7 @@ import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
+import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
@@ -47,6 +48,7 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "entity-row": EntityRowDemo,
   "section-header": SectionHeaderDemo,
   "reset-affordance": ResetAffordanceDemo,
+  "stat-readout": StatReadoutDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
 };

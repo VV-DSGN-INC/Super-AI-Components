@@ -68,6 +68,12 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Primitives",
   },
   {
+    name: "stat-readout",
+    title: "Stat Readout",
+    description: "Compact key/value metadata; copyable values, em-dash for absent ones.",
+    group: "Primitives",
+  },
+  {
     name: "shortcuts-sheet",
     title: "Shortcuts Sheet",
     description: "Keyboard shortcuts cheatsheet dialog.",
