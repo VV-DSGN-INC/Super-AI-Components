@@ -50,6 +50,30 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Primitives",
   },
   {
+    name: "entity-row",
+    title: "Entity Row",
+    description: "Icon, title, description and trailing slot in a fixed-height row.",
+    group: "Primitives",
+  },
+  {
+    name: "section-header",
+    title: "Section Header",
+    description: "Group title with optional count, action and collapse.",
+    group: "Primitives",
+  },
+  {
+    name: "reset-affordance",
+    title: "Reset Affordance",
+    description: "The reset control beside every editable value; row and group scope.",
+    group: "Primitives",
+  },
+  {
+    name: "stat-readout",
+    title: "Stat Readout",
+    description: "Compact key/value metadata; copyable values, em-dash for absent ones.",
+    group: "Primitives",
+  },
+  {
     name: "shortcuts-sheet",
     title: "Shortcuts Sheet",
     description: "Keyboard shortcuts cheatsheet dialog.",

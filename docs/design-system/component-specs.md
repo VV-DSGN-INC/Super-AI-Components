@@ -73,6 +73,7 @@ Wireframes for every entry are on the working board, column 4 — see
 - Numeric inputs carry their unit as a suffix inside the field (%, s, ×, px) — never as separate
   label text.
 - A11 `reset-affordance` is the optional trailing slot. It is what makes a row feel bound to a value.
+  Shipped 2026-08-02 as the additive `reset` prop; omitting it renders what Wave 0 shipped.
 
 **Evidence:** CapCut, Canva, Spline and Tripo all ship this row. After `preview-tile`, the highest-reuse primitive.
 
@@ -107,8 +108,9 @@ out of scope — see gaps.md §4 and D11.
 - Icon · title · description · trailing slot. The trailing slot takes a badge, chevron, switch or
   cost chip without changing the row grid.
 - Description is optional but row height is not — a menu of mixed rows must not look ragged.
-- Six consumers: `skill-menu`, `ai-tools-menu`, `action-stack`, `sidebar-nav`, `source-panel`,
-  `recommendation-card`.
+- Six consumers, corrected by audit 2026-08-02 (D13): `skill-menu`, `ai-tools-menu`,
+  `action-stack`, `source-panel`, `feature-card-row`, `workspace-switcher`. `sidebar-nav` uses A12,
+  not A9, and `recommendation-card` never declared it.
 
 **Evidence:** After the card, the most-repeated pattern on the board. Manus skills, Freepik AI tools, Zapier starters, Tripo settings, Lovable connectors.
 
@@ -138,8 +140,8 @@ out of scope — see gaps.md §4 and D11.
 
 - Title · count · action · collapse are four optional slots on one baseline, so stacked sections read
   as a consistent rhythm.
-- "View all" is a link, never a button — it navigates, it does not act. Holds across all five
-  consumers.
+- "View all" is a link, never a button — it navigates, it does not act. The pattern is well
+  evidenced on the board; of the listed consumers only I1 and B3 declare A12 (audit, D13).
 - The collapsible variant owns its disclosure state; the panel below is a slot it knows nothing about.
 
 **Evidence:** Every tool panel on the board is a stack of these — CapCut, Canva, Fotor, Simplified, Spline.

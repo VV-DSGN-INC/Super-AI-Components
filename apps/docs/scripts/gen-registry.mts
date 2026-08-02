@@ -32,6 +32,7 @@ type Item = {
 const extras: Record<string, { dependencies?: string[]; registryDependencies?: string[] }> = {
   "cost-chip": { dependencies: ["lucide-react"] },
   "filter-bar": { dependencies: ["lucide-react"] },
+  "field-row": { registryDependencies: [self("reset-affordance")] },
   "shortcuts-sheet": { registryDependencies: ["dialog", self("kbd")] },
   "thread-list": {
     registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],

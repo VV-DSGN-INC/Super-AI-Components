@@ -43,12 +43,13 @@ existing.
 | Primitive | Consumers |
 | --------- | --------- |
 | **A8 preview-tile** | E4 preset-grid · H5 frame-strip · I1 tool-panel · F1 result-card · C4 recent-grid (· F2 generation-grid, transitively through F1) |
-| **A9 entity-row** | D6 skill-menu · I4 ai-tools-menu · F4 action-stack · B3 sidebar-nav · K5 source-panel · C5 recommendation-card |
+| **A9 entity-row** | D6 skill-menu · I4 ai-tools-menu · F4 action-stack · K5 source-panel · C3 feature-card-row · B2 workspace-switcher |
 | **A6 field-row** | E3 parameter-panel · I2 property-inspector · G9 node-inspector · M1 settings-dialog · E1 generation-panel |
 | **A2 cost-chip** | E5 run-button · F4 action-stack · M5 paywall-message · M2 credits-indicator · G6 model-bar |
 | **A7 gen-settings-bar** | G6 model-bar · D1 media-prompt-bar · E1 generation-panel |
-| **A10 stat-readout** | F3 asset-detail · N5 run-inspector · N6 usage-dashboard · G5 node-result |
-| **A12 section-header** | I1 tool-panel · C3 feature-card-row · L4 whats-new · J2 filter-panel · J1 asset-library |
+| **A10 stat-readout** | F3 asset-detail · N5 run-inspector · N6 usage-dashboard *(unstated)* |
+| **A11 reset-affordance** | A6 field-row · I2 property-inspector · A12 section-header *(group scope)* |
+| **A12 section-header** | I1 tool-panel · B3 sidebar-nav · C3 feature-card-row · L4 whats-new · J2 filter-panel · J1 asset-library *(only I1 and B3 declared)* |
 | **A3 date-section** | B6 thread-list · F2 generation-grid · J4 artifact-grid · J5 record-list |
 
 **`preview-tile` is the load-bearing one** — five direct consumers plus one transitive, across four
