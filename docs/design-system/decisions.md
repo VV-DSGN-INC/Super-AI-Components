@@ -73,6 +73,29 @@ Consequences:
 - G specs and wireframes are **retained as records** — marked cut, not deleted — in the catalog,
   spec docs, and on the Figma boards.
 
+### D11 · `preview-tile` is one primitive — 2026-08-02
+
+Resolves Q5. One primitive, not two.
+
+(D10 is reserved for the catalog promotion decision, which is still open in its own PR.)
+
+Q5's content list — image, video, colour swatch, text excerpt, 3D model — is what made two primitives
+look necessary. Two entries on it do not survive an audit of the actual consumers:
+
+- **Text excerpt** came from J4 `artifact-grid`, which is not an A8 consumer. Its own spec makes the
+  excerpt load-bearing and never mentions a thumbnail.
+- **Audio** was already excluded in [gaps.md](gaps.md) §4: U3 `voice-picker` needs play/pause,
+  exclusive playback and a shared audition sentence. That is a control, not a preview.
+
+What remains is visual media at a fixed aspect ratio, which one component covers with an untyped
+children slot that never branches on content type.
+
+The audit also corrected the fan-out from eleven consumers to five direct plus one transitive. C3
+declares A9, E2 is entity-row shaped, J4 is text-first, J6 is a dialog, and J3 `explore-gallery`
+requires masonry — which contradicts A8's fixed frame outright. J3 and J4 each need their own
+component. Full reasoning in
+[the preview-tile spec](../superpowers/specs/2026-08-02-preview-tile-design.md) §2–3.
+
 ---
 
 ## 2. Components dropped from the approved spec
@@ -229,10 +252,13 @@ sign-in screen is not what anyone installs an AI component registry for.
 
 **Recommendation:** cut it. It costs catalog credibility more than it adds.
 
-### Q5 · Is `preview-tile` one primitive or two?
+### Q5 · Is `preview-tile` one primitive or two? — RESOLVED
 
 Does one API genuinely cover image, video, colour swatch, text excerpt and 3D model content?
 Prototype before Wave 1 commits to it.
+
+**Resolved 2026-08-02 (D11):** one primitive. The content types that argued for a second belong to
+components that are not consumers.
 
 ### Q6 · Board sections with no coverage
 

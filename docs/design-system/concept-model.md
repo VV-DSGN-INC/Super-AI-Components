@@ -42,7 +42,7 @@ existing.
 
 | Primitive | Consumers |
 | --------- | --------- |
-| **A8 preview-tile** | E4 preset-grid · F1 result-card · F2 generation-grid · H5 frame-strip · J4 artifact-grid · I1 tool-panel · J6 template-detail · J3 explore-gallery · C4 recent-grid · E2 model-picker · C3 feature-card-row |
+| **A8 preview-tile** | E4 preset-grid · H5 frame-strip · I1 tool-panel · F1 result-card · C4 recent-grid (· F2 generation-grid, transitively through F1) |
 | **A9 entity-row** | D6 skill-menu · I4 ai-tools-menu · F4 action-stack · B3 sidebar-nav · K5 source-panel · C5 recommendation-card |
 | **A6 field-row** | E3 parameter-panel · I2 property-inspector · G9 node-inspector · M1 settings-dialog · E1 generation-panel |
 | **A2 cost-chip** | E5 run-button · F4 action-stack · M5 paywall-message · M2 credits-indicator · G6 model-bar |
@@ -51,9 +51,15 @@ existing.
 | **A12 section-header** | I1 tool-panel · C3 feature-card-row · L4 whats-new · J2 filter-panel · J1 asset-library |
 | **A3 date-section** | B6 thread-list · F2 generation-grid · J4 artifact-grid · J5 record-list |
 
-**`preview-tile` is the load-bearing one** — eleven consumers across six unrelated families. It is
-the first thing to prototype, because if its API does not hold across image / video / colour / text
-content, eleven components inherit the problem.
+**`preview-tile` is the load-bearing one** — five direct consumers plus one transitive, across four
+families. It remains the highest fan-out primitive in the catalog and is still the first thing to
+build, because if its API does not hold across image / video / colour / 3D content, every one of
+them inherits the problem.
+
+An earlier draft listed eleven consumers. Six were disproved by their own entries in
+component-specs.md: C3 declares A9, E2 is entity-row shaped, J4 is text-first, J6 is a dialog, and
+J3 requires masonry — which contradicts A8's fixed frame outright. See the audit in
+[the preview-tile spec](../superpowers/specs/2026-08-02-preview-tile-design.md) §2 and D11.
 
 ---
 
