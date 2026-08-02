@@ -21,6 +21,7 @@ interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect">
   label?: React.ReactNode;
   labelPlacement?: "overlay" | "below" | "none";
   badge?: React.ReactNode;
+  onSelect?: () => void;
 }
 
 function PreviewTile({
@@ -30,10 +31,14 @@ function PreviewTile({
   label,
   labelPlacement = "overlay",
   badge,
+  onSelect,
   className,
   children,
   ...props
 }: PreviewTileProps) {
+  const interactive = typeof onSelect === "function";
+  const Frame = interactive ? "button" : "div";
+
   return (
     <div
       data-slot="preview-tile"
@@ -41,11 +46,17 @@ function PreviewTile({
       className={cn("flex flex-col gap-2", className)}
       {...props}
     >
-      <div
+      <Frame
+        // A native button gives Enter/Space, focus and disabled semantics for free.
+        // Decorative tiles stay a div so they never enter the tab order.
+        {...(interactive
+          ? { type: "button" as const, onClick: onSelect, "aria-pressed": selected }
+          : {})}
         data-slot="preview-tile-frame"
         className={cn(
           "bg-muted relative w-full overflow-hidden rounded-lg",
           ASPECT[aspect],
+          interactive && "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
           // A ring is a box-shadow: zero layout contribution, so selecting never
           // reflows the grid. A border would add 2px per side. This is the reason
           // E4 preset-grid and H5 frame-strip both specify a ring.
@@ -66,7 +77,7 @@ function PreviewTile({
             {label}
           </span>
         ) : null}
-      </div>
+      </Frame>
       {label && labelPlacement === "below" ? (
         <span data-slot="preview-tile-label" className="text-foreground truncate text-sm">
           {label}

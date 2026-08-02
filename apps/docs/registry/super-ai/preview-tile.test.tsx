@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { PreviewTile } from "./preview-tile";
 
 const frameClassName = () => document.querySelector('[data-slot="preview-tile-frame"]')!.className;
@@ -48,5 +49,28 @@ describe("PreviewTile", () => {
     render(<PreviewTile badge={<span>17 credits</span>} />);
     const frame = document.querySelector('[data-slot="preview-tile-frame"]')!;
     expect(frame.textContent).toContain("17 credits");
+  });
+
+  it("is a button carrying aria-pressed when selectable", async () => {
+    const onSelect = vi.fn();
+    render(<PreviewTile label="Tile" onSelect={onSelect} selected />);
+    const button = screen.getByRole("button");
+    expect(button).toHaveAttribute("aria-pressed", "true");
+    await userEvent.click(button);
+    expect(onSelect).toHaveBeenCalledOnce();
+  });
+
+  it("fires onSelect on Enter and Space", async () => {
+    const onSelect = vi.fn();
+    render(<PreviewTile onSelect={onSelect} />);
+    screen.getByRole("button").focus();
+    await userEvent.keyboard("{Enter}");
+    await userEvent.keyboard(" ");
+    expect(onSelect).toHaveBeenCalledTimes(2);
+  });
+
+  it("is not focusable and exposes no button when not selectable", () => {
+    render(<PreviewTile label="Static" />);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
