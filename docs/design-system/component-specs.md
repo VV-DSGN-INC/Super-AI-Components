@@ -497,6 +497,9 @@ Wireframes for every entry are on the working board, column 4 — see
 
 # G · Canvas & nodes
 
+> **CUT 2026-07-31** ([decisions.md](decisions.md) D9). The node builder is out of scope. Specs
+> retained as a record; working code parked unmerged on `wave-2-flow-foundation`.
+
 ## G1 `flow-canvas`
 **Extends:** `@ai-elements/canvas`
 

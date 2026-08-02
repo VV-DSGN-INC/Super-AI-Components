@@ -52,6 +52,27 @@ track lane can be used standalone.
 A chat title bar is `app-topbar` with fewer slots filled. Same for `credits-indicator`, which moves
 into the monetization family as M2.
 
+### D9 · Node builder cut from scope — 2026-07-31
+
+Nick's call at the Wave-0 status review: **the node builder does not ship.** Cut: G1–G9,
+`useFlowRunner`, and O5 `flow-shell` — 11 items, taking the catalog from 110 to **99 active items**
+(12 primitives · 74 components · 13 blocks).
+
+Consequences:
+
+- The unmerged `wave-2-flow-foundation` branch (10 flow components + the hook, ~4k lines with
+  tests, built against the approved spec) stays **parked, not merged**. It remains on the remote as
+  the reference implementation; reversing this decision starts there.
+- Q3 (build order) resolves by elimination: home-first.
+- Q2's defensible subset drops to five shells: home, chat, studio, library, settings.
+- R2 `run-controls` in [gaps.md](gaps.md) is moot — do not restore it.
+- F3 is moot: `model-bar` (G6) no longer exists to drift from `gen-settings-bar` (A7).
+- F2 is unaffected: none of `preview-tile`'s eleven consumers were G items.
+- In the sequencing table below, Wave 5 is struck; later wave numbers are kept as-is so
+  cross-references hold.
+- G specs and wireframes are **retained as records** — marked cut, not deleted — in the catalog,
+  spec docs, and on the Figma boards.
+
 ---
 
 ## 2. Components dropped from the approved spec
@@ -152,7 +173,7 @@ Replaces §11 of the approved spec. Each wave ships components plus the block th
 | **2** | B (app shell) + C (home) + `home-shell` | Fewest new dependencies; produces a demonstrable page fastest |
 | **3** | D (composer) + N1/N3 + `chat-shell` | Composes AI Elements; second-cheapest shell |
 | **4** | E + F + `generation-shell` + the cost contract placements | The lifecycle core; monetization states land here, not in Wave 12 |
-| **5** | G + `useFlowRunner` + `flow-shell` | Strongest differentiation, working reference implementation to lift from |
+| **5** | ~~G + `useFlowRunner` + `flow-shell`~~ | **Cut (D9, 2026-07-31).** Wave numbers 6–12 kept unchanged |
 | **6** | I + H + `studio-shell` + `timeline-shell` | The heaviest shells; two blocks from one component set |
 | **7** | J + `library-shell` + `explore-shell` + `artifact-shell` | Three shells from one family |
 | **8** | K + `notebook-shell` + `docs-shell` | Documents and grounding |
@@ -187,6 +208,9 @@ subset is six: `home-shell`, `chat-shell`, `studio-shell`, `flow-shell`, `librar
 
 **No recommendation** — this is a scope call, not a design call.
 
+**Post-D9:** `flow-shell` is cut, so the choice is now thirteen blocks vs five: `home-shell`,
+`chat-shell`, `studio-shell`, `library-shell`, `settings-shell`.
+
 ### Q3 · Build order — home-first or flow-first?
 
 The proposal above is home-first. The approved spec argues flow-first because Flow Builder exists as
@@ -195,6 +219,8 @@ a reference implementation to lift from, which is a real de-risking argument.
 **Recommendation:** home-first, because Wave 2 then produces something installable and demonstrable
 with almost no new primitives. But flow-first is a legitimate choice if momentum from an existing
 implementation matters more.
+
+**Resolved by D9 (2026-07-31):** the node builder is cut — home-first by elimination.
 
 ### Q4 · Does `auth-shell` belong in this registry?
 
