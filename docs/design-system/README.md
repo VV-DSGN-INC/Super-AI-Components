@@ -1,7 +1,9 @@
 # Super-AI-Components — design system documentation
 
-**Status:** Proposed. Not yet approved; supersedes nothing until §5 of the
-[design spec](../superpowers/specs/2026-06-10-super-ai-components-design.md) is formally replaced.
+**Status:** **Approved 2026-08-02** (decision D10 in [decisions.md](decisions.md), resolving Q1).
+This is the authoritative catalog: it supersedes §5 and §11 of the
+[design spec](../superpowers/specs/2026-06-10-super-ai-components-design.md), which are retained
+there as records. All other sections of that spec remain current.
 **Date:** 2026-07-28
 **2026-07-31:** the node builder — family G, `useFlowRunner`, O5 `flow-shell` — was **cut from
 scope** (decision D9 in [decisions.md](decisions.md)). Active catalog: **99 items** (was 110).

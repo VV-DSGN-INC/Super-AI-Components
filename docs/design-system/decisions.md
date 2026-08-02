@@ -73,11 +73,29 @@ Consequences:
 - G specs and wireframes are **retained as records** — marked cut, not deleted — in the catalog,
   spec docs, and on the Figma boards.
 
+### D10 · This catalog is promoted over the spec — 2026-08-02
+
+Resolves Q1. `docs/design-system/` is now the **authoritative catalog and sequencing**. §5 and §11
+of the [design spec](../superpowers/specs/2026-06-10-super-ai-components-design.md) are marked
+superseded and retained there as records, following the same treatment D9 gave family G.
+
+Reason: two live catalogs guarantee divergence, and the spec's §5 no longer matches anything the
+repo intends to build — it predates both the re-cut and the D9 cut.
+
+Scope of the promotion:
+
+- **§5 and §11 only.** Every other section of the design spec — positioning, principles,
+  architecture, registry mechanics, repo structure, non-goals, risks — remains current and
+  authoritative. This is not a wholesale replacement.
+- The open questions Q2, Q4, Q5 and Q6 are **not** resolved by this. Promotion makes this document
+  the place where they get answered; it does not answer them.
+- The scope-statement mismatch raised in [gaps.md](gaps.md) §7 — the catalog covers creative and
+  agentic AI products, while the spec positions the registry for AI products generally — is
+  **inherited, not settled**. It sits against §2 of the spec, which this decision does not touch.
+
 ### D11 · `preview-tile` is one primitive — 2026-08-02
 
 Resolves Q5. One primitive, not two.
-
-(D10 is reserved for the catalog promotion decision, which is still open in its own PR.)
 
 Q5's content list — image, video, colour swatch, text excerpt, 3D model — is what made two primitives
 look necessary. Two entries on it do not survive an audit of the actual consumers:
@@ -215,13 +233,15 @@ page soonest; Flow moves to Wave 5. Both orderings are defensible — see open q
 
 These need a decision before implementation starts.
 
-### Q1 · Promote this over §5 of the approved spec?
+### Q1 · Promote this over §5 of the approved spec? — RESOLVED
 
 The catalog here replaces §5 and §11 of
 [the design spec](../superpowers/specs/2026-06-10-super-ai-components-design.md). Options: promote it,
 revise it first, or keep both and reconcile later.
 
 **Recommendation:** promote. Keeping two catalogs guarantees they diverge.
+
+**Resolved 2026-08-02 (D10):** promoted. §5 and §11 are marked superseded and retained as records.
 
 ### Q2 · All 14 shells, or a defensible 6?
 
