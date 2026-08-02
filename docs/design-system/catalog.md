@@ -1,11 +1,17 @@
 # Catalog
 
-**99 active items: 12 primitives · 74 components · 13 blocks.** Family G (canvas & nodes, incl.
+**107 active items: 12 primitives · 82 components · 13 blocks.** Family G (canvas & nodes, incl.
 the headless `useFlowRunner`) and O5 `flow-shell` were **cut 2026-07-31** — see
-[decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Per-component
-requirements are in [component-specs.md](component-specs.md) and [block-specs.md](block-specs.md).
+[decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Eight components
+were **restored 2026-08-02** (D12) from the gaps analysis. Per-component requirements are in
+[component-specs.md](component-specs.md) and [block-specs.md](block-specs.md).
 
-`NEW` = not in the approved spec. `KEEP` = already shipped in Wave 0.
+`NEW` = not in the approved spec. `KEEP` = already shipped. `RESTORED` = re-added by D12 from
+[gaps.md](gaps.md) §2–3.
+
+> **The catalog is not final.** D12 chose to broaden the reference sampling rather than narrow the
+> positioning. Families J, K and N — and any new family the second board produces — should not be
+> treated as closed until the re-sampling is done. Families A, B, C and D are unaffected.
 
 ---
 
@@ -62,7 +68,7 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | D5 | `quote-reply` | Select content → quoted block in composer | text range · image region · table cell · timeline range | Card |
 | D6 | `skill-menu` `NEW` | Select-with-preview menu of agent skills | search · hover preview · new-skill footer | Command, Popover |
 
-## E · Generation & parameters — 8
+## E · Generation & parameters — 10
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -74,6 +80,8 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | E6 | `generation-queue` | Pending slots with progress | queued · running % · done · failed · cancel | Skeleton, Progress |
 | E7 | `member-gate-row` `NEW` | Feature row locked behind a plan | locked+badge · unlocked · trial-available · inline upsell | Switch, Badge |
 | E8 | `generation-wizard` `NEW` | Multi-step generate dialog | stepper · preview pane · Skip / Back / primary | Dialog, Tabs |
+| E9 | `tts-composer` `RESTORED` | Script editor with per-segment voice, emotion, speed | per-segment regenerate · segment select · whole-script play | Textarea, A6 |
+| E10 | `voice-clone-recorder` `RESTORED` | Guided sample recording | prompt script · level metering · retake · consent capture | Progress, Alert-dialog |
 
 **Consolidation:** E1–E5 replace the spec's `style-picker`, `palette-picker`, `tone-selector`,
 `shot-controls`, `music-brief` and `brush-controls`.
@@ -110,7 +118,7 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 
 **Consolidation:** the spec's 10 modality node presets become demo recipes on G2, not registry items.
 
-## H · Timeline & transport — 5
+## H · Timeline & transport — 7
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -119,6 +127,8 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | H3 | `track-lane` `NEW` | One timeline track | filmstrip · waveform · text · adjustment; mute · lock · trim handles | — |
 | H4 | `transcript-editor` | Edit media by editing text | word-level select · speaker labels · inline media chips · strikethrough | — |
 | H5 | `frame-strip` `NEW` | Keyframe / page / artboard strip | video frames · slide pages · in/out picker · add · reorder | built on A8 |
+| H6 | `waveform-editor` `RESTORED` | Sample-level audio editing | region select · zoom to sample · scrub · region actions | — |
+| H7 | `stem-mixer` `RESTORED` | Per-stem lanes with mute/solo/volume/pan | exclusive vs additive solo · live meters · stem lineage | Slider, Progress |
 
 **Dropped:** `timeline-editor` as a monolith — it is H1 + H2 + H3 composed, which makes it a block.
 
@@ -132,7 +142,7 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | I4 | `ai-tools-menu` | Object-scoped AI actions | grouped rows with cost chips | A9 |
 | I5 | `drawing-tools` `NEW` | Tool + shape flyouts | tool rail · shape rail · size/hardness/opacity · swatch grid · mask mode | Toggle-group, Popover |
 
-## J · Library, filtering & discovery — 6
+## J · Library, filtering & discovery — 7
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -142,6 +152,7 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | J4 | `artifact-grid` `NEW` | Document/artifact cards grouped by session | type badge · excerpt · edited-ago · view count · privacy icon | Card |
 | J5 | `record-list` `NEW` | Project / scenario rows | app-icon cluster · meta · enable toggle · run status · overflow | Table, Switch |
 | J6 | `template-detail` `NEW` | Template preview modal | preview + thumbnail strip · option selects · author + follow · more-like-this | Dialog, Carousel |
+| J7 | `track-list` `RESTORED` | Music library rows | artwork · tags · inline waveform · BPM · key | Table |
 
 ## K · Documents & knowledge — 6
 
@@ -168,7 +179,7 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | L5 | `shortcuts-sheet` `KEEP` | Shortcuts cheatsheet | sectioned · searchable · pinned header · controls-primer variant | Dialog, A1 |
 | L6 | `onboarding-wizard` | Multi-step first-run survey / setup | question + choice cards · dot progress · Back/Skip · split-panel variant | Card, Progress |
 
-## M · Account, plan & monetization — 6
+## M · Account, plan & monetization — 7
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -178,8 +189,9 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | M4 | `pricing-table` | Billing toggle + plan cards | monthly/yearly + save badge · grouped feature lists · add-on row with switch | Card, Toggle-group |
 | M5 | `paywall-message` `NEW` | Upgrade card inside a result or message stream | locked-model · quota-exhausted · feature-locked | Card |
 | M6 | `rate-limit-banner` | Cooldown countdown | your-limit · provider-capacity · live countdown · notify-me | Alert |
+| M7 | `connection-manager` `RESTORED` | BYO keys and local models | not-set · valid · invalid · unreachable; test-connection; download + hardware reqs | Card, Input |
 
-## N · Feedback, trust & observability — 6
+## N · Feedback, trust & observability — 8
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -189,6 +201,8 @@ requirements are in [component-specs.md](component-specs.md) and [block-specs.md
 | N4 | `trace-timeline` | Waterfall of steps / tool calls / LLM calls | collapsed · expanded · errored · retries as siblings | Collapsible |
 | N5 | `run-inspector` | Span detail: I/O, tokens, cost, errors | input · output · metadata · error tabs | Tabs, A10 |
 | N6 | `usage-dashboard` | Aggregate cost / token / latency | period select · summary cards with deltas · per-model breakdown | Chart, Card |
+| N7 | `env-status` `RESTORED` | Per-provider reachability | ok · degraded · key-invalid · not-running | Badge, A9 |
+| N8 | `permission-prompt` `RESTORED` | Agent asks before a side effect | allow once · always allow · deny · edit-first; visible revocable scope | Alert-dialog |
 
 **Dropped:** `agent-board`, `eval-board`, `model-compare`, `response-diff`, `review-queue` —
 single-product patterns on this board.
@@ -222,19 +236,19 @@ single-product patterns on this board.
 | B — App shell & navigation | 8 |
 | C — Home & launcher | 5 |
 | D — Composer & context | 6 |
-| E — Generation & parameters | 8 |
+| E — Generation & parameters | 10 |
 | F — Results & assets | 7 |
 | G — Canvas & nodes | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9) |
-| H — Timeline & transport | 5 |
+| H — Timeline & transport | 7 |
 | I — Editor surfaces | 5 |
-| J — Library, filtering & discovery | 6 |
+| J — Library, filtering & discovery | 7 |
 | K — Documents & knowledge | 6 |
 | L — First-run & onboarding | 6 |
-| M — Account, plan & monetization | 6 |
-| N — Feedback, trust & observability | 6 |
-| **B–N subtotal (L3)** | **74** (84 before D9) |
+| M — Account, plan & monetization | 7 |
+| N — Feedback, trust & observability | 8 |
+| **B–N subtotal (L3)** | **82** (74 before D12, 84 before D9) |
 | O — Blocks (L4) | 13 (O5 cut) |
-| **Total registry items** | **99** (110 before D9) |
+| **Total registry items** | **107** (99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109
