@@ -85,6 +85,24 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Date-grouped conversation list with rename, delete, and pin.",
     group: "Components",
   },
+  {
+    name: "credits-indicator",
+    title: "Credits Indicator",
+    description: "Persistent credit balance with ring, low and empty states, and top-up.",
+    group: "Components",
+  },
+  {
+    name: "quota-meter",
+    title: "Quota Meter",
+    description: "Per-resource plan usage with near-limit and over-limit states and reset countdown.",
+    group: "Components",
+  },
+  {
+    name: "pricing-table",
+    title: "Pricing Table",
+    description: "Plan cards with monthly/yearly anchor, grouped features, and add-on rows.",
+    group: "Components",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

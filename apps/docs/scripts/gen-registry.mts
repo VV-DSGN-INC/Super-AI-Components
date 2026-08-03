@@ -19,6 +19,12 @@ const file = (name: string) => ({
   target: `components/super-ai/${name}.tsx`,
 });
 
+type CssVars = {
+  theme?: Record<string, string>;
+  light?: Record<string, string>;
+  dark?: Record<string, string>;
+};
+
 type Item = {
   name: string;
   title: string;
@@ -26,10 +32,32 @@ type Item = {
   type?: "registry:component" | "registry:hook" | "registry:lib";
   registryDependencies?: string[];
   dependencies?: string[];
+  cssVars?: CssVars;
 };
 
-// Per-item extras (deps/registryDeps) keyed by name
-const extras: Record<string, { dependencies?: string[]; registryDependencies?: string[] }> = {
+// --warning is the one token this registry adds beyond stock shadcn (the rest of
+// the palette is monochrome + --destructive). Tailwind v4 emits nothing for an
+// undefined utility rather than failing, so a consumer who installs one of these
+// without the token gets a silently colourless near-limit state — the docs app
+// hides the bug because its own globals.css defines it. Shipping the token with
+// every item that references it is what closes that gap.
+const WARNING_CSS_VARS: CssVars = {
+  theme: {
+    "color-warning": "var(--warning)",
+    "color-warning-foreground": "var(--warning-foreground)",
+  },
+  light: { warning: "oklch(0.76 0.16 70)", "warning-foreground": "oklch(0.26 0.05 70)" },
+  dark: { warning: "oklch(0.82 0.14 72)", "warning-foreground": "oklch(0.24 0.05 70)" },
+};
+
+// Per-item extras (deps/registryDeps/cssVars) keyed by name
+const extras: Record<
+  string,
+  { dependencies?: string[]; registryDependencies?: string[]; cssVars?: CssVars }
+> = {
+  "credits-indicator": { cssVars: WARNING_CSS_VARS },
+  "quota-meter": { cssVars: WARNING_CSS_VARS },
+  "pricing-table": { cssVars: WARNING_CSS_VARS },
   "cost-chip": { dependencies: ["lucide-react"] },
   "filter-bar": { dependencies: ["lucide-react"] },
   "field-row": { registryDependencies: [self("reset-affordance")] },
@@ -249,6 +277,7 @@ const superAiItems = items.map((i) => ({
   dependencies: i.dependencies ?? [],
   registryDependencies: i.registryDependencies ?? [],
   files: [file(i.name)],
+  ...(i.cssVars ? { cssVars: i.cssVars } : {}),
 }));
 
 const allItems = [...superAiItems, ...marketingItems];
