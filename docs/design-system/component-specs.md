@@ -344,6 +344,42 @@ out of scope — see gaps.md §4 and D11.
 
 **Evidence:** Freepik skills menu, Manus plugins, Claude skills, Zapier actions.
 
+## D7 `slot-summary` `NEW`
+**Base:** A9, Badge · **Sources:** stated · inferred · defaulted · retrieved
+
+**The Dialog contract's first consumer.** Everything here is that contract made visible; if the
+contract changes, this component changes with it.
+
+- **Every slot shows how it was filled.** This is the entire point. An inferred value that looks
+  identical to a stated one means the user is auditing nothing — they scan a list, see their own
+  words reflected back, and confirm four things the model guessed. `stated` is the quiet default;
+  `inferred` and `defaulted` carry visible marks.
+- **Correction is in place and never restarts the flow.** The correction affordance sits on the slot
+  it corrects. Every framework in the population implements this as a first-class path
+  (Rasa's `pattern_correction`), because "no, the other one" is the single most common repair.
+- **Missing is a state, not an omission.** A required slot with no value renders as a row with an
+  ask, not as an absent row. A summary that silently drops what it could not collect is how an agent
+  acts on three of five parameters.
+- **Low confidence is a flag on the slot, not a number.** Bands, not percentages — the model's
+  calibration does not support two decimal places. See D17 for why `confidence-badge` is not a shared
+  primitive yet.
+- **The confirm action states the consequence, not "OK."** This is the grounding move immediately
+  before a side effect: "Cancel these 3 orders", not "Confirm". It is also where the confirmation
+  ladder attaches — reversible actions may skip this surface entirely.
+
+**Not D3 `context-chips`.** Context chips are references the *user* attached. A slot summary is task
+state the *system* resolved. They look similar and mean opposite things about who is accountable for
+the value being right.
+
+**Not A10 `stat-readout`.** A10 is read-only key/value metadata. Every row here needs a source mark,
+a correction affordance and a missing state, and the moment A10 grows those it stops being a
+readout.
+
+**Evidence:** Google Assistant confirmation patterns (explicit vs implicit, scaled by reversibility),
+Rasa `pattern_correction` / `pattern_validate_slot`, ServiceNow Horizon `now-ai-summary-card`. ⚠
+Counted at 3 from documentation — verify against the running products before treating this spec as
+settled.
+
 ---
 
 # E · Generation & parameters

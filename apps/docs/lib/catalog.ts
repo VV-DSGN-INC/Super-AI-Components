@@ -109,6 +109,30 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Background work that outlives the view that started it; blocked tasks first.",
     group: "Components",
   },
+  {
+    name: "citation-ref",
+    title: "Citation Ref",
+    description: "Inline citation marker with the quoted chunk; unresolved stays visible.",
+    group: "Components",
+  },
+  {
+    name: "answer-block",
+    title: "Answer Block",
+    description: "Grounded answer with citations at the claim, and honest coverage warnings.",
+    group: "Components",
+  },
+  {
+    name: "source-cards",
+    title: "Source Cards",
+    description: "The retrieved set behind an answer — what was used, and what wasn't.",
+    group: "Components",
+  },
+  {
+    name: "slot-summary",
+    title: "Slot Summary",
+    description: "What the system understood, how it knows, and how to correct it in place.",
+    group: "Components",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

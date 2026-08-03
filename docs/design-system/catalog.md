@@ -1,6 +1,6 @@
 # Catalog
 
-**113 active items: 12 primitives · 88 components · 13 blocks.** Family G (canvas & nodes, incl.
+**114 active items: 12 primitives · 89 components · 13 blocks.** Family G (canvas & nodes, incl.
 the headless `useFlowRunner`) and O5 `flow-shell` were **cut 2026-07-31** — see
 [decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Eight components
 were **restored 2026-08-02** (D12) from the gaps analysis. Per-component requirements are in
@@ -62,7 +62,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | C4 | `recent-grid` `NEW` | Recent projects with thumbnails | grid/list · duration badge · edited-ago · in-grid empty · hover actions | Card, Aspect-ratio |
 | C5 | `recommendation-card` `NEW` | "Recommended for you" with apps + steps | collapsed row · expanded detail · dismissible · save-for-later | Card, Dialog |
 
-## D · Composer & context — 6
+## D · Composer & context — 7
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -72,6 +72,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | D4 | `mode-tabs` `NEW` | Ask/Design/Build · Chat/Cowork · Standard/Director | 2–5 modes · with-icon · with-tooltip | Toggle-group |
 | D5 | `quote-reply` | Select content → quoted block in composer | text range · image region · table cell · timeline range | Card |
 | D6 | `skill-menu` `NEW` | Select-with-preview menu of agent skills | search · hover preview · new-skill footer | Command, Popover |
+| D7 | `slot-summary` `NEW` | What the system understood, before it acts | per-slot source (stated · inferred · defaulted · retrieved) · low-confidence flag · correct in place · missing · confirm/act | A9, Badge |
 
 ## E · Generation & parameters — 10
 
@@ -253,7 +254,7 @@ the Dialog contract governs, and it waits for the contract's first consumer.
 | A — Primitives (L2) | 12 |
 | B — App shell & navigation | 8 |
 | C — Home & launcher | 5 |
-| D — Composer & context | 6 |
+| D — Composer & context | 7 |
 | E — Generation & parameters | 10 |
 | F — Results & assets | 7 |
 | G — Canvas & nodes | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9) |
@@ -264,9 +265,9 @@ the Dialog contract governs, and it waits for the contract's first consumer.
 | L — First-run & onboarding | 6 |
 | M — Account, plan & monetization | 7 |
 | N — Feedback, trust & observability | 12 |
-| **B–N subtotal (L3)** | **88** (82 before D16, 74 before D12, 84 before D9) |
+| **B–N subtotal (L3)** | **89** (88 after D16, 82 before it, 74 before D12, 84 before D9) |
 | O — Blocks (L4) | 13 (O5 cut) |
-| **Total registry items** | **113** (107 before D16, 99 before D12, 110 before D9) |
+| **Total registry items** | **114** (113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

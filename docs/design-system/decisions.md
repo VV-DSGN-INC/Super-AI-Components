@@ -226,6 +226,27 @@ The catalog moves from 107 active items to **113** (12 primitives · 88 componen
 Placement: `answer-block` and `source-cards` join K beside `citation-ref`; the four control and
 oversight items join N.
 
+### D17 · `slot-summary` released from hold; `confidence-badge` stays deferred — 2026-08-03
+
+D16 held `slot-summary` because it governs the Dialog contract and the contract had no consumer yet.
+Building the grounded-answer chain (K6→K7→K8) supplied one: K7's per-claim sourcing is the same
+obligation applied to retrieved values. **`slot-summary` ships as D7**, in the composer/context family
+rather than in N — it is task state, and it belongs beside D3 `context-chips`, which it is
+deliberately distinguished from in its spec.
+
+Catalog 113 → **114** (12 primitives · 89 components · 13 blocks).
+
+**`confidence-badge` (U5) is NOT promoted, despite now having four would-be consumers** — D7, K7, K8
+and any future extraction surface. Four consumers is the strongest promotion argument in the catalog,
+and it is still the wrong call: U5's own evidence lives in the extraction and vision slices, which are
+unsampled. Promoting a primitive on its consumers' say-so rather than on observed anatomy is exactly
+what the A8 audit in D11 caught.
+
+Until that slice is sampled, each consumer renders its own band inline from a shared three-value
+vocabulary (`high · medium · low`, never a raw score). This is deliberate, temporary duplication with
+a named exit condition — not an oversight. **When the extraction slice lands, this is the first thing
+to reconcile.**
+
 ---
 
 ## 2. Components dropped from the approved spec

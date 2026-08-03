@@ -43,12 +43,7 @@ const extras: Record<string, { dependencies?: string[]; registryDependencies?: s
     dependencies: ["lucide-react"],
   },
   "autonomy-selector": {
-    registryDependencies: [
-      "radio-group",
-      "button",
-      self("entity-row"),
-      self("section-header"),
-    ],
+    registryDependencies: ["radio-group", "button", self("entity-row"), self("section-header")],
     dependencies: ["lucide-react"],
   },
   "escalation-handoff": {
@@ -57,6 +52,21 @@ const extras: Record<string, { dependencies?: string[]; registryDependencies?: s
   },
   "task-tray": {
     registryDependencies: ["sheet", "button", self("entity-row")],
+    dependencies: ["lucide-react"],
+  },
+  "citation-ref": {
+    registryDependencies: ["hover-card"],
+  },
+  "answer-block": {
+    registryDependencies: [self("citation-ref")],
+    dependencies: ["lucide-react"],
+  },
+  "source-cards": {
+    registryDependencies: ["card", "badge"],
+    dependencies: ["lucide-react"],
+  },
+  "slot-summary": {
+    registryDependencies: ["badge", "button"],
     dependencies: ["lucide-react"],
   },
 };

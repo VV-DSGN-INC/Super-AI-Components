@@ -3,11 +3,13 @@ import path from "node:path";
 
 import { notFound } from "next/navigation";
 
+import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AuroraTextDemo from "@/components/demos/aurora-text-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import BentoGridDemo from "@/components/demos/bento-grid-demo";
 import BorderBeamDemo from "@/components/demos/border-beam-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
+import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import ConfettiDemo from "@/components/demos/confetti-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
@@ -30,6 +32,8 @@ import RippleButtonDemo from "@/components/demos/ripple-button-demo";
 import SafetyBlockDemo from "@/components/demos/safety-block-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
+import SlotSummaryDemo from "@/components/demos/slot-summary-demo";
+import SourceCardsDemo from "@/components/demos/source-cards-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import TaskTrayDemo from "@/components/demos/task-tray-demo";
 import TerminalDemo from "@/components/demos/terminal-demo";
@@ -59,6 +63,10 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "autonomy-selector": AutonomySelectorDemo,
   "escalation-handoff": EscalationHandoffDemo,
   "task-tray": TaskTrayDemo,
+  "citation-ref": CitationRefDemo,
+  "answer-block": AnswerBlockDemo,
+  "source-cards": SourceCardsDemo,
+  "slot-summary": SlotSummaryDemo,
 };
 
 // Grows one entry per component task (Tasks 6–20).
