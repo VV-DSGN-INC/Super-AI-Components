@@ -11,6 +11,7 @@
     "test": "vitest run",
     "check:tokens": "node scripts/check-tokens.mjs",
     "gen:wiring": "tsx scripts/gen-wiring.mts",
+    "new:component": "tsx scripts/new-component.mts",
     "build:registry": "tsx scripts/gen-wiring.mts && tsx scripts/gen-registry.mts && shadcn build --output public/r"
   },
   "dependencies": {
