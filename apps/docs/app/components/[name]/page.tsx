@@ -18,9 +18,11 @@ import RippleButtonDemo from "@/components/demos/ripple-button-demo";
 import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
 import TypingAnimationDemo from "@/components/demos/typing-animation-demo";
+import { ComponentDocsView } from "@/components/component-docs";
 import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 import { demos } from "@/lib/demos.generated";
+import { componentDocs } from "@/lib/docs.generated";
 import { MARKETING, MARKETING_ITEMS, type MarketingName } from "@/lib/marketing-catalog";
 
 // Grows one entry per component task (Tasks 6–20).
@@ -72,6 +74,10 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
       </div>
 
       <PreviewTabs preview={<Demo />} code={demoSource} />
+
+      {!isMarketing && componentDocs[name] ? (
+        <ComponentDocsView docs={componentDocs[name]} />
+      ) : null}
 
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">Installation</h2>

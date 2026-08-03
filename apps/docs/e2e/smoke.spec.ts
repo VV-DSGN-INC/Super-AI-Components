@@ -20,3 +20,12 @@ for (const item of [...CATALOG_ITEMS, ...MARKETING_ITEMS]) {
     expect(errors).toEqual([]);
   });
 }
+
+test("a component with guidance renders its Do and Don't blocks", async ({ page }) => {
+  // Skips until the first documented component ships (Task 15).
+  const documented = CATALOG_ITEMS.find((i) => i.name === "workspace-switcher");
+  test.skip(!documented, "no documented component shipped yet");
+  await page.goto(`/components/${documented!.name}`);
+  await expect(page.locator('[data-slot="docs-do"]')).toBeVisible();
+  await expect(page.locator('[data-slot="docs-dont"]')).toBeVisible();
+});
