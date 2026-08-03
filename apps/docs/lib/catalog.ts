@@ -85,6 +85,30 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     description: "Date-grouped conversation list with rename, delete, and pin.",
     group: "Components",
   },
+  {
+    name: "safety-block",
+    title: "Safety Block",
+    description: "A request or response stopped by policy, in the system's voice, with an exit.",
+    group: "Components",
+  },
+  {
+    name: "autonomy-selector",
+    title: "Autonomy Selector",
+    description: "How much an agent may do unasked, plus the grant list that makes it revocable.",
+    group: "Components",
+  },
+  {
+    name: "escalation-handoff",
+    title: "Escalation Handoff",
+    description: "Hand a conversation to a person — with the context packet the human receives.",
+    group: "Components",
+  },
+  {
+    name: "task-tray",
+    title: "Task Tray",
+    description: "Background work that outlives the view that started it; blocked tasks first.",
+    group: "Components",
+  },
 ] as const;
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);

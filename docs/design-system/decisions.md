@@ -177,6 +177,55 @@ a registry change never affects an already-installed component — only new inst
 property makes "ship incomplete, complete later" a legitimate strategy here in a way it would not be
 in a conventional component library.
 
+### D14 · Move 3 actioned for one slice — the agent population — 2026-08-03
+
+[gaps.md](gaps.md) §5 committed to collecting a second reference population and re-running D1 against
+the combined set. **That is now done for one slice: enterprise assistants and tool-calling agents.**
+See [agent-board-analysis.md](agent-board-analysis.md).
+
+The slice was read by a **weaker method than the primary board** — documentation and published UI
+analyses rather than a Figma read of screenshots — and the doc says so in §1. Rows resting on
+framework docs rather than shipped UI are marked ⚠ and must be verified against the running product
+before they earn a spec.
+
+**This does not close Move 3.** Voice, extraction, vision, data and coding remain unsampled, and the
+§1 sampling-bias limitation still stands for those categories. The twenty U-items are now nineteen
+candidates plus one deferral — still not commitments.
+
+### D15 · Dialog is the seventh contract — 2026-08-03
+
+The agent slice found the conversation-state layer to be universal and **chrome-less**: Rasa ships it
+as named default patterns, Google as confirmation policy, every CX agent as handoff behaviour.
+
+`repair-prompt` (2 products) and `interrupted-flow-resume` (1 product) **failed D1 as components**,
+and the reason they failed is the finding: the population expresses conversation state as behaviour,
+not as UI. So it ships as a contract — frame, sourced slots, correction-without-restart, stack
+visibility, declared expiry — binding B D F K N O. See
+[concept-model.md](concept-model.md#4-cross-cutting-contracts).
+
+**A contract that owns no component is not a weaker result than a component family.** Empty owns no
+component either, and it changed more surfaces than any single item in the catalog.
+
+### D16 · Six additions from the agent slice — 2026-08-03
+
+Clearing D1 against the combined population: `escalation-handoff` `NEW`, plus `autonomy-selector`
+(T2), `task-tray` (T3), `safety-block` (T4), `answer-block` (U12) and `source-cards` (U14) promoted
+from PROPOSED to validated. `slot-summary` also passed at 3 ⚠ but is **held** — it is the surface the
+Dialog contract governs, and specifying it before the contract has one consumer is the mistake D11
+nearly made with `preview-tile`.
+
+Two corrections to already-shipped items fall out of the same read, both additive:
+
+- **N8 `permission-prompt`** — edit-first is confirmed unanimously across the framework population
+  and is promoted to equal weight with allow, not a tertiary action.
+- **The revocable-scope surface moves out of N8 and into T2.** A grant list with no review screen is
+  the component nobody in the population ships well; it belongs with the autonomy control, not with
+  the per-call prompt.
+
+The catalog moves from 107 active items to **113** (12 primitives · 88 components · 13 blocks).
+Placement: `answer-block` and `source-cards` join K beside `citation-ref`; the four control and
+oversight items join N.
+
 ---
 
 ## 2. Components dropped from the approved spec

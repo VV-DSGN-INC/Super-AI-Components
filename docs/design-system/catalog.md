@@ -1,6 +1,6 @@
 # Catalog
 
-**107 active items: 12 primitives · 82 components · 13 blocks.** Family G (canvas & nodes, incl.
+**113 active items: 12 primitives · 88 components · 13 blocks.** Family G (canvas & nodes, incl.
 the headless `useFlowRunner`) and O5 `flow-shell` were **cut 2026-07-31** — see
 [decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Eight components
 were **restored 2026-08-02** (D12) from the gaps analysis. Per-component requirements are in
@@ -12,6 +12,11 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 > **The catalog is not final.** D12 chose to broaden the reference sampling rather than narrow the
 > positioning. Families J, K and N — and any new family the second board produces — should not be
 > treated as closed until the re-sampling is done. Families A, B, C and D are unaffected.
+>
+> **Re-sampling status (D14, 2026-08-03):** one slice done — enterprise assistants and tool-calling
+> agents ([agent-board-analysis.md](agent-board-analysis.md)), which added K7–K8 and N9–N12 and
+> produced the **Dialog** contract. K and N are correspondingly further along; J is untouched. Voice,
+> extraction, vision, data and coding remain unsampled, so this note still stands for them.
 
 ---
 
@@ -154,7 +159,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | J6 | `template-detail` `NEW` | Template preview modal | preview + thumbnail strip · option selects · author + follow · more-like-this | Dialog, Carousel |
 | J7 | `track-list` `RESTORED` | Music library rows | artwork · tags · inline waveform · BPM · key | Table |
 
-## K · Documents & knowledge — 6
+## K · Documents & knowledge — 8
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -164,9 +169,12 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | K4 | `selection-toolbar` | The ✨ menu on selected text | improve · shorten · expand · tone submenu · custom prompt | I3 |
 | K5 | `source-panel` `NEW` | Ingested sources with pipeline status | parsing → chunking → embedding → ready/failed; chunk counts; empty | A9, Progress |
 | K6 | `citation-ref` `NEW` | Inline citation → source popover | resolved · loading · unresolved; jump-to-source; copy quote | Hover-card |
+| K7 | `answer-block` `NEW` | Grounded answer with citations at the claim | streaming · cited · partially-cited · uncited-warning; retrieved-but-uncited shown | K6, A9 |
+| K8 | `source-cards` `NEW` | The retrieved set behind an answer | ranked · relevance shown · used vs retrieved-unused · permission-filtered · empty | Card, A10 |
 
 **Dropped:** `rewrite-panel`, `outline-builder`, `inline-suggestion`, `chunk-highlighter`,
-`retrieval-inspector`, `memory-viewer` — single-product patterns.
+`memory-viewer` — single-product patterns. `retrieval-inspector` was dropped by the approved spec and
+returns as K8 `source-cards`, its user-facing form (D16).
 
 ## L · First-run & onboarding — 6 · all NEW
 
@@ -191,7 +199,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | M6 | `rate-limit-banner` | Cooldown countdown | your-limit · provider-capacity · live countdown · notify-me | Alert |
 | M7 | `connection-manager` `RESTORED` | BYO keys and local models | not-set · valid · invalid · unreachable; test-connection; download + hardware reqs | Card, Input |
 
-## N · Feedback, trust & observability — 8
+## N · Feedback, trust & observability — 12
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
@@ -202,10 +210,20 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | N5 | `run-inspector` | Span detail: I/O, tokens, cost, errors | input · output · metadata · error tabs | Tabs, A10 |
 | N6 | `usage-dashboard` | Aggregate cost / token / latency | period select · summary cards with deltas · per-model breakdown | Chart, Card |
 | N7 | `env-status` `RESTORED` | Per-provider reachability | ok · degraded · key-invalid · not-running | Badge, A9 |
-| N8 | `permission-prompt` `RESTORED` | Agent asks before a side effect | allow once · always allow · deny · edit-first; visible revocable scope | Alert-dialog |
+| N8 | `permission-prompt` `RESTORED` | Agent asks before a side effect | allow once · always allow · deny · **edit-first** (equal weight, D16) | Alert-dialog |
+| N9 | `autonomy-selector` `NEW` | How much the agent may do unasked | ask every time · auto-approve reads · full auto; per-tool override; **grant list with revoke**; effective mid-run | Radio-group, A9 |
+| N10 | `safety-block` `NEW` | A request or response stopped by policy | input-blocked · output-blocked; policy named; triggering fragment quoted; sensitive-content blur; appeal/reroute | Alert |
+| N11 | `escalation-handoff` `NEW` | Agent hands the conversation to a person | triggered (user · budget-exhausted · low-confidence · policy) · packet preview · queued with wait estimate · accepted · unavailable | Card, A10, A12 |
+| N12 | `task-tray` `NEW` | Work that outlives the view that started it | running · needs-input · done · failed; per-task cancel; opt-in completion notification; empty | Sheet, A9 |
 
 **Dropped:** `agent-board`, `eval-board`, `model-compare`, `response-diff`, `review-queue` —
 single-product patterns on this board.
+
+N9–N12 enter by D16 via [agent-board-analysis.md](agent-board-analysis.md), not by the primary
+board. N10 and the `slot-summary` candidate carry a ⚠ in that doc: their counts rest on framework
+documentation rather than observed pixels, and must be verified against the running products before
+their specs are treated as settled. `slot-summary` passed at 3 but is **held** — it is the surface
+the Dialog contract governs, and it waits for the contract's first consumer.
 
 ## O · Blocks (L4) — 14
 
@@ -242,13 +260,13 @@ single-product patterns on this board.
 | H — Timeline & transport | 7 |
 | I — Editor surfaces | 5 |
 | J — Library, filtering & discovery | 7 |
-| K — Documents & knowledge | 6 |
+| K — Documents & knowledge | 8 |
 | L — First-run & onboarding | 6 |
 | M — Account, plan & monetization | 7 |
-| N — Feedback, trust & observability | 8 |
-| **B–N subtotal (L3)** | **82** (74 before D12, 84 before D9) |
+| N — Feedback, trust & observability | 12 |
+| **B–N subtotal (L3)** | **88** (82 before D16, 74 before D12, 84 before D9) |
 | O — Blocks (L4) | 13 (O5 cut) |
-| **Total registry items** | **107** (99 before D12, 110 before D9) |
+| **Total registry items** | **113** (107 before D16, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

@@ -8,10 +8,16 @@
 [catalog.md](catalog.md), marked `RESTORED`; the catalog stands at 107 items. R2 `run-controls` was
 **not** restored — D9 made it moot.
 
-Move 3 is accepted and outstanding: a second reference board covering voice, extraction, vision,
-data, search and coding will be collected, and the 3+ inclusion test re-run against the combined
-population. Until that happens the twenty U-items in §4 remain candidates, not commitments, and the
-sampling-bias limitation in §1 still stands.
+**2026-08-03 (D14) — Move 3 actioned for one slice.** Enterprise assistants and tool-calling agents
+were sampled and D1 re-run against the combined population — see
+[agent-board-analysis.md](agent-board-analysis.md). Result: **T2, T3 and T4 pass and ship** (as N9,
+N12 and N10), `escalation-handoff` enters as N11, and U12/U14 pass and ship as K7/K8. The catalog
+stands at **113**. The slice also produced the **Dialog** contract, because the two conversation-repair
+candidates *failed* — see §8.
+
+Move 3 remains **open** for voice, extraction, vision, data and coding. Until those are sampled, the
+remaining U-items are candidates, not commitments, and the sampling-bias limitation in §1 still
+stands for them.
 
 ---
 
@@ -49,7 +55,7 @@ the board's own Requirements table E named three of these. I overrode it without
 
 ---
 
-## 3. T — Trust & control · 5 items · PROPOSED
+## 3. T — Trust & control · 5 items · ALL RESOLVED (D12, D14)
 
 Cross-cutting families with no representation in the catalog. Confidence is high that these are
 needed; they are absent from the board because it samples creative tools rather than agents with
@@ -69,6 +75,19 @@ config counterpart to R1, which is the runtime view.
 
 T3 was observed once (Manus: "Receive a browser notification when tasks complete") — below the 3+
 threshold, but structurally required by any agent whose work outlives a page view.
+
+**Resolution — D14, 2026-08-03.** All five now ship. T1 and T5 were restored by D12; the agent slice
+cleared T2 (→ **N9** `autonomy-selector`), T3 (→ **N12** `task-tray`, now at 4 products) and T4 (→
+**N10** `safety-block`). Three notes for whoever specs them:
+
+- **The reasoning in this section held up well.** T4's input-blocked / output-blocked split and T1's
+  edit-first verb were both called from first principles here and both are confirmed unanimously by
+  the population. T3's "structurally required despite one observation" was right too.
+- **One correction:** the *visible revocable scope* listed under T1 belongs to T2, not T1. A per-call
+  prompt cannot own a grant-review surface; the autonomy control can.
+- **T4's real design rule was missed here:** the population's failure mode is that refusals arrive in
+  the assistant's own voice, so users cannot tell a policy fired. A block must read as visibly *not
+  the assistant talking*. That is why it is a component and not a message.
 
 ---
 
@@ -185,3 +204,29 @@ derived is a catalog for **creative and agentic AI products**.
 
 Either narrow the positioning to match what exists, or broaden the sampling to match the positioning.
 The current mismatch is the thing worth deciding — see [decisions.md](decisions.md).
+
+---
+
+## 8. What the first Move-3 slice taught about the method — 2026-08-03
+
+Two things, and the second matters more than the six components.
+
+**1. The 3+ test works as a filter on *categories*, not just on components.** T3 `task-tray` sat at
+one observation on the creative board and cleared at four on the agent board without changing at all.
+The component was never rare; the population was wrong. That is precisely the failure §1 named, now
+demonstrated rather than argued.
+
+**2. A failed candidate can be the most valuable result.** `repair-prompt` (2 products) and
+`interrupted-flow-resume` (1 product) both failed — and the *reason* they failed is the finding: the
+agent population models conversation repair as **behaviour**, not chrome. Rasa ships it as named
+default patterns, Google as confirmation policy, CX agents as handoff routing. Nobody ships it as a
+component, because there is nothing to draw.
+
+So it became the **Dialog** contract (D15) — the seventh, binding B D F K N O. This is the second
+contract the reference population produced that the approved spec had no concept of; Empty was the
+first, and Empty changed more surfaces than any single component in the catalog.
+
+**Method note for the remaining slices:** when a candidate fails the 3+ test, record *why* before
+discarding it. "Absent because unsampled" (→ go sample), "absent because genuinely rare" (→ discard),
+and "absent because it is behaviour, not UI" (→ it is a contract) are three different results, and
+only the middle one is a drop. The original inclusion test conflated all three.
