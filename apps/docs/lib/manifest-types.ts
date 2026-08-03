@@ -33,6 +33,3 @@ export interface ManifestItem {
 }
 
 export const shippedItems = (items: ManifestItem[]) => items.filter((i) => i.status === "shipped");
-
-export const byFamily = (items: ManifestItem[], family: FamilyId) =>
-  items.filter((i) => i.family === family);

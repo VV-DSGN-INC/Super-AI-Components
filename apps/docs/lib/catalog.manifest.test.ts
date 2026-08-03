@@ -42,3 +42,42 @@ describe("MANIFEST", () => {
     }
   });
 });
+
+// Pins the wave assignment against decisions.md §5 ("Revised sequencing
+// proposal"), where each wave ships a family's components plus the one block
+// that proves them — so a block's wave is almost never its family's wave, and
+// family N is split (N1/N3 land with D in wave 3; N4-N6 land with
+// `records-shell` in wave 11).
+describe("MANIFEST wave assignment (decisions.md §5)", () => {
+  const byId = (id: string) => MANIFEST.find((i) => i.id === id)!;
+
+  it("places each block in the wave whose components it proves", () => {
+    const wavesById: Record<string, number> = {
+      O1: 2, // home-shell — wave 2 (B + C)
+      O2: 3, // chat-shell — wave 3 (D)
+      O3: 6, // studio-shell — wave 6 (I + H)
+      O4: 6, // timeline-shell — wave 6 (I + H)
+      O6: 4, // generation-shell — wave 4 (E + F)
+      O7: 7, // library-shell — wave 7 (J)
+      O8: 7, // explore-shell — wave 7 (J)
+      O9: 7, // artifact-shell — wave 7 (J)
+      O10: 11, // records-shell — wave 11 (N4-N6)
+      O11: 8, // docs-shell — wave 8 (K)
+      O12: 10, // settings-shell — wave 10 (M)
+      O13: 8, // notebook-shell — wave 8 (K)
+      O14: 12, // auth-shell — wave 12
+    };
+    for (const [id, wave] of Object.entries(wavesById)) {
+      expect(byId(id).wave).toBe(wave);
+    }
+  });
+
+  it("places N1 `feedback` and N3 `disclaimer-note` in wave 3 with D, not family N's default", () => {
+    expect(byId("N1").wave).toBe(3);
+    expect(byId("N3").wave).toBe(3);
+  });
+
+  it("gives every cut item wave 0, regardless of family or id", () => {
+    expect(MANIFEST.filter((i) => i.status === "cut").every((i) => i.wave === 0)).toBe(true);
+  });
+});
