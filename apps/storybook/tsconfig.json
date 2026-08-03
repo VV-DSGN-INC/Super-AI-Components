@@ -19,6 +19,7 @@
       "@/components/demos/*": ["../docs/components/demos/*"],
       "@/content/*": ["../docs/content/*"],
       "@/lib/component-docs": ["../docs/lib/component-docs.ts"],
+      "@/components/component-docs": ["../docs/components/component-docs.tsx"],
       "@/*": ["./src/*"]
     }
   },
