@@ -24,7 +24,7 @@ export default mergeConfig(
         // Vitest 4.x moved the browser provider from a string id to a factory
         // package (@vitest/browser-playwright) — the plan's `provider: "playwright"`
         // string throws "The `browser.provider` configuration was changed to
-        // accept a factory instead of a string" against the installed vitest@4.1.10.
+        // accept a factory instead of a string" against installed vitest@4.x.
         provider: playwright(),
         headless: true,
         instances: [{ browser: "chromium" }],
