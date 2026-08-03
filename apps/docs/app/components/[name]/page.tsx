@@ -3,16 +3,20 @@ import path from "node:path";
 
 import { notFound } from "next/navigation";
 
+import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AuroraTextDemo from "@/components/demos/aurora-text-demo";
+import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import BentoGridDemo from "@/components/demos/bento-grid-demo";
 import BorderBeamDemo from "@/components/demos/border-beam-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
+import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import ConfettiDemo from "@/components/demos/confetti-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import DotPatternDemo from "@/components/demos/dot-pattern-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
+import EscalationHandoffDemo from "@/components/demos/escalation-handoff-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
@@ -28,9 +32,13 @@ import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
+import SafetyBlockDemo from "@/components/demos/safety-block-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
+import SlotSummaryDemo from "@/components/demos/slot-summary-demo";
+import SourceCardsDemo from "@/components/demos/source-cards-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
+import TaskTrayDemo from "@/components/demos/task-tray-demo";
 import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
@@ -57,6 +65,14 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "credits-indicator": CreditsIndicatorDemo,
   "quota-meter": QuotaMeterDemo,
   "pricing-table": PricingTableDemo,
+  "safety-block": SafetyBlockDemo,
+  "autonomy-selector": AutonomySelectorDemo,
+  "escalation-handoff": EscalationHandoffDemo,
+  "task-tray": TaskTrayDemo,
+  "citation-ref": CitationRefDemo,
+  "answer-block": AnswerBlockDemo,
+  "source-cards": SourceCardsDemo,
+  "slot-summary": SlotSummaryDemo,
 };
 
 // Grows one entry per component task (Tasks 6–20).

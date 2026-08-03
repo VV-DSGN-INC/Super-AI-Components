@@ -66,6 +66,37 @@ const extras: Record<
     registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],
     dependencies: ["lucide-react"],
   },
+  "safety-block": {
+    registryDependencies: ["alert", "button"],
+    dependencies: ["lucide-react"],
+  },
+  "autonomy-selector": {
+    registryDependencies: ["radio-group", "button", self("entity-row"), self("section-header")],
+    dependencies: ["lucide-react"],
+  },
+  "escalation-handoff": {
+    registryDependencies: ["card", "button", self("section-header"), self("stat-readout")],
+    dependencies: ["lucide-react"],
+  },
+  "task-tray": {
+    registryDependencies: ["sheet", "button", self("entity-row")],
+    dependencies: ["lucide-react"],
+  },
+  "citation-ref": {
+    registryDependencies: ["hover-card"],
+  },
+  "answer-block": {
+    registryDependencies: [self("citation-ref")],
+    dependencies: ["lucide-react"],
+  },
+  "source-cards": {
+    registryDependencies: ["card", "badge"],
+    dependencies: ["lucide-react"],
+  },
+  "slot-summary": {
+    registryDependencies: ["badge", "button"],
+    dependencies: ["lucide-react"],
+  },
 };
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({
