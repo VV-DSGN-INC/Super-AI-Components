@@ -73,6 +73,20 @@ if ! grep -qF -e "--marketing-rainbow-1" "$GLOBAL_CSS"; then
 fi
 echo "  found --marketing-rainbow-1 in $GLOBAL_CSS"
 
+# Tailwind v4 emits no CSS for an undefined utility instead of failing the build, so
+# a missing --warning would ship a colourless near-limit state and still go green.
+# Only an explicit assertion catches it.
+if ! grep -qF -e "--warning" "$GLOBAL_CSS"; then
+  echo "CONSUMER INSTALL TEST: FAIL — $GLOBAL_CSS is missing --warning (quota-meter's cssVars did not install)" >&2
+  exit 1
+fi
+echo "  found --warning in $GLOBAL_CSS"
+if ! grep -qF -e "--color-warning" "$GLOBAL_CSS"; then
+  echo "CONSUMER INSTALL TEST: FAIL — $GLOBAL_CSS is missing --color-warning (@theme mapping absent; bg-warning would emit nothing)" >&2
+  exit 1
+fi
+echo "  found --color-warning in $GLOBAL_CSS"
+
 echo "==> Using the components in a page"
 cat > app/page.tsx <<'EOF'
 "use client";

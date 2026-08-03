@@ -12,6 +12,7 @@ import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import ConfettiDemo from "@/components/demos/confetti-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
+import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import DotPatternDemo from "@/components/demos/dot-pattern-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
@@ -25,6 +26,8 @@ import MarqueeDemo from "@/components/demos/marquee-demo";
 import NumberTickerDemo from "@/components/demos/number-ticker-demo";
 import OrbitingCirclesDemo from "@/components/demos/orbiting-circles-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
+import PricingTableDemo from "@/components/demos/pricing-table-demo";
+import QuotaMeterDemo from "@/components/demos/quota-meter-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
@@ -59,6 +62,9 @@ const demos: Record<CatalogName, React.ComponentType> = {
   "stat-readout": StatReadoutDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "thread-list": ThreadListDemo,
+  "credits-indicator": CreditsIndicatorDemo,
+  "quota-meter": QuotaMeterDemo,
+  "pricing-table": PricingTableDemo,
   "safety-block": SafetyBlockDemo,
   "autonomy-selector": AutonomySelectorDemo,
   "escalation-handoff": EscalationHandoffDemo,

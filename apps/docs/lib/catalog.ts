@@ -86,6 +86,24 @@ export const CATALOG_ITEMS: CatalogItem[] = [
     group: "Components",
   },
   {
+    name: "credits-indicator",
+    title: "Credits Indicator",
+    description: "Persistent credit balance with ring, low and empty states, and top-up.",
+    group: "Components",
+  },
+  {
+    name: "quota-meter",
+    title: "Quota Meter",
+    description: "Per-resource plan usage with near-limit and over-limit states and reset countdown.",
+    group: "Components",
+  },
+  {
+    name: "pricing-table",
+    title: "Pricing Table",
+    description: "Plan cards with monthly/yearly anchor, grouped features, and add-on rows.",
+    group: "Components",
+  },
+  {
     name: "safety-block",
     title: "Safety Block",
     description: "A request or response stopped by policy, in the system's voice, with an exit.",
