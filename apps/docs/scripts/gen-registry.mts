@@ -6,7 +6,9 @@ import postcss from "postcss";
 import { registrySchema } from "shadcn/schema";
 
 import { CATALOG_ITEMS } from "../lib/catalog";
+import { MANIFEST } from "../lib/catalog.manifest";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
+import { deriveExtras } from "./lib/registry-extras";
 
 const REGISTRY_URL = (process.env.REGISTRY_URL ?? "https://super-ai-components.vercel.app").replace(
   /\/$/,
@@ -28,17 +30,7 @@ type Item = {
   dependencies?: string[];
 };
 
-// Per-item extras (deps/registryDeps) keyed by name
-const extras: Record<string, { dependencies?: string[]; registryDependencies?: string[] }> = {
-  "cost-chip": { dependencies: ["lucide-react"] },
-  "filter-bar": { dependencies: ["lucide-react"] },
-  "field-row": { registryDependencies: [self("reset-affordance")] },
-  "shortcuts-sheet": { registryDependencies: ["dialog", self("kbd")] },
-  "thread-list": {
-    registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],
-    dependencies: ["lucide-react"],
-  },
-};
+const extras = deriveExtras(MANIFEST, self);
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({
   name: i.name,
