@@ -6,6 +6,13 @@ import "../src/index.css";
 const preview: Preview = {
   parameters: {
     layout: "centered",
+    // @storybook/addon-a11y defaults parameters.a11y.test to "todo", which
+    // only records violations as warnings and never fails the vitest run
+    // (see addon-a11y's preview.mjs: getMode() only returns "failed", which
+    // triggers `expect(result).toHaveNoViolations()`, when test === "error").
+    // Without this, the whole a11y gate is silent — set here so it's the
+    // default contract for every story, not opt-in per story.
+    a11y: { test: "error" },
     controls: {
       matchers: {
         color: /(background|color)$/i,

@@ -24,12 +24,12 @@ jobs:
           pnpm --filter docs exec playwright install --with-deps chromium
           pnpm --filter docs exec playwright test
       - name: Storybook a11y + interaction
-        # Non-blocking for now: 3 of 119 legacy stories fail to mount under a
-        # real browser (Context, DropdownMenu, MessageScroller — pre-existing
-        # story/component bugs, not addon or a11y issues; see task notes).
-        # Retrofitting them is out of scope for this task. Flip this to
-        # blocking once that follow-up lands, so regressions get caught.
-        continue-on-error: true
+        # Blocking. Covers what this repo owns and publishes — super-ai and
+        # marketing stories — not vendored ports (shadcn/ui, AI Elements) it
+        # merely displays. Exclusions are in
+        # apps/storybook/vitest.config.ts's `test.exclude`; full audit and
+        # rationale in docs/design-system/a11y-baseline.md. The exclusion
+        # list may only shrink — never grow to silence a new failure.
         run: |
           pnpm --filter storybook exec playwright install --with-deps chromium
           pnpm --filter storybook test:stories
