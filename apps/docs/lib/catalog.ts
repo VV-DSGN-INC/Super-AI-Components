@@ -1,3 +1,5 @@
+import { MANIFEST } from "./catalog.manifest";
+
 export interface CatalogItem {
   name: string;
   title: string;
@@ -5,87 +7,16 @@ export interface CatalogItem {
   group: "Primitives" | "Components";
 }
 
-export const CATALOG_ITEMS: CatalogItem[] = [
-  { name: "kbd", title: "Kbd", description: "Keycap chip for keyboard shortcuts.", group: "Primitives" },
-  {
-    name: "cost-chip",
-    title: "Cost Chip",
-    description: "Per-action credit cost chip (e.g. 17 credits, 900 credits/min).",
-    group: "Primitives",
-  },
-  {
-    name: "date-section",
-    title: "Date Section",
-    description: "Date-grouped section header for lists and grids.",
-    group: "Primitives",
-  },
-  {
-    name: "choice-chips",
-    title: "Choice Chips",
-    description: "Ring-selected chip group for visual and numeric parameters.",
-    group: "Primitives",
-  },
-  {
-    name: "filter-bar",
-    title: "Filter Bar",
-    description: "Category chips, add-filter chip, and filters button.",
-    group: "Primitives",
-  },
-  {
-    name: "field-row",
-    title: "Field Row",
-    description: "Label + control inspector row with unit-suffixed value input.",
-    group: "Primitives",
-  },
-  {
-    name: "gen-settings-bar",
-    title: "Gen Settings Bar",
-    description: "Compact model/aspect/resolution/duration/batch strip.",
-    group: "Primitives",
-  },
-  {
-    name: "preview-tile",
-    title: "Preview Tile",
-    description: "Fixed-aspect media tile with label, badge, selection ring and states.",
-    group: "Primitives",
-  },
-  {
-    name: "entity-row",
-    title: "Entity Row",
-    description: "Icon, title, description and trailing slot in a fixed-height row.",
-    group: "Primitives",
-  },
-  {
-    name: "section-header",
-    title: "Section Header",
-    description: "Group title with optional count, action and collapse.",
-    group: "Primitives",
-  },
-  {
-    name: "reset-affordance",
-    title: "Reset Affordance",
-    description: "The reset control beside every editable value; row and group scope.",
-    group: "Primitives",
-  },
-  {
-    name: "stat-readout",
-    title: "Stat Readout",
-    description: "Compact key/value metadata; copyable values, em-dash for absent ones.",
-    group: "Primitives",
-  },
-  {
-    name: "shortcuts-sheet",
-    title: "Shortcuts Sheet",
-    description: "Keyboard shortcuts cheatsheet dialog.",
-    group: "Components",
-  },
-  {
-    name: "thread-list",
-    title: "Thread List",
-    description: "Date-grouped conversation list with rename, delete, and pin.",
-    group: "Components",
-  },
-] as const;
+const ORDER = { primitive: 0, component: 1, block: 2 } as const;
+
+export const CATALOG_ITEMS: CatalogItem[] = MANIFEST.filter((i) => i.status === "shipped")
+  .sort((a, b) => ORDER[a.layer] - ORDER[b.layer])
+  .map((i) => ({
+    name: i.name,
+    title: i.title,
+    description: i.description,
+    group: i.layer === "primitive" ? "Primitives" : "Components",
+  }));
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);
-export type CatalogName = (typeof CATALOG_ITEMS)[number]["name"];
+export type CatalogName = string;
