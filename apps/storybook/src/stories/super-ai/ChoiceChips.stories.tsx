@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import ChoiceChipsDemo from "@/components/super-ai/demos/choice-chips-demo";
+import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 
 const meta: Meta<typeof ChoiceChipsDemo> = {
   title: "Super AI/Choice Chips",

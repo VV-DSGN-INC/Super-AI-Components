@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import ResetAffordanceDemo from "@/components/super-ai/demos/reset-affordance-demo";
+import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 
 const meta: Meta<typeof ResetAffordanceDemo> = {
   title: "Super AI/Reset Affordance",

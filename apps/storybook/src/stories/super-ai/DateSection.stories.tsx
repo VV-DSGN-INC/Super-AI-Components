@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import DateSectionDemo from "@/components/super-ai/demos/date-section-demo";
+import DateSectionDemo from "@/components/demos/date-section-demo";
 
 const meta: Meta<typeof DateSectionDemo> = {
   title: "Super AI/Date Section",

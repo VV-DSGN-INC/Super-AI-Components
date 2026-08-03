@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import PreviewTileDemo from "@/components/super-ai/demos/preview-tile-demo";
+import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 
 const meta: Meta<typeof PreviewTileDemo> = {
   title: "Super AI/Preview Tile",
