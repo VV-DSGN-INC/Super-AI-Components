@@ -16,6 +16,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm check:tokens
+      - run: pnpm check:contract
       - run: pnpm test
       - run: pnpm build:registry
       - run: pnpm build

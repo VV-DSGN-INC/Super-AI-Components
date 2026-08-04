@@ -3,6 +3,7 @@
 import { ExternalLink, Loader2 } from "lucide-react";
 import * as React from "react";
 
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "@/registry/super-ai/section-header";
 
@@ -66,20 +67,18 @@ function SidebarNavRow({
   const trailing = (
     <span className="ml-auto flex shrink-0 items-center gap-1.5">
       {item.count !== undefined ? (
-        <span
+        <Badge
           data-slot="sidebar-nav-count"
-          className="bg-muted text-muted-foreground min-w-4 rounded-full px-1.5 py-0.5 text-center text-[0.6875rem] leading-none font-medium tabular-nums"
+          variant="secondary"
+          className="min-w-4 justify-center bg-muted text-muted-foreground tabular-nums"
         >
           {item.count}
-        </span>
+        </Badge>
       ) : null}
       {item.tier ? (
-        <span
-          data-slot="sidebar-nav-tier"
-          className="bg-secondary text-secondary-foreground rounded-full px-1.5 py-0.5 text-[0.6875rem] leading-none font-medium"
-        >
+        <Badge data-slot="sidebar-nav-tier" variant="secondary">
           {item.tier}
-        </span>
+        </Badge>
       ) : null}
       {item.unread ? (
         <span

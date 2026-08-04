@@ -4,6 +4,7 @@ import { RefreshCw, Sparkles, TriangleAlert, UserPlus, X } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 type PromoCardFlavour = "upgrade" | "invite" | "update-available" | "quota-warning";
@@ -105,15 +106,11 @@ function PromoCard({
   const { icon: Icon, iconClass, toneClass, ctaClassName, urgent } = FLAVOUR_META[flavour];
 
   return (
-    <div
+    <Card
       data-slot="promo-card"
       data-flavour={flavour}
       role={urgent ? "alert" : undefined}
-      className={cn(
-        "relative flex w-full max-w-sm flex-col gap-3 rounded-xl border bg-card p-4 text-card-foreground",
-        toneClass,
-        className,
-      )}
+      className={cn("relative w-full max-w-sm border", toneClass, className)}
       {...props}
     >
       <Button
@@ -128,54 +125,56 @@ function PromoCard({
         <X aria-hidden className="size-3.5" />
       </Button>
 
-      {art ? (
-        <div data-slot="promo-card-art" className="overflow-hidden rounded-lg">
-          {art}
-        </div>
-      ) : null}
+      <CardContent className="flex flex-col gap-3">
+        {art ? (
+          <div data-slot="promo-card-art" className="overflow-hidden rounded-lg">
+            {art}
+          </div>
+        ) : null}
 
-      <div className="flex items-start gap-2 pr-6">
-        <Icon aria-hidden className={cn("mt-0.5 size-4 shrink-0", iconClass)} />
-        <div className="flex flex-col gap-1">
-          {/* Urgency has to survive past colour for AT users too — a plain
-              sr-only prefix, kept out of the title node so getByText(title)
-              (and any consumer doing the same) still matches exactly. */}
-          {urgent ? <span className="sr-only">Warning:</span> : null}
-          <p data-slot="promo-card-title" className="text-sm leading-snug font-medium">
-            {title}
-          </p>
-          {description ? (
-            // text-muted-foreground reads fine on the bare bg-card surface,
-            // but every flavour tints that surface (border-primary/30
-            // bg-primary/5 through border-destructive/40 bg-destructive/10)
-            // and muted-foreground's contrast against those tints — ~4.3–4.6:1
-            // by the same math axe used to catch quota-warning at 3.98 — sits
-            // right at or under the 4.5:1 line for every flavour, not just
-            // the one axe happened to run against. text-foreground/70 keeps
-            // the description visually lighter
-            // than the title (which is full-strength text-card-foreground)
-            // while clearing 4.5:1 against all four tints with margin to
-            // spare (~7:1+), so it doesn't reintroduce the same near-miss.
-            <p data-slot="promo-card-description" className="text-foreground/70 text-xs leading-snug">
-              {description}
+        <div className="flex items-start gap-2 pr-6">
+          <Icon aria-hidden className={cn("mt-0.5 size-4 shrink-0", iconClass)} />
+          <div className="flex flex-col gap-1">
+            {/* Urgency has to survive past colour for AT users too — a plain
+                sr-only prefix, kept out of the title node so getByText(title)
+                (and any consumer doing the same) still matches exactly. */}
+            {urgent ? <span className="sr-only">Warning:</span> : null}
+            <p data-slot="promo-card-title" className="text-sm leading-snug font-medium">
+              {title}
             </p>
-          ) : null}
+            {description ? (
+              // text-muted-foreground reads fine on the bare bg-card surface,
+              // but every flavour tints that surface (border-primary/30
+              // bg-primary/5 through border-destructive/40 bg-destructive/10)
+              // and muted-foreground's contrast against those tints — ~4.3–4.6:1
+              // by the same math axe used to catch quota-warning at 3.98 — sits
+              // right at or under the 4.5:1 line for every flavour, not just
+              // the one axe happened to run against. text-foreground/70 keeps
+              // the description visually lighter
+              // than the title (which is full-strength text-card-foreground)
+              // while clearing 4.5:1 against all four tints with margin to
+              // spare (~7:1+), so it doesn't reintroduce the same near-miss.
+              <p data-slot="promo-card-description" className="text-foreground/70 text-xs leading-snug">
+                {description}
+              </p>
+            ) : null}
+          </div>
         </div>
-      </div>
 
-      {onCtaClick ? (
-        <Button
-          type="button"
-          size="sm"
-          variant={flavour === "quota-warning" ? "destructive" : "default"}
-          onClick={onCtaClick}
-          data-slot="promo-card-cta"
-          className={cn("self-start", ctaClassName)}
-        >
-          {ctaLabel ?? "Learn more"}
-        </Button>
-      ) : null}
-    </div>
+        {onCtaClick ? (
+          <Button
+            type="button"
+            size="sm"
+            variant={flavour === "quota-warning" ? "destructive" : "default"}
+            onClick={onCtaClick}
+            data-slot="promo-card-cta"
+            className={cn("self-start", ctaClassName)}
+          >
+            {ctaLabel ?? "Learn more"}
+          </Button>
+        ) : null}
+      </CardContent>
+    </Card>
   );
 }
 
