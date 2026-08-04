@@ -126,8 +126,12 @@ for (const item of manifest) {
   if (existsSync(docsPath)) {
     const docs = readFileSync(docsPath, "utf8");
     const required: [RegExp, string][] = [
-      [/whatItIs:\s*"[^"]{10,}"/, "whatItIs"],
-      [/whyItMatters:\s*"[^"]{10,}"/, "whyItMatters"],
+      // `(?:[^"\\]|\\.)` rather than `[^"]` so an escaped quote inside the prose
+      // doesn't terminate the match early. Guidance is prose and routinely
+      // quotes things; the naive form rejected a fully-written whatItIs whose
+      // only sin was containing \"Recommended for you\".
+      [/whatItIs:\s*"(?:[^"\\]|\\.){10,}"/, "whatItIs"],
+      [/whyItMatters:\s*"(?:[^"\\]|\\.){10,}"/, "whyItMatters"],
       [/dos:\s*\[\s*\{/, "at least one do"],
       [/donts:\s*\[\s*\{/, "at least one don't"],
       [/pitfalls:\s*\[\s*"/, "at least one pitfall"],
