@@ -13,9 +13,9 @@ was already decided.
 |                 |                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
-| Branch          | `claude/wave-4-family-f` (branched from `main` after PR #15 merged)                                                         |
+| Branch          | `claude/waves-4-6-components` (branched from `main` after PR #15 merged)                                                    |
 | HEAD at handoff | families F, H, I complete + the `cost` contract module                                                                      |
-| Pushed          | **no.** Six local commits — needs a push and a PR.                                                                          |
+| Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
 | Open PR         | **none** for this work. PR #11 (`claude/wave-specs-and-infra`) is still open, but its content landed on main via `11f633e`. |
 | Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
 
