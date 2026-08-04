@@ -8,6 +8,7 @@ import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
 import { FeedbackDocs } from "@/content/components/feedback.docs";
+import { GenerationGridDocs } from "@/content/components/generation-grid.docs";
 import { GenerationPanelDocs } from "@/content/components/generation-panel.docs";
 import { GenerationQueueDocs } from "@/content/components/generation-queue.docs";
 import { GenerationWizardDocs } from "@/content/components/generation-wizard.docs";
@@ -24,6 +25,7 @@ import { QuoteReplyDocs } from "@/content/components/quote-reply.docs";
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
 import { RecommendationCardDocs } from "@/content/components/recommendation-card.docs";
 import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
+import { ResultCardDocs } from "@/content/components/result-card.docs";
 import { RunButtonDocs } from "@/content/components/run-button.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
 import { SkillMenuDocs } from "@/content/components/skill-menu.docs";
@@ -39,6 +41,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "disclaimer-note": DisclaimerNoteDocs,
   "feature-card-row": FeatureCardRowDocs,
   "feedback": FeedbackDocs,
+  "generation-grid": GenerationGridDocs,
   "generation-panel": GenerationPanelDocs,
   "generation-queue": GenerationQueueDocs,
   "generation-wizard": GenerationWizardDocs,
@@ -55,6 +58,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "recent-grid": RecentGridDocs,
   "recommendation-card": RecommendationCardDocs,
   "reference-strip": ReferenceStripDocs,
+  "result-card": ResultCardDocs,
   "run-button": RunButtonDocs,
   "sidebar-nav": SidebarNavDocs,
   "skill-menu": SkillMenuDocs,

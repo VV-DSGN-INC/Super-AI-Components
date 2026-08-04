@@ -731,32 +731,47 @@ export const MANIFEST: ManifestItem[] = [
     id: "F1",
     name: "result-card",
     title: "Result Card",
-    description: "One generated asset, anywhere it appears",
+    description:
+      "One generated asset, anywhere it appears — the same box from queued through done, failed or locked.",
     family: "F",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 4,
+    // catalog.md says "Card, Aspect-ratio"; component-specs.md's "Built on: A8"
+    // is authoritative post-D13 (wave-4 spec §1.2 finding 6), and A8 already
+    // owns the aspect frame — so no aspect-ratio primitive is imported.
     base: ["card", "aspect-ratio"],
-    shadcn: [],
-    consumes: [],
-    npm: [],
-    states: ["image/video/audio/text/3D", "idle", "streaming", "done", "failed", "locked"],
+    shadcn: ["button", "card", "checkbox", "progress"],
+    consumes: ["preview-tile"],
+    npm: ["lucide-react"],
+    // catalog.md's raw states mixed one media-type axis ("image/video/audio/
+    // text/3D") into the lifecycle list and omitted `queued`. Normalised to the
+    // six-name GenerationState union the State contract fixes
+    // (concept-model.md:108, wave-4 spec §1.6 — F1 "uses it verbatim"), with
+    // the media-type axis kept as its own story rather than dropped.
+    states: ["idle", "queued", "streaming", "done", "failed", "locked", "media-types"],
     specAnchor: "component-specs.md#f1-result-card",
   },
   {
     id: "F2",
     name: "generation-grid",
     title: "Generation Grid",
-    description: "Batch gallery of results",
+    description:
+      "Batch gallery of results — density is a prop, select mode replaces hover actions, empty is a tile.",
     family: "F",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 4,
     base: ["f1-+-a3"],
     shadcn: [],
-    consumes: [],
+    // A3 only. F1 is reached through `renderItem`, never imported — the layer
+    // rule keeps two sibling L3 components out of each other's import graph
+    // (wave-4 spec §1.4), which is why the declared base names F1 but the
+    // dependency does not.
+    consumes: ["date-section"],
     npm: [],
-    states: ["date sections", "density", "select-mode", "empty"],
+    // "date sections" carried a space, which cannot become a story export.
+    states: ["date-sections", "density", "select-mode", "empty"],
     specAnchor: "component-specs.md#f2-generation-grid",
   },
   {

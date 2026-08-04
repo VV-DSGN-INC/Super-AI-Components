@@ -4,30 +4,32 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-04, after batch 3 (family E).
+**Last updated:** 2026-08-04, after F1 + F2 (family F opened).
 
 ---
 
 ## 1. Where things stand
 
-|                 |                                                                                         |
-| --------------- | --------------------------------------------------------------------------------------- |
-| Repo            | `VV-DSGN-INC/Super-AI-Components`                                                       |
-| Branch          | `claude/component-pipeline`                                                             |
-| Worktree used   | `.claude/worktrees/component-pipeline`                                                  |
-| HEAD at handoff | `f874320` — "batch 3 — family E complete"                                               |
-| Pushed          | yes, `origin/claude/component-pipeline`                                                 |
-| Open PR         | **none.** PR #12 (spec + plan) is already merged. The 43-component work needs a new PR. |
-| Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)           |
+|                 |                                                                                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
+| Branch          | `claude/wave-4-family-f` (branched from `main` after PR #15 merged)                                                         |
+| HEAD at handoff | F1 `result-card` + F2 `generation-grid`                                                                                     |
+| Pushed          | **no.** Local commit only — needs a push and a PR.                                                                          |
+| Open PR         | **none** for this work. PR #11 (`claude/wave-specs-and-infra`) is still open, but its content landed on main via `11f633e`. |
+| Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
 
-**Catalog progress: 43 of 107 active items shipped.** 64 planned, 11 cut
+**Catalog progress: 56 of 114 active items shipped.** 58 planned, 10 cut
 (family G + O5, per decision D9 — do not revive them).
 
-Of the 43, **14 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
+Of the 56, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
 are exempt from the story-state and documentation contracts until someone runs
-the retrofit. The other 29 satisfy the full contract.
+the retrofit. The other 31 satisfy the full contract.
 
-Remaining by family: C 1 · F 7 · H 7 · I 5 · J 7 · K 6 · L 5 · M 7 · N 6 · O 13.
+Remaining by family: C 1 · F 5 · H 7 · I 5 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
+
+Gate baselines at this handoff: `pnpm test` **482**, `pnpm build` **75 pages**,
+`pnpm test:stories` **156**.
 
 ---
 
@@ -56,8 +58,14 @@ The loop, per batch of ~8–10 components:
 ### 3.1 Pick the batch
 
 Follow `decisions.md` §5 wave order. Blocks (family O) compose components from
-many families, so they come **last**. Next up is **family F** (7 items, the
-results side of the generation lifecycle).
+many families, so they come **last**.
+
+**Family F is open: F1 `result-card` and F2 `generation-grid` have shipped.**
+Next up is the rest of it, in the wave-4 spec's own build order (§5): F4
+`action-stack` and F3 `asset-detail` together, then F7 `approval-card`, F5
+`compare-viewer` and F6 `render-queue`, which have no dependencies within the
+wave. **F3, F4 and F6 all take a `Cost` — build the contract module first (see
+§5.9).**
 
 ### 3.2 Prepare the manifest — you do this, not the agents
 
@@ -181,6 +189,36 @@ gate twice.
 **`fs.globSync`** exists at runtime on Node 22+ but not in `@types/node@20`, so
 it passes in untyped `.mjs` gates and fails typecheck in `.mts` ones.
 
+**A `data-slot` you pass to a registry component replaces its own.** Every
+component here spreads `...props` _after_ its own attributes, so
+`<DateSection data-slot="my-group">` silently erases `date-section` and any
+test or style keyed to it. Don't rename another component's slot from the
+call site.
+
+**Composing A8 inside a card means the frame can become a nested interactive.**
+A8 draws its `action` slot _inside_ the frame, so a `failed` or `locked` tile
+already contains a button. If `onSelect` also makes that frame a `<button>`,
+axe fails `nested-interactive`. `result-card.tsx` suppresses tile
+interactivity in exactly those two states — copy that rule in any other
+component that puts a control in A8's action slot.
+
+**Never run `pnpm format`.** The tree is **not** prettier-clean at HEAD, so it
+rewrites ~300 unrelated files in one go — and worse, it breaks
+`check:contract`: that gate matches guidance fields with regexes like
+`whatItIs:\s*"..."`, and prettier re-wraps those strings so the match fails on
+six previously-passing components. Format only the files you touched
+(`pnpm exec prettier --write <paths>`), or leave it to the editor. Bringing
+the whole repo up to prettier is its own task, and it needs the contract
+gate's regexes made whitespace-tolerant first.
+
+**A fresh clone has no Playwright browsers**, and `pnpm test:stories` fails
+with `Executable doesn't exist` rather than anything a11y-shaped. Run
+`pnpm exec playwright install chromium` from `apps/storybook` once.
+
+**`pnpm` and `corepack` may both be missing** even though the repo pins
+`pnpm@11.1.0`. `npm i -g pnpm@11.1.0` is enough; Node 26 works against
+`.nvmrc`'s 24 for every gate in this repo.
+
 ---
 
 ## 5. Open decisions — these need a human, don't guess
@@ -211,7 +249,39 @@ it passes in untyped `.mjs` gates and fails typecheck in `.mts` ones.
    stories, no guidance modules, and `entity-row` has a confirmed contrast
    failure. The retrofit is unscheduled.
 8. **T14, the `/roadmap` page, was specced but never built.** The site still
-   shows no roadmap, so "43 of 107" is invisible to a visitor.
+   shows no roadmap, so "56 of 114" is invisible to a visitor.
+
+9. **The `cost` contract module was never built, and family E shipped without
+   it.** It is step **1** of the wave-4 spec's own build order
+   (`2026-08-02-wave-4-generation-results-design.md` §2, §5) — one
+   `registry:lib` item exporting `Cost`, `CostProvider`, `useCost` and
+   `formatCost`, plus the `GenerationState` union (§2.5). Nothing in
+   `registry/super-ai/` references any of it. Three consequences, in order of
+   cost to fix:
+   - **E5 `run-button` and E7 `member-gate-row` shipped as the two cost
+     placements without the contract they were supposed to validate.** The
+     spec's rule that `insufficient` is _derived_ from `balance < amount` and
+     "never accepted as a prop" is therefore unenforced — which is exactly the
+     "two different prices is the failure mode" the module exists to prevent.
+   - **F3, F4 and F6 all declare `cost?: Cost` in their APIs.** They cannot be
+     built to spec until the type exists. Build the module before them.
+   - **F1 declares its lifecycle union locally** (`ResultCardState` in
+     `result-card.tsx`) rather than duplicating a contract that has no home
+     yet. When the module lands, that type should collapse into it. The union
+     is already spelled the spec's way — `streaming`, never `running`.
+
+   The spec also leaves a naming question open for Nick: if the file carries
+   both the cost and state contracts it is misnamed as `cost` and should be
+   `contracts.tsx`. Note the manifest's `layer` is
+   `primitive | component | block` with no `lib`, so adding a `registry:lib`
+   item needs a small change to `manifest-types.ts` and `gen-registry.mts`
+   as well.
+
+10. **`generation-grid`'s `renderItem` context carries a `toggleSelected` the
+    wave-4 spec's §6.2 sketch does not list.** Without it `onSelectionChange`
+    could never fire — the checkbox that toggles an item is rendered by the
+    caller, not by the grid — so the prop would be dead. Additive and
+    documented, but it is a departure from the written API.
 
 ---
 

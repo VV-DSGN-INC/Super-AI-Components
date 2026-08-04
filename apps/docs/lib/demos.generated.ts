@@ -20,6 +20,7 @@ import FeedbackDemo from "@/components/demos/feedback-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
+import GenerationGridDemo from "@/components/demos/generation-grid-demo";
 import GenerationPanelDemo from "@/components/demos/generation-panel-demo";
 import GenerationQueueDemo from "@/components/demos/generation-queue-demo";
 import GenerationWizardDemo from "@/components/demos/generation-wizard-demo";
@@ -41,6 +42,7 @@ import RecentGridDemo from "@/components/demos/recent-grid-demo";
 import RecommendationCardDemo from "@/components/demos/recommendation-card-demo";
 import ReferenceStripDemo from "@/components/demos/reference-strip-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
+import ResultCardDemo from "@/components/demos/result-card-demo";
 import RunButtonDemo from "@/components/demos/run-button-demo";
 import SafetyBlockDemo from "@/components/demos/safety-block-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
@@ -76,6 +78,7 @@ export const demos: Record<string, ComponentType> = {
   "field-row": FieldRowDemo,
   "filter-bar": FilterBarDemo,
   "gen-settings-bar": GenSettingsBarDemo,
+  "generation-grid": GenerationGridDemo,
   "generation-panel": GenerationPanelDemo,
   "generation-queue": GenerationQueueDemo,
   "generation-wizard": GenerationWizardDemo,
@@ -97,6 +100,7 @@ export const demos: Record<string, ComponentType> = {
   "recommendation-card": RecommendationCardDemo,
   "reference-strip": ReferenceStripDemo,
   "reset-affordance": ResetAffordanceDemo,
+  "result-card": ResultCardDemo,
   "run-button": RunButtonDemo,
   "safety-block": SafetyBlockDemo,
   "section-header": SectionHeaderDemo,
