@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 
 import AccountMenuDemo from "@/components/demos/account-menu-demo";
 import ActionStackDemo from "@/components/demos/action-stack-demo";
+import AiToolsMenuDemo from "@/components/demos/ai-tools-menu-demo";
 import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
 import AppTopbarDemo from "@/components/demos/app-topbar-demo";
@@ -13,16 +14,19 @@ import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import CompareViewerDemo from "@/components/demos/compare-viewer-demo";
 import ContextChipsDemo from "@/components/demos/context-chips-demo";
+import ContextToolbarDemo from "@/components/demos/context-toolbar-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
+import DrawingToolsDemo from "@/components/demos/drawing-tools-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
 import EscalationHandoffDemo from "@/components/demos/escalation-handoff-demo";
 import FeatureCardRowDemo from "@/components/demos/feature-card-row-demo";
 import FeedbackDemo from "@/components/demos/feedback-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
+import FrameStripDemo from "@/components/demos/frame-strip-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import GenerationGridDemo from "@/components/demos/generation-grid-demo";
 import GenerationPanelDemo from "@/components/demos/generation-panel-demo";
@@ -40,6 +44,7 @@ import PresetGridDemo from "@/components/demos/preset-grid-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PricingTableDemo from "@/components/demos/pricing-table-demo";
 import PromoCardDemo from "@/components/demos/promo-card-demo";
+import PropertyInspectorDemo from "@/components/demos/property-inspector-demo";
 import QuotaMeterDemo from "@/components/demos/quota-meter-demo";
 import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
 import RecentGridDemo from "@/components/demos/recent-grid-demo";
@@ -57,15 +62,23 @@ import SkillMenuDemo from "@/components/demos/skill-menu-demo";
 import SlotSummaryDemo from "@/components/demos/slot-summary-demo";
 import SourceCardsDemo from "@/components/demos/source-cards-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
+import StemMixerDemo from "@/components/demos/stem-mixer-demo";
 import TaskTrayDemo from "@/components/demos/task-tray-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
+import TimeRulerDemo from "@/components/demos/time-ruler-demo";
+import ToolPanelDemo from "@/components/demos/tool-panel-demo";
+import TrackLaneDemo from "@/components/demos/track-lane-demo";
+import TranscriptEditorDemo from "@/components/demos/transcript-editor-demo";
+import TransportControlsDemo from "@/components/demos/transport-controls-demo";
 import TtsComposerDemo from "@/components/demos/tts-composer-demo";
 import VoiceCloneRecorderDemo from "@/components/demos/voice-clone-recorder-demo";
+import WaveformEditorDemo from "@/components/demos/waveform-editor-demo";
 import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 
 export const demos: Record<string, ComponentType> = {
   "account-menu": AccountMenuDemo,
   "action-stack": ActionStackDemo,
+  "ai-tools-menu": AiToolsMenuDemo,
   "answer-block": AnswerBlockDemo,
   "app-sidebar": AppSidebarDemo,
   "app-topbar": AppTopbarDemo,
@@ -76,16 +89,19 @@ export const demos: Record<string, ComponentType> = {
   "citation-ref": CitationRefDemo,
   "compare-viewer": CompareViewerDemo,
   "context-chips": ContextChipsDemo,
+  "context-toolbar": ContextToolbarDemo,
   "cost-chip": CostChipDemo,
   "credits-indicator": CreditsIndicatorDemo,
   "date-section": DateSectionDemo,
   "disclaimer-note": DisclaimerNoteDemo,
+  "drawing-tools": DrawingToolsDemo,
   "entity-row": EntityRowDemo,
   "escalation-handoff": EscalationHandoffDemo,
   "feature-card-row": FeatureCardRowDemo,
   "feedback": FeedbackDemo,
   "field-row": FieldRowDemo,
   "filter-bar": FilterBarDemo,
+  "frame-strip": FrameStripDemo,
   "gen-settings-bar": GenSettingsBarDemo,
   "generation-grid": GenerationGridDemo,
   "generation-panel": GenerationPanelDemo,
@@ -103,6 +119,7 @@ export const demos: Record<string, ComponentType> = {
   "preview-tile": PreviewTileDemo,
   "pricing-table": PricingTableDemo,
   "promo-card": PromoCardDemo,
+  "property-inspector": PropertyInspectorDemo,
   "quota-meter": QuotaMeterDemo,
   "quote-reply": QuoteReplyDemo,
   "recent-grid": RecentGridDemo,
@@ -120,9 +137,16 @@ export const demos: Record<string, ComponentType> = {
   "slot-summary": SlotSummaryDemo,
   "source-cards": SourceCardsDemo,
   "stat-readout": StatReadoutDemo,
+  "stem-mixer": StemMixerDemo,
   "task-tray": TaskTrayDemo,
   "thread-list": ThreadListDemo,
+  "time-ruler": TimeRulerDemo,
+  "tool-panel": ToolPanelDemo,
+  "track-lane": TrackLaneDemo,
+  "transcript-editor": TranscriptEditorDemo,
+  "transport-controls": TransportControlsDemo,
   "tts-composer": TtsComposerDemo,
   "voice-clone-recorder": VoiceCloneRecorderDemo,
+  "waveform-editor": WaveformEditorDemo,
   "workspace-switcher": WorkspaceSwitcherDemo,
 };

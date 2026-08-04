@@ -97,7 +97,11 @@ function ActionRow({
   const actionable = !action.locked && !action.disabled;
   return (
     <EntityRow
-      data-slot="action-stack-item"
+      // No data-slot here: A9 spreads `...props` after its own attributes, so
+      // one would erase `entity-row` and hide that A9 is what renders a row —
+      // the trap CONTINUE.md §4 records. Rows are addressed by data-action-id
+      // instead. (I4 `ai-tools-menu` caught this; it uses the same scheme.)
+      data-action-id={action.id}
       data-locked={action.locked ? "" : undefined}
       icon={action.locked ? <Lock aria-hidden className="size-4" /> : action.icon}
       title={action.title}

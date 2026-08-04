@@ -16,7 +16,7 @@ const IMAGE_ACTIONS: AssetAction[] = [
 ];
 
 const rows = (root: HTMLElement) =>
-  [...root.querySelectorAll('[data-slot="action-stack-item"]')] as HTMLElement[];
+  [...root.querySelectorAll("[data-action-id]")] as HTMLElement[];
 
 describe("ActionStack", () => {
   it("renders the menu state", async () => {
@@ -33,6 +33,8 @@ describe("ActionStack", () => {
       "inline",
     );
     expect(rows(container)).toHaveLength(3);
+    // A9 keeps its own slot — the row is visibly an entity-row in the DOM.
+    expect(container.querySelectorAll('[data-slot="entity-row"]')).toHaveLength(3);
     // No trigger: the rows are the surface.
     expect(screen.queryByRole("button", { name: "Use this result" })).not.toBeInTheDocument();
   });

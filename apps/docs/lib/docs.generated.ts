@@ -3,15 +3,19 @@ import type { ComponentDocs } from "./component-docs";
 
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { ActionStackDocs } from "@/content/components/action-stack.docs";
+import { AiToolsMenuDocs } from "@/content/components/ai-tools-menu.docs";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { ApprovalCardDocs } from "@/content/components/approval-card.docs";
 import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
+import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
+import { DrawingToolsDocs } from "@/content/components/drawing-tools.docs";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
 import { FeedbackDocs } from "@/content/components/feedback.docs";
+import { FrameStripDocs } from "@/content/components/frame-strip.docs";
 import { GenerationGridDocs } from "@/content/components/generation-grid.docs";
 import { GenerationPanelDocs } from "@/content/components/generation-panel.docs";
 import { GenerationQueueDocs } from "@/content/components/generation-queue.docs";
@@ -25,6 +29,7 @@ import { ModelPickerDocs } from "@/content/components/model-picker.docs";
 import { ParameterPanelDocs } from "@/content/components/parameter-panel.docs";
 import { PresetGridDocs } from "@/content/components/preset-grid.docs";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
+import { PropertyInspectorDocs } from "@/content/components/property-inspector.docs";
 import { QuoteReplyDocs } from "@/content/components/quote-reply.docs";
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
 import { RecommendationCardDocs } from "@/content/components/recommendation-card.docs";
@@ -34,22 +39,33 @@ import { ResultCardDocs } from "@/content/components/result-card.docs";
 import { RunButtonDocs } from "@/content/components/run-button.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
 import { SkillMenuDocs } from "@/content/components/skill-menu.docs";
+import { StemMixerDocs } from "@/content/components/stem-mixer.docs";
+import { TimeRulerDocs } from "@/content/components/time-ruler.docs";
+import { ToolPanelDocs } from "@/content/components/tool-panel.docs";
+import { TrackLaneDocs } from "@/content/components/track-lane.docs";
+import { TranscriptEditorDocs } from "@/content/components/transcript-editor.docs";
+import { TransportControlsDocs } from "@/content/components/transport-controls.docs";
 import { TtsComposerDocs } from "@/content/components/tts-composer.docs";
 import { VoiceCloneRecorderDocs } from "@/content/components/voice-clone-recorder.docs";
+import { WaveformEditorDocs } from "@/content/components/waveform-editor.docs";
 import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.docs";
 
 export const componentDocs: Record<string, ComponentDocs> = {
   "account-menu": AccountMenuDocs,
   "action-stack": ActionStackDocs,
+  "ai-tools-menu": AiToolsMenuDocs,
   "app-sidebar": AppSidebarDocs,
   "app-topbar": AppTopbarDocs,
   "approval-card": ApprovalCardDocs,
   "asset-detail": AssetDetailDocs,
   "compare-viewer": CompareViewerDocs,
   "context-chips": ContextChipsDocs,
+  "context-toolbar": ContextToolbarDocs,
   "disclaimer-note": DisclaimerNoteDocs,
+  "drawing-tools": DrawingToolsDocs,
   "feature-card-row": FeatureCardRowDocs,
   "feedback": FeedbackDocs,
+  "frame-strip": FrameStripDocs,
   "generation-grid": GenerationGridDocs,
   "generation-panel": GenerationPanelDocs,
   "generation-queue": GenerationQueueDocs,
@@ -63,6 +79,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "parameter-panel": ParameterPanelDocs,
   "preset-grid": PresetGridDocs,
   "promo-card": PromoCardDocs,
+  "property-inspector": PropertyInspectorDocs,
   "quote-reply": QuoteReplyDocs,
   "recent-grid": RecentGridDocs,
   "recommendation-card": RecommendationCardDocs,
@@ -72,7 +89,14 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "run-button": RunButtonDocs,
   "sidebar-nav": SidebarNavDocs,
   "skill-menu": SkillMenuDocs,
+  "stem-mixer": StemMixerDocs,
+  "time-ruler": TimeRulerDocs,
+  "tool-panel": ToolPanelDocs,
+  "track-lane": TrackLaneDocs,
+  "transcript-editor": TranscriptEditorDocs,
+  "transport-controls": TransportControlsDocs,
   "tts-composer": TtsComposerDocs,
   "voice-clone-recorder": VoiceCloneRecorderDocs,
+  "waveform-editor": WaveformEditorDocs,
   "workspace-switcher": WorkspaceSwitcherDocs,
 };

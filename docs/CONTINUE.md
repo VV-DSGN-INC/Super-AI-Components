@@ -4,7 +4,7 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-04, after family F closed (all 7 items) plus the `cost` contract.
+**Last updated:** 2026-08-04, after Wave 6 (families H + I, 12 items via parallel agents).
 
 ---
 
@@ -14,25 +14,25 @@ was already decided.
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
 | Branch          | `claude/wave-4-family-f` (branched from `main` after PR #15 merged)                                                         |
-| HEAD at handoff | family F complete (F1–F7) + the `cost` contract module                                                                      |
-| Pushed          | **no.** Four local commits — needs a push and a PR.                                                                         |
+| HEAD at handoff | families F, H, I complete + the `cost` contract module                                                                      |
+| Pushed          | **no.** Six local commits — needs a push and a PR.                                                                          |
 | Open PR         | **none** for this work. PR #11 (`claude/wave-specs-and-infra`) is still open, but its content landed on main via `11f633e`. |
 | Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
 
-**Catalog progress: 61 of 114 active items shipped.** 53 planned, 10 cut
+**Catalog progress: 73 of 114 active items shipped.** 41 planned, 10 cut
 (family G + O5, per decision D9 — do not revive them).
 
-Of the 61, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
+Of the 73, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
 are exempt from the story-state and documentation contracts until someone runs
-the retrofit. The other 36 satisfy the full contract.
+the retrofit. The other 48 satisfy the full contract.
 
-Remaining by family: C 1 · H 7 · I 5 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
+Remaining by family: C 1 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
 
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-Gate baselines at this handoff: `pnpm test` **567**, `pnpm build` **80 pages**,
-`pnpm test:stories` **176**, `registry.json` **77 items**.
+Gate baselines at this handoff: `pnpm test` **737**, `pnpm build` **92 pages**,
+`pnpm test:stories` **225**, `registry.json` **89 items**.
 
 ---
 
@@ -63,18 +63,18 @@ The loop, per batch of ~8–10 components:
 Follow `decisions.md` §5 wave order. Blocks (family O) compose components from
 many families, so they come **last**.
 
-**Family F is complete — all 7 items shipped**, and with family E already
-done, that closes Wave 4 apart from the O6 `generation-shell` block.
+**Families E, F, H and I are complete.** Waves 4 and 6 are done apart from
+their blocks (O6, O3, O4).
 
-Next by `decisions.md` §5 is **Wave 6: families I and H** (12 items), which
-have no cost dependency and no open questions. **But note D12 warns families
-J, K and N are not closed** pending re-sampling, and C2 `suggestion-chips` is
-still blocked on the AI Elements question (§5.1) — so H/I is the clean run.
+Next: **L (5) + M (4)**, both clean. Then **J (7) + K (5)** and **N (6)** —
+note D12 still warns J/K/N are unclosed pending re-sampling, so those carry a
+rework risk that has been accepted by decision, not resolved. C2
+`suggestion-chips` remains blocked on the AI Elements question (§5.1).
+Family O's 13 blocks come last by dependency: they compose everything above.
 
-The other candidate is **O6 `generation-shell`**, the block that proves Wave 4.
-It composes E1 and F1/F2 and would make the wave demonstrable, but two of its
-declared fillers (L1 `empty-state`, M2 `credits-indicator`) ship in later
-waves, so it lands with placeholders.
+**Parallel agents are the throughput mechanism** — §3.4 is not optional advice.
+Wave 6's 12 items were built by 12 concurrent agents in one pass; sequential
+building runs at roughly 7 components per session.
 
 ### 3.2 Prepare the manifest — you do this, not the agents
 
@@ -129,7 +129,7 @@ for n in <names>; do
   printf "%-22s " "$n"
   grep -h 'from "' registry/super-ai/$n.tsx \
     | sed 's/.*from "//;s/".*//' \
-    | grep -E '^@/components/ui/|^@/registry/super-ai/|lucide-react' \
+    | grep -E '^@/components/ui/|^@/registry/super-ai/|lucide-react|^@base-ui' \
     | sort -u | tr '\n' ' '; echo
 done
 
@@ -140,6 +140,13 @@ pnpm check:contract
 cd ../.. && pnpm typecheck && pnpm lint && pnpm check:tokens && pnpm test && pnpm build
 cd apps/storybook && rm -rf node_modules/.cache/storybook && pnpm test:stories
 ```
+
+**On `@base-ui/react`:** it is normally left out of `npm`, because it arrives
+as a peer of any vendored `ui/` primitive the component also imports — that is
+why `parameter-panel`, `run-button` and `compare-viewer` all declare `[]`. The
+exception is a component that imports **no** `ui/` primitive at all: `time-ruler`
+uses only `@base-ui/react/slider`, so nothing would drag the package in and it
+declares `npm: ["@base-ui/react"]`. Check before assuming the default.
 
 `rm -rf node_modules/.cache/storybook` before `test:stories` is **not optional**
 after adding components — Vite's dep optimiser invalidates mid-run and produces
@@ -224,6 +231,32 @@ the a11y gate only under its *own* story name — so any component that renders
 one fails its own stories. Until A2's retrofit lands, pass
 `className="text-foreground"` at the call site; tailwind-merge swaps the token
 and leaves the chip otherwise intact. See `action-stack.tsx`.
+
+**The `data-slot` rule, refined.** Overriding a **vendored `ui/` primitive's**
+slot is house idiom (`result-card` on `Card`, `frame-strip` on `Carousel`,
+`tool-panel` on `Tabs`) — nothing keys on those values. Overriding a
+**registry component's** slot is the bug, because that slot is the component's
+identity and every test and style keyed to it silently misses. `DateSection`,
+`CostChip`, `StatReadout` and `EntityRow` have all been erased this way. Use
+`data-<thing>-id` to address rows instead.
+
+**An `sr-only` suffix fuses with the visible text in the accessible name.**
+`<span>In</span><span class="sr-only"> point at 3s</span>` computes as
+**"Inpoint at 3s"** — accname concatenates name-from-content chunks with
+whitespace trimmed and no separator. Two agents hit this independently on the
+same afternoon (`frame-strip`, `transcript-editor`), and it broke three tests
+before either worked out why. Either set an outright `aria-label`, or make the
+visual half `aria-hidden` and put the *complete* phrase in the sr-only span.
+
+**A decorative thumbnail that renders text doubles the accessible name.**
+A tile whose thumbnail contains the item's label, inside A8 which also renders
+that label, is named `"Dashed line Dashed line"` and every exact-name query
+misses. Mark thumbnails `aria-hidden`. Cost this batch a story-gate failure.
+
+**A8 `preview-tile`'s `failed` branch is `text-destructive` on its own
+`bg-muted`** (~4.0:1). A8 is gate-exempt under its own story name, so its
+stories pass and yours will not. Override the message to `text-foreground`
+(`result-card` does) or don't render that state (`tool-panel` doesn't).
 
 **Never run `pnpm format`.** The tree is **not** prettier-clean at HEAD, so it
 rewrites ~300 unrelated files in one go — and worse, it breaks
@@ -328,12 +361,30 @@ with `Executable doesn't exist` rather than anything a11y-shaped. Run
       the caller re-rendering, and leaves the pane numbers — the one identity
       that survives into that mode — with nothing to do.
 
-11. **`compare-viewer`'s `syncKey` is rendered, not implemented.** The spec
+11. **THREE SHARED PIECES WANT PROMOTING — the clearest signal this catalog
+    has produced.** In each case two builders working blind reached for the
+    same thing, which is what D3 means by *"promote shared pieces to L2 rather
+    than importing sideways"*. None is broken; all three are correct-but-
+    duplicated, and were deliberately left for a dedicated pass rather than
+    stalling the build queue.
+
+    | Shared piece | Found by | Current state |
+    | --- | --- | --- |
+    | Timeline coordinates — `timeToPixels`, `pixelsToTime`, `snapTime` | H2 / H3 / H6 | H2 exports them and calls them "the coordinate model H3 shares"; H3 built its own from `duration × pixelsPerSecond`; H6 has a third. **Two implementations of the same math, and H2's spec requires the playhead to span every track — which is only true if they agree.** |
+    | The action row — A9 + A2 trailing chip + locked treatment + menu/inline split | F4 / I4 | I4 established it cannot *compose* F4 (F4's root owns the `DropdownMenu`, so composing per-group yields N menus where I4 needs one). It mirrored the shape instead and documented it. |
+    | `ParameterSlider` — A6 `field-row` + a slider with a real accessible name | E3 / I5 | I5 imports it from E3 — an L3→L3 sideways import across families, which is precisely what D3 forbids. It should be an L2 primitive. |
+
+    The `registry:lib` machinery built for `cost` (see §5.9) is the right home
+    for the first; the third is a straight promotion to `registry/super-ai/`.
+
+12. **`compare-viewer`'s `syncKey` is rendered, not implemented.** The spec
     calls for synchronised zoom, pan and playhead, but gives the component no
     zoom API and no ownership of the media (which arrives as opaque
     `content`). It emits `data-sync-key` for whatever does own the media to
     read. Real synchronisation still needs a home — most likely in family H,
     where `time-ruler` and `track-lane` already have to agree on a playhead.
+    **Now confirmed:** H2, H3 and H6 all shipped without a sync story, and each
+    said so independently. It belongs with the coordinate model in item 11.
 
 ---
 
