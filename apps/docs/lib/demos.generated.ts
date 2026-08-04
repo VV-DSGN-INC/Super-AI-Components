@@ -5,24 +5,32 @@ import AccountMenuDemo from "@/components/demos/account-menu-demo";
 import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
 import AppTopbarDemo from "@/components/demos/app-topbar-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
+import ContextChipsDemo from "@/components/demos/context-chips-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
+import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
 import FeatureCardRowDemo from "@/components/demos/feature-card-row-demo";
+import FeedbackDemo from "@/components/demos/feedback-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import HeroOmniboxDemo from "@/components/demos/hero-omnibox-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
+import MediaPromptBarDemo from "@/components/demos/media-prompt-bar-demo";
 import ModalityRailDemo from "@/components/demos/modality-rail-demo";
+import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PromoCardDemo from "@/components/demos/promo-card-demo";
+import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
 import RecentGridDemo from "@/components/demos/recent-grid-demo";
 import RecommendationCardDemo from "@/components/demos/recommendation-card-demo";
+import ReferenceStripDemo from "@/components/demos/reference-strip-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import SidebarNavDemo from "@/components/demos/sidebar-nav-demo";
+import SkillMenuDemo from "@/components/demos/skill-menu-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
@@ -32,24 +40,32 @@ export const demos: Record<string, ComponentType> = {
   "app-sidebar": AppSidebarDemo,
   "app-topbar": AppTopbarDemo,
   "choice-chips": ChoiceChipsDemo,
+  "context-chips": ContextChipsDemo,
   "cost-chip": CostChipDemo,
   "date-section": DateSectionDemo,
+  "disclaimer-note": DisclaimerNoteDemo,
   "entity-row": EntityRowDemo,
   "feature-card-row": FeatureCardRowDemo,
+  "feedback": FeedbackDemo,
   "field-row": FieldRowDemo,
   "filter-bar": FilterBarDemo,
   "gen-settings-bar": GenSettingsBarDemo,
   "hero-omnibox": HeroOmniboxDemo,
   "kbd": KbdDemo,
+  "media-prompt-bar": MediaPromptBarDemo,
   "modality-rail": ModalityRailDemo,
+  "mode-tabs": ModeTabsDemo,
   "preview-tile": PreviewTileDemo,
   "promo-card": PromoCardDemo,
+  "quote-reply": QuoteReplyDemo,
   "recent-grid": RecentGridDemo,
   "recommendation-card": RecommendationCardDemo,
+  "reference-strip": ReferenceStripDemo,
   "reset-affordance": ResetAffordanceDemo,
   "section-header": SectionHeaderDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "sidebar-nav": SidebarNavDemo,
+  "skill-menu": SkillMenuDemo,
   "stat-readout": StatReadoutDemo,
   "thread-list": ThreadListDemo,
   "workspace-switcher": WorkspaceSwitcherDemo,

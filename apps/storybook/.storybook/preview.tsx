@@ -12,7 +12,18 @@ const preview: Preview = {
     // triggers `expect(result).toHaveNoViolations()`, when test === "error").
     // Without this, the whole a11y gate is silent — set here so it's the
     // default contract for every story, not opt-in per story.
-    a11y: { test: "error" },
+    //
+    // `context.exclude` is axe-core's own context parameter (see addon-a11y's
+    // preview.mjs `run()`: `input.context.exclude` is concatenated onto the
+    // addon's own default excludes, then the whole `context` object is passed
+    // straight to `axe.run(context, options)` — this is not an addon-invented
+    // option, it's axe-core's documented context.exclude, verified by reading
+    // dist/preview.mjs in node_modules). `[data-base-ui-focus-guard]` is the
+    // attribute Base UI's `FocusGuard` component (utils/FocusGuard.js) stamps
+    // on every popup focus-trap span it renders — see
+    // docs/design-system/a11y-baseline.md for why this is excluded and why
+    // the exclusion must not be widened beyond this exact selector.
+    a11y: { test: "error", context: { exclude: ["[data-base-ui-focus-guard]"] } },
     controls: {
       matchers: {
         color: /(background|color)$/i,

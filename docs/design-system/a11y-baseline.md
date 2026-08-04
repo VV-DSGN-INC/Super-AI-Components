@@ -236,3 +236,64 @@ surface's own foreground token (`text-accent-foreground` on `bg-accent`,
 `text-secondary-foreground` on `bg-secondary`, ~16:1) instead. `bg-muted/50`
 is not a safe workaround — it only passes by blending toward whatever's
 behind it, and moves with that background.
+
+## Excluded: Base UI's own focus-guard spans (`aria-hidden-focus`)
+
+`Feedback`'s `Rating` story (and every future story that opens a Base UI
+popup, menu, dialog, or tooltip in its default state) tripped
+`aria-hidden-focus`:
+
+```
+Expected the HTML found at $('span[data-base-ui-focus-guard=""][aria-hidden="true"]:nth-child(2)')
+to have no violations: "ARIA hidden element must not be focusable or contain
+focusable elements (aria-hidden-focus)"
+```
+
+**What the element is.** `@base-ui/react`'s internal `FocusGuard` component
+(`utils/FocusGuard.js`, used by every vendored `ui/popover.tsx`,
+`ui/dropdown-menu.tsx`, `ui/dialog.tsx`, `ui/tooltip.tsx`, etc. that sit on
+Base UI's popup layer) renders a visually-hidden `<span>` at each end of the
+popup content to trap focus for screen-reader users tabbing past it. Reading
+the component source confirms it unconditionally sets `tabIndex: 0` and
+`data-base-ui-focus-guard=""`, and sets `aria-hidden="true"` on every browser
+except when VoiceOver-on-Safari detection assigns it `role="button"`
+instead. That `aria-hidden="true"` + `tabindex="0"` combination is exactly
+what axe's `aria-hidden-focus` rule exists to catch — the element is
+intentionally focusable-but-hidden by design, not a markup bug in this repo.
+This looks like a genuine axe/Base UI friction point (axe can't tell a
+deliberate ARIA-hidden focus-trap apart from an accidental one), but no
+upstream issue was filed as part of this fix — this section only records
+what was observed in the installed version (`@base-ui/react@1.5.0`).
+
+**The exclusion.** `apps/storybook/.storybook/preview.tsx` sets:
+
+```ts
+a11y: { test: "error", context: { exclude: ["[data-base-ui-focus-guard]"] } }
+```
+
+`context.exclude` is axe-core's own context option, not an addon invention —
+confirmed by reading `@storybook/addon-a11y`'s `dist/preview.mjs`: the
+addon concatenates `parameters.a11y.context.exclude` onto its own default
+excludes (`.sb-wrapper`, `#storybook-docs`, `#storybook-highlights-root`) and
+passes the resulting `context` object straight to `axe.run(context,
+options)`. It removes only elements matching
+`[data-base-ui-focus-guard]` — an attribute Base UI stamps on nothing else —
+from the entire axe scan, for every story, set once. `options.rules` (the
+per-rule config axe-core exposes) only supports `{ enabled: boolean }` in the
+installed `axe-core@4.12.1` — there is no per-rule selector/exclude option in
+that shape, which is why the exclusion is applied via `context` instead.
+
+**Still fires on real violations.** Verified by temporarily wrapping a
+`<button>` in a plain `aria-hidden="true"` `<div>` (no
+`data-base-ui-focus-guard`) inside `DisclaimerNote.stories.tsx`'s
+`UnderComposer` story: `pnpm test:stories` failed with the same
+`aria-hidden-focus` rule, on `div[aria-hidden="true"]`, distinct from the
+excluded selector. Reverting the wrapper brought the suite back to 45 files /
+100 tests passing. The rule is not disabled — only Base UI's own guard
+elements are exempted.
+
+**This exclusion must not be widened.** The selector is
+`[data-base-ui-focus-guard]` and nothing broader — not `[aria-hidden]`, not a
+class name, not the whole popup layer. Any future `aria-hidden-focus` failure
+that doesn't carry this exact attribute is a real violation and must be
+fixed, not added to this exclude list.

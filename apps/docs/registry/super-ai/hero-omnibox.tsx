@@ -5,10 +5,10 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CostChip } from "@/registry/super-ai/cost-chip";
+import { ModeTabs } from "@/registry/super-ai/mode-tabs";
 
 /**
  * Hero Omnibox — The centred "What can I help you with?" prompt
@@ -32,7 +32,7 @@ interface HeroOmniboxProps extends Omit<React.ComponentProps<"div">, "onSubmit">
   placeholder?: string;
   /** Accessible name for the composer. Rendered as a visually-hidden <label>. */
   label?: string;
-  /** 2–5 mode options (D4 mode-tabs), rendered inside the field. Omit to hide. */
+  /** 2–5 mode options, composed via ModeTabs (D4) inside the field. Omit to hide. */
   modes?: HeroOmniboxOption[];
   mode?: string;
   onModeChange?: (mode: string) => void;
@@ -55,7 +55,7 @@ interface HeroOmniboxProps extends Omit<React.ComponentProps<"div">, "onSubmit">
   onUnlock?: () => void;
 }
 
-const INTERACTIVE_SELECTOR = "button, a, [role='tab'], [data-slot='select-trigger'], input, textarea";
+const INTERACTIVE_SELECTOR = "button, a, [data-slot='select-trigger'], input, textarea";
 
 function HeroOmnibox({
   state = "idle",
@@ -134,15 +134,12 @@ function HeroOmnibox({
     >
       {modes && modes.length > 0 ? (
         <div data-slot="hero-omnibox-modes">
-          <Tabs value={mode} onValueChange={(next) => onModeChange?.(String(next))}>
-            <TabsList aria-label="Mode">
-              {modes.map((item) => (
-                <TabsTrigger key={item.value} value={item.value} disabled={isGenerating || isLocked}>
-                  {item.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
+          <ModeTabs
+            modes={modes}
+            value={mode}
+            onValueChange={onModeChange}
+            disabled={isGenerating || isLocked}
+          />
         </div>
       ) : null}
 

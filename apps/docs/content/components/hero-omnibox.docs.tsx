@@ -34,7 +34,7 @@ export const HeroOmniboxDocs: ComponentDocs = {
   evidence: ["Descript", "Zapier Copilot", "CapCut", "Manus", "Claude"],
   anatomy: [
     { slot: "hero-omnibox", note: "Root card. Click anywhere on it that isn't a nested control to focus the field." },
-    { slot: "hero-omnibox-modes", note: "Optional mode tabs (D4), rendered inside the card, above the field." },
+    { slot: "hero-omnibox-modes", note: "Optional mode tabs — composes ModeTabs (D4), rendered inside the card, above the field." },
     { slot: "hero-omnibox-field", note: "Wraps the textarea and its toolbar. Absent entirely when `locked`." },
     { slot: "hero-omnibox-textarea", note: "The prompt input. Carries the accessible name, visible or not." },
     { slot: "hero-omnibox-toolbar", note: "The row beneath the textarea: attach, model, cost on the left; submit on the right." },

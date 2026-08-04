@@ -4,25 +4,41 @@ import type { ComponentDocs } from "./component-docs";
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
+import { ContextChipsDocs } from "@/content/components/context-chips.docs";
+import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
+import { FeedbackDocs } from "@/content/components/feedback.docs";
 import { HeroOmniboxDocs } from "@/content/components/hero-omnibox.docs";
+import { MediaPromptBarDocs } from "@/content/components/media-prompt-bar.docs";
 import { ModalityRailDocs } from "@/content/components/modality-rail.docs";
+import { ModeTabsDocs } from "@/content/components/mode-tabs.docs";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
+import { QuoteReplyDocs } from "@/content/components/quote-reply.docs";
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
 import { RecommendationCardDocs } from "@/content/components/recommendation-card.docs";
+import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
+import { SkillMenuDocs } from "@/content/components/skill-menu.docs";
 import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.docs";
 
 export const componentDocs: Record<string, ComponentDocs> = {
   "account-menu": AccountMenuDocs,
   "app-sidebar": AppSidebarDocs,
   "app-topbar": AppTopbarDocs,
+  "context-chips": ContextChipsDocs,
+  "disclaimer-note": DisclaimerNoteDocs,
   "feature-card-row": FeatureCardRowDocs,
+  "feedback": FeedbackDocs,
   "hero-omnibox": HeroOmniboxDocs,
+  "media-prompt-bar": MediaPromptBarDocs,
   "modality-rail": ModalityRailDocs,
+  "mode-tabs": ModeTabsDocs,
   "promo-card": PromoCardDocs,
+  "quote-reply": QuoteReplyDocs,
   "recent-grid": RecentGridDocs,
   "recommendation-card": RecommendationCardDocs,
+  "reference-strip": ReferenceStripDocs,
   "sidebar-nav": SidebarNavDocs,
+  "skill-menu": SkillMenuDocs,
   "workspace-switcher": WorkspaceSwitcherDocs,
 };
