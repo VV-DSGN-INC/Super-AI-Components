@@ -258,11 +258,18 @@ with `Executable doesn't exist` rather than anything a11y-shaped. Run
 3. **Inconsistent accessible-name convention** for model selection:
    `model-picker` uses `"Model: Veo 3.1 Fast"`, `hero-omnibox` a static
    `"Model"`. One should win.
-4. **Six components have no spec prose** — `H6 waveform-editor`,
-   `H7 stem-mixer`, `J7 track-list`, `M7 connection-manager`, `N7 env-status`,
-   `N8 permission-prompt`. Five are D12 restorations. E9/E10 had the same gap and
-   were built from `catalog.md` + `gaps.md` + D12 with `evidence: []` rather than
-   invented sources. That precedent works; expect thinner guidance.
+4. **RESOLVED — the spec gap is closed.** All five genuinely missing entries
+   were written on 2026-08-04 from `catalog.md` + `gaps.md` + D12: **H6
+   `waveform-editor`** (gaps R3), **H7 `stem-mixer`** (R4), **J7 `track-list`**
+   (R5), **M7 `connection-manager`** (T5) and **N7 `env-status`** (R1). The
+   sixth on the old list, `N8 permission-prompt`, had already been specced by
+   D16 — that list was stale.
+
+   Each new entry carries an explicit **Evidence** line saying it is a restored
+   consolidation error rather than a board sample, and instructs implementations
+   to use `evidence: []` rather than inventing product names — the precedent
+   E9/E10 set. Do not "improve" those entries by adding a product list; the
+   screenshots were never collected.
 5. **D12 warns families J, K and N are not closed** pending re-sampling — 20 of
    the 64 remaining. Building them now risks rework.
 6. **The preview is SSO-protected.** Making it publicly shareable means
