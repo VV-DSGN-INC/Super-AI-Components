@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import FieldRowDemo from "@/components/super-ai/demos/field-row-demo";
+import FieldRowDemo from "@/components/demos/field-row-demo";
 
 const meta: Meta<typeof FieldRowDemo> = {
   title: "Super AI/Field Row",

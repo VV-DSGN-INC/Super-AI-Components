@@ -378,6 +378,13 @@ const here = dirname(fileURLToPath(import.meta.url));
 const CATALOG_MD = join(here, "../../../docs/design-system/catalog.md");
 const OUT = join(here, "../lib/catalog.manifest.ts");
 
+/**
+ * Cut records that are not a whole family. O5 `flow-shell` was cut by D9 and is
+ * struck through in catalog.md (`~~`flow-shell`~~`); the parser reads the name
+ * out of the backticks and cannot see the strikethrough, so it is named here.
+ */
+const CUT_IDS = new Set(["O5"]);
+
 /** Wave assignment per decisions.md §5. G is cut, so it has no wave. */
 const WAVE_BY_FAMILY: Record<string, number> = {
   A: 1,
@@ -430,7 +437,7 @@ const rows = parseCatalogTables(readFileSync(CATALOG_MD, "utf8"));
 const items = rows.map((row) => {
   const shipped = SHIPPED[row.name];
   const layer = row.family === "A" ? "primitive" : row.family === "O" ? "block" : "component";
-  const status = row.family === "G" ? "cut" : shipped ? "shipped" : "planned";
+  const status = row.family === "G" || CUT_IDS.has(row.id) ? "cut" : shipped ? "shipped" : "planned";
 
   return {
     id: row.id,
@@ -466,7 +473,7 @@ console.log(`gen:manifest — wrote ${items.length} items to lib/catalog.manifes
 - [ ] **Step 3: Run the generator**
 
 Run: `cd apps/docs && pnpm tsx scripts/gen-manifest.mts && npx prettier --write lib/catalog.manifest.ts`
-Expected: `gen:manifest — wrote 107 items` (if the count differs, the parser is dropping rows — fix the parser, not the count)
+Expected: `gen:manifest — wrote 118 items` — 107 active plus 11 cut records (family G's 10 rows and O5 `flow-shell`). Task 2's parser was verified against the real file and produces exactly these 118 rows with per-family counts matching every heading. If the count differs, the parser is dropping rows — fix the parser, not the count.
 
 - [ ] **Step 4: Write the test that pins the manifest's shape**
 
@@ -478,8 +485,13 @@ import { MANIFEST } from "./catalog.manifest";
 import { shippedItems } from "./manifest-types";
 
 describe("MANIFEST", () => {
-  it("carries every catalog item", () => {
-    expect(MANIFEST).toHaveLength(107);
+  it("carries every catalog row, including the cut records", () => {
+    // 107 active + family G's 10 cut rows + the cut O5 `flow-shell` = 118.
+    expect(MANIFEST).toHaveLength(118);
+  });
+
+  it("has 107 active items, matching catalog.md's totals table", () => {
+    expect(MANIFEST.filter((i) => i.status !== "cut")).toHaveLength(107);
   });
 
   it("has exactly the 14 already-registered components as shipped", () => {

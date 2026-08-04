@@ -6,7 +6,10 @@ import postcss from "postcss";
 import { registrySchema } from "shadcn/schema";
 
 import { CATALOG_ITEMS } from "../lib/catalog";
+import { MANIFEST } from "../lib/catalog.manifest";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
+import type { CssVars } from "../lib/manifest-types";
+import { deriveExtras } from "./lib/registry-extras";
 
 const REGISTRY_URL = (process.env.REGISTRY_URL ?? "https://super-ai-components.vercel.app").replace(
   /\/$/,
@@ -19,12 +22,6 @@ const file = (name: string) => ({
   target: `components/super-ai/${name}.tsx`,
 });
 
-type CssVars = {
-  theme?: Record<string, string>;
-  light?: Record<string, string>;
-  dark?: Record<string, string>;
-};
-
 type Item = {
   name: string;
   title: string;
@@ -35,69 +32,7 @@ type Item = {
   cssVars?: CssVars;
 };
 
-// --warning is the one token this registry adds beyond stock shadcn (the rest of
-// the palette is monochrome + --destructive). Tailwind v4 emits nothing for an
-// undefined utility rather than failing, so a consumer who installs one of these
-// without the token gets a silently colourless near-limit state — the docs app
-// hides the bug because its own globals.css defines it. Shipping the token with
-// every item that references it is what closes that gap.
-const WARNING_CSS_VARS: CssVars = {
-  theme: {
-    "color-warning": "var(--warning)",
-    "color-warning-foreground": "var(--warning-foreground)",
-  },
-  light: { warning: "oklch(0.76 0.16 70)", "warning-foreground": "oklch(0.26 0.05 70)" },
-  dark: { warning: "oklch(0.82 0.14 72)", "warning-foreground": "oklch(0.24 0.05 70)" },
-};
-
-// Per-item extras (deps/registryDeps/cssVars) keyed by name
-const extras: Record<
-  string,
-  { dependencies?: string[]; registryDependencies?: string[]; cssVars?: CssVars }
-> = {
-  "credits-indicator": { cssVars: WARNING_CSS_VARS },
-  "quota-meter": { cssVars: WARNING_CSS_VARS },
-  "pricing-table": { cssVars: WARNING_CSS_VARS },
-  "cost-chip": { dependencies: ["lucide-react"] },
-  "filter-bar": { dependencies: ["lucide-react"] },
-  "field-row": { registryDependencies: [self("reset-affordance")] },
-  "shortcuts-sheet": { registryDependencies: ["dialog", self("kbd")] },
-  "thread-list": {
-    registryDependencies: ["button", "input", "dropdown-menu", "alert-dialog", self("date-section")],
-    dependencies: ["lucide-react"],
-  },
-  "safety-block": {
-    registryDependencies: ["alert", "button"],
-    dependencies: ["lucide-react"],
-  },
-  "autonomy-selector": {
-    registryDependencies: ["radio-group", "button", self("entity-row"), self("section-header")],
-    dependencies: ["lucide-react"],
-  },
-  "escalation-handoff": {
-    registryDependencies: ["card", "button", self("section-header"), self("stat-readout")],
-    dependencies: ["lucide-react"],
-  },
-  "task-tray": {
-    registryDependencies: ["sheet", "button", self("entity-row")],
-    dependencies: ["lucide-react"],
-  },
-  "citation-ref": {
-    registryDependencies: ["hover-card"],
-  },
-  "answer-block": {
-    registryDependencies: [self("citation-ref")],
-    dependencies: ["lucide-react"],
-  },
-  "source-cards": {
-    registryDependencies: ["card", "badge"],
-    dependencies: ["lucide-react"],
-  },
-  "slot-summary": {
-    registryDependencies: ["badge", "button"],
-    dependencies: ["lucide-react"],
-  },
-};
+const extras = deriveExtras(MANIFEST, self);
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({
   name: i.name,

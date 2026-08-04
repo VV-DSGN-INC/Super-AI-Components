@@ -13,6 +13,7 @@
     "typecheck": {},
     "test": {},
     "check:tokens": {},
+    "check:contract": {},
     "build:registry": {
       "outputs": ["public/r/**"],
       "env": ["REGISTRY_URL"]

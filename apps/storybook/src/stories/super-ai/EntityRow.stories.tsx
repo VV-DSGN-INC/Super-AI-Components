@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import EntityRowDemo from "@/components/super-ai/demos/entity-row-demo";
+import EntityRowDemo from "@/components/demos/entity-row-demo";
 
 const meta: Meta<typeof EntityRowDemo> = {
   title: "Super AI/Entity Row",

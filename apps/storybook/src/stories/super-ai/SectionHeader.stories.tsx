@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import SectionHeaderDemo from "@/components/super-ai/demos/section-header-demo";
+import SectionHeaderDemo from "@/components/demos/section-header-demo";
 
 const meta: Meta<typeof SectionHeaderDemo> = {
   title: "Super AI/Section Header",

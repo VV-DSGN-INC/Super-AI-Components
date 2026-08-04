@@ -43,7 +43,7 @@ function CitationRef({
       }
       onClick={state === "resolved" ? onJumpToSource : undefined}
       className={cn(
-        "bg-muted text-muted-foreground ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded px-1 align-super text-[0.625rem] font-medium",
+        "bg-muted text-foreground ml-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded px-1 align-super text-[0.625rem] font-medium",
         "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
         state === "resolved" && "hover:bg-accent hover:text-accent-foreground cursor-pointer",
         state === "loading" && "animate-pulse motion-reduce:animate-none",

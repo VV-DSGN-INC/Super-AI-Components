@@ -3,77 +3,27 @@ import path from "node:path";
 
 import { notFound } from "next/navigation";
 
-import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AuroraTextDemo from "@/components/demos/aurora-text-demo";
-import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import BentoGridDemo from "@/components/demos/bento-grid-demo";
 import BorderBeamDemo from "@/components/demos/border-beam-demo";
-import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
-import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import ConfettiDemo from "@/components/demos/confetti-demo";
-import CostChipDemo from "@/components/demos/cost-chip-demo";
-import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
-import DateSectionDemo from "@/components/demos/date-section-demo";
 import DotPatternDemo from "@/components/demos/dot-pattern-demo";
-import EntityRowDemo from "@/components/demos/entity-row-demo";
-import EscalationHandoffDemo from "@/components/demos/escalation-handoff-demo";
-import FieldRowDemo from "@/components/demos/field-row-demo";
-import FilterBarDemo from "@/components/demos/filter-bar-demo";
-import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import HeroVideoDialogDemo from "@/components/demos/hero-video-dialog-demo";
-import KbdDemo from "@/components/demos/kbd-demo";
 import MarqueeDemo from "@/components/demos/marquee-demo";
 import NumberTickerDemo from "@/components/demos/number-ticker-demo";
 import OrbitingCirclesDemo from "@/components/demos/orbiting-circles-demo";
-import PreviewTileDemo from "@/components/demos/preview-tile-demo";
-import PricingTableDemo from "@/components/demos/pricing-table-demo";
-import QuotaMeterDemo from "@/components/demos/quota-meter-demo";
 import PulsatingButtonDemo from "@/components/demos/pulsating-button-demo";
 import RainbowButtonDemo from "@/components/demos/rainbow-button-demo";
-import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import RippleButtonDemo from "@/components/demos/ripple-button-demo";
-import SafetyBlockDemo from "@/components/demos/safety-block-demo";
-import SectionHeaderDemo from "@/components/demos/section-header-demo";
-import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
-import SlotSummaryDemo from "@/components/demos/slot-summary-demo";
-import SourceCardsDemo from "@/components/demos/source-cards-demo";
-import StatReadoutDemo from "@/components/demos/stat-readout-demo";
-import TaskTrayDemo from "@/components/demos/task-tray-demo";
 import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
-import ThreadListDemo from "@/components/demos/thread-list-demo";
 import TypingAnimationDemo from "@/components/demos/typing-animation-demo";
+import { ComponentDocsView } from "@/components/component-docs";
 import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
+import { demos } from "@/lib/demos.generated";
+import { componentDocs } from "@/lib/docs.generated";
 import { MARKETING, MARKETING_ITEMS, type MarketingName } from "@/lib/marketing-catalog";
-
-const demos: Record<CatalogName, React.ComponentType> = {
-  kbd: KbdDemo,
-  "cost-chip": CostChipDemo,
-  "date-section": DateSectionDemo,
-  "choice-chips": ChoiceChipsDemo,
-  "filter-bar": FilterBarDemo,
-  "field-row": FieldRowDemo,
-  "gen-settings-bar": GenSettingsBarDemo,
-  "preview-tile": PreviewTileDemo,
-  "entity-row": EntityRowDemo,
-  "section-header": SectionHeaderDemo,
-  "reset-affordance": ResetAffordanceDemo,
-  "stat-readout": StatReadoutDemo,
-  "shortcuts-sheet": ShortcutsSheetDemo,
-  "thread-list": ThreadListDemo,
-  "credits-indicator": CreditsIndicatorDemo,
-  "quota-meter": QuotaMeterDemo,
-  "pricing-table": PricingTableDemo,
-  "safety-block": SafetyBlockDemo,
-  "autonomy-selector": AutonomySelectorDemo,
-  "escalation-handoff": EscalationHandoffDemo,
-  "task-tray": TaskTrayDemo,
-  "citation-ref": CitationRefDemo,
-  "answer-block": AnswerBlockDemo,
-  "source-cards": SourceCardsDemo,
-  "slot-summary": SlotSummaryDemo,
-};
 
 // Grows one entry per component task (Tasks 6–20).
 const marketingDemos: Record<MarketingName, React.ComponentType> = {
@@ -124,6 +74,10 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
       </div>
 
       <PreviewTabs preview={<Demo />} code={demoSource} />
+
+      {!isMarketing && componentDocs[name] ? (
+        <ComponentDocsView docs={componentDocs[name]} />
+      ) : null}
 
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">Installation</h2>

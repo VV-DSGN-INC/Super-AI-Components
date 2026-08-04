@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import ShortcutsSheetDemo from "@/components/super-ai/demos/shortcuts-sheet-demo";
+import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 
 const meta: Meta<typeof ShortcutsSheetDemo> = {
   title: "Super AI/Shortcuts Sheet",

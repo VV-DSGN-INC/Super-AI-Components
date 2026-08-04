@@ -148,6 +148,18 @@
 /* Storybook: ensure Tailwind scans component + story sources */
 @source "./components";
 @source "./stories";
+/* ...and the registry components themselves. vite.config.ts aliases
+   `@/registry/(.*)` to `../docs/registry/$1` (apps/docs/registry), a sibling
+   package outside Tailwind's automatic (same-package) content detection —
+   Tailwind v4's heuristic scan doesn't cross that npm-workspace boundary on
+   its own. Every registry class that happened to already appear, verbatim,
+   in an in-workspace file (apps/storybook/src/components/ui/button.tsx's
+   own `bg-destructive/10`, `border-destructive/40`, etc.) got generated
+   anyway, by coincidence — masking the gap. Any class unique to a registry
+   file (e.g. promo-card.tsx's `bg-accent/30`, `bg-primary/5`, or a plain
+   `bg-destructive` with no other in-workspace user) silently compiled to no
+   CSS rule at all, so the class name reached the DOM but did nothing. */
+@source "../../docs/registry";
 
 body {
   background-color: var(--background);

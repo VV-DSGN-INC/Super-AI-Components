@@ -19,7 +19,13 @@ function GenSettingsBar({ disabled = false, className, ...props }: GenSettingsBa
         data-slot="gen-settings-bar"
         data-disabled={disabled || undefined}
         className={cn(
-          "bg-muted/50 text-muted-foreground inline-flex items-center gap-0.5 rounded-md border p-0.5 text-xs",
+          // text-foreground, not text-muted-foreground: bg-muted/50 only
+          // clears 4.5:1 by a ~0.04 margin, and only against this exact
+          // ancestor background (see docs/design-system/a11y-baseline.md) —
+          // fragile, and it's what every item's label text actually
+          // inherits. text-foreground keeps the toolbar's quiet tint and
+          // clears contrast regardless of what sits behind it.
+          "bg-muted/50 text-foreground inline-flex items-center gap-0.5 rounded-md border p-0.5 text-xs",
           className,
         )}
         {...props}

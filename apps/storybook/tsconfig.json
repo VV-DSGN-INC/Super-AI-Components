@@ -15,8 +15,14 @@
     "verbatimModuleSyntax": false,
     "baseUrl": ".",
     "paths": {
+      "@/registry/*": ["../docs/registry/*"],
+      "@/components/demos/*": ["../docs/components/demos/*"],
+      "@/content/*": ["../docs/content/*"],
+      "@/lib/component-docs": ["../docs/lib/component-docs.ts"],
+      "@/components/component-docs": ["../docs/components/component-docs.tsx"],
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", ".storybook"]
+  "include": ["src", ".storybook", "../docs/registry/super-ai", "../docs/components/demos"],
+  "exclude": ["../docs/registry/super-ai/**/*.test.tsx"]
 }

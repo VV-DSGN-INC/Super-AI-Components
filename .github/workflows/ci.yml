@@ -16,6 +16,7 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm check:tokens
+      - run: pnpm check:contract
       - run: pnpm test
       - run: pnpm build:registry
       - run: pnpm build
@@ -23,5 +24,15 @@ jobs:
         run: |
           pnpm --filter docs exec playwright install --with-deps chromium
           pnpm --filter docs exec playwright test
+      - name: Storybook a11y + interaction
+        # Blocking. Covers what this repo owns and publishes — super-ai and
+        # marketing stories — not vendored ports (shadcn/ui, AI Elements) it
+        # merely displays. Exclusions are in
+        # apps/storybook/vitest.config.ts's `test.exclude`; full audit and
+        # rationale in docs/design-system/a11y-baseline.md. The exclusion
+        # list may only shrink — never grow to silence a new failure.
+        run: |
+          pnpm --filter storybook exec playwright install --with-deps chromium
+          pnpm --filter storybook test:stories
       - name: Consumer install test
         run: apps/docs/scripts/consumer-test.sh
