@@ -72,7 +72,9 @@ export function ReasonGatedPraise() {
       </div>
       <div className="bg-popover text-popover-foreground w-72 rounded-lg p-2.5 text-sm shadow-md ring-1 ring-foreground/10">
         <p className="mb-1.5 font-medium">Why was this helpful?</p>
-        <p className="text-foreground text-xs">Praise now needs a reason before it counts — the signal gets suppressed.</p>
+        <p className="text-foreground text-xs">
+          Praise now needs a reason before it counts — the signal gets suppressed.
+        </p>
       </div>
     </div>
   );

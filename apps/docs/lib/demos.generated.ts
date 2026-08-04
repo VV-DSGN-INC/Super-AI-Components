@@ -15,11 +15,18 @@ import FeedbackDemo from "@/components/demos/feedback-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
+import GenerationPanelDemo from "@/components/demos/generation-panel-demo";
+import GenerationQueueDemo from "@/components/demos/generation-queue-demo";
+import GenerationWizardDemo from "@/components/demos/generation-wizard-demo";
 import HeroOmniboxDemo from "@/components/demos/hero-omnibox-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import MediaPromptBarDemo from "@/components/demos/media-prompt-bar-demo";
+import MemberGateRowDemo from "@/components/demos/member-gate-row-demo";
 import ModalityRailDemo from "@/components/demos/modality-rail-demo";
 import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
+import ModelPickerDemo from "@/components/demos/model-picker-demo";
+import ParameterPanelDemo from "@/components/demos/parameter-panel-demo";
+import PresetGridDemo from "@/components/demos/preset-grid-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PromoCardDemo from "@/components/demos/promo-card-demo";
 import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
@@ -27,12 +34,15 @@ import RecentGridDemo from "@/components/demos/recent-grid-demo";
 import RecommendationCardDemo from "@/components/demos/recommendation-card-demo";
 import ReferenceStripDemo from "@/components/demos/reference-strip-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
+import RunButtonDemo from "@/components/demos/run-button-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import SidebarNavDemo from "@/components/demos/sidebar-nav-demo";
 import SkillMenuDemo from "@/components/demos/skill-menu-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
+import TtsComposerDemo from "@/components/demos/tts-composer-demo";
+import VoiceCloneRecorderDemo from "@/components/demos/voice-clone-recorder-demo";
 import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 
 export const demos: Record<string, ComponentType> = {
@@ -50,11 +60,18 @@ export const demos: Record<string, ComponentType> = {
   "field-row": FieldRowDemo,
   "filter-bar": FilterBarDemo,
   "gen-settings-bar": GenSettingsBarDemo,
+  "generation-panel": GenerationPanelDemo,
+  "generation-queue": GenerationQueueDemo,
+  "generation-wizard": GenerationWizardDemo,
   "hero-omnibox": HeroOmniboxDemo,
   "kbd": KbdDemo,
   "media-prompt-bar": MediaPromptBarDemo,
+  "member-gate-row": MemberGateRowDemo,
   "modality-rail": ModalityRailDemo,
   "mode-tabs": ModeTabsDemo,
+  "model-picker": ModelPickerDemo,
+  "parameter-panel": ParameterPanelDemo,
+  "preset-grid": PresetGridDemo,
   "preview-tile": PreviewTileDemo,
   "promo-card": PromoCardDemo,
   "quote-reply": QuoteReplyDemo,
@@ -62,11 +79,14 @@ export const demos: Record<string, ComponentType> = {
   "recommendation-card": RecommendationCardDemo,
   "reference-strip": ReferenceStripDemo,
   "reset-affordance": ResetAffordanceDemo,
+  "run-button": RunButtonDemo,
   "section-header": SectionHeaderDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "sidebar-nav": SidebarNavDemo,
   "skill-menu": SkillMenuDemo,
   "stat-readout": StatReadoutDemo,
   "thread-list": ThreadListDemo,
+  "tts-composer": TtsComposerDemo,
+  "voice-clone-recorder": VoiceCloneRecorderDemo,
   "workspace-switcher": WorkspaceSwitcherDemo,
 };

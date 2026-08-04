@@ -78,7 +78,10 @@ export function TooManyModes() {
   return (
     <div className="bg-muted inline-flex w-fit max-w-64 gap-1 overflow-x-auto rounded-lg p-[3px]">
       {labels.map((label) => (
-        <span key={label} className="text-foreground/60 shrink-0 rounded-md px-2.5 py-0.5 text-sm whitespace-nowrap">
+        <span
+          key={label}
+          className="text-foreground/60 shrink-0 rounded-md px-2.5 py-0.5 text-sm whitespace-nowrap"
+        >
           {label}
         </span>
       ))}

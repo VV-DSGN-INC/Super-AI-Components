@@ -35,11 +35,19 @@ export function FilledActiveRow() {
 }
 
 export function UsableTierBadgeRow() {
-  return <SidebarNav sections={[{ label: "Workspace", items: [{ id: "library", label: "Library", tier: "Pro" }] }]} />;
+  return (
+    <SidebarNav
+      sections={[{ label: "Workspace", items: [{ id: "library", label: "Library", tier: "Pro" }] }]}
+    />
+  );
 }
 
 export function SmallSectionHeader() {
-  return <SidebarNav sections={[{ label: "Automations", items: [{ id: "runs", label: "Runs", running: true }] }]} />;
+  return (
+    <SidebarNav
+      sections={[{ label: "Automations", items: [{ id: "runs", label: "Runs", running: true }] }]}
+    />
+  );
 }
 
 export function LeftBorderActiveState() {

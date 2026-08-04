@@ -43,7 +43,9 @@ export function UpsellBadgeOnTheRail() {
 }
 
 export function PinnedGroupSurvivesScroll() {
-  return <ModalityRail items={CORE_TOOLS} pinned={PINNED} activeId="select" onSelect={() => {}} maxVisible={4} />;
+  return (
+    <ModalityRail items={CORE_TOOLS} pinned={PINNED} activeId="select" onSelect={() => {}} maxVisible={4} />
+  );
 }
 
 export function ChevronNotScrollbar() {
@@ -66,7 +68,10 @@ export function ScrollingColumnInsteadOfChevron() {
     <div className="h-40 w-[92px] overflow-y-auto rounded-md border p-1.5">
       <div className="flex flex-col gap-1">
         {CORE_TOOLS.concat(CORE_TOOLS.map((t) => ({ ...t, id: `${t.id}-2` }))).map((tool) => (
-          <div key={tool.id} className="flex flex-col items-center gap-1 rounded-lg px-2 py-2.5 text-center text-xs">
+          <div
+            key={tool.id}
+            className="flex flex-col items-center gap-1 rounded-lg px-2 py-2.5 text-center text-xs"
+          >
             <span aria-hidden className="[&_svg]:size-5">
               {tool.icon}
             </span>

@@ -43,14 +43,7 @@ export function LockedInPlace() {
 }
 
 export function FloatingPresentation() {
-  return (
-    <MediaPromptBar
-      presentation="floating"
-      settings={<DemoSettings />}
-      cost={5}
-      onSubmit={() => {}}
-    />
-  );
+  return <MediaPromptBar presentation="floating" settings={<DemoSettings />} cost={5} onSubmit={() => {}} />;
 }
 
 export function LockedAsSeparateBanner() {

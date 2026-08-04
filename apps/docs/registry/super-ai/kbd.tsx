@@ -7,7 +7,11 @@ function Kbd({ className, ...props }: React.ComponentProps<"kbd">) {
     <kbd
       data-slot="kbd"
       className={cn(
-        "bg-muted text-muted-foreground pointer-events-none inline-flex h-5 min-w-5 select-none items-center justify-center rounded border px-1.5 font-mono text-xs font-medium",
+        // text-foreground, not text-muted-foreground: bg-muted +
+        // text-muted-foreground is 4.34:1, under 4.5:1 (see
+        // docs/design-system/a11y-baseline.md). text-foreground keeps the
+        // muted key-cap fill and clears contrast against it.
+        "bg-muted text-foreground pointer-events-none inline-flex h-5 min-w-5 select-none items-center justify-center rounded border px-1.5 font-mono text-xs font-medium",
         className,
       )}
       {...props}

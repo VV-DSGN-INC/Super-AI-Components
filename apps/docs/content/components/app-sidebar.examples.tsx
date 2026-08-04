@@ -39,7 +39,11 @@ const NAV_SECTIONS = [
 ];
 
 function DemoFrame({ children }: { children: React.ReactNode }) {
-  return <div className="bg-background flex h-72 w-full max-w-xs overflow-hidden rounded-lg border">{children}</div>;
+  return (
+    <div className="bg-background flex h-72 w-full max-w-xs overflow-hidden rounded-lg border">
+      {children}
+    </div>
+  );
 }
 
 export function OneComponentAcrossWidths() {
@@ -139,7 +143,11 @@ export function EmptyPromoPlaceholder() {
         <AppSidebar
           switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="acme" onSelect={() => {}} />}
           nav={<SidebarNav sections={NAV_SECTIONS} activeId="chat" />}
-          promo={<div className="text-muted-foreground rounded-md border border-dashed p-3 text-xs">Nothing to promote right now.</div>}
+          promo={
+            <div className="text-muted-foreground rounded-md border border-dashed p-3 text-xs">
+              Nothing to promote right now.
+            </div>
+          }
         />
       </SidebarProvider>
     </DemoFrame>

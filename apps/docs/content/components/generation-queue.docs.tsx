@@ -1,0 +1,65 @@
+import type { ComponentDocs } from "@/lib/component-docs";
+import {
+  BatchAndPerSlotProgress,
+  CancelReachesFinishedSlot,
+  ColorOnlyDoneFailed,
+  ReservedRowThroughItsLifecycle,
+} from "./generation-queue.examples";
+
+/**
+ * Seeded from docs/design-system/component-specs.md#e6-generation-queue.
+ * Translate the spec's internal voice into consumer-facing guidance — do not
+ * ship the seed text verbatim.
+ *
+ * No "use client" here: this module is plain data read by a Server
+ * Component (component-docs.tsx), which destructures `docs.whatItIs`,
+ * `docs.evidence`, etc. directly. Live examples that need interactivity
+ * live in the ./generation-queue.examples client sidecar and get
+ * referenced here as zero-prop elements — see that file for why.
+ */
+export const GenerationQueueDocs: ComponentDocs = {
+  whatItIs:
+    "A list of in-flight generation slots — one row per requested result — that carries each slot from queued to running to a final done or failed state. Each row is an entity row (icon, title, description, trailing controls) rather than a media tile, and an optional header shows the batch's overall progress alongside a Cancel-all action.",
+  whyItMatters:
+    "Every generation surface on the reference board needs somewhere to put work that hasn't resolved yet, and it needs two different numbers at once: how far along the whole batch is, and how far along any one slot is. Collapsing those into a single percentage is the recurring mistake this pattern exists to prevent — a batch that's '50% done' could mean one slot at 100% and one at 0%, or five slots all sitting at 50%, and only the per-slot bars tell those two apart.",
+  evidence: ["Midjourney", "Freepik", "Playground", "getimg"],
+  anatomy: [
+    { slot: "generation-queue", note: "Root wrapper around the header and the list of slots." },
+    { slot: "generation-queue-header", note: "Heading, Cancel-all and the batch progress bar, shown when any is present." },
+    { slot: "generation-queue-batch-progress", note: "The aggregate progressbar — a different number from any one slot's own." },
+    { slot: "generation-queue-cancel-all", note: "Only rendered while at least one slot is still queued or running." },
+    { slot: "generation-queue-items", note: "The list of slots, in submission order." },
+    { slot: "generation-queue-item", note: "One slot: an entity row plus, while running, its own progressbar." },
+    { slot: "generation-queue-item-progress", note: "Per-slot progressbar — real progressbar semantics, not a styled div." },
+    { slot: "generation-queue-cancel", note: "Per-row Cancel, named after that row's own title." },
+    { slot: "generation-queue-retry", note: "Per-row Retry, shown only while that slot is failed." },
+    { slot: "generation-queue-item-status", note: "Visually hidden role=status text announcing that row's transitions." },
+  ],
+  usage:
+    "Reach for it the moment a generation request is submitted — create the row (in `queued`) before any result exists, so the slot is reserved and the list never reflows as work resolves. Move each item through `queued` → `running` → `done`/`failed`/`cancel` by updating its `state` (and `progress` while running); the component is fully controlled, so nothing about pacing or polling lives inside it. Supply `onCancelItem` and `onCancelAll` to expose cancellation, and `onRetryItem` to let a failed slot re-queue.",
+  dos: [
+    {
+      text: "Create the row the instant a slot is submitted, and let one row carry it through queued, running and done — never swap in a different component per state.",
+      example: <ReservedRowThroughItsLifecycle />,
+    },
+    {
+      text: "Show the batch's aggregate progress and each row's own percentage side by side — they are different numbers and both are load-bearing.",
+      example: <BatchAndPerSlotProgress />,
+    },
+  ],
+  donts: [
+    {
+      text: "Don't reduce done vs. failed to a coloured dot — pair colour with a distinct icon and a text label so it survives grayscale and screen readers.",
+      example: <ColorOnlyDoneFailed />,
+    },
+    {
+      text: "Don't let Cancel (per-row or Cancel-all) reach a slot that has already resolved — a finished result should never carry a cancel affordance.",
+      example: <CancelReachesFinishedSlot />,
+    },
+  ],
+  pitfalls: [
+    "Cancel-all only ever receives queued/running ids from the component, but that only protects the batch action — a hand-rolled per-row Cancel button outside `onCancelItem` can still target a resolved slot if you're not careful about which rows render it.",
+    "The batch bar falls back to a resolved/total ratio when `batchProgress` is omitted. That ratio is a reasonable default for same-weight slots, but silently misleading once slots represent different amounts of work — pass an explicit `batchProgress` in that case instead of trusting the fallback.",
+    "Updating a running row's `progress` on every server tick fires that row's `role=status` announcement every time the text changes, which reads as a percentage read out loud on every tick for screen reader users. Throttle updates (e.g. every 5–10%) rather than forwarding every event verbatim.",
+  ],
+};

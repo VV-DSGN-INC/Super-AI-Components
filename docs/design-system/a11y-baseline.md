@@ -190,30 +190,142 @@ fragile, and the exact number moves with whatever sits behind it.
    are `text-destructive` on the default surface and label text in a
    translucent overlay above unpredictable image content; unrelated defects
    that happen to share the same exemption flag.
+4. **This round** (component-pipeline, `GenerationPanel`/`GenerationQueue`/
+   `GenerationWizard`/`ModelPicker`/`TtsComposer` batch) — per the task brief
+   that opened this round, this pairing has now failed the browser gate in
+   five separate rounds counting this one; the three before this file's (1)–(3)
+   aren't all narrated here in prose (this document only names the ones fixed
+   or confirmed at the time), so treat the count as coming from the task
+   brief, not from arithmetic on this list. Two distinct failures landed, in
+   four files:
+   - `GenerationPanel.stories.tsx`'s `Presets`/`Settings`/`Cost And Generate`
+     stories: the same shape as (2) above, one level removed. The story
+     assembles `PRESETS` — three `PreviewTile`s (`contractExempt`, `bg-muted`
+     frame) with placeholder label text set to `text-muted-foreground` — and
+     passes it into `GenerationPanel` as the `presets` slot. `GenerationPanel`
+     never touches that content; the fix is in the story's own composed
+     children, same call-site-override principle as (2), just one composition
+     layer further from the component whose default styling created the risk.
+     `apps/docs/components/demos/generation-panel-demo.tsx` had the
+     byte-for-byte same composed markup (it's the same demo content, not
+     gated by `test:stories`, but a real bug on the live docs page) and got
+     the identical fix.
+   - `ModelPicker.stories.tsx`'s `Expanded Cards` story: `EntityRow`
+     (`contractExempt`) again, the exact mechanism (3) already confirmed —
+     `selected` sets `bg-accent` on the row but its internal description span
+     keeps `text-muted-foreground`. Unlike (2)'s `CostChip`, `EntityRow`
+     doesn't forward `className` to that inner span, so a plain
+     `className="text-foreground"` override at the call site can't reach it.
+     Fixed with an arbitrary-variant call-site override instead —
+     `model-picker.tsx`'s `ENTITY_ROW_SELECTED_DESCRIPTION_FIX =
+     "data-[state=on]:[&_[data-slot=entity-row-description]]:text-accent-foreground"`
+     — retinting only that descendant, and only while the row itself carries
+     `EntityRow`'s own `data-state="on"`, so an unselected row's muted
+     description is untouched. Applied at both `ModelPicker` call sites that
+     set `selected` (`expanded-cards` and `node-inline`); only
+     `expanded-cards` renders inline without an interaction, so it's the only
+     one axe reached, but both would have broken identically once opened.
+   - A second, distinct pairing surfaced in the same round — see
+     "The destructive-tint pairing" below.
 
-### Audit: latent instances found elsewhere in the registry (not fixed — out of scope)
+   Running the new static rule (see "The static gate" below) against the
+   whole registry also caught four **real, pre-existing** same-string
+   instances that the browser gate happened not to be failing on yet — the
+   exact four the previous round's audit (below) flagged as latent and
+   deliberately left untouched. Since the static rule is meant to be a
+   mechanical floor, not just a check against today's browser-measured
+   pass/fail, all four were fixed rather than exempted:
+   - `kbd.tsx` — `<kbd>`'s own `bg-muted text-muted-foreground` → `bg-muted
+     text-foreground`.
+   - `sidebar-nav.tsx` — the `sidebar-nav-count` badge's `bg-muted
+     text-muted-foreground tabular-nums` → `bg-muted text-foreground
+     tabular-nums`.
+   - `gen-settings-bar.tsx` — the toolbar's `bg-muted/50 text-muted-foreground`
+     → `bg-muted/50 text-foreground` (this also retires the `~4.54:1`,
+     0.04-margin fragility the previous audit called out — `text-foreground`
+     clears contrast regardless of what opacity-blended color sits behind it).
+   - `recommendation-card.tsx` — the `aria-hidden` step-number span's
+     `bg-muted text-muted-foreground` → `bg-muted text-foreground` (the
+     previous audit's point stands: `aria-hidden` hides it from axe, not from
+     the sighted user reading the digit).
 
-Grepped `apps/docs/registry/super-ai/*.tsx` for `text-muted-foreground`
-co-located with `bg-muted`/`bg-accent`/`bg-secondary` on the same element or
-visual state. Two are already covered above (`cost-chip.tsx`,
-`entity-row.tsx`, both pre-existing `contractExempt`). Four more carry the
-identical class combination but are **not currently failing** the gate —
-listed here as the retrofit task's target list, not touched per this task's
-scope:
+   `cost-chip.tsx` and `entity-row.tsx` themselves still carry this pairing
+   and are still deliberately unfixed — same `contractExempt`, out-of-scope
+   status as (3), now additionally excluded by name from the static rule
+   (see below) so the new gate doesn't force that separate decision.
 
-| File | Element | Classes | Why it isn't failing today |
-| --- | --- | --- | --- |
-| `recommendation-card.tsx` | step-number badge (`recommendation-card-steps` `<li>`) | `bg-muted text-muted-foreground` `text-xs font-medium` | `aria-hidden="true"` on the span removes it from axe's scan entirely — but the step number is still real, sighted-user-visible text. Same failure mode as (1) above before it was fixed: aria-hidden hides it from the gate, not from users. |
-| `kbd.tsx` | `<kbd>` element itself | `bg-muted text-muted-foreground` `text-xs font-medium` | Passes today (verified: `Kbd.stories.tsx` is green), but it is the byte-for-byte same class combination as `cost-chip.tsx`'s failing span. Sitting at the exact 4.34:1 boundary — a one-line change elsewhere (font stack, weight) could tip it over without this file changing at all. |
-| `sidebar-nav.tsx` | unread-count `Badge` (`sidebar-nav-count`) | `Badge variant="secondary"` overridden with `bg-muted text-muted-foreground tabular-nums` | Passes today (verified), same combination as the two above. |
-| `gen-settings-bar.tsx` | toolbar container | `bg-muted/50 text-muted-foreground` `text-xs` | Passes today (verified) — the `/50` opacity lightens the effective background toward `bg-background` to `~#fafafa`, measuring `~4.54:1`. Passes by a 0.04 margin; fails again against any darker ancestor background or if the opacity value changes. |
+### The destructive-tint pairing: `text-destructive` on `bg-destructive/10`
 
-Not flagged (same grep hit, different mechanism, ruled out by inspection):
+A second, distinct contrast failure landed in the same round, in
+`GenerationQueue.stories.tsx`'s `Failed` story and
+`TtsComposer.stories.tsx`'s `Per Segment Regenerate` story — both from
+`components/ui/badge.tsx`'s own `variant="destructive"` style
+(`bg-destructive/10 text-destructive`), measured by axe at **4.0:1**
+(foreground `#e7000b`, background `#fde6e7`, 12px normal weight) against the
+4.5:1 minimum.
+
+This is not the muted-on-muted pairing above — `--destructive` is a
+saturated red, not the same lightness family as `--muted`/`--accent`/
+`--secondary` — but it's the same *shape* of bug: a vendored, non-`super-ai`
+primitive's default styling only clears contrast in isolation, and this
+token set has no `--destructive-foreground` variable defined at all (checked
+`apps/docs/app/globals.css` — only `--destructive` exists, light and dark), so
+`text-destructive-foreground` isn't an available semantic token here.
+
+`promo-card.tsx` had already hit and fixed the identical failure for its
+`quota-warning` flavour's CTA button (`Button`'s own `variant="destructive"`
+stacked on that flavour's own `bg-destructive/10` card tint, measured at
+`~3.4:1` — worse, because the tints compound): going solid, `bg-destructive
+text-background`, which is white in light mode and near-black in dark mode
+(i.e. it always inverts against the saturated destructive fill) and clears
+4.5:1 in both themes. `text-background` isn't a token invented for this fix —
+`--background` is the same root token every card and page already renders
+against.
+
+`generation-queue.tsx` and `tts-composer.tsx` both render `Badge
+variant="destructive"` directly from their own component bodies (not from a
+story's composed content), so the fix landed in the component, at the call
+site of `Badge` — `components/ui/badge.tsx` itself, a vendored shadcn
+primitive outside `stories/super-ai/**`, was left untouched, matching the
+`cost-chip`/`entity-row` precedent of not editing exempt/vendored primitives
+directly:
+
+```tsx
+<Badge variant="destructive" className="bg-destructive text-background">
+  {STATE_TEXT.failed}
+</Badge>
+```
+
+Contrast math: for two fully opaque colors, contrast ratio is symmetric in
+which one is foreground vs. background — swapping `text-destructive` (fg) /
+`bg-destructive/10`-over-white (bg, effectively `~#fde6e7`) for
+`bg-destructive` (bg) / `text-background` (fg, pure white) changes the
+*pairing* from a translucent tint blended toward white to the same
+fully-saturated destructive red against pure white either way — which is why
+it clears the identical `~4.77:1` regardless of which role each token plays,
+comfortably over 4.5:1 and, unlike `bg-muted/50`, not dependent on whatever
+ancestor background the translucent tint would otherwise blend toward.
+
+### Audit: latent instances found elsewhere in the registry — now fixed
+
+The previous round's audit (grepping `apps/docs/registry/super-ai/*.tsx` for
+`text-muted-foreground` co-located with `bg-muted`/`bg-accent`/
+`bg-secondary`) found four files carrying the identical class combination as
+the failing ones, not yet failing the browser gate, and left them
+deliberately untouched as a "retrofit task's target list." This round's new
+static rule (below) forced the decision: all four are fixed now, listed under
+item 4 above (`kbd.tsx`, `sidebar-nav.tsx`, `gen-settings-bar.tsx`,
+`recommendation-card.tsx`).
+
+Still correctly **not** flagged, same reasoning as before (confirmed again
+this round, now also verified against the static rule specifically):
 `filter-bar.tsx` and `modality-rail.tsx`'s overflow-trigger button pair
 `text-muted-foreground` with `bg-accent` only on `:hover`, and the hover state
 swaps the text color to `text-accent-foreground` in the same rule — never a
-static muted-on-muted moment. `promo-card.tsx`'s `text-muted-foreground` icon
-class isn't paired with a muted/accent/secondary background at all.
+static muted-on-muted moment, and never a bare (unprefixed) background class
+either. `promo-card.tsx`'s `text-muted-foreground` icon class isn't paired
+with a muted/accent/secondary background at all (its tinted background is a
+sibling element's class, not the icon's own).
 
 One more instance worth naming even though it isn't a static pairing: several
 menu/list rows (e.g. `workspace-switcher.tsx`'s trailing "plan" text,
@@ -236,6 +348,57 @@ surface's own foreground token (`text-accent-foreground` on `bg-accent`,
 `text-secondary-foreground` on `bg-secondary`, ~16:1) instead. `bg-muted/50`
 is not a safe workaround — it only passes by blending toward whatever's
 behind it, and moves with that background.
+
+**Separately: don't pair `text-destructive` with a translucent
+`bg-destructive/NN` tint on the same element** — measures under 4.5:1 (4.0:1
+alone, worse once tints compound, e.g. `promo-card`'s `~3.4:1`). Go solid
+instead: `bg-destructive text-background`.
+
+### The static gate
+
+Five rounds of a documentation-only rule clearly wasn't preventing
+recurrence — every fix above landed only after a browser already caught it in
+CI. `apps/docs/scripts/check-tokens.mjs` (the existing static token-contract
+gate, previously just raw-hex/`oklch()`/palette-class checks) now also flags
+a bare (unprefixed by a variant like `hover:`/`dark:`) `text-muted-foreground`
+appearing in the *same quoted class-list string* as a bare `bg-muted`,
+`bg-accent`, or `bg-secondary` (opacity variants like `bg-muted/50`
+included) — catching the single-element shape of this failure statically,
+before anyone runs a browser.
+
+**Tuned twice**, both documented in the script itself:
+
+1. **Exempts `cost-chip.tsx`, `entity-row.tsx`, `preview-tile.tsx` by name** —
+   the same three files the browser gate already exempts (see "What the gate
+   enforces today" above). Without this, the new rule would fail
+   `pnpm check:tokens` on decisions this task didn't make and isn't in a
+   position to remake.
+2. **Ignores variant-prefixed backgrounds** (`hover:bg-accent`,
+   `dark:bg-muted`, etc.) — `filter-bar.tsx` and `modality-rail.tsx` both put
+   bare `text-muted-foreground` and `hover:bg-accent` in one string, but the
+   same hover rule also swaps the text to `hover:text-accent-foreground`, so
+   the muted text and the muted background never render at the same time.
+   Without this, the rule would have flagged two shipped, genuinely-fine
+   files on day one — confirmed by running it before this tuning was added.
+
+**Proven both directions.** A throwaway file
+(`registry/super-ai/__contrast-proof-tmp.tsx`) with
+`className="bg-muted text-muted-foreground"` made `pnpm check:tokens` fail
+with `text-muted-foreground paired with bg-muted in one class list`, pointing
+at the exact line; deleting it brought the registry back to `58 file(s)
+clean.` Both runs are in this task's report.
+
+**Known limitation, stated in the script's own comment so it doesn't get
+lost:** this rule cannot catch, and does not attempt to catch, the
+*cross-component* case — muted text inside a child whose ancestor (a
+different element, or an entirely different component, e.g. `EntityRow`'s
+selected row vs. its own description span) sets the muted background. Every
+instance of this pairing that has actually shipped broken, across all five
+rounds, was exactly that shape, not the single-string shape this rule can
+see. **The browser a11y gate (`pnpm test:stories`) remains the real
+backstop** — this rule only removes the easiest, single-element way to
+reintroduce the failure, the way (1) `workspace-switcher.tsx` and the four
+files fixed in item 4 above were all shaped.
 
 ## Excluded: Base UI's own focus-guard spans (`aria-hidden-focus`)
 

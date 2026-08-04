@@ -204,7 +204,13 @@ function RecommendationCard({
                   <li key={step} className="flex gap-2">
                     <span
                       aria-hidden
-                      className="bg-muted text-muted-foreground flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-medium"
+                      // text-foreground, not text-muted-foreground: bg-muted +
+                      // text-muted-foreground is 4.34:1, under 4.5:1 (see
+                      // docs/design-system/a11y-baseline.md). aria-hidden
+                      // keeps this out of axe's scan, but the digit is real,
+                      // sighted-user-visible text — hidden from the gate is
+                      // not the same as hidden from users.
+                      className="bg-muted text-foreground flex size-5 shrink-0 items-center justify-center rounded-full text-xs font-medium"
                     >
                       {index + 1}
                     </span>

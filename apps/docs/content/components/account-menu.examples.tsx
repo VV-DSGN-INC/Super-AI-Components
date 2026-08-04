@@ -61,8 +61,8 @@ export function AppearanceAsDialogWrong() {
           <DialogTitle>Appearance</DialogTitle>
         </DialogHeader>
         <p className="text-muted-foreground text-sm">
-          Wrong: a whole modal round-trip just to flip the theme, when this is meant to be a nested
-          menu the user can pop in and out of in one motion.
+          Wrong: a whole modal round-trip just to flip the theme, when this is meant to be a nested menu the
+          user can pop in and out of in one motion.
         </p>
       </DialogContent>
     </Dialog>

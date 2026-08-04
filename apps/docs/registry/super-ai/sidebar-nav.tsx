@@ -70,7 +70,10 @@ function SidebarNavRow({
         <Badge
           data-slot="sidebar-nav-count"
           variant="secondary"
-          className="min-w-4 justify-center bg-muted text-muted-foreground tabular-nums"
+          // text-foreground, not text-muted-foreground: bg-muted +
+          // text-muted-foreground is 4.34:1, under 4.5:1 (see
+          // docs/design-system/a11y-baseline.md).
+          className="min-w-4 justify-center bg-muted text-foreground tabular-nums"
         >
           {item.count}
         </Badge>

@@ -18,8 +18,14 @@ import { ReferenceStrip, type ReferenceStripItem } from "@/registry/super-ai/ref
  */
 
 const PLAIN_ITEMS: ReferenceStripItem[] = [
-  { id: "one", thumbnail: { src: "https://placehold.co/160x160?text=1", alt: "Concept sketch of a lighthouse" } },
-  { id: "two", thumbnail: { src: "https://placehold.co/160x160?text=2", alt: "Photo of a coastline at dusk" } },
+  {
+    id: "one",
+    thumbnail: { src: "https://placehold.co/160x160?text=1", alt: "Concept sketch of a lighthouse" },
+  },
+  {
+    id: "two",
+    thumbnail: { src: "https://placehold.co/160x160?text=2", alt: "Photo of a coastline at dusk" },
+  },
 ];
 
 const ROLE_ITEMS: ReferenceStripItem[] = [
