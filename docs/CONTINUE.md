@@ -4,7 +4,7 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-04, after F1 + F2 (family F opened).
+**Last updated:** 2026-08-04, after family F closed (all 7 items) plus the `cost` contract.
 
 ---
 
@@ -14,25 +14,25 @@ was already decided.
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
 | Branch          | `claude/wave-4-family-f` (branched from `main` after PR #15 merged)                                                         |
-| HEAD at handoff | F1 `result-card` + F2 `generation-grid`                                                                                     |
-| Pushed          | **no.** Local commit only — needs a push and a PR.                                                                          |
+| HEAD at handoff | family F complete (F1–F7) + the `cost` contract module                                                                      |
+| Pushed          | **no.** Four local commits — needs a push and a PR.                                                                         |
 | Open PR         | **none** for this work. PR #11 (`claude/wave-specs-and-infra`) is still open, but its content landed on main via `11f633e`. |
 | Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
 
-**Catalog progress: 58 of 114 active items shipped.** 56 planned, 10 cut
+**Catalog progress: 61 of 114 active items shipped.** 53 planned, 10 cut
 (family G + O5, per decision D9 — do not revive them).
 
-Of the 58, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
+Of the 61, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
 are exempt from the story-state and documentation contracts until someone runs
-the retrofit. The other 33 satisfy the full contract.
+the retrofit. The other 36 satisfy the full contract.
 
-Remaining by family: C 1 · F 3 · H 7 · I 5 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
+Remaining by family: C 1 · H 7 · I 5 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
 
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-Gate baselines at this handoff: `pnpm test` **524**, `pnpm build` **77 pages**,
-`pnpm test:stories` **163**, `registry.json` **74 items**.
+Gate baselines at this handoff: `pnpm test` **567**, `pnpm build` **80 pages**,
+`pnpm test:stories` **176**, `registry.json` **77 items**.
 
 ---
 
@@ -41,7 +41,7 @@ Gate baselines at this handoff: `pnpm test` **524**, `pnpm build` **77 pages**,
 1. [`design-system/component-build-brief.md`](design-system/component-build-brief.md)
    — the house contract every component is built to. This is the single most
    important file; it is what gets handed to each build agent.
-2. [`design-system/catalog.md`](design-system/catalog.md) — the 107 items.
+2. [`design-system/catalog.md`](design-system/catalog.md) — the 124 rows (114 active, 10 cut).
 3. [`design-system/decisions.md`](design-system/decisions.md) — especially **D9**
    (family G cut), **D12** (scope, restorations, and the warning that J/K/N are
    not closed), **D13** (derived tables drift — the reason this whole pipeline
@@ -63,16 +63,18 @@ The loop, per batch of ~8–10 components:
 Follow `decisions.md` §5 wave order. Blocks (family O) compose components from
 many families, so they come **last**.
 
-**Family F is 4 of 7 done** — F1 `result-card`, F2 `generation-grid`,
-F5 `compare-viewer` and F7 `approval-card` have shipped.
+**Family F is complete — all 7 items shipped**, and with family E already
+done, that closes Wave 4 apart from the O6 `generation-shell` block.
 
-**The three that remain — F3 `asset-detail`, F4 `action-stack` and
-F6 `render-queue` — are now unblocked:** the `cost` contract module has
-shipped, so `Cost`, `useCost`, `formatCost` and `GenerationState` all exist.
-Import them from `@/registry/super-ai/cost` and add `"cost"` to the item's
-`consumes` (F1 is the worked example).
+Next by `decisions.md` §5 is **Wave 6: families I and H** (12 items), which
+have no cost dependency and no open questions. **But note D12 warns families
+J, K and N are not closed** pending re-sampling, and C2 `suggestion-chips` is
+still blocked on the AI Elements question (§5.1) — so H/I is the clean run.
 
-Build them in the wave-4 spec's order (§5): F4 and F3 together, then F6.
+The other candidate is **O6 `generation-shell`**, the block that proves Wave 4.
+It composes E1 and F1/F2 and would make the wave demonstrable, but two of its
+declared fillers (L1 `empty-state`, M2 `credits-indicator`) ship in later
+waves, so it lands with placeholders.
 
 ### 3.2 Prepare the manifest — you do this, not the agents
 
@@ -208,6 +210,20 @@ already contains a button. If `onSelect` also makes that frame a `<button>`,
 axe fails `nested-interactive`. `result-card.tsx` suppresses tile
 interactivity in exactly those two states — copy that rule in any other
 component that puts a control in A8's action slot.
+
+**A `data-slot` you pass to a registry component replaces its own — this bit
+three times in one batch.** `DateSection`, `CostChip` and `StatReadout` all
+spread `...props` after their own attributes, so
+`<StatReadout data-slot="asset-detail-params">` silently erases
+`stat-readout` and every test or style keyed to it. Let the composed component
+keep its slot; it is also what makes the composition visible in the DOM.
+
+**A2 `cost-chip` fails contrast wherever you compose it.** It sets
+`text-muted-foreground` on its own `bg-muted` (4.34:1) and is excluded from
+the a11y gate only under its *own* story name — so any component that renders
+one fails its own stories. Until A2's retrofit lands, pass
+`className="text-foreground"` at the call site; tailwind-merge swaps the token
+and leaves the chip otherwise intact. See `action-stack.tsx`.
 
 **Never run `pnpm format`.** The tree is **not** prettier-clean at HEAD, so it
 rewrites ~300 unrelated files in one go — and worse, it breaks

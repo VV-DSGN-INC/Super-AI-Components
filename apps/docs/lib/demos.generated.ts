@@ -2,10 +2,12 @@
 import type { ComponentType } from "react";
 
 import AccountMenuDemo from "@/components/demos/account-menu-demo";
+import ActionStackDemo from "@/components/demos/action-stack-demo";
 import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
 import AppTopbarDemo from "@/components/demos/app-topbar-demo";
 import ApprovalCardDemo from "@/components/demos/approval-card-demo";
+import AssetDetailDemo from "@/components/demos/asset-detail-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
@@ -43,6 +45,7 @@ import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
 import RecentGridDemo from "@/components/demos/recent-grid-demo";
 import RecommendationCardDemo from "@/components/demos/recommendation-card-demo";
 import ReferenceStripDemo from "@/components/demos/reference-strip-demo";
+import RenderQueueDemo from "@/components/demos/render-queue-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import ResultCardDemo from "@/components/demos/result-card-demo";
 import RunButtonDemo from "@/components/demos/run-button-demo";
@@ -62,10 +65,12 @@ import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 
 export const demos: Record<string, ComponentType> = {
   "account-menu": AccountMenuDemo,
+  "action-stack": ActionStackDemo,
   "answer-block": AnswerBlockDemo,
   "app-sidebar": AppSidebarDemo,
   "app-topbar": AppTopbarDemo,
   "approval-card": ApprovalCardDemo,
+  "asset-detail": AssetDetailDemo,
   "autonomy-selector": AutonomySelectorDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
@@ -103,6 +108,7 @@ export const demos: Record<string, ComponentType> = {
   "recent-grid": RecentGridDemo,
   "recommendation-card": RecommendationCardDemo,
   "reference-strip": ReferenceStripDemo,
+  "render-queue": RenderQueueDemo,
   "reset-affordance": ResetAffordanceDemo,
   "result-card": ResultCardDemo,
   "run-button": RunButtonDemo,

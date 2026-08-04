@@ -2,9 +2,11 @@
 import type { ComponentDocs } from "./component-docs";
 
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
+import { ActionStackDocs } from "@/content/components/action-stack.docs";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { ApprovalCardDocs } from "@/content/components/approval-card.docs";
+import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
@@ -27,6 +29,7 @@ import { QuoteReplyDocs } from "@/content/components/quote-reply.docs";
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
 import { RecommendationCardDocs } from "@/content/components/recommendation-card.docs";
 import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
+import { RenderQueueDocs } from "@/content/components/render-queue.docs";
 import { ResultCardDocs } from "@/content/components/result-card.docs";
 import { RunButtonDocs } from "@/content/components/run-button.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
@@ -37,9 +40,11 @@ import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.d
 
 export const componentDocs: Record<string, ComponentDocs> = {
   "account-menu": AccountMenuDocs,
+  "action-stack": ActionStackDocs,
   "app-sidebar": AppSidebarDocs,
   "app-topbar": AppTopbarDocs,
   "approval-card": ApprovalCardDocs,
+  "asset-detail": AssetDetailDocs,
   "compare-viewer": CompareViewerDocs,
   "context-chips": ContextChipsDocs,
   "disclaimer-note": DisclaimerNoteDocs,
@@ -62,6 +67,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "recent-grid": RecentGridDocs,
   "recommendation-card": RecommendationCardDocs,
   "reference-strip": ReferenceStripDocs,
+  "render-queue": RenderQueueDocs,
   "result-card": ResultCardDocs,
   "run-button": RunButtonDocs,
   "sidebar-nav": SidebarNavDocs,
