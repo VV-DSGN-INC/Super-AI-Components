@@ -12,7 +12,9 @@ import AssetDetailDemo from "@/components/demos/asset-detail-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
+import CoachMarkDemo from "@/components/demos/coach-mark-demo";
 import CompareViewerDemo from "@/components/demos/compare-viewer-demo";
+import ConnectionManagerDemo from "@/components/demos/connection-manager-demo";
 import ContextChipsDemo from "@/components/demos/context-chips-demo";
 import ContextToolbarDemo from "@/components/demos/context-toolbar-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
@@ -20,8 +22,10 @@ import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
 import DrawingToolsDemo from "@/components/demos/drawing-tools-demo";
+import EmptyStateDemo from "@/components/demos/empty-state-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
 import EscalationHandoffDemo from "@/components/demos/escalation-handoff-demo";
+import FeatureAnnouncementDemo from "@/components/demos/feature-announcement-demo";
 import FeatureCardRowDemo from "@/components/demos/feature-card-row-demo";
 import FeedbackDemo from "@/components/demos/feedback-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
@@ -39,7 +43,9 @@ import MemberGateRowDemo from "@/components/demos/member-gate-row-demo";
 import ModalityRailDemo from "@/components/demos/modality-rail-demo";
 import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
 import ModelPickerDemo from "@/components/demos/model-picker-demo";
+import OnboardingWizardDemo from "@/components/demos/onboarding-wizard-demo";
 import ParameterPanelDemo from "@/components/demos/parameter-panel-demo";
+import PaywallMessageDemo from "@/components/demos/paywall-message-demo";
 import PresetGridDemo from "@/components/demos/preset-grid-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PricingTableDemo from "@/components/demos/pricing-table-demo";
@@ -47,6 +53,7 @@ import PromoCardDemo from "@/components/demos/promo-card-demo";
 import PropertyInspectorDemo from "@/components/demos/property-inspector-demo";
 import QuotaMeterDemo from "@/components/demos/quota-meter-demo";
 import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
+import RateLimitBannerDemo from "@/components/demos/rate-limit-banner-demo";
 import RecentGridDemo from "@/components/demos/recent-grid-demo";
 import RecommendationCardDemo from "@/components/demos/recommendation-card-demo";
 import ReferenceStripDemo from "@/components/demos/reference-strip-demo";
@@ -56,6 +63,7 @@ import ResultCardDemo from "@/components/demos/result-card-demo";
 import RunButtonDemo from "@/components/demos/run-button-demo";
 import SafetyBlockDemo from "@/components/demos/safety-block-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
+import SettingsDialogDemo from "@/components/demos/settings-dialog-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import SidebarNavDemo from "@/components/demos/sidebar-nav-demo";
 import SkillMenuDemo from "@/components/demos/skill-menu-demo";
@@ -73,6 +81,7 @@ import TransportControlsDemo from "@/components/demos/transport-controls-demo";
 import TtsComposerDemo from "@/components/demos/tts-composer-demo";
 import VoiceCloneRecorderDemo from "@/components/demos/voice-clone-recorder-demo";
 import WaveformEditorDemo from "@/components/demos/waveform-editor-demo";
+import WhatsNewDemo from "@/components/demos/whats-new-demo";
 import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 
 export const demos: Record<string, ComponentType> = {
@@ -87,7 +96,9 @@ export const demos: Record<string, ComponentType> = {
   "autonomy-selector": AutonomySelectorDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
+  "coach-mark": CoachMarkDemo,
   "compare-viewer": CompareViewerDemo,
+  "connection-manager": ConnectionManagerDemo,
   "context-chips": ContextChipsDemo,
   "context-toolbar": ContextToolbarDemo,
   "cost-chip": CostChipDemo,
@@ -95,8 +106,10 @@ export const demos: Record<string, ComponentType> = {
   "date-section": DateSectionDemo,
   "disclaimer-note": DisclaimerNoteDemo,
   "drawing-tools": DrawingToolsDemo,
+  "empty-state": EmptyStateDemo,
   "entity-row": EntityRowDemo,
   "escalation-handoff": EscalationHandoffDemo,
+  "feature-announcement": FeatureAnnouncementDemo,
   "feature-card-row": FeatureCardRowDemo,
   "feedback": FeedbackDemo,
   "field-row": FieldRowDemo,
@@ -114,7 +127,9 @@ export const demos: Record<string, ComponentType> = {
   "modality-rail": ModalityRailDemo,
   "mode-tabs": ModeTabsDemo,
   "model-picker": ModelPickerDemo,
+  "onboarding-wizard": OnboardingWizardDemo,
   "parameter-panel": ParameterPanelDemo,
+  "paywall-message": PaywallMessageDemo,
   "preset-grid": PresetGridDemo,
   "preview-tile": PreviewTileDemo,
   "pricing-table": PricingTableDemo,
@@ -122,6 +137,7 @@ export const demos: Record<string, ComponentType> = {
   "property-inspector": PropertyInspectorDemo,
   "quota-meter": QuotaMeterDemo,
   "quote-reply": QuoteReplyDemo,
+  "rate-limit-banner": RateLimitBannerDemo,
   "recent-grid": RecentGridDemo,
   "recommendation-card": RecommendationCardDemo,
   "reference-strip": ReferenceStripDemo,
@@ -131,6 +147,7 @@ export const demos: Record<string, ComponentType> = {
   "run-button": RunButtonDemo,
   "safety-block": SafetyBlockDemo,
   "section-header": SectionHeaderDemo,
+  "settings-dialog": SettingsDialogDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "sidebar-nav": SidebarNavDemo,
   "skill-menu": SkillMenuDemo,
@@ -148,5 +165,6 @@ export const demos: Record<string, ComponentType> = {
   "tts-composer": TtsComposerDemo,
   "voice-clone-recorder": VoiceCloneRecorderDemo,
   "waveform-editor": WaveformEditorDemo,
+  "whats-new": WhatsNewDemo,
   "workspace-switcher": WorkspaceSwitcherDemo,
 };

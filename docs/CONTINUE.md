@@ -4,7 +4,7 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-04, after Wave 6 (families H + I, 12 items via parallel agents).
+**Last updated:** 2026-08-04, after families L + M (9 items via parallel agents).
 
 ---
 
@@ -14,25 +14,25 @@ was already decided.
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
 | Branch          | `claude/waves-4-6-components` (branched from `main` after PR #15 merged)                                                    |
-| HEAD at handoff | families F, H, I complete + the `cost` contract module                                                                      |
+| HEAD at handoff | families F, H, I, L, M complete + the `cost` contract module                                                                |
 | Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
 | Open PR         | **[#16](https://github.com/VV-DSGN-INC/Super-AI-Components/pull/16)** — waves 4 & 6. (PR #11 also still open, but its content already landed on main via `11f633e`.) |
 | Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
 
-**Catalog progress: 73 of 114 active items shipped.** 41 planned, 10 cut
+**Catalog progress: 82 of 114 active items shipped.** 32 planned, 10 cut
 (family G + O5, per decision D9 — do not revive them).
 
-Of the 73, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
+Of the 82, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
 are exempt from the story-state and documentation contracts until someone runs
-the retrofit. The other 48 satisfy the full contract.
+the retrofit. The other 57 satisfy the full contract.
 
-Remaining by family: C 1 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
+Remaining by family: C 1 · J 7 · K 5 · N 6 · O 13.
 
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-Gate baselines at this handoff: `pnpm test` **737**, `pnpm build` **92 pages**,
-`pnpm test:stories` **225**, `registry.json` **89 items**.
+Gate baselines at this handoff: `pnpm test` **870**, `pnpm build` **101 pages**,
+`pnpm test:stories` **263**, `registry.json` **98 items**.
 
 ---
 
@@ -63,12 +63,11 @@ The loop, per batch of ~8–10 components:
 Follow `decisions.md` §5 wave order. Blocks (family O) compose components from
 many families, so they come **last**.
 
-**Families E, F, H and I are complete.** Waves 4 and 6 are done apart from
-their blocks (O6, O3, O4).
+**Families E, F, H, I, L and M are complete.**
 
-Next: **L (5) + M (4)**, both clean. Then **J (7) + K (5)** and **N (6)** —
-note D12 still warns J/K/N are unclosed pending re-sampling, so those carry a
-rework risk that has been accepted by decision, not resolved. C2
+Next: **J (7) + K (5)**, then **N (6)**. D12 still warns J/K/N are unclosed
+pending re-sampling, so those carry a rework risk that has been **accepted by
+decision, not resolved** — say so in the PR when they land. C2
 `suggestion-chips` remains blocked on the AI Elements question (§5.1).
 Family O's 13 blocks come last by dependency: they compose everything above.
 
@@ -257,6 +256,25 @@ misses. Mark thumbnails `aria-hidden`. Cost this batch a story-gate failure.
 `bg-muted`** (~4.0:1). A8 is gate-exempt under its own story name, so its
 stories pass and yours will not. Override the message to `text-foreground`
 (`result-card` does) or don't render that state (`tool-panel` doesn't).
+
+**Vendored wrappers drop props — now confirmed three times.** `toggle-group`
+never forwards `orientation`; `slider` forwards neither `getAriaLabel` nor
+`getAriaValueText`; **`tabs` destructures `orientation` and re-emits it only as
+`data-orientation`**, so a vertical nav keeps horizontal arrow keys and
+announces `aria-orientation="horizontal"`. Two agents found the `tabs` one
+independently. Read the wrapper before trusting its API; composing the Base UI
+primitive directly is often correct (`settings-dialog`, `whats-new`,
+`compare-viewer` all do).
+
+**DOM prop-name collisions.** `onVolumeChange` (a media event on every element)
+and `resource` (RDFa) both collide with plausible component props and fail
+typecheck in confusing ways. `Omit` them from the extended props — `stem-mixer`
+and `rate-limit-banner` each had to.
+
+**A Base UI popup is `role="dialog"` and needs a name.** `PopoverContent` with
+no `aria-labelledby` fails axe's `aria-dialog-name` outright. Point it at the
+visible title — `feature-announcement` shipped without this and the gate caught
+it.
 
 **Never run `pnpm format`.** The tree is **not** prettier-clean at HEAD, so it
 rewrites ~300 unrelated files in one go — and worse, it breaks

@@ -8,11 +8,15 @@ import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { ApprovalCardDocs } from "@/content/components/approval-card.docs";
 import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
+import { CoachMarkDocs } from "@/content/components/coach-mark.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
+import { ConnectionManagerDocs } from "@/content/components/connection-manager.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
 import { DrawingToolsDocs } from "@/content/components/drawing-tools.docs";
+import { EmptyStateDocs } from "@/content/components/empty-state.docs";
+import { FeatureAnnouncementDocs } from "@/content/components/feature-announcement.docs";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
 import { FeedbackDocs } from "@/content/components/feedback.docs";
 import { FrameStripDocs } from "@/content/components/frame-strip.docs";
@@ -26,17 +30,21 @@ import { MemberGateRowDocs } from "@/content/components/member-gate-row.docs";
 import { ModalityRailDocs } from "@/content/components/modality-rail.docs";
 import { ModeTabsDocs } from "@/content/components/mode-tabs.docs";
 import { ModelPickerDocs } from "@/content/components/model-picker.docs";
+import { OnboardingWizardDocs } from "@/content/components/onboarding-wizard.docs";
 import { ParameterPanelDocs } from "@/content/components/parameter-panel.docs";
+import { PaywallMessageDocs } from "@/content/components/paywall-message.docs";
 import { PresetGridDocs } from "@/content/components/preset-grid.docs";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
 import { PropertyInspectorDocs } from "@/content/components/property-inspector.docs";
 import { QuoteReplyDocs } from "@/content/components/quote-reply.docs";
+import { RateLimitBannerDocs } from "@/content/components/rate-limit-banner.docs";
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
 import { RecommendationCardDocs } from "@/content/components/recommendation-card.docs";
 import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
 import { RenderQueueDocs } from "@/content/components/render-queue.docs";
 import { ResultCardDocs } from "@/content/components/result-card.docs";
 import { RunButtonDocs } from "@/content/components/run-button.docs";
+import { SettingsDialogDocs } from "@/content/components/settings-dialog.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
 import { SkillMenuDocs } from "@/content/components/skill-menu.docs";
 import { StemMixerDocs } from "@/content/components/stem-mixer.docs";
@@ -48,6 +56,7 @@ import { TransportControlsDocs } from "@/content/components/transport-controls.d
 import { TtsComposerDocs } from "@/content/components/tts-composer.docs";
 import { VoiceCloneRecorderDocs } from "@/content/components/voice-clone-recorder.docs";
 import { WaveformEditorDocs } from "@/content/components/waveform-editor.docs";
+import { WhatsNewDocs } from "@/content/components/whats-new.docs";
 import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.docs";
 
 export const componentDocs: Record<string, ComponentDocs> = {
@@ -58,11 +67,15 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "app-topbar": AppTopbarDocs,
   "approval-card": ApprovalCardDocs,
   "asset-detail": AssetDetailDocs,
+  "coach-mark": CoachMarkDocs,
   "compare-viewer": CompareViewerDocs,
+  "connection-manager": ConnectionManagerDocs,
   "context-chips": ContextChipsDocs,
   "context-toolbar": ContextToolbarDocs,
   "disclaimer-note": DisclaimerNoteDocs,
   "drawing-tools": DrawingToolsDocs,
+  "empty-state": EmptyStateDocs,
+  "feature-announcement": FeatureAnnouncementDocs,
   "feature-card-row": FeatureCardRowDocs,
   "feedback": FeedbackDocs,
   "frame-strip": FrameStripDocs,
@@ -76,17 +89,21 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "modality-rail": ModalityRailDocs,
   "mode-tabs": ModeTabsDocs,
   "model-picker": ModelPickerDocs,
+  "onboarding-wizard": OnboardingWizardDocs,
   "parameter-panel": ParameterPanelDocs,
+  "paywall-message": PaywallMessageDocs,
   "preset-grid": PresetGridDocs,
   "promo-card": PromoCardDocs,
   "property-inspector": PropertyInspectorDocs,
   "quote-reply": QuoteReplyDocs,
+  "rate-limit-banner": RateLimitBannerDocs,
   "recent-grid": RecentGridDocs,
   "recommendation-card": RecommendationCardDocs,
   "reference-strip": ReferenceStripDocs,
   "render-queue": RenderQueueDocs,
   "result-card": ResultCardDocs,
   "run-button": RunButtonDocs,
+  "settings-dialog": SettingsDialogDocs,
   "sidebar-nav": SidebarNavDocs,
   "skill-menu": SkillMenuDocs,
   "stem-mixer": StemMixerDocs,
@@ -98,5 +115,6 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "tts-composer": TtsComposerDocs,
   "voice-clone-recorder": VoiceCloneRecorderDocs,
   "waveform-editor": WaveformEditorDocs,
+  "whats-new": WhatsNewDocs,
   "workspace-switcher": WorkspaceSwitcherDocs,
 };
