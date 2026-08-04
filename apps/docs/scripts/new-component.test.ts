@@ -71,6 +71,22 @@ describe("renderScaffold", () => {
     expect(docs).toContain("export const WorkspaceSwitcherDocs: ComponentDocs");
     expect(docs).toContain("dos: [");
   });
+
+  // The docs module is plain data read by a Server Component, so it must
+  // never carry "use client" — see the workspace-switcher/promo-card/
+  // sidebar-nav static-export fix this template was hardened to prevent
+  // a repeat of. Interactive examples belong in a sibling client module.
+  it("does not put the client directive on the docs module", () => {
+    const docs = files["content/components/workspace-switcher.docs.tsx"];
+    expect(docs.trimStart().startsWith('"use client";')).toBe(false);
+  });
+
+  it("shows the zero-prop example pattern and explains why inline handlers break the static export", () => {
+    const docs = files["content/components/workspace-switcher.docs.tsx"];
+    expect(docs).toContain("workspace-switcher.examples");
+    expect(docs).toContain("example: <GoodExample />");
+    expect(docs).toContain("cannot be serialized across the server/client boundary");
+  });
 });
 
 describe("statePascal", () => {

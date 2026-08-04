@@ -10,11 +10,14 @@ import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
+import PromoCardDemo from "@/components/demos/promo-card-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
+import SidebarNavDemo from "@/components/demos/sidebar-nav-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
+import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 
 export const demos: Record<string, ComponentType> = {
   "choice-chips": ChoiceChipsDemo,
@@ -26,9 +29,12 @@ export const demos: Record<string, ComponentType> = {
   "gen-settings-bar": GenSettingsBarDemo,
   "kbd": KbdDemo,
   "preview-tile": PreviewTileDemo,
+  "promo-card": PromoCardDemo,
   "reset-affordance": ResetAffordanceDemo,
   "section-header": SectionHeaderDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
+  "sidebar-nav": SidebarNavDemo,
   "stat-readout": StatReadoutDemo,
   "thread-list": ThreadListDemo,
+  "workspace-switcher": WorkspaceSwitcherDemo,
 };

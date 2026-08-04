@@ -12,18 +12,34 @@ describe("MANIFEST", () => {
     expect(MANIFEST.filter((i) => i.status !== "cut")).toHaveLength(107);
   });
 
-  it("has exactly the 14 already-registered components as shipped", () => {
-    expect(shippedItems(MANIFEST).map((i) => i.name).sort()).toEqual(
-      [
-        "choice-chips", "cost-chip", "date-section", "entity-row", "field-row",
-        "filter-bar", "gen-settings-bar", "kbd", "preview-tile", "reset-affordance",
-        "section-header", "shortcuts-sheet", "stat-readout", "thread-list",
-      ].sort(),
-    );
+  // The 14 components that shipped before Wave 1.5. They are exempt from the
+  // story-state and documentation contracts until the retrofit task runs.
+  const LEGACY = [
+    "choice-chips", "cost-chip", "date-section", "entity-row", "field-row",
+    "filter-bar", "gen-settings-bar", "kbd", "preview-tile", "reset-affordance",
+    "section-header", "shortcuts-sheet", "stat-readout", "thread-list",
+  ];
+
+  it("keeps every pre-Wave-1.5 component shipped", () => {
+    const shipped = new Set(shippedItems(MANIFEST).map((i) => i.name));
+    for (const name of LEGACY) expect(shipped.has(name)).toBe(true);
   });
 
-  it("marks every shipped item as contract-exempt legacy", () => {
-    expect(shippedItems(MANIFEST).every((i) => i.contractExempt === true)).toBe(true);
+  it("exempts the legacy 14 from the contract, and nothing else", () => {
+    // Exemption is a closed set that may only shrink. A new component must never
+    // be born exempt — that is how a gate quietly stops gating.
+    expect(
+      MANIFEST.filter((i) => i.contractExempt).map((i) => i.name).sort(),
+    ).toEqual([...LEGACY].sort());
+  });
+
+  it("holds every newly shipped component to the full contract", () => {
+    const newlyShipped = shippedItems(MANIFEST).filter((i) => !i.contractExempt);
+    expect(newlyShipped.length).toBeGreaterThan(0);
+    for (const item of newlyShipped) {
+      expect(item.states.length).toBeGreaterThan(0);
+      expect(item.specAnchor).toMatch(/^component-specs\.md#/);
+    }
   });
 
   it("cuts family G", () => {
