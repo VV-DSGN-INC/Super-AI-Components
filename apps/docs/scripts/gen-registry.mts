@@ -8,6 +8,7 @@ import { registrySchema } from "shadcn/schema";
 import { CATALOG_ITEMS } from "../lib/catalog";
 import { MANIFEST } from "../lib/catalog.manifest";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
+import type { CssVars } from "../lib/manifest-types";
 import { deriveExtras } from "./lib/registry-extras";
 
 const REGISTRY_URL = (process.env.REGISTRY_URL ?? "https://super-ai-components.vercel.app").replace(
@@ -28,6 +29,7 @@ type Item = {
   type?: "registry:component" | "registry:hook" | "registry:lib";
   registryDependencies?: string[];
   dependencies?: string[];
+  cssVars?: CssVars;
 };
 
 const extras = deriveExtras(MANIFEST, self);
@@ -241,6 +243,7 @@ const superAiItems = items.map((i) => ({
   dependencies: i.dependencies ?? [],
   registryDependencies: i.registryDependencies ?? [],
   files: [file(i.name)],
+  ...(i.cssVars ? { cssVars: i.cssVars } : {}),
 }));
 
 const allItems = [...superAiItems, ...marketingItems];

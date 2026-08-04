@@ -110,8 +110,30 @@ contract that crosses its family. This is what makes 95 components feel like one
 | **Provenance** `NEW` | Prompt, model, seed, params and cost travel with every asset. Any surface showing an asset can render them via A10 stat-readout. | F G J K |
 | **Empty** `NEW` | Every panel, list, grid and pane ships an empty state. | B C D F G I J K L N O |
 | **Approval** | Artifact approval surfaces expose Confirm · Edit · Regenerate · Skip callbacks. | F K N |
+| **Dialog** `NEW` | Any multi-turn surface models a **frame** (slots, each carrying a source and a confidence) and a **stack** (paused work). Every slot declares how it was filled, is correctable in place without restarting the flow, and states what invalidates it. | B D F K N O |
 
-### Where the two new contracts came from
+### Where the Dialog contract came from
+
+[agent-board-analysis.md](agent-board-analysis.md) §3. The conversation-state layer is universal in
+the agent population and has **no chrome**: Rasa ships it as named default patterns
+(`pattern_correction`, `pattern_continue_interrupted`, `pattern_validate_slot`, …), Google ships it
+as confirmation policy, every CX agent implements handoff. It is behaviour that crosses components
+without owning pixels — which is the definition of a contract in this system.
+
+The four obligations:
+
+| Obligation | What it means | Why |
+| --- | --- | --- |
+| **Sourced slots** | Every collected value records whether it was user-stated, inferred, defaulted or retrieved | Inferred and defaulted values must be visibly distinguishable from stated ones, or the user audits nothing |
+| **Correction without restart** | Changing an earlier value recomputes dependents rather than resetting the flow | The single strongest test of state design. `pattern_correction` exists because every framework hit this |
+| **Stack visibility** | Paused work is visible and resumable | `pattern_continue_interrupted` has no observed UI anywhere. That is a gap, not a non-requirement |
+| **Declared expiry** | A surface states what invalidates its collected state | Sessions that remember too long fail the same way as sessions that forget |
+
+The contract deliberately owns **no component**. `repair-prompt` and `interrupted-flow-resume` both
+failed the inclusion test as components (2 and 1 products) precisely because the population expresses
+them as behaviour. Shipping them as chrome would have inverted the finding.
+
+### Where the two earlier contracts came from
 
 **Empty** — NotebookLM ships three simultaneously-empty panes on first load. Empties are the default
 view of an AI product, not an edge case. The approved spec has no first-run family at all.

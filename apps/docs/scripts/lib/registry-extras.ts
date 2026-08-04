@@ -1,6 +1,9 @@
-import type { ManifestItem } from "../../lib/manifest-types";
+import type { CssVars, ManifestItem } from "../../lib/manifest-types";
 
-export type Extras = Record<string, { dependencies?: string[]; registryDependencies?: string[] }>;
+export type Extras = Record<
+  string,
+  { dependencies?: string[]; registryDependencies?: string[]; cssVars?: CssVars }
+>;
 
 export function deriveExtras(items: ManifestItem[], self: (name: string) => string): Extras {
   const extras: Extras = {};
@@ -12,6 +15,7 @@ export function deriveExtras(items: ManifestItem[], self: (name: string) => stri
     const entry: Extras[string] = {};
     if (registryDependencies.length) entry.registryDependencies = registryDependencies;
     if (item.npm.length) entry.dependencies = item.npm;
+    if (item.cssVars) entry.cssVars = item.cssVars;
     if (Object.keys(entry).length) extras[item.name] = entry;
   }
 

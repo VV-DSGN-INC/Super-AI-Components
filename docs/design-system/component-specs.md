@@ -344,6 +344,42 @@ out of scope — see gaps.md §4 and D11.
 
 **Evidence:** Freepik skills menu, Manus plugins, Claude skills, Zapier actions.
 
+## D7 `slot-summary` `NEW`
+**Base:** A9, Badge · **Sources:** stated · inferred · defaulted · retrieved
+
+**The Dialog contract's first consumer.** Everything here is that contract made visible; if the
+contract changes, this component changes with it.
+
+- **Every slot shows how it was filled.** This is the entire point. An inferred value that looks
+  identical to a stated one means the user is auditing nothing — they scan a list, see their own
+  words reflected back, and confirm four things the model guessed. `stated` is the quiet default;
+  `inferred` and `defaulted` carry visible marks.
+- **Correction is in place and never restarts the flow.** The correction affordance sits on the slot
+  it corrects. Every framework in the population implements this as a first-class path
+  (Rasa's `pattern_correction`), because "no, the other one" is the single most common repair.
+- **Missing is a state, not an omission.** A required slot with no value renders as a row with an
+  ask, not as an absent row. A summary that silently drops what it could not collect is how an agent
+  acts on three of five parameters.
+- **Low confidence is a flag on the slot, not a number.** Bands, not percentages — the model's
+  calibration does not support two decimal places. See D17 for why `confidence-badge` is not a shared
+  primitive yet.
+- **The confirm action states the consequence, not "OK."** This is the grounding move immediately
+  before a side effect: "Cancel these 3 orders", not "Confirm". It is also where the confirmation
+  ladder attaches — reversible actions may skip this surface entirely.
+
+**Not D3 `context-chips`.** Context chips are references the *user* attached. A slot summary is task
+state the *system* resolved. They look similar and mean opposite things about who is accountable for
+the value being right.
+
+**Not A10 `stat-readout`.** A10 is read-only key/value metadata. Every row here needs a source mark,
+a correction affordance and a missing state, and the moment A10 grows those it stops being a
+readout.
+
+**Evidence:** Google Assistant confirmation patterns (explicit vs implicit, scaled by reversibility),
+Rasa `pattern_correction` / `pattern_validate_slot`, ServiceNow Horizon `now-ai-summary-card`. ⚠
+Counted at 3 from documentation — verify against the running products before treating this spec as
+settled.
+
 ---
 
 # E · Generation & parameters
@@ -824,6 +860,39 @@ out of scope — see gaps.md §4 and D11.
 
 **Evidence:** NotebookLM citations, Spellbook clause references, Manus reports.
 
+## K7 `answer-block` `NEW`
+**Base:** K6, A9 · **States:** streaming · cited · partially-cited · uncited-warning
+
+- **Citations attach to the claim, not to the answer.** A citation bar under a paragraph tells you
+  the paragraph came from somewhere; it does not tell you *which sentence*. K6 inline at the claim is
+  the unit.
+- `partially-cited` is a real state and must look different from `cited`. An answer where two of five
+  claims are sourced is not a cited answer.
+- **Retrieved-but-uncited sources stay visible** (handed to K8). The gap between what was retrieved
+  and what was used is the most informative thing on the surface — it is how a user notices the model
+  ignored the relevant document.
+- Streaming order is claim-then-citation, never citation-then-claim; a citation that renders before
+  the text it supports reads as a load failure.
+
+**Evidence:** Glean, NotebookLM, iManage "Ask iManage", Microsoft Copilot Studio. Satisfies the
+Dialog contract's *sourced slots* obligation for retrieved values.
+
+## K8 `source-cards` `NEW`
+**Base:** Card, A10 · **States:** ranked · used · retrieved-unused · permission-filtered · empty
+
+- **`used` vs `retrieved-unused` is the whole component.** Showing only cited sources hides the
+  retrieval failure mode; showing them undifferentiated hides the answer's actual basis.
+- Relevance is shown as ranked position plus a band, never a raw score. A "0.7412" is precision the
+  retrieval does not have.
+- **`permission-filtered` is a visible state, not a silent omission.** In an enterprise assistant the
+  sentence "3 sources you don't have access to were excluded" is the difference between a trustworthy
+  answer and an inexplicably thin one. It names that documents exist; it must not leak their titles.
+- Empty means retrieval ran and returned nothing — visibly distinct from not-yet-run, or the user
+  reads an ungrounded answer as grounded.
+
+**Evidence:** Glean, NotebookLM, Perplexity. Returns the approved spec's dropped `retrieval-inspector`
+in its user-facing form (D16).
+
 ---
 
 # L · First-run & onboarding
@@ -1000,3 +1069,102 @@ out of scope — see gaps.md §4 and D11.
 - Period select drives every panel at once.
 
 **Evidence:** Provider consoles. The team-facing counterpart to M2 — same data, different audience.
+
+> N7 `env-status` is in the catalog (restored by D12) and still has no spec. Not written here — this
+> pass covers the D16 additions and the one restored item D16 amends.
+
+## N8 `permission-prompt` `RESTORED`
+**Base:** Alert-dialog · **Verbs:** Allow once · Always allow · Deny · **Edit first**
+
+- **Four verbs, and edit-first carries equal weight with allow.** Every framework in the agent
+  population implements approve / reject / *edit* on a paused tool call. Deny throws the agent's work
+  away and restarts the loop; edit-first keeps it and puts the human in the loop productively. It is
+  the difference between a gate and a collaboration.
+- The prompt states **what** and **why**: the action in plain language, the full arguments, and the
+  reason the agent believes it is needed. Arguments truncated with an explicit expand — same rule as
+  F7. Approving what you cannot read is what this prevents.
+- **Always allow does not live here.** Choosing it writes a grant, and the grant's review and revoke
+  surface belongs to N9. A component that can create a permanent permission but cannot show you the
+  ones you already granted is a one-way door.
+- Deny must be safe to press. The agent reports what it could not do rather than silently routing
+  around it.
+
+**Evidence:** OpenAI Agents SDK, Microsoft Agent Framework (+ AG-UI), LangChain, Laravel AI SDK,
+Claude Code. Amended by D16 — see [agent-board-analysis.md](agent-board-analysis.md) §5.
+
+## N9 `autonomy-selector` `NEW`
+**Base:** Radio-group, A9 · **Levels:** ask every time · auto-approve reads · full auto
+
+- **Three levels, plus per-tool override.** The level is the coarse dial; the override is what makes
+  it usable, because "auto-approve reads" is wrong the moment one read is expensive or sensitive.
+- **Effective mid-run.** Approval fatigue arrives during a long run, not before it. A control you can
+  only set at the start is a control you will not use.
+- **The grant list is part of this component, and it is the half nobody ships.** Every "always allow"
+  from N8 lands here as a row: what was granted, to which tool, when, and Revoke. Grant is easy;
+  review and revoke is the screen that makes the grant safe.
+- **Deny wins and cannot have allowlist exceptions.** Model the denylist as the real boundary and the
+  allowlist becomes safe to be generous with — this is what lets the higher autonomy levels exist at
+  all. Show the two lists as asymmetric, because they are.
+- Raising autonomy is a deliberate act with a stated blast radius; lowering it is one click.
+
+**Evidence:** Claude Code (permission modes + auto mode), Cursor, GitHub Copilot, ChatGPT Workspace
+Agents. Absorbs the revocable-scope surface from N8 (D16).
+
+## N10 `safety-block` `NEW`
+**Base:** Alert · **Variants:** input-blocked · output-blocked
+
+- **It must read as visibly not the assistant talking.** The population's failure mode is a refusal
+  delivered in the assistant's own voice, so the user cannot tell whether a policy fired or the model
+  is being evasive — which reads as the product being broken. Different container, different voice,
+  named source. This is the entire reason it is a component and not a message.
+- **Input-blocked and output-blocked are different events and must not share copy.** "I can't ask
+  that" and "I asked, and I can't show you the answer" tell the user different things about what to
+  do next.
+- Name the policy, and quote the triggering fragment where quoting it is not itself the harm. A block
+  with no locus is indistinguishable from a bug.
+- **Always offer the compliant path** — rephrase, narrow, or route to the surface that can answer.
+  Silent refusal is the failure state; a refusal with an exit is a working guardrail.
+- Sensitive-content blur is reveal-on-intent, never auto-reveal on hover.
+
+**Evidence:** AWS Bedrock Guardrails (separate blocked-prompt and blocked-response messaging),
+ChatGPT, Claude. ⚠ Counted from documentation — verify against the running products before treating
+this spec as settled.
+
+## N11 `escalation-handoff` `NEW`
+**Base:** Card, A10, A12 · **States:** triggered · packet preview · queued · accepted · unavailable
+
+- **The packet is the component; the button is not.** What the receiving human gets — transcript
+  summary, the resolved frame (slots and their sources), actions already attempted, and the specific
+  unblock being requested — is the deliverable. Every product in the population converged on this and
+  none of them converged on the button.
+- **The user sees the packet before it is sent.** They are the one who knows if the summary is wrong,
+  and it is their conversation being forwarded. This is also the privacy control.
+- Four triggers, and they are not interchangeable: explicit user request · repair budget exhausted ·
+  low confidence on a high-stakes action · policy topic. The copy differs per trigger, because
+  "I've asked someone to help" and "this needs a person by policy" are different messages.
+- **`unavailable` is mandatory and must be honest.** No fake "connecting you" at 3 a.m. State the
+  window, offer the asynchronous path, and say what happens next.
+- **Design the return path.** After the human resolves it, the conversation resumes with state intact
+  or it is explicitly closed. A thread that silently dies at handoff is the most common failure.
+
+**Evidence:** Sierra (auto-generated handoff summary), Decagon (history + attempted actions +
+customer data + issue summary), Intercom Fin, Voiceflow, Rasa `pattern_human_handoff`. The strongest
+result in the agent slice — five unrelated products.
+
+## N12 `task-tray` `NEW`
+**Base:** Sheet, A9 · **States:** running · needs-input · done · failed · empty
+
+- **`needs-input` is the state that justifies the component.** A background task blocked on an N8
+  approval is invisible work that has silently stopped. Sort it to the top; everything else is
+  reporting, this is a queue.
+- Tasks outlive the view that started them. The tray is app-shell chrome, not a panel inside the
+  surface that spawned the task.
+- Per-task cancel, always. Same rule as the E family: work you cannot stop burns budget and trust.
+- Completion notification is **opt-in and per-task**, not a global setting. The user knows which of
+  their five running tasks they actually care about.
+- Every row links back to the surface that owns the task — a tray that reports without navigating is
+  a notification list.
+
+**Evidence:** GitHub Copilot (coding agent + background sessions), ChatGPT Workspace Agents,
+Microsoft Copilot Tasks, Manus. Was one observation on the creative board (gaps.md §3); cleared at
+four on the agent board without changing — see [gaps.md](gaps.md) §8.

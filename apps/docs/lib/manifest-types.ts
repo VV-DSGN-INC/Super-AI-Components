@@ -2,6 +2,18 @@ export type FamilyId = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J"
 
 export type ManifestStatus = "planned" | "building" | "shipped" | "cut";
 
+/**
+ * Registry-item `cssVars` shape (shadcn's registry schema), reproduced here
+ * rather than imported so the manifest has no dependency on the `shadcn`
+ * package. Matches `WARNING_CSS_VARS` in the manifest and in the pre-manifest
+ * `gen-registry.mts` extras record it replaces.
+ */
+export type CssVars = {
+  theme?: Record<string, string>;
+  light?: Record<string, string>;
+  dark?: Record<string, string>;
+};
+
 export interface ManifestItem {
   /** Catalog ID, e.g. "B2". The join key to catalog.md and component-specs.md. */
   id: string;
@@ -30,6 +42,15 @@ export interface ManifestItem {
    * assertions until the retrofit task runs. Never set on a new component.
    */
   contractExempt?: true;
+  /**
+   * Registry-level CSS custom properties this component's code depends on,
+   * beyond stock shadcn (e.g. the `--warning` token used by near-limit /
+   * over-limit states). Threaded verbatim into the emitted registry.json item
+   * by deriveExtras() so `npx shadcn add` installs the token alongside the
+   * component — omitting it here silently ships a colourless component to
+   * any consumer who doesn't already define the var themselves.
+   */
+  cssVars?: CssVars;
 }
 
 export const shippedItems = (items: ManifestItem[]) => items.filter((i) => i.status === "shipped");

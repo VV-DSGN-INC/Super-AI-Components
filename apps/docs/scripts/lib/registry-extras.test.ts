@@ -31,9 +31,17 @@ describe("deriveExtras", () => {
 
   it("adds nothing for a component that declares no dependencies", () => {
     // Guards the other direction: a stray key would mean a published item gained
-    // a dependency nobody declared.
+    // a dependency nobody declared. `cssVars` counts as a declared extra too —
+    // credits-indicator/quota-meter/pricing-table have no shadcn/consumes/npm
+    // but do declare cssVars, so they're excluded here and covered by the
+    // cssVars-specific tests below instead.
     const undeclared = MANIFEST.filter(
-      (i) => i.status === "shipped" && !i.shadcn.length && !i.consumes.length && !i.npm.length,
+      (i) =>
+        i.status === "shipped" &&
+        !i.shadcn.length &&
+        !i.consumes.length &&
+        !i.npm.length &&
+        !i.cssVars,
     );
     for (const item of undeclared) expect(extras[item.name]).toBeUndefined();
   });
@@ -44,5 +52,31 @@ describe("deriveExtras", () => {
 
   it("orders shadcn bases before registry-internal deps", () => {
     expect(extras["shortcuts-sheet"].registryDependencies![0]).toBe("dialog");
+  });
+
+  // cssVars ported from main's hand-written `extras` record (WARNING_CSS_VARS)
+  // when the pre-manifest gen-registry.mts extras it replaced still owned this
+  // field directly. deriveExtras() must thread a manifest item's `cssVars`
+  // through unchanged, or these three silently lose the `--warning` token and
+  // render colourless near-limit/over-limit states for any consumer who
+  // doesn't already define it.
+  const WARNING_CSS_VARS = {
+    theme: {
+      "color-warning": "var(--warning)",
+      "color-warning-foreground": "var(--warning-foreground)",
+    },
+    light: { warning: "oklch(0.76 0.16 70)", "warning-foreground": "oklch(0.26 0.05 70)" },
+    dark: { warning: "oklch(0.82 0.14 72)", "warning-foreground": "oklch(0.24 0.05 70)" },
+  };
+
+  it.each(["credits-indicator", "quota-meter", "pricing-table"])(
+    "threads cssVars through for %s",
+    (name) => {
+      expect(extras[name]?.cssVars).toEqual(WARNING_CSS_VARS);
+    },
+  );
+
+  it("emits no cssVars for a shipped item that declares none", () => {
+    expect(extras["citation-ref"]?.cssVars).toBeUndefined();
   });
 });
