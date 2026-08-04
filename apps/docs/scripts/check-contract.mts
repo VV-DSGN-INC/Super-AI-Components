@@ -17,6 +17,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
+import { LIB_MANIFEST } from "../lib/lib.manifest";
 import { deriveExtras } from "./lib/registry-extras";
 import { statePascal } from "./lib/scaffold-templates";
 
@@ -43,8 +44,20 @@ const pascal = (n: string) =>
     .join("");
 const storyFor = (n: string) => `../storybook/src/stories/super-ai/${pascal(n)}.stories.tsx`;
 
-const names = new Set(manifest.map((i) => i.name));
+// Lib items (registry:lib contracts, e.g. cost.tsx) live in the same directory
+// and are installable the same way, so they count for orphan detection and are
+// legal `consumes` targets — but they have no demo, docs page, story or family,
+// so none of the surface or count assertions below apply to them.
+const names = new Set([...manifest.map((i) => i.name), ...LIB_MANIFEST.map((i) => i.name)]);
+const libByName = new Map(LIB_MANIFEST.map((i) => [i.name, i]));
 const byName = new Map(manifest.map((i) => [i.name, i]));
+
+for (const item of LIB_MANIFEST) {
+  if (item.status !== "shipped") continue;
+  for (const path of [`registry/super-ai/${item.name}.tsx`, `registry/super-ai/${item.name}.test.tsx`]) {
+    if (!existsSync(path)) errors.push(`${item.name} (lib): missing ${path}`);
+  }
+}
 
 // Same self() shape gen-registry.mts builds — the actual URL value is
 // irrelevant here, only that deriveExtras resolves one entry per consumed
@@ -64,7 +77,7 @@ for (const item of manifest) {
   // makes `npx shadcn add <item>` safe: every registryDependency it pulls in
   // is itself installable.
   for (const dep of item.consumes) {
-    const depItem = byName.get(dep);
+    const depItem = byName.get(dep) ?? libByName.get(dep);
     if (!depItem) errors.push(`${item.name}: consumes "${dep}", which is not in the manifest`);
     else if (depItem.status !== "shipped")
       errors.push(`${item.name}: consumes "${dep}", which is not shipped`);

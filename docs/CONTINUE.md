@@ -28,8 +28,11 @@ the retrofit. The other 33 satisfy the full contract.
 
 Remaining by family: C 1 · F 3 · H 7 · I 5 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
 
-Gate baselines at this handoff: `pnpm test` **508**, `pnpm build` **77 pages**,
-`pnpm test:stories` **163**.
+Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
+114. See §5.9.
+
+Gate baselines at this handoff: `pnpm test` **524**, `pnpm build` **77 pages**,
+`pnpm test:stories` **163**, `registry.json` **74 items**.
 
 ---
 
@@ -64,9 +67,12 @@ many families, so they come **last**.
 F5 `compare-viewer` and F7 `approval-card` have shipped.
 
 **The three that remain — F3 `asset-detail`, F4 `action-stack` and
-F6 `render-queue` — each declare `cost?: Cost` and are blocked on the contract
-module that was never built. Build it first; see §5.9.** It is the only thing
-standing between here and a closed family F.
+F6 `render-queue` — are now unblocked:** the `cost` contract module has
+shipped, so `Cost`, `useCost`, `formatCost` and `GenerationState` all exist.
+Import them from `@/registry/super-ai/cost` and add `"cost"` to the item's
+`consumes` (F1 is the worked example).
+
+Build them in the wave-4 spec's order (§5): F4 and F3 together, then F6.
 
 ### 3.2 Prepare the manifest — you do this, not the agents
 
@@ -252,31 +258,41 @@ with `Executable doesn't exist` rather than anything a11y-shaped. Run
 8. **T14, the `/roadmap` page, was specced but never built.** The site still
    shows no roadmap, so "56 of 114" is invisible to a visitor.
 
-9. **The `cost` contract module was never built, and family E shipped without
-   it.** It is step **1** of the wave-4 spec's own build order
-   (`2026-08-02-wave-4-generation-results-design.md` §2, §5) — one
-   `registry:lib` item exporting `Cost`, `CostProvider`, `useCost` and
-   `formatCost`, plus the `GenerationState` union (§2.5). Nothing in
-   `registry/super-ai/` references any of it. Three consequences, in order of
-   cost to fix:
-   - **E5 `run-button` and E7 `member-gate-row` shipped as the two cost
-     placements without the contract they were supposed to validate.** The
-     spec's rule that `insufficient` is _derived_ from `balance < amount` and
-     "never accepted as a prop" is therefore unenforced — which is exactly the
-     "two different prices is the failure mode" the module exists to prevent.
-   - **F3, F4 and F6 all declare `cost?: Cost` in their APIs.** They cannot be
-     built to spec until the type exists. Build the module before them.
-   - **F1 declares its lifecycle union locally** (`ResultCardState` in
-     `result-card.tsx`) rather than duplicating a contract that has no home
-     yet. When the module lands, that type should collapse into it. The union
-     is already spelled the spec's way — `streaming`, never `running`.
+9. **SHIPPED — but family E still needs retrofitting to it.** The `cost`
+   module now exists at `registry/super-ai/cost.tsx` as the registry's first
+   `registry:lib` item, exporting `Cost`, `CostProvider`, `useCost`,
+   `formatCost`, `formatShortfall` and `GenerationState`. F1 already takes its
+   lifecycle union from it.
 
-   The spec also leaves a naming question open for Nick: if the file carries
-   both the cost and state contracts it is misnamed as `cost` and should be
-   `contracts.tsx`. Note the manifest's `layer` is
-   `primitive | component | block` with no `lib`, so adding a `registry:lib`
-   item needs a small change to `manifest-types.ts` and `gen-registry.mts`
-   as well.
+   **What is still outstanding is the retrofit the spec called for**, none of
+   which is done: E5 `run-button` and E7 `member-gate-row` are the two cost
+   placements and still do not call `useCost`, so the rule that `insufficient`
+   is *derived* and never accepted as a prop is unenforced where it matters
+   most. A2 `cost-chip` still has only `amount`/`unit` against a spec that
+   declares four states, and A7 `gen-settings-bar` still has no cost slot
+   though its spec says "A2 lives inside the bar rather than beside it".
+   Both retrofits are additive and safe — a registry change never touches an
+   already-installed component.
+
+   Also still open: E5 and E6 spell the running state `running`, where the
+   contract says `streaming`. The two names must not both survive.
+
+   **Naming is still open for Nick.** The spec flagged that a file carrying
+   both the cost and lifecycle contracts is misnamed as `cost` and might want
+   to be `contracts.tsx`. It shipped as `cost.tsx` — the name the spec
+   specifies — and renaming it later is a one-line change in
+   `lib/lib.manifest.ts` plus the file itself.
+
+   **How lib items work**, since this is the first one. They live in
+   `lib/lib.manifest.ts`, not `catalog.manifest.ts`, and have their own
+   narrower `LibManifestItem` type. That is deliberate: a contract has no
+   family, no states, no demo, no docs page and no stories, and `family` in
+   particular feeds the per-family reconciliation against `catalog.md`'s
+   Totals table — a lib item parked in a family would silently inflate it. The
+   contract gate holds lib items to what actually applies (the component and
+   test files exist, the name cannot be shadowed by an orphan) and lets them
+   be legal `consumes` targets. `gen-registry.mts` emits them with
+   `type: "registry:lib"` and a `target` under the consumer's `lib/`.
 
 10. **Two additive API departures, both because the written sketch left a prop
     unreachable.** Each is documented in its component's pitfalls:

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MANIFEST } from "./catalog.manifest";
+import { LIB_MANIFEST } from "./lib.manifest";
 import { shippedItems } from "./manifest-types";
 
 describe("MANIFEST", () => {
@@ -73,9 +74,13 @@ describe("MANIFEST", () => {
   });
 
   it("declares only consumable dependencies that exist", () => {
-    const names = new Set(MANIFEST.map((i) => i.name));
+    // registry:lib contracts (LIB_MANIFEST) are installable registry items in
+    // the same directory, so they are legal `consumes` targets even though
+    // they are not catalog components — see LibManifestItem in
+    // manifest-types.ts for why they are held in a separate manifest.
+    const names = new Set([...MANIFEST.map((i) => i.name), ...LIB_MANIFEST.map((i) => i.name)]);
     for (const item of MANIFEST) {
-      for (const dep of item.consumes) expect(names.has(dep)).toBe(true);
+      for (const dep of item.consumes) expect(names.has(dep), `${item.name} consumes ${dep}`).toBe(true);
     }
   });
 });

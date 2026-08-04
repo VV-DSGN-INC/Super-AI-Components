@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import type { GenerationState } from "@/registry/super-ai/cost";
 import { PreviewTile, type PreviewTileAspect, type PreviewTileState } from "@/registry/super-ai/preview-tile";
 
 /**
@@ -29,14 +30,12 @@ import { PreviewTile, type PreviewTileAspect, type PreviewTileState } from "@/re
  */
 
 /**
- * The six-name lifecycle union the State contract fixes — "idle · queued ·
- * streaming · done · failed · locked on every generation-aware component"
- * (concept-model.md:108). Declared locally because the shared contract module
- * the wave-4 spec §2.5 specifies has not been built; when it lands this type
- * should collapse into it rather than be duplicated. Note `streaming`, never
- * `running` — the two names must not both survive (wave-4 spec §1.6).
+ * F1 uses the shared lifecycle union verbatim (wave-4 spec §2.5), so this is
+ * an alias rather than a second declaration — there is exactly one list of
+ * these six names in the registry, and it lives in the cost contract module
+ * alongside the other cross-cutting contract.
  */
-type ResultCardState = "idle" | "queued" | "streaming" | "done" | "failed" | "locked";
+type ResultCardState = GenerationState;
 
 /**
  * F1's six states onto A8's four (wave-4 spec §3.3). `streaming` maps to A8's

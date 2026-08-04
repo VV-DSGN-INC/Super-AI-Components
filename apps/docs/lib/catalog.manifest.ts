@@ -742,7 +742,10 @@ export const MANIFEST: ManifestItem[] = [
     // owns the aspect frame — so no aspect-ratio primitive is imported.
     base: ["card", "aspect-ratio"],
     shadcn: ["button", "card", "checkbox", "progress"],
-    consumes: ["preview-tile"],
+    // `cost` is the registry:lib contract module — F1 takes only the
+    // GenerationState union from it, but the dependency is real and a consumer
+    // installing result-card needs the file.
+    consumes: ["preview-tile", "cost"],
     npm: ["lucide-react"],
     // catalog.md's raw states mixed one media-type axis ("image/video/audio/
     // text/3D") into the lifecycle list and omitted `queued`. Normalised to the

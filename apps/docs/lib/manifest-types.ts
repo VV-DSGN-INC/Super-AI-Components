@@ -54,3 +54,30 @@ export interface ManifestItem {
 }
 
 export const shippedItems = (items: ManifestItem[]) => items.filter((i) => i.status === "shipped");
+
+/**
+ * A cross-cutting contract shipped as a `registry:lib` item rather than a
+ * component — `cost.tsx` is the first.
+ *
+ * Deliberately NOT a `ManifestItem` with a `layer: "lib"`. A contract has no
+ * family (it is consumed across all of them), no states, no demo, no docs page
+ * and no stories, so every one of those required fields would need a
+ * placeholder, and `family` in particular feeds the per-family reconciliation
+ * against catalog.md's Totals table — where a lib item would silently inflate
+ * whichever family it was parked in. Keeping it a separate, narrower type
+ * means the contract gate can hold it to what actually applies (the file and
+ * its tests exist; its name cannot be shadowed by an orphan) without either
+ * manifest lying about the other.
+ */
+export interface LibManifestItem {
+  name: string;
+  title: string;
+  description: string;
+  status: Extract<ManifestStatus, "planned" | "building" | "shipped">;
+  /** shadcn registry items the code imports. */
+  shadcn: string[];
+  /** npm packages needed at runtime. */
+  npm: string[];
+  /** Where the file lands in a consumer's app, relative to their src root. */
+  target: string;
+}
