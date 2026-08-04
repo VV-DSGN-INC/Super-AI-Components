@@ -5,9 +5,11 @@ import AccountMenuDemo from "@/components/demos/account-menu-demo";
 import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
 import AppTopbarDemo from "@/components/demos/app-topbar-demo";
+import ApprovalCardDemo from "@/components/demos/approval-card-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
+import CompareViewerDemo from "@/components/demos/compare-viewer-demo";
 import ContextChipsDemo from "@/components/demos/context-chips-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
@@ -63,9 +65,11 @@ export const demos: Record<string, ComponentType> = {
   "answer-block": AnswerBlockDemo,
   "app-sidebar": AppSidebarDemo,
   "app-topbar": AppTopbarDemo,
+  "approval-card": ApprovalCardDemo,
   "autonomy-selector": AutonomySelectorDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
+  "compare-viewer": CompareViewerDemo,
   "context-chips": ContextChipsDemo,
   "cost-chip": CostChipDemo,
   "credits-indicator": CreditsIndicatorDemo,

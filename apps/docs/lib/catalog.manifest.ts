@@ -813,13 +813,19 @@ export const MANIFEST: ManifestItem[] = [
     description: "Labelled panes",
     family: "F",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 4,
     base: ["resizable"],
-    shadcn: [],
+    shadcn: ["resizable", "toggle-group"],
     consumes: [],
+    // `@base-ui/react` is imported directly for the wipe handle but not
+    // declared: it arrives as a peer of the vendored ui/ primitives, which is
+    // the precedent parameter-panel and run-button already set.
     npm: [],
-    states: ["side", "single", "wipe; synced zoom and transport"],
+    // The raw third entry, "wipe; synced zoom and transport", folded a mode
+    // together with a behaviour. The three modes are the states; syncing is a
+    // property of the media the caller supplies, not a fourth mode.
+    states: ["side", "single", "wipe"],
     specAnchor: "component-specs.md#f5-compare-viewer",
   },
   {
@@ -845,13 +851,17 @@ export const MANIFEST: ManifestItem[] = [
     description: "Single-artifact approval",
     family: "F",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 4,
     base: ["card", "button-group"],
-    shadcn: [],
+    shadcn: ["button", "button-group", "card"],
     consumes: [],
-    npm: [],
-    states: ["Confirm", "Edit", "Regenerate", "Skip; submitting; resolved with undo"],
+    npm: ["lucide-react"],
+    // catalog.md's raw list mixed the four verbs in with the lifecycle. The
+    // verbs are not states — they are always all four, always in that order —
+    // so they get one story that proves the ordering rule, and the lifecycle
+    // gets the other three.
+    states: ["pending", "submitting", "resolved", "verb-order"],
     specAnchor: "component-specs.md#f7-approval-card",
   },
   {

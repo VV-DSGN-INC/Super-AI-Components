@@ -4,6 +4,8 @@ import type { ComponentDocs } from "./component-docs";
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
+import { ApprovalCardDocs } from "@/content/components/approval-card.docs";
+import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
@@ -37,6 +39,8 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "account-menu": AccountMenuDocs,
   "app-sidebar": AppSidebarDocs,
   "app-topbar": AppTopbarDocs,
+  "approval-card": ApprovalCardDocs,
+  "compare-viewer": CompareViewerDocs,
   "context-chips": ContextChipsDocs,
   "disclaimer-note": DisclaimerNoteDocs,
   "feature-card-row": FeatureCardRowDocs,

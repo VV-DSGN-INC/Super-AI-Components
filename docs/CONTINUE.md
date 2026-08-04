@@ -19,17 +19,17 @@ was already decided.
 | Open PR         | **none** for this work. PR #11 (`claude/wave-specs-and-infra`) is still open, but its content landed on main via `11f633e`. |
 | Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
 
-**Catalog progress: 56 of 114 active items shipped.** 58 planned, 10 cut
+**Catalog progress: 58 of 114 active items shipped.** 56 planned, 10 cut
 (family G + O5, per decision D9 — do not revive them).
 
-Of the 56, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
+Of the 58, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
 are exempt from the story-state and documentation contracts until someone runs
-the retrofit. The other 31 satisfy the full contract.
+the retrofit. The other 33 satisfy the full contract.
 
-Remaining by family: C 1 · F 5 · H 7 · I 5 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
+Remaining by family: C 1 · F 3 · H 7 · I 5 · J 7 · K 5 · L 5 · M 4 · N 6 · O 13.
 
-Gate baselines at this handoff: `pnpm test` **482**, `pnpm build` **75 pages**,
-`pnpm test:stories` **156**.
+Gate baselines at this handoff: `pnpm test` **508**, `pnpm build` **77 pages**,
+`pnpm test:stories` **163**.
 
 ---
 
@@ -60,12 +60,13 @@ The loop, per batch of ~8–10 components:
 Follow `decisions.md` §5 wave order. Blocks (family O) compose components from
 many families, so they come **last**.
 
-**Family F is open: F1 `result-card` and F2 `generation-grid` have shipped.**
-Next up is the rest of it, in the wave-4 spec's own build order (§5): F4
-`action-stack` and F3 `asset-detail` together, then F7 `approval-card`, F5
-`compare-viewer` and F6 `render-queue`, which have no dependencies within the
-wave. **F3, F4 and F6 all take a `Cost` — build the contract module first (see
-§5.9).**
+**Family F is 4 of 7 done** — F1 `result-card`, F2 `generation-grid`,
+F5 `compare-viewer` and F7 `approval-card` have shipped.
+
+**The three that remain — F3 `asset-detail`, F4 `action-stack` and
+F6 `render-queue` — each declare `cost?: Cost` and are blocked on the contract
+module that was never built. Build it first; see §5.9.** It is the only thing
+standing between here and a closed family F.
 
 ### 3.2 Prepare the manifest — you do this, not the agents
 
@@ -277,11 +278,23 @@ with `Executable doesn't exist` rather than anything a11y-shaped. Run
    item needs a small change to `manifest-types.ts` and `gen-registry.mts`
    as well.
 
-10. **`generation-grid`'s `renderItem` context carries a `toggleSelected` the
-    wave-4 spec's §6.2 sketch does not list.** Without it `onSelectionChange`
-    could never fire — the checkbox that toggles an item is rendered by the
-    caller, not by the grid — so the prop would be dead. Additive and
-    documented, but it is a departure from the written API.
+10. **Two additive API departures, both because the written sketch left a prop
+    unreachable.** Each is documented in its component's pitfalls:
+    - `generation-grid`'s `renderItem` context carries a `toggleSelected` the
+      wave-4 spec's §6.2 sketch does not list. Without it `onSelectionChange`
+      could never fire — the checkbox that toggles an item is rendered by the
+      caller, not by the grid.
+    - `compare-viewer` adds `onActivePaneChange`. §6.15 lists `activePaneId`
+      with no way to change it, which leaves `single` mode switchable only by
+      the caller re-rendering, and leaves the pane numbers — the one identity
+      that survives into that mode — with nothing to do.
+
+11. **`compare-viewer`'s `syncKey` is rendered, not implemented.** The spec
+    calls for synchronised zoom, pan and playhead, but gives the component no
+    zoom API and no ownership of the media (which arrives as opaque
+    `content`). It emits `data-sync-key` for whatever does own the media to
+    read. Real synchronisation still needs a home — most likely in family H,
+    where `time-ruler` and `track-lane` already have to agree on a playhead.
 
 ---
 
