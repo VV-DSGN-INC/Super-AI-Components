@@ -16,7 +16,7 @@ was already decided.
 | Branch          | `claude/waves-4-6-components` (branched from `main` after PR #15 merged)                                                    |
 | HEAD at handoff | families F, H, I complete + the `cost` contract module                                                                      |
 | Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
-| Open PR         | **none** for this work. PR #11 (`claude/wave-specs-and-infra`) is still open, but its content landed on main via `11f633e`. |
+| Open PR         | **[#16](https://github.com/VV-DSGN-INC/Super-AI-Components/pull/16)** — waves 4 & 6. (PR #11 also still open, but its content already landed on main via `11f633e`.) |
 | Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
 
 **Catalog progress: 73 of 114 active items shipped.** 41 planned, 10 cut
