@@ -128,7 +128,7 @@ function PricingTable({
                 {plan.current ? (
                   <span
                     data-slot="pricing-table-current"
-                    className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-xs"
+                    className="bg-muted text-foreground rounded-full px-2 py-0.5 text-xs"
                   >
                     Current
                   </span>
