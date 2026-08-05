@@ -7,6 +7,7 @@ import { registrySchema } from "shadcn/schema";
 
 import { CATALOG_ITEMS } from "../lib/catalog";
 import { MANIFEST } from "../lib/catalog.manifest";
+import { LIB_MANIFEST } from "../lib/lib.manifest";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
 import type { CssVars } from "../lib/manifest-types";
 import { deriveExtras } from "./lib/registry-extras";
@@ -246,7 +247,26 @@ const superAiItems = items.map((i) => ({
   ...(i.cssVars ? { cssVars: i.cssVars } : {}),
 }));
 
-const allItems = [...superAiItems, ...marketingItems];
+// registry:lib contracts. Same source directory as the components, but they
+// install into the consumer's lib/ rather than components/, and shadcn needs
+// the type on both the item and its file entry for that to happen.
+const libItems = LIB_MANIFEST.filter((i) => i.status === "shipped").map((i) => ({
+  name: i.name,
+  type: "registry:lib" as const,
+  title: i.title,
+  description: i.description,
+  dependencies: i.npm,
+  registryDependencies: i.shadcn,
+  files: [
+    {
+      path: `registry/super-ai/${i.name}.tsx`,
+      type: "registry:lib",
+      target: i.target,
+    },
+  ],
+}));
+
+const allItems = [...superAiItems, ...libItems, ...marketingItems];
 const allNames = allItems.map((i) => i.name);
 const allDupes = allNames.filter((n, i) => allNames.indexOf(n) !== i);
 if (allDupes.length) throw new Error(`Duplicate item names: ${allDupes.join(", ")}`);

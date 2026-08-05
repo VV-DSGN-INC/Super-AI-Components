@@ -688,6 +688,44 @@ settled.
 
 **Evidence:** Descript, CapCut, Canva page strip, Simplified artboards, Freepik frame conditioning.
 
+## H6 `waveform-editor` `RESTORED`
+**States:** region select · zoom to sample · scrub · region actions
+
+- A region is a sample range, not a clip reference. That is the whole reason this exists: H3
+  `track-lane` selects whole clips and has no sub-clip equivalent, so collapsing the two loses the
+  only selection audio work actually needs.
+- Zoom runs to sample level, where H2 `time-ruler` stops at frames. The two rulers are not the same
+  ruler at different settings — do not fold this back into H2.
+- Region actions apply to the selection, never to the file. A destructive action with nothing
+  selected is the bug this rule prevents.
+- The waveform is a drawing, so the region must also exist as numbers. Boundaries need a text
+  representation and keyboard adjustment, or the component is mouse-only and unusable without sight
+  of it.
+
+**Boundary:** audio *editing* only. Script-in / audio-out belongs to E9 `tts-composer`, and the two
+must not drift into each other.
+
+**Evidence:** Restored per [gaps.md](gaps.md) R3 — a recovered consolidation error, not a board
+sample. The board's Requirements table E names audio editing, but no per-product screenshots were
+collected for it, so this entry carries no product list and its implementation should use
+`evidence: []` rather than inventing one.
+
+## H7 `stem-mixer` `RESTORED`
+**Base:** Slider, Progress · **States:** exclusive vs additive solo · live meters · stem lineage
+
+- Exclusive versus additive solo is a prop, not a fork. Soloing one stem may silence the others or
+  add to them, and which one a product means is a real behavioural decision H3 `track-lane` does not
+  model — that difference is why this component was restored.
+- A stem carries its lineage: separated from a mix, or generated. Losing where a stem came from
+  makes a mixer of five lanes indistinguishable from five unrelated files.
+- Meters are indicators, never the only signal. Mute and solo must be readable as state — pressed,
+  named, announced — with the meters switched off entirely.
+- Volume and pan are per-lane and per-stem. Their handles need names that say which stem they move;
+  "Volume" alone is unusable in a five-lane mixer.
+
+**Evidence:** Restored per [gaps.md](gaps.md) R4 — a recovered consolidation error, not a board
+sample. No per-product screenshots were collected, so implementations should use `evidence: []`.
+
 ---
 
 # I · Editor surfaces
@@ -798,6 +836,22 @@ settled.
 - "More like this" means the modal never dead-ends.
 
 **Evidence:** Canva template modal, Spline templates, Freepik, Pixlr.
+
+## J7 `track-list` `RESTORED`
+**Base:** Table · **Columns:** artwork · tags · inline waveform · BPM · key
+
+- BPM and key are the point, not decoration. J1 `asset-library` carries generic metadata and cannot
+  express either, which is precisely why folding this into J1 was the error D12 reverses — for music,
+  those two fields are the facets people actually sort and filter by.
+- It is a table because the columns are comparable. A card grid hides the numbers you came to
+  compare, so the row is the unit here even though the rest of family J is grid-shaped.
+- The inline waveform is an audition affordance, not artwork: playing a row must not navigate away
+  from the list, or comparing three takes costs three round trips.
+- Artwork, tags, BPM and key are all optional per row. A generated stem has no cover art and a spoken
+  clip has no key — missing values read as deliberate (an em-dash), never as zero.
+
+**Evidence:** Restored per [gaps.md](gaps.md) R5 — a recovered consolidation error, not a board
+sample. No per-product screenshots were collected, so implementations should use `evidence: []`.
 
 ---
 
@@ -1012,6 +1066,27 @@ in its user-facing form (D16).
 
 **Evidence:** Claude usage limits, Midjourney queue caps, Freepik concurrency.
 
+## M7 `connection-manager` `RESTORED`
+**Base:** Card, Input · **States:** not-set · valid · invalid · unreachable
+
+- Four states, and `invalid` and `unreachable` are not the same failure. A rejected key is the
+  user's problem; a provider that is down is not. Collapsing them into one "error" sends people to
+  regenerate a key that was fine.
+- Test-connection is the only way anyone learns which of the two they have, so it is a first-class
+  action with its own result — not a side effect of saving.
+- Keys are write-only. Once stored, show a masked fingerprint and never the value; a settings page
+  that renders a secret back is an exfiltration surface.
+- Local models add hardware requirements to the same row, stated **before** the download. A model
+  that downloads and then cannot run is worse than one that was never offered.
+
+**Pairs with:** N7 `env-status`, which is the runtime view of the same providers — *"reachability vs
+spend"*. Configuration and liveness are two surfaces over one set of facts and must not be able to
+disagree.
+
+**Evidence:** Added per [gaps.md](gaps.md) T5 — a trust surface where absence is a defect rather
+than a scope decision. Identified from the agent-population analysis rather than from per-product
+screenshots, so implementations should use `evidence: []`.
+
 ---
 
 # N · Feedback, trust & observability
@@ -1070,8 +1145,22 @@ in its user-facing form (D16).
 
 **Evidence:** Provider consoles. The team-facing counterpart to M2 — same data, different audience.
 
-> N7 `env-status` is in the catalog (restored by D12) and still has no spec. Not written here — this
-> pass covers the D16 additions and the one restored item D16 amends.
+## N7 `env-status` `RESTORED`
+**Base:** Badge, A9 · **States:** ok · degraded · key-invalid · not-running
+
+- Four states because there are four different remedies. `degraded` means wait, `key-invalid` means
+  go and fix a credential, `not-running` means start something locally. Collapsing them into one red
+  dot tells a user that something is wrong and nothing about what to do.
+- **Reachability is not spend.** The approved spec pairs this with M2 `credits-indicator` explicitly
+  — *"reachability vs spend"* — because a run can fail with a full balance when a key has expired,
+  and a balance widget will never say so. That gap is why D12 restored this.
+- It is the runtime view of M7 `connection-manager`'s configuration: same providers, two surfaces,
+  and they must not be able to disagree about a provider's identity.
+- Never status by colour alone. Each provider row states its condition in words — this is a row of
+  coloured dots in every product that gets it wrong.
+
+**Evidence:** Restored per [gaps.md](gaps.md) R1 — a recovered consolidation error, not a board
+sample. No per-product screenshots were collected, so implementations should use `evidence: []`.
 
 ## N8 `permission-prompt` `RESTORED`
 **Base:** Alert-dialog · **Verbs:** Allow once · Always allow · Deny · **Edit first**
