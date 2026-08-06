@@ -3,12 +3,15 @@ import type { ComponentType } from "react";
 
 import AccountMenuDemo from "@/components/demos/account-menu-demo";
 import ActionStackDemo from "@/components/demos/action-stack-demo";
+import AiDocBlockDemo from "@/components/demos/ai-doc-block-demo";
 import AiToolsMenuDemo from "@/components/demos/ai-tools-menu-demo";
 import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
 import AppTopbarDemo from "@/components/demos/app-topbar-demo";
 import ApprovalCardDemo from "@/components/demos/approval-card-demo";
+import ArtifactGridDemo from "@/components/demos/artifact-grid-demo";
 import AssetDetailDemo from "@/components/demos/asset-detail-demo";
+import AssetLibraryDemo from "@/components/demos/asset-library-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
@@ -20,16 +23,19 @@ import ContextToolbarDemo from "@/components/demos/context-toolbar-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
+import DiffReviewDemo from "@/components/demos/diff-review-demo";
 import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
 import DrawingToolsDemo from "@/components/demos/drawing-tools-demo";
 import EmptyStateDemo from "@/components/demos/empty-state-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
 import EscalationHandoffDemo from "@/components/demos/escalation-handoff-demo";
+import ExploreGalleryDemo from "@/components/demos/explore-gallery-demo";
 import FeatureAnnouncementDemo from "@/components/demos/feature-announcement-demo";
 import FeatureCardRowDemo from "@/components/demos/feature-card-row-demo";
 import FeedbackDemo from "@/components/demos/feedback-demo";
 import FieldRowDemo from "@/components/demos/field-row-demo";
 import FilterBarDemo from "@/components/demos/filter-bar-demo";
+import FilterPanelDemo from "@/components/demos/filter-panel-demo";
 import FrameStripDemo from "@/components/demos/frame-strip-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import GenerationGridDemo from "@/components/demos/generation-grid-demo";
@@ -37,6 +43,7 @@ import GenerationPanelDemo from "@/components/demos/generation-panel-demo";
 import GenerationQueueDemo from "@/components/demos/generation-queue-demo";
 import GenerationWizardDemo from "@/components/demos/generation-wizard-demo";
 import HeroOmniboxDemo from "@/components/demos/hero-omnibox-demo";
+import InlineGeneratePopupDemo from "@/components/demos/inline-generate-popup-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
 import MediaPromptBarDemo from "@/components/demos/media-prompt-bar-demo";
 import MemberGateRowDemo from "@/components/demos/member-gate-row-demo";
@@ -56,6 +63,7 @@ import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
 import RateLimitBannerDemo from "@/components/demos/rate-limit-banner-demo";
 import RecentGridDemo from "@/components/demos/recent-grid-demo";
 import RecommendationCardDemo from "@/components/demos/recommendation-card-demo";
+import RecordListDemo from "@/components/demos/record-list-demo";
 import ReferenceStripDemo from "@/components/demos/reference-strip-demo";
 import RenderQueueDemo from "@/components/demos/render-queue-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
@@ -63,19 +71,23 @@ import ResultCardDemo from "@/components/demos/result-card-demo";
 import RunButtonDemo from "@/components/demos/run-button-demo";
 import SafetyBlockDemo from "@/components/demos/safety-block-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
+import SelectionToolbarDemo from "@/components/demos/selection-toolbar-demo";
 import SettingsDialogDemo from "@/components/demos/settings-dialog-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import SidebarNavDemo from "@/components/demos/sidebar-nav-demo";
 import SkillMenuDemo from "@/components/demos/skill-menu-demo";
 import SlotSummaryDemo from "@/components/demos/slot-summary-demo";
 import SourceCardsDemo from "@/components/demos/source-cards-demo";
+import SourcePanelDemo from "@/components/demos/source-panel-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import StemMixerDemo from "@/components/demos/stem-mixer-demo";
 import TaskTrayDemo from "@/components/demos/task-tray-demo";
+import TemplateDetailDemo from "@/components/demos/template-detail-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import TimeRulerDemo from "@/components/demos/time-ruler-demo";
 import ToolPanelDemo from "@/components/demos/tool-panel-demo";
 import TrackLaneDemo from "@/components/demos/track-lane-demo";
+import TrackListDemo from "@/components/demos/track-list-demo";
 import TranscriptEditorDemo from "@/components/demos/transcript-editor-demo";
 import TransportControlsDemo from "@/components/demos/transport-controls-demo";
 import TtsComposerDemo from "@/components/demos/tts-composer-demo";
@@ -87,12 +99,15 @@ import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 export const demos: Record<string, ComponentType> = {
   "account-menu": AccountMenuDemo,
   "action-stack": ActionStackDemo,
+  "ai-doc-block": AiDocBlockDemo,
   "ai-tools-menu": AiToolsMenuDemo,
   "answer-block": AnswerBlockDemo,
   "app-sidebar": AppSidebarDemo,
   "app-topbar": AppTopbarDemo,
   "approval-card": ApprovalCardDemo,
+  "artifact-grid": ArtifactGridDemo,
   "asset-detail": AssetDetailDemo,
+  "asset-library": AssetLibraryDemo,
   "autonomy-selector": AutonomySelectorDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
@@ -104,16 +119,19 @@ export const demos: Record<string, ComponentType> = {
   "cost-chip": CostChipDemo,
   "credits-indicator": CreditsIndicatorDemo,
   "date-section": DateSectionDemo,
+  "diff-review": DiffReviewDemo,
   "disclaimer-note": DisclaimerNoteDemo,
   "drawing-tools": DrawingToolsDemo,
   "empty-state": EmptyStateDemo,
   "entity-row": EntityRowDemo,
   "escalation-handoff": EscalationHandoffDemo,
+  "explore-gallery": ExploreGalleryDemo,
   "feature-announcement": FeatureAnnouncementDemo,
   "feature-card-row": FeatureCardRowDemo,
   "feedback": FeedbackDemo,
   "field-row": FieldRowDemo,
   "filter-bar": FilterBarDemo,
+  "filter-panel": FilterPanelDemo,
   "frame-strip": FrameStripDemo,
   "gen-settings-bar": GenSettingsBarDemo,
   "generation-grid": GenerationGridDemo,
@@ -121,6 +139,7 @@ export const demos: Record<string, ComponentType> = {
   "generation-queue": GenerationQueueDemo,
   "generation-wizard": GenerationWizardDemo,
   "hero-omnibox": HeroOmniboxDemo,
+  "inline-generate-popup": InlineGeneratePopupDemo,
   "kbd": KbdDemo,
   "media-prompt-bar": MediaPromptBarDemo,
   "member-gate-row": MemberGateRowDemo,
@@ -140,6 +159,7 @@ export const demos: Record<string, ComponentType> = {
   "rate-limit-banner": RateLimitBannerDemo,
   "recent-grid": RecentGridDemo,
   "recommendation-card": RecommendationCardDemo,
+  "record-list": RecordListDemo,
   "reference-strip": ReferenceStripDemo,
   "render-queue": RenderQueueDemo,
   "reset-affordance": ResetAffordanceDemo,
@@ -147,19 +167,23 @@ export const demos: Record<string, ComponentType> = {
   "run-button": RunButtonDemo,
   "safety-block": SafetyBlockDemo,
   "section-header": SectionHeaderDemo,
+  "selection-toolbar": SelectionToolbarDemo,
   "settings-dialog": SettingsDialogDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "sidebar-nav": SidebarNavDemo,
   "skill-menu": SkillMenuDemo,
   "slot-summary": SlotSummaryDemo,
   "source-cards": SourceCardsDemo,
+  "source-panel": SourcePanelDemo,
   "stat-readout": StatReadoutDemo,
   "stem-mixer": StemMixerDemo,
   "task-tray": TaskTrayDemo,
+  "template-detail": TemplateDetailDemo,
   "thread-list": ThreadListDemo,
   "time-ruler": TimeRulerDemo,
   "tool-panel": ToolPanelDemo,
   "track-lane": TrackLaneDemo,
+  "track-list": TrackListDemo,
   "transcript-editor": TranscriptEditorDemo,
   "transport-controls": TransportControlsDemo,
   "tts-composer": TtsComposerDemo,
