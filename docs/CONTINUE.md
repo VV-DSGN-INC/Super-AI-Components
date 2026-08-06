@@ -4,7 +4,7 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-04, after families L + M (9 items via parallel agents).
+**Last updated:** 2026-08-05, after families J + K (12 items via parallel agents).
 
 ---
 
@@ -13,26 +13,26 @@ was already decided.
 |                 |                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
-| Branch          | `claude/waves-4-6-components` (branched from `main` after PR #15 merged)                                                    |
-| HEAD at handoff | families F, H, I, L, M complete + the `cost` contract module                                                                |
+| Branch          | `claude/component-waves-remaining-063bd1` (branched from `main` after PR #17 merged)                                        |
+| HEAD at handoff | families F, H, I, J, K, L, M complete + the `cost` contract module                                                          |
 | Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
-| Open PR         | **[#16](https://github.com/VV-DSGN-INC/Super-AI-Components/pull/16)** — waves 4 & 6. (PR #11 also still open, but its content already landed on main via `11f633e`.) |
-| Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
+| Open PR         | **[#18](https://github.com/VV-DSGN-INC/Super-AI-Components/pull/18)** — waves 7 & 8 (families J + K). |
+| Preview         | https://super-ai-components-am9qtyse1-nick-vyhouskis-projects.vercel.app (preview deploy, behind Vercel SSO — routes 302 to the SSO gate, so page *rendering* is unverified from CI) |
 
-**Catalog progress: 82 of 114 active items shipped.** 32 planned, 10 cut
+**Catalog progress: 94 of 114 active items shipped.** 20 planned, 10 cut
 (family G + O5, per decision D9 — do not revive them).
 
-Of the 82, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
+Of the 94, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
 are exempt from the story-state and documentation contracts until someone runs
-the retrofit. The other 57 satisfy the full contract.
+the retrofit. The other 69 satisfy the full contract.
 
-Remaining by family: C 1 · J 7 · K 5 · N 6 · O 13.
+Remaining by family: C 1 · N 6 · O 13.
 
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-Gate baselines at this handoff: `pnpm test` **870**, `pnpm build` **101 pages**,
-`pnpm test:stories` **263**, `registry.json` **98 items**.
+Gate baselines at this handoff: `pnpm test` **1044**, `pnpm build` **113 pages**,
+`pnpm test:stories` **318**, `registry.json` **110 items**.
 
 ---
 
@@ -63,13 +63,13 @@ The loop, per batch of ~8–10 components:
 Follow `decisions.md` §5 wave order. Blocks (family O) compose components from
 many families, so they come **last**.
 
-**Families E, F, H, I, L and M are complete.**
+**Families E, F, H, I, J, K, L and M are complete.**
 
-Next: **J (7) + K (5)**, then **N (6)**. D12 still warns J/K/N are unclosed
-pending re-sampling, so those carry a rework risk that has been **accepted by
-decision, not resolved** — say so in the PR when they land. C2
-`suggestion-chips` remains blocked on the AI Elements question (§5.1).
-Family O's 13 blocks come last by dependency: they compose everything above.
+Next: **N (6)**, then family O's 13 blocks, which come last by dependency —
+they compose everything above. D12's warning that J/K/N are unclosed pending
+re-sampling still stands for **N**; J and K shipped under that accepted rework
+risk and it was stated in their PR. C2 `suggestion-chips` remains blocked on
+the AI Elements question (§5.1).
 
 **Parallel agents are the throughput mechanism** — §3.4 is not optional advice.
 Wave 6's 12 items were built by 12 concurrent agents in one pass; sequential
@@ -257,14 +257,44 @@ misses. Mark thumbnails `aria-hidden`. Cost this batch a story-gate failure.
 stories pass and yours will not. Override the message to `text-foreground`
 (`result-card` does) or don't render that state (`tool-panel` doesn't).
 
-**Vendored wrappers drop props — now confirmed three times.** `toggle-group`
+**Vendored wrappers drop props — now confirmed six times.** `toggle-group`
 never forwards `orientation`; `slider` forwards neither `getAriaLabel` nor
 `getAriaValueText`; **`tabs` destructures `orientation` and re-emits it only as
 `data-orientation`**, so a vertical nav keeps horizontal arrow keys and
 announces `aria-orientation="horizontal"`. Two agents found the `tabs` one
-independently. Read the wrapper before trusting its API; composing the Base UI
-primitive directly is often correct (`settings-dialog`, `whats-new`,
-`compare-viewer` all do).
+independently. Wave 7/8 added three more: **`popover` forwards only
+`side`/`align`/`alignOffset`/`sideOffset` to `Popover.Positioner` and drops
+`anchor`** — the one prop caret anchoring needs, so `inline-generate-popup`
+composes Portal/Positioner/Popup directly; **`select` renders the raw value
+(`16-9`) instead of the choice label (`16:9`) unless you pass `items`**, which
+`template-detail` found via a failing test, not by inspection; and **`progress`
+is unusable for indeterminate as shipped** — it appends its own
+`Track`/`Indicator` with no handle on either, and Base UI gives an
+indeterminate indicator *no width*, so `<Progress value={null}>` renders an
+empty muted track that reads as broken (`source-panel` works around it with a
+call-site arbitrary-descendant fix; fixing `components/ui/progress.tsx`
+centrally would spare every future consumer). Read the wrapper before trusting
+its API; composing the Base UI primitive directly is often correct
+(`settings-dialog`, `whats-new`, `compare-viewer`, `inline-generate-popup`,
+`explore-gallery` all do).
+
+**A state name whose Pascal form collides with the story file's own imports.**
+`statePascal("meta")` is `Meta`, which collides with `import type { Meta } from
+"@storybook/react"` in every generated story. `record-list` had to alias
+(`Meta as StorybookMeta`). `check:contract` does **not** catch this — it only
+greps for `export const Meta`, which is present either way. Avoid `meta` and
+`story` as state names when normalising the manifest in §3.2.
+
+**`check:tokens` misses the muted-on-muted pairing when the two tokens sit in
+different class strings of the same `cva` call.** Its heuristic matches within
+one class-list string. `components/ui/tabs.tsx` puts `text-muted-foreground` in
+`tabsListVariants`' base string and `bg-muted` in its `default` variant, so the
+gate written specifically to catch the single-element shape of this bug is
+blind to it. Found while building `explore-gallery`, which avoided the wrapper
+for this reason. `parameter-panel.tsx:294` renders `<TabsList>` with no
+variant and so inherits it; `tool-panel.tsx` uses `variant="line"`
+(`bg-transparent`) and is safe. Not recorded in `a11y-baseline.md` — it is
+neither a known nor an accepted exclusion. Unresolved at this handoff.
 
 **DOM prop-name collisions.** `onVolumeChange` (a media event on every element)
 and `resource` (RDFa) both collide with plausible component props and fail
@@ -391,6 +421,16 @@ with `Executable doesn't exist` rather than anything a11y-shaped. Run
     | Timeline coordinates — `timeToPixels`, `pixelsToTime`, `snapTime` | H2 / H3 / H6 | H2 exports them and calls them "the coordinate model H3 shares"; H3 built its own from `duration × pixelsPerSecond`; H6 has a third. **Two implementations of the same math, and H2's spec requires the playhead to span every track — which is only true if they agree.** |
     | The action row — A9 + A2 trailing chip + locked treatment + menu/inline split | F4 / I4 | I4 established it cannot *compose* F4 (F4's root owns the `DropdownMenu`, so composing per-group yields N menus where I4 needs one). It mirrored the shape instead and documented it. |
     | `ParameterSlider` — A6 `field-row` + a slider with a real accessible name | E3 / I5 | I5 imports it from E3 — an L3→L3 sideways import across families, which is precisely what D3 forbids. It should be an L2 primitive. |
+    | The four-verb approval row | F7 / I4 / K1 | **Now a third instance.** K1 `ai-doc-block` could not compose F7 `approval-card` — F7's root *is* a `Card` carrying its own title/summary/undo model, so nesting it would invert the relationship (the block is the thing being approved, not a payload inside an approval surface) and double the frame. K1 copied the *rule* — a fixed `VERBS` array whose order the component owns — with prose labels. Lifting the verb row out of F7 into a shared primitive is the fix all three want. |
+
+    A fourth signal, different in kind — **A12 `section-header`'s `action` slot
+    contract is too narrow.** A12 documents it as "a link, never a button. It
+    navigates, it does not act." Two builders working blind both had to stretch
+    it in the same batch: J1 `asset-library` put Upload / New folder **buttons**
+    there, and J2 `filter-panel` put inert **text** there (`N selected`, so
+    collapsing a section cannot silently hide live filters). Both documented the
+    departure; neither fits the written rule. The rule or the slot should change
+    — right now every real header violates it.
 
     The `registry:lib` machinery built for `cost` (see §5.9) is the right home
     for the first; the third is a straight promotion to `registry/super-ai/`.
@@ -414,9 +454,9 @@ The gates are the contract. All of these must pass before a batch lands:
 - `pnpm check:contract` — files exist, stories cover every declared state,
   guidance fields non-empty, `consumes` resolves to shipped items, deps match
   what `gen-registry` emits, wiring not stale, catalog counts agree
-- `pnpm test` — 366 at handoff
-- `pnpm build` — 62 pages at handoff
-- `pnpm test:stories` — 144 at handoff, **blocking**, run twice to rule out flake
+- `pnpm test` — 1044 at handoff
+- `pnpm build` — 113 pages at handoff
+- `pnpm test:stories` — 318 at handoff, **blocking**, run twice to rule out flake
 
 A component is not done because it renders. It is done when it composes the
 right primitives, its tests pin the spec's load-bearing sentences, its guidance
