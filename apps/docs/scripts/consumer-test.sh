@@ -27,7 +27,19 @@ cd "$TMP"
 pnpm dlx create-next-app@latest consumer --ts --tailwind --app --no-src-dir --import-alias "@/*" --eslint --turbopack --use-pnpm --yes --skip-install
 cd consumer
 # pnpm 11 requires allowBuilds in pnpm-workspace.yaml to run postinstall scripts.
-# create-next-app creates an empty pnpm-workspace.yaml; append allowBuilds to it.
+# create-next-app's template owns this file and has already changed shape once:
+# it used to emit an empty file, and now emits its own allowBuilds block with
+# these same packages set to false. Appending blindly produced a second
+# allowBuilds key, which pnpm rejects as a duplicate mapping key before install
+# even starts. So: drop whatever block it wrote, then write ours.
+if [ -f pnpm-workspace.yaml ]; then
+  awk '
+    /^allowBuilds:[[:space:]]*$/ { in_block = 1; next }
+    in_block && /^([[:space:]]+|[[:space:]]*$)/ { next }
+    { in_block = 0; print }
+  ' pnpm-workspace.yaml > pnpm-workspace.yaml.next
+  mv pnpm-workspace.yaml.next pnpm-workspace.yaml
+fi
 cat >> pnpm-workspace.yaml <<'WSEOF'
 
 allowBuilds:
@@ -35,6 +47,14 @@ allowBuilds:
   unrs-resolver: true
   esbuild: true
 WSEOF
+# Fail by name rather than letting pnpm report a line number, so the next time
+# the template changes shape this says which assumption broke.
+KEY_COUNT="$(grep -c '^allowBuilds:' pnpm-workspace.yaml || true)"
+if [ "$KEY_COUNT" -ne 1 ]; then
+  echo "CONSUMER INSTALL TEST: FAIL — pnpm-workspace.yaml has $KEY_COUNT allowBuilds keys, expected 1" >&2
+  cat pnpm-workspace.yaml >&2
+  exit 1
+fi
 pnpm install
 pnpm dlx shadcn@latest init --defaults
 
