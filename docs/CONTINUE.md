@@ -16,8 +16,8 @@ was already decided.
 | Branch          | `claude/component-waves-remaining-063bd1` (branched from `main` after PR #17 merged)                                        |
 | HEAD at handoff | families F, H, I, J, K, L, M complete + the `cost` contract module                                                          |
 | Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
-| Open PR         | **[#16](https://github.com/VV-DSGN-INC/Super-AI-Components/pull/16)** — waves 4 & 6. (PR #11 also still open, but its content already landed on main via `11f633e`.) |
-| Preview         | https://super-ai-components-v0.vercel.app (preview deploy, behind Vercel SSO)                                               |
+| Open PR         | **[#18](https://github.com/VV-DSGN-INC/Super-AI-Components/pull/18)** — waves 7 & 8 (families J + K). |
+| Preview         | https://super-ai-components-am9qtyse1-nick-vyhouskis-projects.vercel.app (preview deploy, behind Vercel SSO — routes 302 to the SSO gate, so page *rendering* is unverified from CI) |
 
 **Catalog progress: 94 of 114 active items shipped.** 20 planned, 10 cut
 (family G + O5, per decision D9 — do not revive them).
