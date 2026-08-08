@@ -37,18 +37,34 @@ properly in their own project, not for holding 114 items hostage to a research p
 `annotation-overlay`, U8 `label-review`) as the biggest technical one. Those are the v2 spec's
 starting point. D12's warning is not withdrawn — it is deferred, on the record.
 
-### 1.2 · The A-family retrofit lands before family O; the rest lands after
+### 1.2 · The A-family retrofit lands before the shell fan-out; the rest lands after
 
 Twenty-five shipped components carry `contractExempt: true` — no per-state stories, no guidance
 modules — totalling 105 declared states. Twelve of them are the A-family primitives, which every
 other family composes.
 
-**Decision: retrofit A1–A12 in Phase 0, before any block is built. The other thirteen (B6, D7,
+**Decision: retrofit A1–A12 before the twelve-shell fan-out in Phase 2. The other thirteen (B6, D7,
 K6–K8, L5, M2–M4, N9–N12 — 59 states) retrofit in Phase 3, after the shells.**
 
 This is not sequencing preference. Three A primitives carry confirmed contrast failures that every
 consumer currently works around at the call site (§3.1). Thirteen blocks are about to compose those
 primitives roughly a hundred more times.
+
+**Amended 2026-08-07, after the first draft.** This was originally written as "Phase 0, before any
+block is built", with Phase 1 sequenced after it. That over-constrained the graph: the retrofit
+exists to stop *thirteen shells* from composing broken primitives, and the shells are Phase 2.
+Nothing in Phase 1 — the O2 pathfinder, C2, or family N's six — needs it to have happened first.
+Writing Phase 1 between the retrofit and the shells quietly turned a Phase-2 prerequisite into a
+Phase-1 blocker.
+
+**The retrofit therefore runs concurrently with Phase 1, and must complete before Phase 2 begins.**
+The risk it mitigates is *scale* — a hundred call-site workarounds written by twelve parallel
+agents. A single pathfinder agent building one block can simply be told about the three known
+failures explicitly, which is cheap for one build and unmanageable for twelve.
+
+This is the only ordering constraint in the plan that is genuinely load-bearing. If the retrofit
+slips past the start of Phase 2, the result is the "all 25 after the shells" ordering that was
+considered and rejected.
 
 ### 1.3 · C2 resolves as a cross-registry dependency
 
@@ -149,9 +165,18 @@ be planned as one.
 
 ## 3. Phase 0 — fix the base
 
+**Runs concurrently with Phase 1 (§1.2). Must complete before Phase 2 begins.** It is numbered 0
+because it gates the shell fan-out, not because everything waits behind it.
+
 Phase 0 ships **no new catalog items**. The counter stays at 94. This is deliberate and it is the
 phase most likely to be skipped under pressure; it exists because thirteen blocks are about to
 compose this base a hundred times over.
+
+Concurrency note: with Phase 1 running eight agents (§4) and the cap at roughly 10–16, Phase 0's
+twelve retrofit agents will not all fit alongside them. Expect it to run as the second batch —
+started while the O2 pathfinder is still defining the block contract, finished before the twelve
+shells fan out. Track B's builders are told **not** to add contrast workarounds for A2, A8 or A9,
+since those are being fixed here rather than worked around.
 
 ### 3.1 · Retrofit the twelve A-family primitives
 
@@ -315,6 +340,10 @@ convenience one. It gets built to that weight.
 
 ## 5. Phase 2 — fan out the remaining twelve shells
 
+**Entry condition: Phase 0 is complete.** This is the plan's one load-bearing ordering constraint
+(§1.2). Twelve agents composing unretrofitted primitives is exactly the outcome Phase 0 exists to
+prevent.
+
 O1 `home-shell` (unblocked by C2 in Phase 1) · O3 `studio-shell` · O4 `timeline-shell` ·
 O6 `generation-shell` · O7 `library-shell` · O8 `explore-shell` · O9 `artifact-shell` ·
 O10 `records-shell` · O11 `docs-shell` · O12 `settings-shell` · O13 `notebook-shell` ·
@@ -396,7 +425,8 @@ Briefs point at that section rather than restating it, per the rule that one cop
 | 2 | **Shell agents reimplement instead of compose** | Required non-empty `consumes`, reconciled against real imports. §4.1 |
 | 3 | **Timeline coordinate model is a genuine unknown** | Scoped to a decision, not a migration, so it cannot block Phase 0. §3.2 |
 | 4 | **A block may exceed one agent's context** | Pathfinder answers it before twelve agents hit it; Phase 2 batches if needed |
-| 5 | **Phase 0 ships nothing visible** and will be tempting to skip | Named explicitly here; exit criteria in §3.5 are objective |
+| 5 | **Phase 0 ships nothing visible** and will be tempting to skip | Named explicitly here; exit criteria in §3.5 are objective, and it is Phase 2's entry condition (§5) |
+| 7 | **Phase 0 slips past the start of Phase 2** now that it runs concurrently rather than first | The only hard gate in the plan; §5 states it as an entry condition rather than a convention |
 | 6 | J/K/N rework if v2's re-sampling invalidates them | Accepted on the record in §1.1 |
 
 ---
