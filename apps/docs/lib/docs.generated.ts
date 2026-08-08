@@ -11,6 +11,7 @@ import { ApprovalCardDocs } from "@/content/components/approval-card.docs";
 import { ArtifactGridDocs } from "@/content/components/artifact-grid.docs";
 import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
 import { AssetLibraryDocs } from "@/content/components/asset-library.docs";
+import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { CoachMarkDocs } from "@/content/components/coach-mark.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
 import { ConnectionManagerDocs } from "@/content/components/connection-manager.docs";
@@ -82,6 +83,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "artifact-grid": ArtifactGridDocs,
   "asset-detail": AssetDetailDocs,
   "asset-library": AssetLibraryDocs,
+  "chat-shell": ChatShellDocs,
   "coach-mark": CoachMarkDocs,
   "compare-viewer": CompareViewerDocs,
   "connection-manager": ConnectionManagerDocs,

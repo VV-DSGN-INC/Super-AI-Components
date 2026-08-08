@@ -77,7 +77,14 @@ describe("MANIFEST", () => {
   });
 
   it("holds every newly shipped component to the full contract", () => {
-    const newlyShipped = shippedItems(MANIFEST).filter((i) => !i.contractExempt);
+    // Blocks are excluded here, not exempted: a shell is a layout, not a state
+    // machine, so it declares `regions` where a component declares `states` —
+    // and check-contract.mts's block branch asserts the regions instead. Split
+    // out when O2 `chat-shell` shipped and this assertion, which predates the
+    // block layer having any shipped members, failed on `states: []`.
+    const newlyShipped = shippedItems(MANIFEST).filter(
+      (i) => !i.contractExempt && i.layer !== "block",
+    );
     expect(newlyShipped.length).toBeGreaterThan(0);
     for (const item of newlyShipped) {
       expect(item.states.length).toBeGreaterThan(0);
@@ -98,6 +105,20 @@ describe("MANIFEST", () => {
       } else {
         expect(item.specAnchor).toMatch(/^component-specs\.md#/);
       }
+    }
+  });
+
+  it("holds every shipped block to the region contract instead", () => {
+    // The other half of the split above, so excluding blocks from the `states`
+    // assertion cannot become a hole a shell slips through declaring nothing.
+    const shippedBlocks = shippedItems(MANIFEST).filter((i) => i.layer === "block");
+    expect(shippedBlocks.length).toBeGreaterThan(0);
+    for (const item of shippedBlocks) {
+      expect(item.regions ?? [], `${item.name} regions`).not.toHaveLength(0);
+      // A block that composes nothing reimplemented its parts.
+      expect(item.consumes, `${item.name} consumes`).not.toHaveLength(0);
+      // Regions replace states; carrying both would mean two contracts.
+      expect(item.states, `${item.name} states`).toHaveLength(0);
     }
   });
 

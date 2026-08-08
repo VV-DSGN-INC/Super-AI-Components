@@ -13,6 +13,7 @@ import ArtifactGridDemo from "@/components/demos/artifact-grid-demo";
 import AssetDetailDemo from "@/components/demos/asset-detail-demo";
 import AssetLibraryDemo from "@/components/demos/asset-library-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
+import ChatShellDemo from "@/components/demos/chat-shell-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import CoachMarkDemo from "@/components/demos/coach-mark-demo";
@@ -109,6 +110,7 @@ export const demos: Record<string, ComponentType> = {
   "asset-detail": AssetDetailDemo,
   "asset-library": AssetLibraryDemo,
   "autonomy-selector": AutonomySelectorDemo,
+  "chat-shell": ChatShellDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
   "coach-mark": CoachMarkDemo,

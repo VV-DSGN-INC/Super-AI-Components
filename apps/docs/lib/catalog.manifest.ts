@@ -1951,12 +1951,30 @@ export const MANIFEST: ManifestItem[] = [
     description: "Chat / agent workspace",
     family: "O",
     layer: "block",
-    status: "planned",
+    status: "shipped",
     wave: 3,
     base: [],
-    shadcn: [],
-    consumes: [],
-    npm: [],
+    shadcn: ["sidebar"],
+    // The spec's `Filled by:` line is B1 · B6 · B7 · D1/D3/D4 · J4 · N1 · N3 ·
+    // M5 · L1 — eleven components, not the eight the block-gate brief listed:
+    // the D1/D3/D4 composer family was named in the spec's prose but omitted
+    // from the shorthand list. A shell with no composer is not this shell, so
+    // all three are composed and declared here.
+    consumes: [
+      "app-sidebar",
+      "thread-list",
+      "app-topbar",
+      "media-prompt-bar",
+      "context-chips",
+      "mode-tabs",
+      "artifact-grid",
+      "feedback",
+      "disclaimer-note",
+      "paywall-message",
+      "empty-state",
+    ],
+    npm: ["lucide-react"],
+    regions: ["sidebar", "topbar", "message-stream", "artifact-cards", "composer"],
     states: [],
     specAnchor: "block-specs.md#o2-chat-shell",
   },
