@@ -7,6 +7,29 @@ the demo that proves them.
 Derived from the reference board's `App Types/Layout` strip plus the individual app-type sections —
 see [reference-board-analysis.md](reference-board-analysis.md#4-layout-archetypes-extracted).
 
+## Reconciled against the FigJam wireframes — 2026-08-08
+
+All fourteen shells are wireframed on the **AI-Components-Thinking** FigJam board
+(`6QSzRk2FCCfpfrYpo3SmjD`), at 700×537 with labelled region boxes. Those wireframes were compared
+region-by-region against the `Regions:` lines below. **Nine matched. Four did not**, and each was
+ruled individually rather than assuming either side was authoritative:
+
+| Shell | Disagreement | Ruling |
+| --- | --- | --- |
+| **O3** `studio-shell` | Wireframe draws a `topbar`; the spec's `Regions:` omitted it | **Wireframe right.** `Filled by:` already named B7, which has to render somewhere, and the prose said "Five regions" while listing five that excluded it. Spec corrected to six regions. |
+| **O6** `generation-shell` | Wireframe omits `cost + Generate` | **Spec right.** It is a distinct region, filled by E5 `run-button` + A2 `cost-chip`, and the prose pins Generate to the panel bottom "so it never requires scrolling". **The wireframe needs it added.** |
+| **O8** `explore-shell` | Wireframe omits `masonry feed` | **Spec right**, and this is the shell's main content area. The prose is emphatic that it is masonry and not a grid, because equal-height rows suppress the browsing-for-surprise this archetype exists for. **The wireframe needs it added.** |
+| **O14** `auth-shell` | Wireframe omits `email fallback`; labels the provider region `provider icon row` | **Spec right on the fallback** — social-only auth with no email path is incomplete. **The wireframe needs it added.** Separately, the spec called that region `provider buttons` while its own `Filled by:` said A9 provider *rows*; normalised to `provider rows`. |
+
+**Two of the four are corrections to this document, made above.** The other two — plus O14's
+`email fallback` — are **outstanding edits to the FigJam board**, which is not editable from here.
+Until they land, the wireframes for O6, O8 and O14 are missing a region their spec requires, and
+O8's is the one a builder would most likely notice by its absence.
+
+**The board is also a snapshot from before D9/D12/D16** and does not reflect the current catalog: 15
+shipped components are absent from it (D7, E9, E10, H6, H7, J7, K7, K8, M7, N7–N12) and 10 cut items
+still appear (all of family G, plus O5 `flow-shell`).
+
 ---
 
 ## O1 `home-shell` — App Home / launcher
@@ -42,13 +65,17 @@ N1 `feedback` · N3 `disclaimer-note` · M5 `paywall-message` · L1
 
 ## O3 `studio-shell` — creative studio editor
 
-**Regions:** modality rail · tool panel · canvas · inspector · page strip
+**Regions:** modality rail · topbar · tool panel · canvas · inspector · page strip
 
-**Filled by:** B4 `modality-rail` · I1 `tool-panel` · B7 · I3 `context-toolbar` ·
+**Filled by:** B4 `modality-rail` · I1 `tool-panel` · B7 `app-topbar` · I3 `context-toolbar` ·
 I2 `property-inspector` · I5 `drawing-tools` · H5 `frame-strip` · E4 `preset-grid` · F1 `result-card`
 
-- Five regions, fixed positions. Rail and inspector are the invariants; the middle three vary by what
-  is being edited.
+- Six regions, fixed positions. Rail, topbar and inspector are the invariants; the middle
+  three — tool panel, canvas, page strip — vary by what is being edited.
+
+  *(Corrected 2026-08-08. This line read "Five regions" and the `Regions:` list omitted the
+  topbar, while `Filled by:` named B7 — which has to render somewhere. The FigJam wireframe
+  drew the topbar and was right; the spec was internally inconsistent.)*
 - The rail selects which tool panel is shown. It never changes the canvas — that separation is what
   keeps the shell legible.
 - The inspector is selection-driven and must ship an empty state, because "nothing selected" is the
@@ -204,9 +231,9 @@ L1 × 3 · N3
 
 ## O14 `auth-shell` — sign in / sign up
 
-**Regions:** marketing panel · provider buttons · email fallback · legal footer
+**Regions:** marketing panel · provider rows · email fallback · legal footer
 
-**Filled by:** L6 `onboarding-wizard` (split-panel variant) · L1 · A9 (provider rows)
+**Filled by:** L6 `onboarding-wizard` (split-panel variant) · L1 · A9 `entity-row` (provider rows)
 
 - UI only, no auth logic. Providers and copy are props; the shell has no opinion about your identity
   stack.
