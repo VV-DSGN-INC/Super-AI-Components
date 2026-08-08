@@ -254,6 +254,23 @@ fragile, and the exact number moves with whatever sits behind it.
    status as (3), now additionally excluded by name from the static rule
    (see below) so the new gate doesn't force that separate decision.
 
+5. **Wave 11** (`run-inspector.tsx`, `usage-dashboard.tsx`) — two more
+   `CostChip` embeddings, found by the story gate at integration and fixed
+   with the same call-site override as (2):
+   `className="text-foreground"`. `cost-chip.tsx` untouched again.
+
+   **Running total: six call sites now carry this override** —
+   `action-stack.tsx`, `hero-omnibox.tsx`, `model-picker.tsx`,
+   `ai-tools-menu.tsx`, `run-inspector.tsx`, `usage-dashboard.tsx`. Every one
+   of them is compensating for the same unfixed defect in A2, and every one
+   must be **deleted** when A2 is retrofitted — an override left in place
+   after the source is fixed silently double-applies.
+
+   This is the argument for fixing A2 at source before family O's twelve
+   remaining shells are built: each of them composes these primitives, and
+   the list above is what "fix it later" costs per wave. `grep -rn 'CostChip'
+   apps/docs/registry/super-ai/` finds all six.
+
 ### The destructive-tint pairing: `text-destructive` on `bg-destructive/10`
 
 A second, distinct contrast failure landed in the same round, in
