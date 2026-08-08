@@ -10,25 +10,51 @@ see [reference-board-analysis.md](reference-board-analysis.md#4-layout-archetype
 ## Reconciled against the FigJam wireframes — 2026-08-08
 
 All fourteen shells are wireframed on the **AI-Components-Thinking** FigJam board
-(`6QSzRk2FCCfpfrYpo3SmjD`), at 700×537 with labelled region boxes. Those wireframes were compared
-region-by-region against the `Regions:` lines below. **Nine matched. Four did not**, and each was
-ruled individually rather than assuming either side was authoritative:
+(`6QSzRk2FCCfpfrYpo3SmjD`), at ~700×520 with labelled region boxes. Each was compared against the
+`Regions:` lines below, **visually** — an earlier text-only pass produced three false findings and
+is not a method to repeat (see the note at the end).
+
+**Every active shell's wireframe matches its spec.** One genuine disagreement, and it went against
+this document:
 
 | Shell | Disagreement | Ruling |
 | --- | --- | --- |
-| **O3** `studio-shell` | Wireframe draws a `topbar`; the spec's `Regions:` omitted it | **Wireframe right.** `Filled by:` already named B7, which has to render somewhere, and the prose said "Five regions" while listing five that excluded it. Spec corrected to six regions. |
-| **O6** `generation-shell` | Wireframe omits `cost + Generate` | **Spec right.** It is a distinct region, filled by E5 `run-button` + A2 `cost-chip`, and the prose pins Generate to the panel bottom "so it never requires scrolling". **The wireframe needs it added.** |
-| **O8** `explore-shell` | Wireframe omits `masonry feed` | **Spec right**, and this is the shell's main content area. The prose is emphatic that it is masonry and not a grid, because equal-height rows suppress the browsing-for-surprise this archetype exists for. **The wireframe needs it added.** |
-| **O14** `auth-shell` | Wireframe omits `email fallback`; labels the provider region `provider icon row` | **Spec right on the fallback** — social-only auth with no email path is incomplete. **The wireframe needs it added.** Separately, the spec called that region `provider buttons` while its own `Filled by:` said A9 provider *rows*; normalised to `provider rows`. |
+| **O3** `studio-shell` | Wireframe draws a `topbar`; the spec's `Regions:` omitted it | **Wireframe right.** `Filled by:` already named B7, which has to render somewhere, and the prose said "Five regions" while listing five that excluded it. Spec corrected to six regions above. |
 
-**Two of the four are corrections to this document, made above.** The other two — plus O14's
-`email fallback` — are **outstanding edits to the FigJam board**, which is not editable from here.
-Until they land, the wireframes for O6, O8 and O14 are missing a region their spec requires, and
-O8's is the one a builder would most likely notice by its absence.
+One further correction was made to this document, independent of the board: **O14** listed
+`provider buttons` in `Regions:` while its own `Filled by:` said A9 provider *rows*. A9 is
+`entity-row`, so `provider rows` is correct; normalised above.
 
-**The board is also a snapshot from before D9/D12/D16** and does not reflect the current catalog: 15
-shipped components are absent from it (D7, E9, E10, H6, H7, J7, K7, K8, M7, N7–N12) and 10 cut items
-still appear (all of family G, plus O5 `flow-shell`).
+### Where the board is stale
+
+The board predates D9/D12/D16 in two respects:
+
+1. **It still shows 10 cut items** — all of family G (`flow-canvas`, `ai-node`, `typed-handle`,
+   `node-prompt`, `node-result`, `model-bar`, `node-palette`, `canvas-toolbar`, `node-inspector`)
+   plus O5 `flow-shell`, cut by D9 on 2026-07-31.
+2. **13 shipped components appear under `gaps.md`'s provisional IDs rather than their final catalog
+   IDs.** They are on the board and specced there; only the numbering is stale:
+
+   | Board ID | Catalog ID | Component |
+   | --- | --- | --- |
+   | R1 | N7 | `env-status` |
+   | R3 · R4 | H6 · H7 | `waveform-editor` · `stem-mixer` |
+   | R5 | J7 | `track-list` |
+   | R6 · R7 | E9 · E10 | `tts-composer` · `voice-clone-recorder` |
+   | T1 · T2 · T3 · T4 | N8 · N9 · N12 · N10 | `permission-prompt` · `autonomy-selector` · `task-tray` · `safety-block` |
+   | T5 | M7 | `connection-manager` |
+   | U12 · U14 | K7 · K8 | `answer-block` · `source-cards` |
+
+3. **Two shipped components are genuinely absent:** D7 `slot-summary` and N11 `escalation-handoff`.
+
+> **Method note, worth keeping.** The first pass at this reconciliation parsed the board's text
+> nodes instead of looking at it, and produced three findings that were all wrong: it reported O6
+> missing `cost + Generate`, O8 missing `masonry feed`, and O14 missing `email fallback`. All three
+> are present. The label regex only matched names beginning with a lowercase letter, so
+> `cost + Generate` and `Continue with email` were invisible, and O8's masonry boxes carry no text
+> label at all. The same pass reported 15 missing components when 13 of them were present under
+> `R`/`T`/`U` IDs that its `[A-O]\d+` pattern excluded by construction. **Compare wireframes by
+> rendering them, not by grepping their node names.**
 
 ---
 
