@@ -29,6 +29,7 @@ import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
 import DrawingToolsDemo from "@/components/demos/drawing-tools-demo";
 import EmptyStateDemo from "@/components/demos/empty-state-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
+import EnvStatusDemo from "@/components/demos/env-status-demo";
 import EscalationHandoffDemo from "@/components/demos/escalation-handoff-demo";
 import ExploreGalleryDemo from "@/components/demos/explore-gallery-demo";
 import FeatureAnnouncementDemo from "@/components/demos/feature-announcement-demo";
@@ -54,6 +55,7 @@ import ModelPickerDemo from "@/components/demos/model-picker-demo";
 import OnboardingWizardDemo from "@/components/demos/onboarding-wizard-demo";
 import ParameterPanelDemo from "@/components/demos/parameter-panel-demo";
 import PaywallMessageDemo from "@/components/demos/paywall-message-demo";
+import PermissionPromptDemo from "@/components/demos/permission-prompt-demo";
 import PresetGridDemo from "@/components/demos/preset-grid-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PricingTableDemo from "@/components/demos/pricing-table-demo";
@@ -70,6 +72,7 @@ import RenderQueueDemo from "@/components/demos/render-queue-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
 import ResultCardDemo from "@/components/demos/result-card-demo";
 import RunButtonDemo from "@/components/demos/run-button-demo";
+import RunInspectorDemo from "@/components/demos/run-inspector-demo";
 import SafetyBlockDemo from "@/components/demos/safety-block-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import SelectionToolbarDemo from "@/components/demos/selection-toolbar-demo";
@@ -82,16 +85,20 @@ import SourceCardsDemo from "@/components/demos/source-cards-demo";
 import SourcePanelDemo from "@/components/demos/source-panel-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import StemMixerDemo from "@/components/demos/stem-mixer-demo";
+import SuggestionChipsDemo from "@/components/demos/suggestion-chips-demo";
 import TaskTrayDemo from "@/components/demos/task-tray-demo";
 import TemplateDetailDemo from "@/components/demos/template-detail-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import TimeRulerDemo from "@/components/demos/time-ruler-demo";
 import ToolPanelDemo from "@/components/demos/tool-panel-demo";
+import TraceTimelineDemo from "@/components/demos/trace-timeline-demo";
 import TrackLaneDemo from "@/components/demos/track-lane-demo";
 import TrackListDemo from "@/components/demos/track-list-demo";
 import TranscriptEditorDemo from "@/components/demos/transcript-editor-demo";
 import TransportControlsDemo from "@/components/demos/transport-controls-demo";
+import TrustDialogDemo from "@/components/demos/trust-dialog-demo";
 import TtsComposerDemo from "@/components/demos/tts-composer-demo";
+import UsageDashboardDemo from "@/components/demos/usage-dashboard-demo";
 import VoiceCloneRecorderDemo from "@/components/demos/voice-clone-recorder-demo";
 import WaveformEditorDemo from "@/components/demos/waveform-editor-demo";
 import WhatsNewDemo from "@/components/demos/whats-new-demo";
@@ -126,6 +133,7 @@ export const demos: Record<string, ComponentType> = {
   "drawing-tools": DrawingToolsDemo,
   "empty-state": EmptyStateDemo,
   "entity-row": EntityRowDemo,
+  "env-status": EnvStatusDemo,
   "escalation-handoff": EscalationHandoffDemo,
   "explore-gallery": ExploreGalleryDemo,
   "feature-announcement": FeatureAnnouncementDemo,
@@ -151,6 +159,7 @@ export const demos: Record<string, ComponentType> = {
   "onboarding-wizard": OnboardingWizardDemo,
   "parameter-panel": ParameterPanelDemo,
   "paywall-message": PaywallMessageDemo,
+  "permission-prompt": PermissionPromptDemo,
   "preset-grid": PresetGridDemo,
   "preview-tile": PreviewTileDemo,
   "pricing-table": PricingTableDemo,
@@ -167,6 +176,7 @@ export const demos: Record<string, ComponentType> = {
   "reset-affordance": ResetAffordanceDemo,
   "result-card": ResultCardDemo,
   "run-button": RunButtonDemo,
+  "run-inspector": RunInspectorDemo,
   "safety-block": SafetyBlockDemo,
   "section-header": SectionHeaderDemo,
   "selection-toolbar": SelectionToolbarDemo,
@@ -179,16 +189,20 @@ export const demos: Record<string, ComponentType> = {
   "source-panel": SourcePanelDemo,
   "stat-readout": StatReadoutDemo,
   "stem-mixer": StemMixerDemo,
+  "suggestion-chips": SuggestionChipsDemo,
   "task-tray": TaskTrayDemo,
   "template-detail": TemplateDetailDemo,
   "thread-list": ThreadListDemo,
   "time-ruler": TimeRulerDemo,
   "tool-panel": ToolPanelDemo,
+  "trace-timeline": TraceTimelineDemo,
   "track-lane": TrackLaneDemo,
   "track-list": TrackListDemo,
   "transcript-editor": TranscriptEditorDemo,
   "transport-controls": TransportControlsDemo,
+  "trust-dialog": TrustDialogDemo,
   "tts-composer": TtsComposerDemo,
+  "usage-dashboard": UsageDashboardDemo,
   "voice-clone-recorder": VoiceCloneRecorderDemo,
   "waveform-editor": WaveformEditorDemo,
   "whats-new": WhatsNewDemo,

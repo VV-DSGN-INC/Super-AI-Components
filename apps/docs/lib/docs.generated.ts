@@ -21,6 +21,7 @@ import { DiffReviewDocs } from "@/content/components/diff-review.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
 import { DrawingToolsDocs } from "@/content/components/drawing-tools.docs";
 import { EmptyStateDocs } from "@/content/components/empty-state.docs";
+import { EnvStatusDocs } from "@/content/components/env-status.docs";
 import { ExploreGalleryDocs } from "@/content/components/explore-gallery.docs";
 import { FeatureAnnouncementDocs } from "@/content/components/feature-announcement.docs";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
@@ -41,6 +42,7 @@ import { ModelPickerDocs } from "@/content/components/model-picker.docs";
 import { OnboardingWizardDocs } from "@/content/components/onboarding-wizard.docs";
 import { ParameterPanelDocs } from "@/content/components/parameter-panel.docs";
 import { PaywallMessageDocs } from "@/content/components/paywall-message.docs";
+import { PermissionPromptDocs } from "@/content/components/permission-prompt.docs";
 import { PresetGridDocs } from "@/content/components/preset-grid.docs";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
 import { PropertyInspectorDocs } from "@/content/components/property-inspector.docs";
@@ -53,20 +55,25 @@ import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
 import { RenderQueueDocs } from "@/content/components/render-queue.docs";
 import { ResultCardDocs } from "@/content/components/result-card.docs";
 import { RunButtonDocs } from "@/content/components/run-button.docs";
+import { RunInspectorDocs } from "@/content/components/run-inspector.docs";
 import { SelectionToolbarDocs } from "@/content/components/selection-toolbar.docs";
 import { SettingsDialogDocs } from "@/content/components/settings-dialog.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
 import { SkillMenuDocs } from "@/content/components/skill-menu.docs";
 import { SourcePanelDocs } from "@/content/components/source-panel.docs";
 import { StemMixerDocs } from "@/content/components/stem-mixer.docs";
+import { SuggestionChipsDocs } from "@/content/components/suggestion-chips.docs";
 import { TemplateDetailDocs } from "@/content/components/template-detail.docs";
 import { TimeRulerDocs } from "@/content/components/time-ruler.docs";
 import { ToolPanelDocs } from "@/content/components/tool-panel.docs";
+import { TraceTimelineDocs } from "@/content/components/trace-timeline.docs";
 import { TrackLaneDocs } from "@/content/components/track-lane.docs";
 import { TrackListDocs } from "@/content/components/track-list.docs";
 import { TranscriptEditorDocs } from "@/content/components/transcript-editor.docs";
 import { TransportControlsDocs } from "@/content/components/transport-controls.docs";
+import { TrustDialogDocs } from "@/content/components/trust-dialog.docs";
 import { TtsComposerDocs } from "@/content/components/tts-composer.docs";
+import { UsageDashboardDocs } from "@/content/components/usage-dashboard.docs";
 import { VoiceCloneRecorderDocs } from "@/content/components/voice-clone-recorder.docs";
 import { WaveformEditorDocs } from "@/content/components/waveform-editor.docs";
 import { WhatsNewDocs } from "@/content/components/whats-new.docs";
@@ -93,6 +100,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "disclaimer-note": DisclaimerNoteDocs,
   "drawing-tools": DrawingToolsDocs,
   "empty-state": EmptyStateDocs,
+  "env-status": EnvStatusDocs,
   "explore-gallery": ExploreGalleryDocs,
   "feature-announcement": FeatureAnnouncementDocs,
   "feature-card-row": FeatureCardRowDocs,
@@ -113,6 +121,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "onboarding-wizard": OnboardingWizardDocs,
   "parameter-panel": ParameterPanelDocs,
   "paywall-message": PaywallMessageDocs,
+  "permission-prompt": PermissionPromptDocs,
   "preset-grid": PresetGridDocs,
   "promo-card": PromoCardDocs,
   "property-inspector": PropertyInspectorDocs,
@@ -125,20 +134,25 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "render-queue": RenderQueueDocs,
   "result-card": ResultCardDocs,
   "run-button": RunButtonDocs,
+  "run-inspector": RunInspectorDocs,
   "selection-toolbar": SelectionToolbarDocs,
   "settings-dialog": SettingsDialogDocs,
   "sidebar-nav": SidebarNavDocs,
   "skill-menu": SkillMenuDocs,
   "source-panel": SourcePanelDocs,
   "stem-mixer": StemMixerDocs,
+  "suggestion-chips": SuggestionChipsDocs,
   "template-detail": TemplateDetailDocs,
   "time-ruler": TimeRulerDocs,
   "tool-panel": ToolPanelDocs,
+  "trace-timeline": TraceTimelineDocs,
   "track-lane": TrackLaneDocs,
   "track-list": TrackListDocs,
   "transcript-editor": TranscriptEditorDocs,
   "transport-controls": TransportControlsDocs,
+  "trust-dialog": TrustDialogDocs,
   "tts-composer": TtsComposerDocs,
+  "usage-dashboard": UsageDashboardDocs,
   "voice-clone-recorder": VoiceCloneRecorderDocs,
   "waveform-editor": WaveformEditorDocs,
   "whats-new": WhatsNewDocs,

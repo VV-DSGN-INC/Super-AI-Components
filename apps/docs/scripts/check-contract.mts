@@ -179,16 +179,25 @@ for (const item of manifest) {
   const docsPath = fileFor.docs(item.name);
   if (existsSync(docsPath)) {
     const docs = readFileSync(docsPath, "utf8");
+    // `(?:[^"\\]|\\.)` rather than `[^"]` so an escaped quote inside the prose
+    // doesn't terminate the match early. Guidance is prose and routinely
+    // quotes things; the naive form rejected a fully-written whatItIs whose
+    // only sin was containing \"Recommended for you\".
+    //
+    // Both quote styles are accepted for the same reason, one level up:
+    // Prettier picks whichever delimiter needs fewer escapes, so a guidance
+    // string that itself contains a straight double quote comes out
+    // single-quoted. Matching only `"…"` failed N5 run-inspector's whatItIs —
+    // fully written, correctly formatted, and rejected purely for quoting
+    // `"the run failed"` inside itself.
+    const quoted = (field: string) =>
+      new RegExp(`${field}:\\s*(?:"(?:[^"\\\\]|\\\\.){10,}"|'(?:[^'\\\\]|\\\\.){10,}')`);
     const required: [RegExp, string][] = [
-      // `(?:[^"\\]|\\.)` rather than `[^"]` so an escaped quote inside the prose
-      // doesn't terminate the match early. Guidance is prose and routinely
-      // quotes things; the naive form rejected a fully-written whatItIs whose
-      // only sin was containing \"Recommended for you\".
-      [/whatItIs:\s*"(?:[^"\\]|\\.){10,}"/, "whatItIs"],
-      [/whyItMatters:\s*"(?:[^"\\]|\\.){10,}"/, "whyItMatters"],
+      [quoted("whatItIs"), "whatItIs"],
+      [quoted("whyItMatters"), "whyItMatters"],
       [/dos:\s*\[\s*\{/, "at least one do"],
       [/donts:\s*\[\s*\{/, "at least one don't"],
-      [/pitfalls:\s*\[\s*"/, "at least one pitfall"],
+      [/pitfalls:\s*\[\s*["']/, "at least one pitfall"],
     ];
     for (const [re, label] of required)
       if (!re.test(docs)) errors.push(`${item.name}: docs module is missing ${label}`);

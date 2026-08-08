@@ -267,7 +267,19 @@ function UsageDashboardModelBreakdown({
                 every number this chart shows, in real text. */}
             <div data-slot="usage-dashboard-model-chart" aria-hidden="true">
               <ChartContainer config={MODEL_CHART_CONFIG} className="aspect-auto h-48 w-full">
+                {/* `accessibilityLayer={false}` is what makes the
+                    `aria-hidden` above legal. Recharts 3 defaults
+                    `accessibilityLayer` to true (see CartesianChart's
+                    defaultProps), and RootSurface turns that into
+                    `tabIndex={0}` + `role="application"` on the chart's root
+                    SVG — focusable content inside an aria-hidden subtree,
+                    which is the axe `aria-hidden-focus` violation exactly.
+                    Turning it off is the honest expression of rule 3: this
+                    chart is decorative, the table below carries every number
+                    it draws, so it should be out of both the accessibility
+                    tree and the tab order rather than only the former. */}
                 <BarChart
+                  accessibilityLayer={false}
                   data={chartData}
                   layout="vertical"
                   margin={{ left: 4, right: 12, top: 4, bottom: 4 }}
@@ -319,7 +331,17 @@ function UsageDashboardModelBreakdown({
                         {m.name}
                       </th>
                       <td className="py-1.5 pr-3">
-                        <CostChip amount={m.spend.toLocaleString()} unit={spendUnit} />
+                        {/* `text-foreground` overrides CostChip's default
+                            `text-muted-foreground`, which lands at 4.34:1 on
+                            its own `bg-muted` and fails axe. Call-site
+                            substitution per docs/design-system/a11y-baseline.md,
+                            "Where this has already bitten" (2) — CostChip's own
+                            styling and its contractExempt story stay untouched. */}
+                        <CostChip
+                          amount={m.spend.toLocaleString()}
+                          unit={spendUnit}
+                          className="text-foreground"
+                        />
                       </td>
                       <td className="py-1.5 pr-3 tabular-nums">{m.tokens.toLocaleString()}</td>
                       <td className="py-1.5 tabular-nums">{formatLatencyMs(m.latencyMs)}</td>
