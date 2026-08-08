@@ -114,6 +114,47 @@ for (const item of manifest) {
     continue;
   }
 
+  if (item.layer === "block") {
+    checked++;
+
+    // A block that composes nothing is a block that reimplemented its parts.
+    // This is the assertion that catches a shell agent writing its own
+    // inspector markup instead of composing property-inspector.
+    if (item.consumes.length === 0) {
+      errors.push(`${item.name}: blocks must declare a non-empty consumes list`);
+    }
+
+    const blockPath = fileFor.component(item.name);
+    const source = existsSync(blockPath) ? readFileSync(blockPath, "utf8") : "";
+    for (const region of item.regions ?? []) {
+      if (!source.includes(`data-region="${region}"`)) {
+        errors.push(
+          `${item.name}: block does not render declared region "${region}" (expected data-region="${region}")`,
+        );
+      }
+    }
+    if (!(item.regions ?? []).length) {
+      errors.push(`${item.name}: blocks must declare a non-empty regions list`);
+    }
+
+    const blockStoryPath = storyFor(item.name);
+    if (!existsSync(blockStoryPath)) {
+      errors.push(`${item.name}: missing story file ${blockStoryPath}`);
+    } else {
+      const blockStory = readFileSync(blockStoryPath, "utf8");
+      // Empty is mandatory because F4, O1 and O3 all independently say the
+      // empty state is the view most users actually see. Responsive is
+      // mandatory because a shell is a layout and layout is what breaks.
+      for (const required of ["Empty", "Responsive"]) {
+        if (!new RegExp(`export const ${required}\\s*[:=]`).test(blockStory)) {
+          errors.push(`${item.name}: block story is missing the mandatory "${required}" export`);
+        }
+      }
+    }
+
+    continue; // blocks have no `states`; per-state coverage does not apply
+  }
+
   checked++;
 
   const storyPath = storyFor(item.name);
