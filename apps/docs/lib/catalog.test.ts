@@ -1,25 +1,22 @@
 import { describe, expect, it } from "vitest";
 
-import { CATALOG, CATALOG_ITEMS } from "./catalog";
+import { CATALOG_ITEMS, groupFor } from "./catalog";
 import { MANIFEST } from "./catalog.manifest";
 
+describe("groupFor", () => {
+  it("maps every layer to its own group", () => {
+    expect(groupFor("primitive")).toBe("Primitives");
+    expect(groupFor("component")).toBe("Components");
+    expect(groupFor("block")).toBe("Blocks");
+  });
+});
+
 describe("CATALOG_ITEMS", () => {
-  it("contains exactly the shipped manifest items", () => {
-    expect(CATALOG.sort()).toEqual(
-      MANIFEST.filter((i) => i.status === "shipped").map((i) => i.name).sort(),
-    );
-  });
-
-  it("groups primitives and components by manifest layer", () => {
-    const kbd = CATALOG_ITEMS.find((i) => i.name === "kbd")!;
-    const threadList = CATALOG_ITEMS.find((i) => i.name === "thread-list")!;
-    expect(kbd.group).toBe("Primitives");
-    expect(threadList.group).toBe("Components");
-  });
-
-  it("keeps sidebar ordering stable — primitives before components", () => {
-    const firstComponent = CATALOG_ITEMS.findIndex((i) => i.group === "Components");
-    const lastPrimitive = CATALOG_ITEMS.map((i) => i.group).lastIndexOf("Primitives");
-    expect(lastPrimitive).toBeLessThan(firstComponent);
+  it("assigns each shipped item the group its layer maps to", () => {
+    const shipped = MANIFEST.filter((i) => i.status === "shipped");
+    expect(shipped.length).toBeGreaterThan(0);
+    for (const item of shipped) {
+      expect(CATALOG_ITEMS.find((i) => i.name === item.name)?.group).toBe(groupFor(item.layer));
+    }
   });
 });

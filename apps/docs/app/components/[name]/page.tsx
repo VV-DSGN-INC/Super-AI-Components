@@ -56,6 +56,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
   const item = isMarketing
     ? MARKETING_ITEMS.find((i) => i.name === name)!
     : CATALOG_ITEMS.find((i) => i.name === name)!;
+  const isBlock = !isMarketing && CATALOG_ITEMS.find((i) => i.name === name)?.group === "Blocks";
   const Demo = isMarketing ? marketingDemos[name] : demos[name as CatalogName];
   if (!Demo) {
     throw new Error(`No demo registered for "${name}" in ${isMarketing ? "marketingDemos" : "demos"}`);
@@ -73,11 +74,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
         <p className="text-muted-foreground mt-2">{item.description}</p>
       </div>
 
-      <PreviewTabs preview={<Demo />} code={demoSource} />
+      <PreviewTabs preview={<Demo />} code={demoSource} fullBleed={isBlock} />
 
-      {!isMarketing && componentDocs[name] ? (
-        <ComponentDocsView docs={componentDocs[name]} />
-      ) : null}
+      {!isMarketing && componentDocs[name] ? <ComponentDocsView docs={componentDocs[name]} /> : null}
 
       <div className="space-y-2">
         <h2 className="text-lg font-semibold">Installation</h2>
