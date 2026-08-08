@@ -81,9 +81,12 @@ describe("UsageDashboard", () => {
   it("renders the model-breakdown state with every model's numbers available as text, not only chart geometry", () => {
     render(<UsageDashboard periods={PERIODS} data={DATA} defaultPeriod="7d" />);
 
-    // Any decorative chart must not be the only place the data lives.
+    // The decorative chart must exist AND be excluded from the a11y tree —
+    // unconditionally, so this fails (not skips) if the chart wrapper is ever
+    // renamed or removed while the chart itself still renders.
     const chart = document.querySelector('[data-slot="usage-dashboard-model-chart"]');
-    if (chart) expect(chart).toHaveAttribute("aria-hidden", "true");
+    expect(chart).toBeInTheDocument();
+    expect(chart).toHaveAttribute("aria-hidden", "true");
 
     const table = screen.getByRole("table");
     const rows = within(table).getAllByRole("row");
