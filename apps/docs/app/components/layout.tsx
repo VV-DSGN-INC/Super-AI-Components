@@ -16,9 +16,7 @@ export default function ComponentsLayout({ children }: { children: React.ReactNo
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 min-w-0">
-        <div className="mx-auto max-w-3xl p-8">{children}</div>
-      </main>
+      <main className="flex-1 min-w-0">{children}</main>
     </div>
   );
 }

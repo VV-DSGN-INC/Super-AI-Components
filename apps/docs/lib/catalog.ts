@@ -8,7 +8,7 @@ export interface CatalogItem {
   group: "Primitives" | "Components" | "Blocks";
 }
 
-const ORDER = { primitive: 0, component: 1, block: 2 } as const;
+export const ORDER = { primitive: 0, component: 1, block: 2 } as const;
 
 export const groupFor = (layer: ManifestItem["layer"]): CatalogItem["group"] =>
   layer === "primitive" ? "Primitives" : layer === "block" ? "Blocks" : "Components";
