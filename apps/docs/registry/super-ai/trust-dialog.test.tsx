@@ -30,6 +30,11 @@ describe("TrustDialog", () => {
     expect(
       screen.queryByText(/This may run code or access data from a source you didn't create/),
     ).not.toBeInTheDocument();
+
+    // role="note", not the vendored Alert's default role="alert": the
+    // AlertDialog already owns the assertive announcement on open, so a
+    // nested assertive region here would double-announce the same moment.
+    expect(screen.getByRole("note")).toHaveTextContent("This template reads your clipboard on install.");
   });
 
   it("renders the trust-checkbox state, unchecked by default with a real accessible name", () => {

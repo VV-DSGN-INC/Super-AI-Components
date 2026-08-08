@@ -43,12 +43,13 @@ export const Warning: Story = {
   },
 };
 
-/** Continue starts disabled and only clears once the checkbox is ticked — the load-bearing safety property. */
+/** Continue starts disabled and only clears once the checkbox is ticked — shown here already ticked, since the other three stories all show it unchecked. */
 export const TrustCheckbox: Story = {
   args: {
     open: true,
     preview: TEMPLATE_PREVIEW,
     trustLabel: "I've reviewed this template and trust the source",
+    defaultTrusted: true,
   },
 };
 
