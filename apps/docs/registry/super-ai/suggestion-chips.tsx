@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /**
@@ -102,15 +103,26 @@ export interface SuggestionChipsOverflowProps extends Omit<React.ComponentProps<
  * The overflow resolution the spec calls for: "a half-visible chip reads as
  * a layout bug." A row that runs out of room does not truncate its last
  * `SuggestionChip` mid-render — it stops short and appends this real `<a>`
- * instead, styled to match but semantically a link, not a prompt. Point
- * `href` at wherever the rest of the suggestions live.
+ * instead, styled to match but semantically a link, not a prompt.
+ *
+ * The class list is derived from `buttonVariants({ variant: "outline", size:
+ * "sm" })` — the exact variant/size `Suggestion` renders with — plus the same
+ * `rounded-full px-4` override `Suggestion` itself applies (see
+ * suggestion.tsx). That is deliberate, not decorative: deriving from the
+ * shared variant means this link inherits every `dark:` override
+ * (`dark:border-input`, `dark:bg-input/30`, `dark:hover:bg-input/50`) and the
+ * design system's real focus ring (`focus-visible:ring-3 ring-ring/50` plus
+ * `focus-visible:border-ring`) automatically, so it never drifts from what a
+ * real chip renders as the design system evolves. Point `href` at wherever
+ * the rest of the suggestions live.
  */
 function SuggestionChipsOverflow({ count, children, className, ...props }: SuggestionChipsOverflowProps) {
   return (
     <a
       data-slot="suggestion-chips-overflow"
       className={cn(
-        "border-border text-foreground hover:bg-muted focus-visible:ring-ring inline-flex shrink-0 items-center rounded-full border px-4 py-1.5 text-[0.8rem] font-medium underline-offset-4 transition-colors hover:underline focus-visible:ring-2 focus-visible:outline-none",
+        buttonVariants({ variant: "outline", size: "sm" }),
+        "cursor-pointer rounded-full px-4 underline-offset-4 hover:underline",
         className,
       )}
       {...props}
