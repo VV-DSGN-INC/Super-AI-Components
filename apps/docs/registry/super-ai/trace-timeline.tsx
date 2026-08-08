@@ -57,14 +57,24 @@ import { cn } from "@/lib/utils";
  *
  * Rows expand in place into whatever `renderDetail` returns — the seam N5
  * `run-inspector` is meant to fill. This component never imports N5: when a
- * row opens it calls `renderDetail(span)` with exactly that row's own
- * `TraceSpan` (id, name, kind, status, timing, retryOf, error) and renders
- * whatever comes back inside `data-slot="trace-timeline-row-detail"`. A host
- * that wants the real inspector looks up its own richer per-run record (I/O,
- * tokens, cost, cache hit/miss — N5's job, not this component's) by
- * `span.id` and renders `<RunInspector .../>` from that lookup. Omitting
- * `renderDetail` falls back to a minimal built-in summary, so the component
- * still demonstrates the `expanded` state on its own.
+ * row opens it calls `renderDetail(span, retriedBy)` with exactly that row's
+ * own `TraceSpan` (id, name, kind, status, timing, retryOf, error) and
+ * renders whatever comes back inside `data-slot="trace-timeline-row-detail"`.
+ * A host that wants the real inspector looks up its own richer per-run
+ * record (I/O, tokens, cost, cache hit/miss — N5's job, not this
+ * component's) by `span.id` and renders `<RunInspector .../>` from that
+ * lookup. Omitting `renderDetail` falls back to a minimal built-in summary,
+ * so the component still demonstrates the `expanded` state on its own.
+ *
+ * `retryOf` only points backward (a span records what it retried); N5's spec
+ * requires the opposite direction too — "the error tab explains what was
+ * retried and whether it worked". Rather than document a convention for a
+ * host to independently reason out (scanning `spans` for `s.retryOf ===
+ * span.id`), `computeRetriedBy` derives the forward pointer once, here, and
+ * `renderDetail`'s second argument hands it straight to whichever component
+ * fills the seam: `{ id, name, status }` of the span that retried this one,
+ * or `undefined` when nothing did. N5's implementer never has to know the
+ * convention exists.
  */
 
 type TraceSpanStatus = "ok" | "error" | "running";
@@ -91,6 +101,18 @@ interface TraceSpan {
   retryOf?: string;
   /** Shown in visible text for `status: "error"` — never colour alone. */
   error?: string;
+}
+
+/**
+ * The forward half of a retry relationship — handed to `renderDetail` for
+ * the span that `id` retried. See rule 2 and the `computeRetriedBy` doc
+ * comment below for why this exists instead of a documented lookup
+ * convention.
+ */
+interface TraceSpanRetryOutcome {
+  id: string;
+  name: string;
+  status: TraceSpanStatus;
 }
 
 interface TraceTimelineBar {
@@ -169,6 +191,27 @@ function computeAttemptNumbers(spans: TraceSpan[]): Map<string, number> {
   return attempts;
 }
 
+/**
+ * The forward half `retryOf` doesn't give you: for every span that *was*
+ * retried, who retried it and how that attempt turned out. N5's spec needs
+ * this ("what was retried and whether it worked") and `TraceSpan` has no
+ * field for it — deriving it here, once, means `renderDetail` can hand it
+ * straight over instead of documenting a scan-`spans`-yourself convention.
+ * If more than one span retries the same original (concurrent retries,
+ * unusual but not disallowed), the earliest-starting one wins — it's the
+ * immediate next attempt, which is what "whether it worked" is asking about.
+ */
+function computeRetriedBy(spans: TraceSpan[]): Map<string, TraceSpanRetryOutcome> {
+  const retries = spans.filter((span) => span.retryOf).sort((a, b) => a.startMs - b.startMs);
+  const retriedBy = new Map<string, TraceSpanRetryOutcome>();
+  for (const span of retries) {
+    if (!retriedBy.has(span.retryOf!)) {
+      retriedBy.set(span.retryOf!, { id: span.id, name: span.name, status: span.status });
+    }
+  }
+  return retriedBy;
+}
+
 const STATUS_LABEL: Record<TraceSpanStatus, string> = {
   ok: "Succeeded",
   error: "Failed",
@@ -189,7 +232,13 @@ function statusIcon(status: TraceSpanStatus) {
   return <CheckCircle2 aria-hidden className="size-4" />;
 }
 
-function TraceTimelineDefaultDetail({ span }: { span: TraceSpan }) {
+function TraceTimelineDefaultDetail({
+  span,
+  retriedBy,
+}: {
+  span: TraceSpan;
+  retriedBy?: TraceSpanRetryOutcome;
+}) {
   return (
     <dl
       data-slot="trace-timeline-row-detail-fallback"
@@ -207,6 +256,14 @@ function TraceTimelineDefaultDetail({ span }: { span: TraceSpan }) {
           <dd className="text-destructive">{span.error}</dd>
         </>
       ) : null}
+      {retriedBy ? (
+        <>
+          <dt className="font-medium">Retried by</dt>
+          <dd data-slot="trace-timeline-row-detail-retried-by">
+            {`${retriedBy.name} — ${STATUS_LABEL[retriedBy.status]}`}
+          </dd>
+        </>
+      ) : null}
     </dl>
   );
 }
@@ -215,15 +272,17 @@ interface TraceTimelineRowProps {
   span: TraceSpan;
   bar: TraceTimelineBar;
   attempt?: number;
+  retriedBy?: TraceSpanRetryOutcome;
   expanded: boolean;
   onOpenChange: (open: boolean) => void;
-  renderDetail?: (span: TraceSpan) => React.ReactNode;
+  renderDetail?: (span: TraceSpan, retriedBy?: TraceSpanRetryOutcome) => React.ReactNode;
 }
 
 function TraceTimelineRow({
   span,
   bar,
   attempt,
+  retriedBy,
   expanded,
   onOpenChange,
   renderDetail,
@@ -321,7 +380,11 @@ function TraceTimelineRow({
             <h4 id={detailHeadingId} className="sr-only">
               {span.name} detail
             </h4>
-            {renderDetail ? renderDetail(span) : <TraceTimelineDefaultDetail span={span} />}
+            {renderDetail ? (
+              renderDetail(span, retriedBy)
+            ) : (
+              <TraceTimelineDefaultDetail span={span} retriedBy={retriedBy} />
+            )}
           </div>
         </CollapsibleContent>
       </Collapsible>
@@ -337,10 +400,11 @@ interface TraceTimelineProps extends Omit<React.ComponentProps<"div">, "onSelect
   onExpandedChange?: (id: string | null) => void;
   /**
    * Renders the body of the expanded row — the seam N5 `run-inspector` fills.
-   * See the file-header comment for the exact contract. Falls back to a
-   * minimal built-in summary when omitted.
+   * The second argument is who (if anyone) retried this span and how that
+   * attempt turned out — see `computeRetriedBy` and the file-header comment.
+   * Falls back to a minimal built-in summary when omitted.
    */
-  renderDetail?: (span: TraceSpan) => React.ReactNode;
+  renderDetail?: (span: TraceSpan, retriedBy?: TraceSpanRetryOutcome) => React.ReactNode;
 }
 
 function TraceTimeline({
@@ -380,6 +444,7 @@ function TraceTimeline({
   }, [ordered]);
 
   const attempts = React.useMemo(() => computeAttemptNumbers(spans), [spans]);
+  const retriedBy = React.useMemo(() => computeRetriedBy(spans), [spans]);
 
   return (
     <div
@@ -397,6 +462,7 @@ function TraceTimeline({
               span={span}
               bar={bars.get(span.id)!}
               attempt={attempts.get(span.id)}
+              retriedBy={retriedBy.get(span.id)}
               expanded={resolvedExpandedId === span.id}
               onOpenChange={(open) => handleOpenChange(span.id, open)}
               renderDetail={renderDetail}
@@ -408,5 +474,12 @@ function TraceTimeline({
   );
 }
 
-export { TraceTimeline, formatDurationMs, traceTimelineLayout };
-export type { TraceSpan, TraceSpanKind, TraceSpanStatus, TraceTimelineBar, TraceTimelineProps };
+export { TraceTimeline, computeRetriedBy, formatDurationMs, traceTimelineLayout };
+export type {
+  TraceSpan,
+  TraceSpanKind,
+  TraceSpanRetryOutcome,
+  TraceSpanStatus,
+  TraceTimelineBar,
+  TraceTimelineProps,
+};

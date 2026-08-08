@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { TraceTimeline, traceTimelineLayout, type TraceSpan } from "./trace-timeline";
 
 const rows = () => Array.from(document.querySelectorAll<HTMLElement>('[data-slot="trace-timeline-row"]'));
@@ -84,6 +84,39 @@ describe("TraceTimeline", () => {
     // The failed attempt's own row survives, error text and all — it was
     // never overwritten by the retry that came after it.
     expect(within(list[0]).getByText(/Timed out/)).toBeInTheDocument();
+  });
+
+  it("hands renderDetail the retry outcome for a failed attempt's row — the N5 forward pointer", () => {
+    const spans: TraceSpan[] = [
+      { id: "call-1", name: "Call LLM", status: "error", startMs: 0, durationMs: 380, error: "Timed out" },
+      { id: "call-2", name: "Call LLM", status: "ok", retryOf: "call-1", startMs: 380, durationMs: 640 },
+    ];
+    const renderDetail = vi.fn(() => <div>detail</div>);
+
+    // Expanding the span that WAS retried is told who retried it and how
+    // that went — without this, a host would have to scan `spans` for
+    // `retryOf` itself, the exact convention this contract exists to avoid.
+    render(<TraceTimeline spans={spans} defaultExpandedId="call-1" renderDetail={renderDetail} />);
+    expect(renderDetail).toHaveBeenCalledWith(expect.objectContaining({ id: "call-1" }), {
+      id: "call-2",
+      name: "Call LLM",
+      status: "ok",
+    });
+
+    // Expanding a span nothing retried gets `undefined`, not a placeholder.
+    renderDetail.mockClear();
+    render(<TraceTimeline spans={spans} defaultExpandedId="call-2" renderDetail={renderDetail} />);
+    expect(renderDetail).toHaveBeenCalledWith(expect.objectContaining({ id: "call-2" }), undefined);
+  });
+
+  it("shows the retry outcome in the built-in detail summary when no renderDetail is given", () => {
+    const spans: TraceSpan[] = [
+      { id: "call-1", name: "Call LLM", status: "error", startMs: 0, durationMs: 380, error: "Timed out" },
+      { id: "call-2", name: "Call LLM", status: "ok", retryOf: "call-1", startMs: 380, durationMs: 640 },
+    ];
+    render(<TraceTimeline spans={spans} defaultExpandedId="call-1" />);
+
+    expect(screen.getByText("Call LLM — Succeeded")).toBeInTheDocument();
   });
 
   it("positions concurrent spans so their bars overlap rather than stack", () => {

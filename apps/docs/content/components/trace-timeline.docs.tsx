@@ -43,7 +43,7 @@ export const TraceTimelineDocs: ComponentDocs = {
     { slot: "trace-timeline-row-detail", note: "The CollapsibleContent an open row expands into." },
   ],
   usage:
-    "Reach for it once a run has more than a couple of steps and someone needs to reconstruct what actually happened, not just what was attempted. Feed it a flat `spans` array with `startMs`/`durationMs` in milliseconds from the start of the run — it derives the shared axis itself, so never pre-stack or pre-offset spans before handing them in. When a step retries, add the retry as a second span whose `retryOf` points at the id of the one it retried; never mutate or remove the failed attempt to make room for it. Pass `renderDetail` to fill an expanded row with the real per-run detail (I/O, tokens, cost) once that surface exists on your side — omit it and a minimal built-in summary is used instead.",
+    "Reach for it once a run has more than a couple of steps and someone needs to reconstruct what actually happened, not just what was attempted. Feed it a flat `spans` array with `startMs`/`durationMs` in milliseconds from the start of the run — it derives the shared axis itself, so never pre-stack or pre-offset spans before handing them in. When a step retries, add the retry as a second span whose `retryOf` points at the id of the one it retried; never mutate or remove the failed attempt to make room for it. Pass `renderDetail` to fill an expanded row with the real per-run detail (I/O, tokens, cost) once that surface exists on your side — omit it and a minimal built-in summary is used instead. `renderDetail(span, retriedBy)`'s second argument is already resolved for you: `undefined` for a span nothing retried, or `{ id, name, status }` of whichever span retried it — no need to scan `spans` for a matching `retryOf` yourself.",
   dos: [
     {
       text: "Let a bar's position come from startMs/durationMs so two calls that actually overlapped visibly overlap.",
@@ -67,6 +67,7 @@ export const TraceTimelineDocs: ComponentDocs = {
   pitfalls: [
     "Deriving the timeline's total span from array order or index instead of startMs + durationMs — the moment a call starts after an earlier one has already finished, index-based layout stops matching reality.",
     "Treating an errored row as done once it's red. The visible \"Failed: <reason>\" text is the real signal — colour alone fails anyone who can't see it.",
-    "Wiring `renderDetail` to assume N5 `run-inspector`'s exact prop shape before that component exists — this component only ever hands back the row's own `TraceSpan`; the richer per-run record N5 needs is the host's to look up by `span.id`.",
+    "Wiring `renderDetail` to assume N5 `run-inspector`'s exact prop shape before that component exists — this component only ever hands back the row's own `TraceSpan` plus its resolved `retriedBy`; the richer per-run record N5 needs (I/O, tokens, cost, cache hit/miss) is still the host's to look up by `span.id`.",
+    'Re-deriving "was this span retried, and how did it go" by scanning `spans` for a matching `retryOf` at the call site — `renderDetail`\'s second argument already is that answer, resolved once by the component itself.',
   ],
 };
