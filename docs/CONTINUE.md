@@ -57,25 +57,33 @@ alongside its spec anchor, regions and `consumes` list. It supplements
    files. The fan-out the plan assumed needs isolation to actually happen, and
    the win is far larger for twelve shells than it was for seven leaves.
 
-### Known red gate — deliberately not fixed
+### The smoke gate was broken and is now fixed
 
-`pnpm --filter docs exec playwright test` (the smoke gate, run by CI at
-`.github/workflows/ci.yml:23`) **fails with 6 errors, and failed before this
-phase too.** Four are on components this work never touched
-(`recommendation-card`, `voice-clone-recorder`, `asset-detail`,
-`template-detail`); two are new instances of the same cause (`trust-dialog`,
-`permission-prompt`).
+`e2e/smoke.spec.ts` had been failing for six components — four of which predate
+this phase — and the cause was the gate, not the components. Line 19 asserted
+the `h1` via `getByRole`, but that is only a readiness proxy; the assertion the
+test is named for is `expect(errors).toEqual([])` on the next line. `getByRole`
+queries the accessibility tree, and any demo opening a Base UI modal on mount
+makes the library set `aria-hidden` on the page shell — removing the `h1` from
+that tree while leaving it in the DOM. The gate was accidentally testing "this
+demo does not open a modal on mount". It also failed *differently* per
+environment: six locally, four on CI.
 
-The root cause is the gate, not the components. `e2e/smoke.spec.ts:19` asserts
-the `h1` via `getByRole`, but that is only a readiness proxy — the real
-assertion is `expect(errors).toEqual([])` on the next line. Any demo that opens
-a Base UI modal on mount causes `aria-hidden` on the page shell, removing the
-`h1` from the accessibility tree. So the gate accidentally tests "this demo
-does not open a modal on mount".
+Now located by tag: **119/119 pass.**
 
-Shipping as-is was a deliberate call rather than an oversight. **Note also that
-this gate was missing from the Phase 1 plan's gate list** — per-task gate lists
-must mirror `ci.yml`, or a gate gets skipped for a whole phase.
+Two things worth keeping:
+
+- **A green run proved nothing here.** The console-error assertion was verified
+  by compiling a deliberate `console.error` into a demo and watching the test
+  fail. The first attempt at that probe passed misleadingly, because
+  `playwright.config.ts` runs `pnpm start` — `next start` serves the *prebuilt*
+  output, so editing source without rebuilding tests a stale app.
+- **This gate was missing from the Phase 1 plan's gate list**, which is how it
+  went unrun for a whole phase. Worse, because GitHub Actions stops at the first
+  failing step, its failure silently prevented the **Storybook a11y gate** and
+  the **consumer install test** from ever running in CI — the two that verify
+  this phase's most novel work. Per-task gate lists must mirror `ci.yml`, and a
+  red gate early in a pipeline hides everything behind it.
 
 ---
 
@@ -522,10 +530,11 @@ The gates are the contract. All of these must pass before a batch lands:
 - `pnpm test` — 1117 at handoff
 - `pnpm build` — 121 pages at handoff
 - `pnpm test:stories` — 350 at handoff, **blocking**, run twice to rule out flake
-- `pnpm --filter docs exec playwright test` — the smoke gate. **CI runs this
-  (`ci.yml:23`) and it is currently red; see §1.** It was missing from the
-  Phase 1 plan's gate list, which is how a gate goes unrun for a whole phase.
-  Any per-task gate list must mirror `ci.yml`.
+- `pnpm --filter docs exec playwright test` — the smoke gate, 119 at handoff.
+  **CI runs this (`ci.yml:23`) and it was missing from the Phase 1 plan's gate
+  list**, which is how a gate goes unrun for a whole phase — and, because the
+  job stops at the first failure, how the two steps behind it never ran either.
+  Any per-task gate list must mirror `ci.yml`, in `ci.yml`'s order.
 
 A component is not done because it renders. It is done when it composes the
 right primitives, its tests pin the spec's load-bearing sentences, its guidance
