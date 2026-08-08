@@ -131,6 +131,15 @@ function RunInspectorCopyButton({ label, value }: { label: string; value: string
       type="button"
       variant="outline"
       size="sm"
+      // `aria-label` intentionally stays "Copy … JSON" through the "Copied"
+      // confirmation rather than swapping to "Copied" itself: a focused
+      // button's accessible-name change isn't reliably re-announced by
+      // screen readers without a live region, so a name that flips silently
+      // would just as often go unnoticed as a static one. The visible
+      // "Copied" text is sighted-only confirmation; a proper accessible
+      // announcement of the copy event belongs in an `aria-live`/`role`
+      // region, which this control doesn't have — a real fix, not a
+      // one-line label swap.
       aria-label={label}
       onClick={() => {
         void navigator.clipboard?.writeText(value).then(() => {
@@ -294,9 +303,16 @@ function RunInspector({
           <TabsTrigger value="output">Output</TabsTrigger>
           <TabsTrigger value="metadata">Metadata</TabsTrigger>
           <TabsTrigger value="error">
-            Error
+            {/* The dot alone would signal error presence by colour before the
+                tab is ever opened — "never convey status by colour alone"
+                applies at first contact, not only inside the panel. The dot
+                stays decorative; the full accessible name carries the word. */}
+            <span aria-hidden={error ? "true" : undefined}>Error</span>
             {error ? (
-              <span aria-hidden className="bg-destructive ml-1 inline-block size-1.5 rounded-full" />
+              <>
+                <span aria-hidden className="bg-destructive ml-1 inline-block size-1.5 rounded-full" />
+                <span className="sr-only">Error, this run failed</span>
+              </>
             ) : null}
           </TabsTrigger>
         </TabsList>

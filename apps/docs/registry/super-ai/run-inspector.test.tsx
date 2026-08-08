@@ -41,13 +41,16 @@ describe("RunInspector", () => {
     const panel = document.querySelector<HTMLElement>('[data-run-inspector-panel-id="metadata"]')!;
     expect(within(panel).getByText("gpt-4o-mini")).toBeInTheDocument();
 
-    // Cache hit/miss must sit beside cost — same stat row, not a separate
-    // surface a reader has to go hunting for.
+    // Cache hit/miss must sit beside cost — inside the same stat-readout
+    // `dd` as the cost value, not merely somewhere later in the panel. In
+    // stat-readout.tsx, `dt` and `dd` are siblings under `dl`, so the `dd`
+    // that actually holds the cost value is the label's next sibling, not
+    // an ancestor reachable via `.closest()`.
     const costLabel = within(panel).getByText("Cost");
-    const costRow = costLabel.closest("dd")?.parentElement ?? costLabel.parentElement!;
-    const costValue = within(costRow as HTMLElement).getByText(/0\.42/);
-    const cacheValue = within(costRow as HTMLElement).getByText("Cache hit");
-    expect(costValue.compareDocumentPosition(cacheValue) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const costRow = costLabel.nextElementSibling as HTMLElement;
+    expect(costRow.tagName).toBe("DD");
+    expect(within(costRow).getByText(/0\.42/)).toBeInTheDocument();
+    expect(within(costRow).getByText("Cache hit")).toBeInTheDocument();
   });
 
   it("renders the error-tab state with the error stated in visible text, never colour alone", () => {
@@ -91,6 +94,20 @@ describe("RunInspector", () => {
     expect(within(panel).getByText(/Retried by:/).parentElement?.textContent).toBe(
       "Retried by: Call LLM (retry) — Succeeded",
     );
+  });
+
+  it("names the error state on the tab trigger itself, not only inside the panel", () => {
+    render(<RunInspector input={INPUT} error="Provider timed out after 30s" />);
+
+    // First contact is the tab strip, before a reader ever opens the error
+    // panel — the presence dot there must not be the only signal.
+    expect(screen.getByRole("tab", { name: /error/i })).toHaveAccessibleName("Error, this run failed");
+  });
+
+  it("names the error tab trigger with just its label when nothing errored", () => {
+    render(<RunInspector input={INPUT} />);
+
+    expect(screen.getByRole("tab", { name: "Error" })).toHaveAccessibleName("Error");
   });
 
   it("passes className through", () => {
