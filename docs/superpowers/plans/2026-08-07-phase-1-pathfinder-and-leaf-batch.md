@@ -522,27 +522,33 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 
 - [ ] **Step 1: Write the failing test**
 
+The grouping must be tested as a **pure function of layer**, not by filtering the manifest for
+shipped blocks — no block is shipped until Task 5, so a manifest-driven assertion would iterate an
+empty array and assert nothing. Export the mapping so it can be tested directly.
+
 Create `apps/docs/lib/catalog.test.ts`:
 
 ```ts
 import { describe, expect, it } from "vitest";
 
-import { CATALOG_ITEMS } from "./catalog";
+import { CATALOG_ITEMS, groupFor } from "./catalog";
 import { MANIFEST } from "./catalog.manifest";
 
-describe("CATALOG_ITEMS", () => {
-  it("groups blocks separately from components", () => {
-    const blockNames = MANIFEST.filter((i) => i.layer === "block" && i.status === "shipped").map(
-      (i) => i.name,
-    );
-    for (const name of blockNames) {
-      expect(CATALOG_ITEMS.find((i) => i.name === name)?.group).toBe("Blocks");
-    }
+describe("groupFor", () => {
+  it("maps every layer to its own group", () => {
+    expect(groupFor("primitive")).toBe("Primitives");
+    expect(groupFor("component")).toBe("Components");
+    expect(groupFor("block")).toBe("Blocks");
   });
+});
 
-  it("still groups primitives and components as before", () => {
-    const primitive = MANIFEST.find((i) => i.layer === "primitive" && i.status === "shipped")!;
-    expect(CATALOG_ITEMS.find((i) => i.name === primitive.name)?.group).toBe("Primitives");
+describe("CATALOG_ITEMS", () => {
+  it("assigns each shipped item the group its layer maps to", () => {
+    const shipped = MANIFEST.filter((i) => i.status === "shipped");
+    expect(shipped.length).toBeGreaterThan(0);
+    for (const item of shipped) {
+      expect(CATALOG_ITEMS.find((i) => i.name === item.name)?.group).toBe(groupFor(item.layer));
+    }
   });
 });
 ```
@@ -553,21 +559,28 @@ describe("CATALOG_ITEMS", () => {
 cd apps/docs && pnpm vitest run lib/catalog.test.ts
 ```
 
-Expected: the primitives assertion passes; the blocks assertion passes **vacuously** for now (no
-block is shipped yet) and starts biting in Task 5. Confirm the file runs green before moving on —
-this test is the regression guard, not the driver.
+Expected: FAIL — `groupFor` is not exported yet. Both assertions are real from the first run: the
+`groupFor` test covers `"block"` directly, and the `CATALOG_ITEMS` test guards against an empty
+manifest with `toBeGreaterThan(0)` so it cannot pass vacuously.
 
 - [ ] **Step 3: Add the group**
 
-In `apps/docs/lib/catalog.ts`, widen the union at line 7 and the mapping at line 18:
+In `apps/docs/lib/catalog.ts`, widen the union at line 7, export the mapping, and use it at line 18:
 
 ```ts
   group: "Primitives" | "Components" | "Blocks";
 ```
 
 ```ts
-    group: i.layer === "primitive" ? "Primitives" : i.layer === "block" ? "Blocks" : "Components",
+export const groupFor = (layer: ManifestItem["layer"]): CatalogItem["group"] =>
+  layer === "primitive" ? "Primitives" : layer === "block" ? "Blocks" : "Components";
 ```
+
+```ts
+    group: groupFor(i.layer),
+```
+
+`ManifestItem` will need importing from `./manifest-types` if it is not already.
 
 - [ ] **Step 4: Render blocks full-bleed**
 
