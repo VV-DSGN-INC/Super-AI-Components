@@ -13,7 +13,38 @@ const meta: Meta<typeof EnvStatus> = {
 export default meta;
 type Story = StoryObj<typeof EnvStatus>;
 
-export const Ok: Story = {};
-export const Degraded: Story = {};
-export const KeyInvalid: Story = {};
-export const NotRunning: Story = {};
+/** Reachable. Nothing to do — the remedy for the state where nothing is wrong. */
+export const Ok: Story = {
+  args: {
+    label: "Model providers",
+    providers: [{ id: "openai", name: "OpenAI", state: "ok", checkedAt: "Checked 30 seconds ago" }],
+  },
+};
+
+/** Slower than usual, but succeeding. The remedy is to wait — never to touch a credential. */
+export const Degraded: Story = {
+  args: {
+    label: "Model providers",
+    providers: [{ id: "anthropic", name: "Anthropic", state: "degraded", checkedAt: "Checked just now" }],
+  },
+};
+
+/** The provider answered and rejected the credential — the user's problem to fix. */
+export const KeyInvalid: Story = {
+  args: {
+    label: "Model providers",
+    providers: [
+      { id: "replicate", name: "Replicate", state: "key-invalid", checkedAt: "Checked 2 minutes ago" },
+    ],
+  },
+};
+
+/** Nothing answered — no local runtime is up. The remedy is to start it locally. */
+export const NotRunning: Story = {
+  args: {
+    label: "Model providers",
+    providers: [
+      { id: "llama", name: "Llama 3.1 8B (local)", state: "not-running", checkedAt: "Checked 1 minute ago" },
+    ],
+  },
+};
