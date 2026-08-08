@@ -1973,6 +1973,15 @@ export const MANIFEST: ManifestItem[] = [
       "paywall-message",
       "empty-state",
     ],
+    // "Composes AI Elements' conversation and message rather than
+    // reimplementing them" (block-specs.md O2). Neither is a catalog
+    // component, so they go in `external` — absolute URLs into another
+    // vendor's registry, spread into registryDependencies verbatim, the same
+    // route C2 `suggestion-chips` takes. Their own npm needs (`ai`,
+    // `streamdown`, `use-stick-to-bottom`) arrive with them and are
+    // deliberately NOT duplicated in `npm` below, which is only what
+    // chat-shell.tsx itself imports.
+    external: ["https://registry.ai-sdk.dev/conversation.json", "https://registry.ai-sdk.dev/message.json"],
     npm: ["lucide-react"],
     regions: ["sidebar", "topbar", "message-stream", "artifact-cards", "composer"],
     states: [],

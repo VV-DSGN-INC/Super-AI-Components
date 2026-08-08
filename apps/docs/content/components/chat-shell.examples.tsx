@@ -61,7 +61,7 @@ export function RunningJobCarriesAWord() {
   );
 }
 
-/** Don&apos;t — motion is the only signal, and it never reaches a screen reader. */
+/** Don't — motion is the only signal, and it never reaches a screen reader. */
 export function RunningJobIsOnlyASpinner() {
   return (
     <SidebarFrame>
@@ -97,7 +97,7 @@ export function ArtifactsInsideTheStream() {
   );
 }
 
-/** Don&apos;t — artifacts exiled to a second tab, severed from the turn that made them. */
+/** Don't — artifacts exiled to a second tab, severed from the turn that made them. */
 export function ArtifactsBehindTheirOwnTab() {
   return (
     <div className="w-full max-w-lg rounded-lg border">

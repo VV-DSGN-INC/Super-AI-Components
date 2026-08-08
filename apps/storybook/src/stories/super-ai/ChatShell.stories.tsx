@@ -128,10 +128,30 @@ export const Empty: Story = {
  * swaps itself for a drawer, so the topbar trigger becomes the only way in and
  * the stream, artifacts and composer take the full width. Mandatory export for
  * the block contract — a shell is a layout, and layout is what breaks.
+ *
+ * `globals.viewport.value` is the Storybook 9 API. `parameters.viewport
+ * .defaultViewport` — which this story used first, and which reads like the
+ * documented API in a lot of older material — was removed in 9 and does
+ * nothing at all; a story carrying it renders at full width while looking
+ * configured. `options` is declared explicitly rather than relying on a
+ * built-in list, so the selection cannot silently resolve to nothing.
+ *
+ * KNOWN LIMIT: this resizes the canvas in the Storybook UI only. The vitest
+ * runner has no manager to resize an iframe, so `pnpm test:stories` renders
+ * and axe-checks this story at the browser's default width. See the friction
+ * log in task-5-report.md — the responsive layout here is verified by hand,
+ * not by a gate.
  */
 export const Responsive: Story = {
   args: FULL_ARGS,
-  parameters: { viewport: { defaultViewport: "mobile1" } },
+  parameters: {
+    viewport: {
+      options: {
+        mobile: { name: "Mobile", styles: { width: "375px", height: "812px" }, type: "mobile" },
+      },
+    },
+  },
+  globals: { viewport: { value: "mobile" } },
 };
 
 /** The sidebar as a job queue: two background runs visible from another thread. */

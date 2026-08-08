@@ -103,6 +103,48 @@ describe("ChatShell", () => {
     expect(screen.getByText("Audit my brand")).toBeVisible();
   });
 
+  // "Composes AI Elements' conversation and message rather than
+  // reimplementing them." There is no data-slot to key on upstream, and the
+  // one observable difference between composing `Message` and hand-rolling a
+  // bubble is the `is-user`/`is-assistant` class it stamps — which every
+  // AI Elements surface styles against. Asserting a class is normally the
+  // wrong instinct; here it is the only thing that can catch the exact
+  // regression this block exists to prevent.
+  it("composes AI Elements' Message rather than a hand-rolled bubble", () => {
+    render(
+      <ChatShell
+        messages={[
+          { id: "m1", role: "user", content: "Audit my brand" },
+          { id: "m2", role: "assistant", content: "Here is the audit." },
+        ]}
+      />,
+    );
+    expect(document.querySelector('[data-message-id="m1"]')!.className).toContain("is-user");
+    expect(document.querySelector('[data-message-id="m2"]')!.className).toContain("is-assistant");
+  });
+
+  // AI Elements' Conversation supplies role="log" and the stick-to-bottom
+  // behaviour; the shell must not lose the semantics by wrapping it.
+  it("keeps the stream a log region after composing Conversation", () => {
+    const { container } = render(<ChatShell />);
+    expect(container.querySelector('[data-region="message-stream"]')).toHaveAttribute("role", "log");
+  });
+
+  // N1 rates the agent's answer. There is nothing to rate about your own
+  // message, so the shell gates it rather than trusting every caller to.
+  it("renders N1 feedback on assistant turns only", () => {
+    render(
+      <ChatShell
+        messages={[
+          { id: "m1", role: "user", content: "Audit my brand", feedback: { state: "idle" } },
+          { id: "m2", role: "assistant", content: "Here is the audit.", feedback: { state: "idle" } },
+        ]}
+      />,
+    );
+    expect(document.querySelector('[data-message-id="m1"] [data-slot="feedback"]')).toBeNull();
+    expect(document.querySelector('[data-message-id="m2"] [data-slot="feedback"]')).not.toBeNull();
+  });
+
   // "M5 lives in the stream, which is why monetization cannot be deferred."
   // The paywall is a turn in the conversation, not an interstitial over it.
   it("renders the paywall as the last turn inside the stream", () => {

@@ -16,7 +16,7 @@ import {
  */
 export const ChatShellDocs: ComponentDocs = {
   whatItIs:
-    "The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue, a title bar, a scrolling conversation, the artifacts that conversation produced, and a composer pinned to the bottom. It is a block, not a component — it owns arrangement and nothing else. Every region is filled by a component that already ships in this registry, and each of them keeps its own props, its own state model and its own accessibility contract.",
+    "The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue, a title bar, a scrolling conversation, the artifacts that conversation produced, and a composer pinned to the bottom. It is a block, not a component — it owns arrangement and nothing else. Every region is filled by something that already ships: eleven components from this registry, plus AI Elements' own conversation and message for the stream and its turns. Each of them keeps its own props, its own state model and its own accessibility contract.",
   whyItMatters:
     "Manus, Claude and ChatGPT converge on the same five regions in the same positions, which is the strongest signal on the reference board that this is an archetype rather than one product's layout. Two of its decisions are the ones worth copying. The sidebar is a job queue as well as a history, so work that is still running stays visible while you read something else — without that, a background task is invisible the moment you navigate away from it. And artifacts are cards inside the stream rather than a separate destination, so the conversation stays the index of everything it produced; splitting them apart is what turns a workspace back into a chat window with a downloads folder attached.",
   evidence: ["Manus", "Claude", "ChatGPT"],
@@ -31,7 +31,7 @@ export const ChatShellDocs: ComponentDocs = {
     },
     {
       slot: 'data-region="message-stream"',
-      note: "The scrolling conversation. role=log, named, and its own tab stop.",
+      note: "AI Elements' Conversation. role=log, named, its own tab stop, sticks to bottom.",
     },
     {
       slot: 'data-region="artifact-cards"',
@@ -42,7 +42,10 @@ export const ChatShellDocs: ComponentDocs = {
       note: "D1 media-prompt-bar with D3 chips and D4 modes, N3 underneath.",
     },
     { slot: "chat-shell", note: "Root. Contains its own fixed descendants so the shell can be embedded." },
-    { slot: "chat-shell-turn", note: "One turn. Carries data-message-id and data-role." },
+    {
+      slot: "chat-shell-turn",
+      note: "One turn — AI Elements' Message. Carries data-message-id and data-role.",
+    },
     {
       slot: "chat-shell-thread-running",
       note: "The job-queue status line under a thread that is still working.",
@@ -71,7 +74,9 @@ export const ChatShellDocs: ComponentDocs = {
     },
   ],
   pitfalls: [
-    "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a panel, a preview or an app region — if you re-wrap or restyle the root, keep that containment or the sidebar will pin itself to the browser's left edge.",
+    "AI Elements is written against Radix-flavoured shadcn and this registry is Base UI, so the vendored `message` needed two local `asChild` → `render=` edits to typecheck. Installing chat-shell through shadcn fetches AI Elements' file from its own registry, not this repo's patched copy — in a Base UI project, expect to make the same two edits.",
+    "`use-stick-to-bottom` owns an element between the conversation root and its content, and sets no overflow on it. Without a `scrollClassName` the stream does not scroll at all, it just grows — and because that element is not yours, the region's accessible name and tab stop have to live on the conversation root instead.",
+    "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a panel, a preview or an app region — if you re-wrap or restyle the root, keep that containment or the sidebar will pin itself to the browser's left edge. The trade-off is that the sidebar keeps its full `h-svh` height and gets clipped to the shell's: anything the sidebar anchors to its bottom — `sidebarPromo` and `sidebarFooter` both — falls below the clip and is invisible whenever the shell is shorter than the viewport, which is the default embedded case. Fill those two slots only in a shell rendered at viewport height, or leave them empty until the sidebar primitive learns to measure its containing block instead of `svh`.",
     "D1 is the media-generation omnibox, so it offers a negative-prompt field that a chat composer has no use for. The shell suppresses that control through a descendant variant on D1's own class list; a `composer.className` you pass is merged after the shell's, so overriding the same utility will bring the control back.",
     "The stream is the scroll container, which is why it carries `tabIndex={0}` and an accessible name. Moving the overflow onto an inner wrapper without moving those two with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the conversation.",
     "J4's card grid steps columns at viewport breakpoints, not container width, so inside a stream that is narrower than the window it over-columns and clamps the excerpt to nothing. The shell pins it to one column, then two — if you restyle the artifact region, restyle the inner grid, not the wrapper.",

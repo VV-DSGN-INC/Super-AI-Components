@@ -3,6 +3,8 @@
 import { LoaderCircle, MessagesSquare } from "lucide-react";
 import * as React from "react";
 
+import { Conversation, ConversationContent } from "@/components/ai-elements/conversation";
+import { Message, MessageContent } from "@/components/ai-elements/message";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/registry/super-ai/app-sidebar";
@@ -41,6 +43,13 @@ import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-
  * 3. "M5 lives in the stream." The paywall is the last turn of the
  *    conversation, not an interstitial over it, which is why it is a
  *    stream-level prop and not a dialog.
+ *
+ * A fourth sentence governs the stream itself: "Composes AI Elements'
+ * conversation and message rather than reimplementing them." Those two are not
+ * catalog components — they come from a different vendor's registry
+ * (registry.ai-sdk.dev) and are declared on the manifest row's `external`
+ * field, so `npx shadcn add chat-shell` resolves them upstream instead of this
+ * repo forking them.
  */
 
 /**
@@ -75,6 +84,18 @@ const COMPOSER_NO_NEGATIVE_PROMPT = "[&_[data-slot=media-prompt-bar-negative-tog
  */
 const ARTIFACTS_IN_STREAM =
   "[&_[data-slot=artifact-grid-items]]:grid-cols-1 [&_[data-slot=artifact-grid-items]]:lg:grid-cols-2";
+
+/**
+ * `use-stick-to-bottom` renders its own scroll element between
+ * `ConversationContent`'s root and its children, and sets no overflow on it —
+ * and AI Elements passes no `scrollClassName`, so out of the box the element
+ * that is supposed to scroll is `overflow: visible` and the conversation
+ * simply grows. This is the class that makes the stream scroll at all. It goes
+ * through `scrollClassName`, the only handle `ConversationContent` exposes on
+ * that element, which is also why the region's tab stop and accessible name
+ * have to sit on `Conversation` instead.
+ */
+const STREAM_SCROLL = "h-full overflow-y-auto";
 
 interface ChatShellThread {
   id: string;
@@ -127,9 +148,21 @@ interface ChatShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   onRenameThread?: (id: string, title: string) => void;
   onDeleteThread?: (id: string) => void;
   onTogglePinThread?: (id: string) => void;
-  /** B5 promo or any ambient sidebar CTA. Collapses away at icon-rail width. */
+  /**
+   * B5 promo or any ambient sidebar CTA. Collapses away at icon-rail width.
+   *
+   * **Clipped out of view unless the shell is viewport-tall** — B1 anchors this
+   * above its footer, and the containment that keeps the shell embeddable also
+   * clips B1's `h-svh` box. See the pitfalls in the docs page.
+   */
   sidebarPromo?: React.ReactNode;
-  /** B8 account menu, or whatever anchors the bottom of the sidebar. */
+  /**
+   * B8 account menu, or whatever anchors the bottom of the sidebar.
+   *
+   * **Clipped out of view unless the shell is viewport-tall** — same
+   * bottom-anchoring problem as `sidebarPromo`. See the pitfalls in the docs
+   * page.
+   */
   sidebarFooter?: React.ReactNode;
   /** Replaces the default L1 shown when there are no threads. */
   threadsEmpty?: React.ReactNode;
@@ -184,28 +217,31 @@ function ChatShellRunningJob({ label }: { label: string }) {
   );
 }
 
+/**
+ * AI Elements' `Message` + `MessageContent`, not a hand-rolled bubble. `from`
+ * drives the `is-user`/`is-assistant` class that carries every alignment and
+ * surface decision, so the turn styling lives upstream where it is shared with
+ * every other AI Elements surface.
+ *
+ * `MessageResponse` (the Streamdown markdown renderer) is deliberately not
+ * used: `content` here is a `ReactNode`, so the caller decides whether their
+ * turns are markdown, and a shell should not force a renderer on them.
+ */
 function ChatShellTurn({ message }: { message: ChatShellMessage }) {
-  const isUser = message.role === "user";
   return (
-    <article
+    <Message
+      from={message.role}
       data-slot="chat-shell-turn"
       data-message-id={message.id}
       data-role={message.role}
-      className={cn("flex flex-col gap-2", isUser && "items-end")}
     >
-      <div
-        data-slot="chat-shell-turn-body"
-        className={cn(
-          "max-w-prose text-sm leading-relaxed",
-          // The user's turn is a quoted input, the agent's is the page's prose.
-          // bg-secondary with its own foreground token, never muted-on-muted.
-          isUser && "bg-secondary text-secondary-foreground rounded-2xl px-4 py-2.5",
-        )}
-      >
+      <MessageContent data-slot="chat-shell-turn-body" className="leading-relaxed">
         {message.content}
-      </div>
-      {message.feedback ? <Feedback {...message.feedback} /> : null}
-    </article>
+      </MessageContent>
+      {/* N1 is an assistant-turn affordance: there is nothing to rate about
+          your own message. Gated here rather than left to the caller. */}
+      {message.role === "assistant" && message.feedback ? <Feedback {...message.feedback} /> : null}
+    </Message>
   );
 }
 
@@ -316,59 +352,67 @@ function ChatShell({
             context="document"
             title={title}
             {...topbar}
-            className="h-11 min-w-0 flex-1 border-b-0 pl-1"
+            // cn last, like the composer below: a bare className after the
+            // spread would silently swallow a caller's `topbar.className`.
+            className={cn("h-11 min-w-0 flex-1 border-b-0 pl-1", topbar?.className)}
           />
         </div>
 
-        <section
+        {/* AI Elements' Conversation, not a hand-rolled scroll container: it
+            brings `role="log"` and use-stick-to-bottom's pinning, which is the
+            behaviour a chat stream is actually judged on. It carries the
+            region name and the tab stop; `scrollClassName` is what makes the
+            inner element it owns actually scroll (see STREAM_SCROLL). */}
+        <Conversation
           data-region="message-stream"
-          // The stream scrolls, so it needs its own tab stop
-          // (axe scrollable-region-focusable) and its own name. role="log"
-          // because turns arrive over time and arrive at the end.
-          role="log"
           aria-label="Conversation"
           tabIndex={0}
-          className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-4 py-6"
+          className="min-h-0 flex-1"
         >
-          {hasTurns ? (
-            <div data-slot="chat-shell-turns" className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-              {messages.map((message) => (
-                <ChatShellTurn key={message.id} message={message} />
-              ))}
-              {/* M5 last: it is the turn that did not happen, so nothing can
-                  follow it until the plan changes. */}
-              {paywall ? <PaywallMessage {...paywall} /> : null}
-            </div>
-          ) : (
-            (empty ?? (
-              <EmptyState
-                size="page"
-                title="Start the conversation"
-                description="Describe what you want done. Anything produced along the way is collected below."
-                icon={<MessagesSquare />}
-              />
-            ))
-          )}
-
-          {/* Inside the stream, not beside it: the conversation is the index of
-              what it produced. Always mounted so the region is discoverable on
-              day one rather than appearing from nowhere. */}
-          <section
-            data-region="artifact-cards"
-            aria-labelledby={artifactsLabelId}
-            className="mx-auto flex w-full max-w-3xl flex-col gap-3 border-t pt-6"
+          <ConversationContent
+            scrollClassName={STREAM_SCROLL}
+            className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6"
           >
-            <h2 id={artifactsLabelId} className="text-sm font-medium">
-              {artifactsLabel}
-            </h2>
-            <ArtifactGrid
-              sessions={artifacts}
-              filterable={false}
-              emptyLabel={artifactsEmptyLabel}
-              className={ARTIFACTS_IN_STREAM}
-            />
-          </section>
-        </section>
+            {hasTurns ? (
+              <>
+                {messages.map((message) => (
+                  <ChatShellTurn key={message.id} message={message} />
+                ))}
+                {/* M5 last: it is the turn that did not happen, so nothing can
+                    follow it until the plan changes. */}
+                {paywall ? <PaywallMessage {...paywall} /> : null}
+              </>
+            ) : (
+              (empty ?? (
+                <EmptyState
+                  size="page"
+                  title="Start the conversation"
+                  description="Describe what you want done. Anything produced along the way is collected below."
+                  icon={<MessagesSquare />}
+                />
+              ))
+            )}
+
+            {/* Inside the stream, not beside it: the conversation is the index
+                of what it produced. Always mounted so the region is
+                discoverable on day one rather than appearing from nowhere. */}
+            <section
+              data-region="artifact-cards"
+              aria-labelledby={artifactsLabelId}
+              className="flex w-full flex-col gap-3 border-t pt-6"
+            >
+              <h2 id={artifactsLabelId} className="text-sm font-medium">
+                {artifactsLabel}
+              </h2>
+              <ArtifactGrid
+                sessions={artifacts}
+                filterable={false}
+                emptyLabel={artifactsEmptyLabel}
+                className={ARTIFACTS_IN_STREAM}
+              />
+            </section>
+          </ConversationContent>
+        </Conversation>
 
         <div data-region="composer" className="bg-background shrink-0 border-t px-4 pb-2">
           <div className="mx-auto w-full max-w-3xl">
