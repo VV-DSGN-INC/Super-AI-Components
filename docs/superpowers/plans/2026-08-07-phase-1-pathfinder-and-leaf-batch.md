@@ -825,26 +825,26 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 
 ---
 
-## Tasks 7–13: the seven leaf components (Track B, parallel)
+## Task 7: Prepare the manifest and scaffold the leaf batch
 
-These follow the repo's established build loop (`CONTINUE.md` §3), not a new one. **The component
-implementations are delegated to one agent per component** — that is this pipeline's documented
-method and the reason it runs at twelve components per pass rather than seven per session. What
-follows is the orchestration, which is done centrally and is not delegated.
+Central, controller-owned work for all seven leaf components. `apps/docs/lib/catalog.manifest.ts`
+is the single source of truth and the one shared file — **agents must never write it**, which is why
+this is its own task ahead of the seven builds.
 
-Only **Task 7 (C2)** depends on Task 1. The six N components depend on nothing in this plan and can
-start immediately.
+**Files:**
+- Modify: `apps/docs/lib/catalog.manifest.ts` — the C2, N2, N4, N5, N6, N7, N8 rows
+- Create (via scaffold): five files each for all seven components
 
-### Shared step A: prepare the manifest (done centrally, once, for all seven)
-
-`apps/docs/lib/catalog.manifest.ts` is the single source of truth and the one shared file. **Agents
-must never write it.**
+**Interfaces:**
+- Consumes: `ManifestItem.external` from Task 1.
+- Produces: seven rows at `status: "building"` with normalised `states`, C2 carrying its `external`
+  entry, and 35 scaffolded files. Tasks 8–14 each own exactly one component's five files.
 
 The raw `states` in `catalog.md` are prose and cannot become story exports. Below are the normalised
-values — already checked against the three known traps: no `default` (forbidden by the gate), no
+values, already checked against the three known traps: no `default` (forbidden by the gate), no
 `meta` or `story` (they collide with the story template's own `Meta` import), no two states
-normalising to the same identifier, and no `Error` (which would shadow the JS global inside the
-story module — this is why N5's tabs carry a `-tab` suffix).
+normalising to the same identifier, and no `Error` — which would shadow the JS global inside the
+story module, and is why N5's tabs carry a `-tab` suffix.
 
 - [ ] **Step 1: Set `status: "building"` and these exact `states` for all seven**
 
@@ -906,7 +906,8 @@ console.log(bad ? bad + " components need renaming" : "all clear");
 '
 ```
 
-Expected: seven `OK` lines and `all clear`.
+Expected: seven `OK` lines and `all clear`. This exact command was run on 2026-08-07 and produced
+that output; a different result means the manifest was edited incorrectly in Step 1.
 
 - [ ] **Step 4: Scaffold all seven**
 
@@ -917,7 +918,21 @@ for n in suggestion-chips trust-dialog trace-timeline run-inspector usage-dashbo
 done
 ```
 
-- [ ] **Step 5: Commit the scaffold**
+Each emits five files with deliberately failing tests.
+
+- [ ] **Step 5: Verify 35 files landed**
+
+```bash
+cd "$(git rev-parse --show-toplevel)" && for n in suggestion-chips trust-dialog trace-timeline run-inspector usage-dashboard env-status permission-prompt; do
+  printf "%-20s " "$n"
+  ls apps/docs/registry/super-ai/$n.tsx apps/docs/registry/super-ai/$n.test.tsx \
+     apps/docs/components/demos/$n-demo.tsx apps/docs/content/components/$n.docs.tsx 2>/dev/null | wc -l
+done
+```
+
+Expected: `4` on every line (the fifth file is the story, under `apps/storybook`).
+
+- [ ] **Step 6: Commit the scaffold**
 
 ```bash
 git add apps/docs apps/storybook
@@ -925,64 +940,468 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
   commit -m "chore(wave-11): scaffold C2 and family N's six"
 ```
 
-### Shared step B: dispatch one agent per component
+---
 
-Each agent gets **only** this, per `CONTINUE.md` §3.4:
+## Task 8: C2 `suggestion-chips`
 
-- A pointer to `docs/design-system/component-build-brief.md`. **Do not re-paste the house rules** —
-  that is how instructions drift.
-- Its spec anchor: `docs/design-system/component-specs.md#<id>-<name>`.
-- Its declared states, exactly as normalised above.
-- Component-specific steering only (below).
-- An instruction to report **tersely** and to flag judgment calls rather than bury them.
-- The Global Constraints section of this plan.
+**Files:**
+- Modify: `apps/docs/registry/super-ai/suggestion-chips.tsx`
+- Modify: `apps/docs/registry/super-ai/suggestion-chips.test.tsx`
+- Modify: `apps/docs/components/demos/suggestion-chips-demo.tsx`
+- Modify: `apps/docs/content/components/suggestion-chips.docs.tsx`
+- Modify: `apps/storybook/src/stories/super-ai/SuggestionChips.stories.tsx`
+- Vendor: `apps/docs/components/ai-elements/suggestion.tsx`
+- Spec: `docs/design-system/component-specs.md#c2-suggestion-chips`
+- House contract: `docs/design-system/component-build-brief.md` — **read it; do not expect its rules
+  restated here**
 
-**Per-component steering:**
+**Interfaces:**
+- Consumes: the scaffold from Task 7; `external` already set on the manifest row — do not edit the
+  manifest.
+- Produces: story exports `Plain`, `WithIcon`, `WithThumbnail`, `OverflowLink`.
 
-- [ ] **Task 7 · C2 `suggestion-chips`** — Composes `@ai-elements/suggestion`, which is **not**
-  vendored in `apps/docs`. Vendor the single file locally so the workbench renders
-  (`npx shadcn@latest add https://registry.ai-sdk.dev/suggestion.json` from `apps/docs`), but the
-  registry dependency is declared via `external` — already set centrally. Chips are prompts, not
-  filters: clicking fills the composer, never navigates or submits. Overflow resolves to a link,
-  because a half-visible chip reads as a layout bug. `plain` is deliberately not named `default`.
+**Steering.** This composes `@ai-elements/suggestion`, which is **not** vendored in `apps/docs`
+(only `apps/storybook` has an `ai-elements/` directory). Vendor the single file so the workbench can
+render it; the consumer-facing dependency is declared via the manifest's `external` field, already
+set. Chips are **prompts, not filters** — clicking fills the composer; it never navigates or
+submits. Overflow resolves to a link, because a half-visible chip reads as a layout bug. `plain` is
+deliberately not named `default` (the contract gate forbids a `Default` export).
 
-- [ ] **Task 8 · N2 `trust-dialog`** — The primary action stays **disabled** until the trust
-  checkbox is ticked; that is the load-bearing behaviour and the test must pin it. A preview of what
-  will run sits above the warning. The account picker on Continue chooses *where* untrusted code
-  executes — as important as whether. Base: Alert-dialog, Checkbox.
+- [ ] **Step 1: Vendor the AI Elements component**
 
-- [ ] **Task 9 · N4 `trace-timeline`** — Bars are positioned by **start time, not stacked**; a
-  waterfall that hides concurrency is a list, and the test must pin positioning. Retries render as
-  **sibling rows**, never replacing the failed attempt. Rows expand into N5 in place — coordinate
-  the seam with Task 10 by agreeing the expanded-row contract in your report, not by importing N5
-  (they ship in the same batch). Base: Collapsible.
+```bash
+cd apps/docs && npx shadcn@latest add https://registry.ai-sdk.dev/suggestion.json
+```
 
-- [ ] **Task 10 · N5 `run-inspector`** — Raw input and output must be **copyable** JSON;
-  pretty-printed but uncopyable cannot go in a bug report. Cache hit/miss belongs beside cost. The
-  error tab explains what was retried and whether it worked. Composes A10 `stat-readout` — note A10
-  is `contractExempt` and being retrofitted in Phase 0; compose it normally and do not work around
-  it. Base: Tabs, A10. **The vendored `tabs` wrapper drops `orientation`** — read it before use.
+Confirm it landed at `apps/docs/components/ai-elements/suggestion.tsx`. Read it before composing —
+do not assume its API.
 
-- [ ] **Task 11 · N6 `usage-dashboard`** — Per-model breakdown is the actionable view; total spend
-  only says there is a problem. Deltas beside every summary figure. Period select drives every panel
-  at once — that coupling is the component's point. Base: Chart, Card.
+- [ ] **Step 2: Write the failing tests**
 
-- [ ] **Task 12 · N7 `env-status`** — Four states because there are four different **remedies**:
-  `degraded` means wait, `key-invalid` means fix a credential, `not-running` means start something
-  locally. **Never status by colour alone** — each provider row states its condition in words; a row
-  of coloured dots is the failure mode. Reachability is not spend: a run can fail with a full
-  balance when a key has expired. Base: Badge, A9 `entity-row` (also `contractExempt`; compose
-  normally).
+Replace the scaffold's `expect.fail` stubs in `suggestion-chips.test.tsx` with real behavioural
+tests, one per declared state, plus one pinning the spec's load-bearing sentence: **clicking a chip
+fills the composer rather than submitting**. Assert on the callback, not on the DOM alone.
 
-- [ ] **Task 13 · N8 `permission-prompt`** — `gaps.md` records this as the single most important
-  missing component in the catalog: every tool-calling agent needs it, and it is a **safety
-  surface**. Four verbs, and **edit-first carries equal visual weight with allow** — deny throws the
-  agent's work away, edit-first keeps it. The prompt states **what and why**: action in plain
-  language, full arguments, and the reason the agent believes it is needed; arguments truncate with
-  an explicit expand. **"Always allow" does not create its grant UI here** — that surface belongs to
-  N9 `autonomy-selector`, which already ships. Base: Alert-dialog.
+- [ ] **Step 3: Run them and confirm they fail**
 
-### Shared step C: integrate centrally
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/suggestion-chips.test.tsx
+```
+
+Expected: FAIL — the scaffold renders an empty `div`.
+
+- [ ] **Step 4: Implement, composing rather than reimplementing**
+
+- [ ] **Step 5: Run the tests and confirm they pass**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/suggestion-chips.test.tsx
+```
+
+- [ ] **Step 6: Write the four stories, the demo, and the guidance module**
+
+Story exports must be exactly `Plain`, `WithIcon`, `WithThumbnail`, `OverflowLink`. The `.docs.tsx`
+module is plain data read by a Server Component — **never** mark it `"use client"`; interactive
+examples go in a sibling `suggestion-chips.examples.tsx`.
+
+- [ ] **Step 7: Self-check before reporting**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/suggestion-chips.test.tsx
+cd "$(git rev-parse --show-toplevel)" && pnpm typecheck && pnpm lint && pnpm check:tokens
+```
+
+Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write command — integration is
+central (Task 15).
+
+---
+
+## Task 9: N2 `trust-dialog`
+
+**Files:**
+- Modify: `apps/docs/registry/super-ai/trust-dialog.tsx`
+- Modify: `apps/docs/registry/super-ai/trust-dialog.test.tsx`
+- Modify: `apps/docs/components/demos/trust-dialog-demo.tsx`
+- Modify: `apps/docs/content/components/trust-dialog.docs.tsx`
+- Modify: `apps/storybook/src/stories/super-ai/TrustDialog.stories.tsx`
+- Spec: `docs/design-system/component-specs.md#n2-trust-dialog`
+- House contract: `docs/design-system/component-build-brief.md` — **read it; do not expect its rules
+  restated here**
+
+**Interfaces:**
+- Consumes: the scaffold from Task 7. Do not edit the manifest.
+- Produces: story exports `Preview`, `Warning`, `TrustCheckbox`, `AccountPicker`.
+
+**Steering.** Base: Alert-dialog, Checkbox. The primary action **stays disabled until the trust
+checkbox is ticked** — that is the load-bearing behaviour and a test must pin it. A preview of what
+will run sits above the warning. The account picker on Continue chooses *where* untrusted code
+executes, which matters as much as whether it runs at all.
+
+- [ ] **Step 1: Write the failing tests**
+
+Replace the scaffold's `expect.fail` stubs with real behavioural tests, one per declared state, plus
+one that asserts the primary action is disabled until the checkbox is ticked and enabled after.
+
+- [ ] **Step 2: Run them and confirm they fail**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/trust-dialog.test.tsx
+```
+
+- [ ] **Step 3: Implement**
+
+- [ ] **Step 4: Run the tests and confirm they pass**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/trust-dialog.test.tsx
+```
+
+- [ ] **Step 5: Write the four stories, the demo, and the guidance module**
+
+Story exports must be exactly `Preview`, `Warning`, `TrustCheckbox`, `AccountPicker`. The
+`.docs.tsx` module is plain data read by a Server Component — **never** mark it `"use client"`.
+
+- [ ] **Step 6: Self-check before reporting**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/trust-dialog.test.tsx
+cd "$(git rev-parse --show-toplevel)" && pnpm typecheck && pnpm lint && pnpm check:tokens
+```
+
+Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write command.
+
+---
+
+## Task 10: N4 `trace-timeline`
+
+**Files:**
+- Modify: `apps/docs/registry/super-ai/trace-timeline.tsx`
+- Modify: `apps/docs/registry/super-ai/trace-timeline.test.tsx`
+- Modify: `apps/docs/components/demos/trace-timeline-demo.tsx`
+- Modify: `apps/docs/content/components/trace-timeline.docs.tsx`
+- Modify: `apps/storybook/src/stories/super-ai/TraceTimeline.stories.tsx`
+- Spec: `docs/design-system/component-specs.md#n4-trace-timeline`
+- House contract: `docs/design-system/component-build-brief.md` — **read it; do not expect its rules
+  restated here**
+
+**Interfaces:**
+- Consumes: the scaffold from Task 7. Do not edit the manifest.
+- Produces: story exports `Collapsed`, `Expanded`, `Errored`, `RetrySiblings`.
+
+**Steering.** Base: Collapsible. Bars are positioned by **start time, not stacked** — a waterfall
+that hides concurrency is just a list, and a test must pin the positioning. Retries render as
+**sibling rows**, never replacing the failed attempt. Rows expand into N5 `run-inspector` in place;
+N5 ships in this same batch, so **do not import it** — describe the expanded-row contract you assume
+in your report and let integration reconcile it.
+
+- [ ] **Step 1: Write the failing tests**
+
+Replace the scaffold's `expect.fail` stubs with real behavioural tests, one per declared state, plus
+one asserting bars are positioned by start time (two concurrent spans overlap rather than stack) and
+one asserting a retry renders as a sibling row alongside the failed attempt, not in place of it.
+
+- [ ] **Step 2: Run them and confirm they fail**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/trace-timeline.test.tsx
+```
+
+- [ ] **Step 3: Implement**
+
+- [ ] **Step 4: Run the tests and confirm they pass**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/trace-timeline.test.tsx
+```
+
+- [ ] **Step 5: Write the four stories, the demo, and the guidance module**
+
+Story exports must be exactly `Collapsed`, `Expanded`, `Errored`, `RetrySiblings`. The `.docs.tsx`
+module is plain data read by a Server Component — **never** mark it `"use client"`.
+
+- [ ] **Step 6: Self-check before reporting**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/trace-timeline.test.tsx
+cd "$(git rev-parse --show-toplevel)" && pnpm typecheck && pnpm lint && pnpm check:tokens
+```
+
+Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write command.
+
+---
+
+## Task 11: N5 `run-inspector`
+
+**Files:**
+- Modify: `apps/docs/registry/super-ai/run-inspector.tsx`
+- Modify: `apps/docs/registry/super-ai/run-inspector.test.tsx`
+- Modify: `apps/docs/components/demos/run-inspector-demo.tsx`
+- Modify: `apps/docs/content/components/run-inspector.docs.tsx`
+- Modify: `apps/storybook/src/stories/super-ai/RunInspector.stories.tsx`
+- Spec: `docs/design-system/component-specs.md#n5-run-inspector`
+- House contract: `docs/design-system/component-build-brief.md` — **read it; do not expect its rules
+  restated here**
+
+**Interfaces:**
+- Consumes: the scaffold from Task 7; composes A10 `stat-readout` (shipped). Do not edit the
+  manifest.
+- Produces: story exports `InputTab`, `OutputTab`, `MetadataTab`, `ErrorTab`.
+
+**Steering.** Base: Tabs, A10 `stat-readout`. Raw input and output must be **copyable** JSON —
+pretty-printed but uncopyable cannot go in a bug report, and a test should pin that a copy
+affordance exists. Cache hit/miss belongs beside cost; it is usually the largest lever on spend. The
+error tab explains what was retried and whether it worked.
+
+Two traps specific to this component: **the vendored `tabs` wrapper destructures `orientation` and
+re-emits it only as `data-orientation`**, so a vertical tab list keeps horizontal arrow keys and
+announces `aria-orientation="horizontal"` — read `apps/docs/components/ui/tabs.tsx` before trusting
+it, and compose Base UI directly if needed. And A10 is `contractExempt` pending a Phase 0 retrofit —
+**compose it normally and do not add a call-site workaround**; if it fails your story, report it.
+
+The state names carry a `-tab` suffix deliberately: the raw spec names would normalise to `Input`,
+`Output` and `Error`, and `export const Error` shadows the JS global inside the story module.
+
+- [ ] **Step 1: Write the failing tests**
+
+Replace the scaffold's `expect.fail` stubs with real behavioural tests, one per declared state, plus
+one asserting the input and output panes expose a copy affordance carrying the raw JSON.
+
+- [ ] **Step 2: Run them and confirm they fail**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/run-inspector.test.tsx
+```
+
+- [ ] **Step 3: Implement**
+
+- [ ] **Step 4: Run the tests and confirm they pass**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/run-inspector.test.tsx
+```
+
+- [ ] **Step 5: Write the four stories, the demo, and the guidance module**
+
+Story exports must be exactly `InputTab`, `OutputTab`, `MetadataTab`, `ErrorTab`. The `.docs.tsx`
+module is plain data read by a Server Component — **never** mark it `"use client"`.
+
+- [ ] **Step 6: Self-check before reporting**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/run-inspector.test.tsx
+cd "$(git rev-parse --show-toplevel)" && pnpm typecheck && pnpm lint && pnpm check:tokens
+```
+
+Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write command.
+
+---
+
+## Task 12: N6 `usage-dashboard`
+
+**Files:**
+- Modify: `apps/docs/registry/super-ai/usage-dashboard.tsx`
+- Modify: `apps/docs/registry/super-ai/usage-dashboard.test.tsx`
+- Modify: `apps/docs/components/demos/usage-dashboard-demo.tsx`
+- Modify: `apps/docs/content/components/usage-dashboard.docs.tsx`
+- Modify: `apps/storybook/src/stories/super-ai/UsageDashboard.stories.tsx`
+- Spec: `docs/design-system/component-specs.md#n6-usage-dashboard`
+- House contract: `docs/design-system/component-build-brief.md` — **read it; do not expect its rules
+  restated here**
+
+**Interfaces:**
+- Consumes: the scaffold from Task 7. Do not edit the manifest.
+- Produces: story exports `PeriodSelect`, `SummaryCards`, `ModelBreakdown`.
+
+**Steering.** Base: Chart, Card. **Per-model breakdown is the actionable view** — total spend only
+says there is a problem, not what to do about it. Deltas sit beside every summary figure. The period
+select **drives every panel at once**; that coupling is the component's point and a test must pin
+it. This is the team-facing counterpart to M2 `credits-indicator`: same data, different audience.
+
+- [ ] **Step 1: Write the failing tests**
+
+Replace the scaffold's `expect.fail` stubs with real behavioural tests, one per declared state, plus
+one asserting that changing the period updates both the summary figures and the per-model breakdown
+in the same interaction.
+
+- [ ] **Step 2: Run them and confirm they fail**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/usage-dashboard.test.tsx
+```
+
+- [ ] **Step 3: Implement**
+
+- [ ] **Step 4: Run the tests and confirm they pass**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/usage-dashboard.test.tsx
+```
+
+- [ ] **Step 5: Write the three stories, the demo, and the guidance module**
+
+Story exports must be exactly `PeriodSelect`, `SummaryCards`, `ModelBreakdown`. The `.docs.tsx`
+module is plain data read by a Server Component — **never** mark it `"use client"`.
+
+- [ ] **Step 6: Self-check before reporting**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/usage-dashboard.test.tsx
+cd "$(git rev-parse --show-toplevel)" && pnpm typecheck && pnpm lint && pnpm check:tokens
+```
+
+Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write command.
+
+---
+
+## Task 13: N7 `env-status`
+
+**Files:**
+- Modify: `apps/docs/registry/super-ai/env-status.tsx`
+- Modify: `apps/docs/registry/super-ai/env-status.test.tsx`
+- Modify: `apps/docs/components/demos/env-status-demo.tsx`
+- Modify: `apps/docs/content/components/env-status.docs.tsx`
+- Modify: `apps/storybook/src/stories/super-ai/EnvStatus.stories.tsx`
+- Spec: `docs/design-system/component-specs.md#n7-env-status`
+- House contract: `docs/design-system/component-build-brief.md` — **read it; do not expect its rules
+  restated here**
+
+**Interfaces:**
+- Consumes: the scaffold from Task 7; composes A9 `entity-row` (shipped). Do not edit the manifest.
+- Produces: story exports `Ok`, `Degraded`, `KeyInvalid`, `NotRunning`.
+
+**Steering.** Base: Badge, A9 `entity-row`. **Four states because there are four different
+remedies:** `degraded` means wait, `key-invalid` means go and fix a credential, `not-running` means
+start something locally. Collapsing them into one red dot tells a user something is wrong and
+nothing about what to do.
+
+**Never status by colour alone** — each provider row states its condition **in words**. A row of
+coloured dots is the failure mode this component exists to avoid, and a test must pin the textual
+condition. Reachability is not spend: a run can fail with a full balance when a key has expired,
+which is precisely why D12 restored this component.
+
+A9 is `contractExempt` pending a Phase 0 retrofit and has a known contrast failure — **compose it
+normally and do not add a call-site workaround**; if it fails your story, report it.
+
+- [ ] **Step 1: Write the failing tests**
+
+Replace the scaffold's `expect.fail` stubs with real behavioural tests, one per declared state, plus
+one asserting each state is conveyed in text and not by colour alone.
+
+- [ ] **Step 2: Run them and confirm they fail**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/env-status.test.tsx
+```
+
+- [ ] **Step 3: Implement**
+
+- [ ] **Step 4: Run the tests and confirm they pass**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/env-status.test.tsx
+```
+
+- [ ] **Step 5: Write the four stories, the demo, and the guidance module**
+
+Story exports must be exactly `Ok`, `Degraded`, `KeyInvalid`, `NotRunning`. The `.docs.tsx` module
+is plain data read by a Server Component — **never** mark it `"use client"`.
+
+- [ ] **Step 6: Self-check before reporting**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/env-status.test.tsx
+cd "$(git rev-parse --show-toplevel)" && pnpm typecheck && pnpm lint && pnpm check:tokens
+```
+
+Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write command.
+
+---
+
+## Task 14: N8 `permission-prompt`
+
+`gaps.md` records this as **the single most important missing component in the catalog**: every
+tool-calling agent needs it, and it is a safety surface rather than a convenience one. Build it to
+that weight.
+
+**Files:**
+- Modify: `apps/docs/registry/super-ai/permission-prompt.tsx`
+- Modify: `apps/docs/registry/super-ai/permission-prompt.test.tsx`
+- Modify: `apps/docs/components/demos/permission-prompt-demo.tsx`
+- Modify: `apps/docs/content/components/permission-prompt.docs.tsx`
+- Modify: `apps/storybook/src/stories/super-ai/PermissionPrompt.stories.tsx`
+- Spec: `docs/design-system/component-specs.md#n8-permission-prompt`
+- House contract: `docs/design-system/component-build-brief.md` — **read it; do not expect its rules
+  restated here**
+
+**Interfaces:**
+- Consumes: the scaffold from Task 7. Do not edit the manifest.
+- Produces: story exports `AllowOnce`, `AlwaysAllow`, `Deny`, `EditFirst`.
+
+**Steering.** Base: Alert-dialog. **Four verbs, and edit-first carries equal visual weight with
+allow.** Every framework in the sampled agent population implements approve / reject / *edit* on a
+paused tool call: deny throws the agent's work away and restarts the loop, while edit-first keeps it
+and puts the human in the loop productively. It is the difference between a gate and a
+collaboration — a test must pin that edit-first is not visually subordinate.
+
+The prompt states **what and why**: the action in plain language, the full arguments, and the reason
+the agent believes it is needed. Arguments truncate with an **explicit expand**, same rule as F7 —
+approving what you cannot read is what this component prevents.
+
+**"Always allow" does not create its grant UI here.** Choosing it writes a grant, but the grant's
+review-and-revoke surface belongs to N9 `autonomy-selector`, which already ships. A component that
+can create a permanent permission but cannot show you the ones you already granted is a one-way
+door. Emit the choice; do not build the grant list.
+
+Deny must be safe to press: the agent reports what it could not do rather than silently rerouting.
+
+- [ ] **Step 1: Write the failing tests**
+
+Replace the scaffold's `expect.fail` stubs with real behavioural tests, one per declared state, plus
+one asserting the arguments truncate with an expand control, and one asserting all four verbs are
+reachable with edit-first given weight equal to allow.
+
+- [ ] **Step 2: Run them and confirm they fail**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/permission-prompt.test.tsx
+```
+
+- [ ] **Step 3: Implement**
+
+- [ ] **Step 4: Run the tests and confirm they pass**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/permission-prompt.test.tsx
+```
+
+- [ ] **Step 5: Write the four stories, the demo, and the guidance module**
+
+Story exports must be exactly `AllowOnce`, `AlwaysAllow`, `Deny`, `EditFirst`. The `.docs.tsx`
+module is plain data read by a Server Component — **never** mark it `"use client"`.
+
+- [ ] **Step 6: Self-check before reporting**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/permission-prompt.test.tsx
+cd "$(git rev-parse --show-toplevel)" && pnpm typecheck && pnpm lint && pnpm check:tokens
+```
+
+Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write command.
+
+---
+
+## Task 15: Integrate the leaf batch
+
+Central, controller-owned. Tasks 8–14 each wrote only their own files; this reconciles them against
+the manifest and runs every gate.
+
+**Files:**
+- Modify: `apps/docs/lib/catalog.manifest.ts` — the seven rows
+
+**Interfaces:**
+- Consumes: seven implemented components from Tasks 8–14; O2 from Task 5.
+- Produces: seven rows at `status: "shipped"` with `shadcn`/`consumes`/`npm` reconciled against real
+  imports. Catalog reaches 102 of 114.
 
 - [ ] **Step 1: Reconcile declared deps against real imports for all seven**
 
@@ -992,13 +1411,15 @@ for n in suggestion-chips trust-dialog trace-timeline run-inspector usage-dashbo
   printf "%-22s " "$n"
   grep -h 'from "' registry/super-ai/$n.tsx \
     | sed 's/.*from "//;s/".*//' \
-    | grep -E '^@/components/ui/|^@/registry/super-ai/|lucide-react|^@base-ui' \
+    | grep -E '^@/components/ui/|^@/registry/super-ai/|lucide-react|^@base-ui|^@/components/ai-elements/' \
     | sort -u | tr '\n' ' '; echo
 done
 ```
 
 Set `shadcn` / `consumes` / `npm` from that output — never from the catalog's assumed bases, which
-name primitives this repo does not vendor. Then flip all seven to `status: "shipped"`.
+name primitives this repo does not vendor. On `@base-ui/react`: leave it out of `npm` unless the
+component imports **no** vendored `ui/` primitive at all, since it normally arrives as a peer. Then
+flip all seven to `status: "shipped"`.
 
 - [ ] **Step 2: Run every gate**
 
@@ -1031,12 +1452,11 @@ to vendoring, because the vendoring fallback was considered and rejected in spec
 ```bash
 git add apps/docs apps/storybook
 git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
-  commit -m "feat(wave-11): C2 + family N's six — 94 to 101"
+  commit -m "feat(wave-11): C2 + family N's six — 94 to 102"
 ```
 
----
 
-## Task 14: Close out Phase 1
+## Task 16: Close out Phase 1
 
 - [ ] **Step 1: Verify the counts**
 
