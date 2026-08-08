@@ -20,9 +20,20 @@ describe("MANIFEST", () => {
   // The 14 components that shipped before Wave 1.5. They are exempt from the
   // story-state and documentation contracts until the retrofit task runs.
   const LEGACY = [
-    "choice-chips", "cost-chip", "date-section", "entity-row", "field-row",
-    "filter-bar", "gen-settings-bar", "kbd", "preview-tile", "reset-affordance",
-    "section-header", "shortcuts-sheet", "stat-readout", "thread-list",
+    "choice-chips",
+    "cost-chip",
+    "date-section",
+    "entity-row",
+    "field-row",
+    "filter-bar",
+    "gen-settings-bar",
+    "kbd",
+    "preview-tile",
+    "reset-affordance",
+    "section-header",
+    "shortcuts-sheet",
+    "stat-readout",
+    "thread-list",
   ];
 
   // The 11 components PR #14 (main) shipped straight to `main` using the old
@@ -32,9 +43,17 @@ describe("MANIFEST", () => {
   // LEGACY above they are exempt until a retrofit task covers them — this set
   // should shrink, never grow.
   const MAIN_PR14 = [
-    "answer-block", "autonomy-selector", "citation-ref", "credits-indicator",
-    "escalation-handoff", "pricing-table", "quota-meter", "safety-block",
-    "slot-summary", "source-cards", "task-tray",
+    "answer-block",
+    "autonomy-selector",
+    "citation-ref",
+    "credits-indicator",
+    "escalation-handoff",
+    "pricing-table",
+    "quota-meter",
+    "safety-block",
+    "slot-summary",
+    "source-cards",
+    "task-tray",
   ];
 
   it("keeps every pre-Wave-1.5 component shipped", () => {
@@ -51,7 +70,9 @@ describe("MANIFEST", () => {
     // Exemption is a closed set that may only shrink. A new component must never
     // be born exempt — that is how a gate quietly stops gating.
     expect(
-      MANIFEST.filter((i) => i.contractExempt).map((i) => i.name).sort(),
+      MANIFEST.filter((i) => i.contractExempt)
+        .map((i) => i.name)
+        .sort(),
     ).toEqual([...LEGACY, ...MAIN_PR14].sort());
   });
 
@@ -60,7 +81,23 @@ describe("MANIFEST", () => {
     expect(newlyShipped.length).toBeGreaterThan(0);
     for (const item of newlyShipped) {
       expect(item.states.length).toBeGreaterThan(0);
-      expect(item.specAnchor).toMatch(/^component-specs\.md#/);
+    }
+
+    // specAnchor is static data pointing at a spec file — it must be correct
+    // for every manifest row regardless of status. A `planned` or `cut` row
+    // with a wrong anchor is exactly the bug this suite exists to catch, so
+    // this checks the full MANIFEST, not just shipped items. Guarded against
+    // a vacuous pass: fail loudly if the manifest is empty or the block
+    // layer disappears, rather than passing over an empty set.
+    expect(MANIFEST.length).toBeGreaterThan(0);
+    const blocks = MANIFEST.filter((i) => i.layer === "block");
+    expect(blocks.length).toBeGreaterThan(0);
+    for (const item of MANIFEST) {
+      if (item.layer === "block") {
+        expect(item.specAnchor).toMatch(/^block-specs\.md#/);
+      } else {
+        expect(item.specAnchor).toMatch(/^component-specs\.md#/);
+      }
     }
   });
 

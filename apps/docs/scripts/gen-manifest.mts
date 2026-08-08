@@ -37,7 +37,21 @@ const CUT_IDS = new Set(["O5"]);
  * here only fires if a future O row ships without an explicit WAVE_BY_ID entry.
  */
 const WAVE_BY_FAMILY: Record<FamilyId, number> = {
-  A: 1, B: 2, C: 2, D: 3, E: 4, F: 4, G: 0, H: 6, I: 6, J: 7, K: 8, L: 9, M: 10, N: 11, O: 0,
+  A: 1,
+  B: 2,
+  C: 2,
+  D: 3,
+  E: 4,
+  F: 4,
+  G: 0,
+  H: 6,
+  I: 6,
+  J: 7,
+  K: 8,
+  L: 9,
+  M: 10,
+  N: 11,
+  O: 0,
 };
 
 /**
@@ -114,8 +128,7 @@ const titleCase = (name: string) =>
     .map((w) => w[0].toUpperCase() + w.slice(1))
     .join(" ");
 
-const isFamilyId = (family: string): family is FamilyId =>
-  /^[A-O]$/.test(family);
+const isFamilyId = (family: string): family is FamilyId => /^[A-O]$/.test(family);
 
 const rows = parseCatalogTables(readFileSync(CATALOG_MD, "utf8"));
 
@@ -126,8 +139,7 @@ const items: ManifestItem[] = rows.map((row) => {
   const family = row.family;
 
   const shipped = SHIPPED[row.name];
-  const layer: ManifestItem["layer"] =
-    family === "A" ? "primitive" : family === "O" ? "block" : "component";
+  const layer: ManifestItem["layer"] = family === "A" ? "primitive" : family === "O" ? "block" : "component";
   const status: ManifestStatus =
     family === "G" || CUT_IDS.has(row.id) ? "cut" : shipped ? "shipped" : "planned";
   // Cut items carry no wave, full stop — never fall through to a per-item or
@@ -148,7 +160,7 @@ const items: ManifestItem[] = rows.map((row) => {
     consumes: shipped?.consumes ?? [],
     npm: shipped?.npm ?? [],
     states: row.states,
-    specAnchor: `component-specs.md#${row.id.toLowerCase()}-${row.name.toLowerCase()}`,
+    specAnchor: `${layer === "block" ? "block-specs.md" : "component-specs.md"}#${row.id.toLowerCase()}-${row.name.toLowerCase()}`,
     ...(shipped ? { contractExempt: true as const } : {}),
   };
 });

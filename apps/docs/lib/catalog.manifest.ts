@@ -1942,7 +1942,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o1-home-shell",
+    specAnchor: "block-specs.md#o1-home-shell",
   },
   {
     id: "O2",
@@ -1958,7 +1958,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o2-chat-shell",
+    specAnchor: "block-specs.md#o2-chat-shell",
   },
   {
     id: "O3",
@@ -1974,7 +1974,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o3-studio-shell",
+    specAnchor: "block-specs.md#o3-studio-shell",
   },
   {
     id: "O4",
@@ -1990,7 +1990,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o4-timeline-shell",
+    specAnchor: "block-specs.md#o4-timeline-shell",
   },
   {
     id: "O5",
@@ -2006,7 +2006,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o5-flow-shell",
+    specAnchor: "block-specs.md#o5-flow-shell",
   },
   {
     id: "O6",
@@ -2022,7 +2022,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o6-generation-shell",
+    specAnchor: "block-specs.md#o6-generation-shell",
   },
   {
     id: "O7",
@@ -2038,7 +2038,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o7-library-shell",
+    specAnchor: "block-specs.md#o7-library-shell",
   },
   {
     id: "O8",
@@ -2054,7 +2054,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o8-explore-shell",
+    specAnchor: "block-specs.md#o8-explore-shell",
   },
   {
     id: "O9",
@@ -2070,7 +2070,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o9-artifact-shell",
+    specAnchor: "block-specs.md#o9-artifact-shell",
   },
   {
     id: "O10",
@@ -2086,7 +2086,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o10-records-shell",
+    specAnchor: "block-specs.md#o10-records-shell",
   },
   {
     id: "O11",
@@ -2102,7 +2102,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o11-docs-shell",
+    specAnchor: "block-specs.md#o11-docs-shell",
   },
   {
     id: "O12",
@@ -2118,7 +2118,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o12-settings-shell",
+    specAnchor: "block-specs.md#o12-settings-shell",
   },
   {
     id: "O13",
@@ -2134,7 +2134,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o13-notebook-shell",
+    specAnchor: "block-specs.md#o13-notebook-shell",
   },
   {
     id: "O14",
@@ -2150,6 +2150,6 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o14-auth-shell",
+    specAnchor: "block-specs.md#o14-auth-shell",
   },
 ];
