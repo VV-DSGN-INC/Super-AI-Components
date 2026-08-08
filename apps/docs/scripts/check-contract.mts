@@ -90,11 +90,11 @@ for (const item of manifest) {
   // any change to how consumes/npm get derived shows up in both places at
   // once instead of only in registry.json at build time.
   const entry = extras[item.name];
-  const expectedDeps = item.shadcn.length + item.consumes.length;
+  const expectedDeps = item.shadcn.length + (item.external?.length ?? 0) + item.consumes.length;
   const actualDeps = entry?.registryDependencies?.length ?? 0;
   if (actualDeps !== expectedDeps) {
     errors.push(
-      `${item.name}: gen-registry would emit ${actualDeps} registryDependencies, expected ${expectedDeps} (shadcn: ${item.shadcn.length}, consumes: ${item.consumes.length})`,
+      `${item.name}: gen-registry would emit ${actualDeps} registryDependencies, expected ${expectedDeps} (shadcn: ${item.shadcn.length}, external: ${item.external?.length ?? 0}, consumes: ${item.consumes.length})`,
     );
   }
   const actualNpm = entry?.dependencies ?? [];
