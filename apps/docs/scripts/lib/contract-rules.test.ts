@@ -74,9 +74,18 @@ describe("parseStorybookExclusions", () => {
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
 
-  it("does not count an entry inside a block comment", () => {
-    const src = `/* was: "**/stories/super-ai/Foo.stories.tsx" */
+  it("does not count an entry inside a block comment that contains no glob", () => {
+    // Deliberately glob-free. A block comment containing one of these globs is
+    // a SYNTAX ERROR — the glob's own `**/` closes the comment — so it cannot
+    // occur in a loadable config, and a test built on one would assert
+    // behaviour on source that could never exist.
+    const src = `/* PreviewTile was removed here, see the retrofit note */
       "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("strips a multi-line block comment without eating the entry after it", () => {
+    const src = [`/*`, `  a long`, `  explanation`, `*/`, `"**/stories/super-ai/PreviewTile.stories.tsx",`].join("\n");
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
 
