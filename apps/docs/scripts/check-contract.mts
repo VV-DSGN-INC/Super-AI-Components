@@ -207,12 +207,25 @@ for (const item of manifest) {
 // Orphan detection across every registry component file — catches a stray
 // file (or a "building" item's file scaffolded under the wrong name) that
 // has no corresponding manifest entry at all, of any status.
+// A multi-file item's extra parts are accounted for by that item's row, so
+// they are not orphans. Without this, every part of a multi-file item (P1
+// `data-views` ships six view shells) reads as a stray file — the orphan
+// check predates multi-file items and assumed one file per name.
+const declaredFiles = new Set(
+  MANIFEST.flatMap((i) => i.files ?? []).map((f) =>
+    f.path
+      .split("/")
+      .pop()!
+      .replace(/\.tsx$/, ""),
+  ),
+);
+
 for (const file of readdirSync("registry/super-ai").filter((f) => f.endsWith(".tsx"))) {
   const name = file
     .split("/")
     .pop()!
     .replace(/\.test\.tsx$|\.tsx$/, "");
-  if (!names.has(name)) errors.push(`orphan: ${file} has no manifest entry`);
+  if (!names.has(name) && !declaredFiles.has(name)) errors.push(`orphan: ${file} has no manifest entry`);
 }
 
 // Per-family manifest counts must match catalog.md's Totals table — this is

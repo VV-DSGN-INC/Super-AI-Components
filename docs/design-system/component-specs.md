@@ -1257,3 +1257,59 @@ result in the agent slice — five unrelated products.
 **Evidence:** GitHub Copilot (coding agent + background sessions), ChatGPT Workspace Agents,
 Microsoft Copilot Tasks, Manus. Was one observation on the creative board (gaps.md §3); cleared at
 four on the agent board without changing — see [gaps.md](gaps.md) §8.
+
+## P1 `data-views` — one config, five collection views
+
+**Family P · v2.** Evidence: [`records-board-analysis.md`](records-board-analysis.md) and D18, both
+provisional — seven products read from public documentation, no screens seen.
+
+**States:** kanban · table · feed · calendar · timeline · group-tone
+
+One config (`ViewGroup<T>`, `ColumnDef<T>`, `TimeCapability<T>`) drives every view; the switcher
+picks a shell by `viewMode`. A section declares its groups, its card, its columns and its row once.
+Adding a sixth view means adding one shell and one contract, and touching no section.
+
+- **Fully controlled.** `viewMode` is a prop. The component never writes to storage; the optional
+  `use-view-mode` lib contract is the host-side half.
+- **Both-or-neither time capability.** `getDateRange` without `renderChip` is a compile error, and
+  `hasTimeCapability()` is the runtime guard for data the compiler never saw. A time view asked for
+  without the pair falls through to the feed rather than rendering nothing.
+- **Groups must cover the domain.** An item matching no group is absent from the grouped views. The
+  time views count the strays and announce them; the board and feed do not.
+- **Tone is shape first, colour second.** The system has two chromatic tokens, so `neutral`, `info`
+  and `success` share a bar surface and are separated by the mark. The tone word reaches assistive
+  tech through the accessible name, never through colour alone.
+- **Local-time bucketing throughout.** A due date at 23:00 local belongs to that local day.
+
+**Ships seven files.** The six view shells are imported by `data-views.tsx` and by nothing else, so
+D3 leaves them nowhere to be but this item's own file set.
+
+## P2 `detail-view-shell` — one record, three opening modes
+
+**Family P · v2.** Evidence: [`records-board-analysis.md`](records-board-analysis.md) and D18, both
+provisional. Notion's side peek / center peek / full page map one-for-one onto overlay / popup /
+fullscreen.
+
+**States:** popup · overlay · fullscreen · two-column · collapsed-tabs · collapsed-stack
+
+Branches on `mode` and renders what it is told. It owns no routing: the page decides when a mode
+change means navigating. That single restraint is what lets one shell serve every entity.
+
+- **Only fullscreen owns a URL**, and it owns it in the host. `use-detail-navigation` is
+  deliberately not part of this item — a registry component that reaches for a router works in one
+  framework.
+- **Collapse is measured, not guessed.** `useContainerWidth` observes the content element at a
+  720px threshold, so the same body works inside a 480px panel and a full-width route without
+  branching on mode. It starts narrow and only widens once measured; the pessimistic default is
+  what prevents a flash of two columns.
+- **Overlay is a plain `<aside>`, not a Sheet.** Upstream it was a Radix Sheet with three overrides
+  that switched off its scroll lock, its backdrop and its outside-close — i.e. everything that made
+  it a dialog. None of those props exist on a Base UI Sheet, and rebuilding a de-modalized dialog on
+  whichever primitive a consumer installed breaks on the next bump. No focus trap is correct here:
+  the collection behind is meant to stay operable.
+- **Two named slots.** `attributes` is what the record IS; `conversation` is what HAPPENED to it.
+  An absent or empty `conversation` gives a one-column body and the narrower frame.
+
+**Ships four files.** `detail-fields` and `use-container-width` are not imported by the shell —
+they are what a consumer renders into `attributes` and measures with, and a two-column detail body
+without a field list is half a component.

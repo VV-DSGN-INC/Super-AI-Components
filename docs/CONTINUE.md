@@ -150,6 +150,32 @@ second reference board became its own v2 project.
 batch.** Its fourteen: twelve built here by twelve concurrent agents, O2
 `chat-shell` as the earlier pathfinder, O5 cut.
 
+**And that v2 project now exists, as family P.** P1 `data-views`, P2
+`detail-view-shell`, plus the `use-view-mode` lib contract, shipped 2026-08-11
+under [`2026-08-11-data-views-v2-design.md`](superpowers/specs/2026-08-11-data-views-v2-design.md).
+It is counted separately from A–O by construction, so "the catalog is complete
+at 114" above stays exactly true — `catalog.manifest.test.ts` asserts the two
+halves independently rather than leaving that a comment.
+
+Family P is where the "any v2 catalog" clause below stops being hypothetical.
+Two things about it are open work rather than done work:
+
+- **D18's evidence is desk research**, not a collected board of screens — see
+  [`records-board-analysis.md`](design-system/records-board-analysis.md) §1.
+  Family P does not reach A–O's evidentiary footing until those seven products
+  are verified against real screens. P2 cleared D1 at exactly 3 of 5, so re-test
+  that one first.
+- **The consumer flip is not done.** `shadcn-shell` in DS-WebApp-Shells still
+  authors its own copies of these files. Pointing it at the registry needs a
+  published URL and is its own PR.
+
+One correction the merge forces, worth recording because it inverts an
+assumption family P was written under: **O10 `records-shell` shipped before P1
+and P2 existed**, so it composes J5 `record-list` rather than the view axis.
+That is not a defect — but "records-shell now has its dependencies" was written
+when O10 was still planned, and it is no longer the right framing. Whether O10
+should be revised to compose P1 is an open question, not a task.
+
 **Parallel agents are the throughput mechanism** — §3.4 is not optional advice.
 Wave 6's 12 items were built by 12 concurrent agents in one pass; family O's 12
 likewise, each in its own git worktree. Sequential building runs at roughly 7

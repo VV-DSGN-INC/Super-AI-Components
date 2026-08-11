@@ -247,6 +247,25 @@ the Dialog contract governs, and it waits for the contract's first consumer.
 
 ---
 
+## P · Records & views (v2) — 2
+
+The first family from the **second reference board**, which
+[`2026-08-07-catalog-completion-design.md`](../superpowers/specs/2026-08-07-catalog-completion-design.md)
+§1.1 ruled would become its own v2 project rather than reopen the frozen 114. It is counted
+separately for exactly that reason: the B–N subtotal and the O block count do not move because
+family P exists. The grand total does, necessarily.
+
+Evidence is [`records-board-analysis.md`](records-board-analysis.md) and D18, both **provisional** —
+seven products read from public documentation, no screens seen. Family P is justified to build and
+does not reach A–O's evidentiary footing until the screens are verified.
+
+| # | Name | Purpose | Key states / variants | shadcn base |
+|---|------|---------|-----------------------|-------------|
+| P1 | `data-views` `NEW` | One config, five interchangeable collection views | feed · board · table · calendar · timeline; group tone by mark | Table, Toggle-group |
+| P2 | `detail-view-shell` `NEW` | One record, three opening modes | popup · overlay · fullscreen; two-column · collapsed tabs · collapsed stack | Dialog, Tabs |
+
+---
+
 ## Totals
 
 | Family | Count |
@@ -267,7 +286,8 @@ the Dialog contract governs, and it waits for the contract's first consumer.
 | N — Feedback, trust & observability | 12 |
 | **B–N subtotal (L3)** | **89** (88 after D16, 82 before it, 74 before D12, 84 before D9) |
 | O — Blocks (L4) | 13 (O5 cut) |
-| **Total registry items** | **114** (113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| P — Records & views (v2) | 2 |
+| **Total registry items** | **116** (113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

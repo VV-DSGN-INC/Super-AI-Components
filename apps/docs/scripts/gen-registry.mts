@@ -37,6 +37,9 @@ const extras = deriveExtras(MANIFEST, self);
 // CATALOG_ITEMS (built from MANIFEST) doesn't carry `layer` itself, so the
 // item-type derivation below looks it back up through MANIFEST by name.
 const layerByName = new Map(MANIFEST.map((m) => [m.name, m.layer]));
+// Same reason as layerByName: CATALOG_ITEMS doesn't carry `files`, and a
+// multi-file item needs its extra parts looked back up through MANIFEST.
+const filesByName = new Map(MANIFEST.filter((m) => m.files?.length).map((m) => [m.name, m.files!]));
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({
   name: i.name,
@@ -246,7 +249,10 @@ const superAiItems = items.map((i) => ({
   description: i.description,
   dependencies: i.dependencies ?? [],
   registryDependencies: i.registryDependencies ?? [],
-  files: [file(i.name)],
+  // The item's own file always leads, so `npx shadcn add` writes the entry
+  // point before its parts. An item without extras emits exactly what it
+  // emitted before this field existed.
+  files: [file(i.name), ...(filesByName.get(i.name) ?? [])],
   ...(i.cssVars ? { cssVars: i.cssVars } : {}),
 }));
 

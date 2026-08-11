@@ -25,7 +25,9 @@ import ContextChipsDemo from "@/components/demos/context-chips-demo";
 import ContextToolbarDemo from "@/components/demos/context-toolbar-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
+import DataViewsDemo from "@/components/demos/data-views-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
+import DetailViewShellDemo from "@/components/demos/detail-view-shell-demo";
 import DiffReviewDemo from "@/components/demos/diff-review-demo";
 import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
 import DocsShellDemo from "@/components/demos/docs-shell-demo";
@@ -141,7 +143,9 @@ export const demos: Record<string, ComponentType> = {
   "context-toolbar": ContextToolbarDemo,
   "cost-chip": CostChipDemo,
   "credits-indicator": CreditsIndicatorDemo,
+  "data-views": DataViewsDemo,
   "date-section": DateSectionDemo,
+  "detail-view-shell": DetailViewShellDemo,
   "diff-review": DiffReviewDemo,
   "disclaimer-note": DisclaimerNoteDemo,
   "docs-shell": DocsShellDemo,

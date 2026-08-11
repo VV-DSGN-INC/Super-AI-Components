@@ -52,6 +52,10 @@ const WAVE_BY_FAMILY: Record<FamilyId, number> = {
   M: 10,
   N: 11,
   O: 0,
+  // P postdates §5's sequencing entirely — it is the second board's family
+  // (D18), not a wave of the first board's build. Wave 8 groups it as one
+  // shipment rather than implying a place in the original order.
+  P: 8,
 };
 
 /**
