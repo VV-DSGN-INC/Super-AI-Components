@@ -312,6 +312,38 @@ describe("findCvaViolations", () => {
     const src = `cva("text-muted-foreground", { variants: { v: { a: "bg-muted", b: "bg-muted" } } })`;
     expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
   });
+
+  it("survives parentheses inside class strings", () => {
+    // Idiomatic Tailwind arbitrary values are full of parens. These happen to
+    // self-balance, but the scan must not depend on that.
+    const src = `cva("text-muted-foreground [&:not(:first-child)]:mt-2", { variants: { v: { a: "bg-muted" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
+  });
+
+  it("survives an unbalanced parenthesis in a comment inside the call", () => {
+    const src = [
+      `cva("text-muted-foreground", {`,
+      `  // TODO (see GH-123`,
+      `  variants: { v: { a: "bg-muted" } },`,
+      `})`,
+    ].join("\n");
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
+  });
+
+  it("skips a call whose first argument is not a plain string literal", () => {
+    // Promoting the first variant value to "base" would pair it against its
+    // own mutually-exclusive siblings. Under-report instead.
+    const arrayBase = `cva(["p-2"], { variants: { v: { a: "text-muted-foreground", b: "bg-muted" } } })`;
+    expect(findCvaViolations("x.tsx", arrayBase)).toEqual([]);
+
+    const templateBase = "cva(`p-2 ${x}`, { variants: { v: { a: \"text-muted-foreground\", b: \"bg-muted\" } } })";
+    expect(findCvaViolations("x.tsx", templateBase)).toEqual([]);
+  });
+
+  it("reports both of two cva calls sharing one physical line", () => {
+    const src = `const a = cva("text-muted-foreground", { variants: { v: { x: "bg-muted" } } }); const b = cva("text-muted-foreground", { variants: { v: { y: "bg-accent" } } });`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(2);
+  });
 });
 ```
 
@@ -340,9 +372,31 @@ export function extractCvaCalls(source) {
     const start = m.index + m[0].length;
     let depth = 1;
     let i = start;
+    let quote = null;
     while (i < source.length && depth > 0) {
       const ch = source[i];
-      if (ch === "(") depth++;
+      const next = source[i + 1];
+      // Parens inside strings and comments must not move the depth counter.
+      // Tailwind arbitrary values are full of them — `[&:not(:first-child)]`,
+      // `color-mix(...)`, `max-w-(--x)` — and those happen to self-balance, so
+      // a naive scan survives them by luck rather than by design. A single
+      // unbalanced paren in a comment (`// TODO (see GH-123`) would either
+      // truncate the body early, losing detections, or run the scan to some
+      // unrelated `)` later in the file and swallow foreign code into it.
+      if (quote) {
+        if (ch === "\\") i++;
+        else if (ch === quote) quote = null;
+      } else if (ch === "/" && next === "/") {
+        while (i < source.length && source[i] !== "\n") i++;
+        continue;
+      } else if (ch === "/" && next === "*") {
+        i += 2;
+        while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) i++;
+        i += 2;
+        continue;
+      } else if (ch === '"' || ch === "'" || ch === "`") {
+        quote = ch;
+      } else if (ch === "(") depth++;
       else if (ch === ")") depth--;
       i++;
     }
@@ -379,15 +433,28 @@ export function findCvaViolations(file, source) {
   const found = [];
   const seen = new Set();
   for (const call of extractCvaCalls(source)) {
-    const strings = [...call.body.matchAll(/"([^"]*)"|'([^']*)'/g)].map((x) => x[1] ?? x[2] ?? "");
-    if (strings.length < 2) continue;
+    // The base MUST be cva's first argument and MUST be a plain string
+    // literal. Taking "the first quoted string anywhere in the body" instead
+    // is wrong for a call whose first argument is a template literal, an
+    // array, or a variable: the first *variant value* would be promoted to
+    // base and then paired against its own siblings — precisely the
+    // union-across-mutually-exclusive-values this rule exists to avoid.
+    // Skipping such a call under-reports; promoting a variant value
+    // false-positives. Under-reporting is the safe direction for a gate
+    // whose failures block CI.
+    const baseMatch = /^\s*(["'])((?:\\.|[^\\])*?)\1/.exec(call.body);
+    if (!baseMatch) continue;
 
-    const base = classTokens(strings[0]);
+    const base = classTokens(baseMatch[2]);
+    const rest = call.body.slice(baseMatch[0].length);
     const line = source.slice(0, call.index).split("\n").length;
 
-    for (const value of strings.slice(1)) {
-      const bg = crossPairViolation(base, classTokens(value));
-      const key = `${line}:${bg}`;
+    for (const m of rest.matchAll(/"([^"]*)"|'([^']*)'/g)) {
+      const bg = crossPairViolation(base, classTokens(m[1] ?? m[2] ?? ""));
+      // Keyed on the call's offset, not its line: two cva() calls can share a
+      // physical line, and a line-based key would silently drop the second's
+      // finding. `format:check` is not in CI, so one-line source is possible.
+      const key = `${call.index}:${bg}`;
       if (bg && !seen.has(key)) {
         seen.add(key);
         found.push(
