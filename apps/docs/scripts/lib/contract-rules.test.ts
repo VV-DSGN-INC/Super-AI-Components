@@ -28,4 +28,27 @@ describe("findSlotErasures", () => {
   it("ignores a data-slot on a plain DOM element", () => {
     expect(findSlotErasures("x.tsx", `<div data-slot="wrapper" />`, REGISTRY)).toEqual([]);
   });
+
+  it("does not attribute nested JSX's data-slot to the outer registry component", () => {
+    // The real frame-strip shape. Badge is a vendored ui/ primitive and its
+    // own data-slot is legal; attributing it to PreviewTile is a false
+    // positive, and false positives make people contort working code.
+    const src = [
+      `<EntityRow`,
+      `  title="a"`,
+      `  badge={<Badge data-slot="frame-strip-mark">In</Badge>}`,
+      `/>`,
+    ].join("\n");
+    expect(findSlotErasures("x.tsx", src, REGISTRY)).toEqual([]);
+  });
+
+  it("still flags the outer component when its own data-slot precedes nested JSX", () => {
+    const src = [
+      `<EntityRow`,
+      `  data-slot="mine"`,
+      `  badge={<Badge data-slot="theirs">x</Badge>}`,
+      `/>`,
+    ].join("\n");
+    expect(findSlotErasures("x.tsx", src, REGISTRY)).toHaveLength(1);
+  });
 });
