@@ -1,5 +1,6 @@
 // Pure predicates for the contract gate. Kept separate from check-contract.mts
 // so each can be unit-tested without running the whole gate.
+import { pascal } from "./scaffold-templates";
 
 /**
  * A `data-slot` passed to a registry component silently replaces that
@@ -40,4 +41,48 @@ export function findSlotErasures(file: string, source: string, registryComponent
     );
   }
   return found;
+}
+
+/**
+ * Pull this repo's own super-ai story exclusions out of
+ * apps/storybook/vitest.config.ts. Vendored directory excludes
+ * (stories/ui/**, stories/ai-elements/**) are out of scope — they are a
+ * different decision, documented in a11y-baseline.md, and are not per-component.
+ */
+export function parseStorybookExclusions(source: string): string[] {
+  return [...source.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
+    (m) => m[1],
+  );
+}
+
+/**
+ * Two exemption lists, in two files, both governed by "may only shrink, never
+ * grow", with nothing linking them. A component silenced in one and enforced in
+ * the other is either an unnoticed regression or an exemption that outlived its
+ * reason — and until now neither was visible.
+ */
+export function compareExemptionLists(contrastFiles: string[], storyComponents: string[]): string[] {
+  const pascalOf = (f: string) => pascal(f.replace(/\.tsx$/, ""));
+  const fromContrastNames = new Set(contrastFiles.map(pascalOf));
+  const fromStories = new Set(storyComponents);
+  const errors: string[] = [];
+
+  // Report against the original token-rules.mjs filename, not just its
+  // Pascal-cased form — a reader chasing the mismatch down needs to know
+  // which literal entry to look at in CONTRAST_EXEMPT_FILES.
+  for (const file of contrastFiles) {
+    if (!fromStories.has(pascalOf(file))) {
+      errors.push(
+        `${file} is contrast-exempt in token-rules.mjs but not excluded from the a11y gate (vitest.config.ts) — one of the two lists is stale`,
+      );
+    }
+  }
+  for (const name of fromStories) {
+    if (!fromContrastNames.has(name)) {
+      errors.push(
+        `${name} is excluded from the a11y gate (vitest.config.ts) but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
+      );
+    }
+  }
+  return errors;
 }

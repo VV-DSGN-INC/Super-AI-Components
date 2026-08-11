@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { findSlotErasures } from "./contract-rules";
+import { compareExemptionLists, findSlotErasures, parseStorybookExclusions } from "./contract-rules";
 
 const REGISTRY = new Set(["EntityRow", "CostChip", "StatReadout"]);
 
@@ -50,5 +50,35 @@ describe("findSlotErasures", () => {
       `/>`,
     ].join("\n");
     expect(findSlotErasures("x.tsx", src, REGISTRY)).toHaveLength(1);
+  });
+});
+
+describe("parseStorybookExclusions", () => {
+  it("extracts only this repo's own super-ai story exclusions", () => {
+    const src = `exclude: [
+      ...configDefaults.exclude,
+      "**/stories/ui/**",
+      "**/stories/ai-elements/**",
+      "**/stories/super-ai/PreviewTile.stories.tsx",
+    ],`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+});
+
+describe("compareExemptionLists", () => {
+  it("passes when the two lists name the same components", () => {
+    expect(compareExemptionLists(["preview-tile.tsx"], ["PreviewTile"])).toEqual([]);
+  });
+
+  it("reports a component exempt from contrast but not from the a11y gate", () => {
+    const out = compareExemptionLists(["preview-tile.tsx", "kbd.tsx"], ["PreviewTile"]);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("kbd");
+  });
+
+  it("reports a component excluded from the a11y gate but not from contrast", () => {
+    const out = compareExemptionLists(["preview-tile.tsx"], ["PreviewTile", "EntityRow"]);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("EntityRow");
   });
 });

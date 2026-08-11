@@ -18,9 +18,10 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { LIB_MANIFEST } from "../lib/lib.manifest";
-import { findSlotErasures } from "./lib/contract-rules";
+import { compareExemptionLists, findSlotErasures, parseStorybookExclusions } from "./lib/contract-rules";
 import { deriveExtras } from "./lib/registry-extras";
 import { pascal, statePascal } from "./lib/scaffold-templates";
+import { CONTRAST_EXEMPT_FILES } from "./lib/token-rules.mjs";
 
 const manifest = MANIFEST;
 const errors: string[] = [];
@@ -220,6 +221,12 @@ for (const item of manifest) {
   if (!existsSync(path)) continue;
   errors.push(...findSlotErasures(path, readFileSync(path, "utf8"), registryComponents));
 }
+
+// G3 — the contrast exemption list and the a11y exclusion list must agree.
+const storybookConfig = readFileSync("../storybook/vitest.config.ts", "utf8");
+errors.push(
+  ...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)),
+);
 
 // Per-family manifest counts must match catalog.md's Totals table — this is
 // the one hand-maintained summary in the whole pipeline that nothing
