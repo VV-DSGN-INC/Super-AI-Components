@@ -607,6 +607,7 @@ Then, at each of the three reporting sites (the `PATTERNS` loop, the `findSingle
 ```js
     if (isVendored(file)) {
       warnings++;
+      warnedFiles.add(file);
       console.warn(`WARN ${message}`);
     } else {
       violations++;
@@ -614,15 +615,29 @@ Then, at each of the three reporting sites (the `PATTERNS` loop, the `findSingle
     }
 ```
 
-Declare `let warnings = 0;` beside `let violations = 0;`, and extend the closing summary:
+Declare `let warnings = 0;` and `const warnedFiles = new Set();` beside `let violations = 0;`, and extend the closing summary:
 
 ```js
 if (warnings) {
   console.warn(
-    `\ncheck:tokens — ${warnings} warning(s) in vendored components/ui/. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
+    `\ncheck:tokens — ${warnings} warning(s) across ${warnedFiles.size} vendored file(s) in components/ui/. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
   );
 }
 ```
+
+**The final success line must not call a warned file clean.** Replace the existing
+`console.log(\`check:tokens — ${FILES.length} file(s) clean.\`)` with:
+
+```js
+const clean = FILES.length - warnedFiles.size;
+console.log(
+  warnedFiles.size
+    ? `check:tokens — ${clean} of ${FILES.length} file(s) clean, ${warnedFiles.size} vendored file(s) warned.`
+    : `check:tokens — ${FILES.length} file(s) clean.`,
+);
+```
+
+This matters more than it looks: the last line is what a human skims and what a CI dashboard surfaces. Printing "169 file(s) clean" directly beneath two WARN lines naming two of those files is a gate that overstates its own result.
 
 **Accepted trade-off, state it in the commit body:** a genuinely new violation in a vendored file also only warns, so it cannot block a PR. That is the price of not creating an exemption list, and it is the cheaper of the two risks — vendored files change only when someone deliberately re-vendors them.
 
@@ -632,7 +647,7 @@ if (warnings) {
 cd apps/docs && pnpm check:tokens; echo "exit=$?"
 ```
 
-Expected: `exit=0`; at least one `WARN` line naming `components/ui/tabs.tsx:19`; and the clean-file count now higher than 130, since the glob includes `components/ui/**`.
+Expected: `exit=0`; at least one `WARN` line naming `components/ui/tabs.tsx:19`; a total scanned count well above 130, since the glob now includes `components/ui/**`; and a final line that reports clean and warned counts **separately**, never describing a warned file as clean. Check the arithmetic in the output adds up — total scanned = clean + warned — and use those same figures if you cite them in the commit body.
 
 - [ ] **Step 6: Prove registry files still fail**
 
