@@ -44,13 +44,24 @@ if printf '%s' "$probe" | grep -Eq 'shadcn(@[^[:space:]]+)?[[:space:]]+add([[:sp
   exit 2
 fi
 
+# Starting a rebase is forbidden for everyone, integrator included — same
+# reasoning as the history-rewriting block below. But --continue/--abort/
+# --skip/--quit finish or cancel a rebase already in progress; they do not
+# start a rewrite, and denying --abort in particular would strand someone in
+# a conflicted rebase (possibly started outside this tool, or before this
+# hook existed) with no sanctioned way out.
+if printf '%s' "$probe" | grep -Eq 'git[[:space:]]+rebase([[:space:]]|$)' \
+   && ! printf '%s' "$probe" | grep -Eq 'git[[:space:]]+rebase[[:space:]]+--(continue|abort|skip|quit)\b'; then
+  echo "Starting a rebase is denied for everyone, including the integrator. Finishing or aborting one already in progress is allowed — git rebase --continue, --abort, --skip, and --quit all pass. To make changes, create a new commit instead of rewriting; if you are not already mid-rebase, report the problem rather than trying to repair history." >&2
+  exit 2
+fi
+
 # History rewriting is forbidden for everyone, integrator included — unlike
 # `git commit`/`git add`/`git push`, which the hook deliberately leaves alone
 # because it cannot tell a subagent's commit from the integrator's, rewriting
 # has no legitimate subagent use and the worst incident on this branch was an
 # `--amend` against the wrong commit, recovered only via reflog.
 if printf '%s' "$probe" | grep -Eq 'git[[:space:]]+commit[^;&|]*--amend\b' \
-   || printf '%s' "$probe" | grep -Eq 'git[[:space:]]+rebase([[:space:]]|$)' \
    || printf '%s' "$probe" | grep -Eq 'git[[:space:]]+reset[^;&|]*--hard\b' \
    || printf '%s' "$probe" | grep -Eq 'git[[:space:]]+push[^;&|]*--force(-with-lease)?\b' \
    || printf '%s' "$probe" | grep -Eq 'git[[:space:]]+filter-branch\b'; then
