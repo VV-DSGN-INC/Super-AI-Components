@@ -921,6 +921,33 @@ describe("parseStorybookExclusions", () => {
     ],`;
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
+
+  it("does not count a commented-out exclusion as live", () => {
+    // How a human "removes" an entry. Counting it as live means G3 reports no
+    // mismatch and stops catching the drift it exists to catch.
+    const src = `exclude: [
+      // "**/stories/super-ai/Foo.stories.tsx", // removed 2026-01
+      "**/stories/super-ai/PreviewTile.stories.tsx",
+    ],`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("does not count an entry inside a block comment", () => {
+    const src = `/* was: "**/stories/super-ai/Foo.stories.tsx" */
+      "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("keeps a live entry that has a trailing comment", () => {
+    const src = `"**/stories/super-ai/PreviewTile.stories.tsx", // color-contrast x2`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("is not confused by a URL on the same line", () => {
+    const src = `// see https://example.com/x
+      "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
 });
 
 describe("compareExemptionLists", () => {
@@ -964,7 +991,19 @@ import { pascal } from "./scaffold-templates";
  * different decision, documented in a11y-baseline.md, and are not per-component.
  */
 export function parseStorybookExclusions(source: string): string[] {
-  return [...source.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
+  // Strip comments before matching, and note this is load-bearing rather than
+  // tidy. The exclusion list is edited by hand, and commenting a line out is
+  // how people "remove" an entry — `// "**/stories/super-ai/Foo.stories.tsx"`.
+  // A parser that still counts that as live reports no mismatch, and G3
+  // silently stops catching the drift it exists to catch. The file's own
+  // comments narrate exactly that retrofit ("CostChip and EntityRow were here
+  // … the list shrank"), so this is the editing pattern, not a hypothetical.
+  //
+  // The `[^:]` guard keeps a `https://` on the same line from swallowing a
+  // live entry after it.
+  const live = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+
+  return [...live.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
     (m) => m[1],
   );
 }
