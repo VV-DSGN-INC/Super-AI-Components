@@ -14,9 +14,9 @@ complete**.
 |                 |                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
-| Branch          | `claude/e2e-gate-a11y-and-family-o` (branched from `main` after PR #19 merged)                                              |
+| Branch          | none — this landed on `main` as PR #20                                                                                     |
 | HEAD at handoff | **The catalog is complete** — family O's twelve remaining blocks, plus the A- and M-family a11y retrofits                   |
-| Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
+| Pushed          | **merged.** Start your next branch from `main`.                                                                             |
 | Preview         | Not deployed. Production is behind and serves fewer registry items than this branch builds — see §7.                        |
 
 **Catalog progress: 114 of 114 active items shipped. Nothing is planned.**
