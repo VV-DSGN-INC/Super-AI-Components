@@ -1505,51 +1505,30 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 You build exactly one component in this registry.
 
 **Read `docs/design-system/component-build-brief.md` before writing anything.**
-It is the house contract and it is not summarised here — one copy, on purpose.
+
+It is the house contract, and it is deliberately **not** summarised here. One
+copy, on purpose: re-pasting it into prompts is how instructions drift, which
+is the reason the brief exists at all (CONTINUE.md §3.4). It governs your file
+scope, your commands, your tests, your guidance module, your story, and the
+format of your report. Do not ask this prompt what it says — read it.
+
 Then read your component's entry in `docs/design-system/component-specs.md`.
 
-## Your write scope
+Your invocation prompt supplies what the brief cannot know: the component name,
+its spec anchor, its declared states, and any component-specific steering.
 
-Only these files, for your component's `<name>`:
+## What your tools enforce, rather than request
 
-- `apps/docs/registry/super-ai/<name>.tsx`
-- `apps/docs/registry/super-ai/<name>.test.tsx`
-- `apps/docs/components/demos/<name>-demo.tsx`
-- `apps/docs/content/components/<name>.docs.tsx`
-- `apps/docs/content/components/<name>.examples.tsx` (optional)
-- `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`
+Some of the brief's rules are configuration here. You will be refused, not
+trusted:
 
-Write nothing else. Other components are being built concurrently in sibling
-worktrees.
+- `apps/docs/lib/catalog.manifest.ts` is not writable by you.
+- git write commands (`commit`, `add`, `checkout`, `stash`, `reset`) are not
+  runnable by you.
+- `pnpm build` and the full `pnpm test` are not runnable by you.
 
-**Never write `apps/docs/lib/catalog.manifest.ts`.** The integrator owns it and
-reconciles your declared dependencies against your real imports afterwards.
-
-## Commands
-
-Run, from `apps/docs`:
-- `pnpm vitest run registry/super-ai/<name>.test.tsx`
-- `pnpm typecheck`
-- `pnpm check:tokens`
-
-**Never run** any `git` write command (`commit`, `add`, `checkout`, `stash`,
-`reset`). `refs/stash` is shared across worktrees and an agent has already lost
-work that way. To read a file from history use
-`git show HEAD:<path> > /tmp/copy`.
-
-**Never run** `pnpm build`, the full `pnpm test`, or anything in
-`apps/storybook`. The integrator runs the full gates centrally.
-
-## Report
-
-Terse. Status; props signature; test counts (fail → pass); typecheck and
-check:tokens results; what you composed; and anything in the spec you could not
-honour, with the reason.
-
-Flag judgment calls rather than burying them. Several of this system's best
-decisions came from a builder saying "the spec is ambiguous here and I chose X".
-If a component you were told to compose does not fit, **say so — do not fork
-it.** A reimplemented row passes every gate and is still wrong.
+A refusal is intentional and is not a puzzle to solve. Report what you needed
+and why; do not look for another route to it.
 ```
 
 - [ ] **Step 2: Write `retrofit-builder`**
@@ -1566,59 +1545,85 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 You retrofit exactly one already-shipped component so it satisfies the full
 contract and can lose its `contractExempt: true` flag.
 
-**Read `docs/design-system/component-build-brief.md` first** — specifically its
-"Guidance" and "Story" sections. It is not summarised here.
+**Read `docs/design-system/component-build-brief.md` first** — its "Guidance"
+and "Story" sections define what you must produce. They are deliberately **not**
+summarised here; one copy, on purpose (CONTINUE.md §3.4). Read it rather than
+asking this prompt what it says.
 
-## Your write scope
+## How a retrofit differs from a build — the part the brief does not cover
 
-Only these two files, for your component's `<name>`:
+The brief describes building a component from scratch. You are not doing that.
 
-- `apps/docs/content/components/<name>.docs.tsx` (usually does not exist yet —
-  `check-contract.mts` skips the existence check for exempt items, so all 25
-  ship with no guidance module at all)
-- `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`
+- **The component already exists and must not change.** It is shipped and
+  installed by consumers. Your tools refuse writes under
+  `apps/docs/registry/super-ai/`. If you believe the component must change to
+  satisfy the contract, **stop and report** — that is the integrator's call.
+- **The guidance module usually does not exist yet.** `check-contract.mts`
+  skips the docs-file existence check for exempt items, so all 25 ship with no
+  guidance at all. You are writing it, not editing it.
+- **A state may need renaming, and you cannot do it.** `default`, `meta` and
+  `story` all produce reserved story exports. Report the rename you need; the
+  integrator applies it to the manifest.
+- **`anatomy` must list the component's real `data-slot` names** — read the
+  shipped source for them rather than inferring from the spec.
 
-Plus, optionally, `apps/docs/content/components/<name>.examples.tsx`.
+## What your tools enforce, rather than request
 
-**Do not modify `apps/docs/registry/super-ai/<name>.tsx`.** This component is
-shipped and installed by consumers. If you believe it must change to satisfy
-the contract, stop and report that instead — it is a decision for the
-integrator, not a change for you to make.
+- `apps/docs/registry/super-ai/**` is not writable by you.
+- `apps/docs/lib/catalog.manifest.ts` is not writable by you.
+- git write commands, `pnpm build` and the full `pnpm test` are not runnable.
 
-**Never write `apps/docs/lib/catalog.manifest.ts`.** If a declared state needs
-renaming — `default`, `meta` and `story` all produce reserved story exports —
-report the rename you need. The integrator applies it.
-
-## What "done" means
-
-- One story export per declared state, with real `args`. No bare `Default`.
-- `componentDocsPage(<Pascal>Docs)` as `parameters.docs.page`.
-- Every guidance field filled: `whatItIs`, `whyItMatters`, `evidence`,
-  `anatomy` (your component's **real** `data-slot` names — read the source),
-  `usage`, ≥2 `dos` and ≥2 `donts` each with a live example, ≥2 `pitfalls`.
-- Never invent Evidence products. If the spec has none, use `evidence: []`.
-
-## Commands
-
-From `apps/docs`: `pnpm typecheck`, `pnpm check:tokens`.
-
-**Never run** any `git` write command, `pnpm build`, the full `pnpm test`, or
-anything in `apps/storybook`.
+A refusal is intentional. Report what you needed; do not route around it.
 
 ## Report
 
-Terse. Which states you wrote stories for; any manifest state rename you need
-and why; anything in the component that blocked the retrofit; and any pitfall
-you found in the source that is not yet written down anywhere.
+Per the brief's §Report, plus: any manifest state rename you need and why,
+anything in the shipped component that blocked the retrofit, and any pitfall
+you found in its source that is not yet written down anywhere.
 ```
 
-- [ ] **Step 3: Verify the agents are registered**
+- [ ] **Step 3: Widen the deny list beyond the two named files**
 
-Restart the session and confirm `component-builder` and `retrofit-builder` appear in the available agent types.
+`tools: … Edit, Write` grants unscoped write over the whole repository, and a
+single-file deny for the manifest is thin. Add deny entries for the areas
+neither agent has any business touching, so "write nothing else" stops being
+purely prose:
 
-- [ ] **Step 4: Smoke-test the write restriction**
+```
+Edit(docs/**), Write(docs/**),
+Edit(.github/**), Write(.github/**),
+Edit(.claude/**), Write(.claude/**),
+Edit(apps/docs/scripts/**), Write(apps/docs/scripts/**),
+Edit(apps/docs/lib/**), Write(apps/docs/lib/**)
+```
 
-Dispatch `retrofit-builder` with: *"Report the current contents of `apps/docs/lib/catalog.manifest.ts`'s entry for `kbd`. Do not modify anything."* Confirm it reads and reports without writing.
+A positive allowlist would be better still — the four directories each agent
+writes into are static prefixes that do not depend on `<name>`. It is not used
+here only because `Edit(<glob>)` in the **allow** position is unverified in
+this harness, and getting it wrong yields an agent that cannot write at all.
+Record that as the open question it is rather than guessing.
+
+- [ ] **Step 4: Registration and restriction smoke test — REQUIRES A SESSION RESTART**
+
+**This could not be completed during the plan's execution, and that is a known
+gap, not an oversight.** The agent roster is cached at session start, so a
+newly-added `.claude/agents/*.md` is invisible until the session restarts.
+Attempting to dispatch `retrofit-builder` returns `Agent type 'retrofit-builder'
+not found`, confirmed directly.
+
+After a restart, dispatch `retrofit-builder` and have it attempt, reporting the
+verbatim outcome of each without working around it:
+
+1. `git commit --allow-empty -m "smoke-test-should-be-denied"` — must be refused.
+2. An `Edit` to `apps/docs/registry/super-ai/kbd.tsx` — must be refused.
+3. A `Read` of `docs/design-system/component-build-brief.md` — must succeed.
+
+**Until this runs, treat every `disallowedTools` entry as unverified.** The
+changelog introduces that field as "frontmatter support for *plugin-shipped*
+agents"; these are project-level, and whether it is honoured there is not
+established. The prose prohibitions in both agent bodies are the backstop in
+the meantime, and they are exactly the kind of rule this plan exists to stop
+relying on.
 
 - [ ] **Step 5: Commit**
 
