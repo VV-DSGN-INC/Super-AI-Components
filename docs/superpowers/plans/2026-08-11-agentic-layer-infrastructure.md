@@ -932,9 +932,18 @@ describe("parseStorybookExclusions", () => {
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
 
-  it("does not count an entry inside a block comment", () => {
-    const src = `/* was: "**/stories/super-ai/Foo.stories.tsx" */
+  it("does not count an entry inside a block comment that contains no glob", () => {
+    // Deliberately glob-free. A block comment containing one of these globs is
+    // a SYNTAX ERROR — the glob's own `**/` closes the comment — so it cannot
+    // occur in a loadable config, and a test built on one would assert
+    // behaviour on source that could never exist.
+    const src = `/* PreviewTile was removed here, see the retrofit note */
       "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("strips a multi-line block comment without eating the entry after it", () => {
+    const src = [`/*`, `  a long`, `  explanation`, `*/`, `"**/stories/super-ai/PreviewTile.stories.tsx",`].join("\n");
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
 
@@ -1043,6 +1052,18 @@ function stripComments(source: string): string {
       continue;
     }
     if (ch === "/" && next === "*") {
+      // Terminates at the FIRST `*/`, deliberately, including one that falls
+      // inside what looks like a string. That is exactly what a JavaScript
+      // parser does, so this is faithful rather than sloppy — and it is worth
+      // stating because it looks like the bug that condemned the regex above.
+      //
+      // The consequence: you cannot block-comment one of these globs at all.
+      // `/* "**/stories/super-ai/Foo.stories.tsx" */` is a SYNTAX ERROR,
+      // because the glob's own `**/` closes the comment (verified with
+      // `new Function(src)`). A vitest.config.ts containing one would not
+      // load and Storybook would fail long before G3 had an opinion. Line
+      // comments are the only way to comment an entry out, and those are
+      // handled above.
       i += 2;
       while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) i++;
       i++; // land on the closing `/`; the loop's i++ advances past it
