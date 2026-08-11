@@ -2,13 +2,25 @@
 # PostToolUse/Write|Edit. Turns a CI-time token failure into an edit-time one.
 # Advisory: exit 0 always, so a failure surfaces without blocking the edit that
 # is often mid-way through a legitimate multi-step change.
-set -euo pipefail
-path=$(jq -r '.tool_input.file_path // ""')
+set -uo pipefail
+
+# node, not jq — see deny-dangerous-bash.sh. Here a missing parser would exit
+# 127 on EVERY Write/Edit in the session, contradicting this hook's own
+# "advisory, always exit 0" promise.
+path=$(node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).tool_input?.file_path??"")}catch{process.stdout.write("")}})' 2>/dev/null) || exit 0
+
 case "$path" in
   *apps/docs/registry/super-ai/*.tsx) ;;
   *) exit 0 ;;
 esac
-cd "$(git rev-parse --show-toplevel)/apps/docs" || exit 0
+
+# $CLAUDE_PROJECT_DIR first, matching session-baselines.sh. `git rev-parse` is
+# cwd-dependent, and this repo's own CLAUDE.md warns that parallel builds run
+# in sibling worktrees — resolving to the wrong root would check another
+# tree's files and print pass/fail noise about work you did not do.
+root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || true)}"
+[ -n "$root" ] || exit 0
+cd "$root/apps/docs" || exit 0
 if ! out=$(node scripts/check-tokens.mjs 2>&1); then
   echo "check:tokens is now failing after that edit:" >&2
   printf '%s\n' "$out" | grep -E '^registry/|^components/' >&2 || true
