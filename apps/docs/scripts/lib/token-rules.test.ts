@@ -75,4 +75,37 @@ describe("findCvaViolations", () => {
     const src = `cva("text-muted-foreground", { variants: { v: { a: "bg-muted", b: "bg-muted" } } })`;
     expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
   });
+
+  it("survives parentheses inside class strings", () => {
+    // Idiomatic Tailwind arbitrary values are full of parens. These happen to
+    // self-balance, but the scan must not depend on that.
+    const src = `cva("text-muted-foreground [&:not(:first-child)]:mt-2", { variants: { v: { a: "bg-muted" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
+  });
+
+  it("survives an unbalanced parenthesis in a comment inside the call", () => {
+    const src = [
+      `cva("text-muted-foreground", {`,
+      `  // TODO (see GH-123`,
+      `  variants: { v: { a: "bg-muted" } },`,
+      `})`,
+    ].join("\n");
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
+  });
+
+  it("skips a call whose first argument is not a plain string literal", () => {
+    // Promoting the first variant value to "base" would pair it against its
+    // own mutually-exclusive siblings. Under-report instead.
+    const arrayBase = `cva(["p-2"], { variants: { v: { a: "text-muted-foreground", b: "bg-muted" } } })`;
+    expect(findCvaViolations("x.tsx", arrayBase)).toEqual([]);
+
+    const templateBase =
+      'cva(`p-2 ${x}`, { variants: { v: { a: "text-muted-foreground", b: "bg-muted" } } })';
+    expect(findCvaViolations("x.tsx", templateBase)).toEqual([]);
+  });
+
+  it("reports both of two cva calls sharing one physical line", () => {
+    const src = `const a = cva("text-muted-foreground", { variants: { v: { x: "bg-muted" } } }); const b = cva("text-muted-foreground", { variants: { v: { y: "bg-accent" } } });`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(2);
+  });
 });
