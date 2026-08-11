@@ -1701,7 +1701,7 @@ export const MANIFEST: ManifestItem[] = [
     wave: 10,
     base: ["card", "input"],
     shadcn: ["button", "card", "input", "label"],
-    consumes: [],
+    consumes: ["entity-row"],
     npm: ["lucide-react"],
     states: ["not-set", "valid", "invalid", "unreachable", "local-model"],
     specAnchor: "component-specs.md#m7-connection-manager",
