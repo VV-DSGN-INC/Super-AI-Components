@@ -17,6 +17,7 @@ import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
 import { ConnectionManagerDocs } from "@/content/components/connection-manager.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
+import { DataViewsDocs } from "@/content/components/data-views.docs";
 import { DiffReviewDocs } from "@/content/components/diff-review.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
 import { DrawingToolsDocs } from "@/content/components/drawing-tools.docs";
@@ -96,6 +97,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "connection-manager": ConnectionManagerDocs,
   "context-chips": ContextChipsDocs,
   "context-toolbar": ContextToolbarDocs,
+  "data-views": DataViewsDocs,
   "diff-review": DiffReviewDocs,
   "disclaimer-note": DisclaimerNoteDocs,
   "drawing-tools": DrawingToolsDocs,

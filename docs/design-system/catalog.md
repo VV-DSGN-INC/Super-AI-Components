@@ -247,7 +247,7 @@ the Dialog contract governs, and it waits for the contract's first consumer.
 
 ---
 
-## P · Records & views (v2) — 0
+## P · Records & views (v2) — 1
 
 The first family from the **second reference board**, which
 [`2026-08-07-catalog-completion-design.md`](../superpowers/specs/2026-08-07-catalog-completion-design.md)
@@ -261,6 +261,7 @@ does not reach A–O's evidentiary footing until the screens are verified.
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|
+| P1 | `data-views` `NEW` | One config, five interchangeable collection views | feed · board · table · calendar · timeline; group tone by mark | Table, Toggle-group |
 
 ---
 
@@ -284,8 +285,8 @@ does not reach A–O's evidentiary footing until the screens are verified.
 | N — Feedback, trust & observability | 12 |
 | **B–N subtotal (L3)** | **89** (88 after D16, 82 before it, 74 before D12, 84 before D9) |
 | O — Blocks (L4) | 13 (O5 cut) |
-| P — Records & views (v2) | 0 |
-| **Total registry items** | **114** (113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| P — Records & views (v2) | 1 |
+| **Total registry items** | **115** (113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

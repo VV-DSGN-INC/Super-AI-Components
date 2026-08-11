@@ -5,16 +5,24 @@ import { shippedItems } from "./manifest-types";
 
 describe("MANIFEST", () => {
   it("carries every catalog row, including the cut records", () => {
-    // 114 active + family G's 10 cut rows + the cut O5 `flow-shell` = 125.
+    // 115 active + family G's 10 cut rows + the cut O5 `flow-shell` = 126.
     // (107 + family G/O5 = 118 before PR #14 / D14-D17 added 7 rows: D7
     // `slot-summary`, K7 `answer-block`, K8 `source-cards`, N9
     // `autonomy-selector`, N10 `safety-block`, N11 `escalation-handoff`, N12
-    // `task-tray`.)
-    expect(MANIFEST).toHaveLength(125);
+    // `task-tray`. D18 then added family P's first item.)
+    expect(MANIFEST).toHaveLength(126);
   });
 
-  it("has 114 active items, matching catalog.md's totals table", () => {
-    expect(MANIFEST.filter((i) => i.status !== "cut")).toHaveLength(114);
+  it("holds the A–O freeze at 114 while family P grows separately", () => {
+    // The freeze that matters is per-family, not the grand total: D18 added
+    // family P from the second reference board, and the catalog-completion
+    // spec's ruling was that such a family is counted alongside A–O rather
+    // than reopening them. Asserting the two halves separately is what keeps
+    // "the 114 is frozen" a checkable claim instead of a comment.
+    const active = MANIFEST.filter((i) => i.status !== "cut");
+    expect(active.filter((i) => i.family !== "P")).toHaveLength(114);
+    expect(active.filter((i) => i.family === "P")).toHaveLength(1);
+    expect(active).toHaveLength(115);
   });
 
   // The 14 components that shipped before Wave 1.5. They are exempt from the
