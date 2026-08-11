@@ -106,6 +106,14 @@ traps that have actually bitten this system:
   `feature-card-row`.
 - **State changes should be announced** — `role="status"`/`aria-live` for
   submitted/generating transitions; see `feedback`.
+- **An `sr-only` suffix fuses with the visible text in the accessible name.**
+  `<span>In</span><span class="sr-only"> point at 3s</span>` computes as
+  **"Inpoint at 3s"** — accname concatenates name-from-content chunks with
+  whitespace trimmed and no separator. Two components shipped this on the same
+  afternoon. Either set an outright `aria-label`, or mark the visual half
+  `aria-hidden` and put the *complete* phrase in the sr-only span. Assert it
+  with `expectAccessibleName` from `@/lib/test-utils`, not with
+  `toHaveTextContent` — text content will not show you the bug.
 
 ## Tests
 
