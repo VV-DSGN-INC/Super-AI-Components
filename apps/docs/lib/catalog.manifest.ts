@@ -1307,7 +1307,7 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["button", "dropdown-menu", "switch", "table"],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["app-icon-cluster", "meta", "enable-toggle", "run-status", "overflow-menu"],
+    states: ["app-icon-cluster", "metadata", "enable-toggle", "run-status", "overflow-menu"],
     specAnchor: "component-specs.md#j5-record-list",
   },
   {
