@@ -55,7 +55,7 @@ export function CostChipOverrideOnHighlight() {
       icon={<Sparkles aria-hidden />}
       title="Upscale"
       description="Increase resolution up to 4x without softening edges"
-      trailing={<CostChip amount={3} className="text-foreground" />}
+      trailing={<CostChip amount={3} />}
     />
   );
 }

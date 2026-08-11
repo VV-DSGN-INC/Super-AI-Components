@@ -337,14 +337,7 @@ function GenerationPanel({
         <CardFooter data-slot="generation-panel-generate" className="flex shrink-0 items-center justify-between gap-2">
           {cost !== undefined ? (
             <div data-slot="generation-panel-cost">
-              <CostChip
-                amount={cost}
-                unit={costUnit}
-                // CostChip's own bg-muted + text-muted-foreground pairing is
-                // 4.34:1, under the 4.5:1 minimum (see a11y-baseline.md).
-                // text-foreground keeps the pill but clears contrast.
-                className="text-foreground"
-              />
+              <CostChip amount={cost} unit={costUnit} />
             </div>
           ) : (
             <span />

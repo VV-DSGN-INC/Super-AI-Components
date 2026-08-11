@@ -29,11 +29,20 @@ function EntityRow({
 
   // min-h keeps a description-less row the same height as one with a description,
   // so a menu of mixed rows never looks ragged.
+  // Whenever the row's surface becomes `bg-accent`, it rebinds `--muted-foreground`
+  // to the accent's own foreground for its whole subtree. Muted text on an accent
+  // surface measures 4.34:1 (they're the same lightness in this token set) — see
+  // a11y-baseline.md, "The contrast pairing, measured". Rebinding the variable
+  // rather than overriding the two slots this component owns is deliberate:
+  // `trailing` holds caller markup, and callers pass `text-muted-foreground` into
+  // it (the demo does). A slot-level fix cannot reach that; a variable rebind
+  // repaints any descendant, composed or not.
   const rowClassName = cn(
     "flex min-h-14 w-full items-center gap-3 rounded-lg px-3 py-2 text-left",
-    interactive && "hover:bg-accent hover:text-accent-foreground transition-colors",
+    interactive &&
+      "hover:bg-accent hover:text-accent-foreground hover:[--muted-foreground:var(--accent-foreground)] transition-colors",
     interactive && "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
-    selected && "bg-accent text-accent-foreground",
+    selected && "bg-accent text-accent-foreground [--muted-foreground:var(--accent-foreground)]",
     disabled && "pointer-events-none opacity-50",
     className,
   );
@@ -85,10 +94,16 @@ function EntityRow({
     );
   }
 
+  // A non-interactive row has no `disabled` attribute to carry, so `opacity-50`
+  // was the only signal that it is inactive — visible to sighted users, invisible
+  // to assistive tech, and read by axe as ordinary low-contrast text (1.96:1 on
+  // the description). `aria-disabled` makes the state programmatic, which is the
+  // actual defect; the contrast reading was its symptom.
   return (
     <div
       data-slot="entity-row"
       data-state={selected ? "on" : "off"}
+      aria-disabled={disabled || undefined}
       className={rowClassName}
       {...props}
     >

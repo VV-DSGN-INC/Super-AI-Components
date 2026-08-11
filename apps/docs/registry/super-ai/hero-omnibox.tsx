@@ -208,15 +208,7 @@ function HeroOmnibox({
 
               {cost !== undefined ? (
                 <div data-slot="hero-omnibox-cost">
-                  {/* CostChip's own default (bg-muted + text-muted-foreground)
-                      is 4.34:1 at this size — under the 4.5:1 text needs, and
-                      already tracked as a pre-existing, contractExempt
-                      violation on CostChip itself. Overriding to text-foreground
-                      here (same fix as workspace-switcher's avatar initials)
-                      keeps the muted pill background — the visual hierarchy —
-                      while clearing 4.5:1 with a wide margin (~18:1) against
-                      the same bg-muted fill. */}
-                  <CostChip amount={cost} className="text-foreground" />
+                  <CostChip amount={cost} />
                 </div>
               ) : null}
             </div>

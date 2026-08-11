@@ -9,8 +9,10 @@ import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { ApprovalCardDocs } from "@/content/components/approval-card.docs";
 import { ArtifactGridDocs } from "@/content/components/artifact-grid.docs";
+import { ArtifactShellDocs } from "@/content/components/artifact-shell.docs";
 import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
 import { AssetLibraryDocs } from "@/content/components/asset-library.docs";
+import { AuthShellDocs } from "@/content/components/auth-shell.docs";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { CoachMarkDocs } from "@/content/components/coach-mark.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
@@ -19,10 +21,12 @@ import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
 import { DiffReviewDocs } from "@/content/components/diff-review.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
+import { DocsShellDocs } from "@/content/components/docs-shell.docs";
 import { DrawingToolsDocs } from "@/content/components/drawing-tools.docs";
 import { EmptyStateDocs } from "@/content/components/empty-state.docs";
 import { EnvStatusDocs } from "@/content/components/env-status.docs";
 import { ExploreGalleryDocs } from "@/content/components/explore-gallery.docs";
+import { ExploreShellDocs } from "@/content/components/explore-shell.docs";
 import { FeatureAnnouncementDocs } from "@/content/components/feature-announcement.docs";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
 import { FeedbackDocs } from "@/content/components/feedback.docs";
@@ -31,14 +35,18 @@ import { FrameStripDocs } from "@/content/components/frame-strip.docs";
 import { GenerationGridDocs } from "@/content/components/generation-grid.docs";
 import { GenerationPanelDocs } from "@/content/components/generation-panel.docs";
 import { GenerationQueueDocs } from "@/content/components/generation-queue.docs";
+import { GenerationShellDocs } from "@/content/components/generation-shell.docs";
 import { GenerationWizardDocs } from "@/content/components/generation-wizard.docs";
 import { HeroOmniboxDocs } from "@/content/components/hero-omnibox.docs";
+import { HomeShellDocs } from "@/content/components/home-shell.docs";
 import { InlineGeneratePopupDocs } from "@/content/components/inline-generate-popup.docs";
+import { LibraryShellDocs } from "@/content/components/library-shell.docs";
 import { MediaPromptBarDocs } from "@/content/components/media-prompt-bar.docs";
 import { MemberGateRowDocs } from "@/content/components/member-gate-row.docs";
 import { ModalityRailDocs } from "@/content/components/modality-rail.docs";
 import { ModeTabsDocs } from "@/content/components/mode-tabs.docs";
 import { ModelPickerDocs } from "@/content/components/model-picker.docs";
+import { NotebookShellDocs } from "@/content/components/notebook-shell.docs";
 import { OnboardingWizardDocs } from "@/content/components/onboarding-wizard.docs";
 import { ParameterPanelDocs } from "@/content/components/parameter-panel.docs";
 import { PaywallMessageDocs } from "@/content/components/paywall-message.docs";
@@ -51,6 +59,7 @@ import { RateLimitBannerDocs } from "@/content/components/rate-limit-banner.docs
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
 import { RecommendationCardDocs } from "@/content/components/recommendation-card.docs";
 import { RecordListDocs } from "@/content/components/record-list.docs";
+import { RecordsShellDocs } from "@/content/components/records-shell.docs";
 import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
 import { RenderQueueDocs } from "@/content/components/render-queue.docs";
 import { ResultCardDocs } from "@/content/components/result-card.docs";
@@ -58,13 +67,16 @@ import { RunButtonDocs } from "@/content/components/run-button.docs";
 import { RunInspectorDocs } from "@/content/components/run-inspector.docs";
 import { SelectionToolbarDocs } from "@/content/components/selection-toolbar.docs";
 import { SettingsDialogDocs } from "@/content/components/settings-dialog.docs";
+import { SettingsShellDocs } from "@/content/components/settings-shell.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
 import { SkillMenuDocs } from "@/content/components/skill-menu.docs";
 import { SourcePanelDocs } from "@/content/components/source-panel.docs";
 import { StemMixerDocs } from "@/content/components/stem-mixer.docs";
+import { StudioShellDocs } from "@/content/components/studio-shell.docs";
 import { SuggestionChipsDocs } from "@/content/components/suggestion-chips.docs";
 import { TemplateDetailDocs } from "@/content/components/template-detail.docs";
 import { TimeRulerDocs } from "@/content/components/time-ruler.docs";
+import { TimelineShellDocs } from "@/content/components/timeline-shell.docs";
 import { ToolPanelDocs } from "@/content/components/tool-panel.docs";
 import { TraceTimelineDocs } from "@/content/components/trace-timeline.docs";
 import { TrackLaneDocs } from "@/content/components/track-lane.docs";
@@ -88,8 +100,10 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "app-topbar": AppTopbarDocs,
   "approval-card": ApprovalCardDocs,
   "artifact-grid": ArtifactGridDocs,
+  "artifact-shell": ArtifactShellDocs,
   "asset-detail": AssetDetailDocs,
   "asset-library": AssetLibraryDocs,
+  "auth-shell": AuthShellDocs,
   "chat-shell": ChatShellDocs,
   "coach-mark": CoachMarkDocs,
   "compare-viewer": CompareViewerDocs,
@@ -98,10 +112,12 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "context-toolbar": ContextToolbarDocs,
   "diff-review": DiffReviewDocs,
   "disclaimer-note": DisclaimerNoteDocs,
+  "docs-shell": DocsShellDocs,
   "drawing-tools": DrawingToolsDocs,
   "empty-state": EmptyStateDocs,
   "env-status": EnvStatusDocs,
   "explore-gallery": ExploreGalleryDocs,
+  "explore-shell": ExploreShellDocs,
   "feature-announcement": FeatureAnnouncementDocs,
   "feature-card-row": FeatureCardRowDocs,
   "feedback": FeedbackDocs,
@@ -110,14 +126,18 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "generation-grid": GenerationGridDocs,
   "generation-panel": GenerationPanelDocs,
   "generation-queue": GenerationQueueDocs,
+  "generation-shell": GenerationShellDocs,
   "generation-wizard": GenerationWizardDocs,
   "hero-omnibox": HeroOmniboxDocs,
+  "home-shell": HomeShellDocs,
   "inline-generate-popup": InlineGeneratePopupDocs,
+  "library-shell": LibraryShellDocs,
   "media-prompt-bar": MediaPromptBarDocs,
   "member-gate-row": MemberGateRowDocs,
   "modality-rail": ModalityRailDocs,
   "mode-tabs": ModeTabsDocs,
   "model-picker": ModelPickerDocs,
+  "notebook-shell": NotebookShellDocs,
   "onboarding-wizard": OnboardingWizardDocs,
   "parameter-panel": ParameterPanelDocs,
   "paywall-message": PaywallMessageDocs,
@@ -130,6 +150,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "recent-grid": RecentGridDocs,
   "recommendation-card": RecommendationCardDocs,
   "record-list": RecordListDocs,
+  "records-shell": RecordsShellDocs,
   "reference-strip": ReferenceStripDocs,
   "render-queue": RenderQueueDocs,
   "result-card": ResultCardDocs,
@@ -137,13 +158,16 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "run-inspector": RunInspectorDocs,
   "selection-toolbar": SelectionToolbarDocs,
   "settings-dialog": SettingsDialogDocs,
+  "settings-shell": SettingsShellDocs,
   "sidebar-nav": SidebarNavDocs,
   "skill-menu": SkillMenuDocs,
   "source-panel": SourcePanelDocs,
   "stem-mixer": StemMixerDocs,
+  "studio-shell": StudioShellDocs,
   "suggestion-chips": SuggestionChipsDocs,
   "template-detail": TemplateDetailDocs,
   "time-ruler": TimeRulerDocs,
+  "timeline-shell": TimelineShellDocs,
   "tool-panel": ToolPanelDocs,
   "trace-timeline": TraceTimelineDocs,
   "track-lane": TrackLaneDocs,

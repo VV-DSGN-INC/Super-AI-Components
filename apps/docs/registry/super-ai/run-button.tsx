@@ -130,11 +130,7 @@ function RunButton({
         <div data-slot="run-button-controls" className="inline-flex items-center gap-2">
           {showCostChip ? (
             <div data-slot="run-button-cost">
-              {/* CostChip's own bg-muted + text-muted-foreground pairing is
-                  4.34:1 — under the 4.5:1 minimum. Overriding to
-                  text-foreground (same fix hero-omnibox and skill-menu apply)
-                  keeps the muted pill while clearing contrast (~18:1). */}
-              <CostChip amount={cost} unit={unit} className="text-foreground" />
+              <CostChip amount={cost} unit={unit} />
             </div>
           ) : null}
 

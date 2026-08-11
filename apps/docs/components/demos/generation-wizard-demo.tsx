@@ -18,7 +18,7 @@ const STEPS: GenerationWizardStep[] = [
     preview: (
       <div className="flex flex-col items-center gap-2 text-center">
         <p className="text-foreground text-sm font-medium">Fast model</p>
-        <CostChip amount={2} className="text-foreground" />
+        <CostChip amount={2} />
       </div>
     ),
   },
@@ -43,7 +43,7 @@ const STEPS: GenerationWizardStep[] = [
     preview: (
       <div className="flex flex-col items-center gap-2 text-center">
         <p className="text-foreground text-sm font-medium">Total cost</p>
-        <CostChip amount={3} className="text-foreground" />
+        <CostChip amount={3} />
       </div>
     ),
   },

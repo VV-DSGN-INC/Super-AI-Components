@@ -115,11 +115,7 @@ function ModelPickerBadges({ model }: { model: ModelPickerModel }) {
         </Badge>
       ))}
       {model.price !== undefined ? (
-        // CostChip's own default (bg-muted + text-muted-foreground) is 4.34:1 —
-        // under the 4.5:1 text minimum. Overriding to text-foreground keeps the
-        // muted pill background while clearing contrast against that same fill
-        // (same fix as hero-omnibox, media-prompt-bar, skill-menu).
-        <CostChip amount={model.price} unit={model.priceUnit} className="text-foreground" />
+        <CostChip amount={model.price} unit={model.priceUnit} />
       ) : null}
     </div>
   );

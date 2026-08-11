@@ -48,6 +48,12 @@ const VALUE: Record<QuotaState, string> = {
 };
 
 function QuotaMeter({ resources, nearLimitAt = 0.8, compact = false, className, ...props }: QuotaMeterProps) {
+  // Names each track from the row's own visible label. `aria-valuetext` carried the
+  // numbers but nothing said *what* was being measured, so every track announced as
+  // an unnamed progressbar (axe `aria-progressbar-name`, serious). Pointing at the
+  // label rather than duplicating it into an `aria-label` keeps the two in step.
+  const labelBaseId = React.useId();
+
   return (
     <div
       data-slot="quota-meter"
@@ -64,7 +70,11 @@ function QuotaMeter({ resources, nearLimitAt = 0.8, compact = false, className, 
         return (
           <div key={i} data-slot="quota-meter-row" data-state={state} className="flex flex-col gap-1.5">
             <div className={cn("flex items-baseline justify-between gap-3", compact && "text-xs")}>
-              <span data-slot="quota-meter-label" className={cn(!compact && "text-sm", "font-medium")}>
+              <span
+                id={`${labelBaseId}-${i}`}
+                data-slot="quota-meter-label"
+                className={cn(!compact && "text-sm", "font-medium")}
+              >
                 {label}
               </span>
               <span
@@ -80,6 +90,7 @@ function QuotaMeter({ resources, nearLimitAt = 0.8, compact = false, className, 
             <div
               data-slot="quota-meter-track"
               role="progressbar"
+              aria-labelledby={`${labelBaseId}-${i}`}
               aria-valuenow={used}
               aria-valuemin={0}
               aria-valuemax={limit}

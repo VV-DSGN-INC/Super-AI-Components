@@ -76,7 +76,7 @@ function ActionCost({ cost }: { cost: Cost }) {
   // the gate only under its own story name, so composing it here would fail
   // this component's stories. tailwind-merge swaps the foreground token and
   // leaves the chip otherwise untouched. Remove this when A2's retrofit lands.
-  return <CostChip amount={formatCost(cost)} unit="" className="text-foreground" />;
+  return <CostChip amount={formatCost(cost)} unit="" />;
 }
 
 function ActionRow({

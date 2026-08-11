@@ -228,11 +228,7 @@ function TtsComposerSegmentRow({
           <RefreshCw aria-hidden className={cn(status === "generating" && "animate-spin")} />
         </Button>
         {regenerateCost != null ? (
-          // CostChip's own bg-muted + text-muted-foreground pairing measures
-          // 4.34:1 — under the 4.5:1 minimum (a11y-baseline.md). Overriding to
-          // text-foreground at the embedding site is the established fix
-          // (hero-omnibox, run-button); CostChip itself is left untouched.
-          <CostChip amount={regenerateCost} unit={costUnit} className="text-foreground" />
+          <CostChip amount={regenerateCost} unit={costUnit} />
         ) : null}
       </div>
     </div>

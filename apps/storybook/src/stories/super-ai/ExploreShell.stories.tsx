@@ -1,0 +1,262 @@
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Compass, Library, MessagesSquare, Settings, Sparkles } from "lucide-react";
+
+import { ExploreShell, type ExploreShellProps } from "@/registry/super-ai/explore-shell";
+import { ExploreShellDocs } from "@/content/components/explore-shell.docs";
+import { componentDocsPage } from "@/lib/component-docs-page";
+
+/** Stand-in for real community artwork — token-only, no palette classes. */
+function Swatch({ tone }: { tone: "primary" | "secondary" | "muted" }) {
+  return (
+    <div
+      className={
+        tone === "primary"
+          ? "bg-primary/25 size-full"
+          : tone === "secondary"
+            ? "bg-secondary size-full"
+            : "bg-muted size-full"
+      }
+    />
+  );
+}
+
+const RAIL = [
+  { id: "explore", label: "Explore", icon: <Compass /> },
+  { id: "create", label: "Create", icon: <Sparkles />, badge: "new" as const },
+  { id: "library", label: "Library", icon: <Library /> },
+  { id: "chat", label: "Chat", icon: <MessagesSquare /> },
+];
+
+const RAIL_PINNED = [{ id: "settings", label: "Settings", icon: <Settings /> }];
+
+const ITEMS: ExploreShellProps["items"] = [
+  {
+    id: "neon",
+    title: "Neon city at dusk",
+    aspectRatio: "3 / 4",
+    type: "image",
+    typeLabel: "Image",
+    author: "@lumen",
+    metric: "1.2k",
+    prompt: "neon city at dusk, wet asphalt reflections, anamorphic",
+    media: <Swatch tone="primary" />,
+    asset: {
+      media: <Swatch tone="primary" />,
+      prompt: "neon city at dusk, wet asphalt reflections, anamorphic",
+      highlightedSpans: [{ start: 22, end: 47 }],
+      params: [
+        { label: "Model", value: "Flux 1.1 Pro" },
+        { label: "Seed", value: "884201", copyable: true },
+        { label: "Sampler", value: "DPM++ 2M", copyable: true },
+        { label: "Steps", value: "28" },
+      ],
+      cost: { amount: 4, unit: "credits", status: "confirmed" },
+    },
+  },
+  {
+    id: "forest",
+    title: "Paper-cut forest",
+    aspectRatio: "16 / 9",
+    type: "image",
+    typeLabel: "Image",
+    author: "@fold",
+    metric: "840",
+    prompt: "layered paper-cut forest, warm rim light",
+    media: <Swatch tone="secondary" />,
+    asset: {
+      media: <Swatch tone="secondary" />,
+      prompt: "layered paper-cut forest, warm rim light",
+      params: [
+        { label: "Model", value: "Flux 1.1 Pro" },
+        { label: "Seed", value: "119003", copyable: true },
+      ],
+    },
+  },
+  {
+    id: "jellyfish",
+    title: "Chrome jellyfish",
+    aspectRatio: "1 / 1",
+    type: "video",
+    typeLabel: "Video",
+    author: "@drift",
+    metric: "3.4k",
+    prompt: "chrome jellyfish drifting through black water, slow motion",
+    media: <Swatch tone="muted" />,
+    asset: {
+      media: <Swatch tone="muted" />,
+      prompt: "chrome jellyfish drifting through black water, slow motion",
+      params: [{ label: "Model", value: "Veo 3.1" }],
+    },
+  },
+  {
+    id: "greenhouse",
+    title: "Brutalist greenhouse",
+    aspectRatio: "4 / 5",
+    type: "image",
+    typeLabel: "Image",
+    author: "@slab",
+    metric: "612",
+    prompt: "brutalist greenhouse, overgrown, morning fog",
+    media: <Swatch tone="secondary" />,
+    asset: {
+      media: <Swatch tone="secondary" />,
+      prompt: "brutalist greenhouse, overgrown, morning fog",
+      params: [{ label: "Model", value: "Flux 1.1 Pro" }],
+    },
+  },
+  {
+    id: "launch-deck",
+    title: "Launch deck",
+    aspectRatio: "16 / 10",
+    type: "template",
+    typeLabel: "Template",
+    author: "@studio",
+    metric: "9.1k",
+    media: <Swatch tone="primary" />,
+    template: {
+      templates: [
+        {
+          id: "launch-deck",
+          title: "Launch deck",
+          description: "Twelve slides that open on the problem and close on the ask.",
+          previews: [
+            { id: "cover", label: "Cover slide", media: <Swatch tone="primary" /> },
+            { id: "metrics", label: "Metrics slide", media: <Swatch tone="secondary" /> },
+          ],
+          options: [
+            {
+              id: "length",
+              label: "Length",
+              choices: [
+                { value: "12", label: "12 slides" },
+                { value: "20", label: "20 slides" },
+              ],
+            },
+          ],
+          author: { id: "studio", name: "Studio Ninefold", meta: "84 templates" },
+        },
+      ],
+    },
+  },
+  {
+    id: "zine",
+    title: "Risograph zine cover",
+    aspectRatio: "3 / 4",
+    type: "image",
+    typeLabel: "Image",
+    author: "@press",
+    metric: "455",
+    prompt: "risograph zine cover, two-colour overprint, halftone",
+    media: <Swatch tone="muted" />,
+    asset: {
+      media: <Swatch tone="muted" />,
+      prompt: "risograph zine cover, two-colour overprint, halftone",
+      params: [{ label: "Model", value: "Flux 1.1 Pro" }],
+    },
+  },
+];
+
+const SORTS = [
+  { value: "hot", label: "Hot" },
+  { value: "new", label: "New" },
+  { value: "top", label: "Top" },
+];
+
+const TYPES = [
+  { value: "image", label: "Images", count: 812 },
+  { value: "video", label: "Videos", count: 44 },
+  { value: "template", label: "Templates", count: 126 },
+];
+
+const FULL_ARGS: ExploreShellProps = {
+  rail: RAIL,
+  railPinned: RAIL_PINNED,
+  activeRailId: "explore",
+  sorts: SORTS,
+  defaultSort: "hot",
+  types: TYPES,
+  items: ITEMS,
+  gallery: { hasMore: true, totalCount: 982 },
+};
+
+const meta: Meta<typeof ExploreShell> = {
+  title: "Super AI/Explore Shell",
+  component: ExploreShell,
+  // A block is a page, so it gets the whole canvas rather than a centred box.
+  // The `h-svh` wrapper is what the shell's `h-full` measures against — in a
+  // real app that is the document, here it is the story frame.
+  parameters: { layout: "fullscreen", docs: { page: componentDocsPage(ExploreShellDocs) } },
+  decorators: [
+    (Story) => (
+      <div className="h-svh w-full">
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export default meta;
+type Story = StoryObj<typeof ExploreShell>;
+
+/** The working shell: a rail, a loaded prompt bar, both axes, and a feed of uneven tiles. */
+export const Feed: Story = { args: FULL_ARGS };
+
+/**
+ * Day one. The rail and both axes are there — they are product chrome, not user
+ * content — but nobody has published anything, so the feed falls to L1 rather
+ * than to J3's own empty list and its "0 shown" line. Mandatory export for the
+ * block contract, and the view a community surface actually launches with.
+ */
+export const Empty: Story = {
+  args: {
+    rail: RAIL,
+    railPinned: RAIL_PINNED,
+    activeRailId: "explore",
+    sorts: SORTS,
+    defaultSort: "hot",
+    types: TYPES.map((type) => ({ ...type, count: 0 })),
+    items: [],
+  },
+};
+
+/**
+ * Narrow viewport. The rail keeps its 92px column — B4 has no compact width and
+ * no drawer of its own — the prompt bar and control strip take the rest, and
+ * J3's masonry collapses to a single column below `sm`. Mandatory export for
+ * the block contract; a shell is a layout, and layout is what breaks.
+ *
+ * `globals.viewport.value` is the Storybook 9 API. `parameters.viewport
+ * .defaultViewport` was removed in 9 and does nothing while looking configured.
+ *
+ * KNOWN LIMIT: this resizes the canvas in the Storybook UI only. The vitest
+ * runner has no manager to resize an iframe, so `pnpm test:stories` renders and
+ * axe-checks this story at the browser's default width.
+ */
+export const Responsive: Story = {
+  args: FULL_ARGS,
+  parameters: {
+    viewport: {
+      options: {
+        mobile: { name: "Mobile", styles: { width: "375px", height: "812px" }, type: "mobile" },
+      },
+    },
+  },
+  globals: { viewport: { value: "mobile" } },
+};
+
+/** A tile opened into F3, with more-like-this derived from the feed behind it. */
+export const AssetOpen: Story = { args: { ...FULL_ARGS, openItemId: "neon" } };
+
+/** The same tile grammar, opening into J6 instead — a template is configured before it is used. */
+export const TemplateOpen: Story = { args: { ...FULL_ARGS, openItemId: "launch-deck" } };
+
+/** A feed that offers neither axis still mounts the control region, and says what it holds. */
+export const NoAxes: Story = {
+  args: {
+    rail: RAIL,
+    railPinned: RAIL_PINNED,
+    activeRailId: "explore",
+    items: ITEMS,
+    scopeLabel: "Showing everything, newest first",
+  },
+};

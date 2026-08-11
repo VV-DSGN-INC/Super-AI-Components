@@ -133,7 +133,7 @@ function SkillMenu({
                 description={skill.description}
                 trailing={
                   skill.cost != null ? (
-                    <CostChip amount={skill.cost} unit={skill.costUnit} className="text-foreground" />
+                    <CostChip amount={skill.cost} unit={skill.costUnit} />
                   ) : undefined
                 }
                 className="w-full"
