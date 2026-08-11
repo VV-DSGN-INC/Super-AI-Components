@@ -2,8 +2,15 @@
 name: retrofit-builder
 description: Brings one pre-Wave-1.5 contractExempt component up to the story-state and guidance contracts. The component file already exists and must not change. Dispatched one per component; not for direct invocation.
 tools: Read, Grep, Glob, Edit, Write, Bash
-disallowedTools: Edit(apps/docs/registry/super-ai/**), Write(apps/docs/registry/super-ai/**), Edit(apps/docs/lib/catalog.manifest.ts), Write(apps/docs/lib/catalog.manifest.ts), Edit(docs/**), Write(docs/**), Edit(.github/**), Write(.github/**), Edit(.claude/**), Write(.claude/**), Edit(apps/docs/scripts/**), Write(apps/docs/scripts/**), Edit(apps/docs/lib/**), Write(apps/docs/lib/**), Bash(git add), Bash(git add *), Bash(git commit), Bash(git commit *), Bash(git checkout), Bash(git checkout *), Bash(git stash), Bash(git stash *), Bash(git reset), Bash(git reset *), Bash(pnpm build), Bash(pnpm build *), Bash(pnpm run build), Bash(pnpm run build *), Bash(pnpm test), Bash(pnpm test *), Bash(pnpm run test), Bash(pnpm run test *)
+disallowedTools: Edit(./apps/docs/registry/super-ai/**), Write(./apps/docs/registry/super-ai/**), Bash(git commit:*), Bash(git add:*), Bash(git checkout:*), Bash(git stash:*), Bash(git reset:*), Bash(pnpm build:*), Bash(pnpm test:*), Edit(./apps/docs/lib/**), Write(./apps/docs/lib/**), Edit(./docs/**), Write(./docs/**), Edit(./.github/**), Write(./.github/**), Edit(./.claude/**), Write(./.claude/**), Edit(./apps/docs/scripts/**), Write(./apps/docs/scripts/**)
 ---
+
+> **UNVERIFIED — do not dispatch in a real wave yet.** As first written, this
+> agent registered with `Edit`, `Write` and `Bash` missing entirely, making it
+> unusable. The permission syntax has since been corrected, but that fix is
+> unconfirmed until the smoke test in the plan's Task 9 Step 4 passes after a
+> session restart. Until then, treat every restriction below as a request, not
+> an enforcement.
 
 You retrofit exactly one already-shipped component so it satisfies the full
 contract and can lose its `contractExempt: true` flag.

@@ -2,8 +2,15 @@
 name: component-builder
 description: Builds one component in the super-ai registry, filling its five scaffolded files. Dispatched one per component during a parallel wave; not for direct invocation.
 tools: Read, Grep, Glob, Edit, Write, Bash
-disallowedTools: Edit(apps/docs/lib/catalog.manifest.ts), Write(apps/docs/lib/catalog.manifest.ts), Edit(docs/**), Write(docs/**), Edit(.github/**), Write(.github/**), Edit(.claude/**), Write(.claude/**), Edit(apps/docs/scripts/**), Write(apps/docs/scripts/**), Edit(apps/docs/lib/**), Write(apps/docs/lib/**), Bash(git add), Bash(git add *), Bash(git commit), Bash(git commit *), Bash(git checkout), Bash(git checkout *), Bash(git stash), Bash(git stash *), Bash(git reset), Bash(git reset *), Bash(pnpm build), Bash(pnpm build *), Bash(pnpm run build), Bash(pnpm run build *), Bash(pnpm test), Bash(pnpm test *), Bash(pnpm run test), Bash(pnpm run test *)
+disallowedTools: Bash(git commit:*), Bash(git add:*), Bash(git checkout:*), Bash(git stash:*), Bash(git reset:*), Bash(pnpm build:*), Bash(pnpm test:*), Edit(./apps/docs/lib/**), Write(./apps/docs/lib/**), Edit(./docs/**), Write(./docs/**), Edit(./.github/**), Write(./.github/**), Edit(./.claude/**), Write(./.claude/**), Edit(./apps/docs/scripts/**), Write(./apps/docs/scripts/**)
 ---
+
+> **UNVERIFIED — do not dispatch in a real wave yet.** As first written, this
+> agent registered with `Edit`, `Write` and `Bash` missing entirely, making it
+> unusable. The permission syntax has since been corrected, but that fix is
+> unconfirmed until the smoke test in the plan's Task 9 Step 4 passes after a
+> session restart. Until then, treat every restriction below as a request, not
+> an enforcement.
 
 You build exactly one component in this registry.
 
