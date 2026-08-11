@@ -814,7 +814,33 @@ for (const item of manifest) {
 cd apps/docs && pnpm check:contract
 ```
 
-Expected: passes. If it reports erasures, those are **real bugs in shipped components** — record each in the task report and fix them in a follow-up commit; do not weaken the rule to get green.
+**It did not pass — and the outcome is now part of this task.** The gate reported seven real erasures on its first run:
+
+| Call site | Composed component | Overriding slot | Referenced by |
+| --- | --- | --- | --- |
+| `thread-list.tsx:33` | `DateSection` | `thread-list-section` | nothing |
+| `generation-panel.tsx:209` | `PreviewTile` | expression form — inspect | — |
+| `voice-clone-recorder.tsx:190` | `DisclaimerNote` | `voice-clone-recorder-disclaimer` | its own docs `anatomy` |
+| `frame-strip.tsx:141` | `PreviewTile` | expression form — inspect | — |
+| `template-detail.tsx:354` | `FieldRow` | `template-detail-option` | its own docs `anatomy` |
+| `task-tray.tsx:102` | `EntityRow` | `task-tray-task` | its own test |
+| `explore-shell.tsx:330` | `ChoiceChips` | `explore-shell-types` | nothing |
+
+Three are *documented* — the overriding slot appears in the component's own guidance `anatomy`, so a builder deliberately re-labelled a composed primitive and wrote the new name down as public API. That is not the silent erasure §4 describes.
+
+**Ruling: fix all seven; the gate enforces.** The harm the rule guards against still occurs regardless of intent — a consumer styling `[data-slot="date-section"]` gets nothing on a `ThreadListSection`, because the composed primitive's identity is gone from the DOM. Let the composed component keep its slot; that is also what makes the composition visible.
+
+**Do not weaken the rule to get green.** No exemption list, no narrowed tag match, no skipped files.
+
+- [ ] **Step 7a: Fix the seven call sites**
+
+For each, remove the overriding `data-slot`. Where the wrapper genuinely needs a handle on the element, use `data-<thing>-id` instead — that is the documented alternative and it does not collide with the slot.
+
+Then update what referenced the removed names: two guidance `anatomy` lists (`voice-clone-recorder.docs.tsx`, `template-detail.docs.tsx`) must document the composed component's real slot, and `task-tray.test.tsx` must query the real slot.
+
+Inspect `generation-panel.tsx:209` and `frame-strip.tsx:141` individually — their `data-slot` is an expression, not a literal, so the right fix may differ.
+
+**If removing an override would break a behavioural assertion** — as opposed to renaming a selector — stop and report it rather than weakening the test.
 
 - [ ] **Step 8: Prove the gate fails on a real instance**
 
