@@ -14,9 +14,9 @@ complete**.
 |                 |                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
-| Branch          | `claude/e2e-gate-a11y-and-family-o` (branched from `main` after PR #19 merged)                                              |
+| Branch          | none — this landed on `main` as PR #20                                                                                     |
 | HEAD at handoff | **The catalog is complete** — family O's twelve remaining blocks, plus the A- and M-family a11y retrofits                   |
-| Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
+| Pushed          | **merged.** Start your next branch from `main`.                                                                             |
 | Preview         | Not deployed. Production is behind and serves fewer registry items than this branch builds — see §7.                        |
 
 **Catalog progress: 114 of 114 active items shipped. Nothing is planned.**
@@ -172,8 +172,14 @@ names.
 
 **Two naming traps, both already hit:**
 
-- A state named `"default"` becomes the story export `Default`, which the
-  contract gate forbids. Use a meaningful name (`text-only`, `plain`).
+- A state named `"default"` becomes the story export `Default`. Use a meaningful
+  name (`text-only`, `plain`). **Correction (2026-08-11): this bullet used to say
+  "which the contract gate forbids", and that is not true.** `check-contract.mts`
+  only asserts that every declared state has a matching export, so a state called
+  `default` passes it. What actually keeps `Default` out is the scaffolder, which
+  never emits one — pinned by `new-component.test.ts:65` — and the 14 stories
+  that do export it are exactly the pre-Wave-1.5 `contractExempt` set. Worth
+  knowing before you rely on the gate to catch this.
 - Two states that normalise to the same identifier silently collide.
 
 ### 3.3 Scaffold
