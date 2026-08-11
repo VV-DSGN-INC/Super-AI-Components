@@ -1283,3 +1283,33 @@ Adding a sixth view means adding one shell and one contract, and touching no sec
 
 **Ships seven files.** The six view shells are imported by `data-views.tsx` and by nothing else, so
 D3 leaves them nowhere to be but this item's own file set.
+
+## P2 `detail-view-shell` — one record, three opening modes
+
+**Family P · v2.** Evidence: [`records-board-analysis.md`](records-board-analysis.md) and D18, both
+provisional. Notion's side peek / center peek / full page map one-for-one onto overlay / popup /
+fullscreen.
+
+**States:** popup · overlay · fullscreen · two-column · collapsed-tabs · collapsed-stack
+
+Branches on `mode` and renders what it is told. It owns no routing: the page decides when a mode
+change means navigating. That single restraint is what lets one shell serve every entity.
+
+- **Only fullscreen owns a URL**, and it owns it in the host. `use-detail-navigation` is
+  deliberately not part of this item — a registry component that reaches for a router works in one
+  framework.
+- **Collapse is measured, not guessed.** `useContainerWidth` observes the content element at a
+  720px threshold, so the same body works inside a 480px panel and a full-width route without
+  branching on mode. It starts narrow and only widens once measured; the pessimistic default is
+  what prevents a flash of two columns.
+- **Overlay is a plain `<aside>`, not a Sheet.** Upstream it was a Radix Sheet with three overrides
+  that switched off its scroll lock, its backdrop and its outside-close — i.e. everything that made
+  it a dialog. None of those props exist on a Base UI Sheet, and rebuilding a de-modalized dialog on
+  whichever primitive a consumer installed breaks on the next bump. No focus trap is correct here:
+  the collection behind is meant to stay operable.
+- **Two named slots.** `attributes` is what the record IS; `conversation` is what HAPPENED to it.
+  An absent or empty `conversation` gives a one-column body and the narrower frame.
+
+**Ships four files.** `detail-fields` and `use-container-width` are not imported by the shell —
+they are what a consumer renders into `attributes` and measures with, and a two-column detail body
+without a field list is half a component.

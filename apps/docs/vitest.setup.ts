@@ -1,12 +1,24 @@
 import "@testing-library/jest-dom/vitest";
+import { afterEach } from "vitest";
 
-// Base UI / floating-ui shims for jsdom (shadcn base-nova components use @base-ui/react)
-class ResizeObserverStub {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-globalThis.ResizeObserver ??= ResizeObserverStub as unknown as typeof ResizeObserver;
+import { clearResizeObservers, installResizeObserver } from "./test/resize-observer";
+
+/**
+ * jsdom ships no ResizeObserver and reports every element as 0x0.
+ *
+ * This was a passive three-no-op stub, which is all that components merely
+ * constructing an observer ever needed. P2 `detail-view-shell` measures its own
+ * container to choose one column or two, so its tests have to *drive* a width —
+ * hence the controllable implementation, which records live observers and lets
+ * a test push a width into their callbacks.
+ *
+ * Behaviour-compatible with the stub it replaces: it fires only when a test
+ * calls `resizeTo`, so every existing test sees the same never-fires observer
+ * it saw before.
+ */
+installResizeObserver();
+
+afterEach(clearResizeObservers);
 window.HTMLElement.prototype.scrollIntoView ??= () => {};
 window.HTMLElement.prototype.hasPointerCapture ??= () => false;
 window.HTMLElement.prototype.setPointerCapture ??= () => {};

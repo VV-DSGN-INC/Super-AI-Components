@@ -18,6 +18,7 @@ import { ConnectionManagerDocs } from "@/content/components/connection-manager.d
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
 import { DataViewsDocs } from "@/content/components/data-views.docs";
+import { DetailViewShellDocs } from "@/content/components/detail-view-shell.docs";
 import { DiffReviewDocs } from "@/content/components/diff-review.docs";
 import { DisclaimerNoteDocs } from "@/content/components/disclaimer-note.docs";
 import { DrawingToolsDocs } from "@/content/components/drawing-tools.docs";
@@ -98,6 +99,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "context-chips": ContextChipsDocs,
   "context-toolbar": ContextToolbarDocs,
   "data-views": DataViewsDocs,
+  "detail-view-shell": DetailViewShellDocs,
   "diff-review": DiffReviewDocs,
   "disclaimer-note": DisclaimerNoteDocs,
   "drawing-tools": DrawingToolsDocs,
