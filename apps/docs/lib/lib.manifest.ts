@@ -18,6 +18,16 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     npm: [],
     target: "lib/cost.tsx",
   },
+  {
+    name: "use-view-mode",
+    title: "View & detail mode contracts",
+    description:
+      "The collection-axis and record-axis preference hooks — each validated against what a section actually offers, persisted independently, and inert without a window.",
+    status: "shipped",
+    shadcn: [],
+    npm: [],
+    target: "lib/use-view-mode.tsx",
+  },
 ];
 
 export const LIB_NAMES = LIB_MANIFEST.map((i) => i.name);
