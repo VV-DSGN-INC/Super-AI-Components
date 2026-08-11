@@ -29,6 +29,7 @@ if (FILES.length === 0) {
 
 let violations = 0;
 let warnings = 0;
+const warnedFiles = new Set();
 for (const file of FILES) {
   let source;
   try {
@@ -44,6 +45,7 @@ for (const file of FILES) {
         const message = `${file}:${i + 1} — ${why}: ${line.trim()}`;
         if (isVendored(file)) {
           warnings++;
+          warnedFiles.add(file);
           console.warn(`WARN ${message}`);
         } else {
           violations++;
@@ -56,6 +58,7 @@ for (const file of FILES) {
   for (const message of findSingleStringViolations(file, source)) {
     if (isVendored(file)) {
       warnings++;
+      warnedFiles.add(file);
       console.warn(`WARN ${message}`);
     } else {
       violations++;
@@ -65,6 +68,7 @@ for (const file of FILES) {
   for (const message of findCvaViolations(file, source)) {
     if (isVendored(file)) {
       warnings++;
+      warnedFiles.add(file);
       console.warn(`WARN ${message}`);
     } else {
       violations++;
@@ -79,7 +83,12 @@ if (violations) {
 }
 if (warnings) {
   console.warn(
-    `\ncheck:tokens — ${warnings} warning(s) in vendored components/ui/. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
+    `\ncheck:tokens — ${warnings} warning(s) across ${warnedFiles.size} vendored file(s) in components/ui/. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
   );
 }
-console.log(`check:tokens — ${FILES.length} file(s) clean.`);
+const clean = FILES.length - warnedFiles.size;
+console.log(
+  warnedFiles.size
+    ? `check:tokens — ${clean} of ${FILES.length} file(s) clean, ${warnedFiles.size} vendored file(s) warned.`
+    : `check:tokens — ${FILES.length} file(s) clean.`,
+);
