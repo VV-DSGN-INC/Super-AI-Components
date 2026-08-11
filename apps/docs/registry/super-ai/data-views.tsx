@@ -21,47 +21,89 @@ import type {
 
 /* The public surface of this item. Consumers import everything from
    `data-views`; the shared module is an implementation detail of the file set,
-   not a second entry point. */
-export type {
-  BaseDataViewsConfig,
+   not a second entry point.
+
+   Written as import-then-export rather than `export … from`, and that is not a
+   style choice. `npx shadcn add` rewrites the `@/registry/super-ai/…` prefix on
+   IMPORT declarations only — a re-export keeps the raw path and lands in a
+   consumer as `@/components/<name>`, which resolves to nothing because the
+   files install under `components/super-ai/`. It type-checks here and fails in
+   every consumer, which is precisely the class of bug consumer-test.sh exists
+   to catch. */
+import {
+  GROUP_TONE_LABEL,
+  GROUP_TONE_MARK,
+  GROUP_TONE_SURFACE,
+  UnplacedNotice,
+  addDays,
+  dayLabel,
+  groupAccessibleName,
+  isSameLocalDay,
+  localDayKey,
+  normalizeRange,
+  packRows,
+  parseLocalDate,
+  startOfLocalDay,
+  withTone,
+} from "@/registry/super-ai/data-views-shared";
+import type {
+  BaseDataViewsConfig as BaseDataViewsConfigType,
   CalendarViewProps,
   ColumnDef,
-  DataViewsConfig,
+  DataViewsConfig as DataViewsConfigType,
   DateRange,
   FeedViewProps,
   GroupTone,
   KanbanViewProps,
   TableViewProps,
-  TimeCapability,
+  TimeCapability as TimeCapabilityType,
   TimelineViewProps,
   TimelineZoom,
   ViewGroup,
-  ViewItem,
-  ViewMode,
 } from "@/registry/super-ai/data-views-shared";
+import { KanbanColumn } from "@/registry/super-ai/kanban-column";
+
 export {
   GROUP_TONE_LABEL,
   GROUP_TONE_MARK,
   GROUP_TONE_SURFACE,
   UnplacedNotice,
-  groupAccessibleName,
-  hasTimeCapability,
-  packRows,
-  withTone,
   addDays,
   dayLabel,
+  groupAccessibleName,
+  hasTimeCapability,
   isSameLocalDay,
   localDayKey,
   normalizeRange,
+  packRows,
   parseLocalDate,
   startOfLocalDay,
-} from "@/registry/super-ai/data-views-shared";
-export { CalendarView } from "@/registry/super-ai/calendar-view";
-export { FeedView } from "@/registry/super-ai/feed-view";
-export { KanbanView } from "@/registry/super-ai/kanban-view";
-export { KanbanColumn } from "@/registry/super-ai/kanban-column";
-export { TableView } from "@/registry/super-ai/table-view";
-export { TimelineView } from "@/registry/super-ai/timeline-view";
+  withTone,
+  CalendarView,
+  FeedView,
+  KanbanView,
+  KanbanColumn,
+  TableView,
+  TimelineView,
+};
+
+export type {
+  BaseDataViewsConfigType as BaseDataViewsConfig,
+  CalendarViewProps,
+  ColumnDef,
+  DataViewsConfigType as DataViewsConfig,
+  DateRange,
+  FeedViewProps,
+  GroupTone,
+  KanbanViewProps,
+  TableViewProps,
+  TimeCapabilityType as TimeCapability,
+  TimelineViewProps,
+  TimelineZoom,
+  ViewGroup,
+  ViewItem,
+  ViewMode,
+};
 
 /* An intersection rather than `interface … extends`: DataViewsConfig is a union
    (the both-or-neither time pair), and an interface can only extend an object

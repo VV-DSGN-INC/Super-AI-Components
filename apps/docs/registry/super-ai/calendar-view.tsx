@@ -232,7 +232,14 @@ export function CalendarView<T extends ViewItem>({
                     <span
                       className={cn(
                         "text-xs tabular-nums",
-                        outside ? "text-muted-foreground/60" : "text-muted-foreground",
+                        /* Out-of-month days were `text-muted-foreground/60`,
+                           which measures 2.26:1 against the calendar surface —
+                           the browser a11y gate caught it, the static token
+                           lint could not, because an opacity modifier on a
+                           legal token is still a legal token. De-emphasis now
+                           comes from the cell, not from fading the number
+                           below readable. */
+                        outside ? "text-muted-foreground" : "text-foreground",
                         key === todayKey &&
                           "bg-primary text-primary-foreground inline-flex size-5 items-center justify-center rounded-full font-medium",
                       )}

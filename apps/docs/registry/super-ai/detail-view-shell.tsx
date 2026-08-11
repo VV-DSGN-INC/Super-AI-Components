@@ -129,11 +129,21 @@ export function DetailViewShell({
           ariaLabel="Conversation channel"
         />
       ) : null}
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">{activeChannel?.content}</div>
+      <div tabIndex={0} className="flex min-h-0 flex-1 flex-col overflow-y-auto">
+        {activeChannel?.content}
+      </div>
     </div>
   );
 
-  const attributesPane = <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">{attributes}</div>;
+  /* tabIndex on a scrollable pane, not a decoration: a region that
+     scrolls but contains no focusable element is unreachable by keyboard,
+     and axe fails it (scrollable-region-focusable). An attributes list is
+     exactly that case — a <dl> of plain text that overflows. */
+  const attributesPane = (
+    <div tabIndex={0} className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+      {attributes}
+    </div>
+  );
 
   let panes: ReactNode;
   if (!hasConversation) {
@@ -166,7 +176,7 @@ export function DetailViewShell({
     );
   } else {
     panes = (
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
+      <div tabIndex={0} className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto">
         {attributes}
         <div className="flex min-h-0 flex-col border-t">
           {/* No tab names this pane when stacked, so it needs a heading. */}
@@ -281,7 +291,17 @@ export function DetailViewShell({
    here because a two-column detail body without a field list is half a
    component. Same reasoning for the width hook: the 720px collapse is the
    shell's contract, and a consumer composing its own body needs the same
-   measurement rather than a second, subtly different one. */
-export { DetailFields, type DetailField, type DetailFieldsProps } from "@/registry/super-ai/detail-fields";
-export { DetailTabs, type DetailTabItem, type DetailTabsProps } from "@/registry/super-ai/detail-tabs";
-export { useContainerWidth, type ContainerSize } from "@/registry/super-ai/use-container-width";
+   measurement rather than a second, subtly different one.
+
+   Import-then-export, not `export … from`: shadcn rewrites the
+   `@/registry/super-ai/…` prefix on import declarations only, so a re-export
+   ships a path that resolves to nothing in a consumer. See the same note in
+   data-views.tsx. */
+import { DetailFields } from "@/registry/super-ai/detail-fields";
+import { useContainerWidth as useContainerWidthImpl } from "@/registry/super-ai/use-container-width";
+import type { DetailField, DetailFieldsProps } from "@/registry/super-ai/detail-fields";
+import type { DetailTabsProps } from "@/registry/super-ai/detail-tabs";
+import type { ContainerSize } from "@/registry/super-ai/use-container-width";
+
+export { DetailFields, DetailTabs, useContainerWidthImpl as useContainerWidth };
+export type { ContainerSize, DetailField, DetailFieldsProps, DetailTabItem, DetailTabsProps };

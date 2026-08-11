@@ -121,7 +121,25 @@ J and K took — D12's warning that J/K/N are unclosed pending re-sampling was
 deliberately set aside when the catalog target was frozen at 114, and the
 second reference board became its own v2 project.
 
-Next and last: **family O's 12 remaining blocks**. O2 `chat-shell` is built;
+**That v2 project now exists.** Family P — P1 `data-views`, P2
+`detail-view-shell`, plus the `use-view-mode` lib contract — shipped 2026-08-11
+under [`2026-08-11-data-views-v2-design.md`](superpowers/specs/2026-08-11-data-views-v2-design.md).
+The A–O freeze is untouched, and `catalog.manifest.test.ts` now asserts the two
+halves separately so that stays checkable rather than commented.
+
+Two things there are open work rather than done work:
+
+- **D18's evidence is desk research**, not a collected board of screens — see
+  [`records-board-analysis.md`](design-system/records-board-analysis.md) §1.
+  Family P does not reach A–O's evidentiary footing until those seven products
+  are verified against real screens. P2 cleared D1 at exactly 3 of 5, so re-test
+  that one first.
+- **The consumer flip is not done.** `shadcn-shell` in DS-WebApp-Shells still
+  authors its own copies of these files. Pointing it at the registry needs a
+  published URL and is its own PR.
+
+Next and last: **family O's 12 remaining blocks**. O10 `records-shell` now has
+its dependencies shipped. O2 `chat-shell` is built;
 read [`design-system/block-build-brief.md`](design-system/block-build-brief.md)
 before starting any of the rest, and see §1 for the two prerequisites.
 
