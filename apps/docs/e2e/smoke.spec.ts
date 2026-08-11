@@ -17,12 +17,21 @@ for (const item of [...CATALOG_ITEMS, ...MARKETING_ITEMS]) {
     });
     await page.goto(`/components/${item.name}`);
     // Readiness only — the assertion this test is named for is the console-error
-    // check below. Located by tag rather than by role: a demo that opens a Base UI
-    // modal on mount makes the library set `aria-hidden` on the page shell, which
-    // removes the h1 from the accessibility tree while leaving it in the DOM. A
-    // `getByRole` readiness check therefore fails for any modal component and turns
-    // this into a test of "does not open a modal on mount", which is not its job.
-    await expect(page.locator("h1")).toHaveText(item.title);
+    // check below. This locator has now been wrong twice, in two different ways,
+    // and both failures looked like broken components rather than a broken gate:
+    //
+    //   1. `getByRole("heading")` queried the accessibility tree, and a demo that
+    //      opens a Base UI modal on mount makes the library set `aria-hidden` on
+    //      the page shell — removing the h1 from that tree while leaving it in the
+    //      DOM. That turned this into a test of "does not open a modal on mount".
+    //   2. A bare `h1` tag locator then matched *two* elements once family O
+    //      landed: a block is a page shell and renders its own heading inside the
+    //      preview, below the docs chrome's own h1.
+    //
+    // So it targets the docs page's own title explicitly. Anything the preview
+    // renders is now out of scope by construction, which is the property this
+    // readiness check needed all along.
+    await expect(page.locator('[data-slot="component-page-title"]')).toHaveText(item.title);
     expect(errors).toEqual([]);
   });
 }

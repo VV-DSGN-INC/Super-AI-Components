@@ -71,7 +71,12 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
     <div className={isBlock ? "w-full p-8" : "mx-auto max-w-3xl p-8"}>
       <div className="space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">{item.title}</h1>
+          {/* `data-slot` is load-bearing: the smoke gate uses this heading as its
+              readiness signal, and a block renders its own page `<h1>` in the preview
+              below — so an unscoped `h1` locator matches two elements. */}
+          <h1 data-slot="component-page-title" className="text-3xl font-bold">
+            {item.title}
+          </h1>
           <p className="text-muted-foreground mt-2">{item.description}</p>
         </div>
 

@@ -26,16 +26,24 @@ function creditsState(balance: number, lowAt: number | undefined): CreditsState 
   return lowAt !== undefined && balance <= lowAt ? "low" : "normal";
 }
 
-const TONE: Record<CreditsState, string> = {
-  normal: "text-foreground",
-  low: "text-warning",
-  empty: "text-destructive",
+// The alarm states colour the *surface*, not the text. `text-destructive` on this
+// pill's own `bg-muted` measures 4.37:1 and `text-warning` is lighter still — neither
+// can reach 4.5:1 as foreground on a near-white fill, at any size. Going solid is the
+// move a11y-baseline.md already prescribes for the destructive-tint failure, and it
+// reads better anyway: an out-of-credits pill should look like an alarm, not like a
+// normal pill wearing red text.
+const SURFACE: Record<CreditsState, string> = {
+  normal: "bg-muted text-foreground",
+  low: "bg-warning text-warning-foreground",
+  empty: "bg-destructive text-background",
 };
 
+// The ring rides on the surface, so it takes that surface's foreground rather than
+// its own tint — a destructive-red stroke on a destructive-red fill is invisible.
 const RING: Record<CreditsState, string> = {
   normal: "text-primary",
-  low: "text-warning",
-  empty: "text-destructive",
+  low: "text-warning-foreground",
+  empty: "text-background",
 };
 
 function CreditsIndicator({
@@ -70,8 +78,8 @@ function CreditsIndicator({
       data-slot="credits-indicator"
       data-state={state}
       className={cn(
-        "bg-muted inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium",
-        TONE[state],
+        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium",
+        SURFACE[state],
         className,
       )}
       {...props}
@@ -98,7 +106,12 @@ function CreditsIndicator({
           type="button"
           onClick={onTopUp}
           data-slot="credits-indicator-top-up"
-          className="text-muted-foreground hover:text-foreground focus-visible:ring-ring border-border -mr-1 rounded-full border-l pl-1.5 focus-visible:ring-2 focus-visible:outline-none"
+          // Inherits the pill's foreground instead of setting `text-muted-foreground`:
+          // muted text on this pill's own `bg-muted` is the 4.34:1 pairing, and on the
+          // solid alarm surfaces it would be wrong twice over. The border-l already
+          // separates it from the balance, so hover is carried by an underline rather
+          // than by a colour change that would have to be re-solved per surface.
+          className="focus-visible:ring-ring border-border -mr-1 rounded-full border-l pl-1.5 underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           Top up
         </button>

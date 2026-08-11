@@ -72,7 +72,7 @@ export function RegenerateAllButtonBoltedOn() {
       <Button type="button" variant="outline" size="sm">
         <RefreshCw aria-hidden />
         Regenerate all
-        <CostChip amount={9} className="text-foreground" />
+        <CostChip amount={9} />
       </Button>
     </div>
   );

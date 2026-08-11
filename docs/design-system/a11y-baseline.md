@@ -436,14 +436,24 @@ Two files failed, four violations.
 
 `bg-muted text-muted-foreground` at 4.34:1, both stories. Fixed by making
 `text-foreground` the component default. This is not a new appearance: **all
-fourteen call sites in the registry already passed
+nineteen call sites in the registry already passed
 `className="text-foreground"`**, so the shipped look was already this. Those
-overrides are deleted — the count is fourteen across thirteen files, not the six
-recorded in PR #19's description:
+overrides are deleted.
 
-`hero-omnibox`, `action-stack`, `model-picker`, `ai-tools-menu`, `run-inspector`,
-`usage-dashboard`, `tts-composer`, `media-prompt-bar`, `skill-menu`, `run-button`,
-`paywall-message`, `generation-panel`, and `generation-wizard-demo` (twice).
+**The count is nineteen, across seventeen files — not the six recorded in PR
+#19's description, and not the fourteen this document first claimed.** The first
+sweep grepped `registry/` and `components/` and missed `content/`, where five
+more sat in `.examples.tsx` sidecars from waves 1.5. If you are hunting for
+instances of a pattern in this repo, all three directories carry component
+markup:
+
+- `registry/super-ai/`: `hero-omnibox`, `action-stack`, `model-picker`,
+  `ai-tools-menu`, `run-inspector`, `usage-dashboard`, `tts-composer`,
+  `media-prompt-bar`, `skill-menu`, `run-button`, `paywall-message`,
+  `generation-panel`
+- `components/demos/`: `generation-wizard-demo` (twice)
+- `content/components/`: `skill-menu.examples`, `tts-composer.examples`,
+  `generation-panel.examples`, `generation-wizard.examples` (twice)
 
 ### `EntityRow` — two causes, only one of them predicted
 
@@ -479,6 +489,72 @@ the symptom fix, and would not have reached 4.5:1 anyway.
 
 **Result: 105 story files / 352 tests pass with both exemptions removed.**
 `preview-tile.tsx` remains the only name on the list.
+
+## The M-family fixes (2026-08-11, family O round)
+
+Building family O's twelve shells put three monetization components on a
+storybook a11y gate for the first time *in composition*, and each failed. All
+three are fixed at source rather than exempted — the list may only shrink — and
+none of the twelve shells carries a call-site compensation for them.
+
+**M3 `quota-meter` — `aria-progressbar-name` (serious).** Its track carried
+`aria-valuenow`/`aria-valuetext` but no accessible name, so every meter
+announced as an unnamed progressbar: you were told "12400 of 50000 used" and
+never what was being measured. Fixed with `aria-labelledby` pointing at the
+row's own visible label (`React.useId()` + row index), rather than duplicating
+the label into an `aria-label` where the two could drift apart.
+
+**M4 `pricing-table` — two defects in one control.** The unselected period
+option was `text-muted-foreground` on the control's own `bg-muted` track:
+the 4.34:1 pairing again. Fixed to `text-foreground` — the selected/unselected
+distinction was never carried by the text colour anyway, it is the raised
+`bg-background` pill and its shadow. Separately its "Save 20%" badge was
+`text-warning` on that same track; `--warning` is a light amber meant for the
+page background. Fixed by going solid (`bg-warning text-warning-foreground`),
+the same move this document already prescribes for `text-destructive` on a tint.
+
+**M2 `credits-indicator` — the alarm states could not be fixed as text.** Its
+pill is `bg-muted`, and the `empty` state painted `text-destructive` on it:
+4.37:1. `low` was `text-warning` on the same fill, which is lighter still and
+was simply not covered by a story yet. **Neither token can reach 4.5:1 as
+foreground on a near-white fill at any size**, so no text-colour change was
+available. The state now colours the *surface* — `bg-destructive text-background`
+and `bg-warning text-warning-foreground` — and the ring stroke follows the
+surface's foreground rather than its own tint. Its "Top up" control, muted text
+on that same muted pill, now inherits the pill's foreground and carries hover as
+an underline, so it stays correct on all three surfaces.
+
+**A compensation was deleted in the same pass.** `home-shell` had rebound
+`--muted-foreground` at its M2 call site, with a comment reading "delete this the
+moment M2 stops pairing muted text with a muted fill", and a test asserting the
+rebind. M2 stopped; both are gone. Left in place it would have been actively
+wrong — rebinding muted text to `--foreground` on a solid destructive pill paints
+dark text on dark red.
+
+### The variable rebind generalised
+
+The idiom introduced for `entity-row` above turned out to be the shape this
+layer needed. Five of the twelve shells reached for it independently, each for
+the same structural reason — **they paint a surface, and the muted text on it
+belongs to a composed child they cannot reach with `className`**:
+
+| Shell | Surface it paints | What it could not reach |
+| --- | --- | --- |
+| `studio-shell` | canvas backdrop | composed canvas content |
+| `docs-shell` | announcement strip | anything dropped in the strip |
+| `generation-shell` | E1's `bg-muted/50` footer | E5's shortfall and locked reasons |
+| `auth-shell` | marketing panel | L6's panel content |
+| `home-shell` | — (deleted, see above) | M2's "Top up" |
+
+One of them verified *why* it works, which is worth recording because it is not
+universal: `globals.css` uses `@theme inline`, so `text-muted-foreground`
+compiles to `var(--muted-foreground)` and responds to a cascade override. Under
+a non-inline `@theme` the rebind would compile to a literal colour and silently
+do nothing.
+
+**Gate after the whole round: 422 tests across 117 story files, zero
+violations**, with `preview-tile.tsx` still the single name on the exclusion
+list.
 
 ## Excluded: Base UI's own focus-guard spans (`aria-hidden-focus`)
 
