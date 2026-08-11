@@ -27,7 +27,7 @@ export const TemplateDetailDocs: ComponentDocs = {
     { slot: "template-detail-author", note: "Avatar, name and a line of context about the creator." },
     { slot: "template-detail-follow", note: "The follow toggle. Its accessible name includes the author." },
     { slot: "template-detail-options", note: "Everything configured before the commit." },
-    { slot: "template-detail-option", note: "One labelled option row, rendered through A6 field-row." },
+    { slot: "field-row", note: "One labelled option row (its own slot, not renamed) — rendered through A6 field-row, addressed by data-option-id." },
     { slot: "template-detail-related", note: "The 'more like this' section." },
     { slot: "template-detail-related-item", note: "One related tile — an inert A8 preview-tile inside a single button." },
     { slot: "template-detail-use", note: "The commit. Emits the template id together with the configured options." },

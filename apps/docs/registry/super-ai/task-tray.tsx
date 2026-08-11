@@ -99,8 +99,12 @@ function TaskTray({
               // and cancel buttons in its `trailing` slot produces nested
               // buttons — invalid HTML, and a hydration error in React.
               <li key={task.id} className="flex items-center gap-0.5">
+                {/* No data-slot override: EntityRow spreads ...props after
+                    its own attributes, so one would erase `entity-row` and
+                    hide that this is what renders a row (CONTINUE.md §4).
+                    Rows are addressed by data-task-id instead. */}
                 <EntityRow
-                  data-slot="task-tray-task"
+                  data-task-id={task.id}
                   data-status={task.status}
                   className="flex-1"
                   icon={

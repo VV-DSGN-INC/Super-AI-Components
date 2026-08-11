@@ -137,6 +137,22 @@ function FrameStripSlide({
   onMark: (mark: "in" | "out", id: string) => void;
   onReorder?: (id: string, direction: "left" | "right") => void;
 }) {
+  // Hoisted out of PreviewTile's badge prop rather than inlined: the gate's
+  // opening-tag scan stops at the first `>`, and an inline <Badge ...> here
+  // (a vendored ui/ primitive, legally carrying its own data-slot) would
+  // supply that `>` before PreviewTile's own closing bracket —
+  // misattributing Badge's data-slot to PreviewTile. No behavior change,
+  // same JSX output.
+  const markBadge = mark ? (
+    // The mark is a word, not a colour: "In"/"Out" survives colourblind
+    // users and screen readers both.
+    <Badge data-slot="frame-strip-mark" data-mark={mark}>
+      {mark === "in" ? "In" : "Out"}
+    </Badge>
+  ) : (
+    item.badge
+  );
+
   const tile = (
     <PreviewTile
       aspect={aspect}
@@ -146,17 +162,7 @@ function FrameStripSlide({
       selected={active}
       label={item.label}
       labelPlacement="overlay"
-      badge={
-        mark ? (
-          // The mark is a word, not a colour: "In"/"Out" survives colourblind
-          // users and screen readers both.
-          <Badge data-slot="frame-strip-mark" data-mark={mark}>
-            {mark === "in" ? "In" : "Out"}
-          </Badge>
-        ) : (
-          item.badge
-        )
-      }
+      badge={markBadge}
       action={
         item.state === "failed" ? (
           // text-foreground, not A8's inherited text-destructive: destructive

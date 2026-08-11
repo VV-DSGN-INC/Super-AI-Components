@@ -351,9 +351,12 @@ function TemplateDetail({
               <div data-slot="template-detail-options" className="flex flex-col gap-3">
                 <h3 className="text-foreground text-xs font-medium">Options</h3>
                 {options.map((option) => (
+                  // No data-slot override: FieldRow spreads ...props after
+                  // its own attributes, so one would erase `field-row` and
+                  // hide that this is a composed A6 (CONTINUE.md §4).
+                  // data-option-id is the real handle for addressing a row.
                   <FieldRow
                     key={option.id}
-                    data-slot="template-detail-option"
                     data-option-id={option.id}
                     label={option.label}
                     hint={option.hint}

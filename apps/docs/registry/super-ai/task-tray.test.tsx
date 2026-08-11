@@ -11,9 +11,10 @@ const TASKS: TrayTask[] = [
 ];
 
 const rows = () =>
-  Array.from(document.querySelectorAll('[data-slot="task-tray-task"]')).map(
-    (el) => el.getAttribute("data-status")!,
-  );
+  // EntityRow's own slot, not a task-tray override — task-tray no longer
+  // renames it (G2: overriding it would erase EntityRow's identity in the
+  // DOM). Rows are addressed by data-task-id; sorted here by data-status.
+  Array.from(document.querySelectorAll('[data-slot="entity-row"]')).map((el) => el.getAttribute("data-status")!);
 
 describe("TaskTray", () => {
   it("sorts needs-input to the top — blocked work is the only row you must act on", () => {
@@ -74,7 +75,7 @@ describe("TaskTray", () => {
 
   it("announces status to assistive tech, since the icon carries it visually", () => {
     render(<TaskTray open tasks={[{ id: "d", title: "Export report", status: "failed" }]} />);
-    const row = document.querySelector('[data-slot="task-tray-task"]')! as HTMLElement;
+    const row = document.querySelector('[data-slot="entity-row"]')! as HTMLElement;
     expect(within(row).getByText("Failed.")).toBeInTheDocument();
   });
 

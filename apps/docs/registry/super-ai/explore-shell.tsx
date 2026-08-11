@@ -327,8 +327,10 @@ function ExploreShell({
       // A4 verbatim: it already ships the ring-selected pill and the
       // radiogroup semantics, and the counts are what make the axis usable at
       // scale — without them every pill click is a gamble.
+      // No data-slot override: ChoiceChips spreads ...props after its own
+      // attributes, so one would erase `choice-chips` and hide that this is
+      // a composed A4 (CONTINUE.md §4).
       <ChoiceChips
-        data-slot="explore-shell-types"
         aria-label={typeLabel}
         value={activeType}
         onValueChange={handleTypeChange}

@@ -187,7 +187,10 @@ function VoiceCloneRecorderConsentDialog({
 
         {disclaimer === null ? null : (
           disclaimer ?? (
-            <DisclaimerNote variant="in-card" data-slot="voice-clone-recorder-disclaimer">
+            // No data-slot override: DisclaimerNote spreads ...props after its
+            // own attributes, so one would erase `disclaimer-note` and hide
+            // that this is a composed N3 (CONTINUE.md §4).
+            <DisclaimerNote variant="in-card">
               Voice clones can convincingly imitate someone without their knowledge. Consent has to come from{" "}
               {who} — never from whoever happens to be holding the microphone.
             </DisclaimerNote>

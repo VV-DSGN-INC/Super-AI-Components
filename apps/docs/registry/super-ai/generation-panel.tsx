@@ -205,37 +205,44 @@ function GenerationPanelDropzone({
 
       {files && files.length > 0 ? (
         <div data-slot="generation-panel-dropzone-files" className="grid grid-cols-3 gap-2">
-          {files.map((file) => (
-            <PreviewTile
-              key={file.id}
-              aspect="square"
-              labelPlacement={file.preview ? "none" : "below"}
-              label={file.preview ? undefined : file.name}
-              badge={
-                onFileRemove ? (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="icon-xs"
-                    data-slot="generation-panel-dropzone-remove"
-                    aria-label={`Remove ${file.name}`}
-                    onClick={() => onFileRemove(file.id)}
-                    className="rounded-full"
-                  >
-                    <X aria-hidden />
-                  </Button>
-                ) : undefined
-              }
-            >
-              {file.preview ? (
-                <img src={file.preview} alt={file.name} className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-foreground flex h-full items-center justify-center p-1 text-center text-[0.65rem] break-all">
-                  {file.name}
-                </span>
-              )}
-            </PreviewTile>
-          ))}
+          {files.map((file) => {
+            // Hoisted out of PreviewTile's badge prop rather than inlined:
+            // the gate's opening-tag scan stops at the first `>`, and an
+            // inline <Button ...> here (a vendored ui/ primitive, legally
+            // carrying its own data-slot) would supply that `>` before
+            // PreviewTile's own closing bracket — misattributing Button's
+            // data-slot to PreviewTile. No behavior change, same JSX output.
+            const removeButton = onFileRemove ? (
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-xs"
+                data-slot="generation-panel-dropzone-remove"
+                aria-label={`Remove ${file.name}`}
+                onClick={() => onFileRemove(file.id)}
+                className="rounded-full"
+              >
+                <X aria-hidden />
+              </Button>
+            ) : undefined;
+            return (
+              <PreviewTile
+                key={file.id}
+                aspect="square"
+                labelPlacement={file.preview ? "none" : "below"}
+                label={file.preview ? undefined : file.name}
+                badge={removeButton}
+              >
+                {file.preview ? (
+                  <img src={file.preview} alt={file.name} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-foreground flex h-full items-center justify-center p-1 text-center text-[0.65rem] break-all">
+                    {file.name}
+                  </span>
+                )}
+              </PreviewTile>
+            );
+          })}
         </div>
       ) : null}
     </div>
