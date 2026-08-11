@@ -172,8 +172,14 @@ names.
 
 **Two naming traps, both already hit:**
 
-- A state named `"default"` becomes the story export `Default`, which the
-  contract gate forbids. Use a meaningful name (`text-only`, `plain`).
+- A state named `"default"` becomes the story export `Default`. Use a meaningful
+  name (`text-only`, `plain`). **Correction (2026-08-11): this bullet used to say
+  "which the contract gate forbids", and that is not true.** `check-contract.mts`
+  only asserts that every declared state has a matching export, so a state called
+  `default` passes it. What actually keeps `Default` out is the scaffolder, which
+  never emits one — pinned by `new-component.test.ts:65` — and the 14 stories
+  that do export it are exactly the pre-Wave-1.5 `contractExempt` set. Worth
+  knowing before you rely on the gate to catch this.
 - Two states that normalise to the same identifier silently collide.
 
 ### 3.3 Scaffold
