@@ -1259,7 +1259,21 @@ Add `findReservedStateNames` to the `contract-rules` import, then inside the exi
 cd apps/docs && pnpm check:contract
 ```
 
-Expected: **this may legitimately fail.** CONTINUE.md §3.2 records that the 14 stories exporting `Default` are exactly the pre-Wave-1.5 `contractExempt` set. If it reports reserved names on legacy items, that is the gate working — record the list in the task report. It is direct input to Plan 2's manifest-prep step (spec §7.2 item 4). Do **not** add an exemption to get green; if it blocks this task, place the check after the `contractExempt` continue and note in the commit body that it becomes universal when the retrofit lands.
+**Outcome, measured:** exactly **one** item in the 114-item catalog declares a reserved state, and it is not a legacy one — `record-list`, non-exempt, wave 7, declaring `"meta"`.
+
+The expectation that legacy items would fail was wrong, and the reason is worth recording. The 14 pre-Wave-1.5 stories that export `Default` do so because they were **hand-written**, not scaffolded from declared states. `check:contract`'s story assertion and this gate both read `states` from the manifest, so a hand-written `Default` export is invisible to both. G4 therefore binds new work and says nothing about the legacy set — which means the check can sit **before** the `contractExempt` continue with no consequence, and will simply start applying when the retrofit lands.
+
+- [ ] **Step 6a: Rename `record-list`'s `meta` state**
+
+This is the exact case the gate was built for. `record-list` ships today by aliasing its *import* (`import type { Meta as StorybookMeta }`) so its `export const Meta` can coexist — a workaround for a name that should never have been declared.
+
+Rename the state to **`"metadata"`** (`statePascal` → `Metadata`, not reserved):
+
+1. `apps/docs/lib/catalog.manifest.ts` — `record-list`'s `states`, `"meta"` → `"metadata"`. **This is the one authorised write to the manifest in this plan.**
+2. `apps/storybook/src/stories/super-ai/RecordList.stories.tsx` — rename `export const Meta` to `export const Metadata`, and restore the plain `import type { Meta, StoryObj }`, dropping the `StorybookMeta` alias and updating its uses.
+3. Check `apps/docs/content/components/record-list.docs.tsx` and the component's tests for references to the old state name.
+
+The alias disappearing is the point: it existed only to work around the collision.
 
 - [ ] **Step 7: Prove the gate fails on a real instance**
 
