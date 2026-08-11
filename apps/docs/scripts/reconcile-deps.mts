@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 
-const RELEVANT = /^(@\/components\/ui\/|@\/registry\/super-ai\/|lucide-react|@base-ui)/;
+const RELEVANT = /^(@\/components\/ui\/|@\/registry\/super-ai\/|\.\/|lucide-react|@base-ui)/;
 
 const names = process.argv.slice(2);
 const items = names.length ? MANIFEST.filter((i) => names.includes(i.name)) : MANIFEST;
@@ -22,9 +22,17 @@ for (const item of items) {
   const realShadcn = [...new Set(imports.filter((s) => s.startsWith("@/components/ui/")))]
     .map((s) => s.replace("@/components/ui/", ""))
     .sort();
-  const realConsumes = [...new Set(imports.filter((s) => s.startsWith("@/registry/super-ai/")))]
-    .map((s) => s.replace("@/registry/super-ai/", ""))
-    .sort();
+  // Intra-registry composition in this codebase is written relatively
+  // (`./kbd`, `./entity-row`), not via the `@/registry/super-ai/` alias — that
+  // alias is what a *consumer* sees post-install, not what these source files
+  // use to reference a sibling. Both forms normalise to a bare component name.
+  const realConsumes = [
+    ...new Set(
+      imports
+        .filter((s) => s.startsWith("@/registry/super-ai/") || s.startsWith("./"))
+        .map((s) => s.replace(/^@\/registry\/super-ai\//, "").replace(/^\.\//, "")),
+    ),
+  ].sort();
 
   const declaredShadcn = [...item.shadcn].sort();
   const declaredConsumes = [...item.consumes].sort();
