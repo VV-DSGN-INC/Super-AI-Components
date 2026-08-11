@@ -247,6 +247,49 @@ vocabulary (`high · medium · low`, never a raw score). This is deliberate, tem
 a named exit condition — not an oversight. **When the extraction slice lands, this is the first thing
 to reconcile.**
 
+### D18 · Family P, from the records slice — PROVISIONAL — 2026-08-11
+
+[`records-board-analysis.md`](records-board-analysis.md) samples seven records-shaped products —
+Linear, Notion, Asana, Airtable, Monday, ClickUp, Height — none of them on the primary board or the
+agent slice. It exists because D1 had nothing to say about multi-view browsing: neither existing
+board contains a kanban, calendar, timeline or view switcher, since both sample AI tools and this
+is a project-management pattern.
+
+**This decision is provisional, and the reason is method.** The slice read public documentation, not
+screens. It can establish that a pattern exists and what its options are; it cannot establish how it
+is drawn. Family P is therefore justified to *build* and is not on families A–O's evidentiary
+footing until the screens are verified.
+
+**Clearing D1.** The three work-management entrants (Asana, Monday, ClickUp) are one category, not
+three unrelated products, and are counted once — leaving five independent data points against a bar
+of three.
+
+- **P1 `data-views`** — a user-selectable multi-view switch appears in **7 of 7** products. Clears
+  comfortably.
+- **P2 `detail-view-shell`** — a record-open mode configured separately from the collection view
+  appears in **3 of 5** independent points (Notion, ClickUp, Airtable). Clears at exactly the bar.
+  This is the slice's narrowest result and the first thing to re-test against screens.
+
+**The load-bearing finding.** Axis independence was the claim most likely to fail, and it did not.
+Notion ships it outright: a per-view Layout setting and a separate per-view "Open pages in" setting
+whose three options — side peek, center peek, full page — map one-for-one onto `overlay`, `popup`
+and `fullscreen`. The pattern was found already shipped under different names, in the product with
+the most mature version of it.
+
+**One gap recorded, not adopted.** Notion derives the record-open default from the collection
+layout; `useDetailMode` takes a single constant fallback. One product is not three, so this does not
+become a requirement. The shape of the fix is known — the fallback becomes a function of the current
+`ViewMode` — if a second product is later found doing it.
+
+**Held.** `view-switcher` as a standalone item. Every product has one; no screen was seen, so
+nothing can be said about its anatomy. It stays folded into P1.
+
+**Placement.** Family P is appended and counted separately. Nothing in the B–N subtotal or the O
+block count changes, per
+[`2026-08-07-catalog-completion-design.md`](../superpowers/specs/2026-08-07-catalog-completion-design.md)
+§1.1, which ruled that a second reference board becomes its own v2 project rather than reopen the
+frozen 114.
+
 ---
 
 ## 2. Components dropped from the approved spec
