@@ -211,18 +211,7 @@ function buildMetadataItems(metadata: RunInspectorMetadata | undefined): StatRea
       label: "Cost",
       value: (
         <span className="flex flex-wrap items-center gap-1.5">
-          {/* `text-foreground` is not decoration: CostChip's own default is
-              `bg-muted text-muted-foreground`, which axe measures at 4.34:1
-              and fails. Its story is `contractExempt` so its own gate never
-              sees it, but this story is not exempt — so the call site
-              substitutes the token, exactly as hero-omnibox.tsx does. See
-              docs/design-system/a11y-baseline.md, "Where this has already
-              bitten" (2). CostChip itself stays untouched. */}
-          <CostChip
-            amount={metadata.cost}
-            unit={metadata.costUnit ?? "credits"}
-            className="text-foreground"
-          />
+          <CostChip amount={metadata.cost} unit={metadata.costUnit ?? "credits"} />
           {metadata.cacheHit !== undefined ? (
             <span className="text-foreground rounded-full border px-1.5 py-0 text-[10px] font-medium">
               {metadata.cacheHit ? "Cache hit" : "Cache miss"}

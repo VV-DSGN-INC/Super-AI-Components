@@ -47,7 +47,7 @@ export function CostSeparatedFromGenerate() {
     <div className="flex max-w-xs flex-col gap-2 rounded-xl border p-3">
       <div className="flex items-center justify-between">
         <span className="text-sm font-semibold">Settings</span>
-        <CostChip amount={8} className="text-foreground" />
+        <CostChip amount={8} />
       </div>
       <div className="text-muted-foreground rounded-lg border border-dashed p-4 text-center text-xs">
         Directions, presets, settings…

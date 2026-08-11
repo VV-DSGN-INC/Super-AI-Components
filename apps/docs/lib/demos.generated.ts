@@ -10,8 +10,10 @@ import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
 import AppTopbarDemo from "@/components/demos/app-topbar-demo";
 import ApprovalCardDemo from "@/components/demos/approval-card-demo";
 import ArtifactGridDemo from "@/components/demos/artifact-grid-demo";
+import ArtifactShellDemo from "@/components/demos/artifact-shell-demo";
 import AssetDetailDemo from "@/components/demos/asset-detail-demo";
 import AssetLibraryDemo from "@/components/demos/asset-library-demo";
+import AuthShellDemo from "@/components/demos/auth-shell-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import ChatShellDemo from "@/components/demos/chat-shell-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
@@ -28,12 +30,14 @@ import DateSectionDemo from "@/components/demos/date-section-demo";
 import DetailViewShellDemo from "@/components/demos/detail-view-shell-demo";
 import DiffReviewDemo from "@/components/demos/diff-review-demo";
 import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
+import DocsShellDemo from "@/components/demos/docs-shell-demo";
 import DrawingToolsDemo from "@/components/demos/drawing-tools-demo";
 import EmptyStateDemo from "@/components/demos/empty-state-demo";
 import EntityRowDemo from "@/components/demos/entity-row-demo";
 import EnvStatusDemo from "@/components/demos/env-status-demo";
 import EscalationHandoffDemo from "@/components/demos/escalation-handoff-demo";
 import ExploreGalleryDemo from "@/components/demos/explore-gallery-demo";
+import ExploreShellDemo from "@/components/demos/explore-shell-demo";
 import FeatureAnnouncementDemo from "@/components/demos/feature-announcement-demo";
 import FeatureCardRowDemo from "@/components/demos/feature-card-row-demo";
 import FeedbackDemo from "@/components/demos/feedback-demo";
@@ -45,15 +49,19 @@ import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
 import GenerationGridDemo from "@/components/demos/generation-grid-demo";
 import GenerationPanelDemo from "@/components/demos/generation-panel-demo";
 import GenerationQueueDemo from "@/components/demos/generation-queue-demo";
+import GenerationShellDemo from "@/components/demos/generation-shell-demo";
 import GenerationWizardDemo from "@/components/demos/generation-wizard-demo";
 import HeroOmniboxDemo from "@/components/demos/hero-omnibox-demo";
+import HomeShellDemo from "@/components/demos/home-shell-demo";
 import InlineGeneratePopupDemo from "@/components/demos/inline-generate-popup-demo";
 import KbdDemo from "@/components/demos/kbd-demo";
+import LibraryShellDemo from "@/components/demos/library-shell-demo";
 import MediaPromptBarDemo from "@/components/demos/media-prompt-bar-demo";
 import MemberGateRowDemo from "@/components/demos/member-gate-row-demo";
 import ModalityRailDemo from "@/components/demos/modality-rail-demo";
 import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
 import ModelPickerDemo from "@/components/demos/model-picker-demo";
+import NotebookShellDemo from "@/components/demos/notebook-shell-demo";
 import OnboardingWizardDemo from "@/components/demos/onboarding-wizard-demo";
 import ParameterPanelDemo from "@/components/demos/parameter-panel-demo";
 import PaywallMessageDemo from "@/components/demos/paywall-message-demo";
@@ -69,6 +77,7 @@ import RateLimitBannerDemo from "@/components/demos/rate-limit-banner-demo";
 import RecentGridDemo from "@/components/demos/recent-grid-demo";
 import RecommendationCardDemo from "@/components/demos/recommendation-card-demo";
 import RecordListDemo from "@/components/demos/record-list-demo";
+import RecordsShellDemo from "@/components/demos/records-shell-demo";
 import ReferenceStripDemo from "@/components/demos/reference-strip-demo";
 import RenderQueueDemo from "@/components/demos/render-queue-demo";
 import ResetAffordanceDemo from "@/components/demos/reset-affordance-demo";
@@ -79,6 +88,7 @@ import SafetyBlockDemo from "@/components/demos/safety-block-demo";
 import SectionHeaderDemo from "@/components/demos/section-header-demo";
 import SelectionToolbarDemo from "@/components/demos/selection-toolbar-demo";
 import SettingsDialogDemo from "@/components/demos/settings-dialog-demo";
+import SettingsShellDemo from "@/components/demos/settings-shell-demo";
 import ShortcutsSheetDemo from "@/components/demos/shortcuts-sheet-demo";
 import SidebarNavDemo from "@/components/demos/sidebar-nav-demo";
 import SkillMenuDemo from "@/components/demos/skill-menu-demo";
@@ -87,11 +97,13 @@ import SourceCardsDemo from "@/components/demos/source-cards-demo";
 import SourcePanelDemo from "@/components/demos/source-panel-demo";
 import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import StemMixerDemo from "@/components/demos/stem-mixer-demo";
+import StudioShellDemo from "@/components/demos/studio-shell-demo";
 import SuggestionChipsDemo from "@/components/demos/suggestion-chips-demo";
 import TaskTrayDemo from "@/components/demos/task-tray-demo";
 import TemplateDetailDemo from "@/components/demos/template-detail-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
 import TimeRulerDemo from "@/components/demos/time-ruler-demo";
+import TimelineShellDemo from "@/components/demos/timeline-shell-demo";
 import ToolPanelDemo from "@/components/demos/tool-panel-demo";
 import TraceTimelineDemo from "@/components/demos/trace-timeline-demo";
 import TrackLaneDemo from "@/components/demos/track-lane-demo";
@@ -116,8 +128,10 @@ export const demos: Record<string, ComponentType> = {
   "app-topbar": AppTopbarDemo,
   "approval-card": ApprovalCardDemo,
   "artifact-grid": ArtifactGridDemo,
+  "artifact-shell": ArtifactShellDemo,
   "asset-detail": AssetDetailDemo,
   "asset-library": AssetLibraryDemo,
+  "auth-shell": AuthShellDemo,
   "autonomy-selector": AutonomySelectorDemo,
   "chat-shell": ChatShellDemo,
   "choice-chips": ChoiceChipsDemo,
@@ -134,12 +148,14 @@ export const demos: Record<string, ComponentType> = {
   "detail-view-shell": DetailViewShellDemo,
   "diff-review": DiffReviewDemo,
   "disclaimer-note": DisclaimerNoteDemo,
+  "docs-shell": DocsShellDemo,
   "drawing-tools": DrawingToolsDemo,
   "empty-state": EmptyStateDemo,
   "entity-row": EntityRowDemo,
   "env-status": EnvStatusDemo,
   "escalation-handoff": EscalationHandoffDemo,
   "explore-gallery": ExploreGalleryDemo,
+  "explore-shell": ExploreShellDemo,
   "feature-announcement": FeatureAnnouncementDemo,
   "feature-card-row": FeatureCardRowDemo,
   "feedback": FeedbackDemo,
@@ -151,15 +167,19 @@ export const demos: Record<string, ComponentType> = {
   "generation-grid": GenerationGridDemo,
   "generation-panel": GenerationPanelDemo,
   "generation-queue": GenerationQueueDemo,
+  "generation-shell": GenerationShellDemo,
   "generation-wizard": GenerationWizardDemo,
   "hero-omnibox": HeroOmniboxDemo,
+  "home-shell": HomeShellDemo,
   "inline-generate-popup": InlineGeneratePopupDemo,
   "kbd": KbdDemo,
+  "library-shell": LibraryShellDemo,
   "media-prompt-bar": MediaPromptBarDemo,
   "member-gate-row": MemberGateRowDemo,
   "modality-rail": ModalityRailDemo,
   "mode-tabs": ModeTabsDemo,
   "model-picker": ModelPickerDemo,
+  "notebook-shell": NotebookShellDemo,
   "onboarding-wizard": OnboardingWizardDemo,
   "parameter-panel": ParameterPanelDemo,
   "paywall-message": PaywallMessageDemo,
@@ -175,6 +195,7 @@ export const demos: Record<string, ComponentType> = {
   "recent-grid": RecentGridDemo,
   "recommendation-card": RecommendationCardDemo,
   "record-list": RecordListDemo,
+  "records-shell": RecordsShellDemo,
   "reference-strip": ReferenceStripDemo,
   "render-queue": RenderQueueDemo,
   "reset-affordance": ResetAffordanceDemo,
@@ -185,6 +206,7 @@ export const demos: Record<string, ComponentType> = {
   "section-header": SectionHeaderDemo,
   "selection-toolbar": SelectionToolbarDemo,
   "settings-dialog": SettingsDialogDemo,
+  "settings-shell": SettingsShellDemo,
   "shortcuts-sheet": ShortcutsSheetDemo,
   "sidebar-nav": SidebarNavDemo,
   "skill-menu": SkillMenuDemo,
@@ -193,11 +215,13 @@ export const demos: Record<string, ComponentType> = {
   "source-panel": SourcePanelDemo,
   "stat-readout": StatReadoutDemo,
   "stem-mixer": StemMixerDemo,
+  "studio-shell": StudioShellDemo,
   "suggestion-chips": SuggestionChipsDemo,
   "task-tray": TaskTrayDemo,
   "template-detail": TemplateDetailDemo,
   "thread-list": ThreadListDemo,
   "time-ruler": TimeRulerDemo,
+  "timeline-shell": TimelineShellDemo,
   "tool-panel": ToolPanelDemo,
   "trace-timeline": TraceTimelineDemo,
   "track-lane": TrackLaneDemo,

@@ -130,10 +130,21 @@ export function usePersistedPreference<T extends string>(
   // The listener depends on `fallback` and `isValid` but must not resubscribe
   // when they change identity — an inline arrow from a caller would otherwise
   // tear down and re-add the listener on every render.
+  //
+  // The refs are refreshed in an effect rather than assigned during render.
+  // Upstream assigned inline, which `react-hooks` rejects outright ("cannot
+  // access refs during render") — and the rule is right, because a ref written
+  // during render is invisible to the compiler's memoisation. An effect with no
+  // dependency array runs after every commit, and a `storage` event can only
+  // arrive from the task queue afterwards, so the listener never reads a stale
+  // value. The initial values come from useRef itself, so the first render is
+  // already correct.
   const fallbackRef = React.useRef(fallback);
-  fallbackRef.current = fallback;
   const isValidRef = React.useRef(isValid);
-  isValidRef.current = isValid;
+  React.useEffect(() => {
+    fallbackRef.current = fallback;
+    isValidRef.current = isValid;
+  });
 
   const set = React.useCallback(
     (next: T) => {

@@ -35,11 +35,12 @@ const PATTERNS = [
 // backstop for that case — this rule only removes the easiest, single-element
 // way to reintroduce the failure.
 //
-// Tuned to ignore `contractExempt` legacy files (cost-chip.tsx, entity-row.tsx,
-// preview-tile.tsx) — their pre-existing violations are a known, documented,
-// separate-decision exemption (see a11y-baseline.md), the same exemption the
-// browser gate already carries by file name. Without this, adding the rule
-// would fail the build on three files nobody asked this task to fix.
+// Originally tuned to ignore three `contractExempt` legacy files. Two of them —
+// cost-chip.tsx and entity-row.tsx — have since been retrofitted and are now
+// enforced by this rule like everything else; only preview-tile.tsx remains, and
+// its violations are a different defect (see a11y-baseline.md: `text-destructive`
+// on the default surface, and label text over unpredictable image content), not
+// the muted-on-muted pairing this rule looks for.
 //
 // Tuned to ignore variant-prefixed backgrounds (`hover:bg-accent`,
 // `dark:bg-muted`, etc.): `filter-bar.tsx` and `modality-rail.tsx` both pair
@@ -50,7 +51,7 @@ const PATTERNS = [
 // pairing that never actually renders.
 const MUTED_FG = "text-muted-foreground";
 const MUTED_BG_RE = /^bg-(?:muted|accent|secondary)(?:\/\d{1,3})?$/;
-const CONTRAST_EXEMPT_FILES = ["cost-chip.tsx", "entity-row.tsx", "preview-tile.tsx"];
+const CONTRAST_EXEMPT_FILES = ["preview-tile.tsx"];
 
 function findMutedOnMutedViolations(file, source) {
   if (CONTRAST_EXEMPT_FILES.some((name) => file.endsWith(`/${name}`))) return [];

@@ -255,7 +255,7 @@ function PaywallMessage({
                 // A2 sets text-muted-foreground on its own bg-muted (4.34:1)
                 // and is gate-exempt only under its own story name. Remove once
                 // A2's retrofit lands. See action-stack.tsx.
-                <CostChip amount={formatCost(resolved.cost)} unit="" className="text-foreground" />
+                <CostChip amount={formatCost(resolved.cost)} unit="" />
               ) : null}
               {shortfall ? (
                 // Derived, never passed in. "Need 900 credits, you have 120."

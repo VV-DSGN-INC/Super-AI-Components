@@ -4,7 +4,8 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-05, after families J + K (12 items via parallel agents).
+**Last updated:** 2026-08-11, after family O's twelve blocks — **the catalog is
+complete**.
 
 ---
 
@@ -13,49 +14,60 @@ was already decided.
 |                 |                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
-| Branch          | `claude/repo-status-review-8bac54` (branched from `main` after PR #18 merged)                                               |
-| HEAD at handoff | **Phase 1 of the catalog-completion plan complete** — the block contract, O2 `chat-shell`, C2, and family N's six           |
-| Pushed          | **yes**, with an open PR. See the repo's PR list.                                                                           |
-| Preview         | Not deployed. Production is still one merge behind and serves 98 registry items against 118 here — see §7.                  |
+| Branch          | none — this landed on `main` as PR #20                                                                                     |
+| HEAD at handoff | **The catalog is complete** — family O's twelve remaining blocks, plus the A- and M-family a11y retrofits                   |
+| Pushed          | **merged.** Start your next branch from `main`.                                                                             |
+| Preview         | Not deployed. Production is behind and serves fewer registry items than this branch builds — see §7.                        |
 
-**Catalog progress: 102 of 114 active items shipped.** 12 planned, 11 cut
-(family G's 10 + O5, per decision D9 — do not revive them).
+**Catalog progress: 114 of 114 active items shipped. Nothing is planned.**
+11 cut (family G's 10 + O5, per decision D9 — do not revive them).
 
-Of the 102, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
+Of the 114, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
 are exempt from the story-state and documentation contracts until someone runs
-the retrofit. The other 77 satisfy the full contract.
-
-**Remaining: family O's 12 blocks.** C and N are closed.
+that retrofit — which is now the largest remaining piece of work in the repo.
+The other 89 satisfy the full contract.
 
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-Gate baselines at this handoff: `pnpm test` **1117**, `pnpm build` **121 pages**,
-`pnpm test:stories` **350**, `registry.json` **118 items**,
-`check:contract` **77 checked / 25 exempt**.
+Gate baselines at this handoff: `pnpm test` **1387** across 137 files ·
+`pnpm build` **133 pages** · `pnpm test:stories` **422** across 117 files ·
+`registry.json` **130 items** · `check:contract` **89 checked / 25 exempt** ·
+Playwright **131/131** · `check:tokens` **130 files clean**.
 
 ### Start here for the next phase
 
-Read **[`design-system/block-build-brief.md`](design-system/block-build-brief.md)** —
-it did not exist before this phase. O2 `chat-shell` was built alone as a
-pathfinder specifically so that document could be written from what it hit, and
-it is the artifact each of the twelve remaining shell builders is handed,
-alongside its spec anchor, regions and `consumes` list. It supplements
-`component-build-brief.md` rather than replacing it.
+**Both prerequisites this section used to list are done, and the fan-out they
+gated has happened.** The A-family retrofit landed (see below), and the twelve
+shells were built by twelve concurrent agents, each in its own git worktree.
+Recorded because both predictions held:
 
-**Two things must happen before the twelve-shell fan-out:**
+- **The worktree isolation was necessary.** Twelve agents sharing one tree would
+  have raced on `tsbuildinfo` exactly as the seven leaves did. One agent still
+  hit the residue of sharing — it found port 3000 held by a *sibling* worktree's
+  dev server, and its preview reported success while serving another worktree's
+  build, so its new routes 404'd with no error anywhere. **If you hand-verify in
+  a parallel worktree, take your own port and your own browser tab.**
+- **The retrofit was worth doing first.** Twelve shells composed those
+  primitives; had `cost-chip` still carried its default, the compensation list
+  would have grown rather than gone to zero.
 
-1. **The A-family retrofit (Phase 0) must land first.** Six call sites now
-   carry `className="text-foreground"` overrides compensating for A2
-   `cost-chip`'s unfixed 4.34:1 contrast bug — two of them added during this
-   phase. Twelve shells composing those primitives is how that list becomes
-   twenty. See `a11y-baseline.md` §5.
-2. **Give each shell its own worktree.** This phase ran its seven leaf
-   components sequentially rather than in parallel, because they share one
-   working tree and each runs a repo-root `pnpm typecheck` — concurrent runs
-   race on `tsbuildinfo` and typecheck against each other's half-written
-   files. The fan-out the plan assumed needs isolation to actually happen, and
-   the win is far larger for twelve shells than it was for seven leaves.
+One thing that did *not* work as intended, and will bite the next fan-out the
+same way: **the agent worktrees were cut from `main`, not from the integration
+branch.** So none of the twelve saw the manifest prep or the retrofit — all
+twelve independently reported "the five files were not scaffolded" and "the
+manifest row has no `regions`". No damage, because a block builder only writes
+its own five files and the integrator sets the manifest centrally anyway. But
+every incoming file had to be checked against the retrofit before it landed
+(an agent working on pre-retrofit `cost-chip` could reasonably have re-added the
+very override just deleted). **Check the base commit of an isolated worktree
+before you rely on it carrying your prep.**
+
+Read **[`design-system/block-build-brief.md`](design-system/block-build-brief.md)**
+before touching family O. It is what the twelve builders were handed, and it
+held: every one of them composed rather than reimplemented, and the composition
+gaps they could not solve came back as reports instead of forks. See §8 for
+those.
 
 ### The smoke gate was broken and is now fixed
 
@@ -70,6 +82,19 @@ demo does not open a modal on mount". It also failed *differently* per
 environment: six locally, four on CI.
 
 Now located by tag: **119/119 pass.**
+
+**It then broke a second time, for a different reason, in this round.** A bare
+`h1` tag locator started matching *two* elements once family O landed: a block
+is a page shell and renders its own heading inside the preview, below the docs
+chrome's own `<h1>`. Four blocks failed and looked like broken components. The
+gate now targets `[data-slot="component-page-title"]` — the docs page's own
+title, explicitly — so anything the preview renders is out of scope by
+construction. **131/131 pass.**
+
+The lesson worth carrying: this locator has been wrong twice, and both times the
+failure presented as "these components are broken" rather than "this gate is
+wrong". A readiness proxy that overlaps with what it is proxying for will keep
+doing this.
 
 Two things worth keeping:
 
@@ -121,13 +146,19 @@ J and K took — D12's warning that J/K/N are unclosed pending re-sampling was
 deliberately set aside when the catalog target was frozen at 114, and the
 second reference board became its own v2 project.
 
-**That v2 project now exists.** Family P — P1 `data-views`, P2
-`detail-view-shell`, plus the `use-view-mode` lib contract — shipped 2026-08-11
-under [`2026-08-11-data-views-v2-design.md`](superpowers/specs/2026-08-11-data-views-v2-design.md).
-The A–O freeze is untouched, and `catalog.manifest.test.ts` now asserts the two
-halves separately so that stays checkable rather than commented.
+**Family O is now closed too, and with it the catalog — there is no next
+batch.** Its fourteen: twelve built here by twelve concurrent agents, O2
+`chat-shell` as the earlier pathfinder, O5 cut.
 
-Two things there are open work rather than done work:
+**And that v2 project now exists, as family P.** P1 `data-views`, P2
+`detail-view-shell`, plus the `use-view-mode` lib contract, shipped 2026-08-11
+under [`2026-08-11-data-views-v2-design.md`](superpowers/specs/2026-08-11-data-views-v2-design.md).
+It is counted separately from A–O by construction, so "the catalog is complete
+at 114" above stays exactly true — `catalog.manifest.test.ts` asserts the two
+halves independently rather than leaving that a comment.
+
+Family P is where the "any v2 catalog" clause below stops being hypothetical.
+Two things about it are open work rather than done work:
 
 - **D18's evidence is desk research**, not a collected board of screens — see
   [`records-board-analysis.md`](design-system/records-board-analysis.md) §1.
@@ -138,14 +169,21 @@ Two things there are open work rather than done work:
   authors its own copies of these files. Pointing it at the registry needs a
   published URL and is its own PR.
 
-Next and last: **family O's 12 remaining blocks**. O10 `records-shell` now has
-its dependencies shipped. O2 `chat-shell` is built;
-read [`design-system/block-build-brief.md`](design-system/block-build-brief.md)
-before starting any of the rest, and see §1 for the two prerequisites.
+One correction the merge forces, worth recording because it inverts an
+assumption family P was written under: **O10 `records-shell` shipped before P1
+and P2 existed**, so it composes J5 `record-list` rather than the view axis.
+That is not a defect — but "records-shell now has its dependencies" was written
+when O10 was still planned, and it is no longer the right framing. Whether O10
+should be revised to compose P1 is an open question, not a task.
 
 **Parallel agents are the throughput mechanism** — §3.4 is not optional advice.
-Wave 6's 12 items were built by 12 concurrent agents in one pass; sequential
-building runs at roughly 7 components per session.
+Wave 6's 12 items were built by 12 concurrent agents in one pass; family O's 12
+likewise, each in its own git worktree. Sequential building runs at roughly 7
+components per session.
+
+**What this loop is still for:** the `contractExempt` retrofit (25 legacy
+items), the composition gaps in §8, and any v2 catalog. The machinery is not
+retired just because the 114 are.
 
 ### 3.2 Prepare the manifest — you do this, not the agents
 
@@ -160,8 +198,14 @@ names.
 
 **Two naming traps, both already hit:**
 
-- A state named `"default"` becomes the story export `Default`, which the
-  contract gate forbids. Use a meaningful name (`text-only`, `plain`).
+- A state named `"default"` becomes the story export `Default`. Use a meaningful
+  name (`text-only`, `plain`). **Correction (2026-08-11): this bullet used to say
+  "which the contract gate forbids", and that is not true.** `check-contract.mts`
+  only asserts that every declared state has a matching export, so a state called
+  `default` passes it. What actually keeps `Default` out is the scaffolder, which
+  never emits one — pinned by `new-component.test.ts:65` — and the 14 stories
+  that do export it are exactly the pre-Wave-1.5 `contractExempt` set. Worth
+  knowing before you rely on the gate to catch this.
 - Two states that normalise to the same identifier silently collide.
 
 ### 3.3 Scaffold
@@ -558,3 +602,90 @@ A component is not done because it renders. It is done when it composes the
 right primitives, its tests pin the spec's load-bearing sentences, its guidance
 tells a consumer when to reach for it and what goes wrong, and the gates are
 green.
+
+---
+
+## 7. Deploy state
+
+Production is behind this branch. Deploys are manual, from `apps/docs`, and need
+the `weeeha` GitHub account. Nothing in this round has shipped to production.
+
+---
+
+## 8. Composition gaps found by family O — the fan-out's most useful output
+
+The block brief's rule — **when a composed component does not fit, report it, do
+not fork it** — held for all twelve builders. Nobody reimplemented a composed
+component; every mismatch came back as a labelled sibling or a documented
+call-site override plus a written gap. That makes this list the honest inventory
+of where the component layer is not yet good enough to be composed, and **it is
+the best-evidenced backlog in the repo**: each item was found by someone who
+needed it to work and could not make it work.
+
+**Found independently by three or more builders — fix these first:**
+
+- **B1 `app-sidebar`'s bottom-anchored slots are clipped** by its own
+  `[contain:layout]`, so `footer`/`promo` props render nothing. Reported by O1,
+  O9, O10 and O11 separately. Four shells now expose those props with a warning
+  in their JSDoc rather than silently shipping dead slots.
+- **Carousel arrows positioned outside their own box** (`-left-12`/`-right-12`):
+  C3 `feature-card-row` (O1, O13) and H5 `frame-strip` (O3). In any constrained
+  column they are clipped, or they turn the page into a horizontal scroller.
+  O1 measured 407px of content in a 375px column, all of it the arrow.
+- **Grid columns keyed off the viewport rather than the container**: J4
+  `artifact-grid` (O9) and C4 `recent-grid` (O1). Every shell that puts a grid
+  beside a sidebar has to shift each breakpoint up a step by hand.
+
+**Missing opt-outs — a component that always renders its own chrome cannot be
+composed into a surface that already has that chrome:**
+
+- **L6 `onboarding-wizard`** always draws a progress rail and Back/Skip footer,
+  so O14's single-step sign-in had to suppress three dead buttons. Wants
+  `progress={false}` / `nav={false}`.
+- **M1 `settings-dialog`** renders its own nav *and* search, both of which O12
+  had to suppress because the page owns them. Wants a `chrome` opt-out, and its
+  private `matchesQuery` exported — O12 had to duplicate the predicate.
+- **J1 `asset-library`** has no `viewSwitch={false}` (O10) and no header-only
+  mode (O7, which called this the biggest gap it hit).
+- **J3 `explore-gallery`** bundles prompt, sort tabs, type pills and feed under
+  one root with no slots, so O8 had to mount it feed-only and host the rest.
+- **E5 `run-button`** renders its own cost chip whenever given `cost`; O6 wanted
+  the control without the chip. Wants `showCost`.
+- **F2 `generation-grid`** has no full-width empty mode (O6).
+- **J3, J4, J5** — O10 and O8 both wanted a per-row/per-item slot and neither
+  has one.
+
+**Smaller, but real:**
+
+- **H3 `track-lane`** exposes no scroll handle, so O4 cannot sync stacked lanes
+  with each other or with the ruler; its gutter width is a private constant the
+  shell has to hardcode. **H2 `TimeRuler`** always draws its own playhead, with
+  no opt-out.
+- **I3 `context-toolbar`'s `selection` is a closed four-member union** while I2's
+  `elementType` is an open string, so O3 cannot express an inspector variant for
+  a frame, group or camera.
+- **I1 `tool-panel`** has no pinned slot other than `prompt`.
+- **A5 `filter-bar`** has no single-select mode (O9) and no sort affordance
+  (O10); its root is a bare `div`, so `aria-label` alone trips
+  `aria-prohibited-attr`.
+- **A8 `preview-tile`** cannot name its own frame button unless the label is
+  `overlay`, and its interactive frame is always a toggle (`aria-pressed`) even
+  when the tile is an open action. O7 notes C4 `recent-grid` uses `below` +
+  `onSelect` and therefore ships nameless buttons — **a latent violation in a
+  shipped component, not yet caught by a gate.**
+- **K5 `source-panel`** stamps no per-source id, so O13's citation→source jump
+  has to find rows positionally.
+- **B4 `modality-rail`'s stacked label never renders** — `ToggleGroupItem`'s base
+  `h-8` collapses the label span to zero height. The accessible name survives;
+  the rail is icon-only visually. Pre-existing, verified in a browser by O4.
+- **Vendored `ui/tabs.tsx`** ships `text-muted-foreground` with `bg-muted` in one
+  class string on `tabsListVariants` — the exact pairing `check:tokens` exists to
+  catch, sitting outside its scan scope where any consumer taking the default
+  variant will hit it.
+
+**One infrastructure fix worth doing before the next fan-out:** Base UI's
+`ScrollArea` (under C2 `suggestion-chips`) schedules a timer calling
+`getAnimations()`, which jsdom lacks — it throws *after* the triggering test
+resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
+its own test file; **it belongs in the shared `vitest.setup.ts`** next to the
+ResizeObserver stub, and will bite anything composing a ScrollArea.

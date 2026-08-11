@@ -95,14 +95,27 @@ function PricingTable({
             aria-checked={period === value}
             onClick={() => setPeriod(value)}
             data-slot="pricing-table-period-option"
+            // The unselected option is `text-foreground`, not `text-muted-foreground`:
+            // this control's own track is `bg-muted`, and that pairing measures 4.34:1
+            // (a11y-baseline.md, "The contrast pairing, measured"). The selected/unselected
+            // distinction was never carried by the text colour anyway — it is the raised
+            // `bg-background` pill and its shadow, which both survive untouched.
             className={cn(
               "focus-visible:ring-ring rounded-full px-3 py-1 capitalize focus-visible:ring-2 focus-visible:outline-none",
-              period === value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
+              period === value ? "bg-background text-foreground shadow-sm" : "text-foreground",
             )}
           >
             {value}
             {value === "yearly" && saving !== null ? (
-              <span data-slot="pricing-table-save-badge" className="text-warning ml-1.5 text-xs font-medium">
+              // Solid, not tinted text: `text-warning` is a light amber meant to sit on
+              // the page background, and on this control's `bg-muted` track it fell under
+              // 4.5:1. `--warning` / `--warning-foreground` are a designed pair, so the
+              // badge goes solid — the same move a11y-baseline.md prescribes for the
+              // `text-destructive`-on-tint failure.
+              <span
+                data-slot="pricing-table-save-badge"
+                className="bg-warning text-warning-foreground ml-1.5 rounded-full px-1.5 py-0.5 text-xs font-medium"
+              >
                 Save {saving}%
               </span>
             ) : null}
