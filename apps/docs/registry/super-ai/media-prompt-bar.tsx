@@ -267,12 +267,7 @@ function MediaPromptBar({
 
               {cost !== undefined ? (
                 <div data-slot="media-prompt-bar-cost">
-                  {/* CostChip's own default (bg-muted + text-muted-foreground) is
-                      4.34:1 at this size — under the 4.5:1 text minimum. Overriding
-                      to text-foreground (same fix as hero-omnibox and
-                      workspace-switcher) keeps the muted pill background while
-                      clearing 4.5:1 with a wide margin against the same bg-muted fill. */}
-                  <CostChip amount={cost} className="text-foreground" />
+                  <CostChip amount={cost} />
                 </div>
               ) : null}
             </div>

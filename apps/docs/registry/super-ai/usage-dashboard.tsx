@@ -331,17 +331,7 @@ function UsageDashboardModelBreakdown({
                         {m.name}
                       </th>
                       <td className="py-1.5 pr-3">
-                        {/* `text-foreground` overrides CostChip's default
-                            `text-muted-foreground`, which lands at 4.34:1 on
-                            its own `bg-muted` and fails axe. Call-site
-                            substitution per docs/design-system/a11y-baseline.md,
-                            "Where this has already bitten" (2) — CostChip's own
-                            styling and its contractExempt story stay untouched. */}
-                        <CostChip
-                          amount={m.spend.toLocaleString()}
-                          unit={spendUnit}
-                          className="text-foreground"
-                        />
+                        <CostChip amount={m.spend.toLocaleString()} unit={spendUnit} />
                       </td>
                       <td className="py-1.5 pr-3 tabular-nums">{m.tokens.toLocaleString()}</td>
                       <td className="py-1.5 tabular-nums">{formatLatencyMs(m.latencyMs)}</td>

@@ -117,7 +117,7 @@ function ToolCost({ cost }: { cost: Cost }) {
   // so composing it unmodified would fail this component's stories.
   // tailwind-merge swaps the foreground token and leaves the chip otherwise
   // intact. Remove this when A2's `Cost` retrofit lands.
-  return <CostChip amount={formatCost(cost)} unit="" className="text-foreground" />;
+  return <CostChip amount={formatCost(cost)} unit="" />;
 }
 
 function ToolRow({
