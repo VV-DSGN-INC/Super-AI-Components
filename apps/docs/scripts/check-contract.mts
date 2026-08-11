@@ -231,17 +231,32 @@ for (const item of manifest) {
 }
 
 // G3 — the contrast exemption list and the a11y exclusion list must agree.
-const storybookConfig = readFileSync("../storybook/vitest.config.ts", "utf8");
-errors.push(
-  ...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)),
-);
+{
+  const storybookConfigPath = "../storybook/vitest.config.ts";
+  try {
+    const storybookConfig = readFileSync(storybookConfigPath, "utf8");
+    errors.push(
+      ...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)),
+    );
+  } catch (err) {
+    errors.push(
+      `${storybookConfigPath}: could not read file to compare exemption lists (${(err as Error).message})`,
+    );
+  }
+}
 
 // Per-family manifest counts must match catalog.md's Totals table — this is
 // the one hand-maintained summary in the whole pipeline that nothing
 // regenerates, so it's the one most likely to silently drift.
-{
+catalogCheck: {
   const catalogPath = "../../docs/design-system/catalog.md";
-  const catalogSource = readFileSync(catalogPath, "utf8");
+  let catalogSource: string;
+  try {
+    catalogSource = readFileSync(catalogPath, "utf8");
+  } catch (err) {
+    errors.push(`${catalogPath}: could not read file (${(err as Error).message})`);
+    break catalogCheck;
+  }
   const totalsSection = catalogSource.split(/^## Totals$/m)[1];
   if (!totalsSection) {
     errors.push(`${catalogPath}: no "## Totals" section found`);

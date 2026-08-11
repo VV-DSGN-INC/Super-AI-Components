@@ -16,6 +16,7 @@ run() {
   fi
 }
 
+run "install"        pnpm install --frozen-lockfile
 run "lint"           pnpm lint
 run "typecheck"      pnpm typecheck
 run "check:tokens"   pnpm check:tokens

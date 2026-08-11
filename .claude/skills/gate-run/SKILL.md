@@ -24,6 +24,12 @@ work.
 **Never hand-write a gate list.** If you need one, run this. If `ci.yml` gains a
 step, add it here in the same position, and nowhere else.
 
+`run-gates.sh` is itself a hand-maintained mirror of `ci.yml` — that is the one
+gate list allowed to exist, and only because it stays in lockstep. Any `ci.yml`
+change must update this script in the same commit, or the mirror drifts and
+this becomes exactly the kind of unfaithful gate list the line above warns
+against.
+
 ## Before you trust a green run
 
 - **`next start` serves the prebuilt output.** Editing source without rebuilding

@@ -490,6 +490,19 @@ the symptom fix, and would not have reached 4.5:1 anyway.
 **Result: 105 story files / 352 tests pass with both exemptions removed.**
 `preview-tile.tsx` remains the only name on the list.
 
+**Coupled-by-coincidence warning.** `check:contract`'s G3 gate asserts that
+`CONTRAST_EXEMPT_FILES` (`apps/docs/scripts/lib/token-rules.mjs`) and this
+file's a11y exclusion list are the same *set* of names — true today only
+because both happen to contain exactly `preview-tile.tsx`, and for different
+reasons: it's contrast-exempt for a `text-destructive` defect (unrelated to
+this document's `text-muted-foreground`/`bg-muted` pairing) and a11y-excluded
+for an axe `color-contrast` violation. **If you shrink this list — which the
+line above tells you to do, and only to do — you must shrink
+`CONTRAST_EXEMPT_FILES` in the same commit, or `check:contract` goes red on a
+gate that reads as unrelated to whatever you actually changed.** The two lists
+must always name the same files; nothing enforces that they exist for the same
+reason.
+
 ## The M-family fixes (2026-08-11, family O round)
 
 Building family O's twelve shells put three monetization components on a

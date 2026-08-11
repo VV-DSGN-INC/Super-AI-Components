@@ -33,8 +33,11 @@ Five files per item, with deliberately failing tests.
 
 ## 3. Fan out — one agent per component
 
-Dispatch `component-builder` (or `retrofit-builder` for a `contractExempt`
-item), one per component, in parallel. Concurrency above ~16 just queues.
+Dedicated fan-out agents for this step are **not yet part of this repo** —
+their permission syntax needs verification against a real session, and that
+lands in a follow-up. Until then, dispatch each builder as a general-purpose
+agent pointed at `docs/design-system/component-build-brief.md`, one per
+component, in parallel. Concurrency above ~16 just queues.
 
 Give each agent **only**: its spec anchor, its declared states, and
 component-specific steering — which shipped primitive it must compose, which

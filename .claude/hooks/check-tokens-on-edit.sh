@@ -9,8 +9,14 @@ set -uo pipefail
 # "advisory, always exit 0" promise.
 path=$(node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).tool_input?.file_path??"")}catch{process.stdout.write("")}})' 2>/dev/null) || exit 0
 
+# Mirrors check-tokens.mjs's own glob —
+# `{registry/{super-ai,marketing},components/ui}/**/*.tsx` — so an edit-time
+# signal exists for every file the gate actually covers, not just the
+# original super-ai subset.
 case "$path" in
   *apps/docs/registry/super-ai/*.tsx) ;;
+  *apps/docs/registry/marketing/*.tsx) ;;
+  *apps/docs/components/ui/*.tsx) ;;
   *) exit 0 ;;
 esac
 
