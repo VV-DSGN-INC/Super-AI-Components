@@ -49,8 +49,66 @@ export function findSlotErasures(file: string, source: string, registryComponent
  * (stories/ui/**, stories/ai-elements/**) are out of scope — they are a
  * different decision, documented in a11y-baseline.md, and are not per-component.
  */
+/**
+ * Strip `//` and `/* *\/` comments, but never touch what's inside a quoted
+ * string. A blind regex over the raw text corrupts this file specifically:
+ * the vendored directory excludes are literal globs — `"**\/stories/ui/**"` —
+ * and `**\/` ends in the two characters `/*`, which a naive block-comment
+ * regex reads as a comment *opening*, non-greedily swallowing everything up
+ * to the next `*\/` (found inside the *next* entry's own `**\/` prefix) and
+ * corrupting both. Tracking quote state is what token-rules.mjs's
+ * extractCvaCalls already does for the same reason (arbitrary Tailwind
+ * values are full of stray parens); this mirrors that pattern for comments.
+ */
+function stripComments(source: string): string {
+  let out = "";
+  let quote: string | null = null;
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+    const next = source[i + 1];
+    if (quote) {
+      out += ch;
+      if (ch === "\\") {
+        out += next ?? "";
+        i++;
+      } else if (ch === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      quote = ch;
+      out += ch;
+      continue;
+    }
+    if (ch === "/" && next === "/") {
+      while (i < source.length && source[i] !== "\n") i++;
+      out += "\n";
+      continue;
+    }
+    if (ch === "/" && next === "*") {
+      i += 2;
+      while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) i++;
+      i++; // land on the closing `/`; the loop's i++ advances past it
+      continue;
+    }
+    out += ch;
+  }
+  return out;
+}
+
 export function parseStorybookExclusions(source: string): string[] {
-  return [...source.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
+  // Comments are stripped before matching, and this is load-bearing rather
+  // than tidy. The exclusion list is edited by hand, and commenting a line
+  // out is how people "remove" an entry —
+  // `// "**/stories/super-ai/Foo.stories.tsx"`. A parser that still counts
+  // that as live reports no mismatch, and G3 silently stops catching the
+  // drift it exists to catch. This file's own comments narrate exactly that
+  // retrofit ("CostChip and EntityRow were here … the list shrank"), so this
+  // is the editing pattern, not a hypothetical.
+  const live = stripComments(source);
+
+  return [...live.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
     (m) => m[1],
   );
 }

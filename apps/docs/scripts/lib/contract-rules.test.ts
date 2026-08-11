@@ -63,6 +63,33 @@ describe("parseStorybookExclusions", () => {
     ],`;
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
+
+  it("does not count a commented-out exclusion as live", () => {
+    // How a human "removes" an entry. Counting it as live means G3 reports no
+    // mismatch and stops catching the drift it exists to catch.
+    const src = `exclude: [
+      // "**/stories/super-ai/Foo.stories.tsx", // removed 2026-01
+      "**/stories/super-ai/PreviewTile.stories.tsx",
+    ],`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("does not count an entry inside a block comment", () => {
+    const src = `/* was: "**/stories/super-ai/Foo.stories.tsx" */
+      "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("keeps a live entry that has a trailing comment", () => {
+    const src = `"**/stories/super-ai/PreviewTile.stories.tsx", // color-contrast x2`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("is not confused by a URL on the same line", () => {
+    const src = `// see https://example.com/x
+      "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
 });
 
 describe("compareExemptionLists", () => {
