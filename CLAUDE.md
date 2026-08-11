@@ -26,6 +26,7 @@ Read these before writing any component code. The first two are contracts, not s
 3. **[`docs/CONTINUE.md`](docs/CONTINUE.md)** — where things stand, how a component gets built end to end, traps that have actually bitten, and the composition-gap backlog (§8).
 4. **[`docs/design-system/decisions.md`](docs/design-system/decisions.md)** — especially D9 (family G cut), D12, D13.
 5. **[`docs/design-system/a11y-baseline.md`](docs/design-system/a11y-baseline.md)** — the measured accessibility posture, the recurring contrast failure, and what is excluded from the gate and why.
+6. **[`docs/design-system/anti-slop.md`](docs/design-system/anti-slop.md)** — the anti-slop taxonomy, audit, and fix ladder for generated UI; the runnable version is the `unslop` skill (`.claude/skills/unslop/`), used before building and again before "done".
 
 Specs are normative **including their prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
 
