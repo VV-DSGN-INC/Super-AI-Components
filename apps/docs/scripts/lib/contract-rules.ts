@@ -1,6 +1,6 @@
 // Pure predicates for the contract gate. Kept separate from check-contract.mts
 // so each can be unit-tested without running the whole gate.
-import { pascal } from "./scaffold-templates";
+import { pascal, statePascal } from "./scaffold-templates";
 
 /**
  * A `data-slot` passed to a registry component silently replaces that
@@ -151,6 +151,31 @@ export function compareExemptionLists(contrastFiles: string[], storyComponents: 
     if (!fromContrastNames.has(name)) {
       errors.push(
         `${name} is excluded from the a11y gate (vitest.config.ts) but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
+      );
+    }
+  }
+  return errors;
+}
+
+/**
+ * Story files import `Meta` and `Story` from @storybook/react, and `Default` is
+ * the export the house style forbids. A state whose Pascal form is any of the
+ * three produces a story file that either shadows its own import or violates
+ * the naming rule.
+ *
+ * check:contract's existing story-state assertion cannot catch this: it greps
+ * for `export const <Name>`, which is present whether or not the name collides.
+ * record-list shipped with `Meta as StorybookMeta` and the gate stayed green.
+ */
+const RESERVED_STATE_EXPORTS = new Set(["Meta", "Story", "Default"]);
+
+export function findReservedStateNames(name: string, states: string[]): string[] {
+  const errors: string[] = [];
+  for (const state of states) {
+    const exported = statePascal(state);
+    if (RESERVED_STATE_EXPORTS.has(exported)) {
+      errors.push(
+        `${name}: state "${state}" produces the reserved story export ${exported}. Rename it in catalog.manifest.ts — see CONTINUE.md §3.2.`,
       );
     }
   }

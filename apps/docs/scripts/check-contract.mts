@@ -18,7 +18,12 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { LIB_MANIFEST } from "../lib/lib.manifest";
-import { compareExemptionLists, findSlotErasures, parseStorybookExclusions } from "./lib/contract-rules";
+import {
+  compareExemptionLists,
+  findReservedStateNames,
+  findSlotErasures,
+  parseStorybookExclusions,
+} from "./lib/contract-rules";
 import { deriveExtras } from "./lib/registry-extras";
 import { pascal, statePascal } from "./lib/scaffold-templates";
 import { CONTRAST_EXEMPT_FILES } from "./lib/token-rules.mjs";
@@ -106,6 +111,9 @@ for (const item of manifest) {
     if (kind === "docs" && item.contractExempt) continue;
     if (!existsSync(path(item.name))) errors.push(`${item.name}: missing ${kind} file ${path(item.name)}`);
   }
+
+  // G4 — a state whose Pascal form collides with the story file's own imports.
+  errors.push(...findReservedStateNames(item.name, item.states));
 
   if (item.contractExempt) {
     exempt++;

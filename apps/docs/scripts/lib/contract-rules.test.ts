@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { compareExemptionLists, findSlotErasures, parseStorybookExclusions } from "./contract-rules";
+import {
+  compareExemptionLists,
+  findReservedStateNames,
+  findSlotErasures,
+  parseStorybookExclusions,
+} from "./contract-rules";
 
 const REGISTRY = new Set(["EntityRow", "CostChip", "StatReadout"]);
 
@@ -116,5 +121,30 @@ describe("compareExemptionLists", () => {
     const out = compareExemptionLists(["preview-tile.tsx"], ["PreviewTile", "EntityRow"]);
     expect(out).toHaveLength(1);
     expect(out[0]).toContain("EntityRow");
+  });
+});
+
+describe("findReservedStateNames", () => {
+  it("rejects a state whose Pascal form collides with the Meta import", () => {
+    const out = findReservedStateNames("record-list", ["meta", "compact"]);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("Meta");
+  });
+
+  it("rejects `default`, which produces the forbidden Default export", () => {
+    expect(findReservedStateNames("x", ["default"])).toHaveLength(1);
+  });
+
+  it("rejects `story`", () => {
+    expect(findReservedStateNames("x", ["story"])).toHaveLength(1);
+  });
+
+  it("accepts ordinary state names", () => {
+    expect(findReservedStateNames("x", ["text-only", "plain", "with-footer"])).toEqual([]);
+  });
+
+  it("catches multi-word states that normalise onto a reserved name", () => {
+    // statePascal strips separators and lowercases the tail: "Meta".
+    expect(findReservedStateNames("x", ["META"])).toHaveLength(1);
   });
 });
