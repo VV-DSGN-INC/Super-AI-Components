@@ -13,7 +13,10 @@ export type FamilyId =
   | "L"
   | "M"
   | "N"
-  | "O";
+  | "O"
+  // P is the first family from the second reference board, kept separate from
+  // A–O so the 114-item freeze stays literally true. See D18.
+  | "P";
 
 export type ManifestStatus = "planned" | "building" | "shipped" | "cut";
 
@@ -62,6 +65,22 @@ export interface ManifestItem {
    * asserts instead.
    */
   regions?: string[];
+  /**
+   * Extra files this item ships beyond `registry/super-ai/<name>.tsx`.
+   *
+   * Present only when a component's internals are genuinely its own. D3
+   * forbids an L3 depending on another L3, so a component whose parts have
+   * exactly one importer can make them neither sibling items nor a sideways
+   * import — they have to be its own files. P1 `data-views` is the first:
+   * its six view shells are imported by `data-views.tsx` and by nothing else,
+   * and promoting them to family A was rejected because A1–A12 are atoms
+   * (`kbd`, `entity-row`) and a calendar grid is not one.
+   *
+   * Omit it and the item emits its single name-derived file, unchanged — the
+   * path all 102 shipped items take. Every file listed here is exempt from
+   * check-contract's orphan detection, because this row accounts for it.
+   */
+  files?: { path: string; type: string; target: string }[];
   /** npm packages the component needs at runtime. */
   npm: string[];
   /** States the story file must export. */
