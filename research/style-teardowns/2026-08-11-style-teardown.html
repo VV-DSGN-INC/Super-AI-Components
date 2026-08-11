@@ -1,0 +1,525 @@
+<title>Style Teardown — Ten Products</title>
+<style>
+  :root{
+    --ground:#fbfbfa; --panel:#ffffff; --ink:#1d1d1b; --muted:#6b6a64;
+    --hair:rgba(29,29,27,.12); --hair-soft:rgba(29,29,27,.07); --accent:#0e7a5a;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ground:#171716; --panel:#1f1f1d; --ink:#e9e8e4; --muted:#98968e;
+      --hair:rgba(233,232,228,.14); --hair-soft:rgba(233,232,228,.07); --accent:#3fae8d; }
+  }
+  :root[data-theme="dark"]{ --ground:#171716; --panel:#1f1f1d; --ink:#e9e8e4; --muted:#98968e;
+    --hair:rgba(233,232,228,.14); --hair-soft:rgba(233,232,228,.07); --accent:#3fae8d; }
+  :root[data-theme="light"]{ --ground:#fbfbfa; --panel:#ffffff; --ink:#1d1d1b; --muted:#6b6a64;
+    --hair:rgba(29,29,27,.12); --hair-soft:rgba(29,29,27,.07); --accent:#0e7a5a; }
+
+  body{ background:var(--ground); color:var(--ink);
+    font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+    margin:0; padding:48px 24px 96px; }
+  .wrap{ max-width:880px; margin:0 auto; }
+  header.page h1{ font-size:26px; line-height:1.2; margin:0 0 6px; letter-spacing:-.01em; text-wrap:balance; }
+  header.page p{ color:var(--muted); margin:0; max-width:62ch; }
+  .eyebrow{ font-size:11px; font-weight:600; letter-spacing:.09em; text-transform:uppercase; color:var(--accent); margin:0 0 10px; }
+
+  section.product{ margin-top:56px; border-top:1px solid var(--hair); padding-top:28px; }
+  .phead{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:4px; }
+  .phead h2{ font-size:19px; margin:0; letter-spacing:-.01em; }
+  .phead .tag{ color:var(--muted); font-size:14px; }
+  .src{ font-family:var(--mono); font-size:11px; color:var(--muted); }
+
+  .swatches{ display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 14px; }
+  .sw{ width:96px; }
+  .sw .chip{ height:44px; border-radius:6px; border:1px solid var(--hair-soft); }
+  .sw .hex{ font-family:var(--mono); font-size:10.5px; margin-top:5px; }
+  .sw .role{ font-size:10.5px; color:var(--muted); line-height:1.3; }
+  .darkstrip{ background:#101011; border:1px solid var(--hair-soft); border-radius:10px; padding:12px 14px 10px; margin:0 0 14px; }
+  .darkstrip .dslabel{ font-size:10.5px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:#8e8e93; margin:0 0 8px; }
+  .darkstrip .swatches{ margin:0; }
+  .darkstrip .hex{ color:#c9c9cd; }
+  .darkstrip .role{ color:#8e8e93; }
+  .darkstrip .chip{ border-color:rgba(255,255,255,.09); }
+
+  dl.specs{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px 20px; margin:14px 0 20px; }
+  dl.specs>div{ border:1px solid var(--hair-soft); border-radius:8px; padding:9px 12px; background:var(--panel); }
+  dl.specs dt{ font-size:10.5px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin:0 0 3px; }
+  dl.specs dd{ margin:0; font-size:13px; }
+  dl.specs dd code{ font-family:var(--mono); font-size:12px; }
+
+  /* ---- live specimen, self-grounded per product ---- */
+  .specimen{ border:1px solid var(--hair); border-radius:10px; overflow:hidden; }
+  .specimen-label{ font-size:10.5px; font-weight:600; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); margin:0 0 8px; }
+  .stage{ background:var(--p-page); padding:22px; display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start;
+    font-family:var(--p-font,system-ui); color:var(--p-text); }
+  .mini-card{ background:var(--p-card); border:1px solid var(--p-border); border-radius:var(--p-r-card);
+    box-shadow:var(--p-shadow,none); padding:16px; width:250px; }
+  .mini-card h3{ margin:0 0 4px; font-size:var(--p-fs-h,15px); font-weight:var(--p-fw-h,600); }
+  .mini-card p{ margin:0 0 12px; font-size:var(--p-fs); color:var(--p-text2); line-height:1.5; }
+  .btn-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .btn{ font-size:var(--p-fs); font-weight:var(--p-fw-btn,500); height:var(--p-btn-h);
+    padding:0 var(--p-btn-px); border-radius:var(--p-r-btn); border:1px solid transparent;
+    display:inline-flex; align-items:center; cursor:default; font-family:inherit; }
+  .btn.primary{ background:var(--p-accent); color:var(--p-on-accent,#fff); border-radius:var(--p-r-btn-primary,var(--p-r-btn)); }
+  .btn.ghost{ background:transparent; color:var(--p-text); border-color:var(--p-border); }
+  .mini-side{ width:170px; background:var(--p-side,var(--p-page)); border:1px solid var(--p-border);
+    border-radius:var(--p-r-card); padding:8px; font-size:var(--p-fs); color:var(--p-side-text,var(--p-text)); }
+  .mini-side .row{ padding:5px 9px; border-radius:var(--p-r-btn); }
+  .mini-side .row.sel{ background:var(--p-hover); color:var(--p-side-sel-text,inherit); }
+  .mini-side .row.dim{ color:var(--p-side-dim,var(--p-text2)); }
+  .chip-row{ display:flex; gap:6px; margin-top:10px; flex-wrap:wrap; }
+  .mchip{ font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid transparent; }
+
+  /* per-product token sets (literal extracted values — kept light in both themes) */
+  .p-openai{ --p-page:#f3f3f3; --p-card:#fff; --p-text:#282828; --p-text2:#5d5d5d;
+    --p-border:rgba(0,0,0,.12); --p-hover:rgba(0,0,0,.05); --p-accent:#181818;
+    --p-r-card:12px; --p-r-btn:10px; --p-fs:14px; --p-btn-h:34px; --p-btn-px:12px;
+    --p-fs-h:16px; --p-fw-h:500; --p-side:#f3f3f3; }
+  .p-claude{ --p-page:#fcfcfb; --p-card:#fcfcfb; --p-text:#0b0b0b; --p-text2:#52514e;
+    --p-border:rgba(11,11,11,.10); --p-hover:rgba(11,11,11,.05); --p-accent:#0b0b0b;
+    --p-r-card:12px; --p-r-btn:8px; --p-fs:14px; --p-btn-h:32px; --p-btn-px:10px;
+    --p-fs-h:17px; --p-fw-h:500; --p-side:#f9f9f7; }
+  .p-claude .mini-card h3{ font-family:Georgia,"Times New Roman",serif; letter-spacing:.005em; }
+  .p-twenty{ --p-page:#f1f1f1; --p-card:#fff; --p-text:#333; --p-text2:#666;
+    --p-border:#ebebeb; --p-hover:rgba(0,0,0,.04); --p-accent:#333;
+    --p-r-card:16px; --p-r-btn:8px; --p-fs:13px; --p-btn-h:26px; --p-btn-px:8px;
+    --p-fs-h:13px; --p-fw-h:600; --p-side:#f1f1f1;
+    --p-shadow:0 0 0 1px #ebebeb, -4px 0 4px rgba(0,0,0,.008); }
+  .p-evernote{ --p-page:#fff; --p-card:#fff; --p-text:#212121; --p-text2:#4e4d4c;
+    --p-border:#dad9d8; --p-hover:#e7e6e5; --p-accent:#00a82d;
+    --p-r-card:8px; --p-r-btn:6px; --p-r-btn-primary:48px; --p-fs:13px; --p-btn-h:34px; --p-btn-px:14px;
+    --p-fs-h:15px; --p-fw-h:600; --p-side:#f6f5f4; --p-fw-btn:600; }
+  .p-monday{ --p-page:#fff; --p-card:#fff; --p-text:#323338; --p-text2:#676879;
+    --p-border:#c3c6d4; --p-hover:#cce5ff; --p-accent:#0073ea;
+    --p-r-card:8px; --p-r-btn:4px; --p-fs:14px; --p-btn-h:31px; --p-btn-px:10px;
+    --p-fs-h:16px; --p-fw-h:500; --p-side:#f6f7fb;
+    --p-shadow:0 4px 6px -4px rgba(0,0,0,.1); }
+  .p-pipedrive{ --p-page:#f5f5f6; --p-card:#fff; --p-text:#21232c; --p-text2:#65686f;
+    --p-border:rgba(33,35,44,.14); --p-hover:rgba(33,35,44,.08); --p-accent:#2d8647;
+    --p-r-card:12px; --p-r-btn:6px; --p-fs:14px; --p-btn-h:38px; --p-btn-px:14px;
+    --p-fs-h:15px; --p-fw-h:600; --p-side:#211c52; --p-side-text:rgba(255,255,255,.75);
+    --p-side-dim:rgba(255,255,255,.55); --p-shadow:0 1px 2px rgba(42,54,71,.05); }
+  .p-pipedrive .mini-side .row.sel{ background:#6150e1; color:#fff; }
+  .p-linear{ --p-page:#f9f9fa; --p-card:#fff; --p-text:#19191b; --p-text2:#5c5d63;
+    --p-border:#dedee1; --p-hover:rgba(25,25,27,.05); --p-accent:#19191b;
+    --p-r-card:12px; --p-r-btn:10px; --p-fs:13px; --p-btn-h:28px; --p-btn-px:10px;
+    --p-fs-h:14px; --p-fw-h:600; --p-side:#efeff0;
+    --p-shadow:0 0 0 1px #ced0d4, 0 3px 6px -2px rgba(0,0,0,.02), 0 1px 1px rgba(0,0,0,.04); }
+  .p-intercom{ --p-page:#eff0eb; --p-card:#fff; --p-text:#1a1a1a; --p-text2:#646462;
+    --p-border:#e9eae6; --p-hover:rgba(26,26,26,.06); --p-accent:#222;
+    --p-r-card:14px; --p-r-btn:9999px; --p-fs:14px; --p-btn-h:32px; --p-btn-px:12px;
+    --p-fs-h:15px; --p-fw-h:600; --p-side:#eff0eb; --p-fw-btn:600;
+    --p-shadow:0 0 0 1px #e9eae6, 0 1px 4px rgba(20,20,20,.15); }
+  .p-elevenlabs{ --p-page:#ffffff; --p-card:#fff; --p-text:#0f0f10; --p-text2:rgba(0,0,0,.53);
+    --p-border:rgba(0,0,0,.10); --p-hover:rgba(0,0,0,.04); --p-accent:#0f0f10;
+    --p-r-card:16px; --p-r-btn:10px; --p-fs:13px; --p-btn-h:34px; --p-btn-px:12px;
+    --p-fs-h:14px; --p-fw-h:500; --p-side:#fafafa; --p-fw-btn:500; }
+  .p-manus{ --p-page:#ffffff; --p-card:#f8f8f7; --p-text:#34322d; --p-text2:#5e5e5b;
+    --p-border:rgba(0,0,0,.06); --p-hover:rgba(55,53,47,.06); --p-accent:#1a1a19;
+    --p-r-card:12px; --p-r-btn:8px; --p-fs:14px; --p-btn-h:32px; --p-btn-px:10px;
+    --p-fs-h:15px; --p-fw-h:500; --p-side:#f8f8f7;
+    --p-font:-apple-system,"Segoe UI Variable Display","Segoe UI",sans-serif; }
+
+  table.cmp{ border-collapse:collapse; width:100%; font-size:12.5px; }
+  table.cmp th,table.cmp td{ text-align:left; padding:7px 10px; border-bottom:1px solid var(--hair-soft); vertical-align:top; }
+  table.cmp th{ font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; }
+  table.cmp td:first-child{ color:var(--muted); white-space:nowrap; }
+  table.cmp code{ font-family:var(--mono); font-size:11.5px; }
+  .tablewrap{ overflow-x:auto; border:1px solid var(--hair-soft); border-radius:10px; background:var(--panel); padding:4px 8px; }
+
+  .patterns{ margin:16px 0 0; padding:0; list-style:none; display:grid; gap:10px; }
+  .patterns li{ border:1px solid var(--hair-soft); background:var(--panel); border-radius:8px; padding:12px 14px; font-size:13.5px; }
+  .patterns b{ color:var(--accent); }
+  @media (prefers-reduced-motion: no-preference){ .btn{ transition:opacity .12s; } }
+</style>
+<div class="wrap">
+  <header class="page">
+    <p class="eyebrow">Design research · 2026-08-11</p>
+    <h1>Style teardown — ten products, measured live</h1>
+    <p>Computed-style extraction from OpenAI Platform, Claude Console, Twenty, Evernote, Monday, Pipedrive, Linear, Intercom, ElevenLabs and Manus. Swatches and numbers are literal values read from the DOM; each specimen is rebuilt from those tokens (typefaces approximated by system stacks). Dark-mode strips were measured by flipping each product into its own dark theme and restoring it after. Companion page: <a href="/shells" style="color:var(--accent)">app shell taxonomy</a> — the conceptual teardown of layout archetypes.</p>
+  </header>
+
+  <!-- OPENAI -->
+  <section class="product">
+    <div class="phead"><h2>OpenAI Platform</h2><span class="tag">quiet gray lab</span><span class="src">platform.openai.com</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#f3f3f3"></div><div class="hex">#f3f3f3</div><div class="role">page canvas</div></div>
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="hex">#ffffff</div><div class="role">card</div></div>
+      <div class="sw"><div class="chip" style="background:#f9f9f9"></div><div class="hex">#f9f9f9</div><div class="role">card alt</div></div>
+      <div class="sw"><div class="chip" style="background:#282828"></div><div class="hex">#282828</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#5d5d5d"></div><div class="hex">#5d5d5d</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#8f8f8f"></div><div class="hex">#8f8f8f</div><div class="role">text muted</div></div>
+      <div class="sw"><div class="chip" style="background:#004f99"></div><div class="hex">#004f99</div><div class="role">link accent</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>10</code> controls · <code>12–16</code> cards · <code>6–8</code> small</dd></div>
+      <div><dt>Border</dt><dd><code>1px black / 10–16%</code> alpha hairlines</dd></div>
+      <div><dt>Type</dt><dd>OpenAI Sans · body 16/24 · UI 14/20 · h1 24/36 <b>w400</b></dd></div>
+      <div><dt>Buttons</dt><dd>h32–36 · pad-x 10–12 · mostly ghost</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 4 &gt; 8 &gt; 12 &gt; 16 · 4px base</dd></div>
+      <div><dt>Shadows</dt><dd>none — flat, border-separated</dd></div>
+    </dl>
+    <div class="darkstrip"><p class="dslabel">Dark mode (measured)</p><div class="swatches">
+      <div class="sw"><div class="chip" style="background:#131313"></div><div class="hex">#131313</div><div class="role">canvas</div></div>
+      <div class="sw"><div class="chip" style="background:#212121"></div><div class="hex">#212121</div><div class="role">card</div></div>
+      <div class="sw"><div class="chip" style="background:#303030"></div><div class="hex">#303030</div><div class="role">card raised</div></div>
+      <div class="sw"><div class="chip" style="background:#dcdcdc"></div><div class="hex">#dcdcdc</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#8f8f8f"></div><div class="hex">#8f8f8f</div><div class="role">muted (same as light)</div></div>
+      <div class="sw"><div class="chip" style="background:#339cff"></div><div class="hex">#339cff</div><div class="role">link</div></div>
+      <div class="sw"><div class="chip" style="background:rgba(255,255,255,.12)"></div><div class="hex">white/12%</div><div class="role">border (mirror)</div></div>
+    </div></div>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-openai">
+      <div class="mini-side"><div class="row sel">Home</div><div class="row dim">Usage</div><div class="row dim">API keys</div></div>
+      <div class="mini-card"><h3>Total tokens</h3><p>Requests across all projects in the last 24 hours.</p>
+        <div class="btn-row"><span class="btn primary">View logs</span><span class="btn ghost">Export</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- CLAUDE -->
+  <section class="product">
+    <div class="phead"><h2>Claude Console</h2><span class="tag">warm paper, serif accent</span><span class="src">platform.claude.com</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#fcfcfb"></div><div class="hex">#fcfcfb</div><div class="role">canvas (warm)</div></div>
+      <div class="sw"><div class="chip" style="background:#f9f9f7"></div><div class="hex">#f9f9f7</div><div class="role">surface 2</div></div>
+      <div class="sw"><div class="chip" style="background:#0b0b0b"></div><div class="hex">#0b0b0b</div><div class="role">ink / primary btn</div></div>
+      <div class="sw"><div class="chip" style="background:#52514e"></div><div class="hex">#52514e</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#898781"></div><div class="hex">#898781</div><div class="role">text muted</div></div>
+      <div class="sw"><div class="chip" style="background:#6da7ec"></div><div class="hex">#6da7ec</div><div class="role">pastel blue</div></div>
+      <div class="sw"><div class="chip" style="background:#f09978"></div><div class="hex">#f09978</div><div class="role">pastel coral</div></div>
+      <div class="sw"><div class="chip" style="background:#bcd1ca"></div><div class="hex">#bcd1ca</div><div class="role">pastel sage</div></div>
+      <div class="sw"><div class="chip" style="background:#f9dca4"></div><div class="hex">#f9dca4</div><div class="role">warning fill</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>8</code> controls · <code>12</code> cards · <code>5–7</code> small</dd></div>
+      <div><dt>Border</dt><dd><code>1px black/10%</code> + <code>0.5px</code> hairlines</dd></div>
+      <div><dt>Type</dt><dd>anthropicSans <b>14px base</b> · serif h1 22/28 · numbers 30/36 w580</dd></div>
+      <div><dt>Buttons</dt><dd>h32–36 · primary = solid ink · CTA h44 r9.6</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 12 &gt; 4 &gt; 8 &gt; 6 — dense</dd></div>
+      <div><dt>Shadows</dt><dd>zero — tint + hairline separation</dd></div>
+    </dl>
+    <div class="darkstrip"><p class="dslabel">Dark mode</p><div class="swatches"><div class="sw" style="width:100%"><div class="role" style="color:#8e8e93">Not shipped — Claude Console has no user-facing dark theme (only the base surface responds to a data-mode flip; components stay light).</div></div></div></div>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-claude">
+      <div class="mini-side"><div class="row sel">Dashboard</div><div class="row dim">API keys</div><div class="row dim">Workbench</div></div>
+      <div class="mini-card"><h3>Good afternoon, Nick</h3><p>Organization credits and spend this month at a glance.</p>
+        <div class="btn-row"><span class="btn primary">Build an agent</span><span class="btn ghost">Get API key</span></div>
+        <div class="chip-row"><span class="mchip" style="background:#cde2fb;color:#184f95">info</span><span class="mchip" style="background:#f9dca4;color:#734500">low balance</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- TWENTY -->
+  <section class="product">
+    <div class="phead"><h2>Twenty CRM</h2><span class="tag">13px mono-scale, floating panel</span><span class="src">q.twenty.com</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#f1f1f1"></div><div class="hex">#f1f1f1</div><div class="role">app frame</div></div>
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="hex">#ffffff</div><div class="role">floating panel</div></div>
+      <div class="sw"><div class="chip" style="background:#333333"></div><div class="hex">#333333</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#666666"></div><div class="hex">#666666</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#999999"></div><div class="hex">#999999</div><div class="role">text muted</div></div>
+      <div class="sw"><div class="chip" style="background:#c2e9e0"></div><div class="hex">≈#c2e9e0</div><div class="role">chip mint</div></div>
+      <div class="sw"><div class="chip" style="background:#d4deff"></div><div class="hex">≈#d4deff</div><div class="role">chip periwinkle</div></div>
+      <div class="sw"><div class="chip" style="background:#fbcfcf"></div><div class="hex">≈#fbcfcf</div><div class="role">chip salmon</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>16</code> panels · <code>8</code> controls · <code>4</code> small</dd></div>
+      <div><dt>Border</dt><dd><code>1px #ebebeb</code> ring shadow on panels</dd></div>
+      <div><dt>Type</dt><dd>Inter <b>13px everywhere</b> · w500 = emphasis</dd></div>
+      <div><dt>Buttons</dt><dd>h24–28 — smallest of the set</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 4 &gt;&gt; 2 &gt; 8 — densest</dd></div>
+      <div><dt>Shadows</dt><dd>panel ring only</dd></div>
+    </dl>
+    <div class="darkstrip"><p class="dslabel">Dark mode (measured)</p><div class="swatches">
+      <div class="sw"><div class="chip" style="background:#1d1d1d"></div><div class="hex">#1d1d1d</div><div class="role">frame</div></div>
+      <div class="sw"><div class="chip" style="background:#1b1b1b"></div><div class="hex">#1b1b1b</div><div class="role">panel (darker!)</div></div>
+      <div class="sw"><div class="chip" style="background:#171717"></div><div class="hex">#171717</div><div class="role">sidebar</div></div>
+      <div class="sw"><div class="chip" style="background:#222222"></div><div class="hex">#222222</div><div class="role">raised + border</div></div>
+      <div class="sw"><div class="chip" style="background:#ebebeb"></div><div class="hex">#ebebeb</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#b3b3b3"></div><div class="hex">#b3b3b3</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#4662d6"></div><div class="hex">#4662d6</div><div class="role">selection blue</div></div>
+    </div></div>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-twenty">
+      <div class="mini-side"><div class="row sel">Notes</div><div class="row dim">People</div><div class="row dim">Companies</div></div>
+      <div class="mini-card"><h3>All Notes · 1</h3><p>Filter, sort and group records in this view.</p>
+        <div class="btn-row"><span class="btn primary" style="color:#fff">Add new</span><span class="btn ghost">Options</span></div>
+        <div class="chip-row"><span class="mchip" style="background:#c2e9e0;color:#24503f;border-color:#8fd0be">Active</span><span class="mchip" style="background:#d4deff;color:#31437a;border-color:#a9c0fe">Lead</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- EVERNOTE -->
+  <section class="product">
+    <div class="phead"><h2>Evernote Web</h2><span class="tag">warm paper + brand pill</span><span class="src">evernote.com/client/web</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#f6f5f4"></div><div class="hex">#f6f5f4</div><div class="role">sidebar</div></div>
+      <div class="sw"><div class="chip" style="background:#e7e6e5"></div><div class="hex">#e7e6e5</div><div class="role">selected row</div></div>
+      <div class="sw"><div class="chip" style="background:#212121"></div><div class="hex">#212121</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#4e4d4c"></div><div class="hex">#4e4d4c</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#00a82d"></div><div class="hex">#00a82d</div><div class="role">brand green</div></div>
+      <div class="sw"><div class="chip" style="background:#dad9d8"></div><div class="hex">#dad9d8</div><div class="role">border</div></div>
+      <div class="sw"><div class="chip" style="background:#4d64ff"></div><div class="hex">#4d64ff</div><div class="role">icon blue</div></div>
+      <div class="sw"><div class="chip" style="background:#a158eb"></div><div class="hex">#a158eb</div><div class="role">icon purple</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>6</code> rows · <code>8</code> inputs · <code>48</code> pill CTA</dd></div>
+      <div><dt>Border</dt><dd>sparse <code>1px #dad9d8</code> — tint does the work</dd></div>
+      <div><dt>Type</dt><dd>Inter · chrome 13px · content 16/24 · h1 22/28 w600</dd></div>
+      <div><dt>Buttons</dt><dd>pill h40 w600 primary · nav rows h30</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 4 &gt; 8 &gt; 12 &gt; 24</dd></div>
+      <div><dt>Shadows</dt><dd>popover only</dd></div>
+    </dl>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-evernote">
+      <div class="mini-side"><div class="row sel">Files</div><div class="row dim">Notes</div><div class="row dim">Tasks</div></div>
+      <div class="mini-card"><h3>Files</h3><p>Manage your important files, media and docs.</p>
+        <div class="btn-row"><span class="btn primary">＋ Note</span><span class="btn ghost">Sort</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- MONDAY -->
+  <section class="product">
+    <div class="phead"><h2>Monday.com</h2><span class="tag">friendly blue enterprise</span><span class="src">pegbo-group.monday.com</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="hex">#ffffff</div><div class="role">canvas</div></div>
+      <div class="sw"><div class="chip" style="background:#f6f7fb"></div><div class="hex">#f6f7fb</div><div class="role">tint</div></div>
+      <div class="sw"><div class="chip" style="background:#323338"></div><div class="hex">#323338</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#676879"></div><div class="hex">#676879</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#0073ea"></div><div class="hex">#0073ea</div><div class="role">brand blue</div></div>
+      <div class="sw"><div class="chip" style="background:#cce5ff"></div><div class="hex">#cce5ff</div><div class="role">selection</div></div>
+      <div class="sw"><div class="chip" style="background:#c3c6d4"></div><div class="hex">#c3c6d4</div><div class="role">border</div></div>
+      <div class="sw"><div class="chip" style="background:#00c875"></div><div class="hex">#00c875</div><div class="role">green</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>4</code> dominant (squarest) · <code>8</code> cards · <code>100+</code> pills</dd></div>
+      <div><dt>Border</dt><dd><code>1px #c3c6d4</code> — most visible borders</dd></div>
+      <div><dt>Type</dt><dd>Figtree · body 15/22.5 · h 24/30 &amp; 18/24 w500</dd></div>
+      <div><dt>Buttons</dt><dd>h30–32 r4 · solid blue / blue outline</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 4 &gt; 8 &gt; 16 &gt; 24</dd></div>
+      <div><dt>Shadows</dt><dd>modest, real (dropdowns 0 4 6)</dd></div>
+    </dl>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-monday">
+      <div class="mini-side"><div class="row sel" style="color:#0073ea">Notetaker</div><div class="row dim">Workspace</div><div class="row dim">Favorites</div></div>
+      <div class="mini-card"><h3>AI Notetaker</h3><p>Connect your calendar once and record every meeting.</p>
+        <div class="btn-row"><span class="btn primary">Invite notetaker</span><span class="btn ghost" style="color:#0073ea;border-color:#0073ea">Learn more</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- PIPEDRIVE -->
+  <section class="product">
+    <div class="phead"><h2>Pipedrive</h2><span class="tag">ink + weight-450 confidence</span><span class="src">123132.pipedrive.com</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#f5f5f6"></div><div class="hex">#f5f5f6</div><div class="role">page tint</div></div>
+      <div class="sw"><div class="chip" style="background:#21232c"></div><div class="hex">#21232c</div><div class="role">ink text</div></div>
+      <div class="sw"><div class="chip" style="background:#65686f"></div><div class="hex">#65686f</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#211c52"></div><div class="hex">#211c52</div><div class="role">navy sidebar</div></div>
+      <div class="sw"><div class="chip" style="background:#6150e1"></div><div class="hex">#6150e1</div><div class="role">selection purple</div></div>
+      <div class="sw"><div class="chip" style="background:#0d68c5"></div><div class="hex">#0d68c5</div><div class="role">link blue</div></div>
+      <div class="sw"><div class="chip" style="background:#2d8647"></div><div class="hex">#2d8647</div><div class="role">CTA green</div></div>
+      <div class="sw"><div class="chip" style="background:#d83c38"></div><div class="hex">#d83c38</div><div class="role">alert red</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>6</code> buttons · <code>12</code> cards · <code>100</code> icon pills</dd></div>
+      <div><dt>Border</dt><dd>single token: <code>1px ink/14%</code></dd></div>
+      <div><dt>Type</dt><dd>Inter <b>wght 450</b> body 14/21 · w600 emphasis · 10/16 caps labels</dd></div>
+      <div><dt>Buttons</dt><dd><b>h40</b> — biggest · solid green primary</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 16 &gt; 8 &gt; 4 — most generous</dd></div>
+      <div><dt>Shadows</dt><dd>every card: <code>0 1 2 / 5%</code></dd></div>
+    </dl>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-pipedrive">
+      <div class="mini-side"><div class="row sel">Setup guide</div><div class="row dim">Contacts</div><div class="row dim">Deals</div></div>
+      <div class="mini-card"><h3>Set up your sales process</h3><p>Map your pipeline so you can track deal progress.</p>
+        <div class="btn-row"><span class="btn primary">Customize pipeline</span><span class="btn ghost">Watch video</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- LINEAR -->
+  <section class="product">
+    <div class="phead"><h2>Linear</h2><span class="tag">hue-282 precision</span><span class="src">linear.app</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#f9f9fa"></div><div class="hex">#f9f9fa</div><div class="role">page bg</div></div>
+      <div class="sw"><div class="chip" style="background:#efeff0"></div><div class="hex">#efeff0</div><div class="role">sidebar</div></div>
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="hex">#ffffff</div><div class="role">content panel</div></div>
+      <div class="sw"><div class="chip" style="background:#19191b"></div><div class="hex">#19191b</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#2f3035"></div><div class="hex">#2f3035</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#5c5d63"></div><div class="hex">#5c5d63</div><div class="role">text tertiary</div></div>
+      <div class="sw"><div class="chip" style="background:#9b9ca4"></div><div class="hex">#9b9ca4</div><div class="role">text quaternary</div></div>
+      <div class="sw"><div class="chip" style="background:#dedee1"></div><div class="hex">#dedee1</div><div class="role">border 2°</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>8</code> dominant · <code>10</code> buttons · <code>12</code> cards · pills for chips</dd></div>
+      <div><dt>Border</dt><dd>3-deep gray ramp + <code>0.5px</code> hairlines · all <code>lch</code> hue 282</dd></div>
+      <div><dt>Type</dt><dd>Inter Var · UI 13/12 <b>w500</b> · lists 15/24 <b>w450</b> · h 19/28 w600</dd></div>
+      <div><dt>Buttons</dt><dd><b>h28</b> ghost · 12–13px</dd></div>
+      <div><dt>Spacing</dt><dd>gaps <b>6</b> &gt; 8 &gt; 2 &gt; 4 — 6px rhythm</dd></div>
+      <div><dt>Shadows</dt><dd>layered whisper <code>2% + 4%</code> + 1px ring</dd></div>
+    </dl>
+    <div class="darkstrip"><p class="dslabel">Dark mode (measured) — hue shifts 282 → 272</p><div class="swatches">
+      <div class="sw"><div class="chip" style="background:#101012"></div><div class="hex">#101012</div><div class="role">bg primary</div></div>
+      <div class="sw"><div class="chip" style="background:#151517"></div><div class="hex">≈#151517</div><div class="role">bg secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#191a1c"></div><div class="hex">≈#191a1c</div><div class="role">bg quaternary</div></div>
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="hex">#ffffff</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#e2e3e6"></div><div class="hex">≈#e2e3e6</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#95969c"></div><div class="hex">≈#95969c</div><div class="role">text tertiary</div></div>
+      <div class="sw"><div class="chip" style="background:#26272b"></div><div class="hex">≈#26272b</div><div class="role">border 2°</div></div>
+    </div></div>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-linear">
+      <div class="mini-side"><div class="row sel">Initiatives</div><div class="row dim">Projects</div><div class="row dim">Triage</div></div>
+      <div class="mini-card"><h3>Pegbo 2.0 MVP</h3><p>Pilot-ready outreach + pre-qualification flow for GCs.</p>
+        <div class="btn-row"><span class="btn primary">Write update</span><span class="btn ghost">Add label</span></div>
+        <div class="chip-row"><span class="mchip" style="background:#f9f9fa;border-color:#dedee1;color:#2f3035">● Active</span><span class="mchip" style="background:#f9f9fa;border-color:#dedee1;color:#5c5d63">Jul 31st</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- INTERCOM -->
+  <section class="product">
+    <div class="phead"><h2>Intercom</h2><span class="tag">olive canvas, pill everything</span><span class="src">app.intercom.com</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#eff0eb"></div><div class="hex">#eff0eb</div><div class="role">olive canvas</div></div>
+      <div class="sw"><div class="chip" style="background:#f8f8f7"></div><div class="hex">#f8f8f7</div><div class="role">surface 2</div></div>
+      <div class="sw"><div class="chip" style="background:#1a1a1a"></div><div class="hex">#1a1a1a</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#646462"></div><div class="hex">#646462</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#222222"></div><div class="hex">#222222</div><div class="role">primary btn</div></div>
+      <div class="sw"><div class="chip" style="background:#ffccb2"></div><div class="hex">#ffccb2</div><div class="role">peach</div></div>
+      <div class="sw"><div class="chip" style="background:#e7e2fd"></div><div class="hex">#e7e2fd</div><div class="role">lavender</div></div>
+      <div class="sw"><div class="chip" style="background:#b09efa"></div><div class="hex">#b09efa</div><div class="role">Fin purple</div></div>
+      <div class="sw"><div class="chip" style="background:#df2020"></div><div class="hex">#df2020</div><div class="role">alert red</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>8</code> rows · <code>12–16</code> panels · <b>pill buttons</b></dd></div>
+      <div><dt>Border</dt><dd>~none — ring <code>#e9eae6</code> + shadow instead</dd></div>
+      <div><dt>Type</dt><dd>Inter · body 14/20 · hard 400/<b>600</b> two-step · h 20/24 w600</dd></div>
+      <div><dt>Buttons</dt><dd>h32 pill w600 · primary near-black</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 4 &gt; 8 &gt; 16</dd></div>
+      <div><dt>Shadows</dt><dd>panel ring + <code>0 1 4 / 15%</code></dd></div>
+    </dl>
+    <div class="darkstrip"><p class="dslabel">Dark mode (measured) — warm flips to cool</p><div class="swatches">
+      <div class="sw"><div class="chip" style="background:#080808"></div><div class="hex">#080808</div><div class="role">canvas</div></div>
+      <div class="sw"><div class="chip" style="background:#1c2026"></div><div class="hex">#1c2026</div><div class="role">panel (cool!)</div></div>
+      <div class="sw"><div class="chip" style="background:#2b2f35"></div><div class="hex">#2b2f35</div><div class="role">raised</div></div>
+      <div class="sw"><div class="chip" style="background:#fafafa"></div><div class="hex">#fafafa</div><div class="role">text primary</div></div>
+      <div class="sw"><div class="chip" style="background:#c9c6c5"></div><div class="hex">#c9c6c5</div><div class="role">text 2° (warm)</div></div>
+      <div class="sw"><div class="chip" style="background:#373c43"></div><div class="hex">#373c43</div><div class="role">panel ring</div></div>
+      <div class="sw"><div class="chip" style="background:#683d27"></div><div class="hex">#683d27</div><div class="role">peach, deepened</div></div>
+      <div class="sw"><div class="chip" style="background:#342e4d"></div><div class="hex">#342e4d</div><div class="role">lavender, deepened</div></div>
+    </div></div>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-intercom">
+      <div class="mini-side"><div class="row sel">All · 4</div><div class="row dim">Mentions</div><div class="row dim">Unassigned</div></div>
+      <div class="mini-card"><h3>Messenger · [Demo]</h3><p>Conversations from the Messenger appear in your Inbox.</p>
+        <div class="btn-row"><span class="btn primary">Reply</span><span class="btn ghost">See all (4)</span></div>
+        <div class="chip-row"><span class="mchip" style="background:#e7e2fd;color:#4a3d8f">Fin AI</span><span class="mchip" style="background:#ffccb2;color:#7a3d14">Waiting 5d</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- ELEVENLABS -->
+  <section class="product">
+    <div class="phead"><h2>ElevenLabs</h2><span class="tag">alpha-ink minimal</span><span class="src">elevenlabs.io/app</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="hex">#ffffff</div><div class="role">canvas</div></div>
+      <div class="sw"><div class="chip" style="background:#fafafa"></div><div class="hex">#fafafa</div><div class="role">sidebar</div></div>
+      <div class="sw"><div class="chip" style="background:#0f0f10"></div><div class="hex">#0f0f10</div><div class="role">text + primary btn</div></div>
+      <div class="sw"><div class="chip" style="background:rgba(0,0,0,.53)"></div><div class="hex">black/53%</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:rgba(0,0,0,.44)"></div><div class="hex">black/44%</div><div class="role">text muted</div></div>
+      <div class="sw"><div class="chip" style="background:rgba(0,0,0,.10)"></div><div class="hex">black/10%</div><div class="role">border</div></div>
+      <div class="sw"><div class="chip" style="background:rgba(0,0,0,.04)"></div><div class="hex">black/4%</div><div class="role">hover</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>10</code> buttons · <code>16</code> cards · <code>6</code> chips · <code>12</code> search</dd></div>
+      <div><dt>Border</dt><dd><code>1px black/10%</code> + 7.5% variant</dd></div>
+      <div><dt>Type</dt><dd>Inter · UI 13/20 <b>w500</b> · body 16/24 · stats 36.8 w600</dd></div>
+      <div><dt>Buttons</dt><dd>h32–36 · solid near-black primary</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 8 &gt; 4 &gt; 6 &gt; 16</dd></div>
+      <div><dt>Naming</dt><dd><code>--gray-alpha-*</code> · <code>--studio-{hue}-*</code> · <code>--{status}-text/bg</code></dd></div>
+    </dl>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-elevenlabs">
+      <div class="mini-side"><div class="row sel">Flows</div><div class="row dim">Voices</div><div class="row dim">Studio</div></div>
+      <div class="mini-card" style="border-radius:16px"><h3>Recent flows</h3><p>Selfie to character sheet, product hero shots and more.</p>
+        <div class="btn-row"><span class="btn primary">＋ New Flow</span><span class="btn ghost">Sort by</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- MANUS -->
+  <section class="product">
+    <div class="phead"><h2>Manus</h2><span class="tag">system-native Notion ink</span><span class="src">manus.im/app</span></div>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#ffffff"></div><div class="hex">#ffffff</div><div class="role">canvas</div></div>
+      <div class="sw"><div class="chip" style="background:#f8f8f7"></div><div class="hex">#f8f8f7</div><div class="role">surface 2</div></div>
+      <div class="sw"><div class="chip" style="background:#f0f0f0"></div><div class="hex">#f0f0f0</div><div class="role">fill</div></div>
+      <div class="sw"><div class="chip" style="background:#34322d"></div><div class="hex">#34322d</div><div class="role">ink (Notion's)</div></div>
+      <div class="sw"><div class="chip" style="background:#5e5e5b"></div><div class="hex">#5e5e5b</div><div class="role">text secondary</div></div>
+      <div class="sw"><div class="chip" style="background:#858481"></div><div class="hex">#858481</div><div class="role">text muted</div></div>
+      <div class="sw"><div class="chip" style="background:#1a1a19"></div><div class="hex">#1a1a19</div><div class="role">primary btn</div></div>
+      <div class="sw"><div class="chip" style="background:#0081f2"></div><div class="hex">#0081f2</div><div class="role">accent blue</div></div>
+    </div>
+    <dl class="specs">
+      <div><dt>Radius</dt><dd><code>8</code> controls · <code>12</code> cards · <code>22</code> composer · pills</dd></div>
+      <div><dt>Border</dt><dd>sparse <code>1px black/6%</code> + 0.5px/14% hairline</dd></div>
+      <div><dt>Type</dt><dd><b>system font stack</b> · body 16/24 · UI 14/18 w500</dd></div>
+      <div><dt>Buttons</dt><dd>h28–36 r8–10 · near-black primary</dd></div>
+      <div><dt>Spacing</dt><dd>gaps 4 &gt; 8 &gt; 12 · raw px, no tokens</dd></div>
+      <div><dt>Naming</dt><dd><code>--text-primary/…/onblack</code> · <code>--border-main</code> · <code>--Button-black</code></dd></div>
+    </dl>
+    <p class="specimen-label">Specimen</p>
+    <div class="specimen"><div class="stage p-manus">
+      <div class="mini-side"><div class="row sel">SLivi</div><div class="row dim">New task</div><div class="row dim">Library</div></div>
+      <div class="mini-card" style="background:#fff"><h3>Tasks</h3><p>Your tasks stay private unless shared.</p>
+        <div class="btn-row"><span class="btn primary">Turn on</span><span class="btn ghost">Not now</span></div></div>
+    </div></div>
+  </section>
+
+  <!-- NAMING -->
+  <section class="product">
+    <div class="phead"><h2>How they name their tokens</h2><span class="tag">text · color · spacing</span></div>
+    <div class="tablewrap"><table class="cmp">
+      <tr><th>Product</th><th>Namespace</th><th>Text color</th><th>Type scale</th><th>Spacing</th></tr>
+      <tr><td>OpenAI</td><td>—</td><td><code>--color-text-{intent}-{style}-{state}</code></td><td><code>--font-heading-*</code> + <code>--font-text-{size}-{prop}</code></td><td>TW <code>--spacing</code> + <code>--control-gutter</code></td></tr>
+      <tr><td>Claude</td><td><code>--cds-</code></td><td><code>text-primary/secondary/muted/disabled</code> + intents + <code>git-*</code></td><td><code>--cds-font-*</code>, <code>--cds-leading-*</code></td><td><code>--cds-pad-xs/sm/md/lg</code></td></tr>
+      <tr><td>Twenty</td><td><code>--t-</code></td><td><code>font-color-primary…extra-light/inverted/danger</code></td><td><code>--t-font-size-xxs…</code></td><td><code>--t-spacing-0…28</code> × multiplicator</td></tr>
+      <tr><td>Evernote</td><td>—</td><td><code>--color-{component}-{element}-fill-{state}</code> (1,900+!)</td><td>component-scoped</td><td>—</td></tr>
+      <tr><td>Monday</td><td>—</td><td><code>--primary-text-color</code>, <code>--text-color-on-primary</code></td><td><code>--font-size-10…60</code> + <code>h1…h5</code></td><td><code>--space-2…80</code> (px-named)</td></tr>
+      <tr><td>Pipedrive</td><td><code>--pd-</code></td><td>compiled away</td><td>—</td><td>—</td></tr>
+      <tr><td>Linear</td><td>—</td><td><code>--color-text-primary…quaternary</code></td><td><code>micro/microPlus…large/largePlus/title1-3</code>; fonts by role</td><td>none public</td></tr>
+      <tr><td>Intercom</td><td>TW classes</td><td><code>text-default</code>, <code>text-muted</code>, <code>bg-neutral-container</code></td><td><code>text-sm/h1</code></td><td>TW + <code>gap-module</code>, <code>shadow-lvl-0</code></td></tr>
+      <tr><td>ElevenLabs</td><td>—</td><td><code>--gray-alpha-{step}</code>; <code>--{status}-text/bg</code></td><td><code>--font-waldenburg</code></td><td>TW <code>--spacing</code>; <code>--radius-xs…</code></td></tr>
+      <tr><td>Manus</td><td>—</td><td><code>--text-primary/secondary/tertiary/onblack</code></td><td>—</td><td>raw px literals</td></tr>
+    </table></div>
+    <ul class="patterns">
+      <li><b>Rank naming won:</b> primary / secondary / tertiary (/ quaternary) is the majority text-color scheme — exactly our <code>--text-*</code> convention. Tail ranks get words (muted, disabled, extra-light), not numbers.</li>
+      <li><b>Two philosophies on states:</b> OpenAI + Evernote bake style and state into names (1,000–1,900 tokens); Linear, Manus and Claude keep names small and resolve states elsewhere — the camp our "recipes, not tokens" rule is in.</li>
+      <li><b>Spacing schools:</b> numbered-steps × base (Twenty, Tailwind), value-named px (Monday's <code>--space-8</code>), t-shirt (<code>--cds-pad-md</code>), or none at all (Linear, Manus).</li>
+      <li><b>Most elegant type naming — Linear:</b> families by role (<code>--font-display</code>), sizes as a word scale with codified half-steps (<code>small/smallPlus</code>).</li>
+    </ul>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="product">
+    <div class="phead"><h2>Side by side</h2></div>
+    <div class="tablewrap"><table class="cmp">
+      <tr><th></th><th>OpenAI</th><th>Claude</th><th>Twenty</th><th>Evernote</th><th>Monday</th><th>Pipedrive</th><th>Linear</th><th>Intercom</th><th>ElevenLabs</th><th>Manus</th></tr>
+      <tr><td>Font</td><td>OpenAI Sans</td><td>anthropicSans + serif</td><td>Inter</td><td>Inter</td><td>Figtree</td><td>Inter <b>450</b></td><td>Inter Var 450/500</td><td>Inter</td><td>Inter</td><td><b>system</b></td></tr>
+      <tr><td>Base size</td><td>16 / UI 14</td><td><b>14</b></td><td><b>13</b></td><td>16 / UI 13</td><td>15</td><td>14</td><td>13–15</td><td>14</td><td>16 / UI 13 w500</td><td>16 / UI 14</td></tr>
+      <tr><td>Gray temp</td><td>neutral</td><td><b>warm</b></td><td>neutral</td><td><b>warm</b></td><td>cool</td><td>ink-navy</td><td>cool lch·282</td><td><b>olive-warm</b></td><td>neutral</td><td><b>warm ink</b></td></tr>
+      <tr><td>Border</td><td><code>black/12%</code></td><td><code>black/10%</code> + 0.5px</td><td><code>#ebebeb</code></td><td><code>#dad9d8</code></td><td><code>#c3c6d4</code></td><td><code>ink/14%</code></td><td><code>#dedee1</code> + 0.5px</td><td>ring <code>#e9eae6</code></td><td><code>black/10%</code></td><td><code>black/6%</code></td></tr>
+      <tr><td>Control r</td><td>10</td><td>8</td><td>8</td><td>6–8</td><td><b>4</b></td><td>6</td><td>8–10</td><td><b>pill</b></td><td>10</td><td>8–10</td></tr>
+      <tr><td>Card r</td><td>12–16</td><td>12</td><td><b>16</b></td><td>8</td><td>8</td><td>12</td><td>12</td><td>12–16</td><td>16</td><td>12</td></tr>
+      <tr><td>Shadows</td><td>none</td><td>none</td><td>ring</td><td>~none</td><td>modest</td><td>subtle, all cards</td><td>layered 2–4%</td><td>ring + 15%</td><td>none</td><td>~none</td></tr>
+      <tr><td>Button h</td><td>32–36</td><td>32–36</td><td><b>24–28</b></td><td>30–40</td><td>30–32</td><td><b>40</b></td><td><b>28</b></td><td>32</td><td>32–36</td><td>28–36</td></tr>
+      <tr><td>Gap mode</td><td>4</td><td>12</td><td>4</td><td>4</td><td>4</td><td><b>16</b></td><td><b>6</b></td><td>4</td><td><b>8</b></td><td>4</td></tr>
+    </table></div>
+    <ul class="patterns">
+      <li><b>Alpha borders beat solid grays.</b> OpenAI, Claude and Pipedrive define borders as text-color at 10–14% opacity — one token that adapts to every surface and to dark mode.</li>
+      <li><b>Hover is an overlay, not a color.</b> Black 4–5% at OpenAI, Claude, Twenty — matches our "recipes, not tokens" rule.</li>
+      <li><b>Nobody ships real elevation on light UI.</b> Four of six have zero shadows; separation = tint + hairline. Validates the flat-dense finish.</li>
+      <li><b>One accent does the work</b>; extra hues are demoted to chips and pastel data colors.</li>
+      <li><b>Warm gray = paper products</b> (Claude, Evernote), cool/neutral = tools — temperature is brand work, same as pegbo-warm vs pegbo-emerald.</li>
+      <li><b>Weight replaces size at small scales</b> — Twenty's one-size 13px, Pipedrive's wght-450 body and Linear's 13px-w500 chrome all carry hierarchy with weight only. Weight <b>450</b> appears independently at Pipedrive and Linear.</li>
+      <li><b>Card radius ≈ control radius + 4</b> in every single product — the same relationship as our 7/13/19 scale.</li>
+      <li><b>The floating-panel frame</b> (Twenty, Intercom, Linear): tinted canvas + white panels lifted by a 1px ring and whisper shadow — structure without borders or heavy elevation.</li>
+      <li><b>Tinted canvas as brand</b> — Intercom's olive #eff0eb and Linear's hue-282 grays carry identity purely through temperature, never registering as "color."</li>
+      <li><b>Dark mode is re-decided, not inverted.</b> Alpha borders self-mirror (OpenAI black/12% ↔ white/12%); muted text converges to ≈#818–#9b in every product; shadow opacity multiplies ~3× (Intercom 15%→55%); temperature flips are allowed (Intercom warm→cool, Linear hue 282→272). Claude Console ships no dark mode at all.</li>
+    </ul>
+  </section>
+</div>
