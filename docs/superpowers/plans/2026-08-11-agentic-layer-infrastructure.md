@@ -145,10 +145,18 @@ export const MUTED_BG_RE = /^bg-(?:muted|accent|secondary)(?:\/\d{1,3})?$/;
 // muted-on-muted pairing this module looks for.
 export const CONTRAST_EXEMPT_FILES = ["preview-tile.tsx"];
 
+// Exactly the original predicate — do not widen it. This is a
+// behaviour-preserving refactor, and `isExempt` guards an exemption list that
+// may only shrink; a looser matcher is a loosening even when inert today.
 export function isExempt(file) {
-  return CONTRAST_EXEMPT_FILES.some((name) => file.endsWith(`/${name}`) || file === name);
+  return CONTRAST_EXEMPT_FILES.some((name) => file.endsWith(`/${name}`));
 }
 
+// `.filter(Boolean)` is intentional and is the one deliberate departure from
+// the original `segment.split(/\s+/)`. It is inert for the single-string rule
+// (an empty token matches neither MUTED_FG nor MUTED_BG_RE), and Task 3 needs
+// it: cva base strings are multi-line and carry leading indentation, which
+// yields empty tokens the original never had to handle.
 function classTokens(segment) {
   return segment.split(/\s+/).filter(Boolean);
 }
