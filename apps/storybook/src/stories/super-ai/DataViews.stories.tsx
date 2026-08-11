@@ -1,6 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { DataViews, type ColumnDef, type ViewGroup } from "@/registry/super-ai/data-views";
+import {
+  DataViews,
+  type BaseDataViewsConfig,
+  type ColumnDef,
+  type TimeCapability,
+  type ViewGroup,
+  type ViewItem,
+  type ViewMode,
+} from "@/registry/super-ai/data-views";
 import { DataViewsDocs } from "@/content/components/data-views.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -58,9 +66,32 @@ const config = {
   renderChip: (t: Task) => <span>{t.title}</span>,
 };
 
+/* Storybook's arg inference cannot see through `DataViewsProps`.
+   That type is a UNION — the both-or-neither time pair means a config either
+   has `getDateRange` + `renderChip` or has neither — and `StoryObj` collapses a
+   union-typed args object to `never`, so every story's `args` fails to
+   assign. It type-checks inside apps/docs, which never compiles this file;
+   only the root `pnpm typecheck` (turbo, both packages) catches it.
+
+   The fix is a wrapper whose props are the INTERSECTION arm: these stories all
+   supply the time pair, so nothing is lost, and the real component is still
+   what renders and what axe audits. */
+type DataViewsStoryProps<T extends ViewItem> = BaseDataViewsConfig<T> &
+  TimeCapability<T> & {
+    items: T[];
+    viewMode: ViewMode;
+    selectedId?: string | null;
+    onItemClick?: (item: T) => void;
+    className?: string;
+  };
+
+function DataViewsStory(props: DataViewsStoryProps<Task>) {
+  return <DataViews {...props} />;
+}
+
 const meta = {
   title: "Super AI/Data Views",
-  component: DataViews,
+  component: DataViewsStory,
   parameters: {
     layout: "padded",
     docs: { page: componentDocsPage(DataViewsDocs) },
@@ -72,7 +103,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof DataViews<Task>>;
+} satisfies Meta<typeof DataViewsStory>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
