@@ -976,21 +976,26 @@ export function parseStorybookExclusions(source: string): string[] {
  * reason — and until now neither was visible.
  */
 export function compareExemptionLists(contrastFiles: string[], storyComponents: string[]): string[] {
-  const fromContrast = new Set(contrastFiles.map((f) => pascal(f.replace(/\.tsx$/, ""))));
+  const pascalOf = (f: string) => pascal(f.replace(/\.tsx$/, ""));
+  const fromContrastNames = new Set(contrastFiles.map(pascalOf));
   const fromStories = new Set(storyComponents);
   const errors: string[] = [];
 
-  for (const name of fromContrast) {
-    if (!fromStories.has(name)) {
+  // Each direction names the entry as it appears in ITS OWN list — the
+  // filename for token-rules.mjs, the Pascal component name for
+  // vitest.config.ts. A reader chasing a mismatch needs the literal string to
+  // search for, and the two lists spell the same component differently.
+  for (const file of contrastFiles) {
+    if (!fromStories.has(pascalOf(file))) {
       errors.push(
-        `${name} is contrast-exempt in token-rules.mjs but not excluded from the a11y gate — one of the two lists is stale`,
+        `${file} is contrast-exempt in token-rules.mjs but not excluded from the a11y gate (vitest.config.ts) — one of the two lists is stale`,
       );
     }
   }
   for (const name of fromStories) {
-    if (!fromContrast.has(name)) {
+    if (!fromContrastNames.has(name)) {
       errors.push(
-        `${name} is excluded from the a11y gate but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
+        `${name} is excluded from the a11y gate (vitest.config.ts) but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
       );
     }
   }
