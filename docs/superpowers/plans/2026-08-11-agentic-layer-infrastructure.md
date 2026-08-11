@@ -1816,7 +1816,13 @@ import { existsSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 
-const RELEVANT = /^(@\/components\/ui\/|@\/registry\/super-ai\/|lucide-react|@base-ui)/;
+// `./` matters more than it looks. Intra-registry imports in this codebase are
+// written RELATIVELY — `./kbd`, `./entity-row` — and there are 133 of them.
+// Matching only the `@/registry/super-ai/` alias saw none of them, i.e. missed
+// almost everything `consumes` actually tracks, and reported seven components
+// as drifted purely because their real imports were invisible. A tool that
+// cries wolf seven times gets ignored.
+const RELEVANT = /^(@\/components\/ui\/|@\/registry\/super-ai\/|\.\/|lucide-react|@base-ui)/;
 
 const names = process.argv.slice(2);
 const items = names.length ? MANIFEST.filter((i) => names.includes(i.name)) : MANIFEST;
@@ -1833,9 +1839,13 @@ for (const item of items) {
   const realShadcn = [...new Set(imports.filter((s) => s.startsWith("@/components/ui/")))]
     .map((s) => s.replace("@/components/ui/", ""))
     .sort();
-  const realConsumes = [...new Set(imports.filter((s) => s.startsWith("@/registry/super-ai/")))]
-    .map((s) => s.replace("@/registry/super-ai/", ""))
-    .sort();
+  const realConsumes = [
+    ...new Set(
+      imports
+        .filter((s) => s.startsWith("@/registry/super-ai/") || s.startsWith("./"))
+        .map((s) => s.replace(/^@\/registry\/super-ai\//, "").replace(/^\.\//, "")),
+    ),
+  ].sort();
 
   const declaredShadcn = [...item.shadcn].sort();
   const declaredConsumes = [...item.consumes].sort();
@@ -1879,7 +1889,14 @@ In `apps/docs/package.json`, add to `"scripts"`:
 cd apps/docs && pnpm reconcile:deps
 ```
 
-Expected: `no drift` — `check:contract` already asserts the derived form of this, so any drift reported here is a genuine finding worth recording in the task report.
+`check:contract` already asserts the derived form of this, so anything reported here is worth recording rather than silencing.
+
+**Two known reports are expected and are NOT bugs** — say so in the report rather than "fixing" the manifest:
+
+- **`field-row` declares `reset-affordance` without importing it.** The only mention is a comment describing what its trailing slot normally holds. Shipping the slot's usual occupant alongside it is a defensible convenience, not stale data.
+- **`suggestion-chips` declares `scroll-area` without importing it.** C2 vendors AI Elements' `suggestion.tsx`, which is what needs it. The script reads only the component file, so an external item's own dependency is invisible to it.
+
+Neither is a manifest error. If a *third* kind of drift appears, that one is worth investigating.
 
 - [ ] **Step 4: Write `build-component`**
 
