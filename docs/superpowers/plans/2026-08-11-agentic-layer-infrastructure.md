@@ -1898,6 +1898,32 @@ cd apps/docs && pnpm reconcile:deps
 
 Neither is a manifest error. If a *third* kind of drift appears, that one is worth investigating.
 
+- [ ] **Step 3a: Fix `connection-manager` — a real shipping bug this script found**
+
+The third drift appeared, and it is a genuine consumer-breaking defect:
+
+```
+connection-manager
+  consumes declared [] · real ["entity-row"]
+```
+
+`connection-manager.tsx:6` imports `EntityRow` from `./entity-row`, but the manifest declares `consumes: []`, so the built registry ships it with `registryDependencies: ["button","card","input","label"]` and one file. **`npx shadcn add connection-manager` installs a component importing something that is never installed, and the consumer's build fails on an unresolved import.**
+
+Two gates that should have caught it did not, and both reasons are worth recording:
+
+- **`check:contract` cannot see it by construction.** It asserts the manifest agrees with what `gen-registry` emits — but both derive from the same manifest, so they agree with each other while both being wrong about reality. Only a check against *real imports* sees it.
+- **`consumer-test.sh` masks it.** It installs the entire registry, so `entity-row` arrives anyway as its own top-level item and the build succeeds. A per-item dependency gap is invisible to a whole-registry install. That is a real coverage limitation in one of the three gates CLAUDE.md names as protecting downstream users.
+
+The fix, authorised as **the second and last manifest write in this plan**:
+
+1. `apps/docs/lib/catalog.manifest.ts` — `connection-manager`'s `consumes: []` → `consumes: ["entity-row"]`. Nothing else in the file.
+2. `pnpm build:registry` to regenerate, since `registry.json` is derived.
+3. Confirm `registry.json`'s `connection-manager` entry now lists `entity-row` in `registryDependencies`.
+4. Confirm `pnpm check:contract` still passes — it will now assert the new derived value.
+5. Confirm `pnpm reconcile:deps` drops to the two documented, expected reports.
+
+The `consumer-test.sh` coverage hole is **not** fixed here — it changes a downstream-protecting gate and belongs in its own task. Record it.
+
 - [ ] **Step 4: Write `build-component`**
 
 Create `.claude/skills/build-component/SKILL.md`:
