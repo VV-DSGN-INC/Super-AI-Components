@@ -18,8 +18,15 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { LIB_MANIFEST } from "../lib/lib.manifest";
+import {
+  compareExemptionLists,
+  findReservedStateNames,
+  findSlotErasures,
+  parseStorybookExclusions,
+} from "./lib/contract-rules";
 import { deriveExtras } from "./lib/registry-extras";
-import { statePascal } from "./lib/scaffold-templates";
+import { pascal, statePascal } from "./lib/scaffold-templates";
+import { CONTRAST_EXEMPT_FILES } from "./lib/token-rules.mjs";
 
 const manifest = MANIFEST;
 const errors: string[] = [];
@@ -33,15 +40,11 @@ const fileFor: Record<string, (n: string) => string> = {
   docs: (n) => `content/components/${n}.docs.tsx`,
 };
 
-// Filename Pascal — for registry names, which are always plain kebab-case
-// (no spaces, no leading digits), this is safe. `states`, by contrast, are
-// free text from catalog.md and need scaffold-templates.ts's statePascal
-// (imported above) to land on the same identifier the scaffold generated.
-const pascal = (n: string) =>
-  n
-    .split("-")
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join("");
+// Filename Pascal (imported above as `pascal`) — for registry names, which
+// are always plain kebab-case (no spaces, no leading digits), this is safe.
+// `states`, by contrast, are free text from catalog.md and need
+// scaffold-templates.ts's statePascal (also imported above) to land on the
+// same identifier the scaffold generated.
 const storyFor = (n: string) => `../storybook/src/stories/super-ai/${pascal(n)}.stories.tsx`;
 
 // Lib items (registry:lib contracts, e.g. cost.tsx) live in the same directory
@@ -108,6 +111,9 @@ for (const item of manifest) {
     if (kind === "docs" && item.contractExempt) continue;
     if (!existsSync(path(item.name))) errors.push(`${item.name}: missing ${kind} file ${path(item.name)}`);
   }
+
+  // G4 — a state whose Pascal form collides with the story file's own imports.
+  errors.push(...findReservedStateNames(item.name, item.states));
 
   if (item.contractExempt) {
     exempt++;
@@ -228,12 +234,42 @@ for (const file of readdirSync("registry/super-ai").filter((f) => f.endsWith(".t
   if (!names.has(name) && !declaredFiles.has(name)) errors.push(`orphan: ${file} has no manifest entry`);
 }
 
+// G2 — a data-slot passed to a registry component erases that component's own.
+const registryComponents = new Set(manifest.map((i) => pascal(i.name)));
+for (const item of manifest) {
+  if (item.status !== "shipped") continue;
+  const path = fileFor.component(item.name);
+  if (!existsSync(path)) continue;
+  errors.push(...findSlotErasures(path, readFileSync(path, "utf8"), registryComponents));
+}
+
+// G3 — the contrast exemption list and the a11y exclusion list must agree.
+{
+  const storybookConfigPath = "../storybook/vitest.config.ts";
+  try {
+    const storybookConfig = readFileSync(storybookConfigPath, "utf8");
+    errors.push(
+      ...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)),
+    );
+  } catch (err) {
+    errors.push(
+      `${storybookConfigPath}: could not read file to compare exemption lists (${(err as Error).message})`,
+    );
+  }
+}
+
 // Per-family manifest counts must match catalog.md's Totals table — this is
 // the one hand-maintained summary in the whole pipeline that nothing
 // regenerates, so it's the one most likely to silently drift.
-{
+catalogCheck: {
   const catalogPath = "../../docs/design-system/catalog.md";
-  const catalogSource = readFileSync(catalogPath, "utf8");
+  let catalogSource: string;
+  try {
+    catalogSource = readFileSync(catalogPath, "utf8");
+  } catch (err) {
+    errors.push(`${catalogPath}: could not read file (${(err as Error).message})`);
+    break catalogCheck;
+  }
   const totalsSection = catalogSource.split(/^## Totals$/m)[1];
   if (!totalsSection) {
     errors.push(`${catalogPath}: no "## Totals" section found`);

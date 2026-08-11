@@ -1,6 +1,4 @@
-// `Meta` is a declared state of this component, so the story export owns that
-// identifier and Storybook's own Meta type is imported under an alias.
-import type { Meta as StorybookMeta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { RecordList, type RecordListItem } from "@/registry/super-ai/record-list";
 import { RecordListDocs } from "@/content/components/record-list.docs";
@@ -61,7 +59,7 @@ const RECORDS: RecordListItem[] = [
   },
 ];
 
-const meta: StorybookMeta<typeof RecordList> = {
+const meta: Meta<typeof RecordList> = {
   title: "Super AI/Record List",
   component: RecordList,
   parameters: { layout: "centered", docs: { page: componentDocsPage(RecordListDocs) } },
@@ -89,7 +87,7 @@ export const AppIconCluster: Story = {
 };
 
 /** Folder, operation count and timing sit under the title — never in columns of their own. */
-export const Meta: Story = {
+export const Metadata: Story = {
   args: { records: [RECORDS[0]] },
 };
 

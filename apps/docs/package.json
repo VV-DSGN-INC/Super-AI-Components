@@ -13,6 +13,7 @@
     "check:contract": "tsx scripts/check-contract.mts",
     "gen:wiring": "tsx scripts/gen-wiring.mts",
     "new:component": "tsx scripts/new-component.mts",
+    "reconcile:deps": "tsx scripts/reconcile-deps.mts",
     "build:registry": "tsx scripts/gen-wiring.mts && tsx scripts/gen-registry.mts && shadcn build --output public/r"
   },
   "dependencies": {
@@ -47,6 +48,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.2",
+    "dom-accessibility-api": "^0.7.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "jsdom": "^29.1.1",

@@ -30,7 +30,10 @@ function ThreadList({ className, ...props }: React.ComponentProps<"nav">) {
 }
 
 function ThreadListSection(props: React.ComponentProps<typeof DateSection>) {
-  return <DateSection data-slot="thread-list-section" {...props} />;
+  // No data-slot override here: DateSection spreads ...props after its own
+  // attributes, so one would erase `date-section` and hide that this is what
+  // renders a section (CONTINUE.md §4).
+  return <DateSection {...props} />;
 }
 
 interface ThreadListItemProps extends Omit<React.ComponentProps<"div">, "id" | "title" | "onSelect"> {

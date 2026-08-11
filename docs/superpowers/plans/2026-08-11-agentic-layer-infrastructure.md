@@ -724,6 +724,29 @@ describe("findSlotErasures", () => {
   it("ignores a data-slot on a plain DOM element", () => {
     expect(findSlotErasures("x.tsx", `<div data-slot="wrapper" />`, REGISTRY)).toEqual([]);
   });
+
+  it("does not attribute nested JSX's data-slot to the outer registry component", () => {
+    // The real frame-strip shape. Badge is a vendored ui/ primitive and its
+    // own data-slot is legal; attributing it to PreviewTile is a false
+    // positive, and false positives make people contort working code.
+    const src = [
+      `<EntityRow`,
+      `  title="a"`,
+      `  badge={<Badge data-slot="frame-strip-mark">In</Badge>}`,
+      `/>`,
+    ].join("\n");
+    expect(findSlotErasures("x.tsx", src, REGISTRY)).toEqual([]);
+  });
+
+  it("still flags the outer component when its own data-slot precedes nested JSX", () => {
+    const src = [
+      `<EntityRow`,
+      `  data-slot="mine"`,
+      `  badge={<Badge data-slot="theirs">x</Badge>}`,
+      `/>`,
+    ].join("\n");
+    expect(findSlotErasures("x.tsx", src, REGISTRY)).toHaveLength(1);
+  });
 });
 ```
 
@@ -754,10 +777,21 @@ Create `apps/docs/scripts/lib/contract-rules.ts`:
  * nothing keys on those values, and it is what makes the composition visible
  * in the DOM. Only registry components are protected.
  *
- * KNOWN LIMITATION: the opening-tag scan stops at the first `>`, so a `>`
- * inside an attribute string value truncates the tag early and the gate may
- * miss a `data-slot` after it. Accepted — the shape this catches is the shape
- * that has actually shipped.
+ * The attribute scan stops at the first `<` OR `>`, which matters more than it
+ * looks. Stopping only at `>` was tried first and produced false positives:
+ * a multi-line tag with nested JSX in a prop —
+ * `<PreviewTile badge={<Badge data-slot="frame-strip-mark">…} />` — has the
+ * NESTED element's `>` terminate the match, and the nested element's
+ * attributes land in the outer tag's attribute region. The gate then
+ * attributes a vendored `Badge`'s perfectly legal `data-slot` to
+ * `PreviewTile`. That cost two false positives out of seven on the first
+ * real run, and nearly cost ~97 lines of shipped component being restructured
+ * to satisfy the regex rather than the regex being fixed.
+ *
+ * KNOWN LIMITATION, and it is the safe direction: because the scan stops at a
+ * nested `<`, a `data-slot` written AFTER nested JSX in the same tag is not
+ * seen. That under-reports. Under-reporting is what a gate should do when it
+ * cannot parse — a false positive forces someone to contort working code.
  */
 export function findSlotErasures(
   file: string,
@@ -765,7 +799,7 @@ export function findSlotErasures(
   registryComponents: Set<string>,
 ): string[] {
   const found: string[] = [];
-  for (const m of source.matchAll(/<([A-Z][A-Za-z0-9]*)\b([^>]*)>/g)) {
+  for (const m of source.matchAll(/<([A-Z][A-Za-z0-9]*)\b([^<>]*)/g)) {
     const [, tag, attrs] = m;
     if (!registryComponents.has(tag)) continue;
     if (!/\bdata-slot\s*=/.test(attrs)) continue;
@@ -814,7 +848,33 @@ for (const item of manifest) {
 cd apps/docs && pnpm check:contract
 ```
 
-Expected: passes. If it reports erasures, those are **real bugs in shipped components** — record each in the task report and fix them in a follow-up commit; do not weaken the rule to get green.
+**It did not pass — and the outcome is now part of this task.** The gate reported seven real erasures on its first run:
+
+| Call site | Composed component | Overriding slot | Referenced by |
+| --- | --- | --- | --- |
+| `thread-list.tsx:33` | `DateSection` | `thread-list-section` | nothing |
+| `generation-panel.tsx:209` | `PreviewTile` | expression form — inspect | — |
+| `voice-clone-recorder.tsx:190` | `DisclaimerNote` | `voice-clone-recorder-disclaimer` | its own docs `anatomy` |
+| `frame-strip.tsx:141` | `PreviewTile` | expression form — inspect | — |
+| `template-detail.tsx:354` | `FieldRow` | `template-detail-option` | its own docs `anatomy` |
+| `task-tray.tsx:102` | `EntityRow` | `task-tray-task` | its own test |
+| `explore-shell.tsx:330` | `ChoiceChips` | `explore-shell-types` | nothing |
+
+Three are *documented* — the overriding slot appears in the component's own guidance `anatomy`, so a builder deliberately re-labelled a composed primitive and wrote the new name down as public API. That is not the silent erasure §4 describes.
+
+**Ruling: fix all seven; the gate enforces.** The harm the rule guards against still occurs regardless of intent — a consumer styling `[data-slot="date-section"]` gets nothing on a `ThreadListSection`, because the composed primitive's identity is gone from the DOM. Let the composed component keep its slot; that is also what makes the composition visible.
+
+**Do not weaken the rule to get green.** No exemption list, no narrowed tag match, no skipped files.
+
+- [ ] **Step 7a: Fix the seven call sites**
+
+For each, remove the overriding `data-slot`. Where the wrapper genuinely needs a handle on the element, use `data-<thing>-id` instead — that is the documented alternative and it does not collide with the slot.
+
+Then update what referenced the removed names: two guidance `anatomy` lists (`voice-clone-recorder.docs.tsx`, `template-detail.docs.tsx`) must document the composed component's real slot, and `task-tray.test.tsx` must query the real slot.
+
+Inspect `generation-panel.tsx:209` and `frame-strip.tsx:141` individually — their `data-slot` is an expression, not a literal, so the right fix may differ.
+
+**If removing an override would break a behavioural assertion** — as opposed to renaming a selector — stop and report it rather than weakening the test.
 
 - [ ] **Step 8: Prove the gate fails on a real instance**
 
@@ -861,6 +921,42 @@ describe("parseStorybookExclusions", () => {
     ],`;
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
+
+  it("does not count a commented-out exclusion as live", () => {
+    // How a human "removes" an entry. Counting it as live means G3 reports no
+    // mismatch and stops catching the drift it exists to catch.
+    const src = `exclude: [
+      // "**/stories/super-ai/Foo.stories.tsx", // removed 2026-01
+      "**/stories/super-ai/PreviewTile.stories.tsx",
+    ],`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("does not count an entry inside a block comment that contains no glob", () => {
+    // Deliberately glob-free. A block comment containing one of these globs is
+    // a SYNTAX ERROR — the glob's own `**/` closes the comment — so it cannot
+    // occur in a loadable config, and a test built on one would assert
+    // behaviour on source that could never exist.
+    const src = `/* PreviewTile was removed here, see the retrofit note */
+      "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("strips a multi-line block comment without eating the entry after it", () => {
+    const src = [`/*`, `  a long`, `  explanation`, `*/`, `"**/stories/super-ai/PreviewTile.stories.tsx",`].join("\n");
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("keeps a live entry that has a trailing comment", () => {
+    const src = `"**/stories/super-ai/PreviewTile.stories.tsx", // color-contrast x2`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+
+  it("is not confused by a URL on the same line", () => {
+    const src = `// see https://example.com/x
+      "**/stories/super-ai/PreviewTile.stories.tsx",`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
 });
 
 describe("compareExemptionLists", () => {
@@ -904,9 +1000,78 @@ import { pascal } from "./scaffold-templates";
  * different decision, documented in a11y-baseline.md, and are not per-component.
  */
 export function parseStorybookExclusions(source: string): string[] {
-  return [...source.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
+  // Strip comments before matching, and note this is load-bearing rather than
+  // tidy. The exclusion list is edited by hand, and commenting a line out is
+  // how people "remove" an entry — `// "**/stories/super-ai/Foo.stories.tsx"`.
+  // A parser that still counts that as live reports no mismatch, and G3
+  // silently stops catching the drift it exists to catch. The file's own
+  // comments narrate exactly that retrofit ("CostChip and EntityRow were here
+  // … the list shrank"), so this is the editing pattern, not a hypothetical.
+  //
+  // Stripping must be QUOTE-AWARE, not a regex. A naive
+  // `source.replace(/\/\*[\s\S]*?\*\//g, "")` is broken here, and not
+  // subtly: the glob `"**/stories/ui/**"` ends in `/**`, which contains
+  // `/*`, so the regex opens a phantom block comment inside a string literal
+  // and swallows everything up to the next `*/`. Measured against the real
+  // `vitest.config.ts`, that returns `[]` instead of `["PreviewTile"]` — the
+  // gate would then report a phantom mismatch and turn CI red on a
+  // non-problem. Use the character scan below, which mirrors
+  // `extractCvaCalls` in `token-rules.mjs`.
+  const live = stripComments(source);
+
+  return [...live.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
     (m) => m[1],
   );
+}
+
+/** Strip `//` and block comments, leaving string literals untouched. */
+function stripComments(source: string): string {
+  let out = "";
+  let quote: string | null = null;
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+    const next = source[i + 1];
+    if (quote) {
+      out += ch;
+      if (ch === "\\") {
+        out += next ?? "";
+        i++;
+      } else if (ch === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      quote = ch;
+      out += ch;
+      continue;
+    }
+    if (ch === "/" && next === "/") {
+      while (i < source.length && source[i] !== "\n") i++;
+      out += "\n";
+      continue;
+    }
+    if (ch === "/" && next === "*") {
+      // Terminates at the FIRST `*/`, deliberately, including one that falls
+      // inside what looks like a string. That is exactly what a JavaScript
+      // parser does, so this is faithful rather than sloppy — and it is worth
+      // stating because it looks like the bug that condemned the regex above.
+      //
+      // The consequence: you cannot block-comment one of these globs at all.
+      // `/* "**/stories/super-ai/Foo.stories.tsx" */` is a SYNTAX ERROR,
+      // because the glob's own `**/` closes the comment (verified with
+      // `new Function(src)`). A vitest.config.ts containing one would not
+      // load and Storybook would fail long before G3 had an opinion. Line
+      // comments are the only way to comment an entry out, and those are
+      // handled above.
+      i += 2;
+      while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) i++;
+      i++; // land on the closing `/`; the loop's i++ advances past it
+      continue;
+    }
+    out += ch;
+  }
+  return out;
 }
 
 /**
@@ -916,21 +1081,26 @@ export function parseStorybookExclusions(source: string): string[] {
  * reason — and until now neither was visible.
  */
 export function compareExemptionLists(contrastFiles: string[], storyComponents: string[]): string[] {
-  const fromContrast = new Set(contrastFiles.map((f) => pascal(f.replace(/\.tsx$/, ""))));
+  const pascalOf = (f: string) => pascal(f.replace(/\.tsx$/, ""));
+  const fromContrastNames = new Set(contrastFiles.map(pascalOf));
   const fromStories = new Set(storyComponents);
   const errors: string[] = [];
 
-  for (const name of fromContrast) {
-    if (!fromStories.has(name)) {
+  // Each direction names the entry as it appears in ITS OWN list — the
+  // filename for token-rules.mjs, the Pascal component name for
+  // vitest.config.ts. A reader chasing a mismatch needs the literal string to
+  // search for, and the two lists spell the same component differently.
+  for (const file of contrastFiles) {
+    if (!fromStories.has(pascalOf(file))) {
       errors.push(
-        `${name} is contrast-exempt in token-rules.mjs but not excluded from the a11y gate — one of the two lists is stale`,
+        `${file} is contrast-exempt in token-rules.mjs but not excluded from the a11y gate (vitest.config.ts) — one of the two lists is stale`,
       );
     }
   }
   for (const name of fromStories) {
-    if (!fromContrast.has(name)) {
+    if (!fromContrastNames.has(name)) {
       errors.push(
-        `${name} is excluded from the a11y gate but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
+        `${name} is excluded from the a11y gate (vitest.config.ts) but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
       );
     }
   }
@@ -1089,7 +1259,21 @@ Add `findReservedStateNames` to the `contract-rules` import, then inside the exi
 cd apps/docs && pnpm check:contract
 ```
 
-Expected: **this may legitimately fail.** CONTINUE.md §3.2 records that the 14 stories exporting `Default` are exactly the pre-Wave-1.5 `contractExempt` set. If it reports reserved names on legacy items, that is the gate working — record the list in the task report. It is direct input to Plan 2's manifest-prep step (spec §7.2 item 4). Do **not** add an exemption to get green; if it blocks this task, place the check after the `contractExempt` continue and note in the commit body that it becomes universal when the retrofit lands.
+**Outcome, measured:** exactly **one** item in the 114-item catalog declares a reserved state, and it is not a legacy one — `record-list`, non-exempt, wave 7, declaring `"meta"`.
+
+The expectation that legacy items would fail was wrong, and the reason is worth recording. The 14 pre-Wave-1.5 stories that export `Default` do so because they were **hand-written**, not scaffolded from declared states. `check:contract`'s story assertion and this gate both read `states` from the manifest, so a hand-written `Default` export is invisible to both. G4 therefore binds new work and says nothing about the legacy set — which means the check can sit **before** the `contractExempt` continue with no consequence, and will simply start applying when the retrofit lands.
+
+- [ ] **Step 6a: Rename `record-list`'s `meta` state**
+
+This is the exact case the gate was built for. `record-list` ships today by aliasing its *import* (`import type { Meta as StorybookMeta }`) so its `export const Meta` can coexist — a workaround for a name that should never have been declared.
+
+Rename the state to **`"metadata"`** (`statePascal` → `Metadata`, not reserved):
+
+1. `apps/docs/lib/catalog.manifest.ts` — `record-list`'s `states`, `"meta"` → `"metadata"`. **This is the one authorised write to the manifest in this plan.**
+2. `apps/storybook/src/stories/super-ai/RecordList.stories.tsx` — rename `export const Meta` to `export const Metadata`, and restore the plain `import type { Meta, StoryObj }`, dropping the `StorybookMeta` alias and updating its uses.
+3. Check `apps/docs/content/components/record-list.docs.tsx` and the component's tests for references to the old state name.
+
+The alias disappearing is the point: it existed only to work around the collision.
 
 - [ ] **Step 7: Prove the gate fails on a real instance**
 
@@ -1129,16 +1313,36 @@ Create `.claude/hooks/deny-dangerous-bash.sh` (`chmod +x`):
 # PreToolUse/Bash. Reads the tool input on stdin; exit 2 denies with the
 # message on stderr. Each rule here is a CONTINUE.md §4 trap that has cost a
 # real debugging session.
-set -euo pipefail
-cmd=$(jq -r '.tool_input.command // ""')
+set -uo pipefail
 
-if printf '%s' "$cmd" | grep -Eq '(^|[;&|[:space:]])pnpm[[:space:]]+format([[:space:]]|$)' \
-   || printf '%s' "$cmd" | grep -Eq 'prettier[[:space:]]+--write[[:space:]]+\.[[:space:]]*$'; then
+# Parse with node, not jq. This is a JS monorepo pinned to Node 24, so node is
+# guaranteed present and jq is not — and a `jq: command not found` exits 127,
+# which the harness treats as a non-blocking hook error rather than a denial.
+# That fails OPEN: the guardrail silently disappears with no message. Verified.
+cmd=$(node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).tool_input?.command??"")}catch{process.stdout.write("")}})' 2>/dev/null) || {
+  echo "WARNING: the bash guardrail could not parse its input and is NOT active for this call." >&2
+  exit 0
+}
+
+# Blank out quoted regions before matching. Without this,
+# `git commit -m "explain the pnpm format ban"` is denied — the patterns are
+# substring matches with no notion of quoting, so any command whose *payload*
+# mentions a forbidden phrase gets blocked. Verified as a real false positive.
+probe=$(printf '%s' "$cmd" | sed "s/'[^']*'/''/g; s/\"[^\"]*\"/\"\"/g")
+
+# `pnpm format` and `pnpm run format` are the same script. `format:check` is a
+# real and permitted script in this repo, hence the `[^:[:alnum:]]` guard.
+# The prettier arm covers `.`, `./`, and a trailing `. && something` — the
+# end-anchored version missed all three.
+if printf '%s' "$probe" | grep -Eq '(^|[;&|]|&&|\|\|)[[:space:]]*pnpm([[:space:]]+run)?[[:space:]]+format([^:[:alnum:]]|$)' \
+   || printf '%s' "$probe" | grep -Eq 'prettier[[:space:]]+(--write|-w)[[:space:]]+\.\/?([[:space:]]|;|&|$)'; then
   echo "Repo-wide format is denied. The tree is not prettier-clean at HEAD, so this rewrites ~300 unrelated files — and it breaks check:contract, whose guidance regexes (whatItIs:\\s*\"...\") do not survive re-wrapping. Format only what you touched: pnpm exec prettier --write <paths>" >&2
   exit 2
 fi
 
-if printf '%s' "$cmd" | grep -Eq 'shadcn[[:space:]]+add[[:space:]]+https?://'; then
+# `@latest` / `@2.1.0` is how this CLI is normally invoked, and the adjacency
+# requirement missed every versioned form.
+if printf '%s' "$probe" | grep -Eq 'shadcn(@[^[:space:]]+)?[[:space:]]+add[[:space:]]+https?://'; then
   echo "npx shadcn add <third-party URL> is denied in this repo. It resolves the item's own registryDependencies against the default Radix registry, offers to overwrite this repo's Base UI primitives, and then writes no component files. Vendor the file by hand — see CONTINUE.md §5.1." >&2
   exit 2
 fi
@@ -1169,13 +1373,25 @@ Create `.claude/hooks/check-tokens-on-edit.sh` (`chmod +x`):
 # PostToolUse/Write|Edit. Turns a CI-time token failure into an edit-time one.
 # Advisory: exit 0 always, so a failure surfaces without blocking the edit that
 # is often mid-way through a legitimate multi-step change.
-set -euo pipefail
-path=$(jq -r '.tool_input.file_path // ""')
+set -uo pipefail
+
+# node, not jq — see deny-dangerous-bash.sh. Here a missing parser would exit
+# 127 on EVERY Write/Edit in the session, contradicting this hook's own
+# "advisory, always exit 0" promise.
+path=$(node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).tool_input?.file_path??"")}catch{process.stdout.write("")}})' 2>/dev/null) || exit 0
+
 case "$path" in
   *apps/docs/registry/super-ai/*.tsx) ;;
   *) exit 0 ;;
 esac
-cd "$(git rev-parse --show-toplevel)/apps/docs" || exit 0
+
+# $CLAUDE_PROJECT_DIR first, matching session-baselines.sh. `git rev-parse` is
+# cwd-dependent, and this repo's own CLAUDE.md warns that parallel builds run
+# in sibling worktrees — resolving to the wrong root would check another
+# tree's files and print pass/fail noise about work you did not do.
+root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || true)}"
+[ -n "$root" ] || exit 0
+cd "$root/apps/docs" || exit 0
 if ! out=$(node scripts/check-tokens.mjs 2>&1); then
   echo "check:tokens is now failing after that edit:" >&2
   printf '%s\n' "$out" | grep -E '^registry/|^components/' >&2 || true
@@ -1191,12 +1407,31 @@ Create `.claude/hooks/session-baselines.sh` (`chmod +x`):
 #!/usr/bin/env bash
 # SessionStart. CONTINUE.md §1 keeps these numbers by hand and §6 already
 # contradicts it. Printing them live lets the doc stop being a dashboard.
-set -euo pipefail
-root=$(git rev-parse --show-toplevel)
-exempt=$(grep -c 'contractExempt' "$root/apps/docs/lib/catalog.manifest.ts" || echo "?")
-items=$(grep -c '"name":' "$root/apps/docs/public/r/registry.json" 2>/dev/null || echo "?")
-echo "super-ai-components — contractExempt items: $exempt · registry items: $items"
-echo "Worktree: $(git rev-parse --abbrev-ref HEAD) @ $(git rev-parse --short HEAD)"
+set -uo pipefail
+
+# Prefer $CLAUDE_PROJECT_DIR — settings.json already resolves the hook's own
+# path through it, so it is the reliable anchor. `git rev-parse` is only the
+# fallback, and it must not be allowed to abort: a SessionStart hook that can
+# exit non-zero prints an error at EVERY session start, forever. Note `set -e`
+# is deliberately absent for the same reason.
+root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || true)}"
+manifest="$root/apps/docs/lib/catalog.manifest.ts"
+
+if [ -z "$root" ] || [ ! -f "$manifest" ]; then
+  echo "super-ai-components — baselines unavailable (no manifest at \$CLAUDE_PROJECT_DIR)"
+  exit 0
+fi
+
+# Both counts come from the manifest, deliberately, because it is always
+# present. Reading a build artifact instead — registry.json, which
+# gen-registry.mts writes to apps/docs/, NOT public/r/ — reports "?" in any
+# tree where `pnpm build:registry` has not been run, which is every fresh
+# worktree. A baseline that prints "?" the moment you most need it is worse
+# than no baseline.
+shipped=$(grep -c 'status: "shipped"' "$manifest" || echo "?")
+exempt=$(grep -c 'contractExempt' "$manifest" || echo "?")
+echo "super-ai-components — $shipped shipped · $exempt contractExempt"
+echo "Worktree: $(git -C "$root" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?') @ $(git -C "$root" rev-parse --short HEAD 2>/dev/null || echo '?')"
 echo "If this is an isolated worktree for a fan-out, CHECK ITS BASE COMMIT — twelve agents were once cut from main and none saw the integration branch's prep (CONTINUE.md §1). Take your own dev-server port too."
 ```
 
@@ -1270,51 +1505,30 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 You build exactly one component in this registry.
 
 **Read `docs/design-system/component-build-brief.md` before writing anything.**
-It is the house contract and it is not summarised here — one copy, on purpose.
+
+It is the house contract, and it is deliberately **not** summarised here. One
+copy, on purpose: re-pasting it into prompts is how instructions drift, which
+is the reason the brief exists at all (CONTINUE.md §3.4). It governs your file
+scope, your commands, your tests, your guidance module, your story, and the
+format of your report. Do not ask this prompt what it says — read it.
+
 Then read your component's entry in `docs/design-system/component-specs.md`.
 
-## Your write scope
+Your invocation prompt supplies what the brief cannot know: the component name,
+its spec anchor, its declared states, and any component-specific steering.
 
-Only these files, for your component's `<name>`:
+## What your tools enforce, rather than request
 
-- `apps/docs/registry/super-ai/<name>.tsx`
-- `apps/docs/registry/super-ai/<name>.test.tsx`
-- `apps/docs/components/demos/<name>-demo.tsx`
-- `apps/docs/content/components/<name>.docs.tsx`
-- `apps/docs/content/components/<name>.examples.tsx` (optional)
-- `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`
+Some of the brief's rules are configuration here. You will be refused, not
+trusted:
 
-Write nothing else. Other components are being built concurrently in sibling
-worktrees.
+- `apps/docs/lib/catalog.manifest.ts` is not writable by you.
+- git write commands (`commit`, `add`, `checkout`, `stash`, `reset`) are not
+  runnable by you.
+- `pnpm build` and the full `pnpm test` are not runnable by you.
 
-**Never write `apps/docs/lib/catalog.manifest.ts`.** The integrator owns it and
-reconciles your declared dependencies against your real imports afterwards.
-
-## Commands
-
-Run, from `apps/docs`:
-- `pnpm vitest run registry/super-ai/<name>.test.tsx`
-- `pnpm typecheck`
-- `pnpm check:tokens`
-
-**Never run** any `git` write command (`commit`, `add`, `checkout`, `stash`,
-`reset`). `refs/stash` is shared across worktrees and an agent has already lost
-work that way. To read a file from history use
-`git show HEAD:<path> > /tmp/copy`.
-
-**Never run** `pnpm build`, the full `pnpm test`, or anything in
-`apps/storybook`. The integrator runs the full gates centrally.
-
-## Report
-
-Terse. Status; props signature; test counts (fail → pass); typecheck and
-check:tokens results; what you composed; and anything in the spec you could not
-honour, with the reason.
-
-Flag judgment calls rather than burying them. Several of this system's best
-decisions came from a builder saying "the spec is ambiguous here and I chose X".
-If a component you were told to compose does not fit, **say so — do not fork
-it.** A reimplemented row passes every gate and is still wrong.
+A refusal is intentional and is not a puzzle to solve. Report what you needed
+and why; do not look for another route to it.
 ```
 
 - [ ] **Step 2: Write `retrofit-builder`**
@@ -1331,59 +1545,116 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 You retrofit exactly one already-shipped component so it satisfies the full
 contract and can lose its `contractExempt: true` flag.
 
-**Read `docs/design-system/component-build-brief.md` first** — specifically its
-"Guidance" and "Story" sections. It is not summarised here.
+**Read `docs/design-system/component-build-brief.md` first** — its "Guidance"
+and "Story" sections define what you must produce. They are deliberately **not**
+summarised here; one copy, on purpose (CONTINUE.md §3.4). Read it rather than
+asking this prompt what it says.
 
-## Your write scope
+## How a retrofit differs from a build — the part the brief does not cover
 
-Only these two files, for your component's `<name>`:
+The brief describes building a component from scratch. You are not doing that.
 
-- `apps/docs/content/components/<name>.docs.tsx` (usually does not exist yet —
-  `check-contract.mts` skips the existence check for exempt items, so all 25
-  ship with no guidance module at all)
-- `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`
+- **The component already exists and must not change.** It is shipped and
+  installed by consumers. Your tools refuse writes under
+  `apps/docs/registry/super-ai/`. If you believe the component must change to
+  satisfy the contract, **stop and report** — that is the integrator's call.
+- **The guidance module usually does not exist yet.** `check-contract.mts`
+  skips the docs-file existence check for exempt items, so all 25 ship with no
+  guidance at all. You are writing it, not editing it.
+- **A state may need renaming, and you cannot do it.** `default`, `meta` and
+  `story` all produce reserved story exports. Report the rename you need; the
+  integrator applies it to the manifest.
+- **`anatomy` must list the component's real `data-slot` names** — read the
+  shipped source for them rather than inferring from the spec.
 
-Plus, optionally, `apps/docs/content/components/<name>.examples.tsx`.
+## What your tools enforce, rather than request
 
-**Do not modify `apps/docs/registry/super-ai/<name>.tsx`.** This component is
-shipped and installed by consumers. If you believe it must change to satisfy
-the contract, stop and report that instead — it is a decision for the
-integrator, not a change for you to make.
+- `apps/docs/registry/super-ai/**` is not writable by you.
+- `apps/docs/lib/catalog.manifest.ts` is not writable by you.
+- git write commands, `pnpm build` and the full `pnpm test` are not runnable.
 
-**Never write `apps/docs/lib/catalog.manifest.ts`.** If a declared state needs
-renaming — `default`, `meta` and `story` all produce reserved story exports —
-report the rename you need. The integrator applies it.
-
-## What "done" means
-
-- One story export per declared state, with real `args`. No bare `Default`.
-- `componentDocsPage(<Pascal>Docs)` as `parameters.docs.page`.
-- Every guidance field filled: `whatItIs`, `whyItMatters`, `evidence`,
-  `anatomy` (your component's **real** `data-slot` names — read the source),
-  `usage`, ≥2 `dos` and ≥2 `donts` each with a live example, ≥2 `pitfalls`.
-- Never invent Evidence products. If the spec has none, use `evidence: []`.
-
-## Commands
-
-From `apps/docs`: `pnpm typecheck`, `pnpm check:tokens`.
-
-**Never run** any `git` write command, `pnpm build`, the full `pnpm test`, or
-anything in `apps/storybook`.
+A refusal is intentional. Report what you needed; do not route around it.
 
 ## Report
 
-Terse. Which states you wrote stories for; any manifest state rename you need
-and why; anything in the component that blocked the retrofit; and any pitfall
-you found in the source that is not yet written down anywhere.
+Per the brief's §Report, plus: any manifest state rename you need and why,
+anything in the shipped component that blocked the retrofit, and any pitfall
+you found in its source that is not yet written down anywhere.
 ```
 
-- [ ] **Step 3: Verify the agents are registered**
+- [ ] **Step 3: Widen the deny list beyond the two named files**
 
-Restart the session and confirm `component-builder` and `retrofit-builder` appear in the available agent types.
+`tools: … Edit, Write` grants unscoped write over the whole repository, and a
+single-file deny for the manifest is thin. Add deny entries for the areas
+neither agent has any business touching, so "write nothing else" stops being
+purely prose:
 
-- [ ] **Step 4: Smoke-test the write restriction**
+```
+Edit(docs/**), Write(docs/**),
+Edit(.github/**), Write(.github/**),
+Edit(.claude/**), Write(.claude/**),
+Edit(apps/docs/scripts/**), Write(apps/docs/scripts/**),
+Edit(apps/docs/lib/**), Write(apps/docs/lib/**)
+```
 
-Dispatch `retrofit-builder` with: *"Report the current contents of `apps/docs/lib/catalog.manifest.ts`'s entry for `kbd`. Do not modify anything."* Confirm it reads and reports without writing.
+A positive allowlist would be better still — the four directories each agent
+writes into are static prefixes that do not depend on `<name>`. It is not used
+here only because `Edit(<glob>)` in the **allow** position is unverified in
+this harness, and getting it wrong yields an agent that cannot write at all.
+Record that as the open question it is rather than guessing.
+
+- [ ] **Step 3a: Correct the permission syntax — the first attempt shipped both agents unusable**
+
+**Measured, not theorised.** Both agents registered successfully mid-session (no restart needed for registration — skills and agents both hot-load). Dispatched, each reported its available tools as **`Read`, `Grep`, `Glob` only**. `Edit`, `Write` and `Bash` were absent despite `tools:` declaring all six. A component builder that cannot write files is worse than no agent, because the next fan-out dispatches it and gets nothing.
+
+The likely cause is malformed permission patterns. Claude Code's documented form is a **colon-wildcard** — `Bash(git commit:*)` — and the first attempt used a space (`Bash(git commit *)`). Path-scoped `Edit(<glob>)` in the *deny* position is also unverified. A malformed pattern plausibly causes the whole tool to be dropped rather than scoped.
+
+**This could not be isolated in-session:** editing an already-registered definition has no effect — removing `disallowedTools` entirely still yielded three tools, because the definition is cached at registration. Only a restart re-reads it.
+
+Use the colon form throughout:
+
+```
+disallowedTools: Bash(git commit:*), Bash(git add:*), Bash(git checkout:*), Bash(git stash:*), Bash(git reset:*), Bash(pnpm build:*), Bash(pnpm test:*), Edit(./apps/docs/lib/**), Write(./apps/docs/lib/**), Edit(./docs/**), Write(./docs/**), Edit(./.github/**), Write(./.github/**), Edit(./.claude/**), Write(./.claude/**), Edit(./apps/docs/scripts/**), Write(./apps/docs/scripts/**)
+```
+
+`retrofit-builder` additionally keeps `Edit(./apps/docs/registry/super-ai/**), Write(./apps/docs/registry/super-ai/**)`.
+
+- [ ] **Step 4: Registration and restriction smoke test — REQUIRES A SESSION RESTART**
+
+**Do not merge these two agent definitions until this passes.** They are known-broken as first written; the syntax fix above is a hypothesis, not a confirmed repair.
+
+The test is designed to isolate the cause, not just detect failure:
+
+1. **Tool list first.** Dispatch `component-builder` and ask only for its available tools. It must report `Read, Grep, Glob, Edit, Write, Bash` — all six.
+   - If all six are present, the colon syntax was the bug. Continue to step 2.
+   - If `Bash` is absent, the `Bash(...)` deny form is stripping the tool. Remove the `Bash(...)` entries and retest.
+   - If `Edit`/`Write` are absent but `Bash` is present, the path-scoped `Edit(<glob>)`/`Write(<glob>)` denies are the problem. Remove **those** entries only — the git denies are the higher-value half and worth keeping alone.
+2. **Then the restrictions.** Dispatch `retrofit-builder` and have it attempt each of these, reporting verbatim and without routing around a refusal:
+   - `git commit --allow-empty -m "smoke-test-should-be-denied"` — must be refused.
+   - An `Edit` to `apps/docs/registry/super-ai/kbd.tsx` — must be refused.
+   - An `Edit` to `apps/docs/content/components/kbd.docs.tsx` — must **succeed** (it is in scope; revert it after).
+
+Until both steps pass, treat every enforcement claim as unverified and rely on the prose prohibitions in the agent bodies.
+
+**This could not be completed during the plan's execution, and that is a known
+gap, not an oversight.** The agent roster is cached at session start, so a
+newly-added `.claude/agents/*.md` is invisible until the session restarts.
+Attempting to dispatch `retrofit-builder` returns `Agent type 'retrofit-builder'
+not found`, confirmed directly.
+
+After a restart, dispatch `retrofit-builder` and have it attempt, reporting the
+verbatim outcome of each without working around it:
+
+1. `git commit --allow-empty -m "smoke-test-should-be-denied"` — must be refused.
+2. An `Edit` to `apps/docs/registry/super-ai/kbd.tsx` — must be refused.
+3. A `Read` of `docs/design-system/component-build-brief.md` — must succeed.
+
+**Until this runs, treat every `disallowedTools` entry as unverified.** The
+changelog introduces that field as "frontmatter support for *plugin-shipped*
+agents"; these are project-level, and whether it is honoured there is not
+established. The prose prohibitions in both agent bodies are the backstop in
+the meantime, and they are exactly the kind of rule this plan exists to stop
+relying on.
 
 - [ ] **Step 5: Commit**
 
@@ -1545,7 +1816,13 @@ import { existsSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 
-const RELEVANT = /^(@\/components\/ui\/|@\/registry\/super-ai\/|lucide-react|@base-ui)/;
+// `./` matters more than it looks. Intra-registry imports in this codebase are
+// written RELATIVELY — `./kbd`, `./entity-row` — and there are 133 of them.
+// Matching only the `@/registry/super-ai/` alias saw none of them, i.e. missed
+// almost everything `consumes` actually tracks, and reported seven components
+// as drifted purely because their real imports were invisible. A tool that
+// cries wolf seven times gets ignored.
+const RELEVANT = /^(@\/components\/ui\/|@\/registry\/super-ai\/|\.\/|lucide-react|@base-ui)/;
 
 const names = process.argv.slice(2);
 const items = names.length ? MANIFEST.filter((i) => names.includes(i.name)) : MANIFEST;
@@ -1562,9 +1839,13 @@ for (const item of items) {
   const realShadcn = [...new Set(imports.filter((s) => s.startsWith("@/components/ui/")))]
     .map((s) => s.replace("@/components/ui/", ""))
     .sort();
-  const realConsumes = [...new Set(imports.filter((s) => s.startsWith("@/registry/super-ai/")))]
-    .map((s) => s.replace("@/registry/super-ai/", ""))
-    .sort();
+  const realConsumes = [
+    ...new Set(
+      imports
+        .filter((s) => s.startsWith("@/registry/super-ai/") || s.startsWith("./"))
+        .map((s) => s.replace(/^@\/registry\/super-ai\//, "").replace(/^\.\//, "")),
+    ),
+  ].sort();
 
   const declaredShadcn = [...item.shadcn].sort();
   const declaredConsumes = [...item.consumes].sort();
@@ -1608,7 +1889,40 @@ In `apps/docs/package.json`, add to `"scripts"`:
 cd apps/docs && pnpm reconcile:deps
 ```
 
-Expected: `no drift` — `check:contract` already asserts the derived form of this, so any drift reported here is a genuine finding worth recording in the task report.
+`check:contract` already asserts the derived form of this, so anything reported here is worth recording rather than silencing.
+
+**Two known reports are expected and are NOT bugs** — say so in the report rather than "fixing" the manifest:
+
+- **`field-row` declares `reset-affordance` without importing it.** The only mention is a comment describing what its trailing slot normally holds. Shipping the slot's usual occupant alongside it is a defensible convenience, not stale data.
+- **`suggestion-chips` declares `scroll-area` without importing it.** C2 vendors AI Elements' `suggestion.tsx`, which is what needs it. The script reads only the component file, so an external item's own dependency is invisible to it.
+
+Neither is a manifest error. If a *third* kind of drift appears, that one is worth investigating.
+
+- [ ] **Step 3a: Fix `connection-manager` — a real shipping bug this script found**
+
+The third drift appeared, and it is a genuine consumer-breaking defect:
+
+```
+connection-manager
+  consumes declared [] · real ["entity-row"]
+```
+
+`connection-manager.tsx:6` imports `EntityRow` from `./entity-row`, but the manifest declares `consumes: []`, so the built registry ships it with `registryDependencies: ["button","card","input","label"]` and one file. **`npx shadcn add connection-manager` installs a component importing something that is never installed, and the consumer's build fails on an unresolved import.**
+
+Two gates that should have caught it did not, and both reasons are worth recording:
+
+- **`check:contract` cannot see it by construction.** It asserts the manifest agrees with what `gen-registry` emits — but both derive from the same manifest, so they agree with each other while both being wrong about reality. Only a check against *real imports* sees it.
+- **`consumer-test.sh` masks it.** It installs the entire registry, so `entity-row` arrives anyway as its own top-level item and the build succeeds. A per-item dependency gap is invisible to a whole-registry install. That is a real coverage limitation in one of the three gates CLAUDE.md names as protecting downstream users.
+
+The fix, authorised as **the second and last manifest write in this plan**:
+
+1. `apps/docs/lib/catalog.manifest.ts` — `connection-manager`'s `consumes: []` → `consumes: ["entity-row"]`. Nothing else in the file.
+2. `pnpm build:registry` to regenerate, since `registry.json` is derived.
+3. Confirm `registry.json`'s `connection-manager` entry now lists `entity-row` in `registryDependencies`.
+4. Confirm `pnpm check:contract` still passes — it will now assert the new derived value.
+5. Confirm `pnpm reconcile:deps` drops to the two documented, expected reports.
+
+The `consumer-test.sh` coverage hole is **not** fixed here — it changes a downstream-protecting gate and belongs in its own task. Record it.
 
 - [ ] **Step 4: Write `build-component`**
 

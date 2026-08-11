@@ -1,6 +1,6 @@
 import type { ManifestItem } from "../../lib/manifest-types";
 
-const pascal = (name: string) =>
+export const pascal = (name: string) =>
   name
     .split("-")
     .map((w) => w[0].toUpperCase() + w.slice(1))

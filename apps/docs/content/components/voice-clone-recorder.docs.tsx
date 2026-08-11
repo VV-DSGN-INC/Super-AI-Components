@@ -46,7 +46,7 @@ export const VoiceCloneRecorderDocs: ComponentDocs = {
       slot: "voice-clone-recorder-consent-confirm",
       note: "The only control that can fire onConsent, and only once the checkbox is checked.",
     },
-    { slot: "voice-clone-recorder-disclaimer", note: "A composed disclaimer-note (N3) — the permanent risk footnote, left unrestyled." },
+    { slot: "disclaimer-note", note: "A composed N3 disclaimer-note (its own slot, not renamed) — the permanent risk footnote, left unrestyled." },
   ],
   usage:
     "Reach for it anywhere a product records a voice sample for cloning — never build a bare mic-and-upload widget for this instead, since that's exactly the shape that lets consent get skipped. Drive `state` from the consumer the same way `feedback` and `promo-card` do: this component only renders the state it's given, and never calls getUserMedia itself. Feed it `level` (0–100) and `elapsedLabel` from your own audio analysis while state is \"level-metering\"; hand it `takeUrl`/`takeSummary` once you have a take for \"retake\". Wire `onAcceptTake` to move into \"consent-capture\" — never to a save or clone call directly — and treat `onConsent` as the only trigger for anything that actually creates or updates a voice model.",

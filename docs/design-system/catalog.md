@@ -156,7 +156,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | J2 | `filter-panel` | Faceted rail | checkbox groups with counts · see-more · collapsible · saved searches · view options | Checkbox, Collapsible |
 | J3 | `explore-gallery` | Masonry community feed | sort tabs · type pills · infinite · docked prompt | — |
 | J4 | `artifact-grid` `NEW` | Document/artifact cards grouped by session | type badge · excerpt · edited-ago · view count · privacy icon | Card |
-| J5 | `record-list` `NEW` | Project / scenario rows | app-icon cluster · meta · enable toggle · run status · overflow | Table, Switch |
+| J5 | `record-list` `NEW` | Project / scenario rows | app-icon cluster · metadata · enable toggle · run status · overflow | Table, Switch |
 | J6 | `template-detail` `NEW` | Template preview modal | preview + thumbnail strip · option selects · author + follow · more-like-this | Dialog, Carousel |
 | J7 | `track-list` `RESTORED` | Music library rows | artwork · tags · inline waveform · BPM · key | Table |
 

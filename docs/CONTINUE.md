@@ -439,6 +439,39 @@ with `Executable doesn't exist` rather than anything a11y-shaped. Run
 `pnpm@11.1.0`. `npm i -g pnpm@11.1.0` is enough; Node 26 works against
 `.nvmrc`'s 24 for every gate in this repo.
 
+**Defining `Element.getAnimations` in jsdom switches every Base UI overlay to
+its async exit path — and the switch is not uniformly safe to land.** Base UI
+branches on the method's *existence*, not its return value, so the two-line
+`vitest.setup.ts` shim (`Element.prototype.getAnimations ??= () => []`) moves
+popups, dialogs and tab panels from synchronous unmount to awaited unmount all
+at once. Five components' tests asserted the synchronous behaviour:
+`inline-generate-popup.test.tsx:65`, `recommendation-card.test.tsx:57`,
+`selection-toolbar.test.tsx:106`, `settings-dialog.test.tsx:206`,
+`tool-panel.test.tsx:151`. Applying the shim alone and running just those five
+files ten times back to back gave **3, 4, 4, 4, 4, 5, 3, 3, 4, 3** failures —
+not a fixed number. Splitting it out: `inline-generate-popup`,
+`recommendation-card` and `selection-toolbar` failed in all ten runs (a real,
+fixable synchronous assertion, exactly what the shim's own docs predict).
+`settings-dialog` and `tool-panel` did not — they flipped pass/fail run to
+run, and the flip tracked *what else was in the same vitest invocation*, not
+the component's own logic: `tool-panel.test.tsx` run alone passed 9/9 but
+failed intermittently only when run alongside the other four files; the
+inverse held for `settings-dialog.test.tsx`, which failed 8/8 in isolation but
+sometimes passed when run with company. Neither test uses fake timers, so this
+is real-clock, cross-file scheduling noise from vitest's worker pool — how
+many other files/timers are interleaved in the same tick decides whether the
+exit-animation callback resolves before the assertion runs. `waitFor` would
+make it pass reliably, but it would be papering over event-loop timing that
+genuinely varies, on the strength of a ten-run sample that itself varied. The
+shim was **not landed**: rewriting all five assertions on that evidence risks
+hiding a real defect behind a green run. Before finishing this, get a much
+larger sample (50–100 runs is cheap) and, if the two racy tests are still
+racy, treat their non-determinism as the finding to fix, not a `waitFor` away.
+If you add any jsdom shim like this, check its blast radius (a browser API a
+library branches on, not one it merely stubs) before touching an assertion,
+and check any new failure against the base commit before calling it
+pre-existing.
+
 ---
 
 ## 5. Open decisions — these need a human, don't guess

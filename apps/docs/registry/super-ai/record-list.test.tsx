@@ -52,7 +52,7 @@ describe("RecordList", () => {
     expect(within(cluster).getAllByRole("listitem")).toHaveLength(3);
   });
 
-  it("renders the meta state", () => {
+  it("renders the metadata state", () => {
     render(<RecordList records={RECORDS} />);
     const cell = rowFor("Daily digest").querySelector('[data-slot="record-list-record"]')!;
     const subtitle = cell.querySelector('[data-slot="record-list-subtitle"]')!;
