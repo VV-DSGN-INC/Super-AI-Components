@@ -2,9 +2,13 @@ import { globSync, readFileSync } from "node:fs";
 
 import { findCvaViolations, findSingleStringViolations } from "./lib/token-rules.mjs";
 
-const FILES = globSync("registry/{super-ai,marketing}/**/*.tsx", {
+const FILES = globSync("{registry/{super-ai,marketing},components/ui}/**/*.tsx", {
   exclude: (f) => f.includes(".test."),
 });
+
+// Findings in components/ui/** (vendored shadcn primitives) warn instead of
+// failing the gate. See docs/design-system/vendored-token-findings.md.
+const isVendored = (f) => f.startsWith("components/ui/");
 
 // One entry per token-contract rule (design spec §6). Known limitation: issue refs
 // like "#1234" in comments can false-positive as hex — use GH-1234 in registry sources.
@@ -24,6 +28,7 @@ if (FILES.length === 0) {
 }
 
 let violations = 0;
+let warnings = 0;
 for (const file of FILES) {
   let source;
   try {
@@ -36,24 +41,45 @@ for (const file of FILES) {
   source.split("\n").forEach((line, i) => {
     for (const { re, why } of PATTERNS) {
       if (re.test(line)) {
-        violations++;
-        console.error(`${file}:${i + 1} — ${why}: ${line.trim()}`);
+        const message = `${file}:${i + 1} — ${why}: ${line.trim()}`;
+        if (isVendored(file)) {
+          warnings++;
+          console.warn(`WARN ${message}`);
+        } else {
+          violations++;
+          console.error(message);
+        }
       }
       re.lastIndex = 0;
     }
   });
   for (const message of findSingleStringViolations(file, source)) {
-    violations++;
-    console.error(message);
+    if (isVendored(file)) {
+      warnings++;
+      console.warn(`WARN ${message}`);
+    } else {
+      violations++;
+      console.error(message);
+    }
   }
   for (const message of findCvaViolations(file, source)) {
-    violations++;
-    console.error(message);
+    if (isVendored(file)) {
+      warnings++;
+      console.warn(`WARN ${message}`);
+    } else {
+      violations++;
+      console.error(message);
+    }
   }
 }
 
 if (violations) {
   console.error(`\ncheck:tokens — ${violations} violation(s). Use shadcn CSS variables.`);
   process.exit(1);
+}
+if (warnings) {
+  console.warn(
+    `\ncheck:tokens — ${warnings} warning(s) in vendored components/ui/. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
+  );
 }
 console.log(`check:tokens — ${FILES.length} file(s) clean.`);
