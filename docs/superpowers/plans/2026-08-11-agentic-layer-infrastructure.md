@@ -41,6 +41,10 @@
 | `.claude/agents/component-builder.md` | **Create.** Fan-out agent, restricted tools |
 | `.claude/agents/retrofit-builder.md` | **Create.** Narrower variant for the 25 |
 | `apps/docs/scripts/reconcile-deps.mts` | **Create.** CONTINUE.md §3.5's shell loop as a script |
+| `apps/docs/lib/test-utils.ts` | **Create.** `expectAccessibleName` — G5's helper. In `lib/`, never `registry/super-ai/`, because the registry is the published product |
+| `apps/docs/lib/test-utils.test.tsx` | **Create.** Pins the sr-only fusion case |
+| `docs/design-system/component-build-brief.md` | **Modify.** One bullet pointing builders at the helper |
+| `docs/design-system/vendored-token-findings.md` | **Create.** Triage of what the widened token glob surfaces in vendored `ui/` |
 
 ---
 
@@ -574,53 +578,60 @@ Anything a consumer hits by taking a primitive's **default** variant is marked
 `CONSUMER-FACING` — those are the ones worth deciding about first.
 ```
 
-- [ ] **Step 4: Decide how the gate treats vendored findings**
+- [ ] **Step 4: Make vendored findings warn-only**
 
-The gate cannot both scan `components/ui/**` and stay green while those findings exist. Add a scoped allowance to `apps/docs/scripts/lib/token-rules.mjs` — a **separate** list from `CONTRAST_EXEMPT_FILES`, so the two are not conflated:
+The gate cannot both scan `components/ui/**` and stay green while those findings exist. **Do not add a baseline exemption list.** A third list would carry exactly the drift risk G3 exists to police, would not itself be covered by G3, and CLAUDE.md is explicit that adding a file to silence a failure defeats the gate.
+
+Instead, vendored files **warn and never fail**. There is then no list, so nothing can grow.
+
+In `apps/docs/scripts/check-tokens.mjs`, wrap the per-file reporting so that findings in `components/ui/**` print to stdout as warnings and are not counted toward `violations`:
 
 ```js
-// Vendored upstream files with pre-existing findings, triaged in
-// docs/design-system/vendored-token-findings.md. Scanning them is new; fixing
-// them means diverging from upstream, a decision nobody has made. This list
-// exists so the gate can cover new violations in vendored files without
-// blocking on old ones. Like every exemption list here it may only shrink.
-export const VENDORED_BASELINE = [
-  // Populate from /tmp/vendored-findings.txt — one "components/ui/<file>.tsx" per finding.
-];
+const isVendored = (f) => f.startsWith("components/ui/");
+```
 
-export function isVendoredBaseline(file) {
-  return VENDORED_BASELINE.some((name) => file.endsWith(name));
+Then, at each of the three reporting sites (the `PATTERNS` loop, the `findSingleStringViolations` loop, and the `findCvaViolations` loop), branch:
+
+```js
+    if (isVendored(file)) {
+      warnings++;
+      console.warn(`WARN ${message}`);
+    } else {
+      violations++;
+      console.error(message);
+    }
+```
+
+Declare `let warnings = 0;` beside `let violations = 0;`, and extend the closing summary:
+
+```js
+if (warnings) {
+  console.warn(
+    `\ncheck:tokens — ${warnings} warning(s) in vendored components/ui/. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
+  );
 }
 ```
 
-Wire it into `check-tokens.mjs` so baselined files report as warnings (printed, not counted toward `violations`) and every other file fails as normal.
+**Accepted trade-off, state it in the commit body:** a genuinely new violation in a vendored file also only warns, so it cannot block a PR. That is the price of not creating an exemption list, and it is the cheaper of the two risks — vendored files change only when someone deliberately re-vendors them.
 
-Append the matching declarations to `apps/docs/scripts/lib/token-rules.d.mts`:
-
-```ts
-export declare const VENDORED_BASELINE: string[];
-export declare function isVendoredBaseline(file: string): boolean;
-```
-
-- [ ] **Step 5: Verify green with the baseline in place**
+- [ ] **Step 5: Verify green, with warnings printed**
 
 ```bash
 cd apps/docs && pnpm check:tokens; echo "exit=$?"
 ```
 
-Expected: `exit=0`, with the baselined findings printed as warnings and the clean-file count now higher than 130 (it now includes `components/ui/**`).
+Expected: `exit=0`; at least one `WARN` line naming `components/ui/tabs.tsx:19`; and the clean-file count now higher than 130, since the glob includes `components/ui/**`.
 
-- [ ] **Step 6: Prove a *new* vendored violation still fails**
+- [ ] **Step 6: Prove registry files still fail**
 
-Temporarily add `className="text-muted-foreground bg-muted"` to a non-baselined file under `components/ui/`. Run `pnpm check:tokens`; expected **exit 1**. Revert with `git checkout -- <file>`.
+Widening the glob must not weaken the gate where it already worked. Temporarily add `className="text-muted-foreground bg-muted"` to `apps/docs/registry/super-ai/kbd.tsx`. Run `pnpm check:tokens`; expected **exit 1**. Revert with `git checkout -- apps/docs/registry/super-ai/kbd.tsx`.
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add apps/docs/scripts/check-tokens.mjs apps/docs/scripts/lib/token-rules.mjs \
-        apps/docs/scripts/lib/token-rules.d.mts docs/design-system/vendored-token-findings.md
+git add apps/docs/scripts/check-tokens.mjs docs/design-system/vendored-token-findings.md
 git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
-  commit -m "feat(check:tokens): scan vendored ui/ primitives, baseline existing findings"
+  commit -m "feat(check:tokens): scan vendored ui/ primitives as warnings"
 ```
 
 ---
@@ -1731,9 +1742,11 @@ Independent of Tasks 1–11; can be done at any point.
 **Spec §6 G5 decides deliberately against a static gate.** A detector for "element with visible text plus an `sr-only` sibling" fires on every legitimate use of the pattern, and a noisy gate gets excluded or ignored — the failure mode this whole plan exists to avoid. This ships a test helper and a brief entry instead, and the spec records it as the weaker option.
 
 **Files:**
-- Create: `apps/docs/registry/super-ai/test-utils.ts`
-- Create: `apps/docs/registry/super-ai/test-utils.test.ts`
+- Create: `apps/docs/lib/test-utils.ts`
+- Create: `apps/docs/lib/test-utils.test.tsx`
 - Modify: `docs/design-system/component-build-brief.md`
+
+**Location matters and is not negotiable.** This helper does **not** go under `registry/super-ai/` — that directory is the published product, installed verbatim by `npx shadcn add`, and a test helper must never be installable. `apps/docs/lib/` is already covered by `vitest.config.ts`'s `lib/**/*.test.{ts,tsx}` include and by the `@/` alias, so component tests import it as `@/lib/test-utils`.
 
 **Interfaces:**
 - Consumes: `@testing-library/dom`'s `computeAccessibleName` via `dom-accessibility-api` (already present transitively through `@testing-library/jest-dom`)
@@ -1741,9 +1754,9 @@ Independent of Tasks 1–11; can be done at any point.
 
 - [ ] **Step 1: Write the failing test**
 
-Create `apps/docs/registry/super-ai/test-utils.test.ts`:
+Create `apps/docs/lib/test-utils.test.tsx` (`.tsx` — it contains JSX):
 
-```ts
+```tsx
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
@@ -1771,19 +1784,17 @@ describe("expectAccessibleName", () => {
 });
 ```
 
-Rename the file to `test-utils.test.tsx` — it contains JSX.
-
 - [ ] **Step 2: Run test to verify it fails**
 
 ```bash
-cd apps/docs && pnpm vitest run registry/super-ai/test-utils.test.tsx
+cd apps/docs && pnpm vitest run lib/test-utils.test.tsx
 ```
 
 Expected: FAIL — `Failed to resolve import "./test-utils"`.
 
 - [ ] **Step 3: Implement**
 
-Create `apps/docs/registry/super-ai/test-utils.ts`:
+Create `apps/docs/lib/test-utils.ts`:
 
 ```ts
 import { computeAccessibleName } from "dom-accessibility-api";
@@ -1802,6 +1813,9 @@ import { computeAccessibleName } from "dom-accessibility-api";
  * This is deliberately a helper rather than a static gate: a detector for
  * "visible text plus an sr-only sibling" fires on every legitimate use of the
  * pattern, and a noisy gate gets excluded. See the design spec §6 G5.
+ *
+ * Lives in lib/, not registry/super-ai/ — the registry is the published
+ * product and a test helper must never be installable by `shadcn add`.
  */
 export function expectAccessibleName(el: Element, expected: string): void {
   const actual = computeAccessibleName(el);
@@ -1817,18 +1831,19 @@ export function expectAccessibleName(el: Element, expected: string): void {
 - [ ] **Step 4: Run test to verify it passes**
 
 ```bash
-cd apps/docs && pnpm vitest run registry/super-ai/test-utils.test.tsx
+cd apps/docs && pnpm vitest run lib/test-utils.test.tsx
 ```
 
 Expected: PASS, 2 tests. If `dom-accessibility-api` does not resolve, add it explicitly: `pnpm --filter docs add -D dom-accessibility-api`.
 
-- [ ] **Step 5: Confirm it is excluded from the registry build**
+- [ ] **Step 5: Confirm it is nowhere near the published registry**
 
 ```bash
 cd apps/docs && pnpm build:registry && pnpm check:contract
+grep -c 'test-utils' public/r/registry.json || echo "absent, as required"
 ```
 
-Expected: both pass, and `test-utils.ts` does **not** appear in `public/r/registry.json` — it is a test helper, not a registry item. If `check:contract` reports it as an orphan file under a name absent from the manifest, add it to the gate's ignore list alongside the existing `.test.tsx` handling.
+Expected: both gates pass and `test-utils` is **absent** from `registry.json`. Living in `lib/` is what guarantees this — `gen-registry.mts` only walks `registry/super-ai/`, so there is no orphan-file question and no ignore list to extend.
 
 - [ ] **Step 6: Document it in the brief**
 
@@ -1841,14 +1856,14 @@ In `docs/design-system/component-build-brief.md`, under "## Accessibility is a b
   whitespace trimmed and no separator. Two components shipped this on the same
   afternoon. Either set an outright `aria-label`, or mark the visual half
   `aria-hidden` and put the *complete* phrase in the sr-only span. Assert it
-  with `expectAccessibleName` from `registry/super-ai/test-utils`, not with
+  with `expectAccessibleName` from `@/lib/test-utils`, not with
   `toHaveTextContent` — text content will not show you the bug.
 ```
 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add apps/docs/registry/super-ai/test-utils.ts apps/docs/registry/super-ai/test-utils.test.tsx \
+git add apps/docs/lib/test-utils.ts apps/docs/lib/test-utils.test.tsx \
         docs/design-system/component-build-brief.md
 git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
   commit -m "test: add expectAccessibleName helper for sr-only name fusion"
