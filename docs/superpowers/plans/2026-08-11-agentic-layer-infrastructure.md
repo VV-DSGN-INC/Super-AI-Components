@@ -1,0 +1,1872 @@
+# Agentic Layer — Infrastructure Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Convert this repo's prose operational rules into executable gates, hooks and agent definitions, closing five documented gate gaps without adding a single CI step.
+
+**Architecture:** Three layers. **Gates** extend the two existing scripts — `check-tokens.mjs` gets `cva`-awareness, `check-contract.mts` absorbs three new assertions — so `ci.yml`'s eleven steps stay eleven. **Hooks** in a checked-in `.claude/settings.json` deny the documented footguns at the moment of attempt. **Skills and agents** in `.claude/` encode the build sequence and, critically, restrict what a fan-out agent may write.
+
+**Tech Stack:** Node 24 · pnpm 11.1.0 · Turborepo · Vitest 4 (jsdom for `apps/docs`, browser+Playwright for `apps/storybook`) · tsx for `.mts` gates · plain `node` for `.mjs` gates.
+
+**Source spec:** [`docs/superpowers/specs/2026-08-11-agentic-layer-design.md`](../specs/2026-08-11-agentic-layer-design.md)
+
+## Global Constraints
+
+- **Do not add a step to `ci.yml`.** Eleven steps exist; new assertions fold into `check:tokens` or `check:contract`. (CLAUDE.md: "Do not add a step that duplicates one of these.")
+- **Never run `pnpm format`.** The tree is not prettier-clean at HEAD and it breaks `check:contract`'s guidance regexes. Format only touched files: `pnpm exec prettier --write <paths>`.
+- **`check-tokens.mjs` stays `.mjs`.** It imports `globSync` from `node:fs`, which exists at runtime on Node 22+ but is absent from `@types/node@20`. Converting it to `.mts` fails typecheck — this trap is documented in CONTINUE.md §4. Shared logic therefore lives in a `.mjs` module with a hand-written `.d.mts` beside it.
+- **The a11y and contrast exemption lists may only shrink.** No task here adds an entry to either.
+- **Commit author must be** `weeeha <1083934+weeeha@users.noreply.github.com>` — GitHub rejects the default email for this account. Use `git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" commit`.
+- **Branch per task; never commit to `main`.** Work on `claude/design-system-agentic-flows-52db02` or a branch cut from it.
+- **A gate verified only by passing has proved nothing.** Every new gate in this plan has an explicit step that makes it fail on a deliberately introduced instance of its bug, then reverts. This is CONTINUE.md §1's lesson about the console-error assertion.
+- **Vitest include for gate tests** is already `scripts/**/*.test.{ts,tsx}` (`apps/docs/vitest.config.ts`). New gate tests go there and are picked up by `pnpm test` with no config change.
+
+## File Structure
+
+| File | Responsibility |
+| --- | --- |
+| `apps/docs/scripts/lib/token-rules.mjs` | **Create.** Pure, dependency-free token-contract predicates. No `fs`, so it stays typecheck-safe and unit-testable |
+| `apps/docs/scripts/lib/token-rules.d.mts` | **Create.** Hand-written types for the above, so `.test.ts` imports typecheck |
+| `apps/docs/scripts/lib/token-rules.test.ts` | **Create.** Unit tests for the predicates |
+| `apps/docs/scripts/check-tokens.mjs` | **Modify.** Delegates to `token-rules.mjs`; gains `cva` awareness and a widened glob |
+| `apps/docs/scripts/lib/scaffold-templates.ts:3` | **Modify.** Export the existing `pascal` helper so the contract gate can build the registry-component name set |
+| `apps/docs/scripts/lib/contract-rules.ts` | **Create.** Pure predicates for G2/G3/G4, unit-testable without running the gate |
+| `apps/docs/scripts/lib/contract-rules.test.ts` | **Create.** Unit tests for the above |
+| `apps/docs/scripts/check-contract.mts` | **Modify.** Calls the three new predicates; no new CI step |
+| `apps/docs/vitest.setup.ts` | **Modify.** Adds the `getAnimations` shim next to the `ResizeObserver` stub |
+| `.claude/settings.json` | **Create.** Five hooks |
+| `.claude/skills/gate-run/SKILL.md` | **Create.** Eleven `ci.yml` steps in order |
+| `.claude/skills/build-component/SKILL.md` | **Create.** The §3 loop |
+| `.claude/skills/integrate-batch/SKILL.md` | **Create.** The §3.5 reconciliation |
+| `.claude/agents/component-builder.md` | **Create.** Fan-out agent, restricted tools |
+| `.claude/agents/retrofit-builder.md` | **Create.** Narrower variant for the 25 |
+| `apps/docs/scripts/reconcile-deps.mts` | **Create.** CONTINUE.md §3.5's shell loop as a script |
+
+---
+
+### Task 1: ScrollArea `getAnimations` shim (G6)
+
+Base UI's `ScrollArea` schedules a timer calling `Element.prototype.getAnimations()`, which jsdom does not implement. It throws *after* the triggering test resolves, so every assertion passes and the run still exits 1. O1 shimmed it in its own test file; it belongs in the shared setup, and will bite anything composing a `ScrollArea`.
+
+**Files:**
+- Modify: `apps/docs/vitest.setup.ts:33`
+- Test: `apps/docs/scripts/lib/vitest-setup.test.ts` (create)
+
+**Interfaces:**
+- Consumes: nothing
+- Produces: `Element.prototype.getAnimations(): Animation[]` available in every `apps/docs` jsdom test
+
+- [ ] **Step 1: Write the failing test**
+
+Create `apps/docs/scripts/lib/vitest-setup.test.ts`:
+
+```ts
+import { describe, expect, it } from "vitest";
+
+describe("jsdom shims", () => {
+  it("provides Element.prototype.getAnimations, which Base UI's ScrollArea calls on a timer", () => {
+    expect(typeof Element.prototype.getAnimations).toBe("function");
+    expect(document.createElement("div").getAnimations()).toEqual([]);
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/vitest-setup.test.ts
+```
+
+Expected: FAIL — `expected "undefined" to be "function"`.
+
+- [ ] **Step 3: Add the shim**
+
+In `apps/docs/vitest.setup.ts`, after the `IntersectionObserver` stub (line 33), append:
+
+```ts
+// Base UI's ScrollArea schedules a timer that calls getAnimations(); jsdom has
+// no Web Animations API. It throws *after* the triggering test resolves, so
+// every assertion passes and the run still exits 1 — which reads as a mystery
+// failure, not a missing shim. Anything composing a ScrollArea hits this.
+Element.prototype.getAnimations ??= () => [];
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/vitest-setup.test.ts
+```
+
+Expected: PASS.
+
+- [ ] **Step 5: Confirm nothing else broke**
+
+```bash
+cd apps/docs && pnpm vitest run
+```
+
+Expected: the full suite passes, at or above the 1387 baseline.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add apps/docs/vitest.setup.ts apps/docs/scripts/lib/vitest-setup.test.ts
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "test: shim Element.getAnimations for Base UI ScrollArea in jsdom"
+```
+
+---
+
+### Task 2: Extract token rules into a testable module
+
+`check-tokens.mjs` today is one script with its predicates inline, so nothing about it is unit-testable and Task 3 would have to be verified by running the whole gate. Extract first, behaviour unchanged, with tests pinning the current behaviour — including the two subtleties the existing comments protect.
+
+**Files:**
+- Create: `apps/docs/scripts/lib/token-rules.mjs`
+- Create: `apps/docs/scripts/lib/token-rules.d.mts`
+- Create: `apps/docs/scripts/lib/token-rules.test.ts`
+- Modify: `apps/docs/scripts/check-tokens.mjs:52-79`
+
+**Interfaces:**
+- Consumes: nothing
+- Produces:
+  - `MUTED_FG: string`
+  - `MUTED_BG_RE: RegExp`
+  - `CONTRAST_EXEMPT_FILES: string[]`
+  - `isExempt(file: string): boolean`
+  - `findSingleStringViolations(file: string, source: string): string[]`
+
+- [ ] **Step 1: Write the failing test**
+
+Create `apps/docs/scripts/lib/token-rules.test.ts`:
+
+```ts
+import { describe, expect, it } from "vitest";
+
+import { findSingleStringViolations, isExempt } from "./token-rules.mjs";
+
+describe("findSingleStringViolations", () => {
+  it("flags muted text and a muted background in one class string", () => {
+    const out = findSingleStringViolations("x.tsx", `<p className="text-muted-foreground bg-muted" />`);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("bg-muted");
+  });
+
+  it("flags opacity variants of the background", () => {
+    const out = findSingleStringViolations("x.tsx", `<p className="text-muted-foreground bg-accent/50" />`);
+    expect(out).toHaveLength(1);
+  });
+
+  it("does not merge the two branches of a ternary", () => {
+    // Mutually exclusive at runtime — sidebar-nav.tsx's active vs. inactive rows.
+    const src = `className={active ? "bg-muted" : "text-muted-foreground"}`;
+    expect(findSingleStringViolations("x.tsx", src)).toEqual([]);
+  });
+
+  it("ignores variant-prefixed backgrounds", () => {
+    // filter-bar.tsx pairs bare muted text with hover:bg-accent, but the same
+    // hover rule swaps the text too — they are never on screen together.
+    const src = `className="text-muted-foreground hover:bg-accent"`;
+    expect(findSingleStringViolations("x.tsx", src)).toEqual([]);
+  });
+
+  it("treats preview-tile.tsx as contrast-exempt", () => {
+    expect(isExempt("registry/super-ai/preview-tile.tsx")).toBe(true);
+    expect(isExempt("registry/super-ai/entity-row.tsx")).toBe(false);
+  });
+});
+```
+
+- [ ] **Step 2: Run test to verify it fails**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/token-rules.test.ts
+```
+
+Expected: FAIL — `Failed to resolve import "./token-rules.mjs"`.
+
+- [ ] **Step 3: Create the module**
+
+Create `apps/docs/scripts/lib/token-rules.mjs`. This is a straight lift of `check-tokens.mjs:52-79`; the comments there explain *why* each subtlety exists and must move with the code:
+
+```js
+// Pure token-contract predicates. Deliberately free of `node:fs` — check-tokens
+// runs under plain `node` as .mjs (globSync is absent from @types/node@20, so
+// the entry point cannot become .mts), and keeping this module fs-free is what
+// lets it be unit-tested from a .ts test file.
+
+export const MUTED_FG = "text-muted-foreground";
+export const MUTED_BG_RE = /^bg-(?:muted|accent|secondary)(?:\/\d{1,3})?$/;
+
+// May only shrink, never grow. See docs/design-system/a11y-baseline.md.
+// preview-tile.tsx's violations are a different defect (text-destructive on the
+// default surface, and label text over unpredictable image content), not the
+// muted-on-muted pairing this module looks for.
+export const CONTRAST_EXEMPT_FILES = ["preview-tile.tsx"];
+
+export function isExempt(file) {
+  return CONTRAST_EXEMPT_FILES.some((name) => file.endsWith(`/${name}`) || file === name);
+}
+
+function classTokens(segment) {
+  return segment.split(/\s+/).filter(Boolean);
+}
+
+/**
+ * The single-element shape: muted text and a muted background inside one
+ * quoted class-list literal.
+ *
+ * Each quoted segment is checked on its own, not merged with the rest of the
+ * line — a ternary's two branches are mutually exclusive at runtime and must
+ * not be treated as one combined class list.
+ *
+ * Variant-prefixed backgrounds (`hover:bg-accent`, `dark:bg-muted`) do not
+ * match MUTED_BG_RE, which is anchored: the hover rule that introduces the
+ * background normally swaps the text token too, so the pairing never renders.
+ */
+export function findSingleStringViolations(file, source) {
+  if (isExempt(file)) return [];
+
+  const found = [];
+  source.split("\n").forEach((line, i) => {
+    for (const match of line.matchAll(/"([^"]*)"|'([^']*)'/g)) {
+      const tokens = classTokens(match[1] ?? match[2] ?? "");
+      const mutedBgToken = tokens.find((t) => MUTED_BG_RE.test(t));
+      if (tokens.includes(MUTED_FG) && mutedBgToken) {
+        found.push(
+          `${file}:${i + 1} — text-muted-foreground paired with ${mutedBgToken} in one class list (4.34:1 against a 4.5:1 minimum): ${line.trim()}`,
+        );
+      }
+    }
+  });
+  return found;
+}
+```
+
+- [ ] **Step 4: Create the type declaration**
+
+Create `apps/docs/scripts/lib/token-rules.d.mts`:
+
+```ts
+export declare const MUTED_FG: string;
+export declare const MUTED_BG_RE: RegExp;
+export declare const CONTRAST_EXEMPT_FILES: string[];
+export declare function isExempt(file: string): boolean;
+export declare function findSingleStringViolations(file: string, source: string): string[];
+```
+
+- [ ] **Step 5: Run test to verify it passes**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/token-rules.test.ts
+```
+
+Expected: PASS, 5 tests.
+
+- [ ] **Step 6: Rewire `check-tokens.mjs`**
+
+In `apps/docs/scripts/check-tokens.mjs`, delete lines 18–79 (the comment block, the three constants, and `findMutedOnMutedViolations`) and add this import below line 1:
+
+```js
+import { findSingleStringViolations } from "./lib/token-rules.mjs";
+```
+
+Then change line 106 from `findMutedOnMutedViolations(file, source)` to:
+
+```js
+  for (const message of findSingleStringViolations(file, source)) {
+```
+
+- [ ] **Step 7: Verify the gate is unchanged**
+
+```bash
+cd apps/docs && pnpm check:tokens && pnpm typecheck
+```
+
+Expected: `check:tokens — 130 file(s) clean.` and a clean typecheck. If the file count differs from 130, stop — the glob changed and it should not have in this task.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add apps/docs/scripts/lib/token-rules.mjs apps/docs/scripts/lib/token-rules.d.mts \
+        apps/docs/scripts/lib/token-rules.test.ts apps/docs/scripts/check-tokens.mjs
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "refactor(check:tokens): extract predicates into a unit-testable module"
+```
+
+---
+
+### Task 3: G1 — `cva` base↔variant pairing
+
+`components/ui/tabs.tsx:19` puts `text-muted-foreground` in `tabsListVariants`' base string and `bg-muted` in its `default` variant. The gate written specifically to catch this pairing cannot see it, because it tests one quoted segment at a time. CONTINUE.md §4 records this as unresolved.
+
+**The rule is deliberately narrow: pair the base string with each variant value string *individually*.** Do not union every string in the call. Two values of the same variant group are mutually exclusive, and merging them would resurrect exactly the ternary false-positive Task 2's third test pins.
+
+**Files:**
+- Modify: `apps/docs/scripts/lib/token-rules.mjs`
+- Modify: `apps/docs/scripts/lib/token-rules.d.mts`
+- Modify: `apps/docs/scripts/lib/token-rules.test.ts`
+- Modify: `apps/docs/scripts/check-tokens.mjs`
+
+**Interfaces:**
+- Consumes: `MUTED_FG`, `MUTED_BG_RE`, `isExempt` from Task 2
+- Produces:
+  - `extractCvaCalls(source: string): { body: string; index: number }[]`
+  - `findCvaViolations(file: string, source: string): string[]`
+
+- [ ] **Step 1: Write the failing test**
+
+Append to `apps/docs/scripts/lib/token-rules.test.ts`:
+
+```ts
+import { extractCvaCalls, findCvaViolations } from "./token-rules.mjs";
+
+describe("extractCvaCalls", () => {
+  it("captures a call body across nested parentheses", () => {
+    const calls = extractCvaCalls(`const v = cva("base", { variants: { a: { b: fn(1) } } });`);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].body).toContain("fn(1)");
+  });
+});
+
+describe("findCvaViolations", () => {
+  it("flags muted text in the base string against a muted bg in a variant value", () => {
+    // The real ui/tabs.tsx shape.
+    const src = [
+      `const tabsListVariants = cva(`,
+      `  "inline-flex text-muted-foreground rounded-lg",`,
+      `  { variants: { variant: { default: "bg-muted", line: "bg-transparent" } } },`,
+      `);`,
+    ].join("\n");
+    const out = findCvaViolations("tabs.tsx", src);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("bg-muted");
+  });
+
+  it("flags the inverse — muted bg in the base, muted text in a variant value", () => {
+    const src = `cva("bg-muted p-2", { variants: { tone: { quiet: "text-muted-foreground" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
+  });
+
+  it("does not pair two variant values with each other", () => {
+    // Mutually exclusive: `default` and `line` never both apply.
+    const src = `cva("p-2", { variants: { v: { default: "bg-muted", line: "text-muted-foreground" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toEqual([]);
+  });
+
+  it("does not double-report what the single-string rule already catches", () => {
+    const src = `cva("text-muted-foreground bg-muted", { variants: { v: { a: "p-2" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toEqual([]);
+  });
+
+  it("reports each offending background once, not once per variant value", () => {
+    const src = `cva("text-muted-foreground", { variants: { v: { a: "bg-muted", b: "bg-muted" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
+  });
+});
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/token-rules.test.ts
+```
+
+Expected: FAIL — `extractCvaCalls is not a function`.
+
+- [ ] **Step 3: Implement**
+
+Append to `apps/docs/scripts/lib/token-rules.mjs`:
+
+```js
+/**
+ * Find every `cva(` call and return its body by balanced-paren scan. A regex
+ * cannot do this: variant bodies routinely contain nested calls.
+ */
+export function extractCvaCalls(source) {
+  const calls = [];
+  const re = /\bcva\s*\(/g;
+  let m;
+  while ((m = re.exec(source)) !== null) {
+    const start = m.index + m[0].length;
+    let depth = 1;
+    let i = start;
+    while (i < source.length && depth > 0) {
+      const ch = source[i];
+      if (ch === "(") depth++;
+      else if (ch === ")") depth--;
+      i++;
+    }
+    if (depth === 0) calls.push({ body: source.slice(start, i - 1), index: m.index });
+  }
+  return calls;
+}
+
+/**
+ * Returns the offending background token when muted text and a muted
+ * background are split ACROSS the two argument lists — never when they sit
+ * together in one (findSingleStringViolations owns that case) and never
+ * between two variant values (mutually exclusive at runtime).
+ */
+function crossPairViolation(baseTokens, variantTokens) {
+  const bgInBase = baseTokens.find((t) => MUTED_BG_RE.test(t));
+  const bgInVariant = variantTokens.find((t) => MUTED_BG_RE.test(t));
+  if (baseTokens.includes(MUTED_FG) && bgInVariant) return bgInVariant;
+  if (variantTokens.includes(MUTED_FG) && bgInBase) return bgInBase;
+  return null;
+}
+
+/**
+ * The cva shape: a base class string that always applies, paired with each
+ * variant value string that may apply alongside it.
+ *
+ * This is the gap that let components/ui/tabs.tsx ship the exact pairing this
+ * gate exists to catch — text-muted-foreground in tabsListVariants' base,
+ * bg-muted in its `default` variant. Recorded as unresolved in CONTINUE.md §4.
+ */
+export function findCvaViolations(file, source) {
+  if (isExempt(file)) return [];
+
+  const found = [];
+  const seen = new Set();
+  for (const call of extractCvaCalls(source)) {
+    const strings = [...call.body.matchAll(/"([^"]*)"|'([^']*)'/g)].map((x) => x[1] ?? x[2] ?? "");
+    if (strings.length < 2) continue;
+
+    const base = classTokens(strings[0]);
+    const line = source.slice(0, call.index).split("\n").length;
+
+    for (const value of strings.slice(1)) {
+      const bg = crossPairViolation(base, classTokens(value));
+      const key = `${line}:${bg}`;
+      if (bg && !seen.has(key)) {
+        seen.add(key);
+        found.push(
+          `${file}:${line} — cva() pairs text-muted-foreground with ${bg} across its base and a variant value (4.34:1 against a 4.5:1 minimum)`,
+        );
+      }
+    }
+  }
+  return found;
+}
+```
+
+- [ ] **Step 4: Extend the type declaration**
+
+Append to `apps/docs/scripts/lib/token-rules.d.mts`:
+
+```ts
+export declare function extractCvaCalls(source: string): { body: string; index: number }[];
+export declare function findCvaViolations(file: string, source: string): string[];
+```
+
+- [ ] **Step 5: Run tests to verify they pass**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/token-rules.test.ts
+```
+
+Expected: PASS, 11 tests.
+
+- [ ] **Step 6: Wire into the gate**
+
+In `apps/docs/scripts/check-tokens.mjs`, extend the import:
+
+```js
+import { findCvaViolations, findSingleStringViolations } from "./lib/token-rules.mjs";
+```
+
+and add directly below the existing `findSingleStringViolations` loop:
+
+```js
+  for (const message of findCvaViolations(file, source)) {
+    violations++;
+    console.error(message);
+  }
+```
+
+- [ ] **Step 7: Verify the gate still passes on the current glob**
+
+```bash
+cd apps/docs && pnpm check:tokens
+```
+
+Expected: `check:tokens — 130 file(s) clean.` No registry file uses the offending cva shape; `ui/tabs.tsx` is not yet in scope. That happens in Task 4.
+
+- [ ] **Step 8: Prove the gate fails on a real instance**
+
+Temporarily append to `apps/docs/registry/super-ai/kbd.tsx`:
+
+```tsx
+const probeVariants = cva("text-muted-foreground", {
+  variants: { tone: { quiet: "bg-muted" } },
+});
+```
+
+Run `cd apps/docs && pnpm check:tokens`. Expected: **exit 1**, one violation naming `bg-muted`. Then revert:
+
+```bash
+git checkout -- apps/docs/registry/super-ai/kbd.tsx
+```
+
+A gate verified only by passing has proved nothing. Do not skip this step.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add apps/docs/scripts/lib/token-rules.mjs apps/docs/scripts/lib/token-rules.d.mts \
+        apps/docs/scripts/lib/token-rules.test.ts apps/docs/scripts/check-tokens.mjs
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(check:tokens): catch muted-on-muted split across a cva base and variant"
+```
+
+---
+
+### Task 4: G1b — widen the glob to vendored primitives
+
+The `cva` rule alone does not catch the real bug, because `check-tokens.mjs:3` globs `registry/{super-ai,marketing}/**` and `components/ui/tabs.tsx` is not scanned at all. CONTINUE.md §8 describes it as "sitting outside its scan scope where any consumer taking the default variant will hit it."
+
+**The spec commits to reporting, not fixing, whatever else falls out** (§8.1). Diverging from vendored upstream is an open question this task does not settle.
+
+**Files:**
+- Modify: `apps/docs/scripts/check-tokens.mjs:3`
+- Create: `docs/design-system/vendored-token-findings.md`
+
+**Interfaces:**
+- Consumes: `findCvaViolations`, `findSingleStringViolations` from Task 3
+- Produces: a findings document; no behavioural interface
+
+- [ ] **Step 1: Widen the glob and see what falls out**
+
+Change `apps/docs/scripts/check-tokens.mjs:3-5` to:
+
+```js
+const FILES = globSync("{registry/{super-ai,marketing},components/ui}/**/*.tsx", {
+  exclude: (f) => f.includes(".test."),
+});
+```
+
+- [ ] **Step 2: Run the gate and capture the findings**
+
+```bash
+cd apps/docs && pnpm check:tokens 2>&1 | tee /tmp/vendored-findings.txt; echo "exit=$?"
+```
+
+Expected: **exit 1**, with at least `components/ui/tabs.tsx:19` reported by the new cva rule. This is the confirmation that Task 3's rule catches the real, documented instance — not just the synthetic probe.
+
+- [ ] **Step 3: Write the findings document**
+
+Create `docs/design-system/vendored-token-findings.md` with a header explaining the scope decision, then paste the captured violations under it, one per bullet, each annotated with whether it is (a) the muted-on-muted pairing, (b) a palette class, or (c) a raw colour. Header text:
+
+```markdown
+# Token findings in vendored `components/ui/**`
+
+`check:tokens` now scans vendored shadcn primitives as well as this repo's own
+registry. It previously did not, which is how `ui/tabs.tsx` shipped the exact
+`text-muted-foreground` / `bg-muted` pairing the gate exists to catch — the
+finding CONTINUE.md §8 records as sitting outside the scan scope.
+
+**These are reported, not fixed.** Fixing them means diverging from upstream,
+which is the same open question `a11y-baseline.md` parks for the a11y
+exclusions, and nobody has decided it. Each entry below is triaged only.
+
+Anything a consumer hits by taking a primitive's **default** variant is marked
+`CONSUMER-FACING` — those are the ones worth deciding about first.
+```
+
+- [ ] **Step 4: Decide how the gate treats vendored findings**
+
+The gate cannot both scan `components/ui/**` and stay green while those findings exist. Add a scoped allowance to `apps/docs/scripts/lib/token-rules.mjs` — a **separate** list from `CONTRAST_EXEMPT_FILES`, so the two are not conflated:
+
+```js
+// Vendored upstream files with pre-existing findings, triaged in
+// docs/design-system/vendored-token-findings.md. Scanning them is new; fixing
+// them means diverging from upstream, a decision nobody has made. This list
+// exists so the gate can cover new violations in vendored files without
+// blocking on old ones. Like every exemption list here it may only shrink.
+export const VENDORED_BASELINE = [
+  // Populate from /tmp/vendored-findings.txt — one "components/ui/<file>.tsx" per finding.
+];
+
+export function isVendoredBaseline(file) {
+  return VENDORED_BASELINE.some((name) => file.endsWith(name));
+}
+```
+
+Wire it into `check-tokens.mjs` so baselined files report as warnings (printed, not counted toward `violations`) and every other file fails as normal.
+
+Append the matching declarations to `apps/docs/scripts/lib/token-rules.d.mts`:
+
+```ts
+export declare const VENDORED_BASELINE: string[];
+export declare function isVendoredBaseline(file: string): boolean;
+```
+
+- [ ] **Step 5: Verify green with the baseline in place**
+
+```bash
+cd apps/docs && pnpm check:tokens; echo "exit=$?"
+```
+
+Expected: `exit=0`, with the baselined findings printed as warnings and the clean-file count now higher than 130 (it now includes `components/ui/**`).
+
+- [ ] **Step 6: Prove a *new* vendored violation still fails**
+
+Temporarily add `className="text-muted-foreground bg-muted"` to a non-baselined file under `components/ui/`. Run `pnpm check:tokens`; expected **exit 1**. Revert with `git checkout -- <file>`.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add apps/docs/scripts/check-tokens.mjs apps/docs/scripts/lib/token-rules.mjs \
+        apps/docs/scripts/lib/token-rules.d.mts docs/design-system/vendored-token-findings.md
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(check:tokens): scan vendored ui/ primitives, baseline existing findings"
+```
+
+---
+
+### Task 5: G2 — `data-slot` erasure
+
+Every component here spreads `...props` *after* its own attributes, so a `data-slot` passed from a call site silently replaces the component's own and every test or style keyed to it misses. `DateSection`, `CostChip`, `StatReadout` and `EntityRow` have each been erased this way — three of them in a single batch.
+
+Passing `data-slot` to a **vendored `ui/` primitive** stays legal: that is house idiom (`result-card` on `Card`, `frame-strip` on `Carousel`, `tool-panel` on `Tabs`) and nothing keys on those values. The gate encodes CONTINUE.md §4's refined rule exactly.
+
+This lives in `check-contract.mts`, not `check-tokens.mjs`, because it needs `MANIFEST` — and that keeps `ci.yml` at eleven steps.
+
+**Files:**
+- Modify: `apps/docs/scripts/lib/scaffold-templates.ts:3`
+- Create: `apps/docs/scripts/lib/contract-rules.ts`
+- Create: `apps/docs/scripts/lib/contract-rules.test.ts`
+- Modify: `apps/docs/scripts/check-contract.mts`
+
+**Interfaces:**
+- Consumes: `MANIFEST` from `apps/docs/lib/catalog.manifest`, `pascal` from `scaffold-templates`
+- Produces: `findSlotErasures(file: string, source: string, registryComponents: Set<string>): string[]`
+
+- [ ] **Step 1: Export the `pascal` helper**
+
+`apps/docs/scripts/lib/scaffold-templates.ts:3` currently reads `const pascal = (name: string) =>`. Change it to:
+
+```ts
+export const pascal = (name: string) =>
+```
+
+- [ ] **Step 2: Write the failing test**
+
+Create `apps/docs/scripts/lib/contract-rules.test.ts`:
+
+```ts
+import { describe, expect, it } from "vitest";
+
+import { findSlotErasures } from "./contract-rules";
+
+const REGISTRY = new Set(["EntityRow", "CostChip", "StatReadout"]);
+
+describe("findSlotErasures", () => {
+  it("flags data-slot passed to a registry component", () => {
+    const out = findSlotErasures("x.tsx", `<StatReadout data-slot="asset-detail-params" />`, REGISTRY);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("StatReadout");
+  });
+
+  it("flags it across a multi-line opening tag", () => {
+    const src = ["<EntityRow", `  title="a"`, `  data-slot="row"`, "/>"].join("\n");
+    expect(findSlotErasures("x.tsx", src, REGISTRY)).toHaveLength(1);
+  });
+
+  it("allows data-slot on a vendored ui/ primitive", () => {
+    // House idiom: result-card on Card, tool-panel on Tabs. Nothing keys on these.
+    expect(findSlotErasures("x.tsx", `<Card data-slot="result-card" />`, REGISTRY)).toEqual([]);
+  });
+
+  it("allows a registry component with no data-slot", () => {
+    expect(findSlotErasures("x.tsx", `<EntityRow title="a" />`, REGISTRY)).toEqual([]);
+  });
+
+  it("ignores a data-slot on a plain DOM element", () => {
+    expect(findSlotErasures("x.tsx", `<div data-slot="wrapper" />`, REGISTRY)).toEqual([]);
+  });
+});
+```
+
+- [ ] **Step 3: Run test to verify it fails**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/contract-rules.test.ts
+```
+
+Expected: FAIL — `Failed to resolve import "./contract-rules"`.
+
+- [ ] **Step 4: Implement**
+
+Create `apps/docs/scripts/lib/contract-rules.ts`:
+
+```ts
+// Pure predicates for the contract gate. Kept separate from check-contract.mts
+// so each can be unit-tested without running the whole gate.
+
+/**
+ * A `data-slot` passed to a registry component silently replaces that
+ * component's own — every component here spreads `...props` after its own
+ * attributes — and every test or style keyed to the original slot then misses.
+ * DateSection, CostChip, StatReadout and EntityRow have all been erased this
+ * way; three of them in one batch.
+ *
+ * Overriding a *vendored* ui/ primitive's slot is house idiom and stays legal:
+ * nothing keys on those values, and it is what makes the composition visible
+ * in the DOM. Only registry components are protected.
+ *
+ * KNOWN LIMITATION: the opening-tag scan stops at the first `>`, so a `>`
+ * inside an attribute string value truncates the tag early and the gate may
+ * miss a `data-slot` after it. Accepted — the shape this catches is the shape
+ * that has actually shipped.
+ */
+export function findSlotErasures(
+  file: string,
+  source: string,
+  registryComponents: Set<string>,
+): string[] {
+  const found: string[] = [];
+  for (const m of source.matchAll(/<([A-Z][A-Za-z0-9]*)\b([^>]*)>/g)) {
+    const [, tag, attrs] = m;
+    if (!registryComponents.has(tag)) continue;
+    if (!/\bdata-slot\s*=/.test(attrs)) continue;
+    const line = source.slice(0, m.index).split("\n").length;
+    found.push(
+      `${file}:${line} — data-slot passed to registry component <${tag}>, which erases its own slot. Use data-<thing>-id to address rows instead.`,
+    );
+  }
+  return found;
+}
+```
+
+- [ ] **Step 5: Run test to verify it passes**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/contract-rules.test.ts
+```
+
+Expected: PASS, 5 tests.
+
+- [ ] **Step 6: Wire into `check-contract.mts`**
+
+Add to the imports at the top of `apps/docs/scripts/check-contract.mts`:
+
+```ts
+import { findSlotErasures } from "./lib/contract-rules";
+import { pascal } from "./lib/scaffold-templates";
+```
+
+Then, after the manifest loop completes and before the catalog-count reconciliation, add:
+
+```ts
+// G2 — a data-slot passed to a registry component erases that component's own.
+const registryComponents = new Set(manifest.map((i) => pascal(i.name)));
+for (const item of manifest) {
+  if (item.status !== "shipped") continue;
+  const path = fileFor.component(item.name);
+  if (!existsSync(path)) continue;
+  errors.push(...findSlotErasures(path, readFileSync(path, "utf8"), registryComponents));
+}
+```
+
+- [ ] **Step 7: Run the gate**
+
+```bash
+cd apps/docs && pnpm check:contract
+```
+
+Expected: passes. If it reports erasures, those are **real bugs in shipped components** — record each in the task report and fix them in a follow-up commit; do not weaken the rule to get green.
+
+- [ ] **Step 8: Prove the gate fails on a real instance**
+
+Temporarily change one `<EntityRow ... />` call site in `apps/docs/registry/super-ai/` to include `data-slot="probe"`. Run `pnpm check:contract`; expected **exit 1** naming that file and line. Revert with `git checkout -- <file>`.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add apps/docs/scripts/lib/contract-rules.ts apps/docs/scripts/lib/contract-rules.test.ts \
+        apps/docs/scripts/lib/scaffold-templates.ts apps/docs/scripts/check-contract.mts
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(check:contract): reject data-slot passed to a registry component"
+```
+
+---
+
+### Task 6: G3 — exemption-list coherence
+
+Two exemption lists exist for one component, in two files, with no link between them: `CONTRAST_EXEMPT_FILES = ["preview-tile.tsx"]` (now in `token-rules.mjs`) and `"**/stories/super-ai/PreviewTile.stories.tsx"` in `apps/storybook/vitest.config.ts`. Both are governed by "may only shrink, never grow", and nothing asserts they agree or that either has held.
+
+**Files:**
+- Modify: `apps/docs/scripts/lib/contract-rules.ts`
+- Modify: `apps/docs/scripts/lib/contract-rules.test.ts`
+- Modify: `apps/docs/scripts/check-contract.mts`
+
+**Interfaces:**
+- Consumes: `pascal` from `scaffold-templates`
+- Produces: `parseStorybookExclusions(source: string): string[]` and `compareExemptionLists(contrast: string[], stories: string[]): string[]`
+
+- [ ] **Step 1: Write the failing test**
+
+Append to `apps/docs/scripts/lib/contract-rules.test.ts`:
+
+```ts
+import { compareExemptionLists, parseStorybookExclusions } from "./contract-rules";
+
+describe("parseStorybookExclusions", () => {
+  it("extracts only this repo's own super-ai story exclusions", () => {
+    const src = `exclude: [
+      ...configDefaults.exclude,
+      "**/stories/ui/**",
+      "**/stories/ai-elements/**",
+      "**/stories/super-ai/PreviewTile.stories.tsx",
+    ],`;
+    expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
+  });
+});
+
+describe("compareExemptionLists", () => {
+  it("passes when the two lists name the same components", () => {
+    expect(compareExemptionLists(["preview-tile.tsx"], ["PreviewTile"])).toEqual([]);
+  });
+
+  it("reports a component exempt from contrast but not from the a11y gate", () => {
+    const out = compareExemptionLists(["preview-tile.tsx", "kbd.tsx"], ["PreviewTile"]);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("kbd");
+  });
+
+  it("reports a component excluded from the a11y gate but not from contrast", () => {
+    const out = compareExemptionLists(["preview-tile.tsx"], ["PreviewTile", "EntityRow"]);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("EntityRow");
+  });
+});
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/contract-rules.test.ts
+```
+
+Expected: FAIL — `parseStorybookExclusions is not a function`.
+
+- [ ] **Step 3: Implement**
+
+Append to `apps/docs/scripts/lib/contract-rules.ts`:
+
+```ts
+import { pascal } from "./scaffold-templates";
+
+/**
+ * Pull this repo's own super-ai story exclusions out of
+ * apps/storybook/vitest.config.ts. Vendored directory excludes
+ * (stories/ui/**, stories/ai-elements/**) are out of scope — they are a
+ * different decision, documented in a11y-baseline.md, and are not per-component.
+ */
+export function parseStorybookExclusions(source: string): string[] {
+  return [...source.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
+    (m) => m[1],
+  );
+}
+
+/**
+ * Two exemption lists, in two files, both governed by "may only shrink, never
+ * grow", with nothing linking them. A component silenced in one and enforced in
+ * the other is either an unnoticed regression or an exemption that outlived its
+ * reason — and until now neither was visible.
+ */
+export function compareExemptionLists(contrastFiles: string[], storyComponents: string[]): string[] {
+  const fromContrast = new Set(contrastFiles.map((f) => pascal(f.replace(/\.tsx$/, ""))));
+  const fromStories = new Set(storyComponents);
+  const errors: string[] = [];
+
+  for (const name of fromContrast) {
+    if (!fromStories.has(name)) {
+      errors.push(
+        `${name} is contrast-exempt in token-rules.mjs but not excluded from the a11y gate — one of the two lists is stale`,
+      );
+    }
+  }
+  for (const name of fromStories) {
+    if (!fromContrast.has(name)) {
+      errors.push(
+        `${name} is excluded from the a11y gate but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
+      );
+    }
+  }
+  return errors;
+}
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/contract-rules.test.ts
+```
+
+Expected: PASS, 9 tests total in this file.
+
+- [ ] **Step 5: Wire into `check-contract.mts`**
+
+Extend the `contract-rules` import to include `compareExemptionLists` and `parseStorybookExclusions`, add `CONTRAST_EXEMPT_FILES` from `./lib/token-rules.mjs`, and append after the G2 block:
+
+```ts
+// G3 — the contrast exemption list and the a11y exclusion list must agree.
+const storybookConfig = readFileSync("../storybook/vitest.config.ts", "utf8");
+errors.push(
+  ...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)),
+);
+```
+
+- [ ] **Step 6: Run the gate**
+
+```bash
+cd apps/docs && pnpm check:contract && pnpm typecheck
+```
+
+Expected: passes — both lists currently name only `preview-tile` / `PreviewTile`.
+
+- [ ] **Step 7: Prove the gate fails when the lists diverge**
+
+Temporarily add `"kbd.tsx"` to `CONTRAST_EXEMPT_FILES` in `token-rules.mjs`. Run `pnpm check:contract`; expected **exit 1** naming `Kbd`. Revert with `git checkout -- apps/docs/scripts/lib/token-rules.mjs`.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add apps/docs/scripts/lib/contract-rules.ts apps/docs/scripts/lib/contract-rules.test.ts \
+        apps/docs/scripts/check-contract.mts
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(check:contract): assert the contrast and a11y exemption lists agree"
+```
+
+---
+
+### Task 7: G4 — story-export name collisions
+
+`statePascal("meta")` is `Meta`, which collides with `import type { Meta } from "@storybook/react"` in every generated story. `record-list` had to alias it. The gate greps for `export const Meta`, which is present either way, so it passed throughout. `Default` and `Story` collide the same way.
+
+**Files:**
+- Modify: `apps/docs/scripts/lib/contract-rules.ts`
+- Modify: `apps/docs/scripts/lib/contract-rules.test.ts`
+- Modify: `apps/docs/scripts/check-contract.mts`
+
+**Interfaces:**
+- Consumes: `statePascal` from `scaffold-templates`
+- Produces: `findReservedStateNames(name: string, states: string[]): string[]`
+
+- [ ] **Step 1: Write the failing test**
+
+Append to `apps/docs/scripts/lib/contract-rules.test.ts`:
+
+```ts
+import { findReservedStateNames } from "./contract-rules";
+
+describe("findReservedStateNames", () => {
+  it("rejects a state whose Pascal form collides with the Meta import", () => {
+    const out = findReservedStateNames("record-list", ["meta", "compact"]);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("Meta");
+  });
+
+  it("rejects `default`, which produces the forbidden Default export", () => {
+    expect(findReservedStateNames("x", ["default"])).toHaveLength(1);
+  });
+
+  it("rejects `story`", () => {
+    expect(findReservedStateNames("x", ["story"])).toHaveLength(1);
+  });
+
+  it("accepts ordinary state names", () => {
+    expect(findReservedStateNames("x", ["text-only", "plain", "with-footer"])).toEqual([]);
+  });
+
+  it("catches multi-word states that normalise onto a reserved name", () => {
+    // statePascal strips separators and lowercases the tail: "Meta".
+    expect(findReservedStateNames("x", ["META"])).toHaveLength(1);
+  });
+});
+```
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/contract-rules.test.ts
+```
+
+Expected: FAIL — `findReservedStateNames is not a function`.
+
+- [ ] **Step 3: Implement**
+
+Append to `apps/docs/scripts/lib/contract-rules.ts` (extend the existing `scaffold-templates` import to include `statePascal`):
+
+```ts
+/**
+ * Story files import `Meta` and `Story` from @storybook/react, and `Default` is
+ * the export the house style forbids. A state whose Pascal form is any of the
+ * three produces a story file that either shadows its own import or violates
+ * the naming rule.
+ *
+ * check:contract's existing story-state assertion cannot catch this: it greps
+ * for `export const <Name>`, which is present whether or not the name collides.
+ * record-list shipped with `Meta as StorybookMeta` and the gate stayed green.
+ */
+const RESERVED_STATE_EXPORTS = new Set(["Meta", "Story", "Default"]);
+
+export function findReservedStateNames(name: string, states: string[]): string[] {
+  const errors: string[] = [];
+  for (const state of states) {
+    const exported = statePascal(state);
+    if (RESERVED_STATE_EXPORTS.has(exported)) {
+      errors.push(
+        `${name}: state "${state}" produces the reserved story export ${exported}. Rename it in catalog.manifest.ts — see CONTINUE.md §3.2.`,
+      );
+    }
+  }
+  return errors;
+}
+```
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+```bash
+cd apps/docs && pnpm vitest run scripts/lib/contract-rules.test.ts
+```
+
+Expected: PASS, 14 tests total in this file.
+
+- [ ] **Step 5: Wire into `check-contract.mts`**
+
+Add `findReservedStateNames` to the `contract-rules` import, then inside the existing per-item manifest loop — **before** the `contractExempt` early-`continue` at line 112, so the 25 legacy items are checked too — add:
+
+```ts
+  // G4 — a state whose Pascal form collides with the story file's own imports.
+  errors.push(...findReservedStateNames(item.name, item.states));
+```
+
+- [ ] **Step 6: Run the gate**
+
+```bash
+cd apps/docs && pnpm check:contract
+```
+
+Expected: **this may legitimately fail.** CONTINUE.md §3.2 records that the 14 stories exporting `Default` are exactly the pre-Wave-1.5 `contractExempt` set. If it reports reserved names on legacy items, that is the gate working — record the list in the task report. It is direct input to Plan 2's manifest-prep step (spec §7.2 item 4). Do **not** add an exemption to get green; if it blocks this task, place the check after the `contractExempt` continue and note in the commit body that it becomes universal when the retrofit lands.
+
+- [ ] **Step 7: Prove the gate fails on a real instance**
+
+Temporarily rename any non-exempt component's first declared state to `"meta"` in `apps/docs/lib/catalog.manifest.ts`. Run `pnpm check:contract`; expected **exit 1** naming `Meta`. Revert with `git checkout -- apps/docs/lib/catalog.manifest.ts`.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add apps/docs/scripts/lib/contract-rules.ts apps/docs/scripts/lib/contract-rules.test.ts \
+        apps/docs/scripts/check-contract.mts
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(check:contract): reject state names that collide with story imports"
+```
+
+---
+
+### Task 8: Hooks
+
+Five hooks in a checked-in `.claude/settings.json`. Git-write denial is deliberately **not** here — hooks apply session-wide and cannot distinguish a subagent from the integrator, and the integrator must commit. That denial lives in Task 9's agent definitions, where it is precise.
+
+**Files:**
+- Create: `.claude/settings.json`
+- Create: `.claude/hooks/deny-dangerous-bash.sh`
+- Create: `.claude/hooks/check-tokens-on-edit.sh`
+- Create: `.claude/hooks/session-baselines.sh`
+
+**Interfaces:**
+- Consumes: nothing
+- Produces: hook enforcement for every session in this repo
+
+- [ ] **Step 1: Write the Bash-denial hook**
+
+Create `.claude/hooks/deny-dangerous-bash.sh` (`chmod +x`):
+
+```bash
+#!/usr/bin/env bash
+# PreToolUse/Bash. Reads the tool input on stdin; exit 2 denies with the
+# message on stderr. Each rule here is a CONTINUE.md §4 trap that has cost a
+# real debugging session.
+set -euo pipefail
+cmd=$(jq -r '.tool_input.command // ""')
+
+if printf '%s' "$cmd" | grep -Eq '(^|[;&|[:space:]])pnpm[[:space:]]+format([[:space:]]|$)' \
+   || printf '%s' "$cmd" | grep -Eq 'prettier[[:space:]]+--write[[:space:]]+\.[[:space:]]*$'; then
+  echo "Repo-wide format is denied. The tree is not prettier-clean at HEAD, so this rewrites ~300 unrelated files — and it breaks check:contract, whose guidance regexes (whatItIs:\\s*\"...\") do not survive re-wrapping. Format only what you touched: pnpm exec prettier --write <paths>" >&2
+  exit 2
+fi
+
+if printf '%s' "$cmd" | grep -Eq 'shadcn[[:space:]]+add[[:space:]]+https?://'; then
+  echo "npx shadcn add <third-party URL> is denied in this repo. It resolves the item's own registryDependencies against the default Radix registry, offers to overwrite this repo's Base UI primitives, and then writes no component files. Vendor the file by hand — see CONTINUE.md §5.1." >&2
+  exit 2
+fi
+
+exit 0
+```
+
+- [ ] **Step 2: Verify the denial hook by hand**
+
+```bash
+echo '{"tool_input":{"command":"pnpm format"}}' | .claude/hooks/deny-dangerous-bash.sh; echo "exit=$?"
+```
+
+Expected: the explanatory message on stderr and `exit=2`.
+
+```bash
+echo '{"tool_input":{"command":"pnpm test"}}' | .claude/hooks/deny-dangerous-bash.sh; echo "exit=$?"
+```
+
+Expected: no output, `exit=0`.
+
+- [ ] **Step 3: Write the post-edit token check**
+
+Create `.claude/hooks/check-tokens-on-edit.sh` (`chmod +x`):
+
+```bash
+#!/usr/bin/env bash
+# PostToolUse/Write|Edit. Turns a CI-time token failure into an edit-time one.
+# Advisory: exit 0 always, so a failure surfaces without blocking the edit that
+# is often mid-way through a legitimate multi-step change.
+set -euo pipefail
+path=$(jq -r '.tool_input.file_path // ""')
+case "$path" in
+  *apps/docs/registry/super-ai/*.tsx) ;;
+  *) exit 0 ;;
+esac
+cd "$(git rev-parse --show-toplevel)/apps/docs" || exit 0
+if ! out=$(node scripts/check-tokens.mjs 2>&1); then
+  echo "check:tokens is now failing after that edit:" >&2
+  printf '%s\n' "$out" | grep -E '^registry/|^components/' >&2 || true
+fi
+exit 0
+```
+
+- [ ] **Step 4: Write the session-start hook**
+
+Create `.claude/hooks/session-baselines.sh` (`chmod +x`):
+
+```bash
+#!/usr/bin/env bash
+# SessionStart. CONTINUE.md §1 keeps these numbers by hand and §6 already
+# contradicts it. Printing them live lets the doc stop being a dashboard.
+set -euo pipefail
+root=$(git rev-parse --show-toplevel)
+exempt=$(grep -c 'contractExempt' "$root/apps/docs/lib/catalog.manifest.ts" || echo "?")
+items=$(grep -c '"name":' "$root/apps/docs/public/r/registry.json" 2>/dev/null || echo "?")
+echo "super-ai-components — contractExempt items: $exempt · registry items: $items"
+echo "Worktree: $(git rev-parse --abbrev-ref HEAD) @ $(git rev-parse --short HEAD)"
+echo "If this is an isolated worktree for a fan-out, CHECK ITS BASE COMMIT — twelve agents were once cut from main and none saw the integration branch's prep (CONTINUE.md §1). Take your own dev-server port too."
+```
+
+- [ ] **Step 5: Wire them up**
+
+Create `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/deny-dangerous-bash.sh" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-tokens-on-edit.sh" }]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/session-baselines.sh" }]
+      }
+    ]
+  }
+}
+```
+
+The `catalog.manifest.ts` write confirmation from spec §5 is **not** implemented as a hook: `.claude/settings.json` is checked in and applies to the integrator too, for whom writing that file is the job. The agent definitions in Task 9 deny it instead, which is where the distinction actually exists.
+
+- [ ] **Step 6: Verify the hooks load**
+
+Restart the session, or start a new one in this repo, and confirm the `SessionStart` line prints. Then attempt `pnpm format` via Bash and confirm it is denied with the explanatory message.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add .claude/settings.json .claude/hooks/
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(claude): enforce the format, shadcn-add and token traps as hooks"
+```
+
+---
+
+### Task 9: Agents
+
+The `component-builder` prompt is deliberately thin — it *points at* `component-build-brief.md` rather than restating it, honouring the repo's own no-second-copy rule (§3.4). Its value over a pasted prompt is tool configuration, which converts three prose rules into impossibilities.
+
+**Files:**
+- Create: `.claude/agents/component-builder.md`
+- Create: `.claude/agents/retrofit-builder.md`
+
+**Interfaces:**
+- Consumes: hooks from Task 8 (they apply to subagents too)
+- Produces: two `subagent_type` values usable from the Agent tool and from Task 10's skills
+
+- [ ] **Step 1: Write `component-builder`**
+
+Create `.claude/agents/component-builder.md`:
+
+```markdown
+---
+name: component-builder
+description: Builds one component in the super-ai registry, filling its five scaffolded files. Dispatched one per component during a parallel wave; not for direct invocation.
+tools: Read, Grep, Glob, Edit, Write, Bash
+---
+
+You build exactly one component in this registry.
+
+**Read `docs/design-system/component-build-brief.md` before writing anything.**
+It is the house contract and it is not summarised here — one copy, on purpose.
+Then read your component's entry in `docs/design-system/component-specs.md`.
+
+## Your write scope
+
+Only these files, for your component's `<name>`:
+
+- `apps/docs/registry/super-ai/<name>.tsx`
+- `apps/docs/registry/super-ai/<name>.test.tsx`
+- `apps/docs/components/demos/<name>-demo.tsx`
+- `apps/docs/content/components/<name>.docs.tsx`
+- `apps/docs/content/components/<name>.examples.tsx` (optional)
+- `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`
+
+Write nothing else. Other components are being built concurrently in sibling
+worktrees.
+
+**Never write `apps/docs/lib/catalog.manifest.ts`.** The integrator owns it and
+reconciles your declared dependencies against your real imports afterwards.
+
+## Commands
+
+Run, from `apps/docs`:
+- `pnpm vitest run registry/super-ai/<name>.test.tsx`
+- `pnpm typecheck`
+- `pnpm check:tokens`
+
+**Never run** any `git` write command (`commit`, `add`, `checkout`, `stash`,
+`reset`). `refs/stash` is shared across worktrees and an agent has already lost
+work that way. To read a file from history use
+`git show HEAD:<path> > /tmp/copy`.
+
+**Never run** `pnpm build`, the full `pnpm test`, or anything in
+`apps/storybook`. The integrator runs the full gates centrally.
+
+## Report
+
+Terse. Status; props signature; test counts (fail → pass); typecheck and
+check:tokens results; what you composed; and anything in the spec you could not
+honour, with the reason.
+
+Flag judgment calls rather than burying them. Several of this system's best
+decisions came from a builder saying "the spec is ambiguous here and I chose X".
+If a component you were told to compose does not fit, **say so — do not fork
+it.** A reimplemented row passes every gate and is still wrong.
+```
+
+- [ ] **Step 2: Write `retrofit-builder`**
+
+Create `.claude/agents/retrofit-builder.md`:
+
+```markdown
+---
+name: retrofit-builder
+description: Brings one pre-Wave-1.5 contractExempt component up to the story-state and guidance contracts. The component file already exists and must not change. Dispatched one per component; not for direct invocation.
+tools: Read, Grep, Glob, Edit, Write, Bash
+---
+
+You retrofit exactly one already-shipped component so it satisfies the full
+contract and can lose its `contractExempt: true` flag.
+
+**Read `docs/design-system/component-build-brief.md` first** — specifically its
+"Guidance" and "Story" sections. It is not summarised here.
+
+## Your write scope
+
+Only these two files, for your component's `<name>`:
+
+- `apps/docs/content/components/<name>.docs.tsx` (usually does not exist yet —
+  `check-contract.mts` skips the existence check for exempt items, so all 25
+  ship with no guidance module at all)
+- `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`
+
+Plus, optionally, `apps/docs/content/components/<name>.examples.tsx`.
+
+**Do not modify `apps/docs/registry/super-ai/<name>.tsx`.** This component is
+shipped and installed by consumers. If you believe it must change to satisfy
+the contract, stop and report that instead — it is a decision for the
+integrator, not a change for you to make.
+
+**Never write `apps/docs/lib/catalog.manifest.ts`.** If a declared state needs
+renaming — `default`, `meta` and `story` all produce reserved story exports —
+report the rename you need. The integrator applies it.
+
+## What "done" means
+
+- One story export per declared state, with real `args`. No bare `Default`.
+- `componentDocsPage(<Pascal>Docs)` as `parameters.docs.page`.
+- Every guidance field filled: `whatItIs`, `whyItMatters`, `evidence`,
+  `anatomy` (your component's **real** `data-slot` names — read the source),
+  `usage`, ≥2 `dos` and ≥2 `donts` each with a live example, ≥2 `pitfalls`.
+- Never invent Evidence products. If the spec has none, use `evidence: []`.
+
+## Commands
+
+From `apps/docs`: `pnpm typecheck`, `pnpm check:tokens`.
+
+**Never run** any `git` write command, `pnpm build`, the full `pnpm test`, or
+anything in `apps/storybook`.
+
+## Report
+
+Terse. Which states you wrote stories for; any manifest state rename you need
+and why; anything in the component that blocked the retrofit; and any pitfall
+you found in the source that is not yet written down anywhere.
+```
+
+- [ ] **Step 3: Verify the agents are registered**
+
+Restart the session and confirm `component-builder` and `retrofit-builder` appear in the available agent types.
+
+- [ ] **Step 4: Smoke-test the write restriction**
+
+Dispatch `retrofit-builder` with: *"Report the current contents of `apps/docs/lib/catalog.manifest.ts`'s entry for `kbd`. Do not modify anything."* Confirm it reads and reports without writing.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add .claude/agents/
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(claude): add component-builder and retrofit-builder agents"
+```
+
+---
+
+### Task 10: `gate-run` skill
+
+The highest value-per-line item in this plan. CONTINUE.md §1 records the Playwright smoke gate going unrun for an entire phase because a hand-written gate list omitted it — and because GitHub Actions stops at the first failure, its absence also hid the Storybook a11y gate and the consumer install test, the two that verify the phase's most novel work.
+
+**Files:**
+- Create: `.claude/skills/gate-run/SKILL.md`
+- Create: `.claude/skills/gate-run/run-gates.sh`
+
+**Interfaces:**
+- Consumes: `ci.yml`'s eleven steps
+- Produces: a `gate-run` skill invocable by name
+
+- [ ] **Step 1: Write the runner**
+
+Create `.claude/skills/gate-run/run-gates.sh` (`chmod +x`). The order must mirror `.github/workflows/ci.yml`'s `verify` job exactly:
+
+```bash
+#!/usr/bin/env bash
+# Runs every gate in .github/workflows/ci.yml's order. Stops at the first
+# failure, exactly as GitHub Actions does — which is precisely why order
+# matters: a red gate early in the pipeline hides every gate behind it, and
+# that has already happened here (CONTINUE.md §1).
+set -uo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+run() {
+  printf '\n=== %s ===\n' "$1"
+  shift
+  if ! "$@"; then
+    printf '\nFAILED: %s\n' "$*" >&2
+    printf 'Every gate after this one is UNRUN. Fix and re-run from the top.\n' >&2
+    exit 1
+  fi
+}
+
+run "lint"           pnpm lint
+run "typecheck"      pnpm typecheck
+run "check:tokens"   pnpm check:tokens
+run "check:contract" pnpm check:contract
+run "test"           pnpm test
+run "build:registry" pnpm build:registry
+run "build"          pnpm build
+run "playwright smoke" pnpm --filter docs exec playwright test
+
+# Not optional: Vite's dep optimiser invalidates mid-run after components are
+# added and produces a wall of fake failures that look like a11y errors but say
+# "Failed to fetch dynamically imported module" (CONTINUE.md §3.5).
+rm -rf apps/storybook/node_modules/.cache/storybook
+run "storybook a11y" pnpm --filter storybook test:stories
+
+run "consumer install" apps/docs/scripts/consumer-test.sh
+
+printf '\nAll gates green.\n'
+```
+
+- [ ] **Step 2: Write the skill**
+
+Create `.claude/skills/gate-run/SKILL.md`:
+
+```markdown
+---
+name: gate-run
+description: Run every CI gate locally in ci.yml's exact order. Use before claiming a batch is done, before opening a PR, or whenever you need to know whether this tree is actually green.
+---
+
+# Running the gates
+
+```bash
+.claude/skills/gate-run/run-gates.sh
+```
+
+Eleven steps, in `.github/workflows/ci.yml`'s order. It stops at the first
+failure, as CI does.
+
+## Why the order is the point
+
+CI stops at the first failing step, so **a red gate early in the pipeline hides
+every gate behind it.** That is not hypothetical here: the Playwright smoke gate
+was missing from a phase plan's gate list, went unrun for the whole phase, and
+its eventual failure silently prevented the Storybook a11y gate and the consumer
+install test from ever running — the two that verified that phase's most novel
+work.
+
+**Never hand-write a gate list.** If you need one, run this. If `ci.yml` gains a
+step, add it here in the same position, and nowhere else.
+
+## Before you trust a green run
+
+- **`next start` serves the prebuilt output.** Editing source without rebuilding
+  tests a stale app, and the Playwright smoke gate will pass against it. This
+  script runs `build` before `playwright`, so a full run is safe — a partial one
+  is not.
+- **A gate that has only ever passed has proved nothing.** When you add one,
+  make it fail on a deliberate instance of the bug first.
+
+## First run on a fresh clone
+
+`pnpm test:stories` fails with `Executable doesn't exist` rather than anything
+a11y-shaped if Playwright's browsers are missing:
+
+```bash
+cd apps/storybook && pnpm exec playwright install chromium
+```
+```
+
+- [ ] **Step 3: Run it**
+
+```bash
+.claude/skills/gate-run/run-gates.sh
+```
+
+Expected: all eleven green. This is also the integration check for Tasks 1–7 — every gate change so far must survive a full run.
+
+- [ ] **Step 4: Verify it stops correctly**
+
+Temporarily break lint (add an unescaped `'` to a JSX text node in any demo). Re-run; expected: it fails at `lint` and explicitly says the remaining gates are unrun. Revert.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add .claude/skills/gate-run/
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(claude): add gate-run skill mirroring ci.yml's eleven steps"
+```
+
+---
+
+### Task 11: `build-component` and `integrate-batch` skills
+
+**Files:**
+- Create: `apps/docs/scripts/reconcile-deps.mts`
+- Create: `.claude/skills/build-component/SKILL.md`
+- Create: `.claude/skills/integrate-batch/SKILL.md`
+
+**Interfaces:**
+- Consumes: the agents from Task 9, the `gate-run` skill from Task 10
+- Produces: `pnpm reconcile:deps` in `apps/docs/package.json`
+
+- [ ] **Step 1: Write the reconciliation script**
+
+Create `apps/docs/scripts/reconcile-deps.mts` — CONTINUE.md §3.5's shell loop, made a script that diffs against the manifest instead of only printing:
+
+```ts
+// Reconciles each shipped component's DECLARED dependencies against its REAL
+// imports. Never trust the catalog's assumed bases: it names primitives this
+// repo does not vendor, and never trust a builder's own declared list either.
+import { existsSync, readFileSync } from "node:fs";
+
+import { MANIFEST } from "../lib/catalog.manifest";
+
+const RELEVANT = /^(@\/components\/ui\/|@\/registry\/super-ai\/|lucide-react|@base-ui)/;
+
+const names = process.argv.slice(2);
+const items = names.length ? MANIFEST.filter((i) => names.includes(i.name)) : MANIFEST;
+
+let drift = 0;
+for (const item of items) {
+  const path = `registry/super-ai/${item.name}.tsx`;
+  if (!existsSync(path)) continue;
+
+  const imports = [...readFileSync(path, "utf8").matchAll(/from\s+"([^"]+)"/g)]
+    .map((m) => m[1])
+    .filter((s) => RELEVANT.test(s));
+
+  const realShadcn = [...new Set(imports.filter((s) => s.startsWith("@/components/ui/")))]
+    .map((s) => s.replace("@/components/ui/", ""))
+    .sort();
+  const realConsumes = [...new Set(imports.filter((s) => s.startsWith("@/registry/super-ai/")))]
+    .map((s) => s.replace("@/registry/super-ai/", ""))
+    .sort();
+
+  const declaredShadcn = [...item.shadcn].sort();
+  const declaredConsumes = [...item.consumes].sort();
+
+  const diff = (a: string[], b: string[]) => JSON.stringify(a) !== JSON.stringify(b);
+  if (diff(realShadcn, declaredShadcn) || diff(realConsumes, declaredConsumes)) {
+    drift++;
+    console.log(`${item.name}`);
+    if (diff(realShadcn, declaredShadcn)) {
+      console.log(`  shadcn   declared ${JSON.stringify(declaredShadcn)} · real ${JSON.stringify(realShadcn)}`);
+    }
+    if (diff(realConsumes, declaredConsumes)) {
+      console.log(`  consumes declared ${JSON.stringify(declaredConsumes)} · real ${JSON.stringify(realConsumes)}`);
+    }
+  }
+}
+
+// @base-ui/react is normally omitted from `npm`: it arrives as a peer of any
+// vendored ui/ primitive the component also imports. The exception is a
+// component importing NO ui/ primitive at all — time-ruler uses only
+// @base-ui/react/slider, so nothing else would drag the package in.
+console.log(
+  drift
+    ? `\n${drift} item(s) drifted. Update catalog.manifest.ts from the REAL column, then re-run.`
+    : `\n${items.length} item(s) reconciled, no drift.`,
+);
+process.exit(drift ? 1 : 0);
+```
+
+- [ ] **Step 2: Add the script entry**
+
+In `apps/docs/package.json`, add to `"scripts"`:
+
+```json
+    "reconcile:deps": "tsx scripts/reconcile-deps.mts",
+```
+
+- [ ] **Step 3: Run it against the whole catalog**
+
+```bash
+cd apps/docs && pnpm reconcile:deps
+```
+
+Expected: `no drift` — `check:contract` already asserts the derived form of this, so any drift reported here is a genuine finding worth recording in the task report.
+
+- [ ] **Step 4: Write `build-component`**
+
+Create `.claude/skills/build-component/SKILL.md`:
+
+```markdown
+---
+name: build-component
+description: Build a batch of registry components end to end — manifest prep, scaffold, parallel fan-out, integration, gates. Use when adding components to the super-ai catalog or retrofitting existing ones.
+---
+
+# Building a batch
+
+The full reasoning is in `docs/CONTINUE.md` §3. This is the sequence.
+
+## 1. Prepare the manifest — you do this, not the agents
+
+`apps/docs/lib/catalog.manifest.ts` is the single source of truth and the one
+shared file. Set `status: "building"` and normalise each item's `states` into
+clean kebab-case identifiers — the raw values came from a markdown table and
+contain prose like `"8–14 items"`.
+
+Three naming traps, all of which have bitten:
+
+- **`default`, `meta` and `story` are reserved.** Their Pascal forms are the
+  forbidden `Default` export and the story file's own `Meta`/`Story` imports.
+  `check:contract` now rejects them (G4) — but rename them here rather than
+  discovering it three steps later.
+- **Two states that normalise to the same identifier silently collide.**
+- Use meaningful names: `text-only`, `plain`.
+
+## 2. Scaffold
+
+```bash
+cd apps/docs && pnpm new:component <name>
+```
+
+Five files per item, with deliberately failing tests.
+
+## 3. Fan out — one agent per component
+
+Dispatch `component-builder` (or `retrofit-builder` for a `contractExempt`
+item), one per component, in parallel. Concurrency above ~16 just queues.
+
+Give each agent **only**: its spec anchor, its declared states, and
+component-specific steering — which shipped primitive it must compose, which
+a11y trap applies to its shape, which prior component solved the same problem.
+
+**Do not paste the house rules into the prompt.** The agent is pointed at
+`component-build-brief.md`; a second copy is how instructions drift, which is
+the reason the brief exists.
+
+### Worktrees
+
+Give each agent its own git worktree — they otherwise share a working tree and
+each runs a repo-root `pnpm typecheck`, racing on `tsbuildinfo` and typechecking
+against each other's half-written files.
+
+Two things that have gone wrong anyway:
+
+- **Check the worktree's base commit.** An isolated worktree may be cut from
+  `main` rather than your integration branch, so it will not carry your manifest
+  prep. Twelve agents once all reported "the five files were not scaffolded".
+- **Take your own port and browser tab.** A sibling worktree's dev server on the
+  same port will serve *its* build while your preview reports success.
+
+## 4. Integrate
+
+Use the `integrate-batch` skill.
+
+## 5. Gates
+
+Use the `gate-run` skill. Never hand-write a gate list.
+```
+
+- [ ] **Step 5: Write `integrate-batch`**
+
+Create `.claude/skills/integrate-batch/SKILL.md`:
+
+```markdown
+---
+name: integrate-batch
+description: Land a finished batch of components — reconcile declared dependencies against real imports, regenerate wiring, run the gates. Use after a parallel build fan-out completes.
+---
+
+# Integrating a batch
+
+You do this centrally. Agents never touch the manifest.
+
+## 1. Reconcile declared deps against real imports
+
+```bash
+cd apps/docs && pnpm reconcile:deps <name> <name> ...
+```
+
+Omit the names to check the whole catalog. It prints `declared` vs `real` for
+`shadcn` and `consumes`.
+
+**Never take these from the catalog's assumed bases** — it names primitives this
+repo does not vendor — **and never from a builder's own declared list.** Only
+real imports.
+
+### `@base-ui/react` in `npm`
+
+Normally omitted: it arrives as a peer of any vendored `ui/` primitive the
+component also imports, which is why `parameter-panel`, `run-button` and
+`compare-viewer` all declare `[]`. The exception is a component importing **no**
+`ui/` primitive at all — `time-ruler` uses only `@base-ui/react/slider`, so
+nothing would drag the package in and it declares `npm: ["@base-ui/react"]`.
+Check rather than assuming.
+
+## 2. Update the manifest and regenerate
+
+Set `shadcn` / `consumes` / `npm` from the real column, flip `status` to
+`"shipped"`, then:
+
+```bash
+cd apps/docs && pnpm gen:wiring && pnpm check:contract
+```
+
+## 3. Run every gate
+
+Use the `gate-run` skill.
+
+## 4. Commit
+
+Every component ships with its story and its registry entry **in the same
+commit**. Keep a batch in one PR so the family reads as a set.
+
+```bash
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" commit
+```
+
+GitHub rejects the default email for this account.
+```
+
+- [ ] **Step 6: Verify the skills load**
+
+Restart the session and confirm `build-component`, `integrate-batch` and `gate-run` appear in the available skills list.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add .claude/skills/build-component/ .claude/skills/integrate-batch/ \
+        apps/docs/scripts/reconcile-deps.mts apps/docs/package.json
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "feat(claude): add build-component and integrate-batch skills"
+```
+
+---
+
+### Task 12: G5 — `expectAccessibleName` helper (not a gate)
+
+Independent of Tasks 1–11; can be done at any point.
+
+`<span>In</span><span class="sr-only"> point at 3s</span>` computes as **"Inpoint at 3s"** — accname concatenates name-from-content chunks with whitespace trimmed and no separator. Two agents hit this independently in one afternoon (`frame-strip`, `transcript-editor`) and it broke three tests before either worked out why.
+
+**Spec §6 G5 decides deliberately against a static gate.** A detector for "element with visible text plus an `sr-only` sibling" fires on every legitimate use of the pattern, and a noisy gate gets excluded or ignored — the failure mode this whole plan exists to avoid. This ships a test helper and a brief entry instead, and the spec records it as the weaker option.
+
+**Files:**
+- Create: `apps/docs/registry/super-ai/test-utils.ts`
+- Create: `apps/docs/registry/super-ai/test-utils.test.ts`
+- Modify: `docs/design-system/component-build-brief.md`
+
+**Interfaces:**
+- Consumes: `@testing-library/dom`'s `computeAccessibleName` via `dom-accessibility-api` (already present transitively through `@testing-library/jest-dom`)
+- Produces: `expectAccessibleName(el: Element, expected: string): void`
+
+- [ ] **Step 1: Write the failing test**
+
+Create `apps/docs/registry/super-ai/test-utils.test.ts`:
+
+```ts
+import { render, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
+
+import { expectAccessibleName } from "./test-utils";
+
+describe("expectAccessibleName", () => {
+  it("passes when the computed name matches", () => {
+    render(<button>Save</button>);
+    expect(() => expectAccessibleName(screen.getByRole("button"), "Save")).not.toThrow();
+  });
+
+  it("catches sr-only text fusing with the visible text", () => {
+    // The real frame-strip / transcript-editor bug: this computes as
+    // "Inpoint at 3s", not "In point at 3s".
+    render(
+      <button>
+        <span>In</span>
+        <span className="sr-only"> point at 3s</span>
+      </button>,
+    );
+    expect(() => expectAccessibleName(screen.getByRole("button"), "In point at 3s")).toThrow(
+      /Inpoint at 3s/,
+    );
+  });
+});
+```
+
+Rename the file to `test-utils.test.tsx` — it contains JSX.
+
+- [ ] **Step 2: Run test to verify it fails**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/test-utils.test.tsx
+```
+
+Expected: FAIL — `Failed to resolve import "./test-utils"`.
+
+- [ ] **Step 3: Implement**
+
+Create `apps/docs/registry/super-ai/test-utils.ts`:
+
+```ts
+import { computeAccessibleName } from "dom-accessibility-api";
+
+/**
+ * Assert an element's COMPUTED accessible name, not its text content.
+ *
+ * accname concatenates name-from-content chunks with whitespace trimmed and no
+ * separator, so `<span>In</span><span class="sr-only"> point at 3s</span>`
+ * computes as "Inpoint at 3s". Two components shipped that bug on the same
+ * afternoon and it broke three tests before anyone worked out why.
+ *
+ * The fix at the component is either an outright `aria-label`, or marking the
+ * visual half `aria-hidden` and putting the COMPLETE phrase in the sr-only span.
+ *
+ * This is deliberately a helper rather than a static gate: a detector for
+ * "visible text plus an sr-only sibling" fires on every legitimate use of the
+ * pattern, and a noisy gate gets excluded. See the design spec §6 G5.
+ */
+export function expectAccessibleName(el: Element, expected: string): void {
+  const actual = computeAccessibleName(el);
+  if (actual !== expected) {
+    throw new Error(
+      `accessible name mismatch — expected "${expected}", computed "${actual}". ` +
+        `If the two differ only by a missing space, an sr-only span has fused with the visible text.`,
+    );
+  }
+}
+```
+
+- [ ] **Step 4: Run test to verify it passes**
+
+```bash
+cd apps/docs && pnpm vitest run registry/super-ai/test-utils.test.tsx
+```
+
+Expected: PASS, 2 tests. If `dom-accessibility-api` does not resolve, add it explicitly: `pnpm --filter docs add -D dom-accessibility-api`.
+
+- [ ] **Step 5: Confirm it is excluded from the registry build**
+
+```bash
+cd apps/docs && pnpm build:registry && pnpm check:contract
+```
+
+Expected: both pass, and `test-utils.ts` does **not** appear in `public/r/registry.json` — it is a test helper, not a registry item. If `check:contract` reports it as an orphan file under a name absent from the manifest, add it to the gate's ignore list alongside the existing `.test.tsx` handling.
+
+- [ ] **Step 6: Document it in the brief**
+
+In `docs/design-system/component-build-brief.md`, under "## Accessibility is a blocking gate", append a bullet:
+
+```markdown
+- **An `sr-only` suffix fuses with the visible text in the accessible name.**
+  `<span>In</span><span class="sr-only"> point at 3s</span>` computes as
+  **"Inpoint at 3s"** — accname concatenates name-from-content chunks with
+  whitespace trimmed and no separator. Two components shipped this on the same
+  afternoon. Either set an outright `aria-label`, or mark the visual half
+  `aria-hidden` and put the *complete* phrase in the sr-only span. Assert it
+  with `expectAccessibleName` from `registry/super-ai/test-utils`, not with
+  `toHaveTextContent` — text content will not show you the bug.
+```
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add apps/docs/registry/super-ai/test-utils.ts apps/docs/registry/super-ai/test-utils.test.tsx \
+        docs/design-system/component-build-brief.md
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "test: add expectAccessibleName helper for sr-only name fusion"
+```
+
+---
+
+## Definition of done
+
+- [ ] `.claude/skills/gate-run/run-gates.sh` passes all eleven steps.
+- [ ] `ci.yml` still has exactly eleven steps — no new ones were added.
+- [ ] Each of G1, G2, G3, G4 has been observed **failing** on a deliberately introduced instance of its bug, and passing after revert.
+- [ ] `pnpm check:tokens` scans `components/ui/**` and `docs/design-system/vendored-token-findings.md` records what that surfaced, `CONSUMER-FACING` items marked.
+- [ ] `pnpm format` is denied by hook, with the explanation.
+- [ ] `component-builder` and `retrofit-builder` are registered and cannot write `catalog.manifest.ts`.
+- [ ] The G4 run's list of reserved legacy state names is recorded — it is direct input to Plan 2's manifest prep.
+- [ ] `expectAccessibleName` exists and the build brief points at it (G5's deliberately weaker alternative to a gate).
+
+## What this plan does not do
+
+Plan 2 — the 25-item `contractExempt` retrofit (spec §7) — is written **after** this lands, because its manifest-prep step depends on G4's actual findings and its fan-out depends on `retrofit-builder` existing. Spec §9's other exclusions (the §8 composition gaps, the three §5.11 promotions, any consumer-facing cookbook) stay out of scope.
