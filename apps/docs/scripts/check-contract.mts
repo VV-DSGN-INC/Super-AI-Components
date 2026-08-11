@@ -18,8 +18,9 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { LIB_MANIFEST } from "../lib/lib.manifest";
+import { findSlotErasures } from "./lib/contract-rules";
 import { deriveExtras } from "./lib/registry-extras";
-import { statePascal } from "./lib/scaffold-templates";
+import { pascal, statePascal } from "./lib/scaffold-templates";
 
 const manifest = MANIFEST;
 const errors: string[] = [];
@@ -33,15 +34,11 @@ const fileFor: Record<string, (n: string) => string> = {
   docs: (n) => `content/components/${n}.docs.tsx`,
 };
 
-// Filename Pascal — for registry names, which are always plain kebab-case
-// (no spaces, no leading digits), this is safe. `states`, by contrast, are
-// free text from catalog.md and need scaffold-templates.ts's statePascal
-// (imported above) to land on the same identifier the scaffold generated.
-const pascal = (n: string) =>
-  n
-    .split("-")
-    .map((w) => w[0].toUpperCase() + w.slice(1))
-    .join("");
+// Filename Pascal (imported above as `pascal`) — for registry names, which
+// are always plain kebab-case (no spaces, no leading digits), this is safe.
+// `states`, by contrast, are free text from catalog.md and need
+// scaffold-templates.ts's statePascal (also imported above) to land on the
+// same identifier the scaffold generated.
 const storyFor = (n: string) => `../storybook/src/stories/super-ai/${pascal(n)}.stories.tsx`;
 
 // Lib items (registry:lib contracts, e.g. cost.tsx) live in the same directory
@@ -213,6 +210,15 @@ for (const file of readdirSync("registry/super-ai").filter((f) => f.endsWith(".t
     .pop()!
     .replace(/\.test\.tsx$|\.tsx$/, "");
   if (!names.has(name)) errors.push(`orphan: ${file} has no manifest entry`);
+}
+
+// G2 — a data-slot passed to a registry component erases that component's own.
+const registryComponents = new Set(manifest.map((i) => pascal(i.name)));
+for (const item of manifest) {
+  if (item.status !== "shipped") continue;
+  const path = fileFor.component(item.name);
+  if (!existsSync(path)) continue;
+  errors.push(...findSlotErasures(path, readFileSync(path, "utf8"), registryComponents));
 }
 
 // Per-family manifest counts must match catalog.md's Totals table — this is
