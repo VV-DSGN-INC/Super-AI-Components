@@ -48,78 +48,15 @@
 
 ---
 
-### Task 1: ScrollArea `getAnimations` shim (G6)
+### Task 1: DEFERRED — G6 moved to Task 13
 
-Base UI's `ScrollArea` schedules a timer calling `Element.prototype.getAnimations()`, which jsdom does not implement. It throws *after* the triggering test resolves, so every assertion passes and the run still exits 1. O1 shimmed it in its own test file; it belongs in the shared setup, and will bite anything composing a `ScrollArea`.
+**Do not implement this task.** Attempted 2026-08-11 and reverted; the work is now Task 13, with the scope its first attempt revealed.
 
-**Files:**
-- Modify: `apps/docs/vitest.setup.ts:33`
-- Test: `apps/docs/scripts/lib/vitest-setup.test.ts` (create)
+The shim itself is two lines and correct. What the attempt found is that it is not a two-line *change*: Base UI branches on whether `Element.prototype.getAnimations` exists, so defining it moves every overlay in the library — popups, dialogs, tab panels — onto the async exit-animation path at once. Five shipped components' tests broke together, and the failure count varied between runs (4, then 5), which means at least one of them is genuinely racing rather than deterministically async.
 
-**Interfaces:**
-- Consumes: nothing
-- Produces: `Element.prototype.getAnimations(): Animation[]` available in every `apps/docs` jsdom test
+Attempt-1 diff preserved at `.superpowers/sdd/2026-08-11-agentic-layer-infrastructure/g6-attempt-1.diff`.
 
-- [ ] **Step 1: Write the failing test**
-
-Create `apps/docs/scripts/lib/vitest-setup.test.ts`:
-
-```ts
-import { describe, expect, it } from "vitest";
-
-describe("jsdom shims", () => {
-  it("provides Element.prototype.getAnimations, which Base UI's ScrollArea calls on a timer", () => {
-    expect(typeof Element.prototype.getAnimations).toBe("function");
-    expect(document.createElement("div").getAnimations()).toEqual([]);
-  });
-});
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-```bash
-cd apps/docs && pnpm vitest run scripts/lib/vitest-setup.test.ts
-```
-
-Expected: FAIL — `expected "undefined" to be "function"`.
-
-- [ ] **Step 3: Add the shim**
-
-In `apps/docs/vitest.setup.ts`, after the `IntersectionObserver` stub (line 33), append:
-
-```ts
-// Base UI's ScrollArea schedules a timer that calls getAnimations(); jsdom has
-// no Web Animations API. It throws *after* the triggering test resolves, so
-// every assertion passes and the run still exits 1 — which reads as a mystery
-// failure, not a missing shim. Anything composing a ScrollArea hits this.
-Element.prototype.getAnimations ??= () => [];
-```
-
-- [ ] **Step 4: Run test to verify it passes**
-
-```bash
-cd apps/docs && pnpm vitest run scripts/lib/vitest-setup.test.ts
-```
-
-Expected: PASS.
-
-- [ ] **Step 5: Confirm nothing else broke**
-
-```bash
-cd apps/docs && pnpm vitest run
-```
-
-Expected: the full suite passes, at or above the 1387 baseline.
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add apps/docs/vitest.setup.ts apps/docs/scripts/lib/vitest-setup.test.ts
-git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
-  commit -m "test: shim Element.getAnimations for Base UI ScrollArea in jsdom"
-```
-
----
+Tasks 2–12 do not depend on the shim, so they proceed on a clean base: `pnpm vitest run` from `apps/docs` is **1387/1387 across 137 files** at the plan's base commit.
 
 ### Task 2: Extract token rules into a testable module
 
@@ -1871,6 +1808,86 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 
 ---
 
+### Task 13: G6 — the jsdom animation shim, at its real size
+
+Do this **last**, and only after Tasks 2–12 are green. It is independent of all of them, and unlike them it changes behaviour across the whole `apps/docs` suite.
+
+**What the first attempt established** (diff preserved at `.superpowers/sdd/2026-08-11-agentic-layer-infrastructure/g6-attempt-1.diff`):
+
+- The shim is correct and two lines: `Element.prototype.getAnimations ??= () => [];` in `apps/docs/vitest.setup.ts`.
+- Base UI branches on whether that method **exists**. Undefined → overlays unmount synchronously. Defined, even returning `[]` → they take the exit-animation path and unmount asynchronously.
+- So the shim is a suite-wide behavioural switch, not a stub. Five shipped components' tests assert synchronous unmounting: `inline-generate-popup.test.tsx:65`, `recommendation-card.test.tsx:57`, `selection-toolbar.test.tsx:106`, `settings-dialog.test.tsx:206`, `tool-panel.test.tsx:151`.
+- **The failure count varied between runs — 4, then 5.** That is the open question this task must answer, and it must be answered before any assertion is rewritten.
+
+**Files:**
+- Modify: `apps/docs/vitest.setup.ts`
+- Modify: up to five test files named above
+- Modify: `docs/CONTINUE.md` (§4 traps)
+
+**Interfaces:**
+- Consumes: nothing
+- Produces: `Element.prototype.getAnimations` in every `apps/docs` jsdom test
+
+- [ ] **Step 1: Reproduce and quantify the variance**
+
+Apply the shim only (not the assertion fixes):
+
+```bash
+cd apps/docs && git apply ../../.superpowers/sdd/2026-08-11-agentic-layer-infrastructure/g6-attempt-1.diff
+```
+
+Then run the five files ten times, recording the failing-test count each run:
+
+```bash
+for i in $(seq 1 10); do
+  pnpm vitest run registry/super-ai/{inline-generate-popup,recommendation-card,selection-toolbar,settings-dialog,tool-panel}.test.tsx 2>&1 | grep -E '^ *Tests '
+done
+```
+
+- [ ] **Step 2: Branch on what Step 1 shows**
+
+**If all ten runs give the same count** — the variance was cross-file interference in the full-suite run, not a race. Proceed to Step 3 and rewrite all five assertions with `waitFor`.
+
+**If the count varies** — at least one component's unmount is genuinely racing, and `waitFor` would hide it rather than fix it. Stop and report: identify which test varies, and whether the race exists in the component or only under jsdom's fake timing. A racing unmount in a shipped component is a real defect and belongs in its own fix, not buried in a test-infrastructure task.
+
+- [ ] **Step 3: Rewrite the assertions (only if Step 2 says the count is stable)**
+
+For each of the five, wrap the close/unmount assertion in `waitFor`, matching each file's existing style. Do not weaken any assertion — a count of 1 stays 1, an absent element stays absent. Add a comment at the first one naming the Base UI branch, so nobody "simplifies" the await away.
+
+- [ ] **Step 4: Verify**
+
+```bash
+cd apps/docs && pnpm vitest run
+```
+
+Expected: **1387/1387 across 137 files** — the same baseline the branch started from, now with the shim in place. Any other number is a finding, not a pass. Run it three times before believing it.
+
+- [ ] **Step 5: Record the trap**
+
+Add to `docs/CONTINUE.md` §4, which is where this repo keeps traps that have cost real time:
+
+```markdown
+**Defining `Element.getAnimations` in jsdom switches every Base UI overlay to
+its async exit path.** Base UI branches on the method's existence, not its
+return value, so a two-line `vitest.setup.ts` shim moves popups, dialogs and
+tab panels from synchronous unmount to awaited unmount all at once — and five
+components' tests asserted the synchronous behaviour. The shim is right (every
+real browser defines it, so the async path is what ships); the assertions were
+passing only because jsdom lacked an API browsers have. If you add a jsdom
+shim, check it against the base commit before calling any new failure
+pre-existing.
+```
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add apps/docs/vitest.setup.ts apps/docs/registry/super-ai/*.test.tsx docs/CONTINUE.md
+git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
+  commit -m "test: shim Element.getAnimations, and await Base UI's async unmount"
+```
+
+---
+
 ## Definition of done
 
 - [ ] `.claude/skills/gate-run/run-gates.sh` passes all eleven steps.
@@ -1881,6 +1898,8 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 - [ ] `component-builder` and `retrofit-builder` are registered and cannot write `catalog.manifest.ts`.
 - [ ] The G4 run's list of reserved legacy state names is recorded — it is direct input to Plan 2's manifest prep.
 - [ ] `expectAccessibleName` exists and the build brief points at it (G5's deliberately weaker alternative to a gate).
+- [ ] G6 (Task 13) is either complete with the suite at 1387/1387, or reported out with the racing-unmount finding from its Step 2. Task 1 is deferred and must not be implemented.
+- [ ] `pnpm vitest run` from `apps/docs` is **1387/1387 across 137 files** — the branch's base baseline. Any deviation is a finding; never describe one as pre-existing without checking it against the base commit.
 
 ## What this plan does not do
 
