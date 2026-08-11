@@ -1603,7 +1603,38 @@ here only because `Edit(<glob>)` in the **allow** position is unverified in
 this harness, and getting it wrong yields an agent that cannot write at all.
 Record that as the open question it is rather than guessing.
 
+- [ ] **Step 3a: Correct the permission syntax — the first attempt shipped both agents unusable**
+
+**Measured, not theorised.** Both agents registered successfully mid-session (no restart needed for registration — skills and agents both hot-load). Dispatched, each reported its available tools as **`Read`, `Grep`, `Glob` only**. `Edit`, `Write` and `Bash` were absent despite `tools:` declaring all six. A component builder that cannot write files is worse than no agent, because the next fan-out dispatches it and gets nothing.
+
+The likely cause is malformed permission patterns. Claude Code's documented form is a **colon-wildcard** — `Bash(git commit:*)` — and the first attempt used a space (`Bash(git commit *)`). Path-scoped `Edit(<glob>)` in the *deny* position is also unverified. A malformed pattern plausibly causes the whole tool to be dropped rather than scoped.
+
+**This could not be isolated in-session:** editing an already-registered definition has no effect — removing `disallowedTools` entirely still yielded three tools, because the definition is cached at registration. Only a restart re-reads it.
+
+Use the colon form throughout:
+
+```
+disallowedTools: Bash(git commit:*), Bash(git add:*), Bash(git checkout:*), Bash(git stash:*), Bash(git reset:*), Bash(pnpm build:*), Bash(pnpm test:*), Edit(./apps/docs/lib/**), Write(./apps/docs/lib/**), Edit(./docs/**), Write(./docs/**), Edit(./.github/**), Write(./.github/**), Edit(./.claude/**), Write(./.claude/**), Edit(./apps/docs/scripts/**), Write(./apps/docs/scripts/**)
+```
+
+`retrofit-builder` additionally keeps `Edit(./apps/docs/registry/super-ai/**), Write(./apps/docs/registry/super-ai/**)`.
+
 - [ ] **Step 4: Registration and restriction smoke test — REQUIRES A SESSION RESTART**
+
+**Do not merge these two agent definitions until this passes.** They are known-broken as first written; the syntax fix above is a hypothesis, not a confirmed repair.
+
+The test is designed to isolate the cause, not just detect failure:
+
+1. **Tool list first.** Dispatch `component-builder` and ask only for its available tools. It must report `Read, Grep, Glob, Edit, Write, Bash` — all six.
+   - If all six are present, the colon syntax was the bug. Continue to step 2.
+   - If `Bash` is absent, the `Bash(...)` deny form is stripping the tool. Remove the `Bash(...)` entries and retest.
+   - If `Edit`/`Write` are absent but `Bash` is present, the path-scoped `Edit(<glob>)`/`Write(<glob>)` denies are the problem. Remove **those** entries only — the git denies are the higher-value half and worth keeping alone.
+2. **Then the restrictions.** Dispatch `retrofit-builder` and have it attempt each of these, reporting verbatim and without routing around a refusal:
+   - `git commit --allow-empty -m "smoke-test-should-be-denied"` — must be refused.
+   - An `Edit` to `apps/docs/registry/super-ai/kbd.tsx` — must be refused.
+   - An `Edit` to `apps/docs/content/components/kbd.docs.tsx` — must **succeed** (it is in scope; revert it after).
+
+Until both steps pass, treat every enforcement claim as unverified and rely on the prose prohibitions in the agent bodies.
 
 **This could not be completed during the plan's execution, and that is a known
 gap, not an oversight.** The agent roster is cached at session start, so a
