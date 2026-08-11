@@ -999,13 +999,58 @@ export function parseStorybookExclusions(source: string): string[] {
   // comments narrate exactly that retrofit ("CostChip and EntityRow were here
   // … the list shrank"), so this is the editing pattern, not a hypothetical.
   //
-  // The `[^:]` guard keeps a `https://` on the same line from swallowing a
-  // live entry after it.
-  const live = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/[^\n]*/g, "$1");
+  // Stripping must be QUOTE-AWARE, not a regex. A naive
+  // `source.replace(/\/\*[\s\S]*?\*\//g, "")` is broken here, and not
+  // subtly: the glob `"**/stories/ui/**"` ends in `/**`, which contains
+  // `/*`, so the regex opens a phantom block comment inside a string literal
+  // and swallows everything up to the next `*/`. Measured against the real
+  // `vitest.config.ts`, that returns `[]` instead of `["PreviewTile"]` — the
+  // gate would then report a phantom mismatch and turn CI red on a
+  // non-problem. Use the character scan below, which mirrors
+  // `extractCvaCalls` in `token-rules.mjs`.
+  const live = stripComments(source);
 
   return [...live.matchAll(/["']\*\*\/stories\/super-ai\/([A-Za-z0-9]+)\.stories\.tsx["']/g)].map(
     (m) => m[1],
   );
+}
+
+/** Strip `//` and block comments, leaving string literals untouched. */
+function stripComments(source: string): string {
+  let out = "";
+  let quote: string | null = null;
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+    const next = source[i + 1];
+    if (quote) {
+      out += ch;
+      if (ch === "\\") {
+        out += next ?? "";
+        i++;
+      } else if (ch === quote) {
+        quote = null;
+      }
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      quote = ch;
+      out += ch;
+      continue;
+    }
+    if (ch === "/" && next === "/") {
+      while (i < source.length && source[i] !== "\n") i++;
+      out += "\n";
+      continue;
+    }
+    if (ch === "/" && next === "*") {
+      i += 2;
+      while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) i++;
+      i++; // land on the closing `/`; the loop's i++ advances past it
+      continue;
+    }
+    out += ch;
+  }
+  return out;
 }
 
 /**
