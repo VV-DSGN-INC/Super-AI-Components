@@ -1,4 +1,19 @@
-export type FamilyId = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O";
+export type FamilyId =
+  | "A"
+  | "B"
+  | "C"
+  | "D"
+  | "E"
+  | "F"
+  | "G"
+  | "H"
+  | "I"
+  | "J"
+  | "K"
+  | "L"
+  | "M"
+  | "N"
+  | "O";
 
 export type ManifestStatus = "planned" | "building" | "shipped" | "cut";
 
@@ -31,6 +46,22 @@ export interface ManifestItem {
   shadcn: string[];
   /** Registry-internal items this component composes. Build input. */
   consumes: string[];
+  /**
+   * Absolute registry URLs from *other* vendors' registries, spread into
+   * registryDependencies verbatim. C2 `suggestion-chips` is the first: it
+   * declares AI Elements' own item rather than vendoring or reimplementing it,
+   * which is what its spec's "composes rather than reimplements" line requires.
+   * Distinct from `consumes` (registry-internal, resolved through self()) and
+   * from `shadcn` (bare names shadcn resolves against its own registry).
+   */
+  external?: string[];
+  /**
+   * Blocks only. Kebab-case region identifiers taken from the block's
+   * `Regions:` line in block-specs.md. Blocks have no `states` — a shell is a
+   * layout, not a state machine — so regions are what the contract gate
+   * asserts instead.
+   */
+  regions?: string[];
   /** npm packages the component needs at runtime. */
   npm: string[];
   /** States the story file must export. */

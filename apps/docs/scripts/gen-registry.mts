@@ -27,13 +27,16 @@ type Item = {
   name: string;
   title: string;
   description: string;
-  type?: "registry:component" | "registry:hook" | "registry:lib";
+  type?: "registry:component" | "registry:hook" | "registry:lib" | "registry:block";
   registryDependencies?: string[];
   dependencies?: string[];
   cssVars?: CssVars;
 };
 
 const extras = deriveExtras(MANIFEST, self);
+// CATALOG_ITEMS (built from MANIFEST) doesn't carry `layer` itself, so the
+// item-type derivation below looks it back up through MANIFEST by name.
+const layerByName = new Map(MANIFEST.map((m) => [m.name, m.layer]));
 
 const items: Item[] = CATALOG_ITEMS.map((i) => ({
   name: i.name,
@@ -238,7 +241,7 @@ const marketingItems = MARKETING_ITEMS.map((i) => {
 
 const superAiItems = items.map((i) => ({
   name: i.name,
-  type: i.type ?? "registry:component",
+  type: i.type ?? (layerByName.get(i.name) === "block" ? "registry:block" : "registry:component"),
   title: i.title,
   description: i.description,
   dependencies: i.dependencies ?? [],

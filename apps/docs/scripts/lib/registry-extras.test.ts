@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MANIFEST } from "../../lib/catalog.manifest";
+import type { ManifestItem } from "../../lib/manifest-types";
 import { deriveExtras } from "./registry-extras";
 
 const REGISTRY_URL = "https://super-ai-components.vercel.app";
@@ -36,12 +37,7 @@ describe("deriveExtras", () => {
     // but do declare cssVars, so they're excluded here and covered by the
     // cssVars-specific tests below instead.
     const undeclared = MANIFEST.filter(
-      (i) =>
-        i.status === "shipped" &&
-        !i.shadcn.length &&
-        !i.consumes.length &&
-        !i.npm.length &&
-        !i.cssVars,
+      (i) => i.status === "shipped" && !i.shadcn.length && !i.consumes.length && !i.npm.length && !i.cssVars,
     );
     for (const item of undeclared) expect(extras[item.name]).toBeUndefined();
   });
@@ -69,14 +65,40 @@ describe("deriveExtras", () => {
     dark: { warning: "oklch(0.82 0.14 72)", "warning-foreground": "oklch(0.24 0.05 70)" },
   };
 
-  it.each(["credits-indicator", "quota-meter", "pricing-table"])(
-    "threads cssVars through for %s",
-    (name) => {
-      expect(extras[name]?.cssVars).toEqual(WARNING_CSS_VARS);
-    },
-  );
+  it.each(["credits-indicator", "quota-meter", "pricing-table"])("threads cssVars through for %s", (name) => {
+    expect(extras[name]?.cssVars).toEqual(WARNING_CSS_VARS);
+  });
 
   it("emits no cssVars for a shipped item that declares none", () => {
     expect(extras["citation-ref"]?.cssVars).toBeUndefined();
+  });
+
+  it("spreads external registry URLs into registryDependencies", () => {
+    const items = [
+      {
+        id: "C2",
+        name: "suggestion-chips",
+        title: "Suggestion Chips",
+        description: "Task starter chips",
+        family: "C",
+        layer: "component",
+        status: "shipped",
+        wave: 2,
+        base: [],
+        shadcn: ["button"],
+        consumes: [],
+        npm: [],
+        states: ["plain"],
+        specAnchor: "component-specs.md#c2-suggestion-chips",
+        external: ["https://registry.ai-sdk.dev/suggestion.json"],
+      },
+    ] as unknown as ManifestItem[];
+
+    const extras = deriveExtras(items, (n) => `https://example.test/r/${n}.json`);
+
+    expect(extras["suggestion-chips"].registryDependencies).toEqual([
+      "button",
+      "https://registry.ai-sdk.dev/suggestion.json",
+    ]);
   });
 });

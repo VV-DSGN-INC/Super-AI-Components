@@ -16,7 +16,13 @@ for (const item of [...CATALOG_ITEMS, ...MARKETING_ITEMS]) {
       if (m.type() === "error") errors.push(m.text());
     });
     await page.goto(`/components/${item.name}`);
-    await expect(page.getByRole("heading", { level: 1, name: item.title })).toBeVisible();
+    // Readiness only — the assertion this test is named for is the console-error
+    // check below. Located by tag rather than by role: a demo that opens a Base UI
+    // modal on mount makes the library set `aria-hidden` on the page shell, which
+    // removes the h1 from the accessibility tree while leaving it in the DOM. A
+    // `getByRole` readiness check therefore fails for any modal component and turns
+    // this into a test of "does not open a modal on mount", which is not its job.
+    await expect(page.locator("h1")).toHaveText(item.title);
     expect(errors).toEqual([]);
   });
 }

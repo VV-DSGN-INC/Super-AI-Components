@@ -385,13 +385,20 @@ export const MANIFEST: ManifestItem[] = [
     description: "Task starter chips",
     family: "C",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 2,
     base: ["composes-`@ai-elements/suggestion`"],
-    shadcn: [],
+    // `scroll-area` is here because AI Elements' `suggestion` renders one, and
+    // this repo had never vendored that primitive before C2 — so the component
+    // tree that resolves `@/components/ai-elements/suggestion` reaches
+    // `@/components/ui/scroll-area` transitively. A consumer's own shadcn
+    // registry resolves it; ours must declare it or `npx shadcn add
+    // suggestion-chips` lands a Suggestions row with no ScrollArea to render in.
+    shadcn: ["button", "scroll-area"],
     consumes: [],
+    external: ["https://registry.ai-sdk.dev/suggestion.json"],
     npm: [],
-    states: ["plain", "with-icon", "with-thumbnail", "overflow link"],
+    states: ["plain", "with-icon", "with-thumbnail", "overflow-link"],
     specAnchor: "component-specs.md#c2-suggestion-chips",
   },
   {
@@ -1722,14 +1729,17 @@ export const MANIFEST: ManifestItem[] = [
     description: "Confirm running third-party content",
     family: "N",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 11,
     base: ["alert-dialog", "checkbox"],
-    shadcn: [],
-    consumes: [],
-    npm: [],
-    states: ["preview", "warning", "trust checkbox", "Continue split-button with account picker"],
+    shadcn: ["alert", "alert-dialog", "button-group", "checkbox", "select"],
+    consumes: ["entity-row"],
+    npm: ["lucide-react"],
+    states: ["preview", "warning", "trust-checkbox", "account-picker"],
     specAnchor: "component-specs.md#n2-trust-dialog",
+    // The warning Alert is `border-warning/40 bg-warning/5` with a
+    // `text-warning` icon — same silently-colourless failure as M2/M3/M4.
+    cssVars: WARNING_CSS_VARS,
   },
   {
     id: "N3",
@@ -1754,13 +1764,13 @@ export const MANIFEST: ManifestItem[] = [
     description: "Waterfall of steps / tool calls / LLM calls",
     family: "N",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 11,
     base: ["collapsible"],
-    shadcn: [],
+    shadcn: ["collapsible"],
     consumes: [],
-    npm: [],
-    states: ["collapsed", "expanded", "errored", "retries as siblings"],
+    npm: ["lucide-react"],
+    states: ["collapsed", "expanded", "errored", "retry-siblings"],
     specAnchor: "component-specs.md#n4-trace-timeline",
   },
   {
@@ -1770,13 +1780,13 @@ export const MANIFEST: ManifestItem[] = [
     description: "Span detail: I/O, tokens, cost, errors",
     family: "N",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 11,
     base: ["tabs", "a10"],
-    shadcn: [],
-    consumes: [],
-    npm: [],
-    states: ["input", "output", "metadata", "error tabs"],
+    shadcn: ["button", "tabs"],
+    consumes: ["cost-chip", "stat-readout"],
+    npm: ["lucide-react"],
+    states: ["input-tab", "output-tab", "metadata-tab", "error-tab"],
     specAnchor: "component-specs.md#n5-run-inspector",
   },
   {
@@ -1786,14 +1796,20 @@ export const MANIFEST: ManifestItem[] = [
     description: "Aggregate cost / token / latency",
     family: "N",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 11,
     base: ["chart", "card"],
-    shadcn: [],
-    consumes: [],
-    npm: [],
-    states: ["period select", "summary cards with deltas", "per-model breakdown"],
+    shadcn: ["card", "chart", "select"],
+    consumes: ["cost-chip"],
+    // First manifest item to declare `recharts`: `chart` pulls it in as a peer
+    // for a consumer installing from shadcn's own registry, but this component
+    // imports Bar/BarChart/XAxis/YAxis from it directly, so it is a first-order
+    // runtime dependency here, not a transitive one.
+    npm: ["lucide-react", "recharts"],
+    states: ["period-select", "summary-cards", "model-breakdown"],
     specAnchor: "component-specs.md#n6-usage-dashboard",
+    // The upward-delta indicator is `text-warning`.
+    cssVars: WARNING_CSS_VARS,
   },
   {
     id: "N7",
@@ -1802,14 +1818,17 @@ export const MANIFEST: ManifestItem[] = [
     description: "Per-provider reachability",
     family: "N",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 11,
     base: ["badge", "a9"],
-    shadcn: [],
-    consumes: [],
-    npm: [],
+    shadcn: ["badge"],
+    consumes: ["entity-row"],
+    npm: ["lucide-react"],
     states: ["ok", "degraded", "key-invalid", "not-running"],
     specAnchor: "component-specs.md#n7-env-status",
+    // `degraded` is the whole point of the four-state split and it is drawn
+    // entirely in `border-warning/40 text-warning`.
+    cssVars: WARNING_CSS_VARS,
   },
   {
     id: "N8",
@@ -1818,13 +1837,13 @@ export const MANIFEST: ManifestItem[] = [
     description: "Agent asks before a side effect",
     family: "N",
     layer: "component",
-    status: "planned",
+    status: "shipped",
     wave: 11,
     base: ["alert-dialog"],
-    shadcn: [],
+    shadcn: ["alert-dialog", "button", "label", "textarea"],
     consumes: [],
-    npm: [],
-    states: ["allow once", "always allow", "deny", "edit-first; visible revocable scope"],
+    npm: ["lucide-react"],
+    states: ["allow-once", "always-allow", "deny", "edit-first"],
     specAnchor: "component-specs.md#n8-permission-prompt",
   },
   {
@@ -1942,7 +1961,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o1-home-shell",
+    specAnchor: "block-specs.md#o1-home-shell",
   },
   {
     id: "O2",
@@ -1951,14 +1970,41 @@ export const MANIFEST: ManifestItem[] = [
     description: "Chat / agent workspace",
     family: "O",
     layer: "block",
-    status: "planned",
+    status: "shipped",
     wave: 3,
     base: [],
-    shadcn: [],
-    consumes: [],
-    npm: [],
+    shadcn: ["sidebar"],
+    // The spec's `Filled by:` line is B1 · B6 · B7 · D1/D3/D4 · J4 · N1 · N3 ·
+    // M5 · L1 — eleven components, not the eight the block-gate brief listed:
+    // the D1/D3/D4 composer family was named in the spec's prose but omitted
+    // from the shorthand list. A shell with no composer is not this shell, so
+    // all three are composed and declared here.
+    consumes: [
+      "app-sidebar",
+      "thread-list",
+      "app-topbar",
+      "media-prompt-bar",
+      "context-chips",
+      "mode-tabs",
+      "artifact-grid",
+      "feedback",
+      "disclaimer-note",
+      "paywall-message",
+      "empty-state",
+    ],
+    // "Composes AI Elements' conversation and message rather than
+    // reimplementing them" (block-specs.md O2). Neither is a catalog
+    // component, so they go in `external` — absolute URLs into another
+    // vendor's registry, spread into registryDependencies verbatim, the same
+    // route C2 `suggestion-chips` takes. Their own npm needs (`ai`,
+    // `streamdown`, `use-stick-to-bottom`) arrive with them and are
+    // deliberately NOT duplicated in `npm` below, which is only what
+    // chat-shell.tsx itself imports.
+    external: ["https://registry.ai-sdk.dev/conversation.json", "https://registry.ai-sdk.dev/message.json"],
+    npm: ["lucide-react"],
+    regions: ["sidebar", "topbar", "message-stream", "artifact-cards", "composer"],
     states: [],
-    specAnchor: "component-specs.md#o2-chat-shell",
+    specAnchor: "block-specs.md#o2-chat-shell",
   },
   {
     id: "O3",
@@ -1974,7 +2020,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o3-studio-shell",
+    specAnchor: "block-specs.md#o3-studio-shell",
   },
   {
     id: "O4",
@@ -1990,7 +2036,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o4-timeline-shell",
+    specAnchor: "block-specs.md#o4-timeline-shell",
   },
   {
     id: "O5",
@@ -2006,7 +2052,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o5-flow-shell",
+    specAnchor: "block-specs.md#o5-flow-shell",
   },
   {
     id: "O6",
@@ -2022,7 +2068,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o6-generation-shell",
+    specAnchor: "block-specs.md#o6-generation-shell",
   },
   {
     id: "O7",
@@ -2038,7 +2084,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o7-library-shell",
+    specAnchor: "block-specs.md#o7-library-shell",
   },
   {
     id: "O8",
@@ -2054,7 +2100,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o8-explore-shell",
+    specAnchor: "block-specs.md#o8-explore-shell",
   },
   {
     id: "O9",
@@ -2070,7 +2116,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o9-artifact-shell",
+    specAnchor: "block-specs.md#o9-artifact-shell",
   },
   {
     id: "O10",
@@ -2086,7 +2132,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o10-records-shell",
+    specAnchor: "block-specs.md#o10-records-shell",
   },
   {
     id: "O11",
@@ -2102,7 +2148,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o11-docs-shell",
+    specAnchor: "block-specs.md#o11-docs-shell",
   },
   {
     id: "O12",
@@ -2118,7 +2164,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o12-settings-shell",
+    specAnchor: "block-specs.md#o12-settings-shell",
   },
   {
     id: "O13",
@@ -2134,7 +2180,7 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o13-notebook-shell",
+    specAnchor: "block-specs.md#o13-notebook-shell",
   },
   {
     id: "O14",
@@ -2150,6 +2196,6 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: [],
-    specAnchor: "component-specs.md#o14-auth-shell",
+    specAnchor: "block-specs.md#o14-auth-shell",
   },
 ];

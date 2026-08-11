@@ -20,9 +20,20 @@ describe("MANIFEST", () => {
   // The 14 components that shipped before Wave 1.5. They are exempt from the
   // story-state and documentation contracts until the retrofit task runs.
   const LEGACY = [
-    "choice-chips", "cost-chip", "date-section", "entity-row", "field-row",
-    "filter-bar", "gen-settings-bar", "kbd", "preview-tile", "reset-affordance",
-    "section-header", "shortcuts-sheet", "stat-readout", "thread-list",
+    "choice-chips",
+    "cost-chip",
+    "date-section",
+    "entity-row",
+    "field-row",
+    "filter-bar",
+    "gen-settings-bar",
+    "kbd",
+    "preview-tile",
+    "reset-affordance",
+    "section-header",
+    "shortcuts-sheet",
+    "stat-readout",
+    "thread-list",
   ];
 
   // The 11 components PR #14 (main) shipped straight to `main` using the old
@@ -32,9 +43,17 @@ describe("MANIFEST", () => {
   // LEGACY above they are exempt until a retrofit task covers them — this set
   // should shrink, never grow.
   const MAIN_PR14 = [
-    "answer-block", "autonomy-selector", "citation-ref", "credits-indicator",
-    "escalation-handoff", "pricing-table", "quota-meter", "safety-block",
-    "slot-summary", "source-cards", "task-tray",
+    "answer-block",
+    "autonomy-selector",
+    "citation-ref",
+    "credits-indicator",
+    "escalation-handoff",
+    "pricing-table",
+    "quota-meter",
+    "safety-block",
+    "slot-summary",
+    "source-cards",
+    "task-tray",
   ];
 
   it("keeps every pre-Wave-1.5 component shipped", () => {
@@ -51,16 +70,55 @@ describe("MANIFEST", () => {
     // Exemption is a closed set that may only shrink. A new component must never
     // be born exempt — that is how a gate quietly stops gating.
     expect(
-      MANIFEST.filter((i) => i.contractExempt).map((i) => i.name).sort(),
+      MANIFEST.filter((i) => i.contractExempt)
+        .map((i) => i.name)
+        .sort(),
     ).toEqual([...LEGACY, ...MAIN_PR14].sort());
   });
 
   it("holds every newly shipped component to the full contract", () => {
-    const newlyShipped = shippedItems(MANIFEST).filter((i) => !i.contractExempt);
+    // Blocks are excluded here, not exempted: a shell is a layout, not a state
+    // machine, so it declares `regions` where a component declares `states` —
+    // and check-contract.mts's block branch asserts the regions instead. Split
+    // out when O2 `chat-shell` shipped and this assertion, which predates the
+    // block layer having any shipped members, failed on `states: []`.
+    const newlyShipped = shippedItems(MANIFEST).filter(
+      (i) => !i.contractExempt && i.layer !== "block",
+    );
     expect(newlyShipped.length).toBeGreaterThan(0);
     for (const item of newlyShipped) {
       expect(item.states.length).toBeGreaterThan(0);
-      expect(item.specAnchor).toMatch(/^component-specs\.md#/);
+    }
+
+    // specAnchor is static data pointing at a spec file — it must be correct
+    // for every manifest row regardless of status. A `planned` or `cut` row
+    // with a wrong anchor is exactly the bug this suite exists to catch, so
+    // this checks the full MANIFEST, not just shipped items. Guarded against
+    // a vacuous pass: fail loudly if the manifest is empty or the block
+    // layer disappears, rather than passing over an empty set.
+    expect(MANIFEST.length).toBeGreaterThan(0);
+    const blocks = MANIFEST.filter((i) => i.layer === "block");
+    expect(blocks.length).toBeGreaterThan(0);
+    for (const item of MANIFEST) {
+      if (item.layer === "block") {
+        expect(item.specAnchor).toMatch(/^block-specs\.md#/);
+      } else {
+        expect(item.specAnchor).toMatch(/^component-specs\.md#/);
+      }
+    }
+  });
+
+  it("holds every shipped block to the region contract instead", () => {
+    // The other half of the split above, so excluding blocks from the `states`
+    // assertion cannot become a hole a shell slips through declaring nothing.
+    const shippedBlocks = shippedItems(MANIFEST).filter((i) => i.layer === "block");
+    expect(shippedBlocks.length).toBeGreaterThan(0);
+    for (const item of shippedBlocks) {
+      expect(item.regions ?? [], `${item.name} regions`).not.toHaveLength(0);
+      // A block that composes nothing reimplemented its parts.
+      expect(item.consumes, `${item.name} consumes`).not.toHaveLength(0);
+      // Regions replace states; carrying both would mean two contracts.
+      expect(item.states, `${item.name} states`).toHaveLength(0);
     }
   });
 

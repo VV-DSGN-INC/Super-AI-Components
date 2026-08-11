@@ -7,6 +7,55 @@ the demo that proves them.
 Derived from the reference board's `App Types/Layout` strip plus the individual app-type sections —
 see [reference-board-analysis.md](reference-board-analysis.md#4-layout-archetypes-extracted).
 
+## Reconciled against the FigJam wireframes — 2026-08-08
+
+All fourteen shells are wireframed on the **AI-Components-Thinking** FigJam board
+(`6QSzRk2FCCfpfrYpo3SmjD`), at ~700×520 with labelled region boxes. Each was compared against the
+`Regions:` lines below, **visually** — an earlier text-only pass produced three false findings and
+is not a method to repeat (see the note at the end).
+
+**Every active shell's wireframe matches its spec.** One genuine disagreement, and it went against
+this document:
+
+| Shell | Disagreement | Ruling |
+| --- | --- | --- |
+| **O3** `studio-shell` | Wireframe draws a `topbar`; the spec's `Regions:` omitted it | **Wireframe right.** `Filled by:` already named B7, which has to render somewhere, and the prose said "Five regions" while listing five that excluded it. Spec corrected to six regions above. |
+
+One further correction was made to this document, independent of the board: **O14** listed
+`provider buttons` in `Regions:` while its own `Filled by:` said A9 provider *rows*. A9 is
+`entity-row`, so `provider rows` is correct; normalised above.
+
+### Where the board is stale
+
+The board predates D9/D12/D16 in two respects:
+
+1. **It still shows 10 cut items** — all of family G (`flow-canvas`, `ai-node`, `typed-handle`,
+   `node-prompt`, `node-result`, `model-bar`, `node-palette`, `canvas-toolbar`, `node-inspector`)
+   plus O5 `flow-shell`, cut by D9 on 2026-07-31.
+2. **13 shipped components appear under `gaps.md`'s provisional IDs rather than their final catalog
+   IDs.** They are on the board and specced there; only the numbering is stale:
+
+   | Board ID | Catalog ID | Component |
+   | --- | --- | --- |
+   | R1 | N7 | `env-status` |
+   | R3 · R4 | H6 · H7 | `waveform-editor` · `stem-mixer` |
+   | R5 | J7 | `track-list` |
+   | R6 · R7 | E9 · E10 | `tts-composer` · `voice-clone-recorder` |
+   | T1 · T2 · T3 · T4 | N8 · N9 · N12 · N10 | `permission-prompt` · `autonomy-selector` · `task-tray` · `safety-block` |
+   | T5 | M7 | `connection-manager` |
+   | U12 · U14 | K7 · K8 | `answer-block` · `source-cards` |
+
+3. **Two shipped components are genuinely absent:** D7 `slot-summary` and N11 `escalation-handoff`.
+
+> **Method note, worth keeping.** The first pass at this reconciliation parsed the board's text
+> nodes instead of looking at it, and produced three findings that were all wrong: it reported O6
+> missing `cost + Generate`, O8 missing `masonry feed`, and O14 missing `email fallback`. All three
+> are present. The label regex only matched names beginning with a lowercase letter, so
+> `cost + Generate` and `Continue with email` were invisible, and O8's masonry boxes carry no text
+> label at all. The same pass reported 15 missing components when 13 of them were present under
+> `R`/`T`/`U` IDs that its `[A-O]\d+` pattern excluded by construction. **Compare wireframes by
+> rendering them, not by grepping their node names.**
+
 ---
 
 ## O1 `home-shell` — App Home / launcher
@@ -42,13 +91,17 @@ N1 `feedback` · N3 `disclaimer-note` · M5 `paywall-message` · L1
 
 ## O3 `studio-shell` — creative studio editor
 
-**Regions:** modality rail · tool panel · canvas · inspector · page strip
+**Regions:** modality rail · topbar · tool panel · canvas · inspector · page strip
 
-**Filled by:** B4 `modality-rail` · I1 `tool-panel` · B7 · I3 `context-toolbar` ·
+**Filled by:** B4 `modality-rail` · I1 `tool-panel` · B7 `app-topbar` · I3 `context-toolbar` ·
 I2 `property-inspector` · I5 `drawing-tools` · H5 `frame-strip` · E4 `preset-grid` · F1 `result-card`
 
-- Five regions, fixed positions. Rail and inspector are the invariants; the middle three vary by what
-  is being edited.
+- Six regions, fixed positions. Rail, topbar and inspector are the invariants; the middle
+  three — tool panel, canvas, page strip — vary by what is being edited.
+
+  *(Corrected 2026-08-08. This line read "Five regions" and the `Regions:` list omitted the
+  topbar, while `Filled by:` named B7 — which has to render somewhere. The FigJam wireframe
+  drew the topbar and was right; the spec was internally inconsistent.)*
 - The rail selects which tool panel is shown. It never changes the canvas — that separation is what
   keeps the shell legible.
 - The inspector is selection-driven and must ship an empty state, because "nothing selected" is the
@@ -204,9 +257,9 @@ L1 × 3 · N3
 
 ## O14 `auth-shell` — sign in / sign up
 
-**Regions:** marketing panel · provider buttons · email fallback · legal footer
+**Regions:** marketing panel · provider rows · email fallback · legal footer
 
-**Filled by:** L6 `onboarding-wizard` (split-panel variant) · L1 · A9 (provider rows)
+**Filled by:** L6 `onboarding-wizard` (split-panel variant) · L1 · A9 `entity-row` (provider rows)
 
 - UI only, no auth logic. Providers and copy are props; the shell has no opinion about your identity
   stack.

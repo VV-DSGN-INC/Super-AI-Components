@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { CATALOG_ITEMS } from "@/lib/catalog";
 import { MARKETING_GROUPS, MARKETING_ITEMS } from "@/lib/marketing-catalog";
 
-const GROUPS = ["Primitives", "Components"] as const;
+const GROUPS = ["Primitives", "Components", "Blocks"] as const;
 
 function NavList({ items, pathname }: { items: { name: string; title: string }[]; pathname: string }) {
   return (

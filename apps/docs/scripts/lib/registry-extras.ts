@@ -11,7 +11,7 @@ export function deriveExtras(items: ManifestItem[], self: (name: string) => stri
   for (const item of items) {
     if (item.status !== "shipped") continue;
 
-    const registryDependencies = [...item.shadcn, ...item.consumes.map(self)];
+    const registryDependencies = [...item.shadcn, ...(item.external ?? []), ...item.consumes.map(self)];
     const entry: Extras[string] = {};
     if (registryDependencies.length) entry.registryDependencies = registryDependencies;
     if (item.npm.length) entry.dependencies = item.npm;

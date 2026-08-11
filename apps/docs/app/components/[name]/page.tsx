@@ -56,6 +56,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
   const item = isMarketing
     ? MARKETING_ITEMS.find((i) => i.name === name)!
     : CATALOG_ITEMS.find((i) => i.name === name)!;
+  const isBlock = !isMarketing && CATALOG_ITEMS.find((i) => i.name === name)?.group === "Blocks";
   const Demo = isMarketing ? marketingDemos[name] : demos[name as CatalogName];
   if (!Demo) {
     throw new Error(`No demo registered for "${name}" in ${isMarketing ? "marketingDemos" : "demos"}`);
@@ -67,23 +68,23 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
   );
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">{item.title}</h1>
-        <p className="text-muted-foreground mt-2">{item.description}</p>
-      </div>
+    <div className={isBlock ? "w-full p-8" : "mx-auto max-w-3xl p-8"}>
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold">{item.title}</h1>
+          <p className="text-muted-foreground mt-2">{item.description}</p>
+        </div>
 
-      <PreviewTabs preview={<Demo />} code={demoSource} />
+        <PreviewTabs preview={<Demo />} code={demoSource} fullBleed={isBlock} />
 
-      {!isMarketing && componentDocs[name] ? (
-        <ComponentDocsView docs={componentDocs[name]} />
-      ) : null}
+        {!isMarketing && componentDocs[name] ? <ComponentDocsView docs={componentDocs[name]} /> : null}
 
-      <div className="space-y-2">
-        <h2 className="text-lg font-semibold">Installation</h2>
-        <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
-          <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
-        </pre>
+        <div className="space-y-2">
+          <h2 className="text-lg font-semibold">Installation</h2>
+          <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
+            <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
+          </pre>
+        </div>
       </div>
     </div>
   );

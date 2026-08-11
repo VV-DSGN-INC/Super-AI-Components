@@ -90,11 +90,11 @@ for (const item of manifest) {
   // any change to how consumes/npm get derived shows up in both places at
   // once instead of only in registry.json at build time.
   const entry = extras[item.name];
-  const expectedDeps = item.shadcn.length + item.consumes.length;
+  const expectedDeps = item.shadcn.length + (item.external?.length ?? 0) + item.consumes.length;
   const actualDeps = entry?.registryDependencies?.length ?? 0;
   if (actualDeps !== expectedDeps) {
     errors.push(
-      `${item.name}: gen-registry would emit ${actualDeps} registryDependencies, expected ${expectedDeps} (shadcn: ${item.shadcn.length}, consumes: ${item.consumes.length})`,
+      `${item.name}: gen-registry would emit ${actualDeps} registryDependencies, expected ${expectedDeps} (shadcn: ${item.shadcn.length}, external: ${item.external?.length ?? 0}, consumes: ${item.consumes.length})`,
     );
   }
   const actualNpm = entry?.dependencies ?? [];
@@ -112,6 +112,47 @@ for (const item of manifest) {
   if (item.contractExempt) {
     exempt++;
     continue;
+  }
+
+  if (item.layer === "block") {
+    checked++;
+
+    // A block that composes nothing is a block that reimplemented its parts.
+    // This is the assertion that catches a shell agent writing its own
+    // inspector markup instead of composing property-inspector.
+    if (item.consumes.length === 0) {
+      errors.push(`${item.name}: blocks must declare a non-empty consumes list`);
+    }
+
+    const blockPath = fileFor.component(item.name);
+    const source = existsSync(blockPath) ? readFileSync(blockPath, "utf8") : "";
+    for (const region of item.regions ?? []) {
+      if (!source.includes(`data-region="${region}"`)) {
+        errors.push(
+          `${item.name}: block does not render declared region "${region}" (expected data-region="${region}")`,
+        );
+      }
+    }
+    if (!(item.regions ?? []).length) {
+      errors.push(`${item.name}: blocks must declare a non-empty regions list`);
+    }
+
+    const blockStoryPath = storyFor(item.name);
+    if (!existsSync(blockStoryPath)) {
+      errors.push(`${item.name}: missing story file ${blockStoryPath}`);
+    } else {
+      const blockStory = readFileSync(blockStoryPath, "utf8");
+      // Empty is mandatory because F4, O1 and O3 all independently say the
+      // empty state is the view most users actually see. Responsive is
+      // mandatory because a shell is a layout and layout is what breaks.
+      for (const required of ["Empty", "Responsive"]) {
+        if (!new RegExp(`export const ${required}\\s*[:=]`).test(blockStory)) {
+          errors.push(`${item.name}: block story is missing the mandatory "${required}" export`);
+        }
+      }
+    }
+
+    continue; // blocks have no `states`; per-state coverage does not apply
   }
 
   checked++;
@@ -138,16 +179,25 @@ for (const item of manifest) {
   const docsPath = fileFor.docs(item.name);
   if (existsSync(docsPath)) {
     const docs = readFileSync(docsPath, "utf8");
+    // `(?:[^"\\]|\\.)` rather than `[^"]` so an escaped quote inside the prose
+    // doesn't terminate the match early. Guidance is prose and routinely
+    // quotes things; the naive form rejected a fully-written whatItIs whose
+    // only sin was containing \"Recommended for you\".
+    //
+    // Both quote styles are accepted for the same reason, one level up:
+    // Prettier picks whichever delimiter needs fewer escapes, so a guidance
+    // string that itself contains a straight double quote comes out
+    // single-quoted. Matching only `"…"` failed N5 run-inspector's whatItIs —
+    // fully written, correctly formatted, and rejected purely for quoting
+    // `"the run failed"` inside itself.
+    const quoted = (field: string) =>
+      new RegExp(`${field}:\\s*(?:"(?:[^"\\\\]|\\\\.){10,}"|'(?:[^'\\\\]|\\\\.){10,}')`);
     const required: [RegExp, string][] = [
-      // `(?:[^"\\]|\\.)` rather than `[^"]` so an escaped quote inside the prose
-      // doesn't terminate the match early. Guidance is prose and routinely
-      // quotes things; the naive form rejected a fully-written whatItIs whose
-      // only sin was containing \"Recommended for you\".
-      [/whatItIs:\s*"(?:[^"\\]|\\.){10,}"/, "whatItIs"],
-      [/whyItMatters:\s*"(?:[^"\\]|\\.){10,}"/, "whyItMatters"],
+      [quoted("whatItIs"), "whatItIs"],
+      [quoted("whyItMatters"), "whyItMatters"],
       [/dos:\s*\[\s*\{/, "at least one do"],
       [/donts:\s*\[\s*\{/, "at least one don't"],
-      [/pitfalls:\s*\[\s*"/, "at least one pitfall"],
+      [/pitfalls:\s*\[\s*["']/, "at least one pitfall"],
     ];
     for (const [re, label] of required)
       if (!re.test(docs)) errors.push(`${item.name}: docs module is missing ${label}`);
