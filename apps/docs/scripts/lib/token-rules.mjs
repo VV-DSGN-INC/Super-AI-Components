@@ -57,3 +57,74 @@ export function findSingleStringViolations(file, source) {
   });
   return found;
 }
+
+/**
+ * Find every `cva(` call and return its body by balanced-paren scan. A regex
+ * cannot do this: variant bodies routinely contain nested calls.
+ */
+export function extractCvaCalls(source) {
+  const calls = [];
+  const re = /\bcva\s*\(/g;
+  let m;
+  while ((m = re.exec(source)) !== null) {
+    const start = m.index + m[0].length;
+    let depth = 1;
+    let i = start;
+    while (i < source.length && depth > 0) {
+      const ch = source[i];
+      if (ch === "(") depth++;
+      else if (ch === ")") depth--;
+      i++;
+    }
+    if (depth === 0) calls.push({ body: source.slice(start, i - 1), index: m.index });
+  }
+  return calls;
+}
+
+/**
+ * Returns the offending background token when muted text and a muted
+ * background are split ACROSS the two argument lists — never when they sit
+ * together in one (findSingleStringViolations owns that case) and never
+ * between two variant values (mutually exclusive at runtime).
+ */
+function crossPairViolation(baseTokens, variantTokens) {
+  const bgInBase = baseTokens.find((t) => MUTED_BG_RE.test(t));
+  const bgInVariant = variantTokens.find((t) => MUTED_BG_RE.test(t));
+  if (baseTokens.includes(MUTED_FG) && bgInVariant) return bgInVariant;
+  if (variantTokens.includes(MUTED_FG) && bgInBase) return bgInBase;
+  return null;
+}
+
+/**
+ * The cva shape: a base class string that always applies, paired with each
+ * variant value string that may apply alongside it.
+ *
+ * This is the gap that let components/ui/tabs.tsx ship the exact pairing this
+ * gate exists to catch — text-muted-foreground in tabsListVariants' base,
+ * bg-muted in its `default` variant. Recorded as unresolved in CONTINUE.md §4.
+ */
+export function findCvaViolations(file, source) {
+  if (isExempt(file)) return [];
+
+  const found = [];
+  const seen = new Set();
+  for (const call of extractCvaCalls(source)) {
+    const strings = [...call.body.matchAll(/"([^"]*)"|'([^']*)'/g)].map((x) => x[1] ?? x[2] ?? "");
+    if (strings.length < 2) continue;
+
+    const base = classTokens(strings[0]);
+    const line = source.slice(0, call.index).split("\n").length;
+
+    for (const value of strings.slice(1)) {
+      const bg = crossPairViolation(base, classTokens(value));
+      const key = `${line}:${bg}`;
+      if (bg && !seen.has(key)) {
+        seen.add(key);
+        found.push(
+          `${file}:${line} — cva() pairs text-muted-foreground with ${bg} across its base and a variant value (4.34:1 against a 4.5:1 minimum)`,
+        );
+      }
+    }
+  }
+  return found;
+}

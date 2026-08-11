@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { findSingleStringViolations, isExempt } from "./token-rules.mjs";
+import { extractCvaCalls, findCvaViolations, findSingleStringViolations, isExempt } from "./token-rules.mjs";
 
 describe("findSingleStringViolations", () => {
   it("flags muted text and a muted background in one class string", () => {
@@ -30,5 +30,49 @@ describe("findSingleStringViolations", () => {
   it("treats preview-tile.tsx as contrast-exempt", () => {
     expect(isExempt("registry/super-ai/preview-tile.tsx")).toBe(true);
     expect(isExempt("registry/super-ai/entity-row.tsx")).toBe(false);
+  });
+});
+
+describe("extractCvaCalls", () => {
+  it("captures a call body across nested parentheses", () => {
+    const calls = extractCvaCalls(`const v = cva("base", { variants: { a: { b: fn(1) } } });`);
+    expect(calls).toHaveLength(1);
+    expect(calls[0].body).toContain("fn(1)");
+  });
+});
+
+describe("findCvaViolations", () => {
+  it("flags muted text in the base string against a muted bg in a variant value", () => {
+    // The real ui/tabs.tsx shape.
+    const src = [
+      `const tabsListVariants = cva(`,
+      `  "inline-flex text-muted-foreground rounded-lg",`,
+      `  { variants: { variant: { default: "bg-muted", line: "bg-transparent" } } },`,
+      `);`,
+    ].join("\n");
+    const out = findCvaViolations("tabs.tsx", src);
+    expect(out).toHaveLength(1);
+    expect(out[0]).toContain("bg-muted");
+  });
+
+  it("flags the inverse — muted bg in the base, muted text in a variant value", () => {
+    const src = `cva("bg-muted p-2", { variants: { tone: { quiet: "text-muted-foreground" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
+  });
+
+  it("does not pair two variant values with each other", () => {
+    // Mutually exclusive: `default` and `line` never both apply.
+    const src = `cva("p-2", { variants: { v: { default: "bg-muted", line: "text-muted-foreground" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toEqual([]);
+  });
+
+  it("does not double-report what the single-string rule already catches", () => {
+    const src = `cva("text-muted-foreground bg-muted", { variants: { v: { a: "p-2" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toEqual([]);
+  });
+
+  it("reports each offending background once, not once per variant value", () => {
+    const src = `cva("text-muted-foreground", { variants: { v: { a: "bg-muted", b: "bg-muted" } } })`;
+    expect(findCvaViolations("x.tsx", src)).toHaveLength(1);
   });
 });

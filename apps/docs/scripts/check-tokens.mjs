@@ -1,6 +1,6 @@
 import { globSync, readFileSync } from "node:fs";
 
-import { findSingleStringViolations } from "./lib/token-rules.mjs";
+import { findCvaViolations, findSingleStringViolations } from "./lib/token-rules.mjs";
 
 const FILES = globSync("registry/{super-ai,marketing}/**/*.tsx", {
   exclude: (f) => f.includes(".test."),
@@ -43,6 +43,10 @@ for (const file of FILES) {
     }
   });
   for (const message of findSingleStringViolations(file, source)) {
+    violations++;
+    console.error(message);
+  }
+  for (const message of findCvaViolations(file, source)) {
     violations++;
     console.error(message);
   }
