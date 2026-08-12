@@ -8,9 +8,10 @@ export default function ComponentsIndex() {
       <h1 data-slot="page-title" className="text-2xl font-bold">
         Components
       </h1>
-      <p className="text-muted-foreground">
-        Every shipped item in the registry, in catalog order.
-      </p>
+      {/* Not "every shipped item in the registry": CATALOG_ITEMS leaves out the
+          marketing family, which is in the registry and has pages of its own in
+          the sidebar beside this list. */}
+      <p className="text-muted-foreground">Every component in the catalog, in catalog order.</p>
       <ul className="grid gap-2 sm:grid-cols-2">
         {CATALOG_ITEMS.map((item) => (
           <li key={item.name}>

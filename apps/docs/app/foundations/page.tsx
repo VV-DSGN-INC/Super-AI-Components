@@ -39,8 +39,9 @@ export default function Foundations() {
           Foundations
         </h1>
         <p className="text-muted-foreground leading-relaxed">
-          The token set every component reads. This is stock shadcn base-nova plus one addition,
-          <span className="font-mono text-xs"> --warning</span>, which the near-limit and over-limit
+          The token set every component reads. This is stock shadcn base-nova plus one addition,{" "}
+          <span className="font-mono text-xs whitespace-nowrap">--warning</span>, which the
+          near-limit and over-limit
           states need and which ships with the components that use it.
         </p>
       </header>
