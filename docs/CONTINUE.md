@@ -31,9 +31,9 @@ Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
 Gate baselines at this handoff: `pnpm test` **1387** across 137 files ·
-`pnpm build` **133 pages** · `pnpm test:stories` **422** across 117 files ·
+`pnpm build` **137 pages** · `pnpm test:stories` **422** across 117 files ·
 `registry.json` **130 items** · `check:contract` **89 checked / 25 exempt** ·
-Playwright **131/131** · `check:tokens` **130 files clean**.
+Playwright **141/141** · `check:tokens` **130 files clean**.
 
 ### Start here for the next phase
 
