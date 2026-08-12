@@ -2,22 +2,40 @@ import { globSync, readFileSync } from "node:fs";
 
 import { findCvaViolations, findSingleStringViolations } from "./lib/token-rules.mjs";
 
-// Scan registry sources, vendored UI primitives, showcase components, and app pages.
-// Excludes components/demos/** (legitimate hex content in preset-grid-demo.tsx)
-// which contains four named colour presets ("Sunset orange", "Ocean blue", etc.)
-// in a colour-picker demo — design tokens are greyscale, so no token substitute.
+// Scan registry sources, vendored primitives, demos, showcase components, and
+// app pages. Two demo files are excluded by name, and only those two — the
+// exclusion list may shrink but never grow (docs/design-system/a11y-baseline.md).
+const EXCLUDED = [
+  // Four literal hex colours that are content rather than styling: the named
+  // colour presets of a colour-picker demo ("Sunset orange", "Ocean blue", …).
+  // This token set's --chart-1..--chart-5 are greyscale, so no token says
+  // "orange" and there is nothing to substitute.
+  "components/demos/preset-grid-demo.tsx",
+  // An inline SVG data URI whose `fill` is a literal hex. A data URI is not
+  // stylesheet context and cannot read a CSS variable.
+  "components/demos/hero-video-dialog-demo.tsx",
+];
+
+// String patterns, never the function form: node's `exclude` callback is called
+// with directory entries, not files (verified on node 26 — a glob without a
+// `**` segment never calls it at all), so a predicate on file names silently
+// excludes nothing. That already cost one commit on this branch.
 const FILES = [
-  ...globSync("{registry/{super-ai,marketing},components/ui,components/showcase,app}/**/*.tsx", {
-    exclude: (f) => f.includes(".test."),
-  }),
+  ...globSync(
+    "{registry/{super-ai,marketing},components/{ui,ai-elements,showcase,demos},app}/**/*.tsx",
+    { exclude: ["**/*.test.tsx", ...EXCLUDED] },
+  ),
   ...globSync("components/*.tsx", {
     exclude: ["**/*.test.tsx"],
   }),
 ];
 
-// Findings in components/ui/** (vendored shadcn primitives) warn instead of
-// failing the gate. See docs/design-system/vendored-token-findings.md.
-const isVendored = (f) => f.startsWith("components/ui/");
+// Findings in vendored third-party sources warn instead of failing the gate:
+// components/ui/** is shadcn's primitives, components/ai-elements/** is AI
+// Elements. Neither is edited here, so a failure would be unfixable without
+// diverging from upstream. See docs/design-system/vendored-token-findings.md.
+const VENDORED_DIRS = ["components/ui/", "components/ai-elements/"];
+const isVendored = (f) => VENDORED_DIRS.some((dir) => f.startsWith(dir));
 
 // One entry per token-contract rule (design spec §6). Known limitation: issue refs
 // like "#1234" in comments can false-positive as hex — use GH-1234 in registry sources.
@@ -32,7 +50,7 @@ const PATTERNS = [
 
 if (FILES.length === 0) {
   console.warn(
-    "check:tokens — WARNING: no .tsx files found under registry/{super-ai,marketing}/. Gate has no coverage yet.",
+    "check:tokens — WARNING: no .tsx files found under any scanned root (registry/{super-ai,marketing}/, components/, app/). Gate has no coverage yet.",
   );
 }
 
@@ -92,7 +110,7 @@ if (violations) {
 }
 if (warnings) {
   console.warn(
-    `\ncheck:tokens — ${warnings} warning(s) across ${warnedFiles.size} vendored file(s) in components/ui/. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
+    `\ncheck:tokens — ${warnings} warning(s) across ${warnedFiles.size} vendored file(s) in ${VENDORED_DIRS.join(" / ")}. Triaged in docs/design-system/vendored-token-findings.md; not gated, because fixing them means diverging from upstream and nobody has decided that.`,
   );
 }
 const clean = FILES.length - warnedFiles.size;
