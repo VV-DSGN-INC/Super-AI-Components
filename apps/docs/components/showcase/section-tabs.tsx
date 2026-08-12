@@ -8,20 +8,60 @@ import type { ShowcaseSection } from "@/lib/showcase";
 export function SectionTabs({ sections }: { sections: ShowcaseSection[] }) {
   const [active, setActive] = React.useState(sections[0].id);
   const current = sections.find((s) => s.id === active) ?? sections[0];
+  const tabRefs = React.useRef<(HTMLButtonElement | null)[]>([]);
+
+  const moveFocus = (index: number) => {
+    const section = sections[index];
+    setActive(section.id);
+    tabRefs.current[index]?.focus();
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const from = sections.findIndex((s) => s.id === active);
+    switch (event.key) {
+      case "ArrowRight":
+        event.preventDefault();
+        moveFocus((from + 1) % sections.length);
+        break;
+      case "ArrowLeft":
+        event.preventDefault();
+        moveFocus((from - 1 + sections.length) % sections.length);
+        break;
+      case "Home":
+        event.preventDefault();
+        moveFocus(0);
+        break;
+      case "End":
+        event.preventDefault();
+        moveFocus(sections.length - 1);
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <section data-slot="showcase-sections">
-      <div role="tablist" aria-label="Component sections" className="flex flex-wrap gap-1 border-b">
-        {sections.map((section) => {
+      <div
+        role="tablist"
+        aria-label="Component sections"
+        onKeyDown={handleKeyDown}
+        className="flex flex-wrap gap-1 border-b"
+      >
+        {sections.map((section, index) => {
           const selected = section.id === active;
           return (
             <button
               key={section.id}
+              ref={(el) => {
+                tabRefs.current[index] = el;
+              }}
               role="tab"
               type="button"
               id={`tab-${section.id}`}
               aria-selected={selected}
               aria-controls={`panel-${section.id}`}
+              tabIndex={selected ? 0 : -1}
               onClick={() => setActive(section.id)}
               className={
                 selected
