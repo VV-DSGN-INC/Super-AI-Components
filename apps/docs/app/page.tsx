@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ComponentTile } from "@/components/showcase/component-tile";
+import { HeroApp } from "@/components/showcase/hero-app";
 import { SectionTabs } from "@/components/showcase/section-tabs";
 import { SHOWCASE_BLOCKS, SHOWCASE_PRIMITIVES, SHOWCASE_SECTIONS } from "@/lib/showcase";
 
@@ -37,6 +38,8 @@ export default function Showcase() {
           </Link>
         </div>
       </header>
+
+      <HeroApp />
 
       <SectionTabs sections={SHOWCASE_SECTIONS} />
 
