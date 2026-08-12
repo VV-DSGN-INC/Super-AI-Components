@@ -11,8 +11,8 @@ const FILES = [
     exclude: (f) => f.includes(".test."),
   }),
   ...globSync("components/*.tsx", {
-    exclude: (f) => f.includes(".test."),
-  })
+    exclude: ["**/*.test.tsx"],
+  }),
 ];
 
 // Findings in components/ui/** (vendored shadcn primitives) warn instead of
