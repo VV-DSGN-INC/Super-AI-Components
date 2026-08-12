@@ -2,9 +2,18 @@ import { globSync, readFileSync } from "node:fs";
 
 import { findCvaViolations, findSingleStringViolations } from "./lib/token-rules.mjs";
 
-const FILES = globSync("{registry/{super-ai,marketing},components/ui}/**/*.tsx", {
-  exclude: (f) => f.includes(".test."),
-});
+// Scan registry sources, vendored UI primitives, showcase components, and app pages.
+// Excludes components/demos/** (legitimate hex content in preset-grid-demo.tsx)
+// which contains four named colour presets ("Sunset orange", "Ocean blue", etc.)
+// in a colour-picker demo — design tokens are greyscale, so no token substitute.
+const FILES = [
+  ...globSync("{registry/{super-ai,marketing},components/ui,components/showcase,app}/**/*.tsx", {
+    exclude: (f) => f.includes(".test."),
+  }),
+  ...globSync("components/*.tsx", {
+    exclude: (f) => f.includes(".test."),
+  })
+];
 
 // Findings in components/ui/** (vendored shadcn primitives) warn instead of
 // failing the gate. See docs/design-system/vendored-token-findings.md.
