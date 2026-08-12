@@ -42,3 +42,19 @@ No other file under `components/ui/**` produced a warning: no additional
 `cva()` muted-on-muted pairings, no Tailwind palette classes (`bg-zinc-400`
 etc.), and no other raw hex/`oklch()` literals across the remaining 37
 vendored files.
+
+## Added 2026-08-12: `components/ai-elements/**` joins the warn tier
+
+The gate had been skipping AI Elements entirely, with no reason recorded
+anywhere — an undocumented hole rather than a decision. It is vendored on the
+same terms as `components/ui/**`, so it is scanned on the same warn tier now.
+
+- **`components/ai-elements/message.tsx:401`** — the muted-on-muted pairing,
+  single-element shape: `bg-muted` with `text-muted-foreground` on one `div`
+  (4.34:1 against a 4.5:1 minimum). It is the fallback tile a non-image
+  attachment renders as — the paperclip square — so a consumer hits it on the
+  default path for any attachment without a preview. **CONSUMER-FACING.** Not
+  fixed, for the same reason as everything above:
+  fixing it means diverging from upstream, and nobody has decided that.
+
+That is the only warning the directory produces.

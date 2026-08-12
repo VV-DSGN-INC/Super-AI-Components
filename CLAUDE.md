@@ -81,14 +81,20 @@ Use `pnpm`, not npm — the lockfile is `pnpm-lock.yaml` and CI installs with `-
 
 ## The token gate
 
-`apps/docs/scripts/check-tokens.mjs` enforces the design spec's token contract across `registry/super-ai/**/*.tsx`. It fails the build on:
+`apps/docs/scripts/check-tokens.mjs` enforces the design spec's token contract across everything the site ships: both registry roots, `components/**` and `app/**`. Two tiers and two exclusions, all of them written down at the exclusion itself:
+
+- **Fails the build** for this repo's own sources — `registry/{super-ai,marketing}/**`, `components/{showcase,demos}/**`, `components/*.tsx`, `app/**`.
+- **Warns only** for vendored third-party sources — `components/ui/**` (shadcn) and `components/ai-elements/**` (AI Elements). Neither is edited here, so a failure would be unfixable without diverging from upstream. Findings are triaged in `docs/design-system/vendored-token-findings.md`.
+- **Excluded, by name and only these two:** `components/demos/preset-grid-demo.tsx` (named colour presets that are content — `--chart-1..5` are greyscale here, so no token says "orange") and `components/demos/hero-video-dialog-demo.tsx` (an inline SVG data URI, which cannot read a variable). Like every exclusion list in this repo, it may shrink and never grow.
+
+It fails on:
 
 - raw hex colours (`#1a1a1a`)
 - raw `oklch(...)`
 - Tailwind palette classes (`bg-zinc-400`, `text-blue-600`, `border-slate-200`, …)
 - a bare `text-muted-foreground` in the same quoted class string as a bare `bg-muted` / `bg-accent` / `bg-secondary`
 
-**Documented limitation:** an issue reference like `#1234` in a comment false-positives as hex. Write `GH-1234` in registry sources instead.
+**Documented limitation:** an issue reference like `#1234` in a comment false-positives as hex. Write `GH-1234` in any scanned source instead.
 
 **Second documented limitation, and the important one:** the contrast rule catches only the _single-element_ shape. It cannot see the cross-component case — muted text in a child whose ancestor sets the muted background — and **every instance that has actually shipped broken was that shape.** `pnpm test:stories` is the real backstop.
 

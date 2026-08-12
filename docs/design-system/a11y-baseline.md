@@ -117,6 +117,25 @@ holds for the tier that matters (this repo's own registry output).
 The exclusion list may only shrink, never grow. Adding a file to it to
 silence a new failure defeats the point of the gate.
 
+### Added 2026-08-12: route-level axe, alongside the Storybook gate
+
+The showcase branch added a second axe surface. `apps/docs/e2e/showcase.spec.ts`
+runs `@axe-core/playwright` over the three site routes — `/`, `/foundations`
+and `/components` — with the same four tag sets the Storybook addon uses
+(`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`), failing on `serious` or
+`critical` impact. It is a route-level check, so it sees what a component in
+its real page context does; the Storybook gate still owns per-story coverage
+and is the backstop for the cross-component contrast shape the token gate
+cannot see.
+
+**The two surfaces do not resolve the same axe-core.** `@storybook/addon-a11y`
+pulls `axe-core@4.12.1`; `@axe-core/playwright@4.13.0` pulls `axe-core@4.13.0`
+(both are in `pnpm-lock.yaml`, side by side). They can therefore disagree about
+which rules exist and how one is evaluated, and a clean run on one surface is
+not evidence for the other. Nothing has been observed to diverge yet — this is
+recorded so that a rule firing in one place and not the other is read as a
+version difference to check, not a flake to retry.
+
 ## Recurring failure: `text-muted-foreground` on `bg-muted`/`bg-accent`/`bg-secondary`
 
 Two more blocking failures landed after the baseline above, both in

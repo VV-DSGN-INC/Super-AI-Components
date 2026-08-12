@@ -30,10 +30,18 @@ The other 89 satisfy the full contract.
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-Gate baselines at this handoff: `pnpm test` **1387** across 137 files ·
-`pnpm build` **137 pages** · `pnpm test:stories` **422** across 117 files ·
-`registry.json` **130 items** · `check:contract` **89 checked / 25 exempt** ·
-Playwright **141/141** · `check:tokens` **130 files clean**.
+Gate baselines, all re-measured on 2026-08-12 after the showcase branch:
+`pnpm test` **1574** across 144 files · `pnpm build` **137 pages** ·
+`pnpm test:stories` **434** across 119 files · `registry.json` **133 items** ·
+`check:contract` **91 checked / 25 exempt** · Playwright **144/144** ·
+`check:tokens` **325 of 328 files clean, 3 vendored files warned**.
+
+Two of these moved because of the showcase work (`pnpm test` gained
+`lib/showcase.test.ts`; `check:tokens` now scans a larger set and reports
+vendored warnings, so even its sentence shape changed). The rest were already
+stale here and are corrected in the same pass — a half-updated baseline is
+worse than a stale one, because the next reader trusts the figures that were
+touched.
 
 ### Start here for the next phase
 
