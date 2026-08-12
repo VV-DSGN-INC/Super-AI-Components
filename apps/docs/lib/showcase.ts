@@ -121,3 +121,16 @@ export const SHOWCASE_SECTIONS: ShowcaseSection[] = SECTION_META.map((meta) => (
 
 export const SHOWCASE_PRIMITIVES: ShowcaseItem[] = byLayer("primitive").map(toShowcaseItem);
 export const SHOWCASE_BLOCKS: ShowcaseItem[] = byLayer("block").map(toShowcaseItem);
+
+/**
+ * What the hero block declares it composes. Read here, on the server, and
+ * handed to the client hero as a prop: the hero is a `"use client"` component
+ * and importing the manifest for one field ships the whole 70KB of it.
+ */
+export const HERO_CONSUMES: string[] = (() => {
+  const row = MANIFEST.find((i) => i.name === HERO_BLOCK_NAME);
+  if (!row) {
+    throw new Error(`showcase: hero block ${HERO_BLOCK_NAME} is not in the manifest.`);
+  }
+  return row.consumes;
+})();

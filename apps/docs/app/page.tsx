@@ -3,17 +3,23 @@ import Link from "next/link";
 import { ComponentTile } from "@/components/showcase/component-tile";
 import { HeroApp } from "@/components/showcase/hero-app";
 import { SectionTabs } from "@/components/showcase/section-tabs";
-import { SHOWCASE_BLOCKS, SHOWCASE_PRIMITIVES, SHOWCASE_SECTIONS } from "@/lib/showcase";
+import {
+  HERO_BLOCK_NAME,
+  HERO_CONSUMES,
+  SHOWCASE_BLOCKS,
+  SHOWCASE_PRIMITIVES,
+  SHOWCASE_SECTIONS,
+} from "@/lib/showcase";
 
 export default function Showcase() {
   // 116, not 91: the seven sections cover the component layer only, and the
-  // headline count is every shipped item. Do not quote this as "the catalog",
-  // which is frozen at 114 — the difference is family P, counted separately
-  // by decision D18.
-  const shippedCount =
-    SHOWCASE_SECTIONS.reduce((n, s) => n + s.items.length, 0) +
-    SHOWCASE_PRIMITIVES.length +
-    SHOWCASE_BLOCKS.length;
+  // headline count is every shipped item. The sentence below breaks the total
+  // into its three parts, because the tab badges on the same screen add up to
+  // the section figure and a bare 116 reads as contradicting them. Do not
+  // quote this as "the catalog", which is frozen at 114 — the difference is
+  // family P, counted separately by decision D18.
+  const sectionedCount = SHOWCASE_SECTIONS.reduce((n, s) => n + s.items.length, 0);
+  const shippedCount = sectionedCount + SHOWCASE_PRIMITIVES.length + SHOWCASE_BLOCKS.length;
 
   return (
     <main className="mx-auto max-w-6xl space-y-16 px-6 py-12">
@@ -23,8 +29,9 @@ export default function Showcase() {
         </h1>
         <p className="text-muted-foreground leading-relaxed">
           AI Elements gives you the conversation. This gives you the application: {shippedCount}{" "}
-          components across shells, composers, generation, results, knowledge, trust and billing, on
-          the shadcn base-nova theme. Installed with the shadcn CLI, not npm.
+          components — {sectionedCount} across {SHOWCASE_SECTIONS.length} sections, plus{" "}
+          {SHOWCASE_PRIMITIVES.length} primitives and {SHOWCASE_BLOCKS.length} blocks — on the
+          shadcn base-nova theme. Installed with the shadcn CLI, not npm.
         </p>
         <div className="flex flex-wrap gap-3 pt-2">
           <Link
@@ -39,7 +46,7 @@ export default function Showcase() {
         </div>
       </header>
 
-      <HeroApp />
+      <HeroApp blockName={HERO_BLOCK_NAME} consumes={HERO_CONSUMES} />
 
       <SectionTabs sections={SHOWCASE_SECTIONS} />
 
