@@ -17,6 +17,14 @@ export function SectionTabs({ sections }: { sections: ShowcaseSection[] }) {
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    // Modified arrows belong to the browser, not to the tablist: Alt+Arrow is
+    // back/forward on Windows and Linux, and Ctrl/Cmd variants are reserved
+    // too. Swallowing them here broke history navigation for anyone whose
+    // focus happened to be on a tab. `shiftKey` is deliberately not in this
+    // list — Shift+Arrow has no browser default on a button, so leaving it to
+    // move the selection costs nothing.
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+
     const from = sections.findIndex((s) => s.id === active);
     switch (event.key) {
       case "ArrowRight":

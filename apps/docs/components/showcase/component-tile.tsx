@@ -7,9 +7,9 @@ export function ComponentTile({ item }: { item: ShowcaseItem }) {
     <Link
       href={`/components/${item.name}`}
       data-slot="showcase-tile"
-      className="hover:border-foreground/20 group block rounded-lg border p-4 transition-colors"
+      className="hover:border-foreground/20 block rounded-lg border p-4 transition-colors"
     >
-      <span className="group-hover:text-foreground block text-sm font-medium transition-colors">
+      <span className="block text-sm font-medium">
         {item.title}
       </span>
       <span className="text-muted-foreground mt-1 block text-xs leading-relaxed">
