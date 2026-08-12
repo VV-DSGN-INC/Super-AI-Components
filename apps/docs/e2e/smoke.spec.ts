@@ -3,9 +3,10 @@ import { expect, test } from "@playwright/test";
 import { CATALOG_ITEMS } from "../lib/catalog";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
 
-test("home lists the catalog", async ({ page }) => {
+test("home is the showcase", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "Super-AI-Components" })).toBeVisible();
+  await expect(page.locator('[data-slot="page-title"]')).toHaveText("The other half of an AI app.");
+  await expect(page.getByRole("tab", { name: /Shell/ })).toBeVisible();
 });
 
 for (const item of [...CATALOG_ITEMS, ...MARKETING_ITEMS]) {
