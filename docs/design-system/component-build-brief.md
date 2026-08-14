@@ -162,6 +162,24 @@ Keep the scaffolded shape: `componentDocsPage(<Pascal>Docs)` as
 `parameters.docs.page`, one export per declared state with real `args`, and
 **no bare `Default` export** — the contract gate rejects it.
 
+Then add the **case stories**: the situations the component meets in a
+product, as opposed to the prop combinations above. Read
+[`story-conventions.md`](story-conventions.md) before writing them — it
+carries the seven names, the rule for deciding which are true for your
+component, and three mechanical facts about this repo's Storybook that are
+expensive to rediscover.
+
+The short version: your declared-state stories restate what the types and the
+manifest already say. The case stories are the only place facts like "this
+row scrolls with a hidden scrollbar at 375px" or "this spinner ignores
+`prefers-reduced-motion`" exist anywhere in the repo. Write only the ones
+that are true, record the ones you skipped and why, and put the judgment in
+each story's description — a story with no description is a screenshot.
+
+If a case story surfaces a defect, **say so in your report**. Do not delete
+the story to get green, and do not pin the bug with an assertion that
+expects the wrong behaviour.
+
 ## Report
 
 Terse. Status; props signature; test counts (fail → pass); typecheck and

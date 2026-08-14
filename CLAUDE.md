@@ -23,10 +23,11 @@ Read these before writing any component code. The first two are contracts, not s
 
 1. **[`docs/design-system/component-build-brief.md`](docs/design-system/component-build-brief.md)** — the house contract every component is built to. The single most important file in the repo, and what each build agent gets handed.
 2. **[`docs/design-system/block-build-brief.md`](docs/design-system/block-build-brief.md)** — family O (blocks) only. Supplements the above, never replaces it.
-3. **[`docs/CONTINUE.md`](docs/CONTINUE.md)** — where things stand, how a component gets built end to end, traps that have actually bitten, and the composition-gap backlog (§8).
-4. **[`docs/design-system/decisions.md`](docs/design-system/decisions.md)** — especially D9 (family G cut), D12, D13.
-5. **[`docs/design-system/a11y-baseline.md`](docs/design-system/a11y-baseline.md)** — the measured accessibility posture, the recurring contrast failure, and what is excluded from the gate and why.
-6. **[`docs/design-system/anti-slop.md`](docs/design-system/anti-slop.md)** — the anti-slop taxonomy, audit, and fix ladder for generated UI; the runnable version is the `unslop` skill (`.claude/skills/unslop/`), used before building and again before "done".
+3. **[`docs/design-system/story-conventions.md`](docs/design-system/story-conventions.md)** — the case-story convention. Also supplements the build brief rather than replacing it: declared-state stories restate the types, case stories are the only place a component's real situations are recorded.
+4. **[`docs/CONTINUE.md`](docs/CONTINUE.md)** — where things stand, how a component gets built end to end, traps that have actually bitten, and the composition-gap backlog (§8).
+5. **[`docs/design-system/decisions.md`](docs/design-system/decisions.md)** — especially D9 (family G cut), D12, D13.
+6. **[`docs/design-system/a11y-baseline.md`](docs/design-system/a11y-baseline.md)** — the measured accessibility posture, the recurring contrast failure, and what is excluded from the gate and why.
+7. **[`docs/design-system/anti-slop.md`](docs/design-system/anti-slop.md)** — the anti-slop taxonomy, audit, and fix ladder for generated UI; the runnable version is the `unslop` skill (`.claude/skills/unslop/`), used before building and again before "done".
 
 Specs are normative **including their prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
 
