@@ -58,7 +58,22 @@ function SafetyBlock({
       // The border and system icon are the point: a refusal delivered in the
       // assistant's own voice reads as the model being evasive rather than as a
       // policy firing. This must look like the system, not the assistant.
-      className={cn("border-destructive/40 bg-destructive/5", className)}
+      //
+      // The variable rebind is load-bearing, not decorative. `bg-destructive/5`
+      // composites to a pale destructive tint, and `AlertDescription`
+      // (vendored, ui/alert.tsx) carries its own `text-muted-foreground` —
+      // which against that surface measures 4.33:1, under the 4.5 minimum.
+      // This is the cross-component shape check:tokens documents that it
+      // cannot see, so it survived until a neighbour's Boundary story first
+      // rendered this component under axe. Rebinding the variable rather than
+      // restyling the slot is what reaches the composed children: the body
+      // copy, the fragment and the alternatives all inherit from
+      // AlertDescription, and a `className` override on this root could not
+      // touch any of them. See a11y-baseline.md.
+      className={cn(
+        "border-destructive/40 bg-destructive/5 [--muted-foreground:var(--accent-foreground)]",
+        className,
+      )}
       {...props}
     >
       <ShieldAlert className="text-destructive size-4" />

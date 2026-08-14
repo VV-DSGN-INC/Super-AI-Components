@@ -722,3 +722,55 @@ composed into a surface that already has that chrome:**
 resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
 its own test file; **it belongs in the shared `vitest.setup.ts`** next to the
 ResizeObserver stub, and will bite anything composing a ScrollArea.
+
+## 9. Gaps found by the case-story pilot
+
+Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were
+given the case-story block defined in
+[`story-conventions.md`](design-system/story-conventions.md). The convention was
+adopted on the strength of what one afternoon of it turned up. Same provenance
+rule as §8: each item was found by someone writing a story who could not write
+it honestly without noticing.
+
+**Fixed on the pilot branch:**
+
+- **N10 `safety-block` shipped a 4.33:1 contrast failure.** Its root paints
+  `bg-destructive/5` (#fef2f3) and the vendored `AlertDescription` child carries
+  its own `text-muted-foreground` (#737373). This is the *cross-component* shape
+  `check:tokens` documents that it cannot see, and it had never been caught
+  because the component has no story. Fixed with the house idiom — rebinding
+  `[--muted-foreground:var(--accent-foreground)]` on the surface-painting root,
+  which reaches the composed children a slot-level `className` cannot. Found by
+  L1 `empty-state`'s `Boundary` story, which renders `safety-block` as a
+  neighbour.
+
+**Open, and the largest of the three:**
+
+- **11 of the 25 shipped `contractExempt` components have no story file at
+  all**, so they have never been rendered under axe: `slot-summary`,
+  `citation-ref`, `answer-block`, `source-cards`, `credits-indicator`,
+  `quota-meter`, `pricing-table`, `autonomy-selector`, `safety-block`,
+  `escalation-handoff`, `task-tray`. The cause is mechanical:
+  `check-contract.mts` does `if (item.contractExempt) { exempt++; continue; }`
+  *before* the story-existence assertion, so the exemption silently covers the
+  story file too, not only the per-state and docs assertions it is documented to
+  cover. `safety-block` is the proof this is not theoretical — one of the eleven,
+  carrying a real contrast bug, for as long as it has shipped. **Requiring a
+  story file (not per-state stories) from exempt items would be a small change
+  to the gate and would put eleven components under axe for the first time.**
+
+- **14 of the 17 components that animate ignore `prefers-reduced-motion`.**
+  `motion-reduce:` appears in `citation-ref`, `task-tray` and `trace-timeline`
+  only. The other fourteen — including `generation-queue` and `render-queue`,
+  which are `task-tray`'s own near-twins and use the identical lucide spinner —
+  write a bare `animate-spin`/`animate-pulse`. So the convention exists and was
+  then lost, which makes this drift rather than an open question. Nothing in the
+  pipeline sees it: `check:tokens` reads colour, and axe does not evaluate the
+  media feature at all. The fix is one class per site.
+
+- **E6 `generation-queue` does not manage focus when a row resolves.** A row's
+  Cancel button unmounts as it transitions to done/failed/cancelled, and nothing
+  moves focus, so a keyboard user cancelling the second of three rows loses
+  their place. Deliberately *not* pinned by the `KeyboardOrder` play function —
+  asserting the current behaviour would make the bug permanent. Recorded in that
+  story's description.
