@@ -107,7 +107,8 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 ## G · Canvas & nodes — CUT 2026-07-31
 
 > **Cut from scope** ([decisions.md](decisions.md) D9). Not registry items; table kept as a record.
-> Working code is parked unmerged on `wave-2-flow-foundation`.
+> Working code is parked unmerged on `wave-2-flow-foundation`. Some of the designs are Helene's —
+> provenance is recorded in D9's note; it does not reopen the cut.
 
 | # | Name | Purpose | Key states / variants | shadcn base |
 |---|------|---------|-----------------------|-------------|

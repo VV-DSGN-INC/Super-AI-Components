@@ -72,6 +72,9 @@ Consequences:
   cross-references hold.
 - G specs and wireframes are **retained as records** — marked cut, not deleted — in the catalog,
   spec docs, and on the Figma boards.
+- Provenance note (added 2026-08-14): some of the G designs are **Helene's**. They are part of the
+  retained record — on the Figma boards and in the spec docs — and their existence is not grounds
+  to revive the family.
 
 ### D10 · This catalog is promoted over the spec — 2026-08-02
 
