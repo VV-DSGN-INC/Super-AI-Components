@@ -154,13 +154,23 @@ export const ModifiedDot: Story = {
  *
  * Not written for this component, deliberately:
  *
- * // case-skip: ReducedMotion — no keyframe or transform to suppress, only a colour fade
+ * // case-skip: ReducedMotion — nothing here moves; the only timed change is a colour fade
  * The single timed change in the component is `transition-colors`, which
  * carries the hover move from `text-muted-foreground` to `text-foreground`.
- * There is no `animate-*` class anywhere in the tree, so there is nothing
- * for `motion-reduce:animate-none` to switch off, and nothing moves under
- * either media setting. Because `vitest.config.ts` already runs every story
- * with `reducedMotion: "reduce"`, a ReducedMotion story here would render
+ * There is no `animate-*` class anywhere in the tree, so there is nothing for
+ * `motion-reduce:animate-none` to switch off.
+ *
+ * `motion-reduce:transition-none` is a sanctioned idiom in this repo — see
+ * `story-conventions.md`, mechanical fact 3 — but it is sanctioned beside a
+ * `transition-*` a user would perceive as motion: a thumb that slides, a panel
+ * that grows. `pricing-table`'s switch is that. This is a 150ms crossfade
+ * between two text colours at a fixed position and a fixed size; no pixel
+ * changes place, so there is nothing a reduced-motion user needs suppressed
+ * and no branch for a story to document. Adding the class would buy the story
+ * an assertion about `transitionProperty` and nothing about the component.
+ *
+ * Because `vitest.config.ts` already runs every story with
+ * `reducedMotion: "reduce"`, a ReducedMotion story here would render
  * pixel-identical to `Modified` and imply coverage of a branch that does not
  * exist.
  *

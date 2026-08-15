@@ -46,10 +46,13 @@ function ShortcutsSheet({
           // Reduced motion, with the variant repeated on purpose. The
           // registry's usual bare `motion-reduce:animate-none` is inert against
           // a Base UI popup: DialogContent animates through
-          // `data-open:animate-in` / `data-closed:animate-out`, whose selectors
-          // carry an attribute (`.data-open\:animate-in[data-open]`, 0-2-0) and
-          // outrank `.motion-reduce\:animate-none` (0-1-0) whatever the source
-          // order. Restating the data variant restores specificity and wins.
+          // `data-open:animate-in` / `data-closed:animate-out`, which Tailwind
+          // v4 compiles to `.data-open\:animate-in:where([data-open]…)`. The
+          // `:where()` contributes no specificity, so both rules are a single
+          // class and the tie is broken by source order — and the plain
+          // `motion-reduce:` block is emitted well before the `data-*`
+          // variants, so `animation: enter` wins. Restating the data variant
+          // sorts this override after its counterpart, which wins the same tie.
           // Verified by reading `animation-name` back — see the ReducedMotion
           // story. The backdrop still fades; that class is in ui/dialog.tsx.
           "flex max-h-[80vh] flex-col motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-md",

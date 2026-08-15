@@ -751,22 +751,88 @@ that is where the backlog lives.
   mechanism and the two M-family fixes it invalidates:
   [`a11y-baseline.md`](design-system/a11y-baseline.md), "Gate hole".
 
-- **Adopt logical properties across the registry, or decide not to.** Four
-  components carry physical properties where the logical equivalent is
-  identical in LTR and correct in RTL: K6 `citation-ref` (`ml-0.5`, and
-  `border-l-2 pl-2` on the card's blockquote), N10 `safety-block` (`border-l-2
-  pl-2`), M2 `credits-indicator` (`border-l`, `pl-1.5`, `-mr-1`), and N11
-  `escalation-handoff`, whose `ArrowRight` marker does not mirror at all. K6
-  was found **twice**, by two agents independently, and both correctly declined
-  it for the same reason: logical properties appeared in zero registry sources,
-  so the first one would set a system-wide convention by accident. That premise
-  has now expired — `field-row.tsx` landed `text-end` and `pe-2` in this same
-  batch — which means the convention is being set by accident, in the one
-  component whose reviewer happened not to decline. Decide it deliberately:
-  either sweep the registry to logical properties (and pick an idiom for
-  mirroring icons — `rtl:` appears nowhere today, so `rtl:-scale-x-100` would
-  also be a first) or write down that physical properties are the house style
-  and stop re-finding this.
+- **Logical properties: decided, and now a scoped sweep.** This entry was
+  originally filed as an open system-wide question — K6 `citation-ref` was
+  found **twice**, by two agents independently, and both declined for the same
+  reason: logical properties appeared in zero registry sources, so the first
+  adopter would set a convention by accident. That premise has expired, and the
+  argument that settles it is narrow and checkable: **a physical→logical swap
+  of this kind is byte-identical in LTR.** `pe-2` and `pr-2` compile to the
+  same declaration in the shipped direction; `text-end` and `text-right` do
+  too. There is no risk to weigh against the RTL correctness, so there is
+  nothing left to decide.
+
+  **The swap class is sanctioned. A5 `field-row` is the first adopter** — it
+  landed `text-end` on `UnitInput`'s field and `pe-2` on its unit suffix, both
+  with the reasoning in a comment at the site.
+
+  The remaining sites are a **scoped sweep**, not a research question. Verified
+  present as listed, 2026-08-15:
+
+  | component | site | swap |
+  | --- | --- | --- |
+  | `entity-row.tsx:41` | row root | `text-left` → `text-start` |
+  | `citation-ref.tsx:46` | marker | `ml-0.5` → `ms-0.5` |
+  | `safety-block.tsx:95` | quoted fragment | `border-l-2 pl-2` → `border-s-2 ps-2` |
+  | `credits-indicator.tsx:114` | detail link | `border-l` → `border-s`, `pl-1.5` → `ps-1.5`, `-mr-1` → `-me-1` |
+  | `source-cards.tsx:100` | title button | `text-left` → `text-start` |
+  | `explore-gallery.tsx:418` | facet count | `ml-1.5` → `ms-1.5` |
+  | `artifact-grid.tsx:272` | count badge | `ml-1.5` → `ms-1.5` |
+
+  **Changes that are *not* byte-identical stay open decisions, and must not be
+  swept in with the above.** Two of them:
+
+  - **N11 `escalation-handoff`'s `ArrowRight` does not mirror** (line 115).
+    Fixing it means `rtl:-scale-x-100`, which appears nowhere in the registry
+    and *is* a visible change — a new idiom for mirroring icons, and one worth
+    choosing deliberately rather than as a side effect of a whitespace sweep.
+  - **`kbd`'s `KbdGroup` has no `dir="ltr"` pin, and this one is a real bug.**
+    `KbdGroup` is a plain `inline-flex` row, so under `dir="rtl"` a chord
+    reverses with its container: `⌘ ⇧ Z` paints as `Z ⇧ ⌘`. Chords are written
+    modifier-first in every locale, so the RTL rendering is *a different
+    instruction that still looks correct* — the worst failure shape available,
+    because nothing about it reads as broken. Found independently by two
+    agents (`shortcuts-sheet`, which records it as a pitfall, and the
+    logical-properties pass). The fix belongs in the `kbd` primitive, and it
+    is a behaviour change rather than a compile-identical swap, which is why
+    it is here and not in the table.
+
+- **Duplicate accessible names on repeated per-item controls — six instances,
+  and no gate can see any of them.** A component that renders one control per
+  row, and gives that control a *constant* name, produces N identically-named
+  buttons in a list of N. The screen-reader element list a user navigates by
+  reads "Reset, Reset, Reset"; the row each one acts on exists only in the
+  visual adjacency. **This is the category, not six separate bugs:**
+
+  | component | the name | why it repeats |
+  | --- | --- | --- |
+  | A2 `thread-list` | `"Thread actions"` | ~~constant~~ **fixed 2026-08-15** — now `Thread actions for ${title}` |
+  | `stat-readout` | `"Copy"` | private `CopyButton` takes `value` only, never `item.label` |
+  | `autonomy-selector` | `"Revoke"` | visible button text, no `aria-label`; per grant row |
+  | A11 `reset-affordance` | `"Reset"` | `label` prop defaults to the bare word; three untouched fields announce alike |
+  | A5 `filter-bar` | `"Remove filter"` | `label` is derived as `typeof children === "string" ? children : ""`, so any chip with an icon child collapses to the generic name |
+  | A8 `preview-tile` | *(none)* | worse shape of the same defect — the frame button is named only when `labelPlacement === "overlay"`; `below`/`none` ship a nameless button (already recorded above under the family O list) |
+
+  **Two components in the catalog already solve it**, so the pattern is
+  available and this is drift rather than an open question: `record-list.tsx`
+  (`More actions for ${record.title}`) and `slot-summary.tsx`
+  (`Add ${slot.label}` / `Change ${slot.label}`). `thread-list` was one line
+  away from the same shape — `title` was already in scope — and has been
+  fixed. **The other five are deliberately not fixed here**, because each
+  needs the row's identity threaded to a control that currently cannot see it:
+  a new prop, a changed private signature, or a decision about what a nameless
+  tile should be called. That is an API question per component, not a sweep.
+
+  **Nothing in the pipeline catches this.** Axe has no rule against two
+  distinct controls sharing an accessible name — `duplicate-id` is about
+  attributes and does not apply, and there is no `unique-accessible-name`
+  check. `check:contract` reads the manifest, `check:tokens` reads colour, and
+  the a11y gate is axe. So the whole category is invisible to CI and was found
+  only by people writing `EmptyLabel` and `KeyboardOrder` stories and reading
+  what they rendered. **A candidate for a new check:** within one rendered
+  story, assert that controls sharing a `data-slot` have distinct accessible
+  names. That is mechanical, would have caught five of these six, and is the
+  first gate proposal to come out of the story program.
 
 - **M3 `quota-meter`'s over-limit row is an invalid ARIA range.** `OverLimit`
   renders `aria-valuenow="5240"` against `aria-valuemax="5000"`. ARIA requires
@@ -835,7 +901,57 @@ it honestly without noticing.
   write a bare `animate-spin`/`animate-pulse`. So the convention exists and was
   then lost, which makes this drift rather than an open question. Nothing in the
   pipeline sees it: `check:tokens` reads colour, and axe does not evaluate the
-  media feature at all. The fix is one class per site.
+  media feature at all. The fix is one class per site — **but see the correction
+  immediately below before applying it to a dialog, popover or sheet.**
+
+- **Correction (2026-08-15): "one class per site" is wrong on a Base UI popup
+  surface, and the earlier sentence should not be applied there.** The
+  prescription above is written for the shape it was found in — a lucide
+  spinner carrying a plain `animate-spin`. It does not hold where the animating
+  element is a Base UI popup, and anyone who applied it to a dialog, popover or
+  hover-card fixed nothing and has no way to tell. The mechanism, measured on
+  `shortcuts-sheet` while writing its `ReducedMotion` story:
+
+  `dialog`, `alert-dialog`, `popover`, `tooltip`, `hover-card`,
+  `dropdown-menu` and `select` animate through `data-open:animate-in` /
+  `data-closed:animate-out`. Tailwind v4 compiles that to
+  `.data-open\:animate-in:where([data-open]:not([data-open=false]))` — the
+  attribute test sits inside `:where()`, which contributes **no** specificity,
+  so it and `.motion-reduce\:animate-none` are both a single class and the tie
+  falls to source order. Tailwind emits the plain `motion-reduce:` block well
+  before the `data-*` variants (offsets 112494 vs 124370 in the current docs
+  CSS chunk), so `animation: enter` wins and `animation-name` reads back
+  `"enter"` under emulated reduce. The remedy is to restate the variant on both
+  halves — `motion-reduce:data-open:animate-none
+  motion-reduce:data-closed:animate-none` — which sorts *after* its counterpart
+  and wins the same tie. `sheet` is a third case: it animates by transition
+  (`data-starting-style` / `data-ending-style`), so
+  `motion-reduce:transition-none` is what suppresses it.
+
+  **Surveyed, and the honest answer is that no shipped branch is inert today.**
+  Every bare `motion-reduce:animate-none` in `registry/super-ai/` sits on a
+  plain `animate-spin`/`animate-pulse`, where the same source order works in
+  its favour: K6 `citation-ref` (`animate-pulse` on the marker, which is the
+  hover-card *trigger*, not its surface), A8 `preview-tile` (skeleton),
+  `task-tray` and `trace-timeline` (both lucide spinners). All four work.
+
+  What the finding costs is the *remainder* of the backlog above. These 33
+  registry components render a keyframe-animating popup surface, none of them
+  suppresses it, and each is a site where the plain remedy would be inert:
+  `account-menu`, `action-stack`, `ai-tools-menu`, `asset-detail`,
+  `asset-library`, `citation-ref`, `coach-mark`, `context-toolbar`,
+  `detail-view-shell`, `docs-shell`, `drawing-tools`, `feature-announcement`,
+  `feedback`, `hero-omnibox`, `inline-generate-popup`, `modality-rail`,
+  `mode-tabs`, `model-picker`, `permission-prompt`, `recommendation-card`,
+  `record-list`, `records-shell`, `selection-toolbar`, `settings-dialog`,
+  `template-detail`, `thread-list`, `transport-controls`, `trust-dialog`,
+  `tts-composer`, `usage-dashboard`, `voice-clone-recorder`, `whats-new`,
+  `workspace-switcher`, plus `task-tray` on the transition path. Only
+  `shortcuts-sheet` has the working form. Not fixed here — that is a follow-up
+  wave, and the point of this entry is that the list is accurate before anyone
+  starts it. The idiom is written up in
+  [`story-conventions.md`](design-system/story-conventions.md), mechanical
+  fact 3.
 
 - **E6 `generation-queue` does not manage focus when a row resolves.** A row's
   Cancel button unmounts as it transitions to done/failed/cancelled, and nothing

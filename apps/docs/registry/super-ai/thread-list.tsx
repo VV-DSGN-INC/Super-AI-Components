@@ -164,7 +164,10 @@ function ThreadListItem({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Thread actions"
+              // Named per row, not "Thread actions": ten threads would
+              // otherwise be ten identically-named buttons in the screen-reader
+              // element list. Same shape as record-list's row menu.
+              aria-label={`Thread actions for ${title}`}
               className="size-7 opacity-0 group-hover/thread:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 pointer-coarse:opacity-100"
             />
           }

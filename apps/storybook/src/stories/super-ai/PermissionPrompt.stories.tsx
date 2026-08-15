@@ -21,7 +21,7 @@ export default meta;
 type Story = StoryObj<typeof PermissionPrompt>;
 
 const EMAIL_ARGS = [
-  { key: "to", value: "finance@acme.com" },
+  { key: "to", value: "finance@example.com" },
   { key: "subject", value: "Q3 invoice — ready for review" },
   { key: "attachment", value: "q3-invoice.pdf" },
 ];
@@ -29,7 +29,7 @@ const EMAIL_ARGS = [
 /** Approves this one call only — nothing persists past it. Allow once and Edit first render with identical weight. */
 export const AllowOnce: Story = {
   args: {
-    action: "Send email to finance@acme.com",
+    action: "Send email to finance@example.com",
     reason:
       "The invoice PDF finished rendering and this recipient is on the approved list from the last three runs.",
     args: EMAIL_ARGS,
@@ -60,7 +60,7 @@ export const Deny: Story = {
 /** Edit-first swaps the arguments block for an inline editor instead of discarding the call like Deny would. */
 export const EditFirst: Story = {
   args: {
-    action: "Send email to finance@acme.com",
+    action: "Send email to finance@example.com",
     reason: "The invoice PDF finished rendering.",
     args: EMAIL_ARGS,
     defaultEditing: true,

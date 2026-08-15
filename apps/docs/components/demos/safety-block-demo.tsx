@@ -13,7 +13,7 @@ export default function SafetyBlockDemo() {
       <SafetyBlock
         variant="output-blocked"
         policy="Member data — minimum necessary"
-        fragment="member 449-22-8801"
+        fragment="member MBR-000-0000"
         sensitive
         alternatives="Request access in the member records system."
       />

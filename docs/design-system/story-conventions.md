@@ -86,9 +86,45 @@ These decide the shape of the stories, and all three cost time to rediscover.
    `vitest.config.ts` sets Playwright's `reducedMotion: "reduce"` for every
    test, so the story only differs from its neighbour if the component
    actually branches on the media feature. Tailwind's `animate-spin` does
-   not; `motion-reduce:animate-none` does. Where the component doesn't
-   branch, say so in the description rather than shipping a story that
-   renders identically to `Running` and implies coverage.
+   not branch on its own. **Two idioms create the branch, and both are
+   sanctioned:**
+
+   - `motion-reduce:animate-none` beside an `animate-*` class.
+   - `motion-reduce:transition-none` beside a `transition-*` **that a user
+     would perceive as motion** — a thumb that slides, a panel that grows, a
+     row that shifts position. Shipped precedent: `pricing-table` (switch
+     track and thumb), `choice-chips`.
+
+   The qualifier is load-bearing in the second case. A `transition-colors`
+   that only crossfades a text colour moves nothing, so suppressing it
+   documents no branch worth a story — `reset-affordance` is the recorded
+   example, and its skip line says so. Add the class where something moves;
+   do not add it to look thorough.
+
+   Where the component doesn't branch, say so in the description rather than
+   shipping a story that renders identically to `Running` and implies
+   coverage.
+
+   **`motion-reduce:animate-none` is inert on a Base UI popup surface — the
+   variant has to be restated.** `dialog`, `alert-dialog`, `popover`,
+   `tooltip`, `hover-card`, `dropdown-menu` and `select` all animate through
+   `data-open:animate-in` / `data-closed:animate-out`. Tailwind v4 compiles
+   both sides to a *single* class of specificity — the data-attribute test is
+   wrapped in `:where(…)`, which contributes nothing — so the tie is broken by
+   source order, and Tailwind emits the plain `motion-reduce:` block well
+   before the `data-*` variants. `animation: enter` therefore wins and
+   `animation-name` reads back `"enter"` under emulated reduce. The fix is to
+   restate the variant on both halves:
+
+       motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none
+
+   which sorts *after* its counterpart and wins the same tie. Measured on
+   `shortcuts-sheet`, whose `ReducedMotion` story reads `animationName` back
+   rather than trusting the class. Nothing else in the registry is affected
+   today: every other `motion-reduce:animate-none` sits on a plain
+   `animate-spin` / `animate-pulse`, where the same source order works in its
+   favour. `sheet` is a third case again — it animates by transition, so
+   `motion-reduce:transition-none` is what suppresses it.
 
 Because `preview.tsx` sets `a11y: { test: "error" }` as the default for every
 story, each case story you add is axe-gated from the moment it exists. That
