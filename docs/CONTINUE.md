@@ -4,8 +4,9 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-11, after family O's twelve blocks — **the catalog is
-complete**.
+**Last updated:** 2026-08-15, after wave 0 of the story-guarantees retrofit —
+**`contractExempt` has no members left**. The catalog has been complete since
+family O's twelve blocks (2026-08-11).
 
 ---
 
@@ -14,26 +15,57 @@ complete**.
 |                 |                                                                                                                             |
 | --------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
-| Branch          | none — this landed on `main` as PR #20                                                                                     |
-| HEAD at handoff | **The catalog is complete** — family O's twelve remaining blocks, plus the A- and M-family a11y retrofits                   |
-| Pushed          | **merged.** Start your next branch from `main`.                                                                             |
+| Branch          | `claude/design-systems-tests-rules-870a35` — the convention PR (§2 of the spec) and wave 0                                   |
+| HEAD at handoff | **Wave 0 of the story-guarantees retrofit** — the 25 `contractExempt` items folded into the full contract, the flag at zero  |
+| Pushed          | pushed to `origin`, **not merged.** `main` is still at PR #29.                                                               |
 | Preview         | Not deployed. Production is behind and serves fewer registry items than this branch builds — see §7.                        |
 
 **Catalog progress: 114 of 114 active items shipped. Nothing is planned.**
 11 cut (family G's 10 + O5, per decision D9 — do not revive them).
+*(`check:contract` counts **116**, and the two numbers are already reconciled:
+the 114 is the frozen A–O count, and family P's 2 are counted alongside it
+rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
+at 114 while family P grows separately" asserts all three figures, which is
+what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)*
 
-Of the 114, **25 are pre-Wave-1.5 legacy** carrying `contractExempt: true`. They
-are exempt from the story-state and documentation contracts until someone runs
-that retrofit — which is now the largest remaining piece of work in the repo.
-The other 89 satisfy the full contract.
+**`contractExempt` has no members.** The 25 pre-Wave-1.5 legacy items that
+carried it were folded into the full contract by wave 0 of the story-guarantees
+program (`superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`,
+step 2): states normalized and declared, one story per declared state, a docs
+module, the flag dropped. `check:contract` reports **116 checked / 0 exempt**,
+from 91 / 25 at the program's start. `catalog.manifest.test.ts` pins the empty
+set as a ratchet, so re-exempting any of them fails a dedicated assertion. The
+flag's own branches in `check-contract.mts` and its stale "the 14 pre-Wave-1.5
+components" comment are now dead code, which the gate PR deletes (spec §4).
+
+**No super-ai story is excluded from axe**, and both "may only shrink" lists
+reached zero in the same wave. The Storybook a11y exclusion in
+`apps/storybook/vitest.config.ts` now names only the vendored directories
+(`stories/ui/**`, `stories/ai-elements/**`, plus three mount-crash files already
+inside them), and `CONTRAST_EXEMPT_FILES` in
+`apps/docs/scripts/lib/token-rules.mjs` is `[]`. `preview-tile` was the last
+entry on both, and putting it under the enforced gate is what found the contrast
+failure the exemption had been covering. The two lists are paired by
+`check:contract`'s G3 rule, so they can only move together.
 
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-Gate baselines at this handoff: `pnpm test` **1387** across 137 files ·
-`pnpm build` **133 pages** · `pnpm test:stories` **422** across 117 files ·
-`registry.json` **130 items** · `check:contract` **89 checked / 25 exempt** ·
-Playwright **131/131** · `check:tokens` **130 files clean**.
+**What is not done: the case-story gate.** `check:contract` still says nothing
+about the eight case-story names — presence-or-`case-skip` enforcement is the
+program's final step and lands only after the family waves (spec §4). Until
+then the convention is normative and unenforced: a story file missing `RTL` with
+no skip line is indistinguishable from one that considered it. The remaining
+work is spec §3.2's family waves — case stories only, one PR per family, the
+~91 items wave 0 did not touch.
+
+Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
+`pnpm test:stories` **719** across 131 files · `check:contract`
+**116 checked / 0 exempt** · Playwright **133 passed** · `registry.json`
+**133 items** · `check:tokens` **180 of 182 files clean** (the 2 warnings are
+vendored `components/ui/`, triaged and not gated) · `pnpm build` and the
+consumer install test clean. The a11y gate's 131 / 719 is from **119 / 452**
+before this program; the growth is wave 0's stories, not new components.
 
 ### Start here for the next phase
 
@@ -965,4 +997,109 @@ it honestly without noticing.
 The convention became a program on 2026-08-14: eight names (`Controlled`
 joined), manifest-shape rules, and a retrofit —
 `docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`.
-Wave 0 (the 25 `contractExempt` items) status is recorded here when it lands.
+
+### Wave 0 — the 25 `contractExempt` items (2026-08-15)
+
+Two batches, one agent per component, every manifest edit made centrally (§3.2).
+**Batch A** took the 11 with no story file — the largest of the pilot's three
+open items above, now closed: all 11 were rendered under axe for the first time.
+**Batch B** took the other 14, **every one of which exported `Default`**, the one
+name the house rule forbids; all 14 are gone, each renamed to the state it was
+actually rendering or split into the states it conflated. Each of the 25 got the
+full fold-in — states normalized and declared, one story per declared state,
+case stories, a docs module, the flag dropped. `contractExempt` reached zero
+(§1).
+
+What it found:
+
+- **Fifteen declared states across the 25 name behaviour no component
+  implements.** Ten of batch B's 14 needed real normalization before a single
+  story per state could be written, and the retrofit turned into an audit of
+  `catalog.md`'s states column — which is normative prose, not a hint. A7
+  `gen-settings-bar` declares `inline · compact · node-docked` and implements
+  none of the three; the last names the node builder **D9 cut**. Absent for the
+  same reason: A5 `filter-bar`'s overflow count and clear-all, A3
+  `date-section`'s with/without count and collapsible, L5 `shortcuts-sheet`'s
+  `searchable` and its controls-primer variant, A2 `cost-chip`'s
+  estimate/confirmed/insufficient, and K6 `citation-ref`'s "copy quote" (filed
+  separately in §8). One is factually **wrong** rather than absent: A10
+  `stat-readout`'s "inline rows" describes `columns={1}`, which sets
+  `grid-cols-1` and therefore stacks label *above* value — the inline form is
+  `columns={2}`. B6 `thread-list`'s `running` is removed outright; the spec's
+  status slot was never built. **The mechanism is the finding.** Nobody had ever
+  written one story per declared state for these components, because an exempt
+  component was not required to have a story at all — so nothing had ever
+  compared the column to the code.
+
+- **Two components ship colourless to consumers.** M6 `rate-limit-banner` paints
+  `border-warning/40 bg-warning/5`, and P1 `data-views` paints
+  `bg-warning text-warning-foreground` through `data-views-shared.tsx`. Neither
+  declares `cssVars`, so `shadcn add` installs them without the token and the
+  surface arrives unpainted in a consumer's app. This is a
+  registry-is-the-product bug and it is **distinct from** the Storybook
+  `--warning` gate hole recorded in §8 — the six components carrying
+  `WARNING_CSS_VARS` are wrong only under the axe gate; these two are wrong
+  wherever they are installed. Found by the audit of that hole, recorded beside
+  it, not fixed.
+
+- **A keyboard-help panel was unusable by keyboard.** L5 `shortcuts-sheet`'s
+  section list scrolls once the sections pass its 80vh cap, and the scroll
+  container was not focusable — axe `scrollable-region-focusable`, whose real
+  consequence is that a keyboard user opens a 60-binding shortcuts panel and can
+  read only the first screenful. **Fixed in-wave**, then corrected in review: the
+  first fix put `tabIndex` and `aria-label` on a bare `<div>`, which is
+  `role="generic"`, where ARIA prohibits `aria-label`. The tab stop was real and
+  did clear the axe rule, but it arrived anonymous. It is now a `<section>` named
+  for its contents, and the story asserts the name *through* the role — the only
+  form that catches the original failure.
+
+- **A disabled filter chip can still be deleted.** A5 `filter-bar`'s
+  `FilterChip` spreads `...props` onto its toggle button, so `disabled` reaches
+  the toggle only; the remove button is a sibling built from `onRemove` alone and
+  never sees it. A facet you cannot turn off, you can still delete — by mouse or
+  by Tab. A caller has to withhold `onRemove` in the same breath. (Milder, same
+  site: nothing in `filter-bar.tsx` styles the disabled path at all, and these
+  are unstyled `<button>`s with explicit colour classes, so the UA greying never
+  applies — a locked chip is pixel-identical to a live one.) Recorded in the
+  `Disabled` story, **not fixed**: what `disabled` means on a composite chip is
+  an API decision.
+
+- **`kbd` renders chords backwards under RTL.** `KbdGroup` is a bare
+  `inline-flex` with no direction pin, so `⌘ ⇧ Z` paints as `Z ⇧ ⌘` under
+  `dir="rtl"` — *a different instruction that still looks correct*, which is the
+  worst failure shape available, because nothing about it reads as broken. Found
+  independently by two of the wave's agents. **Not fixed**: the pin belongs in
+  the `kbd` primitive and is a behaviour change rather than a compile-identical
+  swap. Full entry in §8, under logical properties.
+
+**Two defects the wave's own review caught — the program's quality evidence, and
+the reason a retrofit wave gets reviewed rather than merged on green.** Both were
+`KeyboardOrder` play functions that pinned the exact defect their own JSDoc
+documented: green today, **red the moment someone fixed it**. That is the one
+move `story-conventions.md` forbids outright, and neither would have been caught
+by any gate — a pinned bug passes.
+
+- **M4 `pricing-table`** asserted which element each tab landed on. The same
+  story records that its `role="radiogroup"` has no roving tabindex; implementing
+  that gives the unchecked radio `tabindex="-1"`, the second tab skips it, and
+  the test goes red on the fix. Rewritten on `autonomy-selector`'s shape, which
+  asserts invariants that hold both today and under APG: the checked radio is
+  tabbable, the controls outside the group are each independently tabbable, plus
+  containment, ring and no-trap — with the expected stop count derived from live
+  DOM `tabindex` rather than hardcoded.
+- **A7 `gen-settings-bar`** asserted that Tab visits all five toolbar segments in
+  DOM order — the exact traversal its `role="toolbar"` contradicts. Its JSDoc
+  argued the pin was a *feature* ("this story is what notices"), which is
+  precisely the inversion the convention warns about. Rewritten on
+  `choice-chips`' pattern, which carries the identical defect and asserts only
+  that the stops exist and each shows a ring. `pricing-table`'s DOM-derived bound
+  was considered and rejected for this shape: nothing here sets `tabindex` at
+  all, so the derivation reduces to counting the buttons — the same claim wearing
+  a disguise.
+
+**What wave 0 closed from the list above:** the 11-with-no-story item, outright.
+The reduced-motion backlog moved from three branching components to seven —
+`choice-chips`, `preview-tile`, `pricing-table` and `shortcuts-sheet` gained
+branches — and `shortcuts-sheet` is what produced the Base UI popup correction
+recorded above. `generation-queue`'s focus-loss finding is untouched and stays
+open. The remaining ~91 items are spec §3.2's family waves; the gate is §4.

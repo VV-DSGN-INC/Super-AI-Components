@@ -68,9 +68,9 @@ files carry the pattern.
 - **No "every variant at once" story.** A grid of all eight of something
   markets optionality the system exists to remove.
 
-## Three mechanical facts about this repo
+## Four mechanical facts about this repo
 
-These decide the shape of the stories, and all three cost time to rediscover.
+These decide the shape of the stories, and all four cost time to rediscover.
 
 1. **Extra exports are legal.** `check-contract.mts` asserts *declared states
    ⊆ story exports*, never the reverse. Case stories cannot break the
@@ -125,6 +125,39 @@ These decide the shape of the stories, and all three cost time to rediscover.
    `animate-spin` / `animate-pulse`, where the same source order works in its
    favour. `sheet` is a third case again — it animates by transition, so
    `motion-reduce:transition-none` is what suppresses it.
+
+4. **Inside a Base UI portal — dialog, popover, sheet — you cannot read
+   `document.activeElement` immediately after `userEvent.tab()`.** Tabbing off
+   the last control lands on `FloatingFocusManager`'s trailing focus guard,
+   whose `onFocus` re-enters the panel through `enqueueFocus` — and
+   `enqueueFocus` schedules the `focus()` call in a `requestAnimationFrame`
+   unless asked for `sync`. So the read returns *either* the guard *or* the
+   control it redirects to, depending on whether the frame has painted.
+
+   The failure this produces is silent. The guard is not one of the expected
+   stops, so a walk that reads immediately counts that iteration as a miss, and
+   the **next** tab steps over the control the redirect had just landed on. The
+   count saturates one short, every lap, and widening the loop budget only buys
+   more laps that skip the same stop. It cost a CI failure — `expected 6 to be
+   7` — that had passed locally twice from a cleared cache, because whether the
+   frame wins is environment-dependent.
+
+   **The idiom, and reuse it rather than re-deriving it.** Settle before
+   reading: `waitFor` until `document.activeElement` is one of the expected
+   stops. Seed the walk from where focus *actually* landed, not from an assumed
+   first element — a portal focuses its own first tabbable descendant on open,
+   so a walk that records a stop only *after* a tab can never count the one it
+   started on. Then walk exactly one lap, asserting each stop is new, and take
+   one closing tab asserting focus returned to the start. That makes the budget
+   provable rather than generous, because every settled tab moves by exactly one
+   control. `TaskTray.stories.tsx` and `ShortcutsSheet.stories.tsx` in
+   `apps/storybook/src/stories/super-ai/` both carry it — read either before
+   writing a `KeyboardOrder` inside a portal.
+
+   The general lesson outlives the library: **a bounded "did we reach all N
+   stops within M tabs" loop is environment-sensitive; asserting the cycle
+   directly is not.** One infers the property from a count reached inside an
+   allowance; the other states it.
 
 Because `preview.tsx` sets `a11y: { test: "error" }` as the default for every
 story, each case story you add is axe-gated from the moment it exists. That
