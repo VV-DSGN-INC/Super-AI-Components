@@ -223,13 +223,18 @@ function PricingTable({
                   onClick={() => addOn.onToggle?.(!addOn.enabled)}
                   data-slot="pricing-table-addon-switch"
                   className={cn(
-                    "focus-visible:ring-ring inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none",
+                    "focus-visible:ring-ring inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors focus-visible:ring-2 focus-visible:outline-none motion-reduce:transition-none",
                     addOn.enabled ? "bg-primary" : "bg-input",
                   )}
                 >
+                  {/* The thumb slides; under `prefers-reduced-motion` it jumps instead.
+                      `motion-reduce:transition-none` is the same one-class branch the
+                      registry already uses beside `animate-*` (trace-timeline, task-tray,
+                      citation-ref) — without it the switch has no reduced-motion path at
+                      all and its ReducedMotion story would be a duplicate screenshot. */}
                   <span
                     className={cn(
-                      "bg-background size-4 rounded-full transition-transform",
+                      "bg-background size-4 rounded-full transition-transform motion-reduce:transition-none",
                       addOn.enabled ? "translate-x-4.5" : "translate-x-0.5",
                     )}
                   />

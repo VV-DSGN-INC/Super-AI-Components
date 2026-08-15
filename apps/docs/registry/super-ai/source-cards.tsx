@@ -74,7 +74,19 @@ function SourceCards({
                 // Unused sources are visibly quieter but never hidden. Showing
                 // only cited sources conceals the retrieval failure mode;
                 // showing them undifferentiated conceals the answer's basis.
-                className={cn("py-3", !source.used && "opacity-60")}
+                //
+                // `opacity-60` dims every descendant, which drags this card's
+                // muted text (the snippet, the relevance badge, the rank) down
+                // to 2.29:1 — the cross-component contrast shape the token
+                // checker cannot see. Rebind rather than restyle slots: the
+                // relevance badge is a composed `Badge` carrying its own
+                // `text-muted-foreground`, which no slot-level override here
+                // could reach. `--foreground` and not `--accent-foreground`,
+                // because the latter still blends to ~4.1:1 under the dimming.
+                className={cn(
+                  "py-3",
+                  !source.used && "opacity-60 [--muted-foreground:var(--foreground)]",
+                )}
               >
                 <CardContent className="flex items-start gap-2 px-3">
                   <FileText className="text-muted-foreground mt-0.5 size-4 shrink-0" />
