@@ -296,10 +296,14 @@ export const ReducedMotion: Story = {
  *    that last half, a keyboard user who opens the sheet lands back at the
  *    top of the document and has to re-traverse the app to get home.
  *
- * The walk is bounded by the measured stop count. This is a modal Dialog:
- * the exemplar's `while (canvasElement.contains(activeElement))` loop would
- * never terminate here, because the trap guarantees the condition stays true
- * forever.
+ * The walk is one lap, not a budget. This is a modal Dialog: the exemplar's
+ * `while (canvasElement.contains(activeElement))` loop would never terminate
+ * here, because the trap guarantees the condition stays true forever. A fixed
+ * allowance of "enough" tabs terminates but makes the count a race — see
+ * `settledStop`, and `TaskTray.stories.tsx`, where the identical loop reached
+ * six of seven stops in CI while passing on every local run. This file only
+ * escaped it by having two stops against a budget of eighteen, so a lap that
+ * skipped one had several more chances to catch it — luck, not a guarantee.
  */
 export const KeyboardOrder: Story = {
   args: {
@@ -334,32 +338,68 @@ export const KeyboardOrder: Story = {
     // dialog's own title.
     await expect(within(sheet).getByRole("region", { name: "Shortcut list" })).toBe(stops[0]);
 
-    // The trap installs asynchronously — wait for it rather than tabbing from
-    // wherever focus happens to be at mount.
-    await waitFor(() => expect(sheet.contains(document.activeElement)).toBe(true));
+    const nameOf = (el: Element | null) =>
+      el === null
+        ? "nothing"
+        : `stop#${stops.indexOf(el as HTMLElement)} ${el.getAttribute("data-slot") ?? el.tagName}`;
 
-    const seen = new Set<HTMLElement>();
-    // The allowance above `stops.length` absorbs the popup container, which
-    // the trap makes focusable but which is not a control.
-    for (let i = 0; i < stops.length * 6 + 6 && seen.size < stops.length; i += 1) {
-      await userEvent.tab();
-      const focused = document.activeElement as HTMLElement;
-      if (!stops.includes(focused)) continue;
+    /**
+     * The focused stop, once the trap has finished moving focus.
+     *
+     * Reading `document.activeElement` the instant `tab()` resolves is a race
+     * against Base UI, not against this component. Tabbing off the last stop
+     * lands on the popup's trailing focus guard, whose `onFocus` re-enters the
+     * sheet through `enqueueFocus` — which defers the `focus()` call to a
+     * `requestAnimationFrame`. Where a frame has already painted the read
+     * returns the stop the guard handed focus to; where it has not, it returns
+     * the guard, the walk counts a miss, and the *next* tab steps over the stop
+     * the redirect had just landed on. That stop is the one focus started on,
+     * so it is the one a budgeted walk can silently never count.
+     */
+    const settledStop = async () => {
+      await waitFor(() => {
+        const active = document.activeElement;
+        if (!stops.includes(active as HTMLElement)) {
+          throw new Error(`focus is not on one of the sheet's stops: ${nameOf(active)}`);
+        }
+      });
+      return document.activeElement as HTMLElement;
+    };
 
-      const id = focused.getAttribute("data-slot") ?? focused.tagName;
-      await expect(`${id} focusVisible=${focused.matches(":focus-visible")}`).toBe(
+    const assertVisiblyFocused = async (el: HTMLElement) => {
+      const id = nameOf(el);
+      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(
         `${id} focusVisible=true`,
       );
-      const style = getComputedStyle(focused);
+      const style = getComputedStyle(el);
       await expect(`${id} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`).toBe(
         `${id} ring=true`,
       );
+    };
+
+    // The trap installs asynchronously — wait for it rather than tabbing from
+    // wherever focus happens to be at mount.
+    const start = await settledStop();
+    await assertVisiblyFocused(start);
+
+    // Exactly one lap: every settled tab moves by one stop, so `stops.length`
+    // tabs visits the rest and returns to the first.
+    const seen = new Set<HTMLElement>([start]);
+    for (let i = 1; i < stops.length; i += 1) {
+      await userEvent.tab();
+      const focused = await settledStop();
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
+        `${nameOf(focused)} repeat=false`,
+      );
+      await assertVisiblyFocused(focused);
       seen.add(focused);
     }
     await expect(seen.size).toBe(stops.length);
 
-    // Trapped: one more tab past the last stop stays inside the sheet.
+    // Trapped: the tab past the last stop closes the lap on the first one
+    // rather than leaking to the inert page behind the sheet.
     await userEvent.tab();
+    await expect(nameOf(await settledStop())).toBe(nameOf(start));
     await expect(sheet.contains(document.activeElement)).toBe(true);
 
     // Escape dismisses, and the trigger gets the ring back.

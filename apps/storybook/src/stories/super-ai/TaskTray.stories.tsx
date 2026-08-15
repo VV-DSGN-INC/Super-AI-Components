@@ -169,21 +169,26 @@ export const ReducedMotion: Story = {
  * toggle, then its cancel button, and the Sheet's own close button comes
  * last because `SheetContent` renders it after `children`.
  *
- * The walk is bounded by the measured stop count rather than by "still
- * inside the canvas". This is a modal Sheet: Base UI traps focus, so tabbing
- * past the close button wraps to the first row and a `while (contains(...))`
- * walk would never terminate.
+ * The walk is one lap, not a budget. This is a modal Sheet: Base UI traps
+ * focus, so tabbing past the close button wraps to the first row and a
+ * `while (contains(...))` walk would never terminate. But a fixed allowance
+ * of "enough" tabs is the wrong bound too — it makes the count a race, and
+ * this story lost it in CI while passing on every local run. See
+ * `settledStop` for the mechanism. Because every settled tab moves by exactly
+ * one control, `stops.length` tabs from wherever focus lands is a full lap and
+ * no more, which is what makes the count provable rather than generous.
  *
- * It also cannot assume where the ring starts. The trap installs
- * asynchronously, so the story waits for focus to enter the panel and then
- * collects stops as it meets them. Reaching all seven inside the allowance
- * is itself the proof that focus cycles: an untrapped ring would leave the
- * panel after the close button and never return to the rows above it.
+ * It still cannot assume where the ring starts. Base UI focuses the first
+ * tabbable control on open, but the lap is indexed from whatever it actually
+ * lands on, and the closing tab returning there is the proof that focus
+ * cycles: an untrapped ring would leave the panel after the close button and
+ * never come back to the rows above it.
  *
  * Known gap, deliberately not asserted: with two live tasks the two cancel
  * buttons share the accessible name "Cancel task", and the two notify
  * toggles share theirs. Pinning that with an assertion would make it
- * permanent; it is recorded in the docs module's pitfalls instead.
+ * permanent; it is recorded in the docs module's pitfalls instead. The walk
+ * below tells them apart by index rather than by name for the same reason.
  */
 export const KeyboardOrder: Story = {
   args: {
@@ -199,33 +204,75 @@ export const KeyboardOrder: Story = {
     const stops = Array.from(dialog.querySelectorAll<HTMLElement>("button"));
     await expect(stops).toHaveLength(7);
 
-    // The trap installs asynchronously — wait for it rather than tabbing
-    // from wherever focus happens to be when the story mounts.
-    await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+    // Indexed, because the two cancel buttons share an accessible name and so
+    // do the two notify toggles — a name alone cannot identify a stop here.
+    const nameOf = (el: Element | null) =>
+      el === null
+        ? "nothing"
+        : `stop#${stops.indexOf(el as HTMLElement)} ${el.tagName}[${el.getAttribute("aria-label") ?? el.textContent?.trim().slice(0, 24) ?? ""}]`;
 
-    const seen = new Set<HTMLElement>();
-    // The allowance above `stops.length` absorbs the popup container, which
-    // the trap makes focusable but which is not a control.
-    for (let i = 0; i < stops.length * 3 && seen.size < stops.length; i += 1) {
-      await userEvent.tab();
-      const focused = document.activeElement as HTMLElement;
-      if (!stops.includes(focused)) continue;
+    /**
+     * The focused control, once the trap has finished moving focus.
+     *
+     * Reading `document.activeElement` the instant `tab()` resolves is a race
+     * against Base UI, not against this component. Tabbing off the last
+     * control lands on the popup's trailing focus guard, whose `onFocus`
+     * re-enters the panel through `enqueueFocus` — which defers the `focus()`
+     * call to a `requestAnimationFrame`. Where a frame has already painted the
+     * read returns the row the guard handed focus to; where it has not, it
+     * returns the guard. The guard is not a control, so the walk counted it as
+     * a miss and the *next* tab stepped over the row the redirect had just
+     * landed on — silently, and always the same row, the one focus started on.
+     * That is a 6-of-7 that no allowance fixes, because widening the budget
+     * only buys more laps that skip the same stop.
+     */
+    const settledStop = async () => {
+      await waitFor(() => {
+        const active = document.activeElement;
+        if (!stops.includes(active as HTMLElement)) {
+          throw new Error(`focus is not on one of the panel's controls: ${nameOf(active)}`);
+        }
+      });
+      return document.activeElement as HTMLElement;
+    };
 
-      const id = `${focused.tagName}[${focused.getAttribute("aria-label") ?? focused.textContent?.slice(0, 24) ?? ""}]`;
-      await expect(`${id} focusVisible=${focused.matches(":focus-visible")}`).toBe(
+    const assertVisiblyFocused = async (el: HTMLElement) => {
+      const id = nameOf(el);
+      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(
         `${id} focusVisible=true`,
       );
-      const style = getComputedStyle(focused);
+      const style = getComputedStyle(el);
       await expect(`${id} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`).toBe(
         `${id} ring=true`,
       );
+    };
+
+    // The trap installs asynchronously — wait for it rather than tabbing from
+    // wherever focus happens to be when the story mounts.
+    const start = await settledStop();
+    await assertVisiblyFocused(start);
+
+    const seen = new Set<HTMLElement>([start]);
+    for (let i = 1; i < stops.length; i += 1) {
+      await userEvent.tab();
+      const focused = await settledStop();
+      // One control per tab, never a repeat — the walk cannot reach seven by
+      // circling six.
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
+        `${nameOf(focused)} repeat=false`,
+      );
+      await assertVisiblyFocused(focused);
       seen.add(focused);
     }
 
-    // Every control was reached, which required wrapping past the close
-    // button — the panel cycles rather than leaking focus to the inert page
-    // behind it.
+    // Every control was reached.
     await expect(seen.size).toBe(stops.length);
+
+    // And the lap closes: the tab after the last control comes back to the
+    // first, so the panel cycles rather than leaking focus to the inert page
+    // behind it.
+    await userEvent.tab();
+    await expect(nameOf(await settledStop())).toBe(nameOf(start));
     await expect(dialog.contains(document.activeElement)).toBe(true);
   },
 };
