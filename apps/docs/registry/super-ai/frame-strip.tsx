@@ -159,10 +159,13 @@ function FrameStripSlide({
       }
       action={
         item.state === "failed" ? (
-          // text-foreground, not A8's inherited text-destructive: destructive
-          // on the frame's bg-muted is the contrast pairing this system keeps
-          // failing (a11y-baseline.md).
-          <span className="text-foreground">Couldn&apos;t load</span>
+          // No colour class: A8's failed overlay paints `text-foreground`
+          // itself (preview-tile.tsx:88) and this inherits it. The override
+          // that used to be here was the local fix for destructive-on-bg-muted
+          // (a11y-baseline.md); it became redundant when that colour was
+          // promoted to A8's default, so it is deleted rather than left
+          // duplicating a default.
+          <span>Couldn&apos;t load</span>
         ) : undefined
       }
     >

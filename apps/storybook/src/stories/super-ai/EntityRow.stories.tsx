@@ -191,23 +191,23 @@ export const Disabled: Story = {
  * icon and a trailing chevron.
  *
  * What mirrors correctly: the flex row reverses, so the icon lands on the
- * right and the chevron on the left, and the chevron's own glyph is the one
- * thing a caller must flip themselves — it is caller markup, not a slot the
- * row draws.
+ * right and the chevron on the left, and the text block goes with it — the
+ * row aligns with `text-start`, so the title and description sit against the
+ * icon in both directions rather than staying pinned to the visual left.
  *
- * What does not: the row sets `text-left` (a `<button>` centres its text by
- * default, so something had to override it), and that is a physical
- * direction. Under `dir="rtl"` the title and description stay pinned to the
- * visual left edge of their column while the icon sits on the right, opening
- * a gap between the two that does not exist in LTR.
+ * That alignment used to be `text-left`, and this story is where the gap was
+ * recorded. It was declined at the time on a premise that has since expired —
+ * "no component in this registry uses logical properties" — which was already
+ * false when written: A5 `field-row` landed `text-end` and `pe-2` in the same
+ * wave. The swap class is now sanctioned outright (CONTINUE.md §8, "Logical
+ * properties"): physical→logical of this kind compiles to the same
+ * declaration in LTR, so there is no risk to weigh against the RTL
+ * correctness. Applied here rather than carried, because `entity-row` is
+ * composed by seventeen other components and every one of them inherits it.
  *
- * Recorded rather than fixed, and the reason is scope rather than
- * difficulty: `text-start` would be a one-class change, but no component in
- * this registry uses logical properties — `text-start`, `border-s`, `ps-*`
- * and `me-*` appear zero times across all 114, while `text-left` appears in
- * twenty-odd files. Adopting them here would make this the only one. The
- * same call was made for `credits-indicator`'s RTL divider. Carried in the
- * retrofit report.
+ * What still does not mirror is caller markup: the chevron's own glyph is
+ * flipped by the story below, not by the row, because `trailing` is whatever
+ * the caller passes.
  */
 export const RTL: Story = {
   render: (args) => (

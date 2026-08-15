@@ -764,14 +764,16 @@ that is where the backlog lives.
 
   **The swap class is sanctioned. A5 `field-row` is the first adopter** — it
   landed `text-end` on `UnitInput`'s field and `pe-2` on its unit suffix, both
-  with the reasoning in a comment at the site.
+  with the reasoning in a comment at the site. **A4 `entity-row` is the second**
+  — `text-left` → `text-start` on the row root, taken next because seventeen
+  other registry components compose it, so it is the single highest-leverage
+  site in the table.
 
   The remaining sites are a **scoped sweep**, not a research question. Verified
   present as listed, 2026-08-15:
 
   | component | site | swap |
   | --- | --- | --- |
-  | `entity-row.tsx:41` | row root | `text-left` → `text-start` |
   | `citation-ref.tsx:46` | marker | `ml-0.5` → `ms-0.5` |
   | `safety-block.tsx:95` | quoted fragment | `border-l-2 pl-2` → `border-s-2 ps-2` |
   | `credits-indicator.tsx:114` | detail link | `border-l` → `border-s`, `pl-1.5` → `ps-1.5`, `-mr-1` → `-me-1` |

@@ -171,13 +171,19 @@ export const RTL: Story = {
  * five separate tab stops and arrow keys that do nothing. A screen reader
  * user is told "toolbar", tries the arrows, and gets silence.
  *
- * The play function pins the behaviour that exists rather than the one the
- * role implies: five stops, in DOM order, each visibly focused. Asserting
- * that arrow keys move focus would fail; asserting that they do not would
- * pin the defect shut. Bounding the loop by the expected count is the
- * stronger form anyway — it fails when a segment is added as well as when
- * one is lost, and once roving tabindex lands the count drops to one and
- * this story is what notices.
+ * **Defect, recorded not pinned.** What the play function guarantees is the
+ * part that holds under either implementation: Tab reaches at least one stop,
+ * every stop it reaches is inside the bar, and each one is genuinely
+ * `:focus-visible` with a ring or an outline painted rather than merely
+ * focusable. It deliberately asserts neither the number of stops nor which
+ * element each stop is — both are consequences of the missing roving
+ * tabindex, so pinning them would make implementing the ARIA pattern a test
+ * failure, which is the one thing a story recording a defect must not do.
+ * Same shape and same reasoning as `ChoiceChips`' `KeyboardOrder`, which
+ * carries the identical gap.
+ *
+ * The count is written down here rather than asserted: five stops today, one
+ * once the toolbar rovers.
  */
 export const KeyboardOrder: Story = {
   render: (args) => (
@@ -193,23 +199,27 @@ export const KeyboardOrder: Story = {
     const canvas = within(canvasElement);
     const bar = canvas.getByRole("toolbar", { name: "Generation settings" });
 
-    const stops = canvas.getAllByRole("button");
-    await expect(stops).toHaveLength(5);
-    await expect(stops.every((stop) => bar.contains(stop))).toBe(true);
+    // A render assertion rather than a traversal one: five segments are drawn.
+    // Roving tabindex changes which of them Tab reaches, never how many exist.
+    const segments = canvas.getAllByRole("button");
+    await expect(segments).toHaveLength(5);
+    await expect(segments.every((segment) => bar.contains(segment))).toBe(true);
 
-    // Nothing here sets tabindex, so document order is the traversal.
-    await expect(canvasElement.querySelectorAll("button, a[href]")).toHaveLength(stops.length);
-
-    for (const expected of stops) {
-      await userEvent.tab();
-      await expect(document.activeElement).toBe(expected);
+    await userEvent.tab();
+    let stops = 0;
+    while (document.activeElement && canvasElement.contains(document.activeElement)) {
+      const focused = document.activeElement as HTMLElement;
+      await expect(bar.contains(focused)).toBe(true);
 
       // Every stop is visibly focused, not merely focusable.
-      const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
       const style = getComputedStyle(focused);
       await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      stops += 1;
+      await userEvent.tab();
     }
+    // At least one stop, so the loop above cannot pass by never running.
+    await expect(stops).toBeGreaterThan(0);
   },
 };
 

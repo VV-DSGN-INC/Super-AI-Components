@@ -133,8 +133,9 @@ export const Sectioned: Story = {
  * used to fail axe's `scrollable-region-focusable`: the list scrolled, held
  * nothing focusable, and had no tab stop, so a keyboard user could open a
  * sixty-binding sheet and read the first screenful only. The fix is the same
- * `tabIndex` + `aria-label` idiom the shell components already use, and it is
- * pinned by `KeyboardOrder` below.
+ * idiom the shell components already use — a named, focusable `<section>`,
+ * where the sectioning element is what lets the name be exposed at all — and
+ * it is pinned by `KeyboardOrder` below.
  */
 export const ScrollingList: Story = {
   args: { sections: [COMPOSER, THREADS, TIMELINE, VIEW, SELECTION, EXPORT] },
@@ -280,7 +281,11 @@ export const ReducedMotion: Story = {
  *    and holds nothing focusable — without it a keyboard user could open a
  *    sixty-binding sheet and never reach binding twenty-one. Everything else
  *    in the map is `<li>` and `pointer-events-none` keycaps, which is correct
- *    for a read-only reference and is why this walk terminates.
+ *    for a read-only reference and is why this walk terminates. That list stop
+ *    is also **named**, and the name is checked through its role rather than
+ *    read off its attribute — asserting `data-slot` alone is exactly what let
+ *    a silently-unnamed stop ship; the note at the assertion has the
+ *    mechanism.
  * 3. Every stop is visibly focused: it matches `:focus-visible` and its
  *    computed style paints a ring or an outline. The list needs its own ring
  *    because a focused scroll container is otherwise indistinguishable from
@@ -319,6 +324,15 @@ export const KeyboardOrder: Story = {
     await expect(stops).toHaveLength(2);
     await expect(stops[0]).toHaveAttribute("data-slot", "shortcuts-list");
     await expect(stops[1]).toHaveAttribute("data-slot", "dialog-close");
+
+    // The list's *name*, read through its role rather than off the attribute —
+    // which is the only form that catches the failure this replaced. A bare
+    // `<div aria-label>` is role `generic`, where ARIA prohibits the attribute
+    // and nothing is exposed: the stop existed, the data-slot matched, and the
+    // tab stop arrived anonymous. Querying by role fails if the element stops
+    // being a sectioning one, and by name if it goes back to echoing the
+    // dialog's own title.
+    await expect(within(sheet).getByRole("region", { name: "Shortcut list" })).toBe(stops[0]);
 
     // The trap installs asynchronously — wait for it rather than tabbing from
     // wherever focus happens to be at mount.
