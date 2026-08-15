@@ -56,7 +56,7 @@ function ModalityRailBadge({ type }: { type: "new" | "pro" }) {
       <span
         data-slot="modality-rail-badge"
         data-badge="pro"
-        className="bg-primary text-primary-foreground absolute -top-1 -right-1.5 flex size-3.5 items-center justify-center rounded-full"
+        className="bg-primary text-primary-foreground absolute -top-1 -end-1.5 flex size-3.5 items-center justify-center rounded-full"
       >
         <Crown aria-hidden="true" className="size-2.5" />
       </span>
@@ -66,7 +66,7 @@ function ModalityRailBadge({ type }: { type: "new" | "pro" }) {
     <span
       data-slot="modality-rail-badge"
       data-badge="new"
-      className="border-background bg-primary absolute -top-0.5 -right-0.5 size-2.5 rounded-full border-2"
+      className="border-background bg-primary absolute -top-0.5 -end-0.5 size-2.5 rounded-full border-2"
     />
   );
 }
@@ -105,12 +105,36 @@ function ModalityRailButton({
           {item.icon}
           {item.badge ? <ModalityRailBadge type={item.badge} /> : null}
         </span>
-        <span className={cn("truncate", layout === "stacked" ? "w-full text-[11px] leading-tight" : "flex-1 text-sm")}>
+        <span
+          className={cn(
+            "truncate",
+            layout === "stacked" ? "w-full text-[11px] leading-tight" : "flex-1 text-sm",
+          )}
+        >
           {item.label}
         </span>
         {item.badge ? <span className="sr-only">{item.badge === "pro" ? " Pro" : " New"}</span> : null}
       </TooltipTrigger>
-      <TooltipContent side="right">{item.label}</TooltipContent>
+      {/*
+       * `side="inline-end"` rather than `"right"`: the rail is an edge column,
+       * so the tooltip has to open toward the canvas, which is the left in an
+       * RTL shell. Identical rendering in LTR — Base UI resolves inline-end to
+       * right — and `tooltip.tsx` already carries the matching
+       * `data-[side=inline-end]` enter transform.
+       *
+       * The motion-reduce pair is restated on both data-attribute halves. The
+       * registry's bare `motion-reduce:animate-none` is inert on a Base UI
+       * popup: `data-open:animate-in` compiles to a data-attribute selector
+       * that wins the tie on source order, so the popup keeps animating and
+       * `animation-name` reads back "enter". Measured on `shortcuts-sheet`;
+       * see docs/design-system/story-conventions.md §3.
+       */}
+      <TooltipContent
+        side="inline-end"
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+      >
+        {item.label}
+      </TooltipContent>
     </Tooltip>
   );
 }
@@ -147,7 +171,10 @@ function ModalityRail({
     <TooltipProvider>
       <div
         data-slot="modality-rail"
-        className={cn("bg-background flex w-[92px] shrink-0 flex-col justify-between border-r", className)}
+        // `border-e`, not `border-r`: the seam belongs between the rail and
+        // the canvas, which is the rail's left edge in an RTL shell. Same
+        // pixel in LTR.
+        className={cn("bg-background flex w-[92px] shrink-0 flex-col justify-between border-e", className)}
         {...props}
       >
         <div data-slot="modality-rail-scroll" className="flex flex-col items-stretch gap-1 p-1.5">
@@ -183,7 +210,25 @@ function ModalityRail({
                 <ChevronDown aria-hidden="true" className="size-4" />
                 <span className="text-[11px] leading-tight">{overflowLabel}</span>
               </PopoverTrigger>
-              <PopoverContent side="right" align="start" className="w-48 gap-1 p-1">
+              {/*
+               * `aria-label`: Base UI's popup renders role="dialog", and a
+               * dialog with no accessible name is an axe `aria-dialog-name`
+               * violation. It has no title part to borrow one from — this
+               * surface is a bare list — so it takes the trigger's label,
+               * which is also what a screen-reader user just activated.
+               * Found by ModalityRail.stories.tsx's ReducedMotion story, the
+               * first one to open this popover under the gate.
+               *
+               * Same two swaps as the tooltip above: logical side so the
+               * overflow list opens toward the canvas in RTL, and the
+               * restated motion-reduce pair that a Base UI popup needs.
+               */}
+              <PopoverContent
+                aria-label={overflowLabel}
+                side="inline-end"
+                align="start"
+                className="w-48 gap-1 p-1 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+              >
                 <ToggleGroup
                   orientation="vertical"
                   aria-orientation={undefined}

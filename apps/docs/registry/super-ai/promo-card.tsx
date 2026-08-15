@@ -120,7 +120,10 @@ function PromoCard({
         aria-label={dismissLabel}
         onClick={onDismiss}
         data-slot="promo-card-dismiss"
-        className="text-muted-foreground hover:text-foreground absolute top-2 right-2"
+        // `end-2`, not `right-2`: the ✕ has to pin to the logical end so it
+        // lands top-left under `dir="rtl"`, on the same side as the gutter the
+        // text row reserves for it below. Byte-identical in LTR.
+        className="text-muted-foreground hover:text-foreground absolute top-2 end-2"
       >
         <X aria-hidden className="size-3.5" />
       </Button>
@@ -132,7 +135,9 @@ function PromoCard({
           </div>
         ) : null}
 
-        <div className="flex items-start gap-2 pr-6">
+        {/* `pe-6`, not `pr-6`: the gutter that keeps the text clear of the
+            floating ✕ has to mirror with it. Byte-identical in LTR. */}
+        <div className="flex items-start gap-2 pe-6">
           <Icon aria-hidden className={cn("mt-0.5 size-4 shrink-0", iconClass)} />
           <div className="flex flex-col gap-1">
             {/* Urgency has to survive past colour for AT users too — a plain

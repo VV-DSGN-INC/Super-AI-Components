@@ -130,7 +130,13 @@ function AccountMenuAvatar({ user, className }: { user: AccountMenuUser; classNa
 
 function AccountMenuShortcutHint({ keys }: { keys: string[] }) {
   return (
-    <KbdGroup data-slot="account-menu-shortcut" aria-hidden="true" className="ml-auto">
+    // `ms-auto`, not `ml-auto` — a logical property in a component that has no
+    // business naming a physical side. Measured, and worth being honest about:
+    // the swap changes nothing today, because the row's label is `flex-1` and
+    // absorbs the free space this margin would otherwise take, so the hint
+    // already lands at the logical end in both directions. It matters the day
+    // that `flex-1` moves.
+    <KbdGroup data-slot="account-menu-shortcut" aria-hidden="true" className="ms-auto">
       {keys.map((key, i) => (
         <Kbd key={`${i}-${key}`}>{key}</Kbd>
       ))}
@@ -169,7 +175,16 @@ function AccountMenu({
           <AccountMenuAvatar user={user} />
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-64">
+        {/* The popup animates through `data-open:animate-in` /
+            `data-closed:animate-out`, and the registry's usual bare
+            `motion-reduce:animate-none` is inert against it: Tailwind compiles
+            both to a single class of specificity, and emits the plain
+            `motion-reduce:` block before the `data-*` variants, so `animation:
+            enter` wins the tie. Restating the variant sorts after it and wins.
+            See CONTINUE.md §9 — this component is on that list. */}
+        <DropdownMenuContent
+          className="w-64 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+        >
           {/* Identity block on top — conventional order, do not reinvent it. */}
           <div data-slot="account-menu-identity" className="flex items-center gap-2 px-1.5 py-1.5">
             <AccountMenuAvatar user={user} />
@@ -211,7 +226,12 @@ function AccountMenu({
               often and should not cost a modal. */}
           <DropdownMenuSub>
             <DropdownMenuSubTrigger data-slot="account-menu-appearance-trigger">Appearance</DropdownMenuSubTrigger>
-            <DropdownMenuSubContent data-slot="account-menu-appearance-content" className="w-56">
+            {/* Same restated variant as the parent popup — the submenu carries
+                its own copy of the animation classes. */}
+            <DropdownMenuSubContent
+              data-slot="account-menu-appearance-content"
+              className="w-56 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+            >
               {/* DropdownMenuLabel (Menu.GroupLabel) needs a Menu.Group /
                   Menu.RadioGroup ancestor for its context — nest it inside
                   the radio group rather than placing it as a sibling. */}

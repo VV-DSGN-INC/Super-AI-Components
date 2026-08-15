@@ -141,12 +141,18 @@ function RecommendationCard({
         aria-label={dismissLabel}
         onClick={onDismiss}
         data-slot="recommendation-card-dismiss"
-        className="text-muted-foreground hover:text-foreground absolute top-2 right-2"
+        // `end-2`, not `right-2`: a dismiss control belongs in the
+        // block-start/inline-end corner, so under `dir="rtl"` it has to move
+        // to the visual left rather than sitting where the title now starts.
+        // Identical rendering in LTR. `CardContent`'s `pe-6` below is the
+        // matching half — the padding that keeps the row's text clear of this
+        // button has to mirror with it.
+        className="text-muted-foreground hover:text-foreground absolute top-2 end-2"
       >
         <X aria-hidden className="size-3.5" />
       </Button>
 
-      <CardContent className="flex flex-col gap-3 pr-6">
+      <CardContent className="flex flex-col gap-3 pe-6">
         <div className="flex items-start gap-2">
           {icon ? (
             <div data-slot="recommendation-card-icon" className="text-primary mt-0.5 shrink-0 [&_svg]:size-4">
@@ -183,7 +189,19 @@ function RecommendationCard({
             >
               {triggerLabel}
             </DialogTrigger>
-            <DialogContent data-slot="recommendation-card-dialog">
+            <DialogContent
+              data-slot="recommendation-card-dialog"
+              // The variant is restated on both data-state halves on purpose.
+              // `DialogContent` animates through `data-open:animate-in` /
+              // `data-closed:animate-out`, and Tailwind v4 compiles the
+              // data-attribute test inside `:where()` — no specificity — so a
+              // bare `motion-reduce:animate-none` ties on specificity and
+              // loses on source order, leaving `animation-name: enter` under
+              // reduced motion. See docs/CONTINUE.md §9 and the
+              // `ReducedMotion` story, which reads `animation-name` back
+              // rather than trusting the class.
+              className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+            >
               <DialogHeader>
                 <DialogTitle>{title}</DialogTitle>
                 {description ? <DialogDescription>{description}</DialogDescription> : null}
