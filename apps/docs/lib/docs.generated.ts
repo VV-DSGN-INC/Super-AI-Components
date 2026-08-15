@@ -67,6 +67,7 @@ import { RenderQueueDocs } from "@/content/components/render-queue.docs";
 import { ResultCardDocs } from "@/content/components/result-card.docs";
 import { RunButtonDocs } from "@/content/components/run-button.docs";
 import { RunInspectorDocs } from "@/content/components/run-inspector.docs";
+import { SafetyBlockDocs } from "@/content/components/safety-block.docs";
 import { SelectionToolbarDocs } from "@/content/components/selection-toolbar.docs";
 import { SettingsDialogDocs } from "@/content/components/settings-dialog.docs";
 import { SettingsShellDocs } from "@/content/components/settings-shell.docs";
@@ -160,6 +161,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "result-card": ResultCardDocs,
   "run-button": RunButtonDocs,
   "run-inspector": RunInspectorDocs,
+  "safety-block": SafetyBlockDocs,
   "selection-toolbar": SelectionToolbarDocs,
   "settings-dialog": SettingsDialogDocs,
   "settings-shell": SettingsShellDocs,
