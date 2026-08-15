@@ -24,7 +24,12 @@ function FilterChip({ active = false, onRemove, className, children, ...props }:
       data-state={active ? "on" : "off"}
       className={cn(
         "inline-flex items-center rounded-full border text-sm transition-colors",
-        active && "bg-secondary text-secondary-foreground",
+        // The active chip paints a surface, and the remove button inside it is
+        // `text-muted-foreground` — the cross-element muted-on-muted pairing
+        // check-tokens.mjs cannot see. Rebind the variable on the element that
+        // paints, rather than restyling the remove slot: the same fix
+        // entity-row.tsx applies to its selected row.
+        active && "bg-secondary text-secondary-foreground [--muted-foreground:var(--secondary-foreground)]",
         className,
       )}
     >

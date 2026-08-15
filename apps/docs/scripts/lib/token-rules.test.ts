@@ -27,8 +27,17 @@ describe("findSingleStringViolations", () => {
     expect(findSingleStringViolations("x.tsx", src)).toEqual([]);
   });
 
-  it("treats preview-tile.tsx as contrast-exempt", () => {
-    expect(isExempt("registry/super-ai/preview-tile.tsx")).toBe(true);
+  it("exempts nothing — the list is empty and may only shrink", () => {
+    // preview-tile.tsx was the last member. Wave 0 batch B put it under the
+    // enforced gate for the first time (its story file was also the last entry
+    // on the Storybook a11y exclusion list) and fixed the contrast failure the
+    // exemption had been covering, so both coupled lists went to zero together
+    // — which is what check-contract's G3 assertion requires.
+    //
+    // Kept as an assertion rather than deleted: `isExempt` still guards a list
+    // that may only shrink, and an empty expectation is what makes the next
+    // addition fail loudly instead of passing as "one more exemption".
+    expect(isExempt("registry/super-ai/preview-tile.tsx")).toBe(false);
     expect(isExempt("registry/super-ai/entity-row.tsx")).toBe(false);
   });
 });

@@ -51,9 +51,7 @@ function PreviewTile({
       <Frame
         // A native button gives Enter/Space, focus and disabled semantics for free.
         // Decorative tiles stay a div so they never enter the tab order.
-        {...(interactive
-          ? { type: "button" as const, onClick: onSelect, "aria-pressed": selected }
-          : {})}
+        {...(interactive ? { type: "button" as const, onClick: onSelect, "aria-pressed": selected } : {})}
         data-slot="preview-tile-frame"
         className={cn(
           "bg-muted relative w-full overflow-hidden rounded-lg",
@@ -66,11 +64,28 @@ function PreviewTile({
         )}
       >
         {state === "loading" ? (
-          <div data-slot="preview-tile-loading" className="bg-muted h-full w-full animate-pulse" />
+          // motion-reduce:animate-none: the skeleton is the only thing in this
+          // file that moves, and a pulsing placeholder is exactly the motion a
+          // reduced-motion user asked not to see. One class, per CONTINUE.md §9.
+          <div
+            data-slot="preview-tile-loading"
+            className="bg-muted h-full w-full animate-pulse motion-reduce:animate-none"
+          />
         ) : state === "failed" ? (
           <div
             data-slot="preview-tile-failed"
-            className="text-destructive absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs"
+            // text-foreground, not text-destructive: destructive on this frame's
+            // bg-muted measures 4.34:1 against a 4.5:1 minimum — the pairing
+            // a11y-baseline.md records as this system's recurring failure, and
+            // one of the two violations that kept this file on the axe exclusion
+            // list. Both real consumers (result-card.tsx:129, frame-strip.tsx:162)
+            // already override the inherited colour back to text-foreground at
+            // the call site, so this makes the shipped look the default rather
+            // than changing it — the same move cost-chip took across nineteen
+            // call sites. Callers that want the failure coloured put the colour
+            // on an icon, where 4.0:1 is enough and meaning is never carried by
+            // colour alone.
+            className="text-foreground absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs"
           >
             {action}
           </div>

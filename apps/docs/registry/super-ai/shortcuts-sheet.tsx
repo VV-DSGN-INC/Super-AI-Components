@@ -42,12 +42,34 @@ function ShortcutsSheet({
       {trigger ? <DialogTrigger render={trigger} /> : null}
       <DialogContent
         data-slot="shortcuts-sheet"
-        className={cn("flex max-h-[80vh] flex-col sm:max-w-md", className)}
+        className={cn(
+          // Reduced motion, with the variant repeated on purpose. The
+          // registry's usual bare `motion-reduce:animate-none` is inert against
+          // a Base UI popup: DialogContent animates through
+          // `data-open:animate-in` / `data-closed:animate-out`, whose selectors
+          // carry an attribute (`.data-open\:animate-in[data-open]`, 0-2-0) and
+          // outrank `.motion-reduce\:animate-none` (0-1-0) whatever the source
+          // order. Restating the data variant restores specificity and wins.
+          // Verified by reading `animation-name` back — see the ReducedMotion
+          // story. The backdrop still fades; that class is in ui/dialog.tsx.
+          "flex max-h-[80vh] flex-col motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-md",
+          className,
+        )}
       >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className="flex-1 space-y-5 overflow-y-auto">
+        {/* The list scrolls once the sections pass the 80vh cap, so it carries
+            its own tab stop and name — axe `scrollable-region-focusable`, and
+            the same idiom the shell components use (artifact-shell, docs-shell,
+            library-shell). Without it the only keyboard-reachable thing in a
+            sixty-binding sheet is its close button. */}
+        <div
+          data-slot="shortcuts-list"
+          tabIndex={0}
+          aria-label={title}
+          className="focus-visible:ring-ring flex-1 space-y-5 overflow-y-auto focus-visible:ring-2 focus-visible:outline-none"
+        >
           {sections.map((section) => (
             <section key={section.title} data-slot="shortcuts-section" className="space-y-1">
               <h3 className="text-sm font-semibold">{section.title}</h3>

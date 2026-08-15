@@ -65,7 +65,11 @@ function ChoiceChip({ value, className, onClick, ...props }: ChoiceChipProps) {
         onClick?.(e);
       }}
       className={cn(
-        "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none rounded-lg border px-3 py-1.5 text-sm transition-colors",
+        // `motion-reduce:transition-none` is the same one-class branch the registry
+        // already uses beside `transition-*` and `animate-*` (pricing-table,
+        // trace-timeline, task-tray, citation-ref). Without it the hover/selection
+        // colour fade has no reduced-motion path at all.
+        "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none rounded-lg border px-3 py-1.5 text-sm transition-colors motion-reduce:transition-none",
         selected && "ring-ring border-ring ring-2",
         className,
       )}

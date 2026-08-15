@@ -25,8 +25,13 @@ describe("MANIFEST", () => {
     expect(active).toHaveLength(116);
   });
 
-  // The 14 components that shipped before Wave 1.5. They are exempt from the
-  // story-state and documentation contracts until the retrofit task runs.
+  // The 14 components that shipped before Wave 1.5. They were exempt from the
+  // story-state and documentation contracts until a retrofit covered them —
+  // wave 0 batch B of the story-guarantees program
+  // (docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md).
+  // All 14 now carry normalized states, per-state stories, case stories and a
+  // guidance module. The list survives as a ratchet: re-exempting any of these
+  // must fail loudly.
   const LEGACY = [
     "choice-chips",
     "cost-chip",
@@ -80,22 +85,25 @@ describe("MANIFEST", () => {
     for (const name of MAIN_PR14) expect(shipped.has(name)).toBe(true);
   });
 
-  it("exempts the legacy 14, and nothing else", () => {
-    // Exemption is a closed set that may only shrink. A new component must never
-    // be born exempt — that is how a gate quietly stops gating.
-    expect(
-      MANIFEST.filter((i) => i.contractExempt)
-        .map((i) => i.name)
-        .sort(),
-    ).toEqual([...LEGACY].sort());
+  it("exempts nothing at all", () => {
+    // Exemption is a closed set that may only shrink, and wave 0 shrank it to
+    // zero: batch A retrofitted the 11 PR #14 components, batch B the legacy
+    // 14. Every shipped component now meets the story-state and documentation
+    // contracts in full, so `contractExempt` has no members left.
+    //
+    // Keep this assertion even though the flag is unused. A new component must
+    // never be born exempt — that is how a gate quietly stops gating — and an
+    // empty expectation is what makes the next `contractExempt: true` fail
+    // loudly instead of passing as "one more legacy item".
+    expect(MANIFEST.filter((i) => i.contractExempt).map((i) => i.name)).toEqual([]);
   });
 
   it("never re-exempts a component the retrofit already freed", () => {
-    // The ratchet. Wave 0 batch A brought these 11 up to the full contract;
-    // restoring `contractExempt` to any of them would silently un-gate a
-    // component that already has the stories and guidance the flag excuses.
+    // The ratchet. Wave 0 brought all 25 up to the full contract; restoring
+    // `contractExempt` to any of them would silently un-gate a component that
+    // already has the stories and guidance the flag excuses.
     const exempt = new Set(MANIFEST.filter((i) => i.contractExempt).map((i) => i.name));
-    for (const name of MAIN_PR14) expect(exempt.has(name)).toBe(false);
+    for (const name of [...LEGACY, ...MAIN_PR14]) expect(exempt.has(name)).toBe(false);
   });
 
   it("holds every newly shipped component to the full contract", () => {
@@ -104,9 +112,7 @@ describe("MANIFEST", () => {
     // and check-contract.mts's block branch asserts the regions instead. Split
     // out when O2 `chat-shell` shipped and this assertion, which predates the
     // block layer having any shipped members, failed on `states: []`.
-    const newlyShipped = shippedItems(MANIFEST).filter(
-      (i) => !i.contractExempt && i.layer !== "block",
-    );
+    const newlyShipped = shippedItems(MANIFEST).filter((i) => !i.contractExempt && i.layer !== "block");
     expect(newlyShipped.length).toBeGreaterThan(0);
     for (const item of newlyShipped) {
       expect(item.states.length).toBeGreaterThan(0);

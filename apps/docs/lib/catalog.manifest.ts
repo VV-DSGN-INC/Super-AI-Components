@@ -44,7 +44,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["single", "combo", "sequence"],
     specAnchor: "component-specs.md#a1-kbd",
-    contractExempt: true,
   },
   {
     id: "A2",
@@ -59,9 +58,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["estimate", "confirmed", "insufficient", "rate form"],
+    states: ["per-action", "rate", "currency", "with-qualifier"],
     specAnchor: "component-specs.md#a2-cost-chip",
-    contractExempt: true,
   },
   {
     id: "A3",
@@ -76,9 +74,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["with/without count", "collapsible"],
+    states: ["relative-bucket", "absolute-date"],
     specAnchor: "component-specs.md#a3-date-section",
-    contractExempt: true,
   },
   {
     id: "A4",
@@ -93,9 +90,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["numeric", "text", "preview-content; single/multi; disabled; loading"],
+    states: ["numeric", "text", "preview-content", "disabled-chip"],
     specAnchor: "component-specs.md#a4-choice-chips",
-    contractExempt: true,
   },
   {
     id: "A5",
@@ -110,9 +106,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["applied chips", "overflow count", "clear-all"],
+    states: ["unfiltered", "toggle-chips", "removable-chips", "disabled"],
     specAnchor: "component-specs.md#a5-filter-bar",
-    contractExempt: true,
   },
   {
     id: "A6",
@@ -127,9 +122,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: ["reset-affordance"],
     npm: [],
-    states: ["slider+unit", "select", "toggle", "colour", "xy-pair"],
+    states: ["slider-unit", "select", "toggle", "colour", "xy-pair", "with-hint", "with-reset", "disabled"],
     specAnchor: "component-specs.md#a6-field-row",
-    contractExempt: true,
   },
   {
     id: "A7",
@@ -144,9 +138,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["inline", "compact", "node-docked"],
+    states: ["video-model", "image-model", "running", "partially-locked"],
     specAnchor: "component-specs.md#a7-gen-settings-bar",
-    contractExempt: true,
   },
   {
     id: "A8",
@@ -161,9 +154,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["image/video/colour/text/3D", "selected", "locked", "loading", "failed"],
+    states: ["ready", "selectable", "selected", "loading", "locked", "failed"],
     specAnchor: "component-specs.md#a8-preview-tile",
-    contractExempt: true,
   },
   {
     id: "A9",
@@ -180,7 +172,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["plain", "selectable", "with-badge", "with-chevron", "with-switch", "disabled"],
     specAnchor: "component-specs.md#a9-entity-row",
-    contractExempt: true,
   },
   {
     id: "A10",
@@ -195,9 +186,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["2-col grid", "inline rows", "missing-value em-dash"],
+    states: ["label-beside-value", "label-above-value", "copyable-value", "missing-value"],
     specAnchor: "component-specs.md#a10-stat-readout",
-    contractExempt: true,
   },
   {
     id: "A11",
@@ -214,7 +204,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["modified", "at-default", "keyframed", "group-level", "modified-dot"],
     specAnchor: "component-specs.md#a11-reset-affordance",
-    contractExempt: true,
   },
   {
     id: "A12",
@@ -231,7 +220,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["plain", "with-action", "with-count", "collapsible"],
     specAnchor: "component-specs.md#a12-section-header",
-    contractExempt: true,
   },
   {
     id: "B1",
@@ -326,9 +314,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["button", "input", "dropdown-menu", "alert-dialog"],
     consumes: ["date-section"],
     npm: ["lucide-react"],
-    states: ["pin", "inline rename", "delete-confirm", "active", "unread", "running"],
+    states: ["pinned", "inline-rename", "delete-confirm", "active", "unread", "empty"],
     specAnchor: "component-specs.md#b6-thread-list",
-    contractExempt: true,
   },
   {
     id: "B7",
@@ -1547,9 +1534,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["dialog"],
     consumes: ["kbd"],
     npm: [],
-    states: ["sectioned", "searchable", "pinned header", "controls-primer variant"],
+    states: ["sectioned", "scrolling-list", "trigger-button", "controlled-open"],
     specAnchor: "component-specs.md#l5-shortcuts-sheet",
-    contractExempt: true,
   },
   {
     id: "L6",
@@ -1893,15 +1879,7 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["sheet", "button"],
     consumes: ["entity-row"],
     npm: ["lucide-react"],
-    states: [
-      "running",
-      "needs-input",
-      "done",
-      "failed",
-      "empty",
-      "per-task-cancel",
-      "notify-opt-in",
-    ],
+    states: ["running", "needs-input", "done", "failed", "empty", "per-task-cancel", "notify-opt-in"],
     specAnchor: "component-specs.md#n12-task-tray",
   },
   {

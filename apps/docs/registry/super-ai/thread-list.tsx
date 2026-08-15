@@ -110,7 +110,16 @@ function ThreadListItem({
     <div
       data-slot="thread-list-item"
       data-active={active || undefined}
-      className={cn("group/thread relative flex items-center rounded-md", active && "bg-accent", className)}
+      className={cn(
+        "group/thread relative flex items-center rounded-md",
+        // Painting a surface rebinds the variable rather than restyling the
+        // slot: the pin glyph below carries its own `text-muted-foreground`,
+        // which is the same lightness as `bg-accent` in this token set
+        // (a11y-baseline.md). A className on the icon could not reach it once
+        // a consumer composes something else into the row.
+        active && "bg-accent [--muted-foreground:var(--accent-foreground)]",
+        className,
+      )}
       {...props}
     >
       <button
@@ -118,7 +127,9 @@ function ThreadListItem({
         aria-current={active ? "page" : undefined}
         onClick={() => onSelect?.(id)}
         className={cn(
-          "hover:bg-accent flex h-9 flex-1 items-center gap-2 truncate rounded-md px-2 text-left text-sm",
+          // Same rebind as the row above, for the surface hover paints.
+          "hover:bg-accent hover:[--muted-foreground:var(--accent-foreground)]",
+          "flex h-9 flex-1 items-center gap-2 truncate rounded-md px-2 text-left text-sm",
           active && "font-medium",
         )}
       >

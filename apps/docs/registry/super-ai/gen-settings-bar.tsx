@@ -25,7 +25,12 @@ function GenSettingsBar({ disabled = false, className, ...props }: GenSettingsBa
           // fragile, and it's what every item's label text actually
           // inherits. text-foreground keeps the toolbar's quiet tint and
           // clears contrast regardless of what sits behind it.
-          "bg-muted/50 text-foreground inline-flex items-center gap-0.5 rounded-md border p-0.5 text-xs",
+          //
+          // That covers inherited colour but not a composed child that sets
+          // text-muted-foreground itself, which a slot-level choice cannot
+          // reach. Rebinding the variable on the painted surface does — the
+          // house rule for any component that paints its own background.
+          "bg-muted/50 text-foreground [--muted-foreground:var(--accent-foreground)] inline-flex items-center gap-0.5 rounded-md border p-0.5 text-xs",
           className,
         )}
         {...props}
