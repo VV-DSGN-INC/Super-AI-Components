@@ -46,10 +46,16 @@ describe("MANIFEST", () => {
 
   // The 11 components PR #14 (main) shipped straight to `main` using the old
   // hand-wired demos/catalog/registry-extras approach, merged into this
-  // branch's generated pipeline after the fact. They predate this branch's
-  // Dialog-contract retrofit (per-state stories + guidance modules), so like
-  // LEGACY above they are exempt until a retrofit task covers them — this set
-  // should shrink, never grow.
+  // branch's generated pipeline after the fact. They predated this branch's
+  // Dialog-contract retrofit (per-state stories + guidance modules) and were
+  // exempt alongside LEGACY until a retrofit covered them.
+  //
+  // That retrofit is wave 0 batch A of the story-guarantees program
+  // (docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md):
+  // all 11 now carry normalized states, per-state stories, case stories and a
+  // guidance module, so their exemption is gone. They keep their own list here
+  // because "no longer exempt" is itself a property worth pinning — the set is
+  // a ratchet, and re-exempting one of these must fail loudly.
   const MAIN_PR14 = [
     "answer-block",
     "autonomy-selector",
@@ -74,14 +80,22 @@ describe("MANIFEST", () => {
     for (const name of MAIN_PR14) expect(shipped.has(name)).toBe(true);
   });
 
-  it("exempts the legacy 14 plus the PR #14 11, and nothing else", () => {
+  it("exempts the legacy 14, and nothing else", () => {
     // Exemption is a closed set that may only shrink. A new component must never
     // be born exempt — that is how a gate quietly stops gating.
     expect(
       MANIFEST.filter((i) => i.contractExempt)
         .map((i) => i.name)
         .sort(),
-    ).toEqual([...LEGACY, ...MAIN_PR14].sort());
+    ).toEqual([...LEGACY].sort());
+  });
+
+  it("never re-exempts a component the retrofit already freed", () => {
+    // The ratchet. Wave 0 batch A brought these 11 up to the full contract;
+    // restoring `contractExempt` to any of them would silently un-gate a
+    // component that already has the stories and guidance the flag excuses.
+    const exempt = new Set(MANIFEST.filter((i) => i.contractExempt).map((i) => i.name));
+    for (const name of MAIN_PR14) expect(exempt.has(name)).toBe(false);
   });
 
   it("holds every newly shipped component to the full contract", () => {

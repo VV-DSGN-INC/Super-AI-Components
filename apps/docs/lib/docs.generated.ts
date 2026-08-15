@@ -5,6 +5,7 @@ import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { ActionStackDocs } from "@/content/components/action-stack.docs";
 import { AiDocBlockDocs } from "@/content/components/ai-doc-block.docs";
 import { AiToolsMenuDocs } from "@/content/components/ai-tools-menu.docs";
+import { AnswerBlockDocs } from "@/content/components/answer-block.docs";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { ApprovalCardDocs } from "@/content/components/approval-card.docs";
@@ -13,12 +14,15 @@ import { ArtifactShellDocs } from "@/content/components/artifact-shell.docs";
 import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
 import { AssetLibraryDocs } from "@/content/components/asset-library.docs";
 import { AuthShellDocs } from "@/content/components/auth-shell.docs";
+import { AutonomySelectorDocs } from "@/content/components/autonomy-selector.docs";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
+import { CitationRefDocs } from "@/content/components/citation-ref.docs";
 import { CoachMarkDocs } from "@/content/components/coach-mark.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
 import { ConnectionManagerDocs } from "@/content/components/connection-manager.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
+import { CreditsIndicatorDocs } from "@/content/components/credits-indicator.docs";
 import { DataViewsDocs } from "@/content/components/data-views.docs";
 import { DetailViewShellDocs } from "@/content/components/detail-view-shell.docs";
 import { DiffReviewDocs } from "@/content/components/diff-review.docs";
@@ -27,6 +31,7 @@ import { DocsShellDocs } from "@/content/components/docs-shell.docs";
 import { DrawingToolsDocs } from "@/content/components/drawing-tools.docs";
 import { EmptyStateDocs } from "@/content/components/empty-state.docs";
 import { EnvStatusDocs } from "@/content/components/env-status.docs";
+import { EscalationHandoffDocs } from "@/content/components/escalation-handoff.docs";
 import { ExploreGalleryDocs } from "@/content/components/explore-gallery.docs";
 import { ExploreShellDocs } from "@/content/components/explore-shell.docs";
 import { FeatureAnnouncementDocs } from "@/content/components/feature-announcement.docs";
@@ -54,8 +59,10 @@ import { ParameterPanelDocs } from "@/content/components/parameter-panel.docs";
 import { PaywallMessageDocs } from "@/content/components/paywall-message.docs";
 import { PermissionPromptDocs } from "@/content/components/permission-prompt.docs";
 import { PresetGridDocs } from "@/content/components/preset-grid.docs";
+import { PricingTableDocs } from "@/content/components/pricing-table.docs";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
 import { PropertyInspectorDocs } from "@/content/components/property-inspector.docs";
+import { QuotaMeterDocs } from "@/content/components/quota-meter.docs";
 import { QuoteReplyDocs } from "@/content/components/quote-reply.docs";
 import { RateLimitBannerDocs } from "@/content/components/rate-limit-banner.docs";
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
@@ -73,10 +80,13 @@ import { SettingsDialogDocs } from "@/content/components/settings-dialog.docs";
 import { SettingsShellDocs } from "@/content/components/settings-shell.docs";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
 import { SkillMenuDocs } from "@/content/components/skill-menu.docs";
+import { SlotSummaryDocs } from "@/content/components/slot-summary.docs";
+import { SourceCardsDocs } from "@/content/components/source-cards.docs";
 import { SourcePanelDocs } from "@/content/components/source-panel.docs";
 import { StemMixerDocs } from "@/content/components/stem-mixer.docs";
 import { StudioShellDocs } from "@/content/components/studio-shell.docs";
 import { SuggestionChipsDocs } from "@/content/components/suggestion-chips.docs";
+import { TaskTrayDocs } from "@/content/components/task-tray.docs";
 import { TemplateDetailDocs } from "@/content/components/template-detail.docs";
 import { TimeRulerDocs } from "@/content/components/time-ruler.docs";
 import { TimelineShellDocs } from "@/content/components/timeline-shell.docs";
@@ -99,6 +109,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "action-stack": ActionStackDocs,
   "ai-doc-block": AiDocBlockDocs,
   "ai-tools-menu": AiToolsMenuDocs,
+  "answer-block": AnswerBlockDocs,
   "app-sidebar": AppSidebarDocs,
   "app-topbar": AppTopbarDocs,
   "approval-card": ApprovalCardDocs,
@@ -107,12 +118,15 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "asset-detail": AssetDetailDocs,
   "asset-library": AssetLibraryDocs,
   "auth-shell": AuthShellDocs,
+  "autonomy-selector": AutonomySelectorDocs,
   "chat-shell": ChatShellDocs,
+  "citation-ref": CitationRefDocs,
   "coach-mark": CoachMarkDocs,
   "compare-viewer": CompareViewerDocs,
   "connection-manager": ConnectionManagerDocs,
   "context-chips": ContextChipsDocs,
   "context-toolbar": ContextToolbarDocs,
+  "credits-indicator": CreditsIndicatorDocs,
   "data-views": DataViewsDocs,
   "detail-view-shell": DetailViewShellDocs,
   "diff-review": DiffReviewDocs,
@@ -121,6 +135,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "drawing-tools": DrawingToolsDocs,
   "empty-state": EmptyStateDocs,
   "env-status": EnvStatusDocs,
+  "escalation-handoff": EscalationHandoffDocs,
   "explore-gallery": ExploreGalleryDocs,
   "explore-shell": ExploreShellDocs,
   "feature-announcement": FeatureAnnouncementDocs,
@@ -148,8 +163,10 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "paywall-message": PaywallMessageDocs,
   "permission-prompt": PermissionPromptDocs,
   "preset-grid": PresetGridDocs,
+  "pricing-table": PricingTableDocs,
   "promo-card": PromoCardDocs,
   "property-inspector": PropertyInspectorDocs,
+  "quota-meter": QuotaMeterDocs,
   "quote-reply": QuoteReplyDocs,
   "rate-limit-banner": RateLimitBannerDocs,
   "recent-grid": RecentGridDocs,
@@ -167,10 +184,13 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "settings-shell": SettingsShellDocs,
   "sidebar-nav": SidebarNavDocs,
   "skill-menu": SkillMenuDocs,
+  "slot-summary": SlotSummaryDocs,
+  "source-cards": SourceCardsDocs,
   "source-panel": SourcePanelDocs,
   "stem-mixer": StemMixerDocs,
   "studio-shell": StudioShellDocs,
   "suggestion-chips": SuggestionChipsDocs,
+  "task-tray": TaskTrayDocs,
   "template-detail": TemplateDetailDocs,
   "time-ruler": TimeRulerDocs,
   "timeline-shell": TimelineShellDocs,
