@@ -7,6 +7,7 @@ import { RenderQueue } from "@/registry/super-ai/render-queue";
 import { TaskTray } from "@/registry/super-ai/task-tray";
 import { GenerationQueueDocs } from "@/content/components/generation-queue.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof GenerationQueue> = {
   title: "Super AI/Generation Queue",
@@ -169,6 +170,12 @@ export const ReducedMotion: Story = {
  *
  * Open gap, deliberately not asserted: where focus goes when a row's Cancel
  * unmounts as that row resolves. The component does not manage that today.
+ *
+ * The ring check is `expectPerceptibleFocus`, which measures blur and spread
+ * rather than asking whether a box-shadow string exists. Every control here
+ * clears it — all four take `Button`'s `focus-visible:ring-3` — but only once
+ * the ring has finished growing: `transition-all` means the first read after
+ * `tab()` returns `0px 0px 0px 0px`, which the helper settles past.
  */
 export const KeyboardOrder: Story = {
   args: {
@@ -199,13 +206,13 @@ export const KeyboardOrder: Story = {
     // left behind pointing at work that already finished.
     await expect(buttons).toHaveLength(4);
 
-    // The new KeyboardOrder must-show: every stop is visibly focused.
+    // The KeyboardOrder must-show: every stop is visibly focused. The ring is
+    // measured rather than merely present — see `expectPerceptibleFocus`.
     await userEvent.tab();
     while (document.activeElement && canvasElement.contains(document.activeElement)) {
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(focused);
       await userEvent.tab();
     }
   },

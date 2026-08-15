@@ -371,12 +371,29 @@ export const KeyboardOrder: Story = {
      * `document.activeElement` the instant a key event resolves races the
      * popup's own focus management; settling first is what makes "one key, one
      * row" a provable step rather than a generous allowance.
+     *
+     * The wait is for focus to have **moved**, not merely to be somewhere
+     * plausible, and the distinction is the whole bug. The portal-settle idiom
+     * in `TaskTray.stories.tsx` waits until `document.activeElement` is one of
+     * the expected stops, which is sufficient for a *tab* walk only because
+     * tabbing leaves the stop set in between (it lands on Base UI's focus
+     * guard). Arrow navigation inside a composite never leaves the set: read
+     * too early and the previous row is still focused, still a stop, and a
+     * membership-only settle returns it — so the walk compares row *n* against
+     * the expectation for row *n+1*. This file shipped that weaker form and it
+     * failed as a wrap-around reporting the last row instead of the first,
+     * under full-suite load, having passed every time the file ran alone.
+     * `WorkspaceSwitcher.stories.tsx` hit the identical failure and carries the
+     * same fix; see `story-conventions.md` mechanical fact 4.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!stops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the menu's rows: ${nameOf(active)}`);
+        }
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved off ${nameOf(previous)} yet`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -396,24 +413,27 @@ export const KeyboardOrder: Story = {
     await assertVisiblyFocused(start);
 
     const seen = new Set<HTMLElement>([start]);
+    let previous = start;
     for (let i = 1; i < stops.length; i += 1) {
       await userEvent.keyboard("{ArrowDown}");
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
+      previous = focused;
     }
     await expect(seen.size).toBe(stops.length);
 
     // The lap closes: the row after the last is the first again.
     await userEvent.keyboard("{ArrowDown}");
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    previous = await settledStop(previous);
+    await expect(nameOf(previous)).toBe(nameOf(start));
 
     // Into the submenu and back out, without losing the root menu.
     const appearance = within(menu).getByRole("menuitem", { name: "Appearance" });
     for (let i = 0; i < stops.length && document.activeElement !== appearance; i += 1) {
       await userEvent.keyboard("{ArrowDown}");
-      await settledStop();
+      previous = await settledStop(previous);
     }
     await expect(document.activeElement).toBe(appearance);
 

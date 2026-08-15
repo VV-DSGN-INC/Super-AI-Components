@@ -10,6 +10,7 @@ import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
 import { SafetyBlock } from "@/registry/super-ai/safety-block";
 import { EmptyStateDocs } from "@/content/components/empty-state.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 /** Decorative stand-in for one half of a transformation. */
 function Swatch({ label, dim }: { label: string; dim?: boolean }) {
@@ -181,6 +182,11 @@ export const RTL: Story = {
  * `EmptyContent` is `flex-row flex-wrap`, visual order and tab order agree
  * here — and the assertion below is what keeps them agreeing if someone
  * later reaches for `flex-row-reverse` to move the primary button right.
+ *
+ * The ring check is `expectPerceptibleFocus`, which measures blur and spread
+ * rather than asking whether a box-shadow string exists. Both buttons clear
+ * it, including the `ghost` secondary — worth knowing, because a ghost button
+ * paints no surface of its own and the ring is the only thing that marks it.
  */
 export const KeyboardOrder: Story = {
   args: {
@@ -204,13 +210,13 @@ export const KeyboardOrder: Story = {
     await expect(buttons[0]).toHaveAccessibleName("Generate a render");
     await expect(buttons[1]).toHaveAccessibleName("Browse presets");
 
-    // The new KeyboardOrder must-show: every stop is visibly focused.
+    // The KeyboardOrder must-show: every stop is visibly focused. The ring is
+    // measured rather than merely present — see `expectPerceptibleFocus`.
     await userEvent.tab();
     while (document.activeElement && canvasElement.contains(document.activeElement)) {
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(focused);
       await userEvent.tab();
     }
   },
