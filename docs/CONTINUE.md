@@ -208,6 +208,11 @@ names.
   knowing before you rely on the gate to catch this.
 - Two states that normalise to the same identifier silently collide.
 
+**Two shape rules (2026-08-14, story-guarantees program):** a component
+exposing `disabled` declares a disabled-shaped state; an async component
+declares loading-shaped and failure-shaped states — the component's own
+vocabulary, shape not name (`story-conventions.md` §Manifest-shape rules).
+
 ### 3.3 Scaffold
 
 ```bash
@@ -774,3 +779,8 @@ it honestly without noticing.
   their place. Deliberately *not* pinned by the `KeyboardOrder` play function —
   asserting the current behaviour would make the bug permanent. Recorded in that
   story's description.
+
+The convention became a program on 2026-08-14: eight names (`Controlled`
+joined), manifest-shape rules, and a retrofit —
+`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`.
+Wave 0 (the 25 `contractExempt` items) status is recorded here when it lands.

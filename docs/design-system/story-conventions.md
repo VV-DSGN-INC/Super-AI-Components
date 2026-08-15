@@ -22,7 +22,7 @@ finally rendered it.
 So: **a case story earns its place by being the only place a fact exists.**
 A story that restates the props table does not.
 
-## The seven
+## The eight
 
 Write only the ones that are **true for this component**. A story written to
 complete the set is worse than a missing one — it reads as coverage and
@@ -33,7 +33,8 @@ passes can find them.
 | --- | --- | --- |
 | `RTL` | the component has directional layout, icons or motion | rendered under `dir="rtl"`, with chevrons, arrows and trailing slots mirrored |
 | `ReducedMotion` | the component animates at all | the `prefers-reduced-motion` path — see the note below, which is specific to this repo |
-| `KeyboardOrder` | it is focusable or contains focusables | the tab sequence, and where focus returns on close or dismiss |
+| `KeyboardOrder` | it is focusable or contains focusables | the tab sequence, where focus returns on close or dismiss, and a visible focus treatment at every stop — play-asserted: the focused element matches `:focus-visible` and its computed style shows a ring or outline |
+| `Controlled` | it exposes a value/selection API (`value`/`onChange` or an equivalent controlled pair) | the component driven by external state, play-asserted: interaction alone does not move the rendered value, the change callback fires with the payload a consumer needs to apply it, and re-rendering with an unchanged `value` holds the component fixed. Without a play function this story is a screenshot of a prop and does not count |
 | `EmptyLabel` | any text slot is optional | the no-label rendering, which is usually where icon-only tap targets fail |
 | `LongContent` | any text slot is author-supplied | ~90 characters, plus the wrap/truncate/scroll decision the component actually makes |
 | `Mobile` | always | 375px, no horizontal scroll — see the note below on how to constrain it |
@@ -43,6 +44,14 @@ passes can find them.
 block. The pilot files carry the pattern. "`ReducedMotion`: nothing in the
 tree animates" is a useful sentence; silence is not, because the next reader
 cannot tell a considered omission from an oversight.
+
+Write each skip as its own line in that comment, in exactly this grammar, so
+the eventual gate (spec §4) can parse presence-or-annotated-absence:
+
+    // case-skip: RTL — no directional layout, icons or motion
+
+One line per skipped name: `case-skip: <StoryName> — <reason>`. The pilot
+files carry the pattern.
 
 ## Rules
 
@@ -100,14 +109,36 @@ case story surfaces a defect, fix the component or record the gap in the
 story description and in `CONTINUE.md` §8. Pinning a bug with a passing
 assertion is worse than having no assertion.
 
+## Manifest-shape rules
+
+Two rules about `states`, enforced during manifest prep (`CONTINUE.md` §3.2)
+and in review — deliberately not by `check:contract`, which cannot know
+"async" or "disabled-capable" mechanically:
+
+- A component that exposes `disabled` (its own prop, or passed through to an
+  interactive primitive) declares a disabled-shaped state.
+- A component with an async lifecycle declares its loading-shaped and
+  failure-shaped states.
+
+Both are about **shape, not name**: `running`, `generating`, `streaming`,
+`failed` and `locked` all conform. The rule is that the shape exists in the
+manifest, because a declared state is what forces a story through the gate.
+
+## Non-goals
+
+Two guarantee categories from the 2026-08 benchmark are declined, not
+missing. Sizes catalogues (the comparison system's largest category) and
+variant × intent grids market the optionality this system exists to remove —
+the "no every-variant-at-once story" rule above is that posture, stated. A
+future benchmark reader should find this paragraph and know the gap is
+chosen.
+
 ## Scope today
 
-- **Required** for every component built from now on, per
-  `component-build-brief.md` §Story.
-- **Not retrofitted** to the 128 already-shipped components. That work is
-  sequenced with the `contractExempt` retrofit, since both are "bring old
-  components up to a contract written after they shipped" and they touch the
-  same files.
-- **Not gated.** No lint rule requires `Mobile` yet, deliberately: automating
-  a convention while it is still moving locks in its mistakes. Gate after the
-  pattern has held across a wave.
+- **Required for every component in the registry.** The retrofit that makes
+  that true is the story-guarantees program
+  (`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`);
+  wave status lives in `CONTINUE.md`.
+- **Not yet gated.** The gate (presence or `case-skip` annotation for each of
+  the eight names) is the program's final step, landing only after every
+  family wave — a red gate can never sit on `main`.

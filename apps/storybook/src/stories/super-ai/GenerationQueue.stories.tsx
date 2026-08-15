@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { expect, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { GenerationQueue } from "@/registry/super-ai/generation-queue";
@@ -85,8 +85,20 @@ export const Cancel: Story = {
 };
 
 /* -------------------------------------------------------------------------
- * Case stories — see docs/design-system/story-conventions.md. All seven
- * apply to this component, which is why it was chosen for the pilot.
+ * Case stories — see docs/design-system/story-conventions.md. Seven of the
+ * eight apply to this component, which is why it was chosen for the pilot —
+ * `Controlled` joined the convention afterward and is the one that does not.
+ *
+ * Not written for this component, deliberately:
+ *
+ * // case-skip: Controlled — items/onCancel/onRetry callbacks are one-way actions, no value/onChange pair
+ * `items` and `batchProgress` are inbound render data: a caller-supplied
+ * batch of job states the queue displays, not a value a user selects and
+ * the component reports back — the `value` read by the vendored `Progress`
+ * primitive is this same inbound number, not a controlled prop of the
+ * queue's own. `onCancelAll`, `onCancelItem` and `onRetryItem` are one-way
+ * action callbacks, never paired with a `value` prop: there is nothing here
+ * to re-render unchanged and expect the queue to hold fixed.
  * ---------------------------------------------------------------------- */
 
 /**
@@ -186,6 +198,16 @@ export const KeyboardOrder: Story = {
     // Resolved rows contribute no control at all, so nothing focusable is
     // left behind pointing at work that already finished.
     await expect(buttons).toHaveLength(4);
+
+    // The new KeyboardOrder must-show: every stop is visibly focused.
+    await userEvent.tab();
+    while (document.activeElement && canvasElement.contains(document.activeElement)) {
+      const focused = document.activeElement as HTMLElement;
+      await expect(focused.matches(":focus-visible")).toBe(true);
+      const style = getComputedStyle(focused);
+      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await userEvent.tab();
+    }
   },
 };
 
