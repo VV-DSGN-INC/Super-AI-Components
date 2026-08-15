@@ -418,10 +418,10 @@ export const Boundary: Story = {
         </p>
         <PermissionPrompt
           open={false}
-          action="Send email to finance@acme.com"
+          action="Send email to finance@example.com"
           reason="The invoice PDF finished rendering and this recipient is on the approved list."
           args={[
-            { key: "to", value: "finance@acme.com" },
+            { key: "to", value: "finance@example.com" },
             { key: "subject", value: "Q3 invoice — ready for review" },
           ]}
           trigger={<Button variant="outline">Agent paused — review this call</Button>}

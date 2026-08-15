@@ -63,7 +63,7 @@ export const SensitiveFragmentBlurred: Story = {
   args: {
     variant: "output-blocked",
     policy: "Member data — minimum necessary",
-    fragment: "member 449-22-8801",
+    fragment: "member MBR-000-0000",
     sensitive: true,
     alternatives: "Request access in the member records system.",
   },
@@ -147,7 +147,7 @@ export const KeyboardOrder: Story = {
   args: {
     variant: "output-blocked",
     policy: "Member data — minimum necessary",
-    fragment: "member 449-22-8801",
+    fragment: "member MBR-000-0000",
     sensitive: true,
     alternatives: "Request access in the member records system.",
   },
@@ -165,7 +165,7 @@ export const KeyboardOrder: Story = {
 
     // The blocked text is hidden from assistive tech, not merely blurred, so
     // the visual and the accessibility tree agree while it is unrevealed.
-    await expect(canvas.getByText("member 449-22-8801")).toHaveAttribute("aria-hidden", "true");
+    await expect(canvas.getByText("member MBR-000-0000")).toHaveAttribute("aria-hidden", "true");
 
     for (let i = 0; i < stops.length; i++) {
       await userEvent.tab();
@@ -218,7 +218,7 @@ export const LongContent: Story = {
   args: {
     variant: "output-blocked",
     policy: "Protected health information — minimum necessary standard",
-    fragment: "summarize every claim denial for member 449-22-8801 and include the full appeal history",
+    fragment: "summarize every claim denial for member MBR-000-0000 and include the full appeal history",
     alternatives: "Run this in the member records system, where the same query is allowed with an audit trail.",
   },
 };
@@ -241,7 +241,7 @@ export const Mobile: Story = {
   args: {
     variant: "output-blocked",
     policy: "Member data — minimum necessary",
-    fragment: "member 449-22-8801",
+    fragment: "member MBR-000-0000",
     sensitive: true,
     alternatives: "Request access in the member records system.",
   },

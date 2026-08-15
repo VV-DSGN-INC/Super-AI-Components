@@ -159,11 +159,16 @@ export const Unavailable: Story = {
  * **Recorded gap:** the "Already tried" bullets use `lucide-react`'s
  * `ArrowRight`, which still points right (→) under `dir="rtl"`, against the
  * reading direction. It is a marker, so nothing is unusable and axe is
- * silent, but the convention's RTL rule asks for arrows to mirror. The fix
- * is one class on that icon (`rtl:-scale-x-100`); it is not applied here
- * because this retrofit does not change shipped component output, and
- * changing a registry source would leave the built registry stale. No
- * assertion below claims the arrow mirrors.
+ * silent, but the convention's RTL rule asks for arrows to mirror.
+ *
+ * It is not fixed here, and the reason is not that this retrofit leaves
+ * registry sources alone — it does change them where a fix is mechanical.
+ * The reason is that no sanctioned fix exists yet: `rtl:` appears nowhere in
+ * `registry/super-ai` today, so `rtl:-scale-x-100` would be this system's
+ * first direction-aware idiom, and it is the same open decision as the
+ * physical-versus-logical properties several neighbours are waiting on
+ * (`CONTINUE.md` §8). Adopting it in one icon, in one component, would set
+ * the convention by accident. No assertion below claims the arrow mirrors.
  */
 export const RTL: Story = {
   render: (args) => (

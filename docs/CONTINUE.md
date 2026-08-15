@@ -728,6 +728,70 @@ resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
 its own test file; **it belongs in the shared `vitest.setup.ts`** next to the
 ResizeObserver stub, and will bite anything composing a ScrollArea.
 
+### Added by the wave 0 story retrofit (2026-08-15)
+
+Same provenance rule as the list above: each was found by someone writing a
+story who could not write it honestly without noticing. These are not
+composition gaps — they are divergences with no owner, filed here because
+that is where the backlog lives.
+
+- **`--warning` is undefined in Storybook, so no warning surface has ever been
+  measured.** `apps/storybook/src/index.css` carries no `--color-warning` and
+  no `--warning`; `apps/docs/app/globals.css` carries both. Tailwind v4 emits
+  nothing for an undefined utility, so every `bg-warning` / `text-warning` in
+  the registry renders **unpainted** under the axe gate — the stories that
+  exist to show a near-limit or degraded state are green while proving nothing
+  about it. Carrying `cssVars: WARNING_CSS_VARS`: M2 `credits-indicator`, M3
+  `quota-meter`, M4 `pricing-table`, N2 `trust-dialog`, N6 `usage-dashboard`,
+  N7 `env-status`. Painting with the token while declaring **no** `cssVars`,
+  which additionally ships colourless to consumers: M6 `rate-limit-banner` and
+  P1 `data-views` (via `data-views-shared.tsx`). Deliberately not fixed —
+  defining the variable without choosing its value turns several components red
+  at once, and `text-warning` measures ~2.2:1 where it does resolve. Full
+  mechanism and the two M-family fixes it invalidates:
+  [`a11y-baseline.md`](design-system/a11y-baseline.md), "Gate hole".
+
+- **Adopt logical properties across the registry, or decide not to.** Four
+  components carry physical properties where the logical equivalent is
+  identical in LTR and correct in RTL: K6 `citation-ref` (`ml-0.5`, and
+  `border-l-2 pl-2` on the card's blockquote), N10 `safety-block` (`border-l-2
+  pl-2`), M2 `credits-indicator` (`border-l`, `pl-1.5`, `-mr-1`), and N11
+  `escalation-handoff`, whose `ArrowRight` marker does not mirror at all. K6
+  was found **twice**, by two agents independently, and both correctly declined
+  it for the same reason: logical properties appeared in zero registry sources,
+  so the first one would set a system-wide convention by accident. That premise
+  has now expired — `field-row.tsx` landed `text-end` and `pe-2` in this same
+  batch — which means the convention is being set by accident, in the one
+  component whose reviewer happened not to decline. Decide it deliberately:
+  either sweep the registry to logical properties (and pick an idiom for
+  mirroring icons — `rtl:` appears nowhere today, so `rtl:-scale-x-100` would
+  also be a first) or write down that physical properties are the house style
+  and stop re-finding this.
+
+- **M3 `quota-meter`'s over-limit row is an invalid ARIA range.** `OverLimit`
+  renders `aria-valuenow="5240"` against `aria-valuemax="5000"`. ARIA requires
+  `aria-valuenow` to fall inside the range its min/max describe, so an
+  assistive technology computing its own percentage announces over 100%. The
+  visible `5,240 / 5,000` against a clamped bar is right and should stay; the
+  fix is to stop reusing the allowance as the progressbar's maximum once `used`
+  exceeds it. Its story framed this as a consequence of the visual clamp;
+  reframed as a defect, and still not asserted.
+
+- **K7 `answer-block` has no answer-level failure state.** `AnswerBlockProps`
+  is `claims` / `streaming` / `retrievedUnused`, and coverage is derived from
+  the claims. There is no way to express *generation stopped* or *retrieval
+  errored* — an answer that failed halfway renders as a partially-cited answer
+  that simply ended. This is an API gap, not a story gap: no story can be
+  written for it until the prop exists.
+
+- **`catalog.md` promises K6 `citation-ref` an affordance it does not have.**
+  Line ~173 lists "copy quote" among its states; the component implements
+  `resolved` / `loading` / `unresolved` and `onJumpToSource`, and nothing
+  copies. The normalized manifest no longer carries it, so the divergence now
+  survives only in the catalog row and a docs pitfall — which means nothing
+  will catch it. Either build it or strike it from the row; specs are normative
+  including their prose.
+
 ## 9. Gaps found by the case-story pilot
 
 Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were

@@ -214,24 +214,29 @@ export const ReducedMotion: Story = {
 };
 
 /**
- * Tab traversal, and the one place this component departs from the pattern
- * its roles imply.
+ * Tab traversal. What this story guarantees is that every control in the
+ * table is reachable and visibly focused when it is reached, and that the
+ * component does not trap focus — not any particular order of arrival.
  *
- * The period control is `role="radiogroup"` over two `role="radio"` buttons,
- * but it does not implement roving tabindex: both options are native
- * buttons with no tabindex management, so both are tab stops and neither
- * arrow key does anything. The APG radiogroup pattern would make the checked
- * option the single stop and move selection with arrows. The assertion below
- * pins what the component actually does — five stops in document order —
- * rather than the pattern it looks like it implements, because asserting the
- * latter would fail and asserting it loosely would hide the gap.
+ * Three things are asserted, and all three hold whether or not the period
+ * control is ever given roving tabindex: the two plan CTAs and the add-on
+ * switch are each their own tab stop, the checked period option is always
+ * reachable by Tab, and every stop the walk lands on sits inside this
+ * component and matches `:focus-visible` with a ring or outline in its
+ * computed style.
  *
- * DEFECT, recorded not asserted: that missing roving-tabindex/arrow-key
- * behaviour. It is behavioural, so it is reported rather than fixed here.
+ * DEFECT, recorded not asserted: the period control is `role="radiogroup"`
+ * over two `role="radio"` buttons and does not implement the APG radiogroup
+ * pattern — there is no tabindex management, so both options are tab stops
+ * and neither arrow key moves the selection. It is behavioural, so it is
+ * reported (and carried as a pitfall on the docs page) rather than fixed
+ * here. Nothing below asserts how many stops the group contributes or which
+ * element follows which: the walk derives its bound from the radios' live
+ * tabindex, so implementing roving tabindex would keep this story green
+ * instead of turning it red on the fix.
  *
- * The loop is bounded by the expected stop count rather than tabbing until
- * focus escapes: the count is the assertion, and an unbounded walk would
- * quietly pass if a control stopped being focusable.
+ * The walk is bounded rather than run until focus escapes, so a control that
+ * stopped being focusable fails the count above instead of passing quietly.
  */
 export const KeyboardOrder: Story = {
   render: () => (
@@ -241,23 +246,48 @@ export const KeyboardOrder: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
-    // Two period options, two plan CTAs, one add-on switch. Nothing here
-    // sets tabindex, so document order is tab order.
-    const stops = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>("button:not([disabled])"),
-    );
-    await expect(stops).toHaveLength(5);
+    const canvas = within(canvasElement);
 
-    for (const expected of stops) {
-      await userEvent.tab();
+    const group = canvas.getByRole("radiogroup");
+    const radios = canvas.getAllByRole("radio");
+    await expect(radios).toHaveLength(2);
+
+    // The invariant that survives a roving-tabindex fix: whatever the group
+    // does internally, the checked option is the one Tab must reach. Today
+    // both are reachable; under the APG pattern only this one would be.
+    const checked = radios.find((radio) => radio.getAttribute("aria-checked") === "true");
+    await expect(checked).toBeDefined();
+    await expect(checked!.getAttribute("tabindex")).not.toBe("-1");
+
+    // Outside the group the count *is* the assertion: two plan CTAs and one
+    // add-on switch, each independently tabbable.
+    const outside = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>("button:not([disabled])"),
+    ).filter((el) => !group.contains(el));
+    await expect(outside).toHaveLength(3);
+    for (const el of outside) {
+      await expect(el.getAttribute("tabindex")).not.toBe("-1");
+    }
+
+    // Bound taken from the DOM, not from the traversal this component
+    // happens to ship — two group stops today, one after a roving fix.
+    const groupStops = radios.filter((radio) => radio.getAttribute("tabindex") !== "-1").length;
+    const expectedStops = groupStops + outside.length;
+
+    await userEvent.tab();
+    for (let i = 0; i < expectedStops; i++) {
       const focused = document.activeElement as HTMLElement;
-      await expect(focused).toBe(expected);
+      await expect(canvasElement.contains(focused)).toBe(true);
 
       // Every stop is visibly focused, not merely focusable.
       await expect(focused.matches(":focus-visible")).toBe(true);
       const style = getComputedStyle(focused);
       await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await userEvent.tab();
     }
+
+    // …and the component does not trap: the stop after the last one is outside.
+    await expect(canvasElement.contains(document.activeElement)).toBe(false);
   },
 };
 

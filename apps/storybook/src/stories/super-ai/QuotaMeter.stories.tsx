@@ -89,9 +89,16 @@ export const NearLimit: Story = {
 /**
  * Past the allowance. The bar clamps at 100% and the numbers deliberately do
  * not, so the row reads `5,240 / 5,000` against a full bar — the overage is the
- * useful number. A consequence worth knowing: that row reports
- * `aria-valuenow="5240"` against `aria-valuemax="5000"`, so an assistive
- * technology computing its own percentage can announce over 100%.
+ * useful number.
+ *
+ * **DEFECT, recorded not asserted:** that row reports `aria-valuenow="5240"`
+ * against `aria-valuemax="5000"`. ARIA requires `aria-valuenow` to fall
+ * within the range its `aria-valuemin`/`aria-valuemax` describe, so this is
+ * an invalid range rather than a trade the visual clamp buys — an assistive
+ * technology computing its own percentage announces over 100%. The visible
+ * `5,240 / 5,000` is right and should stay; the fix is to stop reusing the
+ * allowance as the progressbar's maximum once `used` exceeds it. Recorded in
+ * `CONTINUE.md` §8, and no assertion here pins the current values.
  */
 export const OverLimit: Story = {
   args: {

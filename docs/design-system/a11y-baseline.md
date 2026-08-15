@@ -569,6 +569,66 @@ do nothing.
 violations**, with `preview-tile.tsx` still the single name on the exclusion
 list.
 
+## Gate hole: `--warning` is undefined in Storybook, so warning surfaces are never measured
+
+Found by the wave 0 story retrofit (2026-08-15). This is not an exclusion —
+nothing was ever added to a list — it is a hole the gate cannot see through,
+and it is worth reading before trusting a green warning story.
+
+**The token exists in one app and not the other.** `apps/docs/app/globals.css`
+defines all four: `--color-warning` and `--color-warning-foreground` in its
+`@theme inline` block, and `--warning` / `--warning-foreground` in both
+`:root` and `.dark`. `apps/storybook/src/index.css` defines **none of them** —
+its `@theme inline` block stops at `--color-destructive`, and its `:root` and
+`.dark` blocks carry no `--warning` at all. `--warning` is the one token this
+registry adds beyond stock shadcn, and the copy of the theme Storybook renders
+against predates it.
+
+**Why that fails silently rather than loudly.** Tailwind v4 emits a utility
+only for a theme key that exists; for an undefined one it emits nothing and
+does not complain. `@source "../../docs/registry"` is in place, so Tailwind
+does scan the registry sources and the class names reach the DOM — they just
+compile to no rule. This is the identical failure mode the `@source` comment
+in that same file already documents for `bg-accent/30`: the class is present
+and does nothing.
+
+**What that costs.** Every `bg-warning`, `text-warning`, `border-warning` and
+`text-warning-foreground` in the registry renders **unpainted** under the axe
+gate. Axe measures the inherited colour instead of the intended one, so the
+warning pairing has never actually been measured — and the stories that exist
+to show a near-limit or degraded state are green while proving nothing about
+the state they are named for.
+
+Two of the three M-family fixes recorded immediately above are in this hole.
+M4 `pricing-table`'s "Save 20%" badge went solid — `bg-warning
+text-warning-foreground` on the control's own `bg-muted` track — precisely
+because `text-warning` on that track fell under 4.5:1. Under the gate that
+badge has no background of its own and inherits the track's foreground, so the
+run that certified the fix never rendered it. M2 `credits-indicator`'s `low`
+state is the same shape. Where the token *does* resolve, in the docs app,
+`text-warning` (`oklch(0.76 0.16 70)`) against `--background` measures
+**~2.2:1** against the 4.5:1 minimum — which is the reason both fixes moved
+the colour onto the surface in the first place.
+
+**Affected, by how they carry the token:**
+
+| How they carry it | Components |
+| --- | --- |
+| Declare `cssVars: WARNING_CSS_VARS` in the manifest | M2 `credits-indicator`, M3 `quota-meter`, M4 `pricing-table`, N2 `trust-dialog`, N6 `usage-dashboard`, N7 `env-status` |
+| Paint with warning classes and declare **no** `cssVars` | M6 `rate-limit-banner` (`border-warning/40 bg-warning/5`), P1 `data-views` via `data-views-shared.tsx` (`text-warning`, `bg-warning text-warning-foreground`) |
+
+The second row is a separate, worse bug in the same token: a consumer who runs
+`shadcn add` for either of those gets the component without the variable, and
+Tailwind emits nothing for them too — the same silent colourlessness the
+`WARNING_CSS_VARS` comment in `catalog.manifest.ts` exists to prevent.
+
+**Deliberately not fixed here.** Adding `--warning` to the Storybook
+stylesheet is a one-line change that would turn several components red at
+once, and *which* value it should take — matching the docs app, or a darker
+one chosen to clear 4.5:1 as foreground — is a design decision, not a
+mechanical one. Recorded rather than patched, per the rule that a gate is
+never quieted to get a run green. Tracked in `CONTINUE.md` §8.
+
 ## Excluded: Base UI's own focus-guard spans (`aria-hidden-focus`)
 
 `Feedback`'s `Rating` story (and every future story that opens a Base UI
