@@ -892,17 +892,32 @@ that is where the backlog lives.
   will catch it. Either build it or strike it from the row; specs are normative
   including their prose.
 
-- **Declared-state stories are shipping without descriptions — 29 of them from
-  this wave alone.** `story-conventions.md` is explicit that a story with no
-  description is a screenshot, and no gate can see the omission:
-  `check:contract` asserts only that every declared state has a matching
-  export, never that the export says anything. Counted 2026-08-15 across the
-  story files this wave touched: **29 declared-state exports carry no JSDoc
-  block, across 8 files** — `task-tray` 7, `source-cards` 5,
-  `credits-indicator` 4, `section-header` 4, `stat-readout` 4, `answer-block` 2,
-  `entity-row` 2, `shortcuts-sheet` 1. A further **16 predate this wave** in
-  files it only edited (`generation-queue` 5, `permission-prompt` 4,
-  `suggestion-chips` 4, `empty-state` 3), for 45 in the 29 touched files.
+- **Declared-state stories are shipping without descriptions, and it is a
+  registry-wide pattern rather than a wave-0 artefact.**
+  `story-conventions.md` is explicit that a story with no description is a
+  screenshot, and no gate can see the omission: `check:contract` asserts only
+  that every declared state has a matching export, never that the export says
+  anything.
+
+  Counted 2026-08-15 by walking each shipped non-block item's declared states
+  to its `statePascal` export and checking whether the preceding non-blank line
+  closes a JSDoc block:
+
+  | scope | undocumented declared-state exports | files |
+  | --- | --- | --- |
+  | the 25 wave-0 components | **23** | 5 — `task-tray` 6, `source-cards` 5, `stat-readout` 4, `section-header` 4, `credits-indicator` 4 |
+  | the whole registry | **202** | 50 |
+
+  The registry-wide figure is the one that matters: wave 0 accounts for barely
+  a tenth of it, so this is a pre-existing convention gap the retrofit merely
+  made visible, not damage the retrofit did. Scope any follow-up to the 202.
+
+  **A caution for whoever counts it next.** This number was got wrong three
+  times before it was got right — 23, then "corrected" to 29, then to 25 —
+  because "does this export have a description" is a question about the shape
+  of the lines above it, and grep answers a slightly different question than
+  the one being asked. Count it mechanically, from the manifest's declared
+  states rather than from export names, and state the scope you counted.
 
   **Why it is a follow-up and not a blocker: zero case stories lack a
   description.** Every undocumented export is a declared-state story — the kind
