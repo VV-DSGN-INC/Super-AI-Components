@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { FileText, Sparkles } from "lucide-react";
-import { expect, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 
 import { ChoiceChip, ChoiceChips } from "@/registry/super-ai/choice-chips";
 import { ContextChip, ContextChips } from "@/registry/super-ai/context-chips";
@@ -75,21 +75,31 @@ export const OverflowLink: Story = {
 /* -------------------------------------------------------------------------
  * Case stories — the situations this component meets in a product, as
  * opposed to the prop combinations above. See
- * docs/design-system/story-conventions.md for which of the seven apply and
- * why the two that are missing here are missing.
+ * docs/design-system/story-conventions.md for which of the eight apply and
+ * why the three that are missing here are missing.
  *
  * Not written for this component, deliberately:
  *
- * - ReducedMotion. Nothing in the tree animates. `Suggestions` is a
- *   ScrollArea with a hidden ScrollBar and `Suggestion` is a plain Button;
- *   there is no transition, transform or keyframe to suppress. A story
- *   asserting the reduced-motion path would assert that nothing changed.
- * - EmptyLabel. `suggestion` is required and is the chip's only source of an
- *   accessible name — the component has no optional text slot to empty. The
- *   docs module's third pitfall ("an icon-only chip with empty suggestion
- *   text ships an unlabeled button") describes a caller error, and rendering
- *   it here would ship an axe `button-name` violation into a gate that runs
- *   at `test: "error"`. It belongs in the docs page's donts, where it is.
+ * // case-skip: ReducedMotion — nothing in the tree animates
+ * `Suggestions` is a ScrollArea with a hidden ScrollBar and `Suggestion` is
+ * a plain Button; there is no transition, transform or keyframe to
+ * suppress. A story asserting the reduced-motion path would assert that
+ * nothing changed.
+ *
+ * // case-skip: EmptyLabel — suggestion is required, the chip's only accessible-name source
+ * The component has no optional text slot to empty. The docs module's third
+ * pitfall ("an icon-only chip with empty suggestion text ships an unlabeled
+ * button") describes a caller error, and rendering it here would ship an
+ * axe `button-name` violation into a gate that runs at `test: "error"`. It
+ * belongs in the docs page's donts, where it is.
+ *
+ * // case-skip: Controlled — onSelect reports a pick, there is no value to hold
+ * `SuggestionChip`'s `onSelect` fires with the clicked suggestion's text so
+ * a caller can fill a composer elsewhere; the component never tracks a
+ * selection of its own — no `value` prop exists anywhere in
+ * `SuggestionChipsProps`/`SuggestionChipProps`, and no chip carries a
+ * selected state a parent could hold with one. A prompt shortcut, not a
+ * controlled input.
  * ---------------------------------------------------------------------- */
 
 /**
@@ -143,6 +153,16 @@ export const KeyboardOrder: Story = {
     // this row sets tabindex, so document order is the traversal.
     const focusable = canvasElement.querySelectorAll("button, a[href]");
     await expect(focusable[focusable.length - 1]).toBe(overflow);
+
+    // The new KeyboardOrder must-show: every stop is visibly focused.
+    await userEvent.tab();
+    while (document.activeElement && canvasElement.contains(document.activeElement)) {
+      const focused = document.activeElement as HTMLElement;
+      await expect(focused.matches(":focus-visible")).toBe(true);
+      const style = getComputedStyle(focused);
+      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await userEvent.tab();
+    }
   },
 };
 

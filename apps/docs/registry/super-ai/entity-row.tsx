@@ -37,8 +37,14 @@ function EntityRow({
   // `trailing` holds caller markup, and callers pass `text-muted-foreground` into
   // it (the demo does). A slot-level fix cannot reach that; a variable rebind
   // repaints any descendant, composed or not.
+  // `text-start`, not `text-left`: a `<button>` centres its text by default, so
+  // something has to override it, and the logical form compiles to the same
+  // declaration in LTR while mirroring under `dir="rtl"`. Without it the title
+  // and description stay pinned to the visual left while the icon moves to the
+  // right, opening a gap that does not exist in LTR. Sanctioned swap class —
+  // CONTINUE.md §8, "Logical properties"; A5 field-row was the first adopter.
   const rowClassName = cn(
-    "flex min-h-14 w-full items-center gap-3 rounded-lg px-3 py-2 text-left",
+    "flex min-h-14 w-full items-center gap-3 rounded-lg px-3 py-2 text-start",
     interactive &&
       "hover:bg-accent hover:text-accent-foreground hover:[--muted-foreground:var(--accent-foreground)] transition-colors",
     interactive && "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",

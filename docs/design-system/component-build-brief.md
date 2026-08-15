@@ -165,7 +165,7 @@ Keep the scaffolded shape: `componentDocsPage(<Pascal>Docs)` as
 Then add the **case stories**: the situations the component meets in a
 product, as opposed to the prop combinations above. Read
 [`story-conventions.md`](story-conventions.md) before writing them — it
-carries the seven names, the rule for deciding which are true for your
+carries the eight names, the rule for deciding which are true for your
 component, and three mechanical facts about this repo's Storybook that are
 expensive to rediscover.
 

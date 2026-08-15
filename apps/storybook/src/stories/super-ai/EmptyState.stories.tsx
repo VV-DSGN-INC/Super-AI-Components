@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ImagePlus, Sparkles } from "lucide-react";
-import { expect, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/registry/super-ai/empty-state";
@@ -126,9 +126,16 @@ export const ExamplePair: Story = {
  *
  * Not written for this component, deliberately:
  *
- * - ReducedMotion. Nothing here animates. The only moving part in the tree
- *   would be a caller-supplied `action`, whose motion is that component's
- *   concern, not this one's.
+ * // case-skip: ReducedMotion — nothing here animates
+ * The only moving part in the tree would be a caller-supplied `action`,
+ * whose motion is that component's concern, not this one's.
+ *
+ * // case-skip: Controlled — no value, onChange or onSelect anywhere in the props
+ * Every prop is either static content (`title`, `description`, `icon`) or a
+ * caller-supplied node (`action`, `secondaryAction`, `examplePair`) whose
+ * own interaction handling belongs to whatever was passed in, not to
+ * `EmptyState` itself. There is no selection or value here for external
+ * state to drive.
  * ---------------------------------------------------------------------- */
 
 /**
@@ -196,6 +203,16 @@ export const KeyboardOrder: Story = {
     await expect(buttons).toHaveLength(2);
     await expect(buttons[0]).toHaveAccessibleName("Generate a render");
     await expect(buttons[1]).toHaveAccessibleName("Browse presets");
+
+    // The new KeyboardOrder must-show: every stop is visibly focused.
+    await userEvent.tab();
+    while (document.activeElement && canvasElement.contains(document.activeElement)) {
+      const focused = document.activeElement as HTMLElement;
+      await expect(focused.matches(":focus-visible")).toBe(true);
+      const style = getComputedStyle(focused);
+      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await userEvent.tab();
+    }
   },
 };
 

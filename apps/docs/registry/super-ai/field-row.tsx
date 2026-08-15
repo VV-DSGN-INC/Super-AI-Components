@@ -55,7 +55,10 @@ function UnitInput({ unit, onValueChange, onChange, className, ...props }: UnitI
       <input
         type="number"
         inputMode="decimal"
-        className="w-full min-w-0 bg-transparent px-2 py-1 text-right text-sm outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+        // Logical, not physical: the value has to sit against the unit
+        // suffix, and under `dir="rtl"` the suffix moves to the visual left.
+        // `text-end` is `text-right` in LTR and mirrors correctly in RTL.
+        className="w-full min-w-0 bg-transparent px-2 py-1 text-end text-sm outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
         onChange={(e) => {
           const n = e.target.valueAsNumber;
           if (!Number.isNaN(n)) onValueChange?.(n);
@@ -64,7 +67,9 @@ function UnitInput({ unit, onValueChange, onChange, className, ...props }: UnitI
         {...props}
       />
       {/* TODO: click-to-focus the input from the unit suffix */}
-      <span data-slot="unit-input-unit" className="text-muted-foreground pr-2 text-xs">
+      {/* `pe-2`, not `pr-2`: in RTL the suffix sits at the visual left and the
+          padding has to follow it, or the unit ends up flush to the border. */}
+      <span data-slot="unit-input-unit" className="text-muted-foreground pe-2 text-xs">
         {unit}
       </span>
     </span>

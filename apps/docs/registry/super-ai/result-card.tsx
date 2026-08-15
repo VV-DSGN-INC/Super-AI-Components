@@ -126,11 +126,15 @@ function ResultCard({
     state === "failed" ? (
       <>
         <AlertTriangle aria-hidden className="size-4" />
-        {/* text-foreground, not the inherited text-destructive: destructive on
-            the frame's bg-muted is the contrast pairing this system keeps
-            failing. The icon carries the colour, the words carry the meaning,
-            so nothing here is conveyed by colour alone. */}
-        <span className="text-foreground">{STATUS_TEXT.failed}</span>
+        {/* No colour class: A8's failed overlay now paints `text-foreground`
+            itself (preview-tile.tsx:88), so this inherits it. The override that
+            used to be here was the local fix for destructive-on-bg-muted, the
+            contrast pairing this system keeps failing; promoting it to A8's
+            default made this redundant, and it is deleted rather than left
+            duplicating a default — the same tidy-up cost-chip's call sites got.
+            The icon carries the colour, the words carry the meaning, so nothing
+            here is conveyed by colour alone. */}
+        <span>{STATUS_TEXT.failed}</span>
         {onRetry ? (
           <Button data-slot="result-card-retry" type="button" size="sm" variant="outline" onClick={onRetry}>
             <RotateCcw aria-hidden />

@@ -7,10 +7,12 @@ export const MUTED_FG = "text-muted-foreground";
 export const MUTED_BG_RE = /^bg-(?:muted|accent|secondary)(?:\/\d{1,3})?$/;
 
 // May only shrink, never grow. See docs/design-system/a11y-baseline.md.
-// preview-tile.tsx's violations are a different defect (text-destructive on the
-// default surface, and label text over unpredictable image content), not the
-// muted-on-muted pairing this module looks for.
-export const CONTRAST_EXEMPT_FILES = ["preview-tile.tsx"];
+// Empty since the A8 retrofit: preview-tile.tsx's `failed` overlay no longer
+// paints text-destructive on the frame's bg-muted (4.34:1) — it inherits
+// text-foreground, which is what both real consumers already overrode it to.
+// This list and the a11y exclusion list in apps/storybook/vitest.config.ts are
+// asserted equal by check:contract's G3 gate; shrink them in the same commit.
+export const CONTRAST_EXEMPT_FILES = [];
 
 // Exactly the original predicate — do not widen it. This is a
 // behaviour-preserving refactor, and `isExempt` guards an exemption list that

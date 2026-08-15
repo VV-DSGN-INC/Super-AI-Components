@@ -110,7 +110,16 @@ function ThreadListItem({
     <div
       data-slot="thread-list-item"
       data-active={active || undefined}
-      className={cn("group/thread relative flex items-center rounded-md", active && "bg-accent", className)}
+      className={cn(
+        "group/thread relative flex items-center rounded-md",
+        // Painting a surface rebinds the variable rather than restyling the
+        // slot: the pin glyph below carries its own `text-muted-foreground`,
+        // which is the same lightness as `bg-accent` in this token set
+        // (a11y-baseline.md). A className on the icon could not reach it once
+        // a consumer composes something else into the row.
+        active && "bg-accent [--muted-foreground:var(--accent-foreground)]",
+        className,
+      )}
       {...props}
     >
       <button
@@ -118,7 +127,9 @@ function ThreadListItem({
         aria-current={active ? "page" : undefined}
         onClick={() => onSelect?.(id)}
         className={cn(
-          "hover:bg-accent flex h-9 flex-1 items-center gap-2 truncate rounded-md px-2 text-left text-sm",
+          // Same rebind as the row above, for the surface hover paints.
+          "hover:bg-accent hover:[--muted-foreground:var(--accent-foreground)]",
+          "flex h-9 flex-1 items-center gap-2 truncate rounded-md px-2 text-left text-sm",
           active && "font-medium",
         )}
       >
@@ -153,7 +164,10 @@ function ThreadListItem({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Thread actions"
+              // Named per row, not "Thread actions": ten threads would
+              // otherwise be ten identically-named buttons in the screen-reader
+              // element list. Same shape as record-list's row menu.
+              aria-label={`Thread actions for ${title}`}
               className="size-7 opacity-0 group-hover/thread:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 pointer-coarse:opacity-100"
             />
           }

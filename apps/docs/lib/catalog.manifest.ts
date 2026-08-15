@@ -44,7 +44,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["single", "combo", "sequence"],
     specAnchor: "component-specs.md#a1-kbd",
-    contractExempt: true,
   },
   {
     id: "A2",
@@ -59,9 +58,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["estimate", "confirmed", "insufficient", "rate form"],
+    states: ["per-action", "rate", "currency", "with-qualifier"],
     specAnchor: "component-specs.md#a2-cost-chip",
-    contractExempt: true,
   },
   {
     id: "A3",
@@ -76,9 +74,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["with/without count", "collapsible"],
+    states: ["relative-bucket", "absolute-date"],
     specAnchor: "component-specs.md#a3-date-section",
-    contractExempt: true,
   },
   {
     id: "A4",
@@ -93,9 +90,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["numeric", "text", "preview-content; single/multi; disabled; loading"],
+    states: ["numeric", "text", "preview-content", "disabled-chip"],
     specAnchor: "component-specs.md#a4-choice-chips",
-    contractExempt: true,
   },
   {
     id: "A5",
@@ -110,9 +106,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["applied chips", "overflow count", "clear-all"],
+    states: ["unfiltered", "toggle-chips", "removable-chips", "disabled"],
     specAnchor: "component-specs.md#a5-filter-bar",
-    contractExempt: true,
   },
   {
     id: "A6",
@@ -127,9 +122,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: ["reset-affordance"],
     npm: [],
-    states: ["slider+unit", "select", "toggle", "colour", "xy-pair"],
+    states: ["slider-unit", "select", "toggle", "colour", "xy-pair", "with-hint", "with-reset", "disabled"],
     specAnchor: "component-specs.md#a6-field-row",
-    contractExempt: true,
   },
   {
     id: "A7",
@@ -144,9 +138,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["inline", "compact", "node-docked"],
+    states: ["video-model", "image-model", "running", "partially-locked"],
     specAnchor: "component-specs.md#a7-gen-settings-bar",
-    contractExempt: true,
   },
   {
     id: "A8",
@@ -161,9 +154,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["image/video/colour/text/3D", "selected", "locked", "loading", "failed"],
+    states: ["ready", "selectable", "selected", "loading", "locked", "failed"],
     specAnchor: "component-specs.md#a8-preview-tile",
-    contractExempt: true,
   },
   {
     id: "A9",
@@ -180,7 +172,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["plain", "selectable", "with-badge", "with-chevron", "with-switch", "disabled"],
     specAnchor: "component-specs.md#a9-entity-row",
-    contractExempt: true,
   },
   {
     id: "A10",
@@ -195,9 +186,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["2-col grid", "inline rows", "missing-value em-dash"],
+    states: ["label-beside-value", "label-above-value", "copyable-value", "missing-value"],
     specAnchor: "component-specs.md#a10-stat-readout",
-    contractExempt: true,
   },
   {
     id: "A11",
@@ -214,7 +204,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["modified", "at-default", "keyframed", "group-level", "modified-dot"],
     specAnchor: "component-specs.md#a11-reset-affordance",
-    contractExempt: true,
   },
   {
     id: "A12",
@@ -231,7 +220,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["plain", "with-action", "with-count", "collapsible"],
     specAnchor: "component-specs.md#a12-section-header",
-    contractExempt: true,
   },
   {
     id: "B1",
@@ -326,9 +314,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["button", "input", "dropdown-menu", "alert-dialog"],
     consumes: ["date-section"],
     npm: ["lucide-react"],
-    states: ["pin", "inline rename", "delete-confirm", "active", "unread", "running"],
+    states: ["pinned", "inline-rename", "delete-confirm", "active", "unread", "empty"],
     specAnchor: "component-specs.md#b6-thread-list",
-    contractExempt: true,
   },
   {
     id: "B7",
@@ -559,20 +546,13 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: ["lucide-react"],
     states: [
-      "per-slot source (stated",
-      "inferred",
-      "defaulted",
-      "retrieved)",
-      "low-confidence flag",
-      "correct in place",
-      "missing",
-      "confirm/act",
+      "mixed-provenance",
+      "low-confidence-flagged",
+      "correctable",
+      "missing-required",
+      "confirm-ready",
     ],
     specAnchor: "component-specs.md#d7-slot-summary",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "E1",
@@ -1435,12 +1415,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["hover-card"],
     consumes: [],
     npm: [],
-    states: ["resolved", "loading", "unresolved; jump-to-source; copy quote"],
+    states: ["resolved", "jump-to-source", "loading", "unresolved", "disabled"],
     specAnchor: "component-specs.md#k6-citation-ref",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "K7",
@@ -1455,12 +1431,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: ["citation-ref"],
     npm: ["lucide-react"],
-    states: ["streaming", "cited", "partially-cited", "uncited-warning; retrieved-but-uncited shown"],
+    states: ["streaming", "cited", "partially-cited", "uncited", "retrieved-unused", "citation-unresolved"],
     specAnchor: "component-specs.md#k7-answer-block",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "K8",
@@ -1475,12 +1447,15 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["card", "badge"],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["ranked", "relevance shown", "used vs retrieved-unused", "permission-filtered", "empty"],
+    states: [
+      "ranked",
+      "relevance-banded",
+      "used-and-unused",
+      "permission-filtered",
+      "empty-searched",
+      "not-yet-run",
+    ],
     specAnchor: "component-specs.md#k8-source-cards",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "L1",
@@ -1559,9 +1534,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["dialog"],
     consumes: ["kbd"],
     npm: [],
-    states: ["sectioned", "searchable", "pinned header", "controls-primer variant"],
+    states: ["sectioned", "scrolling-list", "trigger-button", "controlled-open"],
     specAnchor: "component-specs.md#l5-shortcuts-sheet",
-    contractExempt: true,
   },
   {
     id: "L6",
@@ -1608,13 +1582,9 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["ring", "counter", "low", "empty", "with top-up; hover detail"],
+    states: ["counter", "ring", "low", "empty", "with-top-up"],
     specAnchor: "component-specs.md#m2-credits-indicator",
     cssVars: WARNING_CSS_VARS,
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "M3",
@@ -1629,13 +1599,9 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["per-resource rows", "near-limit", "over-limit", "sidebar compact"],
+    states: ["normal", "near-limit", "over-limit", "compact"],
     specAnchor: "component-specs.md#m3-quota-meter",
     cssVars: WARNING_CSS_VARS,
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "M4",
@@ -1650,13 +1616,9 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: [],
     consumes: [],
     npm: [],
-    states: ["monthly/yearly + save badge", "grouped feature lists", "add-on row with switch"],
+    states: ["billing-period-toggle", "grouped-features", "add-on-rows", "current-plan"],
     specAnchor: "component-specs.md#m4-pricing-table",
     cssVars: WARNING_CSS_VARS,
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "M5",
@@ -1860,15 +1822,14 @@ export const MANIFEST: ManifestItem[] = [
     consumes: ["entity-row", "section-header"],
     npm: ["lucide-react"],
     states: [
-      "ask every time",
-      "auto-approve reads",
-      "full auto; per-tool override; **grant list with revoke**; effective mid-run",
+      "ask-every-time",
+      "auto-approve-reads",
+      "full-auto",
+      "standing-grants",
+      "denied-tools",
+      "locked-mid-run",
     ],
     specAnchor: "component-specs.md#n9-autonomy-selector",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "N10",
@@ -1883,15 +1844,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["alert", "button"],
     consumes: [],
     npm: ["lucide-react"],
-    states: [
-      "input-blocked",
-      "output-blocked; policy named; triggering fragment quoted; sensitive-content blur; appeal/reroute",
-    ],
+    states: ["input-blocked", "output-blocked", "fragment-quoted", "sensitive-fragment-blurred"],
     specAnchor: "component-specs.md#n10-safety-block",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "N11",
@@ -1906,21 +1860,11 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["card", "button"],
     consumes: ["section-header", "stat-readout"],
     npm: ["lucide-react"],
-    states: [
-      "triggered (user",
-      "budget-exhausted",
-      "low-confidence",
-      "policy)",
-      "packet preview",
-      "queued with wait estimate",
-      "accepted",
-      "unavailable",
-    ],
+    // The trigger reasons (user / budget-exhausted / low-confidence / policy)
+    // are an axis, not states — they are the `trigger` prop, rendered across
+    // the four situations below rather than enumerated as a grid.
+    states: ["packet-preview", "queued", "accepted", "unavailable"],
     specAnchor: "component-specs.md#n11-escalation-handoff",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "N12",
@@ -1935,17 +1879,8 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["sheet", "button"],
     consumes: ["entity-row"],
     npm: ["lucide-react"],
-    states: [
-      "running",
-      "needs-input",
-      "done",
-      "failed; per-task cancel; opt-in completion notification; empty",
-    ],
+    states: ["running", "needs-input", "done", "failed", "empty", "per-task-cancel", "notify-opt-in"],
     specAnchor: "component-specs.md#n12-task-tray",
-    // Shipped in PR #14 (main) before this branch's Dialog-contract retrofit
-    // existed: no per-state stories, no guidance module. Exempt like the
-    // legacy 14 above, for the same reason — this should shrink, not grow.
-    contractExempt: true,
   },
   {
     id: "O1",

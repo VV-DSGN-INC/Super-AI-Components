@@ -75,9 +75,10 @@ export default mergeConfig(
         "**/stories/ai-elements/Context.stories.tsx", // mount crash (also covered by the ai-elements/** exclude above)
         "**/stories/ui/DropdownMenu.stories.tsx", // mount crash (also covered by the ui/** exclude above)
         "**/stories/ui/MessageScroller.stories.tsx", // mount crash (also covered by the ui/** exclude above)
-        // CostChip (A2) and EntityRow (A9) were here for color-contrast and are
-        // now retrofitted and enforced — the list shrank, as it may.
-        "**/stories/super-ai/PreviewTile.stories.tsx", // color-contrast x2 — contractExempt: true (A8)
+        // CostChip (A2), EntityRow (A9) and now PreviewTile (A8) were here for
+        // color-contrast and are all retrofitted and enforced — the list
+        // shrank, as it may. No super-ai story is excluded any more; if you
+        // are about to add one back, read a11y-baseline.md first.
       ],
     },
   }),

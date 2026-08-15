@@ -17,8 +17,12 @@ function CostChip({ amount, unit = "credits", className, children, ...props }: C
       // Every call site in the registry already overrode it to exactly this, so
       // this is the shipped appearance being promoted to the default, not a new
       // look — and those overrides are deleted with this change.
+      // The rebind covers the trailing slot: this chip paints `bg-muted` and
+      // renders caller-supplied children on it, and a slot-level override
+      // cannot reach a child that carries its own `text-muted-foreground`
+      // (a11y-baseline.md). Same pairing as docs-shell / studio-shell.
       className={cn(
-        "bg-muted text-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs",
+        "bg-muted text-foreground [--muted-foreground:var(--accent-foreground)] inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs",
         className,
       )}
       {...props}

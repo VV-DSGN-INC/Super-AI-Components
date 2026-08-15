@@ -165,7 +165,13 @@ const items: ManifestItem[] = rows.map((row) => {
     npm: shipped?.npm ?? [],
     states: row.states,
     specAnchor: `${layer === "block" ? "block-specs.md" : "component-specs.md"}#${row.id.toLowerCase()}-${row.name.toLowerCase()}`,
-    ...(shipped ? { contractExempt: true as const } : {}),
+    // No `contractExempt`. This used to emit `contractExempt: true` for every
+    // shipped item; wave 0 drove the flag to zero across the manifest and
+    // `check:contract` now ratchets it there. Re-running the generator with the
+    // old line would re-exempt all 116 items in one write — the ratchet would
+    // catch the flags, but the state normalizations done in the same wave are
+    // regenerated from catalog.md's free text and would revert silently. Do not
+    // reintroduce it.
   };
 });
 
