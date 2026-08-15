@@ -87,7 +87,11 @@ function SlotSummary({
                   </Badge>
                 ) : null}
                 {slot.confidence === "low" && !isMissing ? (
-                  <Badge variant="destructive" className="text-[0.6875rem]">
+                  // Badge's own destructive tint (bg-destructive/10
+                  // text-destructive) measures 4.0:1 and fails the gate; going
+                  // solid is the substitution a11y-baseline.md prescribes and
+                  // generation-queue/tts-composer already carry.
+                  <Badge variant="destructive" className="bg-destructive text-background text-[0.6875rem]">
                     <AlertTriangle />
                     Check this
                   </Badge>
