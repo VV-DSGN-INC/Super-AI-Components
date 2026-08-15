@@ -152,6 +152,12 @@ export const Locked: Story = {
  * overrode it back at the call site, so the fix made the shipped look the
  * default. Colour now rides on the icon, where 4.0:1 is enough and no meaning
  * is carried by colour alone.
+ *
+ * The play function is here because that promotion created a dependency
+ * nothing else can see: `result-card.tsx:129` and `frame-strip.tsx:162`
+ * deleted their local overrides and now cite this default in comments, so if
+ * it moves — or is simply dropped, leaving the overlay to inherit again —
+ * both regress and every gate stays green.
  */
 export const Failed: Story = {
   args: {
@@ -166,6 +172,32 @@ export const Failed: Story = {
         </Button>
       </>
     ),
+  },
+  play: async ({ canvasElement }) => {
+    const tile = canvasElement.querySelector<HTMLElement>('[data-slot="preview-tile"]');
+    const overlay = canvasElement.querySelector<HTMLElement>('[data-slot="preview-tile-failed"]');
+    await expect(tile).not.toBeNull();
+    await expect(overlay).not.toBeNull();
+
+    // What `text-foreground` resolves to in this theme, read back rather than
+    // written as a literal: the token is free to move, the coupling is not.
+    const probe = document.createElement("span");
+    probe.className = "text-foreground";
+    canvasElement.appendChild(probe);
+    const foreground = getComputedStyle(probe).color;
+    probe.remove();
+
+    // Colour the tile from outside with the destructive value this overlay
+    // used to inherit. Storybook's own body is already `text-foreground`, so
+    // without a differing ancestor an inheriting overlay would read back as
+    // foreground anyway and this assertion would prove nothing.
+    const restore = tile!.style.color;
+    tile!.style.color = "var(--destructive)";
+    await expect(getComputedStyle(tile!).color).not.toBe(foreground);
+
+    // Painted, not inherited.
+    await expect(getComputedStyle(overlay!).color).toBe(foreground);
+    tile!.style.color = restore;
   },
 };
 

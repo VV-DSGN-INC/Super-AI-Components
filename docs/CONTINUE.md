@@ -892,6 +892,29 @@ that is where the backlog lives.
   will catch it. Either build it or strike it from the row; specs are normative
   including their prose.
 
+- **Declared-state stories are shipping without descriptions — 29 of them from
+  this wave alone.** `story-conventions.md` is explicit that a story with no
+  description is a screenshot, and no gate can see the omission:
+  `check:contract` asserts only that every declared state has a matching
+  export, never that the export says anything. Counted 2026-08-15 across the
+  story files this wave touched: **29 declared-state exports carry no JSDoc
+  block, across 8 files** — `task-tray` 7, `source-cards` 5,
+  `credits-indicator` 4, `section-header` 4, `stat-readout` 4, `answer-block` 2,
+  `entity-row` 2, `shortcuts-sheet` 1. A further **16 predate this wave** in
+  files it only edited (`generation-queue` 5, `permission-prompt` 4,
+  `suggestion-chips` 4, `empty-state` 3), for 45 in the 29 touched files.
+
+  **Why it is a follow-up and not a blocker: zero case stories lack a
+  description.** Every undocumented export is a declared-state story — the kind
+  that restates the types and the manifest by construction — so nothing a case
+  story is the only record of has gone unwritten. Four `Controlled` exports
+  read as undocumented to a naive grep and are not: `filter-bar`,
+  `pricing-table`, `slot-summary` and `thread-list` each carry the block above
+  the harness or `const` the story renders, with only that declaration in
+  between. Worth knowing twice over — once for whoever writes the audit grep,
+  and once because a block separated from its export that way is attached to
+  the wrong declaration, so autodocs may drop it.
+
 ## 9. Gaps found by the case-story pilot
 
 Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were

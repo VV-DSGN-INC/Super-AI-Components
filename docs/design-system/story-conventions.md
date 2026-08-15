@@ -1,8 +1,9 @@
 # Story conventions — case stories
 
-Normative for every component built from now on. It supplements
-[`component-build-brief.md`](component-build-brief.md) §Story; it does not
-replace it.
+Normative for every component in the registry, not only the ones built from
+here on — see [Scope today](#scope-today) for the retrofit that makes that
+true. It supplements [`component-build-brief.md`](component-build-brief.md)
+§Story; it does not replace it.
 
 ## What this is for
 
@@ -46,12 +47,15 @@ tree animates" is a useful sentence; silence is not, because the next reader
 cannot tell a considered omission from an oversight.
 
 Write each skip as its own line in that comment, in exactly this grammar, so
-the eventual gate (spec §4) can parse presence-or-annotated-absence:
+the eventual gate (spec §4) can parse presence-or-annotated-absence. That
+comment is a block comment, so the line carries the block's leading asterisk:
 
-    // case-skip: RTL — no directional layout, icons or motion
+    * // case-skip: RTL — no directional layout, icons or motion
 
-One line per skipped name: `case-skip: <StoryName> — <reason>`. The pilot
-files carry the pattern.
+One line per skipped name: `case-skip: <StoryName> — <reason>`. Every skip
+line shipped today is that form — 48 of them across 24 story files, none of
+them bare — so the gate should allow an optional leading `*` rather than
+anchoring `//` to the start of the line. The pilot files carry the pattern.
 
 ## Rules
 
