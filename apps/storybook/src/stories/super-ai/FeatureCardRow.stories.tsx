@@ -7,6 +7,7 @@ import { RecentGrid } from "@/registry/super-ai/recent-grid";
 import { RecommendationCard } from "@/registry/super-ai/recommendation-card";
 import { FeatureCardRowDocs } from "@/content/components/feature-card-row.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const ICON_TITLE_DESC: FeatureCardRowItem[] = [
   {
@@ -133,11 +134,15 @@ export const HorizontalScroll: Story = {
  * no controlled prop to drive it.
  * ---------------------------------------------------------------------- */
 
-/** Every keyboard stop must show where focus is, not merely take it. */
-function expectVisiblyFocused(element: Element) {
-  expect(element.matches(":focus-visible")).toBe(true);
-  const style = getComputedStyle(element);
-  expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+/**
+ * Every keyboard stop must show where focus is, not merely take it. The
+ * treatment is measured rather than merely present — see
+ * `expectPerceptibleFocus`, which is also why this is async: it settles the
+ * ring's transition before concluding.
+ */
+async function expectVisiblyFocused(element: HTMLElement) {
+  await expect(element.matches(":focus-visible")).toBe(true);
+  await expectPerceptibleFocus(element);
 }
 
 /**
@@ -221,7 +226,7 @@ export const KeyboardOrder: Story = {
     await userEvent.tab();
     for (const card of cards) {
       await expect(document.activeElement).toBe(card);
-      expectVisiblyFocused(card);
+      await expectVisiblyFocused(card);
       await userEvent.tab();
     }
 
@@ -230,7 +235,7 @@ export const KeyboardOrder: Story = {
     // property that holds either way.
     const affordance = document.activeElement as HTMLElement;
     await expect(["Previous slide", "Next slide"]).toContain(affordance.textContent?.trim());
-    expectVisiblyFocused(affordance);
+    await expectVisiblyFocused(affordance);
   },
 };
 

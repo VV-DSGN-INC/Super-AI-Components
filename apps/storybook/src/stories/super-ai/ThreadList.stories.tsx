@@ -7,6 +7,7 @@ import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-ai/thread-list";
 import { ThreadListDocs } from "@/content/components/thread-list.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof ThreadList> = {
   title: "Super AI/Thread List",
@@ -308,6 +309,18 @@ export const RTL: Story = {
  * an assertion that three triggers share one name would have to be deleted to
  * fix the bug. What is asserted instead is the half that is right and must
  * stay right: the three row buttons carry three distinct names.
+ *
+ * **A second defect, measured by the focus assertion and likewise recorded
+ * rather than asserted: the row button carries no design-system focus
+ * treatment.** Focused, "Brand video script" reads `box-shadow: none`; the
+ * whole treatment is Chromium's own focus ring (`outline-style: auto`, 1px).
+ * The actions trigger beside it is a `Button` and so brings
+ * `focus-visible:ring-3`, and the row's `bg-accent` is bound to `hover` and
+ * to `active`, never to `:focus-visible` — so the two stops in one row are
+ * marked quite differently. `expectPerceptibleFocus` passes it, because the
+ * UA ring is genuinely perceptible; giving the row the registry's ring, or a
+ * focus fill to match the menu rows, is a visible component decision rather
+ * than a story fix.
  */
 export const KeyboardOrder: Story = {
   render: () => (
@@ -345,8 +358,9 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(focused).toBe(stops[i]);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       // Odd stops are the actions triggers, which are invisible until hover.
       // Focus has to reveal them or a keyboard user is aiming at nothing.
       // Waited rather than read once: the Button base carries `transition-all`,

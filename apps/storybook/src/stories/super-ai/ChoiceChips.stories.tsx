@@ -9,6 +9,7 @@ import { PresetGrid, type PresetGridItem } from "@/registry/super-ai/preset-grid
 import { PreviewTile } from "@/registry/super-ai/preview-tile";
 import { ChoiceChipsDocs } from "@/content/components/choice-chips.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof ChoiceChips> = {
   title: "Super AI/Choice Chips",
@@ -241,8 +242,9 @@ export const KeyboardOrder: Story = {
     while (document.activeElement && canvasElement.contains(document.activeElement)) {
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       stops += 1;
       await userEvent.tab();
     }

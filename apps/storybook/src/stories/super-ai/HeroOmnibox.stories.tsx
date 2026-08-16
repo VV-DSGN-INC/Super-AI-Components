@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, userEvent, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
@@ -9,6 +9,7 @@ import { MediaPromptBar } from "@/registry/super-ai/media-prompt-bar";
 import { SuggestionChip, SuggestionChips } from "@/registry/super-ai/suggestion-chips";
 import { HeroOmniboxDocs } from "@/content/components/hero-omnibox.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const MODES = [
   { value: "ask", label: "Ask" },
@@ -144,14 +145,14 @@ export const RTL: Story = {
  * `focus-within` on the card rather than a ring on a borderless field, which
  * is a visual decision for one integrator.
  *
- * One thing the ring check had to get right, and it is a trap the sibling
- * files do not hit: `Button` carries `transition-all`, so reading
+ * The ring check is `expectPerceptibleFocus`, which is where this file's own
+ * hand-rolled version ended up: the measurement that found the textarea — a
+ * zero-width ring is still a full box-shadow *string*, so `boxShadow !==
+ * "none"` cannot tell 3px from 0px — is now the shared helper's, along with
+ * the settle it also needed (`Button` carries `transition-all`, so reading
  * `getComputedStyle` the instant `tab()` resolves returns the pre-transition
- * `0px` ring and the assertion fails for a reason that has nothing to do with
- * the component. `waitFor` settles it. And a zero-width ring is still a full
- * box-shadow *string*, so the `boxShadow !== "none"` test used elsewhere
- * cannot tell 3px from 0px — this one matches a non-zero spread instead,
- * which is what made the textarea's missing ring visible in the first place.
+ * `0px` ring and fails for a reason that has nothing to do with the
+ * component).
  */
 export const KeyboardOrder: Story = {
   args: { ...Idle.args },
@@ -160,13 +161,6 @@ export const KeyboardOrder: Story = {
     const root = canvasElement.querySelector('[data-slot="hero-omnibox"]') as HTMLElement;
     const slotOf = (el: Element | null) =>
       el === null ? "nothing" : (el.getAttribute("data-slot") ?? el.tagName.toLowerCase());
-
-    // Tailwind draws the ring as a box-shadow, so a ring that paints nothing
-    // still stringifies as a shadow list. Match a non-zero spread.
-    const paintsRing = (el: HTMLElement) => {
-      const style = getComputedStyle(el);
-      return style.outlineStyle !== "none" || /0px 0px 0px [1-9][\d.]*px/.test(style.boxShadow);
-    };
 
     const walk = async () => {
       (document.activeElement as HTMLElement | null)?.blur();
@@ -182,7 +176,7 @@ export const KeyboardOrder: Story = {
         );
         // The field is the recorded exception — see the description.
         if (focused.tagName !== "TEXTAREA") {
-          await waitFor(() => expect(`${id} ring=${paintsRing(focused)}`).toBe(`${id} ring=true`));
+          await expectPerceptibleFocus(focused, { label: id });
         }
       }
       return stops;

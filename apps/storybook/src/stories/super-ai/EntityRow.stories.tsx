@@ -10,6 +10,7 @@ import { FieldRow, UnitInput } from "@/registry/super-ai/field-row";
 import { StatReadout } from "@/registry/super-ai/stat-readout";
 import { EntityRowDocs } from "@/content/components/entity-row.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof EntityRow> = {
   title: "Super AI/Entity Row",
@@ -291,11 +292,11 @@ export const KeyboardOrder: Story = {
       await userEvent.tab();
       await expect(document.activeElement).toBe(expected);
 
-      // Every stop is visibly focused, not merely focusable.
+      // Every stop is visibly focused, not merely focusable. The ring is
+      // measured rather than merely present — see `expectPerceptibleFocus`.
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(focused);
     }
   },
 };

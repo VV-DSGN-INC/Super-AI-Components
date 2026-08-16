@@ -7,6 +7,7 @@ import { AddFilterChip, FilterBar, FilterChip, FiltersButton } from "@/registry/
 import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
 import { GenSettingsBarDocs } from "@/content/components/gen-settings-bar.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof GenSettingsBar> = {
   title: "Super AI/Gen Settings Bar",
@@ -213,8 +214,9 @@ export const KeyboardOrder: Story = {
 
       // Every stop is visibly focused, not merely focusable.
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       stops += 1;
       await userEvent.tab();
     }

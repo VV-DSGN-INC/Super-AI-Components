@@ -7,6 +7,7 @@ import { AddFilterChip, FilterBar, FilterChip, FiltersButton } from "@/registry/
 import { FilterPanel } from "@/registry/super-ai/filter-panel";
 import { FilterBarDocs } from "@/content/components/filter-bar.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof FilterBar> = {
   title: "Super AI/Filter Bar",
@@ -182,6 +183,18 @@ export const RTL: Story = {
  * The loop is bounded by the expected stop count rather than running until
  * focus leaves the canvas, so adding or dropping a stop fails on the count
  * instead of quietly changing how many assertions ran.
+ *
+ * **Defect measured by the focus assertion, recorded rather than fixed: the
+ * chip toggle carries no design-system focus treatment.**
+ * `filter-chip-toggle` has no `focus-visible:ring-*` of its own — focused, it
+ * reads `box-shadow: none` — so what a keyboard user sees is Chromium's own
+ * focus ring (`outline-style: auto`, 1px). Its sibling inside the same pill,
+ * `filter-chip-remove`, *does* carry
+ * `focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none`,
+ * so the little X is ringed and the chip it belongs to is not.
+ * `expectPerceptibleFocus` passes it, because the UA ring is genuinely
+ * perceptible; matching the sibling is a visible change to a shipped
+ * component, so it is reported rather than taken in passing here.
  */
 export const KeyboardOrder: Story = {
   render: (args) => (
@@ -217,8 +230,9 @@ export const KeyboardOrder: Story = {
       visited.push(focused);
 
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
     }
 
     await expect(visited).toHaveLength(EXPECTED_STOPS);

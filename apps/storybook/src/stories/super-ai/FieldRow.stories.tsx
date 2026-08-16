@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 import { Sparkles } from "lucide-react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { EntityRow } from "@/registry/super-ai/entity-row";
 import { FieldRow, UnitInput } from "@/registry/super-ai/field-row";
@@ -12,6 +12,7 @@ import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
 import { Switch } from "@/components/ui/switch";
 import { FieldRowDocs } from "@/content/components/field-row.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus, measureFocusTreatment } from "@/lib/focus-treatment";
 
 /**
  * Fixtures are parameters an image/video generation inspector in this system
@@ -297,10 +298,32 @@ export const Disabled: Story = {
  * is `WithHint`.
  * ---------------------------------------------------------------------- */
 
-/** A visible focus treatment, wherever this component happens to draw it. */
-const hasRing = (el: Element) => {
-  const style = getComputedStyle(el);
-  return style.boxShadow !== "none" || style.outlineStyle !== "none";
+/**
+ * The element that actually paints the focus treatment, which is not always
+ * the one holding focus: `UnitInput`'s inner `<input>` is `outline-none` and
+ * the ring is `focus-within:ring-2` on the wrapper around it. So the owner is
+ * the focused element if it paints, else the `unit-input` wrapper enclosing it.
+ *
+ * `measureFocusTreatment` is the measurement `expectPerceptibleFocus` makes,
+ * exported so this choice does not duplicate the parsing. The `waitFor` is the
+ * settle the assertion would otherwise do for us — a ring mid-`transition-all`
+ * reads `0px` and would send us to the wrapper for the wrong reason.
+ */
+const ringOwner = async (focused: HTMLElement) => {
+  const candidates = [focused, focused.closest<HTMLElement>('[data-slot="unit-input"]')].filter(
+    (el): el is HTMLElement => el !== null,
+  );
+  return waitFor(() => {
+    const owner = candidates.find((el) => measureFocusTreatment(el).treatment !== null);
+    if (!owner) {
+      throw new Error(
+        candidates
+          .map((el) => `${el.dataset.slot ?? el.tagName}: ${measureFocusTreatment(el).report}`)
+          .join(" | "),
+      );
+    }
+    return owner;
+  });
 };
 
 /**
@@ -409,9 +432,7 @@ export const KeyboardOrder: Story = {
       await expect(canvasElement.contains(focused)).toBe(true);
       await expect(focused.matches(":focus-visible")).toBe(true);
 
-      const ringOwner = hasRing(focused) ? focused : focused.closest('[data-slot="unit-input"]');
-      await expect(ringOwner).not.toBeNull();
-      await expect(hasRing(ringOwner as HTMLElement)).toBe(true);
+      await expectPerceptibleFocus(await ringOwner(focused));
 
       await userEvent.tab();
     }

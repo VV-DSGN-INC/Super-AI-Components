@@ -760,6 +760,46 @@ resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
 its own test file; **it belongs in the shared `vitest.setup.ts`** next to the
 ResizeObserver stub, and will bite anything composing a ScrollArea.
 
+### Added by the focus-assertion sweep (2026-08-15)
+
+Converting all 35 case-story files onto `expectPerceptibleFocus` turned up four
+elements that paint **no design-system focus treatment**. None is invisible:
+each falls through to Chromium's own ring (`outline-style: auto 1px`), which
+the helper accepts and a user can see. What none of them has is a treatment
+this system chose. Identical measurement on all four — `box-shadow: none`,
+`background-color: rgba(0, 0, 0, 0)`, UA outline only.
+
+Two are ours and are the unambiguous shape, left unfixed deliberately: adding
+a ring is a **visible** change to a shipped component and wants its own review,
+a `build:registry`, and an a11y re-gate, none of which belong in a commit whose
+job was making the assertion able to fail.
+
+- **`filter-chip-toggle`** (`filter-bar.tsx`) has no ring while
+  `filter-chip-remove` — its sibling **inside the same pill** — carries
+  `focus-visible:ring-ring ring-2 outline-none`. The X is ringed; the chip it
+  sits in is not.
+- **The thread row button** (`thread-list.tsx`) has none, while the actions
+  trigger beside it is a `Button` and gets `focus-visible:ring-3`. The row's
+  `bg-accent` is bound to `hover`/`active` and never to `:focus-visible`, so
+  the row that IS focused looks exactly like the row the pointer happens to be
+  over.
+- **The breadcrumb link** is vendored (`components/ui/breadcrumb.tsx`) — the
+  third defect recorded in that one file, alongside the two `app-topbar`
+  already carries.
+- **`"View all"`** is a story fixture rather than the component: `action` is a
+  bare `ReactNode` slot that styles nothing handed to it. The component's own
+  collapsible trigger does carry `focus-visible:ring-2`.
+
+A note for whoever picks this up: the sweep found no red, and that is only
+trustworthy because it was falsified rather than assumed. Forcing
+`measureFocusTreatment` to return `null` failed **all 32** converted files
+(32 failed / 336 passed), which is what proves the assertion is reached
+everywhere rather than silently skipped. Restricting `accept` to `ring` alone
+fails six files, and both menu-row files fail with `fill` excluded — their rows
+have no ring and no outline at all, so the background change is the entire
+treatment. That is why the helper refuses to judge a fill without a measured
+`restingBackground`.
+
 ### Added by the wave 0 story retrofit (2026-08-15)
 
 Same provenance rule as the list above: each was found by someone writing a

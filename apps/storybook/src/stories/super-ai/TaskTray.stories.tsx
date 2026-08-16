@@ -7,6 +7,7 @@ import { RenderQueue } from "@/registry/super-ai/render-queue";
 import { TaskTray, type TrayTask } from "@/registry/super-ai/task-tray";
 import { TaskTrayDocs } from "@/content/components/task-tray.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof TaskTray> = {
   title: "Super AI/Task Tray",
@@ -241,10 +242,9 @@ export const KeyboardOrder: Story = {
       await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(
         `${id} focusVisible=true`,
       );
-      const style = getComputedStyle(el);
-      await expect(`${id} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`).toBe(
-        `${id} ring=true`,
-      );
+      // The treatment is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(el, { label: id });
     };
 
     // The trap installs asynchronously — wait for it rather than tabbing from

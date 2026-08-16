@@ -6,6 +6,7 @@ import { CitationRef } from "@/registry/super-ai/citation-ref";
 import { SourceCards } from "@/registry/super-ai/source-cards";
 import { AnswerBlockDocs } from "@/content/components/answer-block.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof AnswerBlock> = {
   title: "Super AI/Answer Block",
@@ -229,10 +230,10 @@ export const KeyboardOrder: Story = {
     for (const marker of markers) {
       await userEvent.tab();
       await expect(document.activeElement).toBe(marker);
-      // The KeyboardOrder must-show: every stop is visibly focused.
+      // The KeyboardOrder must-show: every stop is visibly focused. The ring is
+      // measured rather than merely present — see `expectPerceptibleFocus`.
       await expect(marker.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(marker);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(marker);
     }
   },
 };

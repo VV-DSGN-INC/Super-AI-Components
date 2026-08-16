@@ -10,6 +10,7 @@ import { ContextToolbar, type ContextToolbarAction } from "@/registry/super-ai/c
 import { SectionHeader } from "@/registry/super-ai/section-header";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof AppTopbar> = {
   title: "Super AI/App Topbar",
@@ -254,6 +255,16 @@ export const RTL: Story = {
  * for is the return: when the menu closes, focus comes back to the trigger
  * *inside this bar*, not to the top of the document. Read after a settle
  * (`waitFor`) rather than straight after the keypress — mechanical fact 4.
+ *
+ * **A third vendored defect, measured by the focus assertion and recorded
+ * rather than fixed: the crumb links carry no design-system focus
+ * treatment.** Focused, "Projects" reads `box-shadow: none`; the only thing
+ * painted is Chromium's own focus ring (`outline-style: auto`, 1px), which
+ * `expectPerceptibleFocus` accepts because a keyboard user genuinely sees it.
+ * But it is the UA's ring, not the registry's `focus-visible:ring-2`, so the
+ * crumbs are the one stop in this bar that does not match the rest.
+ * `BreadcrumbLink` lives in `components/ui/breadcrumb.tsx` — the same vendored
+ * primitive as defect 1 above, so the repair belongs with that one.
  */
 export const KeyboardOrder: Story = {
   render: () => (
@@ -314,10 +325,9 @@ export const KeyboardOrder: Story = {
       await expect(`${nameOf(focused)} focusVisible=${focused.matches(":focus-visible")}`).toBe(
         `${nameOf(focused)} focusVisible=true`,
       );
-      const style = getComputedStyle(focused);
-      await expect(
-        `${nameOf(focused)} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`,
-      ).toBe(`${nameOf(focused)} ring=true`);
+      // The treatment is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused, { label: nameOf(focused) });
 
       seen.add(focused);
     }

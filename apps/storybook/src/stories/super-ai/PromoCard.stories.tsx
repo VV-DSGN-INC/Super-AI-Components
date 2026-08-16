@@ -7,6 +7,7 @@ import { PromoCard, type PromoCardProps } from "@/registry/super-ai/promo-card";
 import { RecommendationCard } from "@/registry/super-ai/recommendation-card";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof PromoCard> = {
   title: "Super AI/Promo Card",
@@ -226,8 +227,9 @@ export const KeyboardOrder: Story = {
     while (document.activeElement && canvasElement.contains(document.activeElement)) {
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       stops += 1;
       await userEvent.tab();
     }

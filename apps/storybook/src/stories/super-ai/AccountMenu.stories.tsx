@@ -6,6 +6,7 @@ import { AccountMenu, type AccountMenuItem } from "@/registry/super-ai/account-m
 import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const SAMPLE_USER = { name: "Ada Lovelace", email: "ada@example.com" };
 
@@ -342,10 +343,7 @@ export const KeyboardOrder: Story = {
     await userEvent.tab();
     await expect(document.activeElement).toBe(trigger);
     await expect(trigger.matches(":focus-visible")).toBe(true);
-    const triggerStyle = getComputedStyle(trigger);
-    await expect(
-      `trigger ring=${triggerStyle.boxShadow !== "none" || triggerStyle.outlineStyle !== "none"}`,
-    ).toBe("trigger ring=true");
+    await expectPerceptibleFocus(trigger, { label: "trigger" });
 
     await userEvent.keyboard("{ArrowDown}");
     const menu = await body.findByRole("menu");
@@ -360,6 +358,20 @@ export const KeyboardOrder: Story = {
     for (const name of ["Settings", "Invite people", "Billing", "Appearance", "Sign out"]) {
       await expect(within(menu).getByRole("menuitem", { name })).toBeInTheDocument();
     }
+
+    // What a row paints when it is *not* focused. The fill assertion below is a
+    // *change* from this value, and `expectPerceptibleFocus` refuses to judge a
+    // fill without it — "paints a background" is true of plenty of elements
+    // that show no focus treatment at all, which is exactly the vacuous shape
+    // the helper exists to close. Read off the resting siblings, because the
+    // row Base UI focuses on open has already changed by the time this runs.
+    const restingBackgrounds = new Set(
+      stops
+        .filter((el) => el !== document.activeElement && !el.contains(document.activeElement))
+        .map((el) => getComputedStyle(el).backgroundColor),
+    );
+    await expect([...restingBackgrounds]).toHaveLength(1);
+    const [restingBackground] = restingBackgrounds;
 
     const nameOf = (el: Element | null) =>
       el === null
@@ -402,11 +414,10 @@ export const KeyboardOrder: Story = {
     const assertVisiblyFocused = async (el: HTMLElement) => {
       const id = nameOf(el);
       await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(`${id} focusVisible=true`);
-      // A row at rest paints nothing — `rgba(0, 0, 0, 0)` is what Chromium
-      // reports for it. A focused row fills. See point 3 above for why this is
-      // not the ring/outline test the other case stories use.
-      const fill = getComputedStyle(el).backgroundColor;
-      await expect(`${id} filled=${fill !== "rgba(0, 0, 0, 0)"}`).toBe(`${id} filled=true`);
+      // A focused row fills. See point 3 above for why the fill, rather than a
+      // ring, is the treatment here — and `restingBackground` for what it is
+      // measured against.
+      await expectPerceptibleFocus(el, { label: id, restingBackground });
     };
 
     const start = await settledStop();
