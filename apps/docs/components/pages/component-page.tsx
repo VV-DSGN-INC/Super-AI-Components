@@ -19,6 +19,7 @@ import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
 import TypingAnimationDemo from "@/components/demos/typing-animation-demo";
 import { ComponentDocsView } from "@/components/component-docs";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 import { demos } from "@/lib/demos.generated";
@@ -75,12 +76,15 @@ export async function ComponentPage({ locale, name }: { locale: Locale; name: st
     <div className={isBlock ? "w-full p-8" : "mx-auto max-w-3xl p-8"}>
       <div className="space-y-8">
         <div>
-          {/* `data-slot` is load-bearing: the smoke gate uses this heading as its
-              readiness signal, and a block renders its own page `<h1>` in the preview
-              below — so an unscoped `h1` locator matches two elements. */}
-          <h1 data-slot="component-page-title" className="text-3xl font-bold">
-            {item.title}
-          </h1>
+          <div className="flex items-start justify-between gap-4">
+            {/* `data-slot` is load-bearing: the smoke gate uses this heading as its
+                readiness signal, and a block renders its own page `<h1>` in the preview
+                below — so an unscoped `h1` locator matches two elements. */}
+            <h1 data-slot="component-page-title" className="text-3xl font-bold">
+              {item.title}
+            </h1>
+            <LanguageSwitcher locale={locale} path={`/components/${name}`} />
+          </div>
           <p className="text-muted-foreground mt-2">{item.description}</p>
         </div>
 

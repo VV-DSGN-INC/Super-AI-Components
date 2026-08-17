@@ -44,3 +44,26 @@ test("a component with guidance renders its Do and Don't blocks", async ({ page 
   await expect(page.locator('[data-slot="docs-do"]')).toBeVisible();
   await expect(page.locator('[data-slot="docs-dont"]')).toBeVisible();
 });
+
+test("the Russian page renders with lang=ru", async ({ page }) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/ru/components/empty-state");
+  await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  await expect(page.locator('[data-slot="docs-a11y"] h2')).toHaveText("Доступность");
+  expect(errors).toEqual([]);
+});
+
+test("the switcher round-trips between locales on the same component", async ({ page }) => {
+  // The docs sidebar (DocsLayout) renders its own switcher too, pointed at "/"
+  // rather than this component — so this scopes to the page-header switcher,
+  // the one built in this task, by anchoring on the title it sits beside.
+  await page.goto("/components/empty-state");
+  // A Playwright Locator re-queries the DOM at action time, so it stays valid
+  // across the navigation the click below triggers.
+  const header = page.locator('[data-slot="component-page-title"]').locator("..");
+  await header.getByRole("link", { name: "Русский" }).click();
+  await expect(page).toHaveURL(/\/ru\/components\/empty-state$/);
+  await header.getByRole("link", { name: "English" }).click();
+  await expect(page).toHaveURL(/\/components\/empty-state$/);
+});
