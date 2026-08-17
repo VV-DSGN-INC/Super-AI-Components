@@ -20,6 +20,7 @@
       "@/content/*": ["../docs/content/*"],
       "@/lib/component-docs": ["../docs/lib/component-docs.ts"],
       "@/components/component-docs": ["../docs/components/component-docs.tsx"],
+      "@/lib/i18n/*": ["../docs/lib/i18n/*"],
       "@/*": ["./src/*"]
     }
   },
