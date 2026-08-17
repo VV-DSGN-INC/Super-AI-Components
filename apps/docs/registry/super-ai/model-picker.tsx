@@ -187,7 +187,17 @@ function ModelPicker({
             ) : null}
             <span className="truncate">{current?.name ?? placeholder}</span>
           </PopoverTrigger>
-          <PopoverContent data-slot="model-picker-content" align="start" className="w-72 gap-3 p-2">
+          {/* Base UI's popup renders `role="dialog"` unconditionally, so an
+              unnamed one is an `aria-dialog-name` violation. It has never been
+              caught because the `node-inline` story renders the trigger closed
+              and axe only ever sees the popup's absence. C7 modality-rail
+              carries the same fix and the same reasoning. */}
+          <PopoverContent
+            aria-label={triggerName}
+            data-slot="model-picker-content"
+            align="start"
+            className="w-72 gap-3 p-2"
+          >
             {Array.from(groups.entries()).map(([group, groupModels]) => (
               <div key={group} data-slot="model-picker-group" className="flex flex-col gap-1">
                 <SectionHeader title={group} size="sm" className="px-1 py-0.5" />

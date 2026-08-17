@@ -58,7 +58,7 @@ export const PresetGridDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "Every tile is its own tab stop. There is no roving tabindex — the source says so, and names A4 `choice-chips` as carrying the same accepted gap — so a twelve-preset grid is twelve stops, plus one more for the see-more tile.",
+      "Every tile is its own tab stop. There is no roving tabindex here, so a twelve-preset grid is twelve stops plus one more for the see-more tile. A4 `choice-chips` used to carry the same gap and no longer does, which makes this component the remaining one of the pair — worth knowing if you are choosing between them for a large set.",
       'Arrow keys do nothing. The tiles carry `role="radio"` (or `role="checkbox"` under `multiple`), which is exactly the role a keyboard user expects to arrow through; here Tab is the only way between them, and Home and End do not work either.',
       "Space and Enter select, because each tile is a native `<button>` underneath its role. In single-select a tile can only ever be turned on — pressing the already-checked tile re-selects it — while under `multiple` the same press toggles it off.",
       'There is no `disabled` anywhere in the API. Every tile is focusable and activatable including one whose `state` is `"loading"` or `"failed"`, so a preset that is still resolving is picked exactly as easily as one that finished.',

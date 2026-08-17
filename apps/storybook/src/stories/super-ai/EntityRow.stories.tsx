@@ -88,13 +88,16 @@ export const WithBadge: Story = {
 /**
  * A chevron in the trailing slot, on a row that opens a detail pane.
  *
- * Worth recording rather than only rendering: this row still carries
- * `aria-pressed="false"`, because `onSelect` is the only way to make a row
- * interactive and it always emits that attribute. A navigation row therefore
- * announces a toggle it does not have. Not fixed here — separating "the row
- * acts" from "the row navigates" is an API change to a primitive seventeen
- * components compose, not a per-story repair. Carried in the retrofit report
- * and in the docs page's first pitfall.
+ * Worth recording rather than only rendering: this row carries no
+ * `aria-pressed` at all, and that is the point. Separating "the row acts" from
+ * "the row navigates" used to be deferred here as an API change to a primitive
+ * seventeen components compose. It has since been made: `selected` has no
+ * default, so passing it — `true` or `false` — is what opts a row into toggle
+ * semantics, and a navigation row like this one announces as a plain button.
+ *
+ * The story stays because the absence is the assertion. A regression that
+ * restored the old default would be invisible in a screenshot and would show
+ * up here.
  */
 export const WithChevron: Story = {
   render: (args) => (
@@ -108,6 +111,13 @@ export const WithChevron: Story = {
     description: "Convert between languages",
     trailing: <ChevronRight aria-hidden className="text-muted-foreground size-4" />,
     onSelect: () => {},
+  },
+  play: async ({ canvasElement }) => {
+    // The assertion is an absence, which is why it needs writing down: a row
+    // that navigates must not report a pressed state, and reinstating the old
+    // `selected = false` default would silently bring one back.
+    const row = within(canvasElement).getByRole("button", { name: /Translate/ });
+    await expect(row.hasAttribute("aria-pressed")).toBe(false);
   },
 };
 

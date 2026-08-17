@@ -58,7 +58,7 @@ export const ActionStackDocs: ComponentDocs = {
     ],
     screenReader: [
       "Inline mode is a group named \"Actions for this result\" — a fixed string. Two stacks on one page announce as two identically named groups, so name the surface around them.",
-      "In inline mode every actionable row is a `<button>` carrying `aria-pressed=\"false\"`, because the composed `entity-row` always emits that attribute. A one-shot action like Upscale therefore announces as an unpressed toggle button, which is wrong about what pressing it does.",
+      "In inline mode every actionable row is a plain `<button>`: A9 `entity-row` emits `aria-pressed` only when a caller passes `selected`, and this component does not, so a one-shot action like Upscale announces as the action it is rather than as an unpressed toggle.",
       "A row's name is the whole row read out: title, description, the formatted price and the word Locked, in that order. \"Upscale to 4K, adds detail without re-rendering, 400 credits\" is one long name, not a name plus a description.",
       "The padlock is `aria-hidden` and the coin glyph in the cost chip is too, so the visible word Locked and the formatted amount are what actually carry those states.",
       "A locked inline row carries no `aria-disabled`: `locked` never reaches `entity-row`'s `disabled` prop, so the only signal that it cannot be run is the literal word Locked in the trailing slot.",

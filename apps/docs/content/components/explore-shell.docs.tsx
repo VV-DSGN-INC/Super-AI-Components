@@ -70,7 +70,7 @@ export const ExploreShellDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "Front to back the shell is: the rail (one tab stop — B4 is a composite, so arrows move between destinations), the prompt bar's field and its buttons, the sort tablist (one stop, arrows move between sorts), one tab stop per type pill, then the feed.",
-      'The type pills are the expensive part. A4 `choice-chips` announces `role="radiogroup"` but has no roving tabindex, so a strip of eight facets is eight tab stops between the sort tabs and the feed, on every visit to the page.',
+      'The type pills are one tab stop, not one per pill. A4 `choice-chips` implements the roving tabindex its `role="radiogroup"` promises, so a strip of eight facets costs a single stop between the sort tabs and the feed, and Left/Right move between facets.',
       "The shell pins the open tab panel to `tabIndex={-1}` deliberately. Base UI makes an open panel focusable, which is right when the panel is the scroll container and wrong here — J3 keeps its own named, focusable, scrolling feed inside it, so the default would put two identical stops in front of the same content.",
       "Inside the feed every tile is an open button plus a Remix button, exactly as J3 ships them. There is no arrow-key navigation in the masonry and no shortcut onto a tile.",
       "Opening a tile's detail puts you in a dialog: focus is trapped there and Escape closes it. The shell itself handles no keys at all.",

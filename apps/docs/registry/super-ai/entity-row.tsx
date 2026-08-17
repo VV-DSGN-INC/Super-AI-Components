@@ -9,6 +9,11 @@ interface EntityRowProps extends Omit<React.ComponentProps<"div">, "onSelect" | 
   title: React.ReactNode;
   description?: React.ReactNode;
   trailing?: React.ReactNode;
+  /**
+   * Pass this — either `true` or `false` — only when the row is a toggle.
+   * Passing it is what makes the row report `aria-pressed`; leaving it off
+   * means the row acts or navigates and announces as a plain button.
+   */
   selected?: boolean;
   disabled?: boolean;
   onSelect?: () => void;
@@ -19,13 +24,24 @@ function EntityRow({
   title,
   description,
   trailing,
-  selected = false,
+  selected,
   disabled = false,
   onSelect,
   className,
   ...props
 }: EntityRowProps) {
   const interactive = typeof onSelect === "function";
+  // `selected` deliberately has no default. It used to default to `false`,
+  // which meant every interactive row emitted `aria-pressed="false"` and a
+  // navigation row ("Fine-tune a model ›") announced as an unpressed toggle it
+  // does not have. Presence of the prop is now the signal: pass it, even as
+  // `false`, and the row is a toggle; omit it and the row simply acts.
+  //
+  // This was a recorded deferral rather than an oversight — EntityRow.stories
+  // called it "an API change to a primitive seventeen components compose".
+  // It is source-compatible: every consumer that passes `selected` keeps the
+  // behaviour it had, and only rows that never passed it change.
+  const isToggle = selected !== undefined;
 
   // min-h keeps a description-less row the same height as one with a description,
   // so a menu of mixed rows never looks ragged.
@@ -89,7 +105,7 @@ function EntityRow({
         type="button"
         onClick={disabled ? undefined : onSelect}
         disabled={disabled}
-        aria-pressed={selected}
+        aria-pressed={isToggle ? selected : undefined}
         data-slot="entity-row"
         data-state={selected ? "on" : "off"}
         className={rowClassName}
@@ -105,11 +121,22 @@ function EntityRow({
   // to assistive tech, and read by axe as ordinary low-contrast text (1.96:1 on
   // the description). `aria-disabled` makes the state programmatic, which is the
   // actual defect; the contrast reading was its symptom.
+  //
+  // `inert` is what makes the keyboard agree with the eye. `pointer-events-none`
+  // stops the mouse and nothing else, so a Switch or button handed to `trailing`
+  // on a row that reads as disabled stayed tabbable and operable by Space —
+  // `aria-disabled` on a wrapper does not inherit to descendants. `inert` does,
+  // and it is the only declarative way to reach markup this component did not
+  // write. The trade is real and worth stating: an inert subtree leaves the
+  // accessibility tree, so the row stops being announced as present-but-disabled
+  // rather than being announced correctly. A live control inside a dead-looking
+  // row is the worse of the two.
   return (
     <div
       data-slot="entity-row"
       data-state={selected ? "on" : "off"}
       aria-disabled={disabled || undefined}
+      inert={disabled || undefined}
       className={rowClassName}
       {...props}
     >

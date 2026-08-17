@@ -95,7 +95,7 @@ export const PermissionPromptDocs: ComponentDocs = {
     keyboard: [
       "Five tab stops in the default shape: the arguments toggle, then Deny, Always allow, Edit first, Allow once. Omit `args` and it is four. Switch into Edit first and the count becomes one textarea per argument plus Back and Approve edited — and Deny leaves the footer entirely while you are editing.",
       "The dialog is modal and traps focus, so Tab cycles inside it and never reaches the page behind. Clicking the backdrop does nothing: this is an alert dialog, and pointer dismissal is disabled by design.",
-      "Escape closes the dialog without calling `onDeny`. Deny itself is an `AlertDialogCancel`, so pressing it both closes the surface and reports the refusal — but Escape reaches the same close path without the handler, which leaves the agent's call neither approved nor refused. Treat `onOpenChange(false)` as a refusal too if Escape has to count as a no.",
+      "Escape closes the dialog and reports a refusal: dismissing the gate any way other than by an explicit verb calls `onDeny`, so the paused call is never left neither approved nor refused. Pressing Deny does not double-report — the component tracks that a decision was already made.",
       "Only Deny closes the dialog — it is the `AlertDialogCancel`, the dialog's own Close. Allow once, Always allow, Edit first, Back and Approve edited are ordinary buttons that fire their handler and leave the dialog open, so drive `open` yourself if approving should dismiss the gate.",
       "Space and Enter activate every verb, and the arguments toggle. There are no accelerators — no A for allow, no D for deny — and no arrow keys anywhere.",
       "The footer is `flex-col-reverse` below the `sm` breakpoint, so on a narrow screen the visual order runs Allow once at the top down to Deny at the bottom while the tab order still runs Deny first. Reading order and tab order disagree there, and the most consequential verb is the one nearest the thumb.",
@@ -111,7 +111,7 @@ export const PermissionPromptDocs: ComponentDocs = {
     focus: [
       "Opening moves focus into the dialog — to its first tabbable element, which is the arguments toggle when `args` is present and Deny otherwise. Closing returns focus to whatever opened it.",
       "Pressing Edit first unmounts the button that had focus and the component places focus nowhere afterwards, leaving it to the dialog's focus trap rather than to the first argument field. A human who asked to edit still has to Tab into the editor they just opened; Back has the same shape in reverse.",
-      "In edit mode there is no Close in the footer at all, so Escape becomes the only way out — and, per the keyboard notes, it reports nothing.",
+      "In edit mode there is no Close in the footer at all, so Escape is the only way out of the dialog — Back only returns to the verbs. Escape there reports a refusal like any other dismissal, which is the safe reading of abandoning an edit.",
       "Every control draws the vendored `Button`'s `focus-visible` ring, so focus is visible without a global style. The one exception is whatever you pass as `trigger`, which keeps its own.",
     ],
   },
