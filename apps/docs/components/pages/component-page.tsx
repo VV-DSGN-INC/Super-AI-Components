@@ -23,6 +23,10 @@ import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 import { demos } from "@/lib/demos.generated";
 import { componentDocs } from "@/lib/docs.generated";
+import { componentDocsRu } from "@/lib/docs.ru.generated";
+import { localizeDocs } from "@/lib/i18n/localize-docs";
+import { messagesFor } from "@/lib/i18n/messages";
+import type { Locale } from "@/lib/i18n/types";
 import { MARKETING, MARKETING_ITEMS, type MarketingName } from "@/lib/marketing-catalog";
 
 // Grows one entry per component task (Tasks 6–20).
@@ -44,12 +48,8 @@ const marketingDemos: Record<MarketingName, React.ComponentType> = {
   confetti: ConfettiDemo,
 };
 
-export function generateStaticParams() {
-  return [...CATALOG, ...MARKETING].map((name) => ({ name }));
-}
-
-export default async function ComponentPage({ params }: { params: Promise<{ name: string }> }) {
-  const { name } = await params;
+export async function ComponentPage({ locale, name }: { locale: Locale; name: string }) {
+  const t = messagesFor(locale);
   const isMarketing = MARKETING.includes(name);
   if (!CATALOG.includes(name as CatalogName) && !isMarketing) notFound();
 
@@ -67,6 +67,10 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
     "utf8",
   );
 
+  const docs = componentDocs[name]
+    ? localizeDocs(componentDocs[name], locale === "ru" ? componentDocsRu[name] : undefined)
+    : undefined;
+
   return (
     <div className={isBlock ? "w-full p-8" : "mx-auto max-w-3xl p-8"}>
       <div className="space-y-8">
@@ -80,12 +84,18 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
           <p className="text-muted-foreground mt-2">{item.description}</p>
         </div>
 
-        <PreviewTabs preview={<Demo />} code={demoSource} fullBleed={isBlock} />
+        <PreviewTabs
+          preview={<Demo />}
+          code={demoSource}
+          fullBleed={isBlock}
+          previewLabel={t.previewTab}
+          codeLabel={t.codeTab}
+        />
 
-        {!isMarketing && componentDocs[name] ? <ComponentDocsView docs={componentDocs[name]} /> : null}
+        {!isMarketing && docs ? <ComponentDocsView docs={docs} locale={locale} /> : null}
 
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold">Installation</h2>
+          <h2 className="text-lg font-semibold">{t.installation}</h2>
           <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
             <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
           </pre>
