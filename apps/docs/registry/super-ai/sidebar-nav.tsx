@@ -56,16 +56,23 @@ function SidebarNavRow({
 }) {
   // Active is a filled row, never a left border — a border is a per-side decoration
   // that a collapsed (icon-only) rail has no room to render.
+  //
+  // Painting a surface rebinds the variable rather than restyling the slots:
+  // the leading icon, the running spinner and the external glyph all carry
+  // their own `text-muted-foreground`, which is the same lightness as
+  // `bg-accent` in this token set (a11y-baseline.md). A className on any one
+  // of them could not reach the others, and could not reach whatever a
+  // consumer composes into the row next. Same shape as thread-list's row.
   const rowClassName = cn(
     "flex w-full min-w-0 items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
     "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
     active
-      ? "bg-accent text-accent-foreground font-medium"
-      : "text-foreground hover:bg-accent/60 hover:text-accent-foreground",
+      ? "bg-accent text-accent-foreground [--muted-foreground:var(--accent-foreground)] font-medium"
+      : "text-foreground hover:bg-accent/60 hover:text-accent-foreground hover:[--muted-foreground:var(--accent-foreground)]",
   );
 
   const trailing = (
-    <span className="ml-auto flex shrink-0 items-center gap-1.5">
+    <span className="ms-auto flex shrink-0 items-center gap-1.5">
       {item.count !== undefined ? (
         <Badge
           data-slot="sidebar-nav-count"
@@ -94,7 +101,7 @@ function SidebarNavRow({
         <Loader2
           data-slot="sidebar-nav-running"
           aria-label="Running"
-          className="text-muted-foreground size-3.5 shrink-0 animate-spin"
+          className="text-muted-foreground size-3.5 shrink-0 animate-spin motion-reduce:animate-none"
         />
       ) : null}
       {item.external ? (
@@ -110,7 +117,7 @@ function SidebarNavRow({
           {item.icon}
         </span>
       ) : null}
-      <span className="min-w-0 flex-1 truncate text-left">{item.label}</span>
+      <span className="min-w-0 flex-1 truncate text-start">{item.label}</span>
       {trailing}
     </>
   );

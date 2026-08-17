@@ -116,14 +116,29 @@ function WorkspaceSwitcher({
             // trigger, not only inside the open menu.
             <span
               data-slot="workspace-switcher-plan-badge"
-              className="bg-primary/10 text-primary ml-auto shrink-0 rounded-full px-1.5 py-0.5 text-[0.65rem] font-medium"
+              // `ms-auto`, not `ml-auto`: the badge belongs at the trigger's
+              // logical end. A physical `margin-left: auto` under `dir="rtl"`
+              // absorbs the free space on the side the badge is already
+              // against, so the badge stays welded to the name instead of
+              // moving to the row's end. Compiles to the same declaration in
+              // LTR. Inert at the trigger's shrink-wrapped width — see the
+              // `RTL` story, which records where it starts mattering.
+              className="bg-primary/10 text-primary ms-auto shrink-0 rounded-full px-1.5 py-0.5 text-[0.65rem] font-medium"
             >
               {current.plan}
             </span>
           ) : null}
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-72">
+        {/* The variant is restated on both halves on purpose. A bare
+            `motion-reduce:animate-none` is inert against a Base UI popup:
+            it and `data-open:animate-in` compile to a single class each, so
+            the tie falls to emission order and Tailwind emits the plain
+            `motion-reduce:` block first. Matching the variant sorts after
+            its counterpart and wins. Same fix as `shortcuts-sheet`; the
+            `ReducedMotion` story reads `animation-name` back rather than
+            trusting the class. */}
+        <DropdownMenuContent className="w-72 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
           <DropdownMenuRadioGroup
             value={currentId}
             onValueChange={(value) => onSelect(value as string)}

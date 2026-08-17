@@ -1,7 +1,9 @@
 # Story guarantees retrofit — Design Specification
 
 **Date:** 2026-08-14
-**Status:** Proposed — awaiting approval
+**Status:** In flight — step 1 (the convention PR) and step 2 (wave 0: the 25
+`contractExempt` items folded in, the flag now at zero) are implemented.
+Steps 3 (the family waves) and 4 (the gate) remain — outcome in `CONTINUE.md` §1 and §9.
 **Follows:** [story-conventions.md](../../design-system/story-conventions.md) (PR #28), which this
 program extends and spreads; the benchmark comparison from the same session, whose finding was
 "ours has more components and fewer of every single guarantee."
