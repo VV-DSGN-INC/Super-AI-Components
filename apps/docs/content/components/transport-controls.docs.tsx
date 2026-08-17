@@ -63,6 +63,32 @@ export const TransportControlsDocs: ComponentDocs = {
       example: <TimecodeAsCaption />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "`simple` is five tab stops — skip back, play, skip forward, the elapsed field, the speed select. `frame-accurate` is nine: step back, step forward, mark in and mark out are appended after the shared three, never interleaved, so the first three stops are identical in both variants.",
+      "Every control is a real `<button>` or a real field, so Enter and Space activate whichever one has focus without any of the shortcut machinery being involved.",
+      "The root handles the editor shortcuts while focus is anywhere inside the group: Left and Right skip by `skipBy`, `,` and `.` step one frame, `I` and `O` mark in and out. Letter keys are case-insensitive, the frame-accurate four only fire in that variant, and Cmd, Ctrl or Alt suppresses all of them.",
+      "The advertised `Space` shortcut never fires. The handler returns early for Space and Enter on a `<button>` so a focused button keeps its own activation, and the group's only other focusable children — the timecode field and the speed menu — both stand down as well. `aria-keyshortcuts=\"Space\"` is announced on Play, but pressing Space only ever activates the button that has focus.",
+      "The shortcuts are scoped to this group, not to the document. Focus in your player, your ruler or anywhere else on the page and none of them fire, so a global equivalent is yours to add — and the warning about double-firing only applies inside the bar.",
+      "In the elapsed field: Enter commits, blur commits, Escape reverts the draft. Escape is `preventDefault`ed but not stopped from propagating, so a transport inside a dialog reverts the field and closes the dialog on the same keystroke.",
+      "No control is ever `disabled`. Skip back at 0:00 and skip forward at the end are both live and clamp silently.",
+    ],
+    screenReader: [
+      "The root is `role=\"group\"` named by `aria-label`, defaulting to \"Transport controls\". Override it when a page carries more than one player, because nothing else distinguishes two bars.",
+      "Every button has an explicit `aria-label` and every icon is `aria-hidden`, so the labels are the whole story: \"Skip back 5 seconds\" interpolates the real `skipBy`, and Play/Pause swaps between \"Play\" and \"Pause\" so the state is the name rather than the icon. The `title` attribute repeats the label plus its shortcut, but `aria-label` wins the name, so the tooltip is never the source of anything announced.",
+      "`aria-keyshortcuts` is set on all seven buttons, which means the one shortcut the handler never fires — Space on Play — is also the one most confidently advertised.",
+      "A visually hidden `role=\"status\"` is mounted at all times and reads \"Playing\" or \"Paused\", so a play-state change announces however it was triggered. Nothing else does: skipping, frame stepping, marking in or out, and seeking by typed timecode all move `currentTime` in silence.",
+      "The elapsed field is named \"Elapsed time — type a timecode to seek\", which is the only place that affordance is stated at all. Its value is the formatted timecode, so it reads as `0:07` or `00:00:07:12`.",
+      "A timecode the parser rejects is thrown away on commit: the draft clears, the field snaps back to the current time, and nothing is announced. There is no `aria-invalid` and no error text, so a mistyped seek is indistinguishable from one that did nothing.",
+      "The in/out readout is plain text inside the group, not a live region, so marking a point changes it silently. It renders only in `frame-accurate`, and only once one of the two points is set.",
+    ],
+    focus: [
+      "Nothing mounts or unmounts under normal use, so focus is stable across play, pause, seek and speed change — the bar is the same nine elements throughout.",
+      "Switching `variant` from `frame-accurate` to `simple` unmounts four buttons. Focus on one of them falls to `<body>`.",
+      "Every focus ring comes from the vendored `Button`, `Input` and `Select`, so the bar inherits your primitives' focus styling rather than defining its own.",
+      "The speed `Select` moves focus into its popup and returns it to the trigger on close. That is the primitive's behaviour, not this component's, and it is why the shortcut handler stands down inside `transport-controls-speed`.",
+    ],
+  },
   pitfalls: [
     "Assuming the component owns playback. It is controlled end to end: clicking Play calls `onPlayPause(true)` and nothing else. If the consumer never updates `playing`, the icon never changes.",
     "Forgetting `fps` in the frame-accurate variant. It drives both the `:FF` field and the value a typed HH:MM:SS:FF timecode parses to, so a bar left at the default 24 against a 25fps source will be a frame out on every seek.",

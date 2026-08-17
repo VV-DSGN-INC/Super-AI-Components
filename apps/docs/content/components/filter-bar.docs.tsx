@@ -70,6 +70,25 @@ export const FilterBarDocs: ComponentDocs = {
       example: <RowGrownPastTheLadder />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "A chip with `onRemove` is two tab stops, not one: the toggle, then the X. Six applied facets is twelve stops before the reader reaches the Filters button.",
+      "Both halves are real buttons, so Space and Enter activate them. There is no Delete or Backspace shortcut — removing a facet from the keyboard means tabbing to the X.",
+      "`disabled` spreads onto the toggle only. A disabled chip that still has `onRemove` keeps a tabbable, activatable X, so withhold `onRemove` in the same breath.",
+      "The row has no roving tabindex and no arrow-key navigation. Left and Right do nothing; it is a plain flex row of independent buttons.",
+    ],
+    screenReader: [
+      "The toggle carries `aria-pressed`, so it announces as a toggle button that is pressed or not pressed — not as a selected option. A single-select category row will still announce as a set of independent toggles.",
+      "The remove button's name is built as \"Remove <label> filter\" from `typeof children === \"string\"`. Any non-string child drops the label and every X in the row announces identically as \"Remove filter\".",
+      "`AddFilterChip` names itself \"Add <children>\", falling back to the generic \"Add filter\" when its child is not a string.",
+      "Both icons are `aria-hidden`, so neither the X nor the sliders glyph contributes to an announced name.",
+      "Nothing here announces the result of a filter change. The bar owns no live region, so put one on the content it filters or the new result count is silent.",
+    ],
+    focus: [
+      "Removing a chip unmounts the button that had focus and nothing restores it, so focus falls to `<body>` and the next Tab restarts from the top of the page. Move focus to the neighbouring chip inside your `onRemove`.",
+      "Only the remove button ships a `focus-visible` ring. The toggle, `AddFilterChip` and `FiltersButton` inherit your global focus style, so three of the four controls are invisible on focus if you have none.",
+    ],
+  },
   pitfalls: [
     "FilterChip splits your props two ways: `className` styles the outer pill, and everything else — id, onClick, disabled, aria-* — spreads onto the inner toggle button. A ref or a data attribute you expect on the pill lands on the toggle instead.",
     "The remove button's accessible name is built from `typeof children === \"string\"`. Any non-string child — a wrapped span, an icon beside the text, a number — silently degrades it to the generic \"Remove filter\", which is the one bug in this component a visual review cannot catch.",

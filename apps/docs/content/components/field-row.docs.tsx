@@ -75,6 +75,27 @@ export const FieldRowDocs: ComponentDocs = {
       example: <ResetOutsideTheRow />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The row is zero tab stops of its own — it is a `<div>`, a `<label>` and a `<p>`. Every stop it has comes from whatever your render prop returns, plus one more when you pass `reset`.",
+      "`UnitInput` is one stop and a native number spinner: Up and Down step the value. The visible spinner buttons are removed (`[appearance:textfield]` plus the webkit override), so the arrow keys are the only stepper and a mouse user has no increment control at all.",
+      "A `reset-affordance` in the `reset` slot is `disabled` while the row sits at its default, so it is not tabbable. The row's tab-stop count changes as the value changes.",
+      "There is no `disabled` on the row. Disabling is something you do to the control you passed in, so the label keeps its full opacity and anything in the `reset` slot stays live unless you disable that too.",
+    ],
+    screenReader: [
+      "`<label for>` plus the id from the render prop is the entire naming story. Return a control without applying `controlId` and the label points at nothing: the control ships unnamed and the label text is announced as loose text beside it.",
+      "The hint is a plain `<p>` with an id, and nothing wires it for you. `describedBy` is the render prop's second argument and applying it is yours to do, so an unwired hint is sighted-only — and no gate can see the omission.",
+      '`UnitInput`\'s suffix is a sibling `<span>` of the input, not part of its name or its value. The field announces as a spin button reading "0.5", never "0.5 seconds", so put the unit in the label too when the bare number is ambiguous.',
+      "One `controlId` per row, and no group role around the control column. A two-control row — an x/y pair, a slider beside its number field — can name only one of the two, and there is no group name to say the pair belongs together.",
+      "Nothing here announces a value change. The row owns no live region, so a reset that moves a value from 1.5 back to 1.0 is silent beyond whatever the control itself reports.",
+    ],
+    focus: [
+      "`UnitInput` draws its ring on the wrapper with `focus-within:ring-2` while the input itself sets `outline-none`. Restyle `unit-input`'s className without keeping `focus-within:ring-2` and the field has no focus indicator at all.",
+      "Pressing a `reset-affordance` in the `reset` slot returns the row to default — which is the state that disables that same button. Focus is dropped from the now-disabled element and falls to `<body>`, so the next Tab restarts from the top of the page.",
+      "Clicking the visible label moves focus to the control. Clicking the unit suffix does not; it is inert text, and the gap is marked as a TODO in the source.",
+      "Whatever the render prop returns brings its own focus style. The row supplies none.",
+    ],
+  },
   pitfalls: [
     "The row hands out exactly one `controlId`, so a two-control row — an x/y pair, a slider plus its number field — can only associate the visible label with one of them. Give every extra control its own `aria-label`; the row has no group-label shape to express the relationship for you.",
     "`<label for>` only reaches a labelable element, and some controls are not one even though they look like it. Base UI's Switch renders a span with role=\"switch\" beside a visually hidden proxy input, and it is the proxy that takes your `controlId` — it still works, because Base UI finds the label through that proxy and points the visible switch at it, but two nodes now answer to the label text, so query such a control by role and name rather than by label. A control with no proxy at all, like a Base UI slider thumb, gets nothing: name it yourself with `getAriaLabel`, which is what parameter-panel.tsx does.",

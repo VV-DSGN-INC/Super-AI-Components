@@ -91,6 +91,30 @@ export const PermissionPromptDocs: ComponentDocs = {
       example: <InlineGrantList />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Five tab stops in the default shape: the arguments toggle, then Deny, Always allow, Edit first, Allow once. Omit `args` and it is four. Switch into Edit first and the count becomes one textarea per argument plus Back and Approve edited — and Deny leaves the footer entirely while you are editing.",
+      "The dialog is modal and traps focus, so Tab cycles inside it and never reaches the page behind. Clicking the backdrop does nothing: this is an alert dialog, and pointer dismissal is disabled by design.",
+      "Escape closes the dialog without calling `onDeny`. Deny itself is an `AlertDialogCancel`, so pressing it both closes the surface and reports the refusal — but Escape reaches the same close path without the handler, which leaves the agent's call neither approved nor refused. Treat `onOpenChange(false)` as a refusal too if Escape has to count as a no.",
+      "Only Deny closes the dialog — it is the `AlertDialogCancel`, the dialog's own Close. Allow once, Always allow, Edit first, Back and Approve edited are ordinary buttons that fire their handler and leave the dialog open, so drive `open` yourself if approving should dismiss the gate.",
+      "Space and Enter activate every verb, and the arguments toggle. There are no accelerators — no A for allow, no D for deny — and no arrow keys anywhere.",
+      "The footer is `flex-col-reverse` below the `sm` breakpoint, so on a narrow screen the visual order runs Allow once at the top down to Deny at the bottom while the tab order still runs Deny first. Reading order and tab order disagree there, and the most consequential verb is the one nearest the thumb.",
+    ],
+    screenReader: [
+      'The surface is `role="alertdialog"`, named by `action` and described by `reason` when you pass one. Omit `reason` and the dialog has a name and no description, leaving the plain-language action to do all the work.',
+      "The arguments toggle carries `aria-expanded` and `aria-controls`. The list it points at is not in the DOM while collapsed, so in the state a user meets first `aria-controls` references an id that does not exist.",
+      'The toggle\'s own label carries the count and the state — "Show all 4 arguments" or "Show argument" collapsed, "Hide arguments" expanded. Expanding inserts the list silently; the toggle\'s state change is the only announcement.',
+      "Arguments render as a definition list, each key a `<dt>` and each value a `<dd>`, both monospace with `break-all` on the value. A long path or a JSON blob is read as one unbroken run, so short, speakable keys are worth more here than they look.",
+      'In the editor each argument gets a real `<label for>` whose text is the raw key. "path", "body", "recipient" is what the human hears, so pass keys you would be happy to read aloud.',
+      "Nothing announces the swap between the four verbs and the editor. The footer's contents change under the user with no live region, so someone who pressed Edit first hears nothing until they navigate to find out what happened.",
+    ],
+    focus: [
+      "Opening moves focus into the dialog — to its first tabbable element, which is the arguments toggle when `args` is present and Deny otherwise. Closing returns focus to whatever opened it.",
+      "Pressing Edit first unmounts the button that had focus and the component places focus nowhere afterwards, leaving it to the dialog's focus trap rather than to the first argument field. A human who asked to edit still has to Tab into the editor they just opened; Back has the same shape in reverse.",
+      "In edit mode there is no Close in the footer at all, so Escape becomes the only way out — and, per the keyboard notes, it reports nothing.",
+      "Every control draws the vendored `Button`'s `focus-visible` ring, so focus is visible without a global style. The one exception is whatever you pass as `trigger`, which keeps its own.",
+    ],
+  },
   pitfalls: [
     "Wiring Allow once and Always allow to the exact same handler as a shortcut. They mean different things downstream — one grant should never be written when the human only meant to approve a single call.",
     "Treating Deny as needing confirmation or a second step before it closes. The whole point of making it the dialog's own Close path is that it is always safe and immediate to press.",

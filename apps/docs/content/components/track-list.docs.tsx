@@ -68,6 +68,29 @@ export const TrackListDocs: ComponentDocs = {
       example: <ZeroFilledMetadata />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "A row's tab stops are decided entirely by which handlers you pass: none with neither, one with `onPlayToggle`, two with both. A hundred tracks with both wired is two hundred stops, in table order, with no way to skip a row.",
+      "Play/pause is a real `<button>`, so Enter and Space toggle it and it calls `onPlayToggle(id, !playing)`. Without `onSelect` the title is a plain `<span>`, so there is no keyboard route into a track at all.",
+      "The component installs no key handlers. There is no Space-plays-the-focused-row, no arrow-key movement between rows, no Escape to stop playback and no type-ahead.",
+      "The vendored table wraps itself in an `overflow-x-auto` container with no `tabIndex`, and every focusable control sits in the first four columns. At a narrow viewport BPM and Key scroll off to the right and no keyboard can bring them back — the two columns the component exists for become mouse-only.",
+      "Nothing is ever `disabled`. A track with no peaks and no audio still renders an enabled Play button whenever `onPlayToggle` is supplied.",
+    ],
+    screenReader: [
+      "It is a real `<table>` with `<th scope=\"col\">` on every column, so each cell announces with its header. The artwork column's header is a visually hidden \"Artwork\" rather than an empty cell, and `label` lands as `aria-label` on the table itself.",
+      "The play control is named for its track — \"Play Midnight Drive\" / \"Pause Midnight Drive\" — so the announced name is the state, and the icon changes shape as well, which keeps it off colour.",
+      "An absent value renders through `NotSet`: the em-dash is `aria-hidden` and a visually hidden \"Not set\" is carried beside it, so an unknown BPM, key, tag set or cover announces the words rather than a dash, a blank or a zero.",
+      "The inline waveform is entirely `aria-hidden`, played portion included. `progress` moves the bars and nothing else, so how far through a track playback has reached is conveyed to nobody — as is the row's `data-state=\"playing\"` tint.",
+      "There is no live region. Playback starting or stopping announces only through the Play button's own name changing, and only if that button still has focus; starting playback from anywhere else on the page is silent.",
+      "Tags render as `Badge` spans with no role, so they read as a run of plain text inside the Tags cell rather than as a list with a count.",
+      "The title control and the play control are siblings, never nested, so a row is two independent controls rather than one interactive inside another.",
+    ],
+    focus: [
+      "Nothing here mounts, unmounts or moves focus. A row does not change shape when it starts playing — the same controls stay in the same cells — so focus survives playback, and re-sorting `tracks` keeps focus with the same row's control as it moves, because rows are keyed by `track.id`.",
+      "Both controls take the vendored `Button`'s `focus-visible` ring. The artwork `PreviewTile` is rendered without `onSelect`, so it is an inert `<div>` and never a focus stop.",
+      "The only way to strand focus is your own data: dropping a track out of `tracks` while its Play button has focus leaves focus on `<body>`.",
+    ],
+  },
   pitfalls: [
     "Auditioning must not navigate. If your `onPlayToggle` handler routes to a detail page, you have re-created the round trip this component exists to remove — start playback in place and leave the list mounted.",
     "The play control renders only when `onPlayToggle` is supplied. A list that silently has no way to audition is usually a forgotten handler, not a decision.",

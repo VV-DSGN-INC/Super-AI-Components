@@ -68,6 +68,28 @@ export const GenerationPanelDocs: ComponentDocs = {
       example: <StagesReordered />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Each stage's heading is one tab stop and toggles with Space or Enter. A collapsed stage costs exactly that one stop, because the rest of its content is unmounted rather than hidden.",
+      'The upload stage is two tab stops, not one. The `<input type="file">` is `sr-only`, which clips it but leaves it focusable, and it precedes the visible trigger in the DOM — so Tab lands first on an invisible control that shares the trigger\'s name, then on the button. Space on either opens the picker.',
+      "Drag and drop has no keyboard path, which is what the trigger button exists for. The drop target itself is a plain `<div>` with no key handlers.",
+      "Add one more stop per uploaded file, for its remove button. The prompt field is a plain textarea — Enter inserts a newline, nothing submits, and the only route to Generate is tabbing to whatever you put in the `generate` slot.",
+    ],
+    screenReader: [
+      'Each stage\'s `<h3>` sits inside its trigger button, and a button\'s children are presentational — so the heading role is dropped from the accessibility tree and heading navigation never reaches "Source", "Directions", "Presets" or "Settings". The stage names survive as the buttons\' names and as each stage\'s group label, but not as headings.',
+      "The trigger carries `aria-expanded` from the Collapsible base. Closing a stage unmounts its content rather than hiding it, so a collapsed stage's fields are absent from the tree entirely, not merely skipped by Tab.",
+      'The dropzone gives the file input and the visible button the same accessible name, so "Upload source file" is announced twice in a row while tabbing through the stage. The description text is the button\'s visible content and joins its name.',
+      'A file with no `preview` renders its name twice — once inside the tile, once as the tile\'s label below it — so it announces as "photo.jpg photo.jpg". A file with a preview names its image with the filename instead.',
+      "The prompt field carries both an `sr-only` `<label>` and an `aria-label` holding the same text. `aria-label` wins, so the label is redundant rather than harmful; `directionsLabel` drives both.",
+      "Nothing here is live. Adding a file, removing one, and the cost changing in the footer are all silent — the panel has no status region, and the cost chip is inert text.",
+    ],
+    focus: [
+      "Removing a file unmounts the remove button that had focus, and nothing restores it — focus falls to `<body>`. Move it to the next tile, or back to the upload trigger, inside your `onFileRemove`.",
+      "Collapsing a stage from its own trigger is safe: focus stays on the trigger. But the content is genuinely unmounted, so anything that closes a stage while focus is inside it drops that focus to `<body>`.",
+      "The section triggers and the dropzone trigger ship their own `focus-visible` rings. The `sr-only` file input cannot have one — it is clipped — so the first of the upload stage's two tab stops shows no focus indicator anywhere on screen.",
+      "The footer sits outside the scrolling body, so Generate can never be scrolled away from; the stages above it scroll independently of it.",
+    ],
+  },
   pitfalls: [
     "Passing `files` without `onFilesAdd`. The upload stage only renders when `onFilesAdd` is provided — that's the intentional signal that a tool wants file intake at all, so a files-only tool silently gets no dropzone section.",
     "Assuming the dropzone's drag target is the only way in. It's additive: a real, keyboard-focusable button opens the native file picker, so a screen-reader or keyboard-only user is never limited to the drag surface.",

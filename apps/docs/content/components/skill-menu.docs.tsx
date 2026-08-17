@@ -36,7 +36,7 @@ export const SkillMenuDocs: ComponentDocs = {
     { slot: "skill-menu", note: "Root: the two-pane frame around the searchable list and the preview." },
     {
       slot: "command-input",
-      note: "The search box (cmdk) — matches a query against every row's title and description together.",
+      note: "The search box (cmdk) — matches a query against each row's `id` and its description, not against the visible title.",
     },
     {
       slot: "command-item",
@@ -81,6 +81,30 @@ export const SkillMenuDocs: ComponentDocs = {
       example: <NestedInteractiveRow />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Three tab stops, and the list is not one of them: the search input, then the two footer buttons. Focus never leaves the input while you browse — cmdk drives the list through `aria-activedescendant`, so the rows are navigated without being focused.",
+      "From the input, Arrow Down and Arrow Up move the active row, Home and End jump to the first and last, and Enter selects. The preview follows the active row, so arrow keys and hover reach the same state — the preview is genuinely not mouse-only.",
+      "Escape does nothing. cmdk only handles Escape inside its dialog wrapper, and this composes `Command` directly, so if you put the menu in a popover of your own you own the dismissal key.",
+      "The preview pane cannot be reached from the list at all. Anything focusable you render into `preview` comes after the two footer buttons in DOM order, so tabbing to it means tabbing past the whole footer.",
+      'Nothing in the list is a real tab stop, which is the point: composing `entity-row` without `onSelect` keeps rows as plain `div`s, because a nested `button` inside a `role="option"` would be a doubled stop and an axe `nested-interactive` failure.',
+    ],
+    screenReader: [
+      "The search field is a `combobox` wired to the list, and its name comes from the root's `label` prop — cmdk renders a visually hidden `<label>` that the input's own `aria-labelledby` already points at, which is why passing `aria-label` to the input instead loses and leaves the field unnamed.",
+      'The list is a `listbox`, named here with the same string as the input (`searchLabel`, "Search skills" by default). Input and listbox therefore announce identically, which is redundant rather than wrong — a distinct name for the list would read better.',
+      "Each row is an `option` whose name is computed from its contents: `entity-row`'s title and description and, when present, the cost chip's \"6 credits\". Adjacent `span`s fuse with no separator, so a title and description announce as one run of text rather than as two fields.",
+      "**Filtering does not search the title.** `CommandItem` is given `value={skill.id}`, and cmdk scores against `value` plus `keywords` — which here is the description only. Typing a skill's visible name filters it out unless that name happens to appear in its `id`. Give every skill an `id` that contains the words a user would type, or the search box is a name-hider rather than a name-finder.",
+      "**The preview is announced as nothing.** It swaps as the active row changes, but it is a plain `div` — no live region, and no `aria-describedby` from the option to it. A screen-reader user arrowing the list hears option names and never the output preview, which is the feature this component exists for. If the preview matters to your audience, put its gist in `description` too.",
+      '"No skills found." is rendered by cmdk\'s `Empty`, which carries `role="presentation"`. It is not a status and not a live region, so filtering down to nothing is silent — the listbox simply reports no options.',
+      "The active row is marked with a ring rather than a background, deliberately: `entity-row`'s icon and description keep their own `text-muted-foreground` whatever the parent paints, so a muted or accent fill would repeat the documented 4.34:1 pairing. The ring carries no meaning of its own — `aria-selected` on the option is what announces the state.",
+      "Footer buttons are named by their labels and their icons are `aria-hidden`.",
+    ],
+    focus: [
+      "Selecting a skill fires `onSelectSkill` and leaves focus in the search input. Nothing moves focus to the preview or out of the menu, so the host decides what happens next.",
+      "When `skills` changes underneath the menu — an async load, or a filter that removes the active row — the active id falls back to the first item, and because that is derived during render rather than synced in an effect there is no flash of a stale selection. No focus moves, because focus was never in the list.",
+      "The search input has **no visible focus ring**. cmdk's input carries `outline-hidden`, and the `InputGroup` frame around it keys its ring off a `data-slot=\"input-group-control\"` that cmdk's input does not set — so the first and most important tab stop in this component shows nothing when focused. The footer buttons are vendored `Button`s and do ship rings.",
+    ],
+  },
   pitfalls: [
     "entity-row's icon and description spans keep their own text-muted-foreground no matter what background the parent draws behind them. Marking the active row with a bg-muted/bg-accent/bg-secondary highlight repeats the exact 4.34:1 failure already documented for entity-row itself — mark the active row with a ring instead of a background, the way this component does.",
     "cmdk's built-in fix for icon colour on a selected item only reaches a literal direct-child <svg> of the row. Composing entity-row (which wraps its icon in its own span) puts the icon two levels too deep for that rule to ever apply — don't rely on it.",

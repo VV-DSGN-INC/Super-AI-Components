@@ -80,6 +80,27 @@ export const PricingTableDocs: ComponentDocs = {
       example: <FeaturesAsOneFlatList />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      'The period control is `role="radiogroup"` but is not wired like one. Both options are ordinary tab stops, there is no roving tabindex, and the arrow keys do nothing — a keyboard user reaches `yearly` with Tab, not with Right. Home and End do nothing either.',
+      "One tab stop per plan card, its CTA — except on the plan marked `current`, whose button is `disabled` and therefore skipped outright. A keyboard user tabbing the grid passes over the plan they are already on without stopping on it.",
+      'Each add-on row adds one stop: the switch, a native `<button role="switch">`, so Space and Enter toggle it. It holds no internal state, so a switch with no `onToggle` takes focus, accepts the keypress and changes nothing while still announcing as operable.',
+      "Nothing else is bound. Feature lists are static text and there is no shortcut between cards, so comparing two tiers from the keyboard means tabbing past every CTA in between.",
+    ],
+    screenReader: [
+      'The period group is named "Billing period" and each option reports `aria-checked`. The saving badge sits inside the yearly button, so that option\'s accessible name is "yearly Save 20%" — the badge is part of the control\'s name rather than an annotation beside it.',
+      "Switching period rewrites every price on the page and announces none of it. There is no live region anywhere in this component, so a screen-reader user who toggles to yearly hears the radio state change and then has to walk back through the cards to learn what the numbers became.",
+      'Each plan\'s name is an `<h3>`, so the cards are reachable by heading. The feature-group titles are not — "Generation", "Collaboration" and the rest are styled `<p>` elements — so the sub-structure that makes the tiers comparable is invisible to a heading rotor, which is the one navigation a comparison surface most needs.',
+      'The tick glyph on every feature is `aria-hidden`, so a feature reads as its own text with no "included" prefix. That is fine in a table where every listed feature is included, and stops being fine the moment you render a feature a plan does not have.',
+      '`current` is announced twice and well: a visible "Current" pin beside the plan name, and the CTA\'s own disabled state under the label "Current plan". `highlighted` is announced not at all — it is a `ring-primary` and a `data-highlighted` attribute with no text and no ARIA behind it, so "Most popular" has to be words you put in `description` or `cta`.',
+      'The add-on switch is named by `aria-label={addOn.name}` alone, so it announces as "Priority rendering, switch, off". The price sitting beside it is separate text and never joins the name, so the switch never says what turning it on costs.',
+    ],
+    focus: [
+      "Nothing in the component moves focus. Switching period rewrites the prices in place and every control keeps its identity, so a focused CTA stays focused across the toggle.",
+      "The one way focus is lost here is caller-driven: marking a plan `current` disables its CTA, and a button disabled while focused is blurred by the browser, dropping focus to `<body>`. If you flip `current` in response to a purchase, put focus somewhere deliberate in the same beat.",
+      "Every control draws its own `focus-visible:ring-2` — the period options, the plan CTAs and the add-on switches — so focus is visible without any global style.",
+    ],
+  },
   pitfalls: [
     "The add-on switch is fully controlled and has no internal state: it renders `enabled` and calls `onToggle` with the value you should move to. Pass an add-on without `onToggle` and its switch is inert — it will animate nothing and report nothing, while still reading to a screen reader as an operable switch.",
     "`monthly` and `yearly` are both per-month numbers. `yearly` is the annualised monthly rate, not the annual total, and the card appends the billed-yearly qualifier itself. Passing an annual total renders a price twelve times too large and computes a nonsense saving.",

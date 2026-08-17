@@ -58,6 +58,27 @@ export const ModalityRailDocs: ComponentDocs = {
       example: <BadgeAsColorOnlyDot />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Each toggle group in the rail is a single tab stop with its own roving tabindex, so a rail with overflow and a pinned group is four stops in total: the visible tools, the chevron, the tools inside the popover once it is open, and the pinned group. Up and Down move within a group and wrap; they never carry you from the middle group into the pinned one.",
+      "Enter and Space activate a tool. Arrows only move the highlight, so someone can travel the whole column without switching tools.",
+      "The chevron is a plain button. Enter or Space opens the overflow popover, Escape closes it, and the list inside is navigated with Up and Down like any other group.",
+      "There is no `disabled` anywhere in this component. Every entry in `items` and `pinned` is always focusable and always activatable — gating a tool means leaving it out of the array, not marking it unavailable.",
+      "Activating the already-active tool reports an empty selection, which is discarded. The rail can never land on no tool at all.",
+    ],
+    screenReader: [
+      "All three toggle groups render as `role=\"group\"` with `aria-orientation` explicitly suppressed — the attribute is not allowed on that role, so the value the primitive computes is an axe `aria-allowed-attr` failure whatever it says. None of the three groups carries a name of its own, so a screen reader meets three unlabelled groups: the tools announce fine, but the split between the scrolling middle and the pinned footer does not.",
+      "An item is a toggle button carrying `aria-pressed`, so the active tool is programmatic rather than a colour treatment. Its accessible name is the visible label plus, when `badge` is set, an sr-only \" Pro\" or \" New\" — the crown and the dot themselves live inside an `aria-hidden` span and contribute nothing.",
+      "The visible label is truncated to fit 92px, but the full string stays in the accessibility tree. A tool that renders as \"Backgro…\" is still announced in full.",
+      "The tooltip repeats the label rather than supplying it. Every item already has a real text name, so nothing is lost on the many occasions the tooltip never opens.",
+      "The overflow popup is `role=\"dialog\"` named by `overflowLabel` — the same string the chevron announces, because the list has no heading to borrow a name from. Without it the popup would be an unnamed dialog, which fails outright.",
+      "Switching tools announces nothing beyond the pressed state of the button that was pressed. The canvas that just changed mode has to say so itself; the rail owns no live region.",
+    ],
+    focus: [
+      "Opening the overflow popover moves focus into the popup, and closing it returns focus to the chevron. Choosing a tool from that list closes the popover — so focus lands back on the chevron rather than on the tool that is now active, and that tool is inside a collapsed list where nothing shows it as pressed.",
+      "Items and the chevron both ship an explicit `focus-visible:ring-2`, so the rail is one of the few components here that does not depend on whatever global focus style you happen to have.",
+    ],
+  },
   pitfalls: [
     "Relying on the tooltip as the only place an item's name appears. The label under the icon already carries it — the tooltip on hover is a supplement for the collapsed/tight case, never the sole source.",
     "Marking the active tool with colour alone. `modality-rail-item` sets `aria-pressed` from the toggle-group's own state, so the active tool is programmatically discoverable even if a custom theme changes the colour treatment entirely.",

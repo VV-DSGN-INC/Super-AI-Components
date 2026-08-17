@@ -58,6 +58,25 @@ export const PromoCardDocs: ComponentDocs = {
       example: <StackedCards />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop, or two: the dismiss ✕ is always rendered, and the CTA appears only when `onCtaClick` is supplied. The ✕ comes first in the DOM, so Tab reaches the dismiss before the pitch it is meant to dismiss.",
+      "Both are native buttons — Space and Enter. Escape does not dismiss the card: this is an ambient card rather than a dialog, and no key is bound to closing it.",
+      "There is no `disabled` anywhere in the API. A dismissed card is not disabled, it is unmounted (`dismissed` returns `null`), so the tab order shortens rather than keeping a dead stop in it.",
+    ],
+    screenReader: [
+      'The `quota-warning` flavour, and only that flavour, puts `role="alert"` on the card root, which makes the whole card an assertive live region — title, description and CTA announced together. It carries `role="alert"`\'s usual limitation with it: a card already present when the page loads is generally not announced at all, so the urgency lands only when the card mounts into a page that is already there.',
+      'Urgency survives past colour with an `sr-only` "Warning:" ahead of the title, kept outside the title node on purpose so a `getByText(title)` still matches exactly. The flavour icon is `aria-hidden` and the tint carries nothing, so those two — the prefix and the words of the title — are the whole non-visual signal.',
+      'The dismiss button is named by `dismissLabel`, which defaults to the bare word "Dismiss". Two promo cards in one rail therefore give a screen-reader user two identically-named buttons and no way to tell which pitch each one closes; pass "Dismiss upgrade prompt" and so on if you cannot avoid the stack.',
+      'The CTA is named by `ctaLabel`, defaulting to "Learn more" — the same collision in the same rail, and it says nothing about where it goes.',
+      "The card has no role of its own outside `quota-warning`, no accessible name, and no heading — the title is a `<p>`. It is not reachable by heading or by landmark, so it is found in reading order or by tabbing to its buttons.",
+    ],
+    focus: [
+      "Dismissing unmounts the card, including the ✕ that had focus, and nothing restores it: focus falls to `<body>` and the next Tab restarts from the top of the page. In a sidebar that is the difference between closing one card and losing your place on the whole page — move focus to the rail, or to whatever follows, inside `onDismiss`.",
+      "The same happens whenever your persisted `dismissed` flips true from elsewhere, since the component's only response to it is to render nothing.",
+      "Both buttons inherit the vendored `Button`'s `focus-visible` ring; this component adds no focus styling of its own.",
+    ],
+  },
   pitfalls: [
     "Four flavours, one component — resist forking upgrade/invite/update-available/quota-warning into four separate components. The copy and tone differ; the dismiss contract, layout, and accessibility handling should not, and a fork is how one of the four quietly stops being dismissible.",
     "The CTA is opt-in on purpose: it only renders when `onCtaClick` is supplied. Don't pass a `ctaLabel` without a real destination behind it — a button that goes nowhere is worse than no button.",

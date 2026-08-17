@@ -49,6 +49,26 @@ export const ModeTabsDocs: ComponentDocs = {
       example: <TooManyModes />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop for the whole row, not one per mode. The underlying toggle group is a composite with a roving tabindex: Tab reaches the highlighted trigger, Left and Right move the highlight between modes and wrap at both ends, and the next Tab leaves the group entirely.",
+      "Arrows move the highlight only — Enter and Space are what commit the mode, so someone can walk the row without changing the working context underneath it.",
+      "Pressing the already-active mode reports an empty selection, which the component discards. The row can never land on \"no mode\", by keyboard or by mouse.",
+      "`disabled` reaches every trigger and renders each as a real `disabled` button, so a disabled `ModeTabs` has no tab stop at all — the current mode stops being reachable rather than merely unclickable. Keep something else on the surface saying which mode is in force while you gate it.",
+      "There is no Home/End jump and no number-key shortcut. The arrows are the only navigation the row has.",
+    ],
+    screenReader: [
+      "`mode-tabs-list` is `role=\"group\"` named by `label` (default \"Mode\"), and each trigger is a toggle button carrying `aria-pressed`. It does not announce as a tab list and not as a radio group, so mutual exclusivity is inferred from hearing exactly one \"pressed\" — nothing states it.",
+      "`aria-orientation` is suppressed on purpose: `role=\"group\"` does not permit the attribute at all, so the value the primitive would otherwise compute is an axe `aria-allowed-attr` failure regardless of what it says. Putting it back is a regression, not a preference.",
+      "Every trigger has a real text name in all three variants. `with-tooltip` keeps `mode.label` as `sr-only` button content, so the accessible name survives even if the tooltip never fires — the tooltip repeats the name for sighted users rather than being the only copy of it.",
+      "The icon in `with-icon` and `with-tooltip` sits inside an `aria-hidden` span and never contributes to the name. The name is `mode.label`, exactly, in every variant.",
+      "Switching mode announces only the pressed state of the button just activated. Nothing announces what changed downstream, so if moving from Ask to Build rewrites the surface below, the live region belongs on that surface and not here.",
+    ],
+    focus: [
+      "The roving tabindex is the only thing that moves focus, and it moves it inside the row. Nothing opens, nothing unmounts, and tabbing out lands wherever document order puts it.",
+      "The focus ring comes from the shared toggle variant rather than from this component, so it matches every other toggle in the system and changes with it. There is nothing to supply and nothing to override here.",
+    ],
+  },
   pitfalls: [
     "ModeTabs doesn't clamp `modes.length` — the 2–5 range from the spec is the caller's responsibility to respect, not something the component enforces.",
     "The selected mode is a working context that the spec says must survive a reload, but ModeTabs only owns the click — persisting `value` across sessions (URL state, localStorage, a server-side setting) is the consuming app's job.",

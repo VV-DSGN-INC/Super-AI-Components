@@ -68,6 +68,29 @@ export const TrustDialogDocs: ComponentDocs = {
       example: <AccountPickerAsSeparateStep />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The dialog traps focus. Tab cycles the trust checkbox, then Cancel, then Continue once it is enabled, then the account trigger when `accounts` is passed — three stops before the box is ticked, four after.",
+      "Continue is genuinely `disabled` until then, so it is not merely dimmed: it is absent from the tab order, and ticking the checkbox inserts a new stop between Cancel and the picker.",
+      "Space toggles the checkbox; Enter and Space activate Cancel and Continue; the account picker opens on Enter, Space or Down and takes arrow keys and type-ahead from there.",
+      "Escape closes the dialog and fires `onOpenChange(false)` — it does not call `onCancel`, which is wired to the Cancel button's click alone. An outside press does not close it, which is the reason this is an alert dialog rather than a dialog.",
+      "The preview is `max-h-40 overflow-auto` with no `tabIndex` and nothing focusable inside it. Any preview taller than 10rem — which is most real manifests, commands and file lists — cannot be scrolled from the keyboard at all, so the content the gate exists to make people read is mouse-only. Keep previews short, or wrap yours in a focusable, named scroll container before passing it in.",
+    ],
+    screenReader: [
+      "Base UI gives the popup `role=\"alertdialog\"` labelled by the title, and described by the description only when you pass one — the preview and the warning are body content, not `aria-describedby` targets. Omit `description` and the dialog announces its title and then falls to the body.",
+      "The warning is `role=\"note\"`, overriding the vendored Alert's `role=\"alert\"`, so opening the dialog announces once rather than twice over itself.",
+      "The checkbox is named by the `<label>` that wraps it, so its accessible name is the whole `trustLabel` sentence and the entire bordered row is a click target for it.",
+      "The account trigger is named `\"<accountLabel>: <account name>\"` — \"Run in: Production\" — so the destination is spoken as part of the control rather than only drawn inside it.",
+      "Continue becoming enabled is announced as nothing. Ticking the box announces the checkbox's own state and no more; the button silently joins the tab order, with no live region to say the gate has opened.",
+      "Pass `accounts` without `selectedAccountId` and the picker falls back to the first account: the trigger announces it as chosen and `onContinue` receives its id. Nothing distinguishes that default from a real choice, which on a safety gate is worth deciding deliberately.",
+    ],
+    focus: [
+      "Opening moves focus into the popup and closing returns it to the trigger, inherited from Base UI rather than implemented here.",
+      "Ticking the checkbox does not move focus to Continue. Focus stays on the checkbox and the newly enabled button is one Tab past Cancel — enabling and acting stay two deliberate steps.",
+      "Continue is `disabled`, not `aria-disabled`, so a controlled `trusted` flipped back to false from outside while Continue has focus drops focus to `<body>` inside a focus-trapped dialog, and the next Tab restarts at the top of it.",
+      "Every focus ring in the dialog comes from the vendored `Button`, `Checkbox` and `Select`; the component adds none of its own.",
+    ],
+  },
   pitfalls: [
     "Passing `defaultTrusted` (or a controlled `trusted` that starts `true`) as a shortcut for trusted users or internal tools. A gate that can start open isn't a gate — it's decoration.",
     'Softening the warning copy into reassurance ("this is probably fine") instead of naming what the content can actually do. The default text is deliberately plain; an override should stay specific, not friendlier.',

@@ -96,6 +96,21 @@ export const DateSectionDocs: ComponentDocs = {
       ),
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Zero tab stops of its own. The wrapper is a `<div role=\"group\">` and the label is a `<p>` — neither takes focus, so every tab stop inside a date section belongs to the rows you passed as children.",
+      "There are no keys, no collapse and nothing to activate. Arrow keys, Enter, Space and Escape all fall through to whatever is inside, which means the group adds no keyboard behaviour that could conflict with a row list, a link list or a menu placed in it.",
+      "Because there is no collapse trigger, there is no way to skip a long bucket from the keyboard: 40 rows under \"Today\" is 40 tab stops before \"Yesterday\" begins. `section-header` is the component with the fold.",
+    ],
+    screenReader: [
+      "`role=\"group\"` plus `aria-labelledby` pointing at the label is the whole accessibility argument for this component: the rows are inside a named group rather than after a heading, so the bucket name travels with the items instead of being a line you had to have seen.",
+      "The label is a `<p>`, not a heading, so date buckets are deliberately absent from the heading outline. Jumping bucket to bucket is by group, not by heading — and a sidebar of `<h3>Today</h3>` would pollute the outline of the page beside it.",
+      "The label's `id` comes from `React.useId()`, so it is unique per instance and several sections in one list cannot cross-wire their names.",
+      "`...props` spreads after the component's own attributes, so passing your own `role` or `aria-labelledby` silently replaces the group semantics and orphans the label paragraph. If you need a different name, change `label`.",
+      "An empty `label` leaves `aria-labelledby` pointing at an empty paragraph, which computes to no accessible name — an unnamed group with a mystery gap above it. Skip the bucket rather than rendering it nameless.",
+      "Nothing announces regrouping. When \"Today\" becomes \"Yesterday\" at midnight, or a row moves between buckets, the DOM changes with no live region, so the new grouping is only discovered by re-reading the list.",
+    ],
+  },
   pitfalls: [
     "The catalog lists a count variant; the component does not implement one. There is no `count` prop and no count slot, so the only way to show one today is inside the `label` string — which folds it into the group's accessible name and gives up the tabular alignment a real count column would have. `section-header` has the implemented version.",
     "Same for the collapsible variant: there is no `collapsible`, `open`, `onOpenChange` or `defaultOpen`, no trigger button, no `aria-expanded` and no `data-state`. Nothing inside a date section can be folded away. `section-header` implements that contract, controlled pair included.",

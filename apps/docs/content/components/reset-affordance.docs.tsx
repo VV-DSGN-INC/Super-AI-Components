@@ -55,6 +55,26 @@ export const ResetAffordanceDocs: ComponentDocs = {
       example: <DotUsedAsAControl />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      'One tab stop when `state` is "modified" or "keyframed", and zero when it is "default" — the control is genuinely `disabled` there, not merely dimmed, so it holds its position and leaves the tab order. An inspector of eleven rows with two edited values is two stops, not eleven.',
+      "Zero tab stops when `collapsed`. That branch renders a `<span>`, so there is nothing to focus and nothing to press.",
+      'It is a real `<button>`, so Space and Enter both fire `onReset`. There is no Escape, no Delete and no modifier variant — Alt-click to clear a whole section is not implemented; use `scope="group"` on the section header instead.',
+      "Props spread onto the button, but only in the uncollapsed branch: the `collapsed` return happens before the spread, so a `tabIndex` or `onKeyDown` you attach silently disappears the moment the group folds.",
+    ],
+    screenReader: [
+      'The button\'s entire accessible name is `label`, which defaults to "Reset". The glyph inside is `aria-hidden`, so nothing else contributes — eleven unlabelled resets in one inspector announce as eleven buttons called "Reset".',
+      '"keyframed" and "modified" are indistinguishable to assistive tech. The glyph changes from ↺ to ◇ and `data-state` changes with it, but the name does not and there is no description, so a value driven by an animation track sounds exactly like one that was edited. Put the difference in `label` ("Clear Opacity keyframes") when it matters.',
+      '"default" is the one state that does announce itself: the button is `disabled`, so it reads as unavailable, which is the intended way of saying there is nothing to reset.',
+      'The collapsed dot is `aria-hidden="true"` with no role and no name, so the promise that a folded group still signals its changes holds for sighted users only. Carry that signal on the group\'s own trigger instead.',
+      "Nothing announces that a reset happened. There is no live region and no busy state here — the only evidence is the field's value changing, which the field has to announce itself.",
+    ],
+    focus: [
+      'Resetting moves `state` to "default", which disables the button the user is standing on, and a focused element that becomes disabled is blurred — focus falls to `<body>` and the next Tab restarts at the top of the page. This fires on every successful reset, which makes it the most likely accessibility failure in a long inspector; move focus to the field you just reset.',
+      "Collapsing a group replaces the button with the inert dot, dropping focus the same way if it was there.",
+      "The button carries its own `focus-visible:ring-2`. It is a bare `<button>`, not the shared `Button`, so it inherits nothing — a `className` that rewrites its ring classes removes the only visible focus indicator it has.",
+    ],
+  },
   pitfalls: [
     'The prop value is `state="default"` while the catalog calls that state `at-default` — the two names are for the same situation, and only the prop spelling is load-bearing in code. Nothing else in the API uses the word "default", so read it as "the value is at its default", not "the default rendering".',
     "The collapsed dot is `aria-hidden`, so the promise that a folded-up group still signals its changes holds for sighted users only. If assistive-technology users need that signal too, carry it on the group's own trigger — a count, or a suffix on the section title — rather than relying on the dot.",

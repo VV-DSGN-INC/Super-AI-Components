@@ -59,6 +59,25 @@ export const PaywallMessageDocs: ComponentDocs = {
       example: <PromptDiscarded />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Between zero and two tab stops, and both are conditional. The upgrade button renders only when you pass `onUpgrade`; the top-up button only when the cost contract supplies `onTopUp` and money is genuinely what is missing. A `feature-locked` card with no `onUpgrade` has nothing to tab to at all.",
+      "Both are native buttons, so Space and Enter activate them. Nothing else is bound — no Escape, no shortcut — because this is a turn in a message stream, not a dialog, and it is not supposed to be dismissible.",
+      "The held prompt is text, not a field. There is no keyboard path to copy, edit or re-run it from inside the card; if the user needs one, render it yourself beside the CTA.",
+    ],
+    screenReader: [
+      'The card is `role="group"` labelled by its own title, so it announces as a named group inside the stream rather than as an unlabelled block. It is deliberately not a live region: the surrounding turn already announces, so the card itself says nothing on arrival.',
+      'The per-state icon is `aria-hidden`. Which gate fired is carried entirely by the title text — "You are out of credits" — which is why overriding `title` with something vaguer costs more than it looks.',
+      '`requirement` renders as a bare badge with no prefix, so passing "Pro" announces as the single word "Pro" beside the title. Write something that survives on its own — "Pro plan" — if the tier name alone would not.',
+      'The cost chip is passed `unit=""`, so it announces as a naked number: "300", with the coin glyph `aria-hidden` and nothing saying what 300 is. The derived shortfall line beside it is the only place the unit is spoken, and it only renders when a balance is in context.',
+      "`before` and `after` are plain paragraphs outside the group, tied to it by reading order alone. That is the intent — the agent explains, then the card — but a user who jumps straight to the group gets the card without the explanation.",
+      'The greyed preview is announced exactly like the prompt above it; the dimming carries nothing. Its visible "Would have produced" caption is the whole of the non-visual signal, which is why the caption is not optional.',
+    ],
+    focus: [
+      "Nothing here moves focus, and nothing unmounts on its own — the card holds its shape until the caller replaces it. If `onUpgrade` swaps this turn for the resumed run, the focused button vanishes with it, so land focus on the new content yourself.",
+      "Both buttons inherit the vendored `Button`'s `focus-visible` ring; this component adds no focus styling of its own.",
+    ],
+  },
   pitfalls: [
     "Passing affordability in. There is no insufficient or shortfall prop, on purpose: both are derived by useCost from the estimate and the balance in CostProvider. Choosing the quota-exhausted state declares which gate fired; it does not fabricate a shortfall line, so if no balance is in context nothing renders rather than a guess.",
     "Greying the prompt along with the preview. The preview is dimmed because it does not exist yet; the prompt does exist, and dimming it reads as though it has been thrown away — precisely the impression the card is trying to avoid.",

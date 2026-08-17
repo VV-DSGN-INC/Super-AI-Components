@@ -71,6 +71,28 @@ export const GenerationWizardDocs: ComponentDocs = {
       example: <StepHiddenBehindColorOnly />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The stepper is only as tabbable as it is complete: a completed step is a button, while the current and upcoming steps are `<span>`s. On step one the stepper has zero tab stops; on the last step it has all but one.",
+      "It is an `<ol>` of buttons, not a tablist. There is no roving tabindex and the arrow keys do nothing — Tab is the only way across it.",
+      "The nav row is Back, then Skip, then the primary action. Back is `disabled` on the first step and Skip is not rendered at all on the last, so the row is three stops mid-flow and two at either end.",
+      "Nothing is bound to Enter or Escape at the wizard level. A step's own fields keep whatever keys they arrived with.",
+    ],
+    screenReader: [
+      "The stepper's accessible name is \"Step 2 of 4\", and the same string is repeated as visible text beside the step title. The name changes as you advance, but a list's name changing is not announced — what users actually hear is the heading, via the focus move below.",
+      'A completed step announces as "Completed: Model". The current step carries `aria-current="step"`; an upcoming step is a plain span with neither. The number and the check glyph are both `aria-hidden`, so position comes from the ordered list and from `aria-current`, never from the marker.',
+      "There are no headings in this component. A12 `section-header` renders spans, so the step title — the very thing focus is moved to on every step change — announces as generic text, and heading navigation finds nothing in the wizard at all.",
+      "On narrow viewports the step titles are `sr-only sm:not-sr-only` rather than hidden, so the stepper keeps its names at the breakpoint the labels disappear at.",
+      "The preview pane is not a live region. Its whole point is that it changes as choices are made, and every one of those changes is silent — put an `aria-live` region inside your `preview` node when the number in it is the reason to stop.",
+      'The primary action\'s label is the only signal that the last step commits rather than continues. "Generate" versus "Next" is the entire announcement; nothing describes what is about to be spent.',
+    ],
+    focus: [
+      "Every step change moves focus to the new step's title, deliberately, so it never strands on a nav button that just changed meaning under the user's finger. That also covers the two cases that would otherwise drop focus to `<body>`: Back becoming `disabled` when you reach step one, and Skip unmounting when you reach the last step.",
+      "The move fires on any change of the active step, including one a parent drives through the controlled `step` prop — so restoring a saved position steals focus. Only the initial mount is exempt.",
+      "The target is a `<span tabIndex={-1}>` carrying `outline-none`. Screen-reader users get the step title read to them; sighted keyboard users get no visible indication of where focus went, and their next Tab starts from the step header rather than from the button they pressed.",
+      "Clicking a completed step in the stepper therefore also moves focus forward, out of the stepper and into the step body.",
+    ],
+  },
   pitfalls: [
     "Treating the three declared states — stepper, preview pane, skip/back/primary nav — as variants to render one at a time. They're three regions of one composed wizard; a build that renders only one of them per 'state' has misread the spec.",
     "Wiring the primary button to always say \"Next\" and always call the same handler. The last step's primary action commits (spends credits, starts the render) rather than continuing, and needs its own label and handler.",

@@ -34,7 +34,10 @@ export const FeatureAnnouncementDocs: ComponentDocs = {
       slot: "feature-announcement-stage",
       note: "New / Beta / Preview / version badge. Always a word, never a bare coloured dot.",
     },
-    { slot: "feature-announcement-title", note: "The headline, and the source of the dismiss control's name." },
+    {
+      slot: "feature-announcement-title",
+      note: "The headline, and the source of the dismiss control's name.",
+    },
     { slot: "feature-announcement-description", note: "One or two sentences of what actually changed." },
     {
       slot: "feature-announcement-media",
@@ -68,6 +71,28 @@ export const FeatureAnnouncementDocs: ComponentDocs = {
       example: <ColourOnlyNewDot />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab stops are per level, and the loud levels have fewer than they look. `modal` is the dismiss button plus the CTA — `showCloseButton` is off, so the ✕ this component renders is the only close control inside the dialog. `anchored` is one stop for the trigger, then the same two inside the popup.",
+      "`inline-card` and `dismissible-chip` are two stops each, CTA then dismiss in DOM order, and neither is modal. Escape does nothing on those levels because there is nothing to close.",
+      "For `modal` and `anchored`, Escape and an outside click both close *and* dismiss: they route through the same handler as the ✕ and fire `onDismiss(id)`. All three exits are the same exit, because an announcement that came back after Escape would read as a bug.",
+      "The `anchored` level's trigger is whatever you pass as `anchor`. Pass something unfocusable — a `div`, a `span` — and the popup has no keyboard opener at all; pass the feature's real button instead.",
+    ],
+    screenReader: [
+      'The dismiss control is named "Dismiss announcement: <title>", built from `title`, which is typed as `string` rather than `ReactNode`. That is what makes the name reliable here: it cannot silently collapse the way a name assembled from an arbitrary child would, so several announcements on one screen stay distinguishable.',
+      '`modal` announces as a dialog named by its `DialogTitle`. `anchored` renders a popup that is also `role="dialog"`, named by an explicit `aria-labelledby` pointing at the visible title — without that line it would be a dialog with no name, which axe fails outright.',
+      "`inline-card` and `dismissible-chip` carry no role at all. They are a card and a `div`, announced in reading order, with nothing marking where the announcement starts or ends.",
+      'The stage is a `Badge` carrying its own word — "New", "Beta", "Preview", or your version string — so it is always announced as text. Only the tint depends on the recognised stage names; an unrecognised value still renders the word.',
+      "The ✕ glyph is `aria-hidden`. The media node is yours: an `<img>` passed as `media` needs real `alt`, and a decorative loop needs `aria-hidden` at the call site.",
+      "Nothing announces an announcement arriving. The two quiet levels are ordinary content with no live region, so an `inline-card` that appears mid-session is silent until the user reaches it. Dismissal is silent too — the component returns `null` and says nothing about what went away.",
+    ],
+    focus: [
+      "Dismissing unmounts the component outright: `dismissed` short-circuits before anything renders, so the button that had focus disappears and focus falls to `<body>`. On the two quiet levels there is nothing left to restore it — move focus to the surrounding surface in your `onDismiss`.",
+      "`modal` is rendered without a `DialogTrigger`, so on close the dialog has no trigger to return focus to. The restore target is whatever was focused beforehand, which for an announcement that is open on mount may be nothing at all.",
+      "`anchored` returns focus to its trigger cleanly — unless you feed `dismissed` straight back, which unmounts the trigger along with the popup and drops focus to `<body>` anyway.",
+      "Every control here is a shadcn `Button` and carries the house `focus-visible` ring. A custom `anchor` brings its own.",
+    ],
+  },
   pitfalls: [
     "Expecting the component to remember the dismissal. It deliberately writes nothing — no localStorage, no cookie, no request. Dismissing emits `onDismiss(id)` and nothing else; if you don't persist that id and pass `dismissed` back in, the announcement returns on the next page load, which is the single most-disliked behaviour on this surface.",
     "Minting a new `id` for the same news — a copy edit, a re-launch, a rebuild that regenerates ids. Every user who already dismissed it sees it again. Treat the id as the identity of the news, and change it only when the news changes.",

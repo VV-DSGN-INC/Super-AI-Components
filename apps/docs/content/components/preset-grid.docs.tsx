@@ -56,6 +56,26 @@ export const PresetGridDocs: ComponentDocs = {
       example: <ShowMoreLinkBelowGrid />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Every tile is its own tab stop. There is no roving tabindex — the source says so, and names A4 `choice-chips` as carrying the same accepted gap — so a twelve-preset grid is twelve stops, plus one more for the see-more tile.",
+      'Arrow keys do nothing. The tiles carry `role="radio"` (or `role="checkbox"` under `multiple`), which is exactly the role a keyboard user expects to arrow through; here Tab is the only way between them, and Home and End do not work either.',
+      "Space and Enter select, because each tile is a native `<button>` underneath its role. In single-select a tile can only ever be turned on — pressing the already-checked tile re-selects it — while under `multiple` the same press toggles it off.",
+      'There is no `disabled` anywhere in the API. Every tile is focusable and activatable including one whose `state` is `"loading"` or `"failed"`, so a preset that is still resolving is picked exactly as easily as one that finished.',
+    ],
+    screenReader: [
+      'The root is `role="radiogroup"`, or `role="group"` under `multiple`, and it has no accessible name. Nothing in the component supplies one — pass `aria-label` or `aria-labelledby` yourself. Props you spread land on that root, so this is the one name you can set from outside.',
+      'A tile\'s name is read from its whole button subtree in DOM order: any text inside the `thumbnail` you passed, then the `badge`, then the overlay label. A badge reading "New" therefore announces before the preset name — "New Sunset orange, radio button" — which is the reverse of how it is read visually.',
+      'For `content="palette"` the swatch is `aria-hidden` and `label` is literally the only thing an assistive-tech user gets. "Sunset orange" is a name; "Palette 3" is not, and there is no second chance at it.',
+      'The see-more tile is a plain `<button>` sitting inside the radiogroup rather than a radio. Its name comes from `seeMoreLabel` plus an `sr-only` count — "See more — 8 more" — but a radiogroup\'s only expected children are radios, so it is a non-radio member of a set whose size assistive tech is trying to report.',
+      "`loading` and `failed` are invisible here. `preview-tile` sets no `aria-busy` and adds no text for either, so all three states announce identically and only the ring and the fill distinguish them.",
+    ],
+    focus: [
+      "Expanding the grid destroys the control that expanded it. Pressing see-more takes the hidden count to zero, the tile unmounts, and nothing restores focus — so focus falls to `<body>` and the next Tab restarts from the top of the page, at the moment the user has just revealed eight more options. Move focus to the first newly-revealed tile inside your own handler if that matters.",
+      "Nothing else is lost across the expand: already-visible tiles keep their key and position, so React reuses their DOM nodes and a focus ring anywhere else in the grid survives.",
+      "Both the tiles and the see-more tile draw their own `focus-visible:ring-2`, so focus is visible here without any global style.",
+    ],
+  },
   pitfalls: [
     "Wiring a tile's own onClick straight into preview-tile's `onSelect` prop — that renders preview-tile's internal Frame as a second, nested interactive button with `aria-pressed` toggle semantics, the wrong ARIA for a radio or checkbox. preset-grid deliberately renders preview-tile without `onSelect` and wraps it in its own single `role=\"radio\"`/`role=\"checkbox\"` button instead.",
     "Passing `multiple` without also reading `value` as an array — a consumer that keeps treating `onValueChange`'s payload as a single string will see every tile after the first look permanently selected or never update at all.",

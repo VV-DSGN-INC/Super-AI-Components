@@ -71,6 +71,32 @@ export const MediaPromptBarDocs: ComponentDocs = {
       example: <NodeEmbeddedWithNegativePromptAttempt />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Unlocked and idle, the `docked` bar is four tab stops plus whatever `settings` contributes: the textarea, attach, the negative-prompt toggle, then submit. `node-embedded` drops the negative toggle and is three; `floating` suppresses the settings strip, so it is the same four minus the strip's own stops.",
+      "Opening the negative prompt swaps the toggle for a collapse button inside the new row and adds the negative textarea, so the count stays even but the order changes — the second field and its X now sit between the prompt and the toolbar.",
+      "Enter submits and Shift+Enter breaks the line, in the main prompt only. The negative-prompt textarea binds no key handler, so Enter there inserts a newline.",
+      "There is no IME guard on the submit key. The handler checks only `event.key === \"Enter\" && !event.shiftKey`, so the Enter that commits a Japanese, Chinese or Korean composition submits the prompt mid-word. K2 `inline-generate-popup` guards this with `event.nativeEvent.isComposing`; this component does not.",
+      "`generating` disables the textarea, attach, and both negative-prompt controls, and replaces submit with stop. Stop is the only control in the bar you can reach while a run is in flight.",
+      "Submit is disabled whenever the trimmed prompt is empty, so an empty bar has one fewer reachable control than a filled one. `locked` collapses the field to two elements, only one of which — the unlock button — is focusable.",
+      "Escape does nothing anywhere. It does not close the negative-prompt row and it does not stop a run.",
+    ],
+    screenReader: [
+      "The prompt field is named twice — an sr-only `<label htmlFor>` and an `aria-label` carrying the same `label` string. `aria-label` wins, so the label element is dead weight rather than a second announcement; the two must not be allowed to drift apart.",
+      "The root carries `aria-busy` while `generating`, and `media-prompt-bar-status` is a visually hidden `role=\"status\" aria-live=\"polite\"` region announcing `generatingLabel`. It is mounted in every state holding an empty string, which is what makes the first announcement actually fire.",
+      "Nothing announces the end of a run. The region empties when `generating` goes false, and emptying a live region announces nothing — so \"Generating…\" is spoken and the finish is silent. Announce the result on the surface that renders it.",
+      "Attach, stop and the negative-prompt collapse are icon-only and named by `attachLabel`, `stopLabel` and `negativePromptCollapseLabel`; every glyph in the bar is `aria-hidden`. Translate those props or the buttons stay in English while the placeholder does not.",
+      "The negative field has a real visible `<label>` and a matching `aria-label`, but the row holding it is a plain div with no group role — so nothing announces that the second field belongs to the first. A screen reader meets two textareas with different names, not a prompt and its negation.",
+      "`locked` swaps the whole field out for the paywall with no live region on the change, so a bar that locks while someone is typing in it changes shape silently.",
+      "The cost chip is static text. Its number is announced when it is passed over and never when it changes.",
+    ],
+    focus: [
+      "Starting a run disables the textarea, which is where focus almost certainly was. A disabled element cannot hold focus, so focus falls to `<body>` and the next Tab restarts from the top of the page — at exactly the moment the only useful control is the Stop button that just appeared. Move focus to `media-prompt-bar-stop` in the same handler that sets `generating`.",
+      "Collapsing the negative prompt unmounts the X that had focus, with nothing restoring it. Same failure, smaller blast radius.",
+      "Switching `locked` on unmounts the entire field, textarea included, and nothing catches focus on the way past.",
+      "The textarea's own ring is switched off (`focus-visible:ring-0`) because the container is meant to carry the styling, but no presentation adds a focus-within treatment — so apart from the caret there is no visible indication that the prompt field holds focus. Every button in the bar uses the standard Button ring.",
+    ],
+  },
   pitfalls: [
     "Deriving `locked` from a disabled textarea instead of swapping in the paywall row — a greyed-out composer with no explanation reads as broken, not as an upsell.",
     "Letting the `cost` prop go stale when `settings` changes — E1, E5, and D1 are all supposed to read from one price; a stale number here is the exact two-prices failure the spec warns about.",

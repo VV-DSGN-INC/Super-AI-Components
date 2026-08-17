@@ -72,6 +72,16 @@ describe("renderScaffold", () => {
     expect(docs).toContain("dos: [");
   });
 
+  // The scaffold seeds both arms so check-contract.mts's accessibility
+  // assertions fail loudly on an unfilled component, rather than the author
+  // discovering the field only when typecheck rejects a missing property.
+  it("seeds both arms of the accessibility block", () => {
+    const docs = files["content/components/workspace-switcher.docs.tsx"];
+    expect(docs).toContain("accessibility: {");
+    expect(docs).toContain("keyboard: []");
+    expect(docs).toContain("screenReader: []");
+  });
+
   // The docs module is plain data read by a Server Component, so it must
   // never carry "use client" — see the workspace-switcher/promo-card/
   // sidebar-nav static-export fix this template was hardened to prevent

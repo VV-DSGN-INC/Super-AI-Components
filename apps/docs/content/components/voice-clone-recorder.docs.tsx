@@ -70,6 +70,32 @@ export const VoiceCloneRecorderDocs: ComponentDocs = {
       example: <ColorOnlyRecordingIndicator />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab stops are per state and small: `prompt-script` is one (Start recording) and `level-metering` is one (Stop recording) — the level meter is a `progressbar` and is never focusable. `retake` is two, or three when you pass `takeUrl`, because the native `<audio controls>` player is its own stop with its own internal transport.",
+      "`consent-capture` is two stops while the box is unchecked — the checkbox, then Back — because the confirm button is a genuinely `disabled` button and disabled buttons are skipped. Checking the box adds the third.",
+      "Space toggles the checkbox, and so does activating anywhere in its bordered label. Every other control is a plain button that answers to Enter and Space.",
+      "Escape closes the consent dialog and routes to `onConsentCancel`, so it can never be mistaken for consent. A click on the backdrop does nothing at all — this is an `alertdialog`, and pointer dismissal is disabled for that role — which leaves Back and Escape as the only ways out.",
+      "There is no shortcut that stops a recording. Stopping means tabbing to the Stop button, which matters more here than usual: this is the one state a user may be mid-sentence in.",
+      "There is no `disabled` prop. The one disabled control in the component is the confirm button, and its state is derived from the checkbox alone.",
+    ],
+    screenReader: [
+      "The level meter is a named `progressbar` — \"Input level\" from `ProgressLabel`, with `aria-valuenow` tracking the clamped `level` — but it carries no live region. Its value is announced only when a reader goes looking for it, so the meter's whole job, confirming the mic is picking up sound, is silent.",
+      "\"Recording\" sits in a `role=\"status\"` region, but that region is mounted at the same instant as its text, because changing `state` swaps the entire subtree. A live region inserted together with its content is unreliably announced, so entering `level-metering` may in practice announce nothing. The same applies to the visually hidden \"Recording stopped. Review your take before continuing.\" in `retake`.",
+      "`elapsedLabel` sits outside the live region on purpose and is therefore never announced — it is visible text only.",
+      "The pulsing dot is `aria-hidden`, as are the mic, pause, rotate and shield glyphs, so no control's name is built from an icon.",
+      "In the consent dialog the title and description are wired to the `alertdialog` as its name and description. The checkbox's name is the whole sentence in its wrapping `<label>`, and `speakerName` is what turns \"this person\" into a name — omit it and every consent string degrades to \"this person\", which is exactly the vagueness the dialog exists to avoid.",
+      "The disabled confirm button states no reason. It has no `aria-describedby` pointing back at the checkbox, so a reader who tabs past it hears an unavailable button and has to work out why for themselves.",
+      "`takeUrl` renders a bare `<audio controls>` with no accessible name and no caption track, so it announces as a generic audio player; `takeSummary` is a nearby `<p>` that is not associated with it.",
+      "`script` is always real text rather than an image, so it is readable and copyable, and the array form announces \"Line 2 of 5\" before the line itself.",
+    ],
+    focus: [
+      "Every state change unmounts the control that was just used. Activating Start unmounts Start, so focus falls to `<body>` and the next Tab restarts from the top of the page — Stop does not receive it. The same happens at Stop, at Retake and at Use this take. Move focus yourself in the handler that changes `state`.",
+      "Entering `consent-capture` mounts the dialog, moves focus to the consent checkbox as the first tabbable element in it, and traps focus there.",
+      "Leaving `consent-capture` has nowhere to send focus back to. The dialog is rendered `open` with no trigger element, so there is no return target and focus falls to `<body>` on both the confirm and the cancel path.",
+      "Every button inherits the shared `Button` focus ring and the checkbox draws its own `focus-visible:ring-3`. The `<audio>` element uses whatever ring the browser supplies — the one focus style here you cannot theme.",
+    ],
+  },
   pitfalls: [
     "Treating `onAcceptTake` as a green light to clone. It only means the speaker liked their take — it carries no payload and is not a substitute for `onConsent`, which is the one callback tied to an explicit, checked box.",
     "Building a settings-page or admin toggle that marks a voice as 'pre-consented' so the recording flow can skip straight past consent-capture next time. That's the exact pattern D12 restored this component to prevent — consent belongs to the recording, not to a flag on an account.",

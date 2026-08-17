@@ -56,6 +56,26 @@ export const SlotSummaryDocs: ComponentDocs = {
       example: <ConfirmSaysOk />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Passing `onCorrect` puts a correction button on *every* row, not on the rows that need one — an eight-slot summary is eight tab stops before you reach the footer. There is no per-slot opt-out, so the only way to shorten the run is to hand in fewer slots.",
+      "The correction, confirm and cancel controls are real buttons, so Space and Enter activate them. Nothing else is bound: no arrow-key movement between rows, no Escape on Cancel, no Enter-to-confirm from a row.",
+      "While any required slot is empty the confirm button carries the native `disabled` attribute, so it is skipped by Tab entirely. A keyboard user goes from the last row straight to Cancel and is given no reason why.",
+      "Rows are `<li>` elements and are not focusable. A value, its source badge and its low-confidence flag are read-only text, reachable only by reading the row — there is no keyboard path that lands on a slot.",
+    ],
+    screenReader: [
+      "The rows are a plain `<ul>`, so the summary announces as a list with a count. Within a row the label, the value and the badges are three separate runs of text with no programmatic association — a row reads as \"Send at, 9:00am, Inferred\" because of source order, not because anything marks the label as the name of that value.",
+      'The correction button is named by `aria-label={`Change ${slot.label}`}` — or `Add ${slot.label}` when the slot is empty. `label` is typed `React.ReactNode`, so an element there ships a button announced as "Change [object Object]"; only a plain string survives.',
+      'The source badges are ordinary text, so "Inferred", "Default" and "From records" are announced in the row. A `stated` slot has no badge, which means an unmarked row and a user-supplied row are indistinguishable to assistive tech — that absence is the design, and it is why every other source has to keep its badge.',
+      'The low-confidence flag announces as "Check this"; its warning triangle is `aria-hidden`. It is suppressed on a slot with no value, so a row that is both empty and doubtful announces only "Still needed".',
+      'The blocked count — "2 still needed" — is plain text with no live region, and it is not wired to the confirm button by `aria-describedby`. Filling the last required slot silently enables the action and emptying one silently disables it; neither transition is announced.',
+    ],
+    focus: [
+      "Nothing here moves focus. A correction re-renders the row in place, so the button that was clicked is still there and still focused — which is the point, and which also means the responsibility for taking the user somewhere useful sits in your `onCorrect`.",
+      "Filling the last required slot changes the tab order rather than focus: the confirm button appears in it, between wherever the user is and wherever they were heading. Expect the run to get one stop longer mid-interaction.",
+      "Every control is the vendored `Button`, which ships `focus-visible:ring-3`. This surface has a visible focus indicator without anything at the call site.",
+    ],
+  },
   pitfalls: [
     'Slot `label` is typed as `React.ReactNode`, but the per-row correction button builds its accessible name by interpolating it into a string — `Change ${slot.label}`. Pass a plain string. An element such as `label={<span>Send at</span>}` type-checks and renders correctly, and then ships a button announced as "Change [object Object]".',
     "The confirm button's disabled state is derived, never passed: it is computed from the slots that are `required` with no `value`. There is no prop that unblocks it, which is deliberate — the only way to enable the action is to fill the slot, and the only way to break that rule is to stop marking the slot required.",

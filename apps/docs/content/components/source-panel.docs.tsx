@@ -56,6 +56,27 @@ export const SourcePanelDocs: ComponentDocs = {
       example: <PanelLevelRetry />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Most rows are not tab stops at all. `entity-row` is rendered without `onSelect`, so it stays a `<div>` — the only focusable thing this panel creates is the Retry button, and only on a `failed` row that was given `onRetrySource`. A panel of five parsing sources has zero tab stops of its own.",
+      "That makes the tab count swing with the data: nothing while a source is ingesting, one stop the moment it fails, back to nothing when the retry succeeds. Anything you pass as `action` or as the empty state's `emptyAction` adds its own stops on top.",
+      "Retry is a real button, so Space and Enter activate it. There is no Delete or Escape binding, no arrow-key movement between rows, and no keyboard route to remove a source — removal is not in this component's API.",
+      "The progress bar is an indicator, not a control. It takes no focus and no keys, and there is nothing to cancel an in-flight source from the keyboard.",
+    ],
+    screenReader: [
+      "The stage is announced from visible text in every one of the five states, because `source-panel-stage` renders the same badge for `ready` and `failed` as it does for the three in-flight stages. Colour and icon shape are redundant with it, never a substitute — which is what makes the panel legible when the bar is switched off.",
+      "Each row carries its own visually hidden `role=\"status\"` region reading, for example, \"Q3-report.pdf: Chunking, step 2 of 3\" — so a parsing → chunking → ready transition is announced without the user going looking. On a `failed` row the `errorMessage` is folded into the same string, and on a `ready` row the chunk count is.",
+      "That is one live region per row. Moving four sources through the pipeline at once produces four independent announcements, and re-pushing the same stage from a polling loop re-announces it, because the region fires on text change rather than on a real transition.",
+      "The in-flight bar is a real `role=\"progressbar\"` with no `aria-valuenow` — genuinely indeterminate, not a fake percentage — and it is named per source and per stage (\"Q3-report.pdf: Chunking\"). Four in-flight rows are four distinguishable bars rather than four announcements of \"Loading\".",
+      "Retry's accessible name comes from `retryLabel`, which defaults to `Retry ${source.name}`. Overriding it with a constant is the one change that turns a usable panel into a list of identically-named buttons, so keep the source name in whatever you pass.",
+      "A ready row's chunk count arrives through `stat-readout` as a `<dl>`, so it reads as \"Chunks, 128\" rather than as two loose numbers. Every stage icon is `aria-hidden`, so none of them contributes to a name.",
+      "The panel heading is a `<p>`, not a heading element. It is not in the document outline and cannot be jumped to by heading navigation — if this panel needs to be reachable that way, wrap it in your own heading.",
+    ],
+    focus: [
+      "Retrying moves nothing on its own, but the button disappears: a successful retry takes the row out of `failed`, which unmounts the Retry that was just pressed and drops focus to `<body>`, so the next Tab restarts from the top of the page. If retries in your product resolve quickly, move focus to something stable before the stage changes.",
+      "Retry is the vendored `Button` and ships `focus-visible:ring-3`. It is the panel's only focusable element, so there is nothing else here whose focus style you have to supply.",
+    ],
+  },
   pitfalls: [
     "The in-flight bar is deliberately indeterminate — parsing, chunking and embedding report completion, not percentages. If you have a real per-stage percentage, add it as visible text beside the stage name rather than reaching for a value on the bar; a fabricated percentage that sticks at 90% is worse than an honest indeterminate one.",
     "Rows are not clickable. Retry lives inside the row, so making the row itself a button would nest one interactive element inside another. If you need jump-to-source (the other half of the citation-ref mechanism), put an explicit control in the row rather than making the whole row activate.",

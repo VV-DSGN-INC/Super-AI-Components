@@ -108,6 +108,32 @@ export const WaveformEditorDocs: ComponentDocs = {
       example: <BoundariesInSeconds />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The tab-stop count is set by which handlers you pass, not by the audio. Fully wired with a region and four region actions it is twelve: the zoom slider, Zoom to region, Fit, the playhead, both region-band thumbs, the Start and End fields, and one per action. With no region it is three.",
+      "Omitting a handler does not always remove a stop. No `onScrub` disables the playhead thumb and takes it out of the tab order, and no `onViewChange` removes the zoom controls entirely — but no `onRegionChange` only makes the boundary fields `readOnly`, and a read-only input is still tabbable, so you tab through two fields you cannot change.",
+      "Every slider thumb is a visually hidden `<input type=\"range\">`. Arrow keys move one sample; Shift with an arrow, PageUp and PageDown move `largeStep`, a tenth of the visible window; and Up and Down work as well as Left and Right — the on-screen Left/Right hint understates what is actually bound.",
+      "Home and End on the playhead go to the edges of the visible window, not of the buffer, because `min` and `max` are `view.start` and `view.end`. Arrowing cannot leave the window either: reaching audio that is off screen means zooming out or pressing Fit first.",
+      "On the two-thumb region band, Home and End address the neighbouring thumb rather than the buffer, so End on Region start collapses the region to a single sample instead of jumping to the end of the audio.",
+      "The boundary fields are `type=\"number\"`: arrows step one sample, and an out-of-range value is clamped on the way out rather than blocked on the way in. Clearing a field emits nothing — the parsed value is `NaN`, the callback is skipped, and the controlled value snaps back on the next render.",
+      "Nothing answers to Delete, Backspace or Escape. There is no keyboard way to clear a selection or to fire a region action without tabbing to its button, and `action.disabled` is a real `disabled` attribute, so a disabled action is skipped rather than announced as unavailable.",
+    ],
+    screenReader: [
+      "The root is a `role=\"group\"` named by `label`, which defaults to \"Waveform editor\". Two editors on one page both carrying the default announce identically — name them.",
+      "The peak strip and the shaded region overlay are `aria-hidden`, and nothing describes the waveform's shape in words. What survives without sight is offsets, lengths and durations, not contour — which is the deliberate trade, but it is a trade.",
+      "All four thumbs are named through `getAriaLabel` — Zoom level, Playhead, Region start, Region end — and each reports its own value text, so a boundary announces as \"12,000 samples, 0:00.272\" rather than a percentage. This is why the component reaches for the Base UI slider directly: the vendored `components/ui/slider` forwards neither prop and leaves an anonymous slider behind.",
+      "Selection and zoom each own a permanently mounted, visually hidden `role=\"status\"`, so unlike most state changes in this registry these really are announced. The cost is that both fire during a drag: holding an arrow key on a boundary produces a stream of \"Region 12,000 to 18,300 samples…\" on top of the slider's own value text.",
+      "The playhead is deliberately outside that — no live region, reported only by its own value text when it has focus.",
+      "Each region action's `aria-label` replaces its visible text with \"Trim region 12,000 to 18,300 samples\", so an action always names what it will act on. The visible label is the prefix, so voice control still reaches it by name.",
+      "The unit is visible only. `UnitInput` renders \"smp\" as a sibling `<span>` that is in neither the field's name nor its description, so the fields announce as \"Start, spin button, 12,000\" with no unit at all. The `m:ss.mmm` hint beside them is properly wired through `aria-describedby`.",
+      "The \"This region extends past the visible window\" warning is a plain `<p>`, not a live region, so it appears silently the moment zooming crops the selection.",
+    ],
+    focus: [
+      "Clearing the selection unmounts both band thumbs, both boundary fields and Zoom to region at once, so focus falls to `<body>` and the next Tab restarts from the top of the page. That includes the case where a destructive region action is what cleared it — the button that was just pressed is one of the things that disappears.",
+      "Zooming never moves focus. A boundary that scrolls out of the window keeps its thumb, parked at the window edge, so a focused thumb is not lost — but it stops tracking the value it reports until you zoom back out.",
+      "All four thumbs draw `focus-visible:ring-3`, and `UnitInput` rings its whole wrapper on `focus-within`. The zoom, Fit and region-action buttons inherit the shared `Button` ring, so every control here is visible on focus without help from you.",
+    ],
+  },
   pitfalls: [
     "Letting the component own playback. It holds no timer and never advances the playhead: `onScrub` reports where the user put it, and moving it during playback is the caller's job. Wiring an interval into it is how two competing sources of truth for the playhead appear.",
     "Announcing the playhead in a live region. It changes on every arrow press, so an aria-live on it talks over the selection and zoom announcements that actually carry meaning. The playhead slider's own value text already reports it on focus.",

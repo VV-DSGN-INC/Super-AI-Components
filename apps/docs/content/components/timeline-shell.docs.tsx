@@ -79,6 +79,30 @@ export const TimelineShellDocs: ComponentDocs = {
       example: <LaneRolledByHand />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Four of the shell's own elements are tab stops in their own right, because each is the element that actually scrolls: the render-queue `<section>`, the tracks group, the transcript group and the inspector. They are pure scroll stops — no key does anything on them — and each one comes before the controls inside it.",
+      "Below `md` the content panel and below `lg` the inspector are Tailwind `hidden`, which is `display: none`, so they leave the tab order entirely rather than becoming invisible stops. At 375px the reachable shell is the rail, the stage and the dock.",
+      "The shell adds no shortcuts. Space does not play, J/K/L do nothing, and no key moves between regions. The transport's own shortcuts (Space, arrows, `,`/`.`, I/O) are bound to the transport's root, so they fire only while focus is inside `data-region=\"transport\"` — never from the stage or the dock.",
+      "Tabbing the tracks dock goes: the tracks group, then the ruler's playhead and in/out handles, then each lane in turn — three gutter toggles, one scroller stop and one stop per clip. Six lanes of ten clips is roughly eighty stops inside a single scroll region with no way to skip a lane.",
+      "`variant` is a prop, not a control. There is no in-shell switch between the track stack and the transcript, so whatever keyboard path reaches that switch is yours to build above the shell.",
+    ],
+    screenReader: [
+      "The six `data-region` markers are attributes, not landmarks. The shell itself contributes exactly one — the render-queue `<section>`, named by its own `<h2>` — because the stage, the tracks, the transcript and the inspector are all `role=\"group\"` with an `aria-label`, deliberately keeping a six-region editor out of the landmark map.",
+      "The lanes undo that. Each `track-lane` names its clip scroller `role=\"region\"`, so a six-lane edit adds six landmarks inside the one group the shell was trying to keep quiet, and the role is hardcoded in H3 rather than passed in. Nothing in the shell can suppress it.",
+      "The stage is `role=\"group\"` named by `previewLabel` but carries no `tabIndex`, so it is reachable in a screen reader's browse mode and not by Tab.",
+      "Every region name is an English default — `previewLabel`, `renderQueueLabel`, `tracksLabel`, `transcriptLabel`, `inspectorLabel`. Nothing reads a locale, so a localized product passes all five.",
+      "The full-height playhead the shell layers over the dock sits inside an `aria-hidden` wrapper and is given no `label`, so it never double-announces against the one the ruler draws inside its own box. The gutter spacer that aligns second zero is `aria-hidden` too.",
+      "Changing `variant` is announced as nothing. The dock swaps wholesale with no live region anywhere in the shell, so say it where the switch lives.",
+      "The shell owns no status region at all. Play state, seek position, clip selection and export progress announce only as far as the composed components announce them — the transport's own `role=\"status\"`, the render queue's rows — and there is no shell-level summary tying them together.",
+    ],
+    focus: [
+      "Flipping `variant` unmounts the region focus was in. Focus falls to `<body>` and Tab restarts from the top of the page; move it to the other dock as part of the switch.",
+      "Crossing the `md` or `lg` breakpoint does the same to the content panel and the inspector — `display: none` on a focused element drops focus to `<body>`. A window resize or a device rotation is enough to trigger it.",
+      "Selection and focus are not connected. Selecting a clip updates the inspector through `selectedClipId` and moves nothing, so a keyboard user who selects a clip must Tab past every remaining lane to reach its properties, and the inspector never hands focus back.",
+      "All four scroll containers ship `focus-visible:ring-2 ring-ring`, so the four otherwise-invisible stops are visible when a keyboard reaches them.",
+    ],
+  },
   pitfalls: [
     "H3 owns a horizontal scroller per lane and exposes no way to read or set its scroll position, so a stack of lanes cannot be kept in sync with each other or with the ruler. At a zoom where the timeline is wider than the dock, the ruler is clipped rather than scrolled and each lane scrolls on its own. Keep zoom × duration inside the dock width until H3 grows a shared scroll context.",
     "H3's gutter width is a private constant (`w-40`), so the shell hardcodes the same 10rem + 1px to align the ruler with it. If H3 ever changes that width the ruler drifts silently — nothing fails, the numbers just stop meaning anything. The offset is a named constant here for exactly that reason.",

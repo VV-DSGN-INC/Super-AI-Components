@@ -69,6 +69,27 @@ export const MemberGateRowDocs: ComponentDocs = {
       example: <ColourOnlyDimming />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop in `locked`, `unlocked` and `trial-available`: the switch. `inline-upsell` is three — the switch, the upgrade CTA, then the dismiss button. The row itself is never focusable, because `entity-row` is composed without `onSelect` and stays a plain div.",
+      "Space toggles the switch and Enter does not — the native switch contract, and it applies to the gated switch too.",
+      "A locked switch is deliberately neither `disabled` nor `readOnly`. It keeps its tab stop and stays activatable so the attempt can be reported; either attribute would swallow the press before `onRequestUpgrade` fires and would also drop the row's state out of the accessibility tree.",
+      "Escape does nothing to the inline upsell. Collapsing it means tabbing to the dismiss button — the panel is revealed content, not a dialog, so it has no dismiss key.",
+      "The tier and trial badges are static text in every state. The switch is the only thing the keyboard can reach in the trailing slot.",
+    ],
+    screenReader: [
+      "The switch is named by `aria-labelledby` pointing at the row's own title, so it announces as \"{label}, switch, off\". The title is wrapped in a span carrying a generated id, which means a non-string `label` still resolves — the name is computed from that element's text content rather than from a `typeof children === \"string\"` check, so the failure that bites A5 `filter-bar` cannot happen here.",
+      "While gated, the switch also carries `aria-describedby` onto an sr-only sentence: \"Locked — requires {tier}. Activating opens upgrade options.\" That sentence, not the badge and not the dimming, is what makes locked programmatic, and it is why a padlock glyph or an opacity change is not enough.",
+      "`trial-available` has no equivalent description. \"Free trial ×1\" is loose text in the trailing slot, outside the switch's name and description, so a screen-reader user hears an ordinary switch and has to find the badge separately.",
+      "A gated switch always reports `aria-checked=\"false\"` and never changes. Activating it announces no state change at all — what announces is the upsell panel, which is `role=\"status\"` and therefore read when it appears.",
+      "The tier badge repeats the tier already inside the lock description, so a gated row says \"Pro\" twice. Cheap redundancy rather than a defect, but do not add a third copy.",
+    ],
+    focus: [
+      "Revealing the upsell moves focus nowhere. Focus stays on the switch that was activated and the panel is announced through its `role=\"status\"` — right for a status region, but it does mean the CTA is two Tabs away rather than under the cursor.",
+      "Dismissing the upsell unmounts both of its buttons. If focus was on the dismiss button — which it is, for anyone who got there by keyboard — nothing restores it, so focus falls to `<body>` and the next Tab restarts from the top of the page. Move focus back to the switch inside your `onDismissUpsell`.",
+      "The switch ships the vendored primitive's `focus-visible` ring and the two upsell buttons ship the standard Button ring, so nothing here depends on a focus style you have to supply.",
+    ],
+  },
   pitfalls: [
     "Opening a modal or navigating to a billing page from onRequestUpgrade. The spec is explicit that toggling a locked row reveals an inline upsell — wire it to flip `state` to inline-upsell in place, the same row stays mounted.",
     "Forgetting the switch in a locked row is still a real, focusable control — it has to stay clickable so it can report the activation attempt. Don't reach for the native `disabled` attribute or Base UI's `readOnly` switch prop; either one silently swallows the click before `onRequestUpgrade` ever fires.",

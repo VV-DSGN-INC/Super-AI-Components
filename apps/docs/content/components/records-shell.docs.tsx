@@ -64,6 +64,30 @@ export const RecordsShellDocs: ComponentDocs = {
       example: <RunStatusAsAColouredDot />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab order runs sidebar trigger → rail contents → header actions → create → filter chips → add-filter chip → Filters → sort → the record region itself → folder search → folder rows → record rows → feedback. A shell with six filter chips, ten folders and twenty records is well over sixty stops from the trigger to the last row.",
+      "The record region is a `section` with `tabIndex={0}`, so it is a tab stop in its own right — the one that makes the scroll container reachable without a mouse wheel. Expect a Tab press that appears to focus nothing visible before the first folder control.",
+      "Mounting the shell registers a **window-level** Cmd/Ctrl+B listener that toggles the rail. It is global, not scoped to the shell, so it fires from anywhere on the page and two shells mounted together both respond to one press.",
+      "An applied filter chip is two stops, not one — A5 renders the toggle and the remove X as siblings — so `filters` with `onRemove` on every entry doubles that section of the tab order.",
+      "J1's list/grid switch is suppressed with `display: none`, which takes it out of the tab order and the accessibility tree rather than just hiding it. There is no dead stop where the switch would have been.",
+      "Nothing here handles arrow keys. Rows do not navigate, folders do not navigate, and the only components with arrow-key behaviour are the ones that bring it themselves: the sort `Select` and each row's overflow menu.",
+    ],
+    screenReader: [
+      "The `<h1>` in the header is the shell's only heading. J1's \"Folders\" title comes from A12 `section-header`, which renders a `<span>` — so heading navigation goes straight from the page title to the end of the page, past both lists.",
+      "The record region is a named landmark: `aria-labelledby` points at the same `<h1>`, so it announces as a region called whatever you passed as `title`. That name is what lets the scroll container carry `tabIndex` without tripping axe's scrollable-region-focusable rule.",
+      "The record count beside the heading is a bare `<span>` of digits with nothing naming it. \"Scenarios, 24\" reads acceptably in order and reads as a stray number if you land on it alone.",
+      "The chip row is a `role=\"group\"` named \"Filter records\", which is a fixed string — it does not say how many filters are applied, and nothing announces that applying one changed the list.",
+      "The sort trigger's accessible name is `sortLabel` (\"Sort by\") while its visible text is the current option (\"Last run\"). The visible words are not part of the name, so a voice-control user asking for \"Last run\" does not reach it — say \"Sort by\" instead.",
+      "The shell adds no live region of its own. Toggling a record, changing the sort, typing in the search box and filtering the list all announce nothing beyond the control the user touched; J5's switch reports its own state and that is the whole of it.",
+      "Everything else is inherited untouched: J5's app clusters and switch names, A5's `aria-pressed` chips, J1's sr-only search label and per-row action names, and N1's `aria-pressed` thumbs.",
+    ],
+    focus: [
+      "Collapsing the rail does not move focus — the trigger keeps it — but the rail's contents leave the tab order while collapsed, so a Tab press from the trigger lands in the header instead of the nav.",
+      "Emptying the list swaps J5's table for L1 `empty-state`. If focus was on a row control when the last record went away it falls to `<body>`; the same applies to the folder table.",
+      "The scroll region takes focus without painting anything — it has no `focus-visible` style of its own, so on some pages the only sign it is focused is that the arrow keys start scrolling. Every actual control inside it (sidebar trigger, create, chips, sort, folder names, row titles, switches, overflow triggers) carries a ring from its own component.",
+    ],
+  },
   pitfalls: [
     "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a preview or an app region — if you re-wrap or restyle the root, keep that containment or the rail will pin itself to the browser's left edge. The trade-off is that the rail keeps its full `h-svh` height and is clipped to the shell's, which is why this shell exposes no promo or footer slot at all: anything B1 bottom-anchors falls below the clip whenever the shell is shorter than the viewport, which is the default embedded case.",
     "J1 has no way to turn off its list/grid switch. `view` can be pinned — the shell pins it to `list` — but the control still renders and still invites a press that now does nothing, so the shell suppresses it with a `hidden` descendant variant on J1's own class list. If you restyle the folder table, keep that variant or a grid of folder tiles reappears above a table of records.",

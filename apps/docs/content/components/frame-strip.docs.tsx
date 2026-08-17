@@ -66,6 +66,28 @@ export const FrameStripDocs: ComponentDocs = {
       example: <UnlabelledFrames />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Do the arithmetic before shipping a long strip. A `select` frame is one stop; an `in-out` frame is two, the In and Out toggles; `onReorder` adds two more to every frame; the add tile is one; previous and next are two. Twelve frames with in/out marks and reorder is fifty tab stops.",
+      "Left and Right scroll the strip. The Carousel base handles them on a capture-phase listener at the root and calls `preventDefault`, so they never move the selection or focus — and any control you nest inside the strip loses its own horizontal arrow keys to them.",
+      "There is no roving tabindex, so Tab is the only way through the frames, and nothing marks off-screen items inert: Tab walks into frames that are scrolled out of view.",
+      "The reorder controls are hidden with `opacity-0` rather than `display:none` precisely so they stay tabbable, and `group-focus-within` reveals them when Tab arrives. They are `disabled` at each end of the strip.",
+      "Selecting a frame is Space or Enter on the frame button. There is no Delete, no Backspace and no Escape — and in the `in-out` variant the frame is not a control at all, so there is nothing to activate but the two toggles beneath it.",
+    ],
+    screenReader: [
+      'The strip is a `role="region"` with `aria-roledescription="carousel"`, named from `kind` — "Frames", "Pages" or "Artboards". Each cell is a `role="group"` announced as a slide.',
+      'A frame\'s accessible name is its `label` and nothing else, which is why the prop is required: the thumbnail is decorative, and a frame identified only by its picture announces as an empty button. The active frame carries `aria-current`, not `aria-pressed` — "the frame you are on", not a toggle.',
+      'Anything else inside the frame joins that name. A `badge` you pass, and the "Couldn\'t load" text a `failed` tile renders, both sit inside the button, so a failed frame announces as "Couldn\'t load 00:12".',
+      'A `loading` frame announces nothing beyond its label. The pulsing skeleton is presentational and the state reaches the DOM only as `data-state`, so "still rendering" is a purely visual distinction.',
+      'The In and Out toggles carry `aria-pressed` and name themselves after the frame — "In point at 00:12" — with the visible "In" `aria-hidden` so the two never concatenate. That is what stops frame 3\'s pair being indistinguishable from frame 4\'s in a list of controls.',
+      "Setting an in point past the out point silently clears the far mark. There is no live region anywhere in the strip, so a mark the component removed on your behalf is announced as nothing.",
+    ],
+    focus: [
+      'Reorder is the trap. Pressing "Move left" repeatedly walks an item toward the front, and the moment it lands at index 0 that same button becomes `disabled` — focus is dropped and falls to `<body>` mid-reorder. Move focus to the item\'s other move control, or to the frame, inside your `onReorder`.',
+      "Selecting a frame does not move focus, and previous/next only scroll — so the focused frame and the visible frames can disagree.",
+      "The frame button and the add tile ship their own `focus-visible` ring. In, Out, the move controls and previous/next inherit the shared Button styles.",
+    ],
+  },
   pitfalls: [
     "Adding padding, a border or a size change to the active tile alongside the ring. The ring is a box-shadow and costs no layout; anything else you attach to the active state reintroduces exactly the reflow the ring was chosen to avoid.",
     "Reimplementing the thumbnail instead of composing preview-tile. The tile is what guarantees a fixed aspect and stable geometry across loading and failed items — a hand-rolled div re-derives all of it, usually without the failed state.",

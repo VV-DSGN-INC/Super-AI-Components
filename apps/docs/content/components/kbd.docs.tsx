@@ -96,6 +96,19 @@ export const KbdDocs: ComponentDocs = {
       ),
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Nothing here is focusable. `Kbd` renders a `<kbd>` and `KbdGroup` a `<span>`, neither of which takes a tab stop, so a cheatsheet of forty shortcuts adds nothing to the tab order.",
+      "The cap is `pointer-events-none` and `select-none`. That is what lets a hint sit inside a menu button without swallowing the click, and it is also why nobody can select the shortcut text to copy it out of a cheatsheet.",
+      "No key handlers are bound anywhere. Printing `⌘` and `N` does not make ⌘N do anything — registering the shortcut is entirely the host's job, and nothing checks that the printed keys and the bound keys agree.",
+    ],
+    screenReader: [
+      '`<kbd>` carries no implicit ARIA role, so a cap announces as its own text content and nothing more. A glyph modifier is read as whatever the screen reader calls that character — `⌘` is commonly announced as "place of interest sign", or as nothing — so pass a spelled-out modifier, or an sr-only word beside the glyph, when the announcement has to be understood.',
+      'Whether the keys are announced at all is a call-site decision the component does not make for you. `KbdGroup` takes plain DOM props, so a hint beside a control that already performs the action takes `aria-hidden="true"` and a cheatsheet row leaves it announced. Nothing warns you when you pick the wrong one.',
+      'The joiner is your markup, not the component\'s, so a chord with no `+` and no "then" between the caps announces as an undifferentiated run of key names. "⌘ ⇧ Z" reads identically whether the keys are held together or pressed in turn.',
+      "An empty `Kbd` announces as nothing while still painting a visible box. That is the reverse of the usual failure — the blank tile is obvious in a screenshot and invisible to a screen reader.",
+    ],
+  },
   pitfalls: [
     "There is no joiner API. `KbdGroup` supplies a gap, not a `+` and not the word then, so the difference between a chord and a sequence lives entirely in text a caller wrote. Two teams will spell it two ways unless you pick one and put it in review.",
     "There is no platform awareness either. The component prints exactly the children it is given, so a hard-coded ⌘ is simply wrong on Windows — resolve the modifier at the call site and pass the resulting glyph in.",

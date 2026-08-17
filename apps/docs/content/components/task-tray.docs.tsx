@@ -1,4 +1,11 @@
 import type { ComponentDocs } from "@/lib/component-docs";
+import {
+  CancelOnLiveWork,
+  NotificationFeed,
+  NotifyIsPerTask,
+  PreSortedOrderIsLost,
+  RowsNavigateBack,
+} from "./task-tray.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#n12-task-tray.
@@ -7,9 +14,11 @@ import type { ComponentDocs } from "@/lib/component-docs";
  *
  * No "use client" here: this module is plain data read by a Server
  * Component (component-docs.tsx), which destructures `docs.whatItIs`,
- * `docs.evidence`, etc. directly. This component's live examples would each
- * need an open Sheet and its own state, so no `.examples.tsx` sidecar is
- * shipped — the dos and donts are stated rather than rendered.
+ * `docs.evidence`, etc. directly. Every live example needs handlers and its
+ * own task state, so they live in the ./task-tray.examples client sidecar and
+ * arrive here as zero-prop elements. Because the tray is a modal Sheet, each
+ * one is a trigger button that opens the real panel rather than an inline
+ * render of a surface that only exists on top of the page.
  */
 export const TaskTrayDocs: ComponentDocs = {
   whatItIs:
@@ -48,12 +57,15 @@ export const TaskTrayDocs: ComponentDocs = {
   dos: [
     {
       text: "Give every task an onOpenTask target, so each row is a way back to the surface that owns the work rather than a status line you can only read.",
+      example: <RowsNavigateBack />,
     },
     {
       text: "Offer cancel on anything still live — work a user cannot stop keeps spending their budget and their trust.",
+      example: <CancelOnLiveWork />,
     },
     {
       text: "Keep the completion notification per-task and off by default, so the opt-in means something; a global toggle just makes every run shout.",
+      example: <NotifyIsPerTask />,
     },
   ],
   donts: [
@@ -62,11 +74,35 @@ export const TaskTrayDocs: ComponentDocs = {
     },
     {
       text: "Don't sort or filter the array before passing it in expecting that order to survive; the component re-sorts by status and a task blocked on approval will move to the top.",
+      example: <PreSortedOrderIsLost />,
     },
     {
       text: "Don't use it as a notification feed. Rows are live work with controls attached, not a log of things that already happened.",
+      example: <NotificationFeed />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Escape closes the panel and Tab is trapped inside it while it is open — the tray is a modal Base UI dialog, so the page behind it is inert and cannot be reached until it closes.",
+      "A row's stop count depends on its status, not on its position. A `running` or `needs-input` row is up to three stops — the row itself, the notify toggle, the cancel button — while a `done` or `failed` row is one, or zero if you passed no `onOpenTask`. Five live tasks is fifteen stops before the close button, which is rendered last and is therefore the final stop in the ring.",
+      "Every control is a real button, so Space and Enter activate all of them. There is no Delete or Backspace shortcut for cancelling a task, no arrow-key movement between rows, and no keyboard route to reorder or dismiss one.",
+      "Nothing here is ever `disabled`. Controls are absent rather than inert, so the tab order changes shape as tasks move through their statuses rather than staying fixed and greying out.",
+    ],
+    screenReader: [
+      "The panel announces as a dialog named \"Tasks\", described by the line beneath it — which reads \"3 waiting on you\" as soon as anything needs input, and otherwise explains that the work keeps running after you navigate away.",
+      "Each row's status reaches assistive tech as a visually hidden word at the front of the description (\"Needs input. Brief editor\"), never from the icon: the spinner, tick and alert glyphs are all `aria-hidden` by lucide's default, and the destructive tint on a failed row is invisible to a screen reader.",
+      "Known gap, and the one worth knowing before you ship: the row controls are not named per task. Every cancel button is \"Cancel task\" and every notify toggle is \"Notify me when done\" / \"Stop notifying when done\", so a tray holding three live tasks presents three identical cancel buttons in a screen reader's element list with nothing to tell them apart. Only the row buttons themselves are distinguishable, by title.",
+      "The notify control carries `aria-pressed`, so it announces as a toggle that is pressed or not — but its name changes with its state as well, which means it reads as, for example, \"Stop notifying when done, pressed\". Cancel is a plain action button with no state.",
+      "Nothing announces a change of status. The description line's \"N waiting on you\" is `SheetDescription`, not a live region, so a task moving to `needs-input` while the tray is open re-sorts the list to the top and says nothing. If that transition matters, own the announcement outside the tray.",
+      "The list is a plain `<ul>`, so it announces with a count — of everything, since the tray never filters. `data-task-id` and `data-status` are test handles and are not exposed to assistive tech.",
+    ],
+    focus: [
+      "Opening the tray moves focus into the panel and closing it returns focus to the trigger, both handled by the underlying dialog. That much is safe.",
+      "Inside it is not. Cancelling a task removes its controls the moment your state comes back — the cancel button that was just pressed unmounts, and focus falls to the panel with nothing focused, so the next Tab restarts at the top of the tray. The same happens when a running task finishes on its own under a focused control.",
+      "The sort is by status, so a task changing status moves. Rows are keyed by `task.id`, so focus follows the row rather than the position — but the row it is on can jump to the top of the list mid-read, with nothing announced.",
+      "Every control is the vendored `Button`, so the whole panel has the design system's `focus-visible:ring-3` without any work at the call site.",
+    ],
+  },
   pitfalls: [
     "The panel is a portaled, modal Sheet. In tests, query it from `document.body` rather than the story or page canvas, and remember that a `dir` or width wrapper placed around the trigger does not reach the panel — set direction on the document and pass a width through `className` instead.",
     "Cancel and notify only render for `running` and `needs-input` rows. A done or failed row has no controls at all, so any layout that assumes a fixed trailing width per row will look ragged.",

@@ -71,6 +71,29 @@ export const AppTopbarDocs: ComponentDocs = {
       example: <PrivacyChipColorOnly />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Document context has one tab stop per breadcrumb crumb that carries an `href`, and none otherwise. The final crumb is deliberately not a link, a crumb without `href` renders as plain text, and the title, privacy chip and saved-state line are never focusable.",
+      "Editor context is always four tab stops before your `actions` — Zoom out, Zoom in, Undo, Redo — and they render whether or not you passed the matching handler. An editor topbar with no `onUndo` still presents an enabled, focusable Undo button that does nothing.",
+      "`canUndo` and `canRedo` default to `true`, so `disabled` only appears when you say so. Omitting them is not the same as having no history.",
+      "The button groups have no roving tabindex and no arrow-key navigation — they are `role=\"group\"` wrappers, so each control is its own stop.",
+      "No shortcuts are bound. The zoom and history controls respond to Space and Enter as buttons and to nothing else; Cmd+Z is your app's job.",
+    ],
+    screenReader: [
+      "The root is a `<header>`, which is a banner landmark only when it is not inside another landmark. Nested in a shell's `<main>` it is a generic container instead, and either way it carries no `aria-label` — two topbars on one page are indistinguishable.",
+      "The breadcrumb is a `<nav aria-label=\"breadcrumb\">`; the final crumb announces as a disabled link with `aria-current=\"page\"`, and each separator is `role=\"presentation\"` so it is not read.",
+      "In document context with a `breadcrumb`, the `title` prop renders nowhere at all — the last crumb's label is what appears. If the two ever differ, the name a screen reader hears is the crumb's, not the title's.",
+      "Zoom and history are icon-only buttons named entirely by `aria-label` — \"Zoom out\", \"Zoom in\", \"Undo\", \"Redo\". Those strings are hard-coded and not localisable through this component.",
+      "The zoom level is rendered as ordinary text between the two buttons, with no `aria-live` and no relationship to either. Pressing Zoom in changes the number silently, so a screen-reader user gets no feedback that the press did anything.",
+      "The saved-state line is the same shape: plain text, no live region. \"Last saved 5 days ago\" becoming \"Saving…\" is a change nobody is told about.",
+      "The privacy chip announces as its label text; its optional glyph is wrapped `aria-hidden`, which is what makes the visible word rather than the icon the actual signal.",
+    ],
+    focus: [
+      "Switching `context` swaps the entire leading group. If focus was on Zoom in when the surface flips to document context, the button unmounts and focus falls to `<body>` — put the switch behind a navigation rather than a toggle in the bar itself.",
+      "Disabling Undo when history empties removes it from the tab order under whoever was standing on it, dropping focus to `<body>` mid-edit.",
+      "Every control inherits the shared button's `focus-visible` ring; the topbar adds no focus styling of its own.",
+    ],
+  },
   pitfalls: [
     "Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.",
     "Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing (\"5 days ago\") before handing it over.",

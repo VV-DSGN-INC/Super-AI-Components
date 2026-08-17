@@ -56,6 +56,20 @@ export const CostChipDocs: ComponentDocs = {
       example: <CostChip amount={0.30000000000000004} />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Zero tab stops, always. The chip is a `<span>` with no role, no `tabIndex` and no handlers of its own, so Tab passes over it — which is correct, because it is decoration attached to something focusable rather than a control.",
+      "It has no keys of its own and no disabled state. If the thing being priced is disabled, the price beside it does not change or dim; that is the caller's decision to render or not render.",
+      "Spreading an `onClick` through `...props` makes the span clickable by mouse and by nothing else — a span takes no focus and fires on no key. If the price needs to be actionable, put it inside your own button rather than on the chip.",
+    ],
+    screenReader: [
+      "The coin glyph is `aria-hidden`, so the announced text is exactly the amount and unit: \"20 credits\". Anything you pass as `children` is appended to that same text, which is why a qualifier like \"est.\" becomes part of the announced price.",
+      "There is no association with the control the chip prices. Nothing here sets an `id` or an `aria-describedby`, so a screen-reader user tabbing to a Run button hears the button's name and not the price beside it — the price is only found by reading the surrounding text. Give the chip an `id` and point the control's `aria-describedby` at it when the price has to travel with the control.",
+      "`dir=\"ltr\"` is pinned on the amount, so the digits, the currency symbol and the slash in a rate keep their order inside an RTL paragraph rather than migrating to the wrong end of the number.",
+      "The chip has no live region. Changing `amount` — swapping models, or a rate updating — rewrites the text with nothing announced, so a price that moves while the user is deciding moves silently.",
+      "There is no role and no state, so the spec's estimate/confirmed/insufficient distinctions reach assistive tech through your own copy or through `run-button`, never through this chip.",
+    ],
+  },
   pitfalls: [
     'The chip has one surface. There is no `state`, `tone` or `variant` prop, so it cannot render the spec\'s estimate, confirmed or insufficient distinctions — an estimate is marked by whatever you put in the trailing slot, and a shortfall is handed off to `run-button` (`state="insufficient-credits"`) or `paywall-message`, which own the shortfall line and the buy control. Do not paint an alarm colour on the chip through `className` to fill the gap; a red price and a neutral price for one job is exactly the disagreement this component exists to prevent.',
     'It spreads `...props` after its own attributes, so passing a `data-slot` of your own erases `cost-chip` and hides the fact that A2 is what rendered the price. Address it by its own slot in tests, and wrap it if you need a hook of your own — every composing component in this registry does exactly that.',

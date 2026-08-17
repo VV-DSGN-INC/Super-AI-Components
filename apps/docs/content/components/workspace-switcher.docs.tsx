@@ -55,6 +55,27 @@ export const WorkspaceSwitcherDocs: ComponentDocs = {
       example: <PlanHiddenInMenuOnly />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop, always: the trigger. The menu is a roving-focus `menu`, so five workspaces and fifty cost the same, and `onCreate` adds a menu item rather than a stop.",
+      "Enter, Space or Down opens the menu; arrows move between rows, typing a letter jumps to a workspace, Enter or Space picks one, and Escape closes and returns focus to the trigger. Tab while the menu is open closes it rather than moving inside it.",
+      "There is no `disabled` prop anywhere — not on the component and not per workspace. A workspace the user cannot enter has to be left out of `workspaces`, not disabled in place.",
+      "Choosing a row closes the menu, so there is no way to try options without reopening it each time.",
+    ],
+    screenReader: [
+      "Rows are `role=\"menuitemradio\"` carrying `aria-checked`, so the current workspace announces as checked. The tick glyph is decoration layered on that state, not the state itself.",
+      "The avatar is `aria-hidden` on the trigger and on every row, so initials never leak into a name — which also means a custom `icon` contributes nothing to the announcement.",
+      "The trigger's name is just its visible contents: \"Acme Pro\". Nothing says workspace, organisation or switcher, and the plan reads as part of the name. It does announce as a menu button with an expanded state, but if the surrounding context does not make its purpose obvious, pass your own `aria-label`.",
+      "Give any workspace a `description` and every row becomes an entity row, which folds the description and the plan into that row's own name — \"Acme, Acme workspace, Pro\" as one string. The plain list announces the much shorter \"Acme Pro\".",
+      "`plan` is text, so the tier survives for anyone who cannot see the badge tint. It is unlabelled text, though: \"Free\" and \"Pro\" arrive with nothing saying they are plans.",
+      "Nothing announces that the workspace changed. The component holds no live region — the only confirmation is the trigger's own name, which focus returns to as the menu closes.",
+      "An empty `workspaces` array announces the trigger as \"Select workspace\" and still opens a menu, which is then empty; there is no empty-state row.",
+    ],
+    focus: [
+      "Opening moves focus into the menu. Closing — by choosing, by Escape, or by clicking away — returns it to the trigger, so nothing here strands focus on `<body>`.",
+      "The trigger inherits the shared `Button` focus ring. Menu rows are highlighted with a background change rather than a ring, and in entity-row mode the row renders as a non-interactive `<div>` with no focus style of its own — the highlight belongs to the menu item wrapping it.",
+    ],
+  },
   pitfalls: [
     "Reaching for a second list or entity-row component when workspaces gain descriptions — the `description` field already switches every row into entity-row rendering, so there's no need to hand-roll a parallel list.",
     "Treating the plan badge as a colour-only signal (a bare dot). It renders as text so plan tier survives for colorblind users and screen readers alike — keep it that way in custom themes.",

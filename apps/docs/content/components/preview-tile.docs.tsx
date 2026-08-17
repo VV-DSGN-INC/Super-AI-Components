@@ -83,6 +83,27 @@ export const PreviewTileDocs: ComponentDocs = {
       text: "Don't treat `locked` as a lock. It paints a scrim and shows your CTA; it does not disable anything, so a locked tile with an `onSelect` still takes focus and still fires. Withhold the handler yourself.",
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Zero tab stops or one, decided entirely by `onSelect`: pass it and the frame renders as a `<button>`, leave it off and the frame is an inert `<div>` that still draws the selection ring. Nothing else in the tile is ever focusable.",
+      "As a native button it takes Space and Enter. Nothing else is bound — no arrow keys, no Delete, no Escape — because a tile knows nothing about the set it sits in. Roving focus, if you want it, belongs to the grid around it.",
+      "There is no `disabled` prop and `state` does not gate the click. `locked` paints a scrim and `failed` replaces the content, but an interactive tile in either state still takes focus and still fires `onSelect`. Withhold the handler instead.",
+      "Anything you pass as `action` renders inside the frame. With `onSelect` also set, that is a control nested inside a control — a Retry or Upgrade button becomes a tab stop inside a button, which is invalid markup and behaves unpredictably on activation.",
+    ],
+    screenReader: [
+      "Nothing you spread reaches the frame. `aria-label`, `id`, `role` and `title` all land on the outer wrapper while the button is one level down, so the frame cannot be named from the call site. Its name is computed from its subtree instead: the children you render, then the badge, then the overlay label.",
+      'That makes `labelPlacement` load-bearing for naming, not just for layout. `overlay` puts the label inside the frame so it names the button; `below` puts it outside, so an interactive tile with `labelPlacement="below"` is a button named only by whatever its children expose, and `"none"` over a decorative fill leaves it unnamed outright. Give the picture its own name — an `<img alt>`, or `role="img"` plus a label — whenever the caption sits below.',
+      "An interactive frame announces `aria-pressed`, which is toggle-button semantics: right for a filter you switch on and off, wrong for a grid where exactly one tile can be chosen. That is why `preset-grid` keeps the frame inert and wraps it in its own radio.",
+      "`loading` announces nothing at all. There is no `aria-busy` and no live region, and the skeleton is a bare div, so a tile that is generating is indistinguishable from one that resolved to nothing. Put the wait into text outside the tile.",
+      "`locked` and `failed` are announced only through whatever you put in `action`. The scrim, the blur and the dimming carry nothing, so the words have to be in `action` itself.",
+      "The overlay label is visually truncated with `truncate`, not shortened — the full text stays in the DOM and is read in full, which is worth knowing before you pass an eighty-character prompt as a label.",
+    ],
+    focus: [
+      "The focus ring and the selection ring are the same declaration: `ring-ring ring-2`. On a tile that is already `selected`, taking focus therefore changes nothing visible — the ring is already drawn, in the same colour and the same width. In a grid, a keyboard user can see where focus is on every tile except the one they have chosen.",
+      "The `focus-visible` ring is applied only on the interactive branch, so an inert tile has no focus styling — correct, since it never takes focus.",
+      "Nothing here moves focus, but the component does unmount things underneath it. Switching an interactive tile to `failed` replaces its children while the button keeps focus (safe), and removing `onSelect` mid-life turns the focused button into a div, which drops focus to `<body>`.",
+    ],
+  },
   pitfalls: [
     'Props spread onto the outer wrapper, not the frame. An `aria-label`, `id` or `title` you pass lands on the div around the tile, while the button is one level down — so you cannot name a tile from the outside. With `labelPlacement="none"` and a decorative fill, that leaves an unnamed button; give the picture itself a name (`role="img"` plus a label, or an `<img alt>`) and the frame inherits it.',
     "`loading` replaces the children but announces nothing — no `aria-busy`, no live region. To a screen reader a tile that is generating is indistinguishable from one that finished empty, so if the wait matters, put the status in text outside the tile.",

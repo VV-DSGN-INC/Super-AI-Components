@@ -89,6 +89,29 @@ export const ArtifactGridDocs: ComponentDocs = {
       example: <IconOnlyPrivacy />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Each card is exactly one tab stop — the excerpt's link or button — and zero when the item has neither `href` nor `onOpen`. Nothing else on the card is focusable, so a 24-artifact index is 24 Tab presses with no way to skip a session.",
+      "`href` wins over `onOpen`: pass both and the handler is silently dropped, leaving a link where you expected a button.",
+      "The facet row declares `role=\"radiogroup\"` but ships one tab stop per chip and no arrow-key movement — the roving tabindex the ARIA radio pattern expects is an open TODO in `choice-chips`. Seven types is eight Tab presses (\"All\" included) before the first card, and Left/Right do nothing.",
+      "With `collapsibleSessions`, each session header is one more tab stop, activated with Space or Enter. There is no expand-all and no key that collapses every session at once.",
+      "Nothing in the grid responds to arrow keys, Home, End, or Delete. It is a list of independent links, not a grid widget.",
+    ],
+    screenReader: [
+      "Each session is a `<section>` named by its label, so sessions are navigable as regions. The section header itself is not a heading element, so heading navigation skips the whole index — regions are the only structure on offer.",
+      "The card link's accessible name is exactly the excerpt, by design: the stretched pseudo-element keeps the badge, the recency line, the privacy word and the view count out of it. The cost is that a links-list pass hears only excerpts — nothing tells the reader which artifact is Public, and privacy is reachable only by reading each card in browse mode.",
+      "`line-clamp-4` clips the excerpt visually and not in the accessible tree, so a long first paragraph becomes a very long link name that is read in full.",
+      "The type badge, the recency line and the footer are plain text with no roles. The privacy word and the view unit are real visible text — never `sr-only` suffixes — because adjacent text concatenates without a separator.",
+      "A facet chip's name fuses its count in: \"Markdown 3, radio button, not checked\". The \"All\" chip has no count, so it announces as a bare word beside numbered siblings.",
+      "The empty message carries `role=\"status\"`, but it is mounted at the same moment its text appears rather than sitting in the DOM beforehand — the opposite of the always-mounted pattern this registry uses elsewhere. Treat its announcement as unreliable and put a stable live region on the surface if the count matters.",
+      "Collapsing a session announces only through the trigger's `aria-expanded`; there is no `aria-controls` tying it to the cards it hides.",
+    ],
+    focus: [
+      "The focus ring traces the excerpt link, not the card, because the click target is a stretched pseudo-element while the focusable box is the text. On a short excerpt the ring is a small rectangle inside a large card, which reads as \"nothing is focused\" at a glance.",
+      "Changing a facet or collapsing a session unmounts cards, but focus is on the chip or the trigger in both cases, so nothing is stranded.",
+      "Filtering the grid to nothing replaces every card with the empty message and moves focus nowhere. The reader is left on the chip with no indication anything below changed.",
+    ],
+  },
   pitfalls: [
     "Rebuilding this on preview-tile (A8) to make it match the other grids. It is deliberately not an A8 consumer: A8 exists to fix a media frame around a thumbnail, and here the excerpt is the content, so the frame would be an empty box above the only field anyone reads. The test suite pins this — leave it text-first.",
     "Adding a `typeLabel` prop so a caller can restyle one badge. The badge and the facet are two renders of one value; the moment they can drift, a card reads \"Spreadsheet\" while its facet says \"Table\" and the filter silently returns nothing.",

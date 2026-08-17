@@ -7,9 +7,11 @@
 // produces for it. "building" items get exactly one assertion: they may not
 // be shadowed by an orphan file under a name absent from the manifest.
 //
-// contractExempt (the 14 pre-Wave-1.5 components) skips only the story-state
-// and docs-module assertions — everything else (files, consumes) still
-// applies, and the exemption is always printed, never silent.
+// contractExempt skips only the story-state and docs-module assertions —
+// everything else (files, consumes) still applies, and the exemption is always
+// printed, never silent. As of the accessibility-section change, zero manifest
+// entries carry the flag, so this path is dormant; it is kept as a deliberate
+// valve for a future legacy import, not as a way to quiet a red gate.
 import { execFileSync } from "node:child_process";
 // readdirSync rather than fs.globSync: globSync exists at runtime on Node 22+
 // but is absent from @types/node@20, so it typechecks in an untyped .mjs gate
@@ -204,6 +206,13 @@ for (const item of manifest) {
       [/dos:\s*\[\s*\{/, "at least one do"],
       [/donts:\s*\[\s*\{/, "at least one don't"],
       [/pitfalls:\s*\[\s*["']/, "at least one pitfall"],
+      // Both arms are required, not just the block, because the failure this
+      // catches is a half-filled one: `keyboard` is the easy arm to write from
+      // reading the component, and `screenReader` — the arm describing what is
+      // actually announced — is the one that gets left as `[]`.
+      [/accessibility:\s*\{/, "an accessibility block"],
+      [/keyboard:\s*\[\s*["']/, "at least one keyboard note"],
+      [/screenReader:\s*\[\s*["']/, "at least one screen reader note"],
     ];
     for (const [re, label] of required)
       if (!re.test(docs)) errors.push(`${item.name}: docs module is missing ${label}`);

@@ -80,6 +80,28 @@ export const RecentGridDocs: ComponentDocs = {
       example: <BareEmptyString />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop per item for the tile, plus one for every control you put in that item's `actions`. Twelve projects with a rename and a delete button each is thirty-six stops before the reader is past the grid.",
+      "The tile is focusable only when that item has `onOpen`. Omit it and `preview-tile` renders a `<div>` instead of a `<button>`, so the item is inert to mouse and keyboard alike — it looks openable and is not.",
+      "Actions stay mounted and only their opacity animates, so Tab reaches them and `group-focus-within` makes them visible when it does. They are unconditionally visible on coarse pointers, so a touch user never has to hover.",
+      "The container is a plain CSS grid of `<div>`s, not a `role=\"grid\"`. Arrow keys do nothing, there is no roving tabindex, and Home/End do not jump to the first or last project.",
+      "Nothing here can be disabled — there is no prop for it, so every rendered control is live.",
+    ],
+    screenReader: [
+      "The tile's accessible name comes from what is inside `preview-tile`'s frame, and in grid layout the title is not: `labelPlacement=\"below\"` puts it in a sibling `<span>` outside the button. The duration badge *is* inside the frame, so a grid tile with a duration announces as \"12:04, toggle button\" and one without announces with no name at all unless your `thumbnail` supplies text.",
+      "List layout has the same shape and no badge to fall back on: the tile is `labelPlacement=\"none\"`, so its button contains only your `thumbnail` while the title sits beside it in a separate `<p>`. Pass an `<img>` with real `alt` or the row's only control is nameless.",
+      "`preview-tile` puts `aria-pressed` on every interactive frame, so opening a project announces as a toggle button that is not pressed. Nothing in this component ever sets it to pressed — the state is meaningless here and is announced anyway.",
+      "The edited-ago line is rendered even when there is nothing to say, as a non-breaking space with `aria-hidden`, so the height-reserving placeholder stays silent while a real string is announced normally.",
+      "The duration badge is real text rather than colour or an icon, so it survives for assistive tech — but it survives as the tile's name, which is not the same as being read after the title.",
+      "There is no live region. Opening a project, renaming one, or the list refreshing announces nothing; whatever you navigate to owns that.",
+    ],
+    focus: [
+      "Deleting an item from `actions` unmounts the button that had focus and nothing restores it, so focus falls to `<body>`. Move focus to a neighbouring tile inside your delete handler.",
+      "Switching `layout` re-renders every item through a different tree, so focus is lost there too — hold the focused item's id and restore it yourself if you expose a view switch.",
+      "The tile's focus ring is `preview-tile`'s own `focus-visible:ring-2`, applied only when the tile is interactive. Controls you pass through `actions` bring their own: the shared `Button` has a ring, a bare `<button>` does not.",
+    ],
+  },
   pitfalls: [
     "Reaching for a second grid component for the list view — grid and list are one component with two renderings of the same item data; a `layout` prop switches between them.",
     "Letting item height vary with which optional fields are present. The edited-ago line is rendered blank (and aria-hidden) rather than omitted, specifically so the grid doesn't ripple between taller and shorter cards.",

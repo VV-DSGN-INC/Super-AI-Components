@@ -56,6 +56,28 @@ export const ModelPickerDocs: ComponentDocs = {
       example: <PriceAsDisconnectedFootnote />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "`dropdown` is one tab stop. The trigger opens the listbox on Enter, Space or Down; arrows move through options, typeahead jumps by first letter, Enter selects and Escape closes. The rows inside are non-interactive `entity-row` divs precisely so nothing nests a second control inside an option.",
+      "`node-inline` is also one tab stop, but what it opens is not a listbox — it is a popover full of buttons. Arrows do nothing inside it; you Tab through the model rows one at a time, and Escape closes.",
+      "`expanded-cards` has no trigger and no popup, so every model is its own tab stop in source order. Twelve models is twelve stops, and the group headings are not stops, so nothing lets you skip a task signature you do not care about.",
+      "There is no `disabled` on any presentation and no way to mark a single model unavailable. A model you do not want chosen has to be left out of `models` entirely.",
+      "The badges are never focusable. Runtime, capabilities and cost are read-only text in all three presentations.",
+    ],
+    screenReader: [
+      "The trigger's accessible name is `\"{label}: {selected name}\"` — \"Model: Veo 3.1\" — falling back to the placeholder when nothing is selected, so the current choice is announced without opening anything. It is set with `aria-label`, which replaces the trigger's visible text rather than adding to it.",
+      "In `dropdown` the task signatures are real `SelectGroup`s with a `SelectLabel`, so the grouping is announced. In `expanded-cards` and `node-inline` the heading is A12 `section-header`, whose title renders as a `<span>` — the grouping is visual there and announces as nothing.",
+      "In `expanded-cards` and `node-inline` a row is `entity-row`'s button branch, so it announces as a toggle button with `aria-pressed`, not as an option in a list. There is no listbox/option pairing and no `aria-activedescendant`: three models are three independent toggle buttons that happen to be mutually exclusive by convention.",
+      "A row's name is the whole row read out — title, description, then every badge. That is deliberate, because runtime is a real decision and not a footnote, but a model with four capabilities announces a long name every time it is passed.",
+      "`node-inline`'s popup is `role=\"dialog\"` with no accessible name. The vendored `PopoverContent` supplies none, this call site passes none, and there is no title inside for it to borrow — so it announces as an unnamed dialog and would fail axe's `aria-dialog-name` rule the moment a story opened it. `dropdown` and `expanded-cards` do not have this problem.",
+      "The runtime badge always carries its own text — \"Cloud\", or \"Local · 16GB VRAM\" — with the icon `aria-hidden`. Nothing about local versus cloud is signalled by colour or by glyph alone.",
+      "Choosing a model announces the selection and nothing else. If the settings strip below rewrites itself in response, the live region belongs there.",
+    ],
+    focus: [
+      "`dropdown` and `node-inline` both move focus into their popup on open and return it to the trigger on close, Escape included. `expanded-cards` moves focus nowhere: selecting a row leaves focus on that row, which is correct, because the row stays mounted.",
+      "All three presentations are visibly focusable, but not with the same ring — `entity-row` ships its own `focus-visible:ring-2`, while the `dropdown` and `node-inline` triggers inherit the vendored SelectTrigger and Button rings.",
+    ],
+  },
   pitfalls: [
     "Re-sorting the `models` array alphabetically before rendering — grouping is driven entirely by each model's `group` field and its first-seen order; alphabetizing upstream defeats the task-signature grouping this component exists to provide.",
     "Nesting an interactive row inside `dropdown`'s listbox. Select's own item is already the focusable `role=\"option\"` element, so rows there render entity-row without `onSelect` — passing one back in reintroduces the nested-interactive violation this component was built to avoid.",

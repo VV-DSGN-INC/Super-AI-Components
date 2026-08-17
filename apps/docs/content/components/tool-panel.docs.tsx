@@ -58,6 +58,31 @@ export const ToolPanelDocs: ComponentDocs = {
       example: <ViewAllAsButton />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The tab stop count is entirely a function of your data: the search field when `searchable`, one stop for the whole tab list, the scrolling body, then per section a collapse trigger when `collapsible`, plus one stop per tile that has an `onSelect`. A twelve-tile section is twelve stops with no way to skip past it.",
+      "A tile is only focusable when it has `onSelect` and is not `state: \"loading\"` — everything else renders as an inert `<div>`. So the stop count changes underneath the user as thumbnails arrive.",
+      "The tab list is Base UI's, so it has a roving tabindex: one Tab into it, then arrows between triggers and Home/End to the ends. The section collapse trigger is a plain `<button>` — Enter or Space toggles it, and a non-collapsible section's title is not focusable at all.",
+      "There is no grid navigation in `tool-panel-grid`. It is a CSS grid of independent buttons, so Down does not move a row — it scrolls the body. There is also no Escape, and no shortcut that jumps to the search field.",
+      "The scrolling body takes `tabIndex={0}` because it is the element that scrolls, which puts a keyless focus stop in front of every section. That is intentional: without it a keyboard cannot scroll a panel whose tiles all fit above the fold.",
+      "Nothing here can be disabled. There is no `disabled` prop on the panel, a section or a tile — the only way to make a tile inert is to withhold `onSelect`, which also removes it from the tab order.",
+    ],
+    screenReader: [
+      "The scrolling body is `role=\"group\"` named by `label` (\"Tools\"), and each section is a `role=\"group\"` too rather than a `<section>` — eight named `<section>`s would put eight `region` landmarks in the map for one panel.",
+      "A section's `aria-labelledby` points at the whole section-header row, not just the title, so its accessible name is the title, the count and the action text run together: \"Shapes 24 View all\". Keep the action short, because it ends up in the group's name.",
+      "There are no heading elements anywhere in the panel. Section titles are `<span>`s inside a `<div>`, so a screen reader cannot navigate the panel by heading — the group names are the only structure.",
+      "The collapse trigger carries `aria-expanded` but no `aria-controls`, and a collapsed section's content is unmounted rather than hidden. So the relationship between the trigger and what it opens is not programmatic, and a closed section's count in the heading is the only evidence it holds anything.",
+      "The search field is an `<input type=\"search\">` named by `searchLabel` (\"Search tools\"); the placeholder is decoration, not the name. Nothing is live: the panel reports the query and you filter, so the new result count and the `empty` node both appear silently.",
+      "A tile's name is the `label` string you pass, rendered as A8's overlay label; a loading tile appends a visually hidden \" — loading\". `aria-pressed` appears only when you pass `selected`, so an insert tile announces as a plain button and a toggle tile as a pressed one — pass `selected` on an insert action and it claims an on/off state it does not have.",
+      "Base UI unmounts an inactive tab panel, so sections in a tab you have not opened are absent from the accessibility tree entirely. A screen-reader search for a tool in another tab finds nothing.",
+      "Picking a tile announces nothing. `onSelect` fires and the panel does not change, so whatever consumed the pick has to say so.",
+    ],
+    focus: [
+      "Collapsing a section, switching tabs and filtering sections away all unmount content. Doing any of them from your own handler while focus is inside the removed content drops focus to `<body>` — collapsing via the trigger is safe, because focus is already on the trigger.",
+      "The scrolling body, the section triggers and the tiles each ship `focus-visible:ring-2 ring-ring`; the search field and anything in `prompt` inherit whatever the vendored primitives give them.",
+      "The docked prompt is a sibling of the scroll region, so it is always the last tab stop and never scrolls out from under focus. That is the structural point of the component, and it holds for the keyboard as well as the eye.",
+    ],
+  },
   pitfalls: [
     "Expecting the search field to filter for you. It reports the query and nothing else — filter your own data and pass the reduced sections back, plus an `empty` node for the no-results case, or the panel will look broken while the user types.",
     "Building section content eagerly and passing it through `render: () => cachedNode`. That defeats the point: the callback exists so a collapsed section and an inactive tab cost nothing, which is what keeps a long library affordable. Do the work inside the callback.",

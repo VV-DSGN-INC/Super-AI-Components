@@ -97,6 +97,33 @@ export const AssetLibraryDocs: ComponentDocs = {
       example: <SelectionModeWithoutAHandler />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The view switch is one tab stop, not two: it is a composite toggle group, so arrow keys move between List and Grid and focus loops at the ends. Re-pressing the active view is a no-op — the primitive would unset it, and the component guards against that.",
+      "A row's stops depend on what you gave it. The name is a stop only when the item has an `href` or you passed `onOpen`; otherwise it is plain text. The overflow trigger is a stop only when `rowActions` returns something for that item. A read-only library is therefore zero stops per row.",
+      "That overflow trigger is `opacity-0`, never `display:none`, so it stays in the tab order on every row even while invisible and reveals itself on focus. Fifty rows with actions is fifty extra stops whether or not you can see them.",
+      "Rows are plain `<tr>`s with no click handler and no arrow-key grid navigation, so Tab is the only way through the table. In selection mode a fifty-item library is fifty checkboxes interleaved with fifty names.",
+      "Selection is one checkbox at a time. There is no Shift-click range, no Ctrl/Cmd+A, and no Delete shortcut — select-all exists only as the checkbox in the bulk bar.",
+      "The table's horizontal scroll container carries no `tabIndex`, so once the columns overflow on a narrow viewport there is no keyboard way to scroll across to Size and Modified. That is axe's `scrollable-region-focusable` rule and it is a real gap, not a styling choice.",
+      "Escape closes an open row menu and returns focus to its trigger; the menu itself traverses with arrow keys, from the shared dropdown primitive.",
+    ],
+    screenReader: [
+      "The search field's label is `sr-only` and is taken from `searchPlaceholder`, so renaming the placeholder renames the field. There is no separate label prop.",
+      "The view switch is a group named \"View\"; each item is named by its `sr-only` text (\"List view\", \"Grid view\") and both icons are `aria-hidden`. `aria-orientation` is explicitly suppressed because the primitive renders `role=\"group\"`, which does not support it.",
+      "Every row checkbox is named \"Select {name}\" and every overflow trigger \"Actions for {name}\", so the two per-row controls are distinct across the table — the failure this shape usually has, and does not here.",
+      "The bulk bar is a `role=\"toolbar\"` named \"Bulk actions, N selected\". That name changes as the count does, but a toolbar is not a live region, so the number is announced only when a reader lands on it. The visible \"N selected\" text is not live either.",
+      "The Select and Actions columns have real `<th>`s carrying `sr-only` text, so the two control columns are named rather than blank.",
+      "The kind glyph is `aria-hidden` in both list and grid. \"Folder\" survives as the word in the Type column; `data-kind` is for your CSS and queries, not for assistive tech.",
+      "Nothing announces that the list changed. Searching, filtering, switching view and select-all all mutate the table with no live region, so a screen-reader user gets no confirmation and no new count until they navigate back to the header.",
+      "A12 `section-header` renders the title and the count as plain `<span>`s inside a `<div>`, so the library's heading is not a heading element and does not appear in a heading list or a rotor. Put your own heading above it if the page needs one.",
+      "That count is `items.length` — the number you passed, not the number matching the search, because the component does not filter.",
+    ],
+    focus: [
+      "Turning `selectionMode` on or off swaps the row's controls: the overflow trigger unmounts and a checkbox mounts, or the reverse. Whichever one had focus is gone and nothing restores it, so focus falls to `<body>` and the next Tab restarts at the top of the page. Move focus yourself when you flip the mode.",
+      "The same happens when the list empties. The table is replaced by L1 `empty-state`, and focus on any row control is lost — which is the common case, because narrowing a search is exactly what empties it.",
+      "The overflow trigger is hidden by opacity rather than display, so tabbing to it makes it appear. It also carries its own `focus-visible:ring-2`, as does the item name; the checkboxes and toggle items use the shared primitives' rings.",
+    ],
+  },
   pitfalls: [
     "The component does not filter. Typing in its search field fires `onSearchChange` and nothing else — if the list does not narrow, it is because you have not narrowed `items`. The same is true of the chips: `filters` is a slot, not a query.",
     "Folders are hoisted above files regardless of the order you pass, so a caller sorting by modified date will see its folders jump to the top. That partition is the one ordering rule the merged table imposes; everything within each kind keeps your order.",
