@@ -6,6 +6,7 @@ import { ResetAffordance } from "@/registry/super-ai/reset-affordance";
 import { SectionHeader } from "@/registry/super-ai/section-header";
 import { ResetAffordanceDocs } from "@/content/components/reset-affordance.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 /**
  * Fixtures are the transform properties an inspector in this system actually
@@ -294,8 +295,9 @@ export const KeyboardOrder: Story = {
       stops.push(focused);
       if (focused.dataset.slot === "reset-affordance") {
         await expect(focused.matches(":focus-visible")).toBe(true);
-        const style = getComputedStyle(focused);
-        await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+        // The ring is measured rather than merely present — see
+        // `expectPerceptibleFocus`.
+        await expectPerceptibleFocus(focused);
       }
     }
 

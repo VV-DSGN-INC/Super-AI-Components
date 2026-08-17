@@ -7,6 +7,7 @@ import { PromoCard } from "@/registry/super-ai/promo-card";
 import { RecommendationCard, type RecommendationCardProps } from "@/registry/super-ai/recommendation-card";
 import { RecommendationCardDocs } from "@/content/components/recommendation-card.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof RecommendationCard> = {
   title: "Super AI/Recommendation Card",
@@ -249,10 +250,9 @@ export const KeyboardOrder: Story = {
     const assertVisiblyFocused = async (el: HTMLElement) => {
       const id = nameOf(el);
       await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(`${id} focusVisible=true`);
-      const style = getComputedStyle(el);
-      await expect(`${id} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`).toBe(
-        `${id} ring=true`,
-      );
+      // The treatment is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(el, { label: id });
     };
 
     // --- the row ---

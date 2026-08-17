@@ -10,6 +10,7 @@ import {
 } from "@/registry/super-ai/workspace-switcher";
 import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const WORKSPACE_LIST = [
   { id: "acme", name: "Acme", plan: "Pro" },
@@ -294,6 +295,20 @@ export const KeyboardOrder: Story = {
     await expect(stops.filter((el) => el.getAttribute("tabindex") === "0")).toHaveLength(1);
     await expect(stops.filter((el) => el.getAttribute("tabindex") === "-1")).toHaveLength(3);
 
+    // What a row paints when it is *not* focused. The fill assertion below is a
+    // *change* from this value, and `expectPerceptibleFocus` refuses to judge a
+    // fill without it — "paints a background" is true of plenty of elements
+    // that show no focus treatment at all, which is exactly the vacuous shape
+    // the helper exists to close. Read off the resting siblings, because the
+    // row Base UI focuses on open has already changed by the time this runs.
+    const restingBackgrounds = new Set(
+      stops
+        .filter((el) => el !== document.activeElement && !el.contains(document.activeElement))
+        .map((el) => getComputedStyle(el).backgroundColor),
+    );
+    await expect([...restingBackgrounds]).toHaveLength(1);
+    const [restingBackground] = restingBackgrounds;
+
     const nameOf = (el: Element | null) =>
       el === null
         ? "nothing"
@@ -335,14 +350,11 @@ export const KeyboardOrder: Story = {
       await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(
         `${id} focusVisible=true`,
       );
-      // The row paints: an opaque fill of its own, rather than showing the
-      // popup through. `bg-accent` is the treatment; a transparent computed
-      // background means the focused row is indistinguishable from its
-      // neighbours.
-      const painted = getComputedStyle(el).backgroundColor;
-      await expect(`${id} painted=${painted !== "rgba(0, 0, 0, 0)" && painted !== "transparent"}`).toBe(
-        `${id} painted=true`,
-      );
+      // The row paints: a fill of its own, rather than showing the popup
+      // through. `bg-accent` is the treatment; a background unchanged from the
+      // resting one measured above means the focused row is indistinguishable
+      // from its neighbours.
+      await expectPerceptibleFocus(el, { label: id, restingBackground });
     };
 
     const start = await settledStop();
@@ -378,8 +390,7 @@ export const KeyboardOrder: Story = {
     await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
     await waitFor(() => expect(document.activeElement).toBe(trigger));
     await expect(trigger.matches(":focus-visible")).toBe(true);
-    const back = getComputedStyle(trigger);
-    await expect(back.boxShadow !== "none" || back.outlineStyle !== "none").toBe(true);
+    await expectPerceptibleFocus(trigger, { label: "trigger (after Escape)" });
   },
 };
 

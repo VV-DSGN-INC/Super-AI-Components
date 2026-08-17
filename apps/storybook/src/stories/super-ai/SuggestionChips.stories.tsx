@@ -7,6 +7,7 @@ import { ContextChip, ContextChips } from "@/registry/super-ai/context-chips";
 import { SuggestionChip, SuggestionChips, SuggestionChipsOverflow } from "@/registry/super-ai/suggestion-chips";
 import { SuggestionChipsDocs } from "@/content/components/suggestion-chips.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof SuggestionChips> = {
   title: "Super AI/Suggestion Chips",
@@ -129,6 +130,15 @@ export const RTL: Story = {
  * that — a future refactor turning the overflow back into a button would
  * still look identical and would silently break the spec's "overflow
  * resolves to a real link" rule.
+ *
+ * The ring check is `expectPerceptibleFocus`, not the `boxShadow !== "none"`
+ * test this file used to carry — that test could not fail here, because
+ * Tailwind emits a five-entry shadow list on every one of these chips whether
+ * or not the ring has any width. Two things this file is the exemplar for:
+ * the assertion measures blur/spread rather than presence, and it settles
+ * first — `Button`'s `transition-all` grows the ring from `0px`, so measured
+ * the instant `tab()` resolves every stop in this row reads `0px 0px 0px 0px`
+ * and would fail for a reason that has nothing to do with the component.
  */
 export const KeyboardOrder: Story = {
   render: (args) => (
@@ -154,13 +164,13 @@ export const KeyboardOrder: Story = {
     const focusable = canvasElement.querySelectorAll("button, a[href]");
     await expect(focusable[focusable.length - 1]).toBe(overflow);
 
-    // The new KeyboardOrder must-show: every stop is visibly focused.
+    // The KeyboardOrder must-show: every stop is visibly focused. The ring is
+    // measured rather than merely present — see `expectPerceptibleFocus`.
     await userEvent.tab();
     while (document.activeElement && canvasElement.contains(document.activeElement)) {
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(focused);
       await userEvent.tab();
     }
   },

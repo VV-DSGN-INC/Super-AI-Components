@@ -12,6 +12,7 @@ import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
 import { AutonomySelectorDocs } from "@/content/components/autonomy-selector.docs";
 import { Button } from "@/components/ui/button";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof AutonomySelector> = {
   title: "Super AI/Autonomy Selector",
@@ -236,8 +237,9 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(canvasElement.contains(focused)).toBe(true);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       await userEvent.tab();
     }
 

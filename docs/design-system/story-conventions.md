@@ -34,7 +34,7 @@ passes can find them.
 | --- | --- | --- |
 | `RTL` | the component has directional layout, icons or motion | rendered under `dir="rtl"`, with chevrons, arrows and trailing slots mirrored |
 | `ReducedMotion` | the component animates at all | the `prefers-reduced-motion` path — see the note below, which is specific to this repo |
-| `KeyboardOrder` | it is focusable or contains focusables | the tab sequence, where focus returns on close or dismiss, and a visible focus treatment at every stop — play-asserted: the focused element matches `:focus-visible` and its computed style shows a ring or outline |
+| `KeyboardOrder` | it is focusable or contains focusables | the tab sequence, where focus returns on close or dismiss, and a visible focus treatment at every stop — play-asserted: the focused element matches `:focus-visible`, and `expectPerceptibleFocus` from `apps/storybook/src/lib/focus-treatment.ts` measures the treatment. Do **not** hand-roll the style test; see [The focus assertion](#the-focus-assertion) for the two ways the obvious one is vacuous |
 | `Controlled` | it exposes a value/selection API (`value`/`onChange` or an equivalent controlled pair) | the component driven by external state, play-asserted: interaction alone does not move the rendered value, the change callback fires with the payload a consumer needs to apply it, and re-rendering with an unchanged `value` holds the component fixed. Without a play function this story is a screenshot of a prop and does not count |
 | `EmptyLabel` | any text slot is optional | the no-label rendering, which is usually where icon-only tap targets fail |
 | `LongContent` | any text slot is author-supplied | ~90 characters, plus the wrap/truncate/scroll decision the component actually makes |
@@ -72,9 +72,69 @@ anchoring `//` to the start of the line. The pilot files carry the pattern.
 - **No "every variant at once" story.** A grid of all eight of something
   markets optionality the system exists to remove.
 
-## Four mechanical facts about this repo
+## The focus assertion
 
-These decide the shape of the stories, and all four cost time to rediscover.
+`KeyboardOrder`'s "a visible focus treatment at every stop" is the one
+must-show in the table that cannot be satisfied by looking. **Use
+`expectPerceptibleFocus` from
+[`apps/storybook/src/lib/focus-treatment.ts`](../../apps/storybook/src/lib/focus-treatment.ts).**
+Do not write your own style test, and do not copy one out of a neighbouring
+story — 35 files copied the same one and it proves nothing.
+
+The idiom this replaces is
+
+    style.boxShadow !== "none" || style.outlineStyle !== "none"
+
+and **both halves are vacuous.** Wave 1 produced a live counterexample for
+each, which is why this is a rule rather than a preference:
+
+- **A zero-width ring is still a full box-shadow string.** Tailwind draws
+  `ring-*` as a box-shadow, so `focus-visible:ring-0` computes to a coloured
+  ring of zero width — measured on `hero-omnibox`'s prompt field as
+  `oklab(0.708 0 0 / 0.5) 0px 0px 0px 0px` while genuinely `:focus-visible`.
+  The field paints nothing at all and the assertion passed. Worse, the shadow
+  list is five entries long on every `Button` in the registry whether or not
+  any of them has width, so `boxShadow !== "none"` is true *at rest* — the
+  first half could never fail on anything.
+- **`outline-hidden` compiles to a transparent outline, not
+  `outline-style: none`.** It emits `outline: 2px solid transparent`, so
+  `outlineStyle !== "none"` passes on a completely unstyled element.
+  `account-menu`'s `DropdownMenuItem` rows carry it.
+
+Three treatments count, because three are what this registry actually ships,
+and the helper accepts all three:
+
+| form | where it is used | judged by |
+| --- | --- | --- |
+| `ring` | most controls — `focus-visible:ring-2` / `ring-3` | at least one box-shadow entry with non-zero blur or spread, in a colour that is not fully transparent |
+| `outline` | `table-view`'s rows, `tabs` | `outline-style` not `none`, non-zero `outline-width`, non-transparent `outline-color` |
+| `fill` | menu and popup rows (`focus:bg-accent`), because a ring inside a `p-1` popup is clipped — `workspace-switcher`, `account-menu` | `background-color` differing from the resting value **the caller passes in** as `restingBackground` |
+
+The `fill` form needs that resting value and the helper will not judge one
+without it. "Paints a non-transparent background" is true of most controls at
+rest, so accepting it unconditionally would hand back exactly the escape hatch
+this replaces. A fill is a *change*; measure what the row paints when it is not
+focused — off a resting sibling, or off the element before focus reaches it.
+
+Two more things the helper does that a hand-rolled check keeps getting wrong:
+
+- **It settles before concluding.** `Button` carries `transition-all`, so the
+  ring grows from `0px` and the first read after `userEvent.tab()` returns
+  `0px 0px 0px 0px` on a control whose ring is perfectly fine. Every stop in
+  all three pilot files reads zero on the first two samples.
+- **It splits the shadow list on top-level commas only.** A single entry
+  contains commas of its own (`rgba(0, 0, 0, 0.5) 0px 0px 0px 3px`), and the
+  ring is the *fourth* of five entries in Tailwind's output — a regex run
+  across the whole string can match lengths from one entry and a colour from
+  another.
+
+The `:focus-visible` match is a separate claim and stays on its own line
+immediately above the call: the helper measures what is painted, not whether
+the browser considers this a keyboard focus.
+
+## Five mechanical facts about this repo
+
+These decide the shape of the stories, and all five cost time to rediscover.
 
 1. **Extra exports are legal.** `check-contract.mts` asserts *declared states
    ⊆ story exports*, never the reverse. Case stories cannot break the
@@ -147,21 +207,66 @@ These decide the shape of the stories, and all four cost time to rediscover.
    frame wins is environment-dependent.
 
    **The idiom, and reuse it rather than re-deriving it.** Settle before
-   reading: `waitFor` until `document.activeElement` is one of the expected
-   stops. Seed the walk from where focus *actually* landed, not from an assumed
-   first element — a portal focuses its own first tabbable descendant on open,
-   so a walk that records a stop only *after* a tab can never count the one it
-   started on. Then walk exactly one lap, asserting each stop is new, and take
-   one closing tab asserting focus returned to the start. That makes the budget
-   provable rather than generous, because every settled tab moves by exactly one
-   control. `TaskTray.stories.tsx` and `ShortcutsSheet.stories.tsx` in
-   `apps/storybook/src/stories/super-ai/` both carry it — read either before
-   writing a `KeyboardOrder` inside a portal.
+   reading, then seed the walk from where focus *actually* landed, not from an
+   assumed first element — a portal focuses its own first tabbable descendant
+   on open, so a walk that records a stop only *after* a tab can never count
+   the one it started on. Then walk exactly one lap, asserting each stop is
+   new, and take one closing step asserting focus returned to the start. That
+   makes the budget provable rather than generous, because every settled step
+   moves by exactly one control.
+
+   **What "settled" means depends on how focus is moving, and the weaker form
+   is silently wrong for arrow keys.** Write the settle as *focus has moved*,
+   which is correct for both:
+
+   - **A TAB walk** may settle on "`document.activeElement` is one of the
+     expected stops". That works only because the focus guard briefly takes
+     focus *outside* the stop set, so "is a stop" doubles as "has settled".
+     `TaskTray.stories.tsx` and `ShortcutsSheet.stories.tsx` carry this form —
+     read either before writing a `KeyboardOrder` inside a portal.
+   - **An ARROW walk never leaves the set.** Every candidate is a stop, before
+     and after the key press, so a settle that only checks membership returns
+     the *previous* row and the walk compares stop N against the expectation
+     for stop N+1. `WorkspaceSwitcher.stories.tsx` caught this as a
+     wrap-around that reported the last row instead of the first, in a run
+     whose timing happened to differ; its `settledStop` takes the previous
+     element and waits for `activeElement` to be a stop **and** not that one.
+     Read it before writing a roving-tabindex walk.
 
    The general lesson outlives the library: **a bounded "did we reach all N
    stops within M tabs" loop is environment-sensitive; asserting the cycle
    directly is not.** One infers the property from a count reached inside an
-   allowance; the other states it.
+   allowance; the other states it. The corollary is the same shape: a settle
+   that asserts *where focus is* is weaker than one asserting *that focus
+   moved*, and only the second is safe when the destination was already a
+   legal place to be.
+
+5. **A JS viewport read cannot be exercised by a CSS-width wrapper — so a
+   declared state can satisfy the contract gate with a story that shows the
+   wrong thing.** This is *not* the same rule as fact 2. Fact 2 says how to
+   constrain `Mobile`: with a wrapper, because `parameters.viewport` does not
+   resize the gate's browser. This one says what a wrapper still cannot buy
+   you, and it matters because the whole program leans on `w-[375px]`.
+
+   A wrapper sets a CSS width. It does not change `window.innerWidth`, and any
+   component that branches in **JavaScript** on the real viewport is unmoved by
+   it. `app-sidebar` is the shipped case: the vendored `Sidebar` swaps to a
+   Sheet-based drawer via `useIsMobile`, which reads
+   `matchMedia("(max-width: 767px)")` against the window. The gate's browser is
+   1200px, so `app-sidebar`'s declared `mobile-drawer` state renders **the
+   desktop panel** under `pnpm test:stories` — a declared state with a passing
+   story that has never once rendered the thing it is named for. The same
+   applies to anything `position: fixed`, which is measured against the
+   viewport and leaves the wrapper's bounds entirely.
+
+   **What to do instead: record the limit in the description, and do not fake
+   it.** Do not reach for a `matchMedia` stub, a forced prop or a hand-built
+   copy of the drawer to make the story look right — a story that renders a
+   mock of the branch documents the mock. Say in the description which branch
+   is unreachable from any story in the file and why, exactly as
+   `AppSidebar.stories.tsx`'s `Mobile` does. The honest sentence is worth more
+   than the screenshot, because the next reader's real question is "is this
+   covered", and a faked story answers it wrongly.
 
 Because `preview.tsx` sets `a11y: { test: "error" }` as the default for every
 story, each case story you add is axe-gated from the moment it exists. That

@@ -24,6 +24,7 @@ import { ModeTabs } from "@/registry/super-ai/mode-tabs";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { ModalityRailDocs } from "@/content/components/modality-rail.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof ModalityRail> = {
   title: "Super AI/Modality Rail",
@@ -321,8 +322,9 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(stops).toContain(focused);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       visited += 1;
       await userEvent.tab();
     }

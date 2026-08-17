@@ -5,6 +5,7 @@ import { EscalationHandoff, type EscalationPacket } from "@/registry/super-ai/es
 import { SafetyBlock } from "@/registry/super-ai/safety-block";
 import { EscalationHandoffDocs } from "@/content/components/escalation-handoff.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof EscalationHandoff> = {
   title: "Super AI/Escalation Handoff",
@@ -223,8 +224,9 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(focused).toBe(expected);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
     }
 
     // One more tab leaves the card entirely. This is the no-trap assertion.

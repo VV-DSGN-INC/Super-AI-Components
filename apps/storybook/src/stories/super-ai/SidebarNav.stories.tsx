@@ -20,6 +20,7 @@ import type { SidebarNavProps } from "@/registry/super-ai/sidebar-nav";
 import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-ai/thread-list";
 import { SidebarNavDocs } from "@/content/components/sidebar-nav.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof SidebarNav> = {
   title: "Super AI/Sidebar Nav",
@@ -285,8 +286,9 @@ export const KeyboardOrder: Story = {
     while (document.activeElement && canvasElement.contains(document.activeElement)) {
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       visited.push(focused);
       await userEvent.tab();
     }

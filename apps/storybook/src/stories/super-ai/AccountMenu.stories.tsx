@@ -6,6 +6,7 @@ import { AccountMenu, type AccountMenuItem } from "@/registry/super-ai/account-m
 import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const SAMPLE_USER = { name: "Ada Lovelace", email: "ada@example.com" };
 
@@ -342,10 +343,7 @@ export const KeyboardOrder: Story = {
     await userEvent.tab();
     await expect(document.activeElement).toBe(trigger);
     await expect(trigger.matches(":focus-visible")).toBe(true);
-    const triggerStyle = getComputedStyle(trigger);
-    await expect(
-      `trigger ring=${triggerStyle.boxShadow !== "none" || triggerStyle.outlineStyle !== "none"}`,
-    ).toBe("trigger ring=true");
+    await expectPerceptibleFocus(trigger, { label: "trigger" });
 
     await userEvent.keyboard("{ArrowDown}");
     const menu = await body.findByRole("menu");
@@ -361,6 +359,20 @@ export const KeyboardOrder: Story = {
       await expect(within(menu).getByRole("menuitem", { name })).toBeInTheDocument();
     }
 
+    // What a row paints when it is *not* focused. The fill assertion below is a
+    // *change* from this value, and `expectPerceptibleFocus` refuses to judge a
+    // fill without it — "paints a background" is true of plenty of elements
+    // that show no focus treatment at all, which is exactly the vacuous shape
+    // the helper exists to close. Read off the resting siblings, because the
+    // row Base UI focuses on open has already changed by the time this runs.
+    const restingBackgrounds = new Set(
+      stops
+        .filter((el) => el !== document.activeElement && !el.contains(document.activeElement))
+        .map((el) => getComputedStyle(el).backgroundColor),
+    );
+    await expect([...restingBackgrounds]).toHaveLength(1);
+    const [restingBackground] = restingBackgrounds;
+
     const nameOf = (el: Element | null) =>
       el === null
         ? "nothing"
@@ -371,12 +383,29 @@ export const KeyboardOrder: Story = {
      * `document.activeElement` the instant a key event resolves races the
      * popup's own focus management; settling first is what makes "one key, one
      * row" a provable step rather than a generous allowance.
+     *
+     * The wait is for focus to have **moved**, not merely to be somewhere
+     * plausible, and the distinction is the whole bug. The portal-settle idiom
+     * in `TaskTray.stories.tsx` waits until `document.activeElement` is one of
+     * the expected stops, which is sufficient for a *tab* walk only because
+     * tabbing leaves the stop set in between (it lands on Base UI's focus
+     * guard). Arrow navigation inside a composite never leaves the set: read
+     * too early and the previous row is still focused, still a stop, and a
+     * membership-only settle returns it — so the walk compares row *n* against
+     * the expectation for row *n+1*. This file shipped that weaker form and it
+     * failed as a wrap-around reporting the last row instead of the first,
+     * under full-suite load, having passed every time the file ran alone.
+     * `WorkspaceSwitcher.stories.tsx` hit the identical failure and carries the
+     * same fix; see `story-conventions.md` mechanical fact 4.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!stops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the menu's rows: ${nameOf(active)}`);
+        }
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved off ${nameOf(previous)} yet`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -385,35 +414,37 @@ export const KeyboardOrder: Story = {
     const assertVisiblyFocused = async (el: HTMLElement) => {
       const id = nameOf(el);
       await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(`${id} focusVisible=true`);
-      // A row at rest paints nothing — `rgba(0, 0, 0, 0)` is what Chromium
-      // reports for it. A focused row fills. See point 3 above for why this is
-      // not the ring/outline test the other case stories use.
-      const fill = getComputedStyle(el).backgroundColor;
-      await expect(`${id} filled=${fill !== "rgba(0, 0, 0, 0)"}`).toBe(`${id} filled=true`);
+      // A focused row fills. See point 3 above for why the fill, rather than a
+      // ring, is the treatment here — and `restingBackground` for what it is
+      // measured against.
+      await expectPerceptibleFocus(el, { label: id, restingBackground });
     };
 
     const start = await settledStop();
     await assertVisiblyFocused(start);
 
     const seen = new Set<HTMLElement>([start]);
+    let previous = start;
     for (let i = 1; i < stops.length; i += 1) {
       await userEvent.keyboard("{ArrowDown}");
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
+      previous = focused;
     }
     await expect(seen.size).toBe(stops.length);
 
     // The lap closes: the row after the last is the first again.
     await userEvent.keyboard("{ArrowDown}");
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    previous = await settledStop(previous);
+    await expect(nameOf(previous)).toBe(nameOf(start));
 
     // Into the submenu and back out, without losing the root menu.
     const appearance = within(menu).getByRole("menuitem", { name: "Appearance" });
     for (let i = 0; i < stops.length && document.activeElement !== appearance; i += 1) {
       await userEvent.keyboard("{ArrowDown}");
-      await settledStop();
+      previous = await settledStop(previous);
     }
     await expect(document.activeElement).toBe(appearance);
 

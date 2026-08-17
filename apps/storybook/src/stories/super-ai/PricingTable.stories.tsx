@@ -11,6 +11,7 @@ import {
 } from "@/registry/super-ai/pricing-table";
 import { PricingTableDocs } from "@/content/components/pricing-table.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof PricingTable> = {
   title: "Super AI/Pricing Table",
@@ -281,8 +282,9 @@ export const KeyboardOrder: Story = {
 
       // Every stop is visibly focused, not merely focusable.
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
       await userEvent.tab();
     }
 

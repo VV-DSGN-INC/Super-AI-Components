@@ -10,6 +10,7 @@ import { RecentGrid } from "@/registry/super-ai/recent-grid";
 import { ResultCard } from "@/registry/super-ai/result-card";
 import { PreviewTileDocs } from "@/content/components/preview-tile.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof PreviewTile> = {
   title: "Super AI/Preview Tile",
@@ -319,8 +320,9 @@ export const KeyboardOrder: Story = {
       // Every stop is visibly focused, not merely focusable.
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
     }
   },
 };

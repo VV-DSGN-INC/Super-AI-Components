@@ -7,6 +7,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import { AppSidebar, type AppSidebarProps } from "@/registry/super-ai/app-sidebar";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 import { ModalityRail } from "@/registry/super-ai/modality-rail";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
@@ -213,10 +214,9 @@ export const KeyboardOrder: Story = {
       await expect(`${nameOf(focused)} focusVisible=${focused.matches(":focus-visible")}`).toBe(
         `${nameOf(focused)} focusVisible=true`,
       );
-      const style = getComputedStyle(focused);
-      await expect(
-        `${nameOf(focused)} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`,
-      ).toBe(`${nameOf(focused)} ring=true`);
+      // The treatment is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused, { label: nameOf(focused) });
       await userEvent.tab();
     }
 

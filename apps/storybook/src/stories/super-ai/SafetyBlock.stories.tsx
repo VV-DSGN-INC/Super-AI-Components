@@ -5,6 +5,7 @@ import { EscalationHandoff } from "@/registry/super-ai/escalation-handoff";
 import { SafetyBlock } from "@/registry/super-ai/safety-block";
 import { SafetyBlockDocs } from "@/content/components/safety-block.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof SafetyBlock> = {
   title: "Super AI/Safety Block",
@@ -172,10 +173,10 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(canvasElement.contains(focused)).toBe(true);
 
-      // The KeyboardOrder must-show: every stop is visibly focused.
+      // The KeyboardOrder must-show: every stop is visibly focused. The ring is
+      // measured rather than merely present — see `expectPerceptibleFocus`.
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(focused);
     }
   },
 };

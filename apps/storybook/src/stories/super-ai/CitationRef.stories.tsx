@@ -6,6 +6,7 @@ import { CitationRef } from "@/registry/super-ai/citation-ref";
 import { SourceCards } from "@/registry/super-ai/source-cards";
 import { CitationRefDocs } from "@/content/components/citation-ref.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 /**
  * Fixtures are real lines out of this repo's own design-system docs, which is
@@ -189,8 +190,7 @@ export const KeyboardOrder: Story = {
       await userEvent.tab();
       await expect(document.activeElement).toBe(marker);
       await expect(marker.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(marker);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(marker);
     }
   },
 };

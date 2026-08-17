@@ -5,6 +5,7 @@ import { DateSection } from "@/registry/super-ai/date-section";
 import { SectionHeader } from "@/registry/super-ai/section-header";
 import { SectionHeaderDocs } from "@/content/components/section-header.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 // `layout: "padded"` rather than "centered": the whole component is a
 // `justify-between` row, and centred it shrink-wraps to its content, which
@@ -115,6 +116,18 @@ export const RTL: Story = {
  * shaped exactly like a missing feature. No assertion is written for the
  * absence, because pinning it would make the eventual fix a test failure. See
  * the report and the docs module's first pitfall.
+ *
+ * **What the focus assertion measured, and it is about the `action` slot
+ * rather than about this component's own markup: the slot styles nothing it
+ * is handed.** The "View all" link is the story's own fixture, a bare `<a>`,
+ * and focused it reads `box-shadow: none` — the whole treatment is Chromium's
+ * own focus ring (`outline-style: auto`, 1px), which
+ * `expectPerceptibleFocus` accepts because it is genuinely perceptible. The
+ * collapsible trigger beside it carries `focus-visible:ring-2`, so the two
+ * stops in one header are treated differently. `action` is a
+ * `React.ReactNode`, so every consumer's link inherits that gap unless they
+ * ring it themselves — worth saying in the docs module rather than papering
+ * over in the fixture.
  */
 export const KeyboardOrder: Story = {
   args: {
@@ -149,8 +162,9 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(focused).toBe(expected);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
     }
 
     // Activating from the keyboard flips the state the button advertises.

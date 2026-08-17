@@ -7,6 +7,7 @@ import { SlotSummary } from "@/registry/super-ai/slot-summary";
 import { StatReadout } from "@/registry/super-ai/stat-readout";
 import { SlotSummaryDocs } from "@/content/components/slot-summary.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof SlotSummary> = {
   title: "Super AI/Slot Summary",
@@ -185,8 +186,9 @@ export const KeyboardOrder: Story = {
       visited.push(focused);
 
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
     }
 
     await expect(visited).toHaveLength(EXPECTED_STOPS);

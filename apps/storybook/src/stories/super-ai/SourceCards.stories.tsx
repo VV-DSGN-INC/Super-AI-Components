@@ -6,6 +6,7 @@ import { CitationRef } from "@/registry/super-ai/citation-ref";
 import { SourceCards, type RetrievedSource } from "@/registry/super-ai/source-cards";
 import { SourceCardsDocs } from "@/content/components/source-cards.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof SourceCards> = {
   title: "Super AI/Source Cards",
@@ -193,8 +194,7 @@ export const KeyboardOrder: Story = {
 
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      await expectPerceptibleFocus(focused);
     }
   },
 };

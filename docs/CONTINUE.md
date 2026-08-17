@@ -760,6 +760,46 @@ resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
 its own test file; **it belongs in the shared `vitest.setup.ts`** next to the
 ResizeObserver stub, and will bite anything composing a ScrollArea.
 
+### Added by the focus-assertion sweep (2026-08-15)
+
+Converting all 35 case-story files onto `expectPerceptibleFocus` turned up four
+elements that paint **no design-system focus treatment**. None is invisible:
+each falls through to Chromium's own ring (`outline-style: auto 1px`), which
+the helper accepts and a user can see. What none of them has is a treatment
+this system chose. Identical measurement on all four — `box-shadow: none`,
+`background-color: rgba(0, 0, 0, 0)`, UA outline only.
+
+Two are ours and are the unambiguous shape, left unfixed deliberately: adding
+a ring is a **visible** change to a shipped component and wants its own review,
+a `build:registry`, and an a11y re-gate, none of which belong in a commit whose
+job was making the assertion able to fail.
+
+- **`filter-chip-toggle`** (`filter-bar.tsx`) has no ring while
+  `filter-chip-remove` — its sibling **inside the same pill** — carries
+  `focus-visible:ring-ring ring-2 outline-none`. The X is ringed; the chip it
+  sits in is not.
+- **The thread row button** (`thread-list.tsx`) has none, while the actions
+  trigger beside it is a `Button` and gets `focus-visible:ring-3`. The row's
+  `bg-accent` is bound to `hover`/`active` and never to `:focus-visible`, so
+  the row that IS focused looks exactly like the row the pointer happens to be
+  over.
+- **The breadcrumb link** is vendored (`components/ui/breadcrumb.tsx`) — the
+  third defect recorded in that one file, alongside the two `app-topbar`
+  already carries.
+- **`"View all"`** is a story fixture rather than the component: `action` is a
+  bare `ReactNode` slot that styles nothing handed to it. The component's own
+  collapsible trigger does carry `focus-visible:ring-2`.
+
+A note for whoever picks this up: the sweep found no red, and that is only
+trustworthy because it was falsified rather than assumed. Forcing
+`measureFocusTreatment` to return `null` failed **all 32** converted files
+(32 failed / 336 passed), which is what proves the assertion is reached
+everywhere rather than silently skipped. Restricting `accept` to `ring` alone
+fails six files, and both menu-row files fail with `fill` excluded — their rows
+have no ring and no outline at all, so the background change is the entire
+treatment. That is why the helper refuses to judge a fill without a measured
+`restingBackground`.
+
 ### Added by the wave 0 story retrofit (2026-08-15)
 
 Same provenance rule as the list above: each was found by someone writing a
@@ -812,6 +852,28 @@ that is where the backlog lives.
   | `source-cards.tsx:100` | title button | `text-left` → `text-start` |
   | `explore-gallery.tsx:418` | facet count | `ml-1.5` → `ms-1.5` |
   | `artifact-grid.tsx:272` | count badge | `ml-1.5` → `ms-1.5` |
+
+  **Caveat, added 2026-08-15: "byte-identical in LTR" is sound for text
+  alignment, padding and margin, but it does not by itself make an INSET swap
+  safe.** Alignment and spacing are properties of one element. An inset places
+  an element *relative to other things*, so swapping one participant flips it
+  into a position the others have not left. **The rule is that an inset swap is
+  only safe when the elements it is positioned against have moved too — the
+  pair moves together or not at all.**
+
+  A6 `recent-grid` is the recorded case, and it correctly **declined** the
+  swap. `RecentGridActions` is `absolute top-2 left-2`; the duration badge on
+  the composed A8 `preview-tile` is `absolute top-2 right-2`, and still
+  physical. Swapping only `recent-grid`'s `left-2` for `start-2` resolves to
+  `right: 0.5rem` under RTL and stacks the overflow menu on top of the badge —
+  strictly worse than the un-mirrored rendering it replaced, and byte-identical
+  in LTR the whole time, so nothing in CI would have said a word. Recorded in
+  `RecentGrid.stories.tsx`'s `RTL` description.
+
+  Note this is a caveat on the *argument*, not a new open decision: the sites
+  in the table above are all padding, margin, border and text alignment, and
+  none of them is an inset. Anyone extending the sweep to insets owes the
+  positioned-against check first.
 
   **Changes that are *not* byte-identical stay open decisions, and must not be
   swept in with the above.** Two of them:
@@ -1008,8 +1070,9 @@ it honestly without noticing.
   `task-tray` and `trace-timeline` (both lucide spinners). All four work.
 
   What the finding costs is the *remainder* of the backlog above. These 33
-  registry components render a keyframe-animating popup surface, none of them
-  suppresses it, and each is a site where the plain remedy would be inert:
+  registry components render a keyframe-animating popup surface and none of
+  them suppresses it — **but read the correction below before treating the list
+  as a work queue.** It is a list of *candidates*:
   `account-menu`, `action-stack`, `ai-tools-menu`, `asset-detail`,
   `asset-library`, `citation-ref`, `coach-mark`, `context-toolbar`,
   `detail-view-shell`, `docs-shell`, `drawing-tools`, `feature-announcement`,
@@ -1020,10 +1083,40 @@ it honestly without noticing.
   `tts-composer`, `usage-dashboard`, `voice-clone-recorder`, `whats-new`,
   `workspace-switcher`, plus `task-tray` on the transition path. Only
   `shortcuts-sheet` has the working form. Not fixed here — that is a follow-up
-  wave, and the point of this entry is that the list is accurate before anyone
-  starts it. The idiom is written up in
+  wave. The idiom is written up in
   [`story-conventions.md`](design-system/story-conventions.md), mechanical
   fact 3.
+
+- **Correction (2026-08-15, wave 1): the 33 above are CANDIDATES, and each one
+  must be measured before the restated idiom is applied to it.** The list was
+  derived by reading sources — "composes a keyframe-animating popup surface and
+  carries no `motion-reduce:`" — and that predicate does not settle whether the
+  surface actually animates *at this call site*. Wave 1 measured two entries
+  and they came out opposite ways:
+
+  - **`recommendation-card`: the list was right.** Its `DialogContent` opens
+    with `data-open:animate-in zoom-in-95`; measured under emulated reduce
+    before the fix, `animation-name` read back `"enter"`. The restated form was
+    added and its `ReducedMotion` story now asserts `"none"`.
+  - **`hero-omnibox`: the list is wrong.** Its only keyframe-animating popup is
+    the model `Select`, and `SelectContent` defaults to `alignItemWithTrigger`,
+    so the surface renders `data-align-trigger="true"` and the primitive's own
+    `data-[align-trigger=true]:animate-none` already beats `data-open:animate-in`
+    on source order. Measured opened under emulated reduce: `animationName` is
+    `"none"` **already**. Recorded in `HeroOmnibox.stories.tsx`'s
+    `case-skip: ReducedMotion` line.
+
+  So the count of 33 overcounts by at least one, and nobody knows by how many
+  more until someone measures. **The failure mode this creates is specific and
+  expensive: bulk-applying the restated idiom adds inert classes that look like
+  fixes.** A component that never animated under reduce gains
+  `motion-reduce:data-open:animate-none`, a `ReducedMotion` story asserting
+  `"none"` passes for a reason that has nothing to do with the media feature,
+  and the entry gets ticked off. The class-name check cannot tell the two apart
+  — only reading `animationName` back off the opened surface can, which is why
+  every `ReducedMotion` story in this repo does that rather than asserting a
+  class. Measure first; if the surface is already still, leave it alone and
+  write the skip line saying so.
 
 - **E6 `generation-queue` does not manage focus when a row resolves.** A row's
   Cancel button unmounts as it transitions to done/failed/cancelled, and nothing

@@ -166,8 +166,9 @@ Then add the **case stories**: the situations the component meets in a
 product, as opposed to the prop combinations above. Read
 [`story-conventions.md`](story-conventions.md) before writing them — it
 carries the eight names, the rule for deciding which are true for your
-component, and four mechanical facts about this repo's Storybook that are
-expensive to rediscover.
+component, the shared focus assertion `KeyboardOrder` must use, and five
+mechanical facts about this repo's Storybook that are expensive to
+rediscover.
 
 The short version: your declared-state stories restate what the types and the
 manifest already say. The case stories are the only place facts like "this

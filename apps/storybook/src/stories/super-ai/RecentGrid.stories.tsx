@@ -8,6 +8,7 @@ import { FeatureCardRow, type FeatureCardRowItem } from "@/registry/super-ai/fea
 import { RecentGrid, type RecentGridItem } from "@/registry/super-ai/recent-grid";
 import { RecentGridDocs } from "@/content/components/recent-grid.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectPerceptibleFocus } from "@/lib/focus-treatment";
 
 const meta: Meta<typeof RecentGrid> = {
   title: "Super AI/Recent Grid",
@@ -266,8 +267,9 @@ export const KeyboardOrder: Story = {
 
       const focused = document.activeElement as HTMLElement;
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // The ring is measured rather than merely present — see
+      // `expectPerceptibleFocus`.
+      await expectPerceptibleFocus(focused);
     }
 
     // Repeated tiles are the prime shape for duplicated accessible names, and
