@@ -54,6 +54,16 @@ describe("validateTranslation", () => {
     expect(validateTranslation(EN, bad).join()).toContain("x-header");
   });
 
+  it("rejects an empty-string anatomy value — a present key is not enough", () => {
+    const bad = { ...GOOD, anatomy: { ...GOOD.anatomy, "x-root": "" } };
+    expect(validateTranslation(EN, bad).join()).toContain('anatomy: slot "x-root"');
+  });
+
+  it("rejects a non-string anatomy value", () => {
+    const bad = { ...GOOD, anatomy: { ...GOOD.anatomy, "x-root": 42 } };
+    expect(validateTranslation(EN, bad).join()).toContain('anatomy: slot "x-root"');
+  });
+
   it("rejects an empty string field", () => {
     expect(validateTranslation(EN, { ...GOOD, usage: "" }).join()).toContain("usage");
   });

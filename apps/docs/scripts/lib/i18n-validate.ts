@@ -34,9 +34,25 @@ export function validateTranslation(en: DocsTranslation, candidate: unknown): st
   if (typeof ru.anatomy !== "object" || ru.anatomy === null) {
     errors.push("anatomy: missing");
   } else {
+    const anatomy = ru.anatomy as Record<string, unknown>;
     const enKeys = Object.keys(en.anatomy);
-    const ruKeys = Object.keys(ru.anatomy);
-    for (const k of enKeys) if (!ruKeys.includes(k)) errors.push(`anatomy: missing slot "${k}"`);
+    const ruKeys = Object.keys(anatomy);
+    for (const k of enKeys) {
+      if (!ruKeys.includes(k)) {
+        errors.push(`anatomy: missing slot "${k}"`);
+        continue;
+      }
+      // Key presence alone is not enough — the model can return an empty or
+      // wrong-typed value for a slot it otherwise named correctly, and unlike
+      // every other field here that failure was previously invisible: the
+      // overlay file still gets a correct @source-hash, so the hash gate then
+      // treats the broken slot as permanently current. Nothing short of
+      // --all or a hand-deleted file would ever re-translate it.
+      const value = anatomy[k];
+      if (typeof value !== "string" || value.trim() === "") {
+        errors.push(`anatomy: slot "${k}" is not a non-empty string`);
+      }
+    }
     for (const k of ruKeys) if (!enKeys.includes(k)) errors.push(`anatomy: unknown slot "${k}"`);
   }
 
