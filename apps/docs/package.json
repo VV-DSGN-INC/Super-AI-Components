@@ -14,7 +14,8 @@
     "gen:wiring": "tsx scripts/gen-wiring.mts",
     "new:component": "tsx scripts/new-component.mts",
     "reconcile:deps": "tsx scripts/reconcile-deps.mts",
-    "build:registry": "tsx scripts/gen-wiring.mts && tsx scripts/gen-registry.mts && shadcn build --output public/r"
+    "build:registry": "tsx scripts/gen-wiring.mts && tsx scripts/gen-registry.mts && shadcn build --output public/r",
+    "i18n:sync": "tsx scripts/i18n-sync.mts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -38,6 +39,7 @@
     "use-stick-to-bottom": "^1.1.6"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.70.0",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
