@@ -4,15 +4,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { CATALOG_ITEMS } from "@/lib/catalog";
+import { localeHref } from "@/lib/i18n/paths";
+import { messagesFor } from "@/lib/i18n/messages";
+import type { Locale } from "@/lib/i18n/types";
 import { MARKETING_GROUPS, MARKETING_ITEMS } from "@/lib/marketing-catalog";
 
-const GROUPS = ["Primitives", "Components", "Blocks"] as const;
-
-function NavList({ items, pathname }: { items: { name: string; title: string }[]; pathname: string }) {
+function NavList({
+  items,
+  pathname,
+  locale,
+}: {
+  items: { name: string; title: string }[];
+  pathname: string;
+  locale: Locale;
+}) {
   return (
     <ul className="space-y-0.5">
       {items.map((item) => {
-        const href = `/components/${item.name}`;
+        const href = localeHref(locale, `/components/${item.name}`);
         const isActive = pathname === href;
         return (
           <li key={item.name}>
@@ -33,17 +42,27 @@ function NavList({ items, pathname }: { items: { name: string; title: string }[]
   );
 }
 
-export function DocsNav() {
+export function DocsNav({ locale }: { locale: Locale }) {
   const pathname = usePathname();
+  const t = messagesFor(locale);
+  const groupLabel: Record<"Primitives" | "Components" | "Blocks", string> = {
+    Primitives: t.groupPrimitives,
+    Components: t.groupComponents,
+    Blocks: t.groupBlocks,
+  };
 
   return (
     <nav className="space-y-6">
-      {GROUPS.map((group) => (
+      {(["Primitives", "Components", "Blocks"] as const).map((group) => (
         <div key={group}>
           <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
-            {group}
+            {groupLabel[group]}
           </p>
-          <NavList items={CATALOG_ITEMS.filter((i) => i.group === group)} pathname={pathname} />
+          <NavList
+            items={CATALOG_ITEMS.filter((i) => i.group === group)}
+            pathname={pathname}
+            locale={locale}
+          />
         </div>
       ))}
       {MARKETING_GROUPS.map((group) => {
@@ -52,9 +71,9 @@ export function DocsNav() {
         return (
           <div key={group}>
             <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
-              Marketing · {group}
+              {t.marketingPrefix} · {group}
             </p>
-            <NavList items={items} pathname={pathname} />
+            <NavList items={items} pathname={pathname} locale={locale} />
           </div>
         );
       })}

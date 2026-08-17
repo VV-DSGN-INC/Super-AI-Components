@@ -6,14 +6,22 @@ interface PreviewTabsProps {
   preview: React.ReactNode;
   code: string;
   fullBleed?: boolean;
+  previewLabel: string;
+  codeLabel: string;
 }
 
-export function PreviewTabs({ preview, code, fullBleed = false }: PreviewTabsProps) {
+export function PreviewTabs({
+  preview,
+  code,
+  fullBleed = false,
+  previewLabel,
+  codeLabel,
+}: PreviewTabsProps) {
   return (
     <Tabs defaultValue="preview">
       <TabsList>
-        <TabsTrigger value="preview">Preview</TabsTrigger>
-        <TabsTrigger value="code">Code</TabsTrigger>
+        <TabsTrigger value="preview">{previewLabel}</TabsTrigger>
+        <TabsTrigger value="code">{codeLabel}</TabsTrigger>
       </TabsList>
       <TabsContent value="preview">
         <div

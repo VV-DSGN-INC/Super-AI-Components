@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import type { ComponentDocs } from "@/lib/component-docs";
+import { messagesFor } from "@/lib/i18n/messages";
+import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils";
 
 function Section({ title, slot, children }: { title: string; slot: string; children: ReactNode }) {
@@ -11,7 +13,15 @@ function Section({ title, slot, children }: { title: string; slot: string; child
   );
 }
 
-function Guidance({ items, tone }: { items: ComponentDocs["dos"]; tone: "do" | "dont" }) {
+function Guidance({
+  items,
+  tone,
+  label,
+}: {
+  items: ComponentDocs["dos"];
+  tone: "do" | "dont";
+  label: string;
+}) {
   return (
     <div
       data-slot={tone === "do" ? "docs-do" : "docs-dont"}
@@ -20,7 +30,7 @@ function Guidance({ items, tone }: { items: ComponentDocs["dos"]; tone: "do" | "
         tone === "do" ? "border-primary/40 bg-primary/5" : "border-destructive/40 bg-destructive/5",
       )}
     >
-      <p className="text-sm font-medium">{tone === "do" ? "Do" : "Don't"}</p>
+      <p className="text-sm font-medium">{label}</p>
       <ul className="space-y-3">
         {items.map((item) => (
           <li key={item.text} className="space-y-2">
@@ -67,22 +77,26 @@ function A11yGroup({ label, slot, items }: { label: string; slot: string; items?
   );
 }
 
-export function ComponentDocsView({ docs }: { docs: ComponentDocs }) {
+export function ComponentDocsView({ docs, locale }: { docs: ComponentDocs; locale: Locale }) {
+  const t = messagesFor(locale);
+
   return (
     <div data-slot="component-docs" className="space-y-8">
-      <Section title="What it is" slot="docs-what">
+      <Section title={t.sectionWhatItIs} slot="docs-what">
         <p className="text-muted-foreground text-sm">{docs.whatItIs}</p>
       </Section>
 
-      <Section title="Why it matters" slot="docs-why">
+      <Section title={t.sectionWhyItMatters} slot="docs-why">
         <p className="text-muted-foreground text-sm">{docs.whyItMatters}</p>
         {docs.evidence.length ? (
-          <p className="text-muted-foreground text-xs">Observed in: {docs.evidence.join(" · ")}</p>
+          <p className="text-muted-foreground text-xs">
+            {t.observedIn} {docs.evidence.join(" · ")}
+          </p>
         ) : null}
       </Section>
 
       {docs.anatomy.length ? (
-        <Section title="Anatomy" slot="docs-anatomy">
+        <Section title={t.sectionAnatomy} slot="docs-anatomy">
           <ol className="space-y-2">
             {docs.anatomy.map((slot, i) => (
               <li key={slot.slot} className="flex items-start gap-3 text-sm">
@@ -99,11 +113,11 @@ export function ComponentDocsView({ docs }: { docs: ComponentDocs }) {
         </Section>
       ) : null}
 
-      <Section title="How to use it" slot="docs-usage">
+      <Section title={t.sectionUsage} slot="docs-usage">
         <p className="text-muted-foreground text-sm">{docs.usage}</p>
         <div className="grid gap-4 md:grid-cols-2">
-          <Guidance items={docs.dos} tone="do" />
-          <Guidance items={docs.donts} tone="dont" />
+          <Guidance items={docs.dos} tone="do" label={t.doLabel} />
+          <Guidance items={docs.donts} tone="dont" label={t.dontLabel} />
         </div>
       </Section>
 
@@ -112,22 +126,26 @@ export function ComponentDocsView({ docs }: { docs: ComponentDocs }) {
           nothing to say here", which is exactly the wrong signal for
           accessibility — so an undocumented component says so out loud, and
           check-contract.mts makes that state unshippable. */}
-      <Section title="Accessibility" slot="docs-a11y">
+      <Section title={t.sectionAccessibility} slot="docs-a11y">
         {hasA11y(docs.accessibility) ? (
           <dl className="space-y-4 rounded-lg border p-4">
-            <A11yGroup label="Keyboard" slot="docs-a11y-keyboard" items={docs.accessibility.keyboard} />
-            <A11yGroup label="Screen reader" slot="docs-a11y-screen-reader" items={docs.accessibility.screenReader} />
-            <A11yGroup label="Focus" slot="docs-a11y-focus" items={docs.accessibility.focus} />
+            <A11yGroup label={t.a11yKeyboard} slot="docs-a11y-keyboard" items={docs.accessibility.keyboard} />
+            <A11yGroup
+              label={t.a11yScreenReader}
+              slot="docs-a11y-screen-reader"
+              items={docs.accessibility.screenReader}
+            />
+            <A11yGroup label={t.a11yFocus} slot="docs-a11y-focus" items={docs.accessibility.focus} />
           </dl>
         ) : (
           <p data-slot="docs-a11y-undocumented" className="text-muted-foreground text-sm">
-            Not yet documented.
+            {t.a11yUndocumented}
           </p>
         )}
       </Section>
 
       {docs.pitfalls.length ? (
-        <Section title="Watch out for" slot="docs-pitfalls">
+        <Section title={t.sectionPitfalls} slot="docs-pitfalls">
           <ul className="text-muted-foreground list-disc space-y-1 pl-5 text-sm">
             {docs.pitfalls.map((p) => (
               <li key={p}>{p}</li>

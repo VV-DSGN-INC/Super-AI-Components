@@ -21,7 +21,7 @@ const DOCS: ComponentDocs = {
 
 describe("ComponentDocsView", () => {
   it("renders every guidance section", () => {
-    render(<ComponentDocsView docs={DOCS} />);
+    render(<ComponentDocsView docs={DOCS} locale="en" />);
     expect(screen.getByText(DOCS.whatItIs)).toBeInTheDocument();
     expect(screen.getByText(DOCS.whyItMatters)).toBeInTheDocument();
     expect(screen.getByText(DOCS.usage)).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe("ComponentDocsView", () => {
   });
 
   it("distinguishes dos from donts so they cannot be misread", () => {
-    render(<ComponentDocsView docs={DOCS} />);
+    render(<ComponentDocsView docs={DOCS} locale="en" />);
     const dos = document.querySelector('[data-slot="docs-do"]')!;
     const donts = document.querySelector('[data-slot="docs-dont"]')!;
     expect(dos.textContent).toContain("Put creation last");
@@ -38,23 +38,23 @@ describe("ComponentDocsView", () => {
   });
 
   it("numbers anatomy slots so callouts can reference them", () => {
-    render(<ComponentDocsView docs={DOCS} />);
+    render(<ComponentDocsView docs={DOCS} locale="en" />);
     expect(screen.getByText("1")).toBeInTheDocument();
     expect(screen.getByText("Current workspace + plan badge")).toBeInTheDocument();
   });
 
   it("lists evidence products", () => {
-    render(<ComponentDocsView docs={DOCS} />);
+    render(<ComponentDocsView docs={DOCS} locale="en" />);
     expect(screen.getByText(/Descript/)).toBeInTheDocument();
   });
 
   it("omits sections that carry no content", () => {
-    render(<ComponentDocsView docs={{ ...DOCS, anatomy: [] }} />);
+    render(<ComponentDocsView docs={{ ...DOCS, anatomy: [] }} locale="en" />);
     expect(document.querySelector('[data-slot="docs-anatomy"]')).toBeNull();
   });
 
   it("splits accessibility notes by the concern a reader arrives with", () => {
-    render(<ComponentDocsView docs={DOCS} />);
+    render(<ComponentDocsView docs={DOCS} locale="en" />);
     const keyboard = document.querySelector('[data-slot="docs-a11y-keyboard"]')!;
     const screenReader = document.querySelector('[data-slot="docs-a11y-screen-reader"]')!;
     expect(keyboard.textContent).toContain("one tab stop");
@@ -62,7 +62,9 @@ describe("ComponentDocsView", () => {
   });
 
   it("drops the focus arm when nothing moves focus", () => {
-    render(<ComponentDocsView docs={{ ...DOCS, accessibility: { ...DOCS.accessibility, focus: undefined } }} />);
+    render(
+      <ComponentDocsView docs={{ ...DOCS, accessibility: { ...DOCS.accessibility, focus: undefined } }} locale="en" />,
+    );
     expect(document.querySelector('[data-slot="docs-a11y-focus"]')).toBeNull();
     expect(document.querySelector('[data-slot="docs-a11y-keyboard"]')).not.toBeNull();
   });
@@ -72,10 +74,42 @@ describe("ComponentDocsView", () => {
   // empty section reads as "nothing to say here" — the one signal this
   // heading must never send.
   it("says so out loud when accessibility is undocumented, rather than hiding", () => {
-    render(<ComponentDocsView docs={{ ...DOCS, accessibility: { keyboard: [], screenReader: [] } }} />);
+    render(<ComponentDocsView docs={{ ...DOCS, accessibility: { keyboard: [], screenReader: [] } }} locale="en" />);
     expect(document.querySelector('[data-slot="docs-a11y"]')).not.toBeNull();
     expect(document.querySelector('[data-slot="docs-a11y-undocumented"]')!.textContent).toContain(
       "Not yet documented",
     );
+  });
+});
+
+describe("ComponentDocsView locale", () => {
+  const LOCALE_DOCS: ComponentDocs = {
+    whatItIs: "A.",
+    whyItMatters: "B.",
+    evidence: ["NotebookLM"],
+    anatomy: [{ slot: "thing-root", note: "Root." }],
+    usage: "C.",
+    dos: [{ text: "Do." }],
+    donts: [{ text: "Don't." }],
+    accessibility: { keyboard: ["K."], screenReader: ["S."] },
+    pitfalls: ["P."],
+  };
+
+  it("renders English section headings by default", () => {
+    render(<ComponentDocsView docs={LOCALE_DOCS} locale="en" />);
+    expect(screen.getByRole("heading", { name: "What it is" })).toBeInTheDocument();
+    expect(screen.getByText("Do")).toBeInTheDocument();
+  });
+
+  it("renders Russian section headings under the ru locale", () => {
+    render(<ComponentDocsView docs={LOCALE_DOCS} locale="ru" />);
+    expect(screen.getByRole("heading", { name: "Что это" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Доступность" })).toBeInTheDocument();
+    expect(screen.getByText("Как надо")).toBeInTheDocument();
+  });
+
+  it("keeps the slot name in Latin under any locale — it is a data-slot value", () => {
+    render(<ComponentDocsView docs={LOCALE_DOCS} locale="ru" />);
+    expect(screen.getByText("thing-root")).toBeInTheDocument();
   });
 });
