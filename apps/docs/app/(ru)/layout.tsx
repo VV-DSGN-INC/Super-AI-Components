@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { bodyClassName, htmlClassName } from "@/components/pages/root-shell";
+import { RootShell } from "@/components/pages/root-shell";
 import "../globals.css";
 
 export const metadata: Metadata = {
@@ -11,9 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function RuRootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html lang="ru" className={htmlClassName}>
-      <body className={bodyClassName}>{children}</body>
-    </html>
-  );
+  return <RootShell locale="ru">{children}</RootShell>;
 }
