@@ -3,9 +3,12 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { MANIFEST } from "../lib/catalog.manifest";
+
 const root = join(__dirname, "..");
 const barrel = join(root, "lib/docs.ru.generated.ts");
 const overlayDir = join(root, "content/ru/components");
+const shipped = MANIFEST.filter((i) => i.status === "shipped").map((i) => i.name);
 
 describe("gen-wiring output", () => {
   it("emits a Russian docs barrel", () => {
@@ -27,9 +30,14 @@ describe("gen-wiring output", () => {
     // barrel to the filesystem.
     if (!existsSync(overlayDir)) return;
     const src = readFileSync(barrel, "utf8");
+    // The generator deliberately filters overlay files against the shipped manifest,
+    // so the test must filter the same way or it fails while asserting correct code.
+    // A stray overlay file (for a non-shipped component) should not enter the barrel.
     for (const file of readdirSync(overlayDir)) {
       if (!file.endsWith(".ts")) continue;
-      expect(src).toContain(`"${file.replace(/\.ts$/, "")}"`);
+      const name = file.replace(/\.ts$/, "");
+      if (!shipped.includes(name)) continue;
+      expect(src).toContain(`"${name}"`);
     }
   });
 });
