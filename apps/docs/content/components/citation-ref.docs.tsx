@@ -1,4 +1,10 @@
 import type { ComponentDocs } from "@/lib/component-docs";
+import {
+  EmptyCardOverTheClaim,
+  MarkersCollectedIntoABar,
+  QuoteCarriesThePassage,
+  UnresolvedStaysVisible,
+} from "./citation-ref.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#k6-citation-ref.
@@ -6,8 +12,10 @@ import type { ComponentDocs } from "@/lib/component-docs";
  * ship the seed text verbatim.
  *
  * No "use client" here: this module is plain data read by a Server Component
- * (component-docs.tsx). No examples sidecar — every do/don't here is a rule
- * about what you pass, not a layout worth rendering twice.
+ * (component-docs.tsx). Every do/don't here is about a marker sitting inside a
+ * real sentence, and each one needs an `onJumpToSource` handler to be worth
+ * opening, so the renders live in the ./citation-ref.examples client sidecar
+ * and arrive here as zero-prop elements.
  */
 export const CitationRefDocs: ComponentDocs = {
   whatItIs:
@@ -34,19 +42,45 @@ export const CitationRefDocs: ComponentDocs = {
   dos: [
     {
       text: "Pass the quoted chunk, not just the document name — the card exists so a reader can check the claim without leaving the answer.",
+      example: <QuoteCarriesThePassage />,
     },
     {
       text: "Render an unresolvable citation as `unresolved` and leave it in place, so the gap in sourcing stays visible.",
+      example: <UnresolvedStaysVisible />,
     },
   ],
   donts: [
     {
       text: "Don't gather markers into a citation bar under the paragraph — that tells a reader the paragraph came from somewhere without telling them which sentence.",
+      example: <MarkersCollectedIntoABar />,
     },
     {
       text: "Don't pass `quote` without `source`, or neither: a resolved citation always opens a card, so omitting both ships an empty popup over the claim.",
+      example: <EmptyCardOverTheClaim />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Every marker is one tab stop in every state. `loading` and `unresolved` markers are still real `<button>`s, just without an `onClick` — so Tab reaches a citation that does nothing when you press it, and nothing on the marker says so.",
+      "A `resolved` marker opens its card on keyboard focus as well as on hover: the underlying preview card wires a focus interaction, so Tab is enough to bring the quote up after the primitive's open delay. Escape closes it again.",
+      "There is no way into the card. The popup carries `tabIndex={-1}` and holds no controls, so the quote cannot be reached, selected or copied from the keyboard — Tab from the marker goes straight to the next word's citation.",
+      "Space and Enter activate a `resolved` marker and fire `onJumpToSource`. That is the only key that does anything; there is no separate shortcut for opening the source panel without leaving the sentence.",
+      "Markers are inline, so their tab stops are interleaved with the prose. A paragraph with eight citations is eight stops between it and whatever follows, and there is no way to skip them.",
+    ],
+    screenReader: [
+      "A `resolved` marker's accessible name is `label` alone — usually a bare number, announced as \"1, button\". It carries no `aria-expanded`, no `aria-describedby` and no `aria-details`, so nothing tells a reader that a card exists or links the marker to it.",
+      "The card is a portaled popup with no `role` — the preview-card primitive sets none and adds no relationship to the trigger. `source` and `quote` are announced only if the reader happens to browse to the end of the document where the portal lands, which in practice means the quote is invisible to assistive tech even though it is the reason the component exists.",
+      "Only `unresolved` gets a written name: \"Citation 4 — source unavailable\". It interpolates `label` only when `label` is a string, so a ReactNode label produces \"Citation  — source unavailable\" with a hole where the number should be.",
+      "`loading` announces as an ordinary button named by its label. There is no `aria-busy`, no `aria-disabled` and no live region, so a citation resolving from `loading` to `resolved` — or failing to `unresolved` — is announced as nothing.",
+      "The superscript is `align-super` styling, not a `<sup>` element, so no superscript semantics reach the accessibility tree in any state.",
+    ],
+    focus: [
+      "All three states ship `focus-visible:ring-2` on the marker, so every citation is visible on focus regardless of your global style.",
+      "Focusing a resolved marker opens its card and blurring closes it. The card never takes focus, so there is nothing to restore and no focus trap to escape.",
+      "`onJumpToSource` scrolls your source panel and moves no focus at all. Move it yourself to the chunk you scrolled to, or a keyboard user stays on the marker while the page moves underneath them.",
+      "`disabled` reaches the marker through the native button props, and a disabled button takes no focus and dispatches no hover events — so a disabled `resolved` citation keeps its card mounted in the tree with no way to open it.",
+    ],
+  },
   pitfalls: [
     "Only `resolved` builds a preview card and only `resolved` calls `onJumpToSource`. In `loading` and `unresolved` the marker renders bare — but it is still a `<button>`, so it stays in the tab order and a keyboard user can focus a citation that does nothing on activation.",
     'The `unresolved` accessible name ("Citation 4 — source unavailable") only interpolates `label` when `label` is a string. Pass a plain string; a ReactNode label produces a name with a hole in it.',

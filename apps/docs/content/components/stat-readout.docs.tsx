@@ -98,6 +98,26 @@ export const StatReadoutDocs: ComponentDocs = {
       ),
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The readout has exactly as many tab stops as it has copyable items with a value. Mark nothing `copyable` and it is entirely inert; mark six fields copyable and the reader tabs through six controls to get past a block of read-only text.",
+      "The copy control is a real `<button type=\"button\">`, so Space and Enter fire it. Nothing else is bound — no arrow-key movement between rows, no select-all, no Escape, and no keyboard route to the value itself other than reading it.",
+      "A copyable item with an undefined value renders no button rather than a disabled one, so the tab count changes with the data. Do not key a test or a layout on the control being there.",
+      "There is no `disabled` prop anywhere in this component. If a value must not be copied, leave `copyable` off — there is no inert state to fall back on.",
+    ],
+    screenReader: [
+      "It is a real `<dl>` with `<dt>`/`<dd>` pairs, so each value is programmatically the description of its label and a row announces as \"Seed, 884201773\" rather than as two loose runs of text. That association survives `columns={1}`, where the grid stacks but the markup does not change.",
+      'A missing value is an em-dash character, which most screen readers announce as "dash" or skip entirely. It reads as deliberate on screen; through audio it can read as an empty cell, so do not rely on it to communicate "not set" where that fact matters.',
+      'Every copy control is labelled with the bare string "Copy" — the label is not scoped to its row. A readout with a copyable seed and a copyable sampler gives two buttons with the same name and nothing to tell them apart in a screen reader\'s element list. Until that is fixed here, keep copy on one field per readout wherever it matters.',
+      'The glyph inside the copy button is `aria-hidden`, so the name is the `aria-label` alone; there is no visible text on the control for a voice-control user to say beyond "Copy".',
+      "Copying announces nothing. There is no live region and no confirmation, and the clipboard write is optional-chained and unawaited — in a non-secure context or with the permission denied, the click is a silent no-op that assistive tech reports exactly as it reports a success.",
+      "`label` and `value` are both `ReactNode`, so an element in either is announced by name-from-content — but `String(value)` is what reaches the clipboard, and an element stringifies to `[object Object]`. What is heard and what is pasted can therefore differ.",
+    ],
+    focus: [
+      "Nothing here moves focus, but the rows are keyed by array index (`key={i}`), so removing or reordering `items` does not move the DOM — it rewrites it in place. Focus stays on the button at that position, which now belongs to a different stat, and because every copy button is named \"Copy\" nothing announces the swap.",
+      "The copy control ships its own `focus-visible:ring-2`. It is the only focusable element here, so the readout has a visible focus style without any work at the call site.",
+    ],
+  },
   pitfalls: [
     "A copyable item loses its copy control the moment its value is undefined — the guard is deliberate (there is nothing to put on the clipboard) but it means the row silently changes shape, so do not key a test or a layout on the button being there.",
     'Every copy control is labelled "Copy", with nothing identifying its row. A readout with a copyable seed and a copyable sampler gives a screen reader user two buttons with the same name and no way to tell them apart; until the label is row-scoped here, keep copy on a single field per readout where that matters.',

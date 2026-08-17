@@ -75,6 +75,30 @@ export const WhatsNewDocs: ComponentDocs = {
       example: <UnreadDotAlone />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Closed, it is one tab stop: the trigger — and none at all when you pass `trigger={null}` and drive `open` yourself.",
+      "Open, it is three, plus the selected entry's call-to-action when it has one: the entry list (a roving tablist, so all of it is one stop however many entries there are), the scrollable detail pane, and the dialog's close button. Anything focusable inside `media` adds its own stops on top.",
+      "The list is a vertical tablist: Up and Down move between entries, Home and End reach the ends, and focus loops past either end.",
+      "Selection is manual, not automatic — `activateOnFocus` is left at its default of `false`. Arrowing through the list moves focus without switching the detail pane, and Enter or Space commits. `onSelect` and `onEntryRead` therefore do not fire while a keyboard user is browsing, which is the right behaviour but not the one most changelogs have.",
+      "Escape closes the dialog, as does a click on the backdrop. Nothing here can be disabled: there is no `disabled` on an entry or on its CTA.",
+      "The close button sits at the top right but is last in the DOM, so it is the final tab stop rather than the first.",
+    ],
+    screenReader: [
+      "The trigger's unread count is never a bare number: the badge renders the count followed by visually hidden \"unread\", so it announces as \"What's new, 3 unread\".",
+      "The two panes are a real tablist and tabpanel, with `aria-label=\"Updates\"` on the list and each panel associated with its own tab — not two columns that merely look related.",
+      "An entry's name is built from everything in the row: the title, then visually hidden \"Unread\" when it is unread, then the date. Unread survives as text rather than as a colour or an ARIA state, but it also means every entry announces its date, which makes a long list slow to arrow through.",
+      "`stage` is a plain badge with no label of its own, so \"Beta\" arrives as a loose word ahead of the date.",
+      "`media` is whatever you pass, and nothing wraps, labels or hides it. An `<img>` with no `alt` inside it announces as an unnamed image in the middle of the entry — the hero media is the part that does the explaining, so describing it is entirely on you.",
+      "Nothing announces that the detail pane changed. Committing a different entry replaces the panel's whole contents with no live region anywhere in the component; the reader finds out by tabbing into the pane.",
+      "The entry heading inside the pane is a fixed `<h3>` under the dialog's own title, so this contributes two heading levels you do not choose.",
+    ],
+    focus: [
+      "Opening the dialog moves focus to the selected entry's tab — the first tabbable element inside it — and traps focus there. Closing returns focus to the trigger, unless you passed `trigger={null}`, in which case there is no return target and focus falls to `<body>`.",
+      "Committing a different entry leaves focus on the tab and never moves it into the pane, so the reader is one Tab away from content that has silently changed underneath them.",
+      "The detail pane is a tab stop with no visible focus indicator: it carries `outline-none` and no replacement ring. The tabs draw `focus-visible:ring-2`, and the CTA and close button inherit the shared `Button` ring, so the scrollable pane is the one place a keyboard user can land and see nothing.",
+    ],
+  },
   pitfalls: [
     "Expecting the component to remember what was read. It holds no storage: `onEntryRead` fires, you persist. Ignore the callback and the badge never moves.",
     "Assuming a read is only reported on click. The entry showing when the dialog opens has been read too, so it reports as well — otherwise a reader who opens the dialog, reads the top entry and closes it would carry that dot forever. Ignore the first call of an open session if you want clicks only.",

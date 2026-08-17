@@ -61,6 +61,31 @@ export const ReferenceStripDocs: ComponentDocs = {
       example: <EmptySlotCollapsedAway />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The whole-strip empty state is at most one tab stop — the Add reference button — and is not a carousel at all: no region, no arrow keys, no previous/next.",
+      "With at least one item the strip becomes a Carousel: two stops for Previous and Next, plus up to three per slot (remove, move left, move right). Six filled, reorderable slots is twenty stops.",
+      "Arrow Left and Right scroll the strip. The handler sits on the root in the capture phase and calls `preventDefault`, so it fires from anywhere inside — every focusable descendant here is a button, so nothing conflicts today, but a text field or slider nested in a slot would lose its arrow keys to the strip.",
+      "Move buttons are `disabled` at each end and Previous/Next are disabled when there is nothing to scroll to, so those stops disappear rather than sitting there inert. The first slot is one move stop, not two.",
+      "An empty slot is focusable only when `onAdd` is passed. Without it `preview-tile` renders a `<div>`, so the placeholder advertises a typed input that can be filled by neither keyboard nor mouse.",
+      "A filled slot's tile is never interactive — no `onSelect` is passed to it — so the image cannot be opened or previewed. Remove and reorder are everything a slot does.",
+    ],
+    screenReader: [
+      "`Carousel` gives the strip `role=\"region\"` and `aria-roledescription=\"carousel\"` but no accessible name, so it announces as an unnamed carousel. Each slide is a `role=\"group\"` with `aria-roledescription=\"slide\"` and no name either.",
+      "Remove and reorder names are built from `typeof roleLabel === \"string\"`, falling back to the bare word \"reference\". Two cases hit that fallback: an item with neither `role` nor `label` — the plain multi-reference strip — and a `label` passed as an element rather than a string. In both, every remove button announces \"Remove reference\" and every reorder button \"Move reference left\".",
+      "Where roles are set the names are good: \"Remove First frame\", \"Move Character right\", and the visible role sits below the tile as real text rather than a colour or an icon.",
+      "`thumbnail.alt` is the image's accessible name and the only thing separating two filled slots that share a role. That is why it is required rather than optional.",
+      "`state=\"failed\"` replaces the image with the words \"Couldn't load\" inside the frame — words, not colour — but it is not a live region, so a slot that fails after upload announces nothing. `state=\"loading\"` announces nothing either: the skeleton is a plain `<div>` with no busy state on it.",
+      "An empty slot announces as a toggle button that is not pressed, named \"Add\" or by its role label. `preview-tile` puts `aria-pressed` on any interactive frame, and attaching a reference is not a toggle.",
+      "Nothing announces a reorder. After Move right the DOM order changes silently, and the user has to re-read the strip to find where the item went.",
+    ],
+    focus: [
+      "Reordering to either end disables the button that was just pressed — the last Move right on the last slot, the first Move left on the first — and a focused element that becomes disabled is blurred, so focus drops to `<body>`. Move focus to the sibling move button inside your `onMove`.",
+      "Removing a slot unmounts its remove button, and removing the last one replaces the whole Carousel with the empty panel. Focus falls to `<body>` in both cases.",
+      "Previous and Next scroll the strip without moving focus, so the focused slot and the visible slots can disagree — a Tab through the strip will reach slots that are scrolled off screen.",
+      "Every button here is the shared `Button` and carries its focus ring; an empty slot's tile uses `preview-tile`'s own `focus-visible:ring-2` instead.",
+    ],
+  },
   pitfalls: [
     "Removing the first frame and letting the next reference silently be promoted into that role — remove is per-slot and must never re-derive a different item's role as a side effect (D2).",
     "Hand-rolling a scrolling row with overflow-x-auto instead of the Carousel base — that loses the visible next affordance and the keyboard-reachable region, and axe's scrollable-region-focusable rule has already caught this exact class of bug once in this repo.",

@@ -58,6 +58,27 @@ export const AppSidebarDocs: ComponentDocs = {
       example: <EmptyPromoPlaceholder />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The sidebar contributes no tab stops of its own — every one belongs to what you put in the four slots. The count is therefore whatever your switcher, nav, promo and footer add up to, and it does not shrink at icon-rail width: collapsed nav buttons stay focusable, only their labels stop being visible.",
+      "The rail is `tabIndex={-1}`. The one collapse affordance this component renders is pointer-only, so the keyboard path to collapsing is either the provider's shortcut or a `SidebarTrigger` you place yourself — this component renders none.",
+      "`SidebarProvider` installs a global Cmd/Ctrl+B listener on `window` and calls `preventDefault()` unconditionally. It fires while focus is in a text field, so it takes Cmd+B away from every rich-text editor on the page whether or not the sidebar is on screen.",
+      "Under the mobile breakpoint the sidebar becomes a modal sheet: focus is trapped inside it, Escape closes it, and the nav behind it is inert until it does.",
+      "There is no arrow-key navigation between slots and no shortcut into the sidebar. Reaching the footer from the page body means tabbing through the whole nav.",
+    ],
+    screenReader: [
+      "This component adds no landmark. `SidebarContent` is a plain `div`, so whatever fills `nav` has to bring its own `<nav>` — `sidebar-nav` and `thread-list` do, which is why wrapping them in a second one produces two nested landmarks with the same name.",
+      "Collapsing to the icon rail keeps every nav label in the accessible tree — the labels are clipped by width, not removed — so the rail announces exactly like the expanded sidebar.",
+      "The promo slot is the exception: it is `display: none` at icon-rail width, so a quota warning or upgrade prompt leaves the accessible tree entirely and silently the moment the sidebar collapses.",
+      "The mobile drawer is a dialog titled \"Sidebar\" with the description \"Displays the mobile sidebar\", both visually hidden and both fixed by the vendored primitive. Neither can be renamed through this component, so every product's drawer announces the same generic title.",
+      "The rail is labelled \"Toggle Sidebar\" and carries no `aria-expanded`, so its state is never announced — and the same is true of `SidebarTrigger`. Nothing anywhere says whether the sidebar is now open or closed.",
+    ],
+    focus: [
+      "Collapsing to the icon rail while focus is inside the promo slot drops focus to `<body>`, because that slot is removed from the layout rather than hidden. Focus inside the nav survives, since those controls stay mounted.",
+      "Opening the mobile drawer moves focus into it and closing it returns focus to whatever opened it — that is the sheet primitive's behaviour, not this component's.",
+      "The sidebar defines no focus ring of its own. Every visible focus style comes from the components you pass into the slots.",
+    ],
+  },
   pitfalls: [
     "Mounting AppSidebar without a SidebarProvider ancestor — every slot inside it (and the rail/trigger) reads sidebar state from that context and throws immediately without it.",
     "Assuming a narrow wrapping element triggers the mobile drawer. The width check reads the real browser viewport, not a parent container's width, so a cramped preview pane doesn't switch AppSidebar into mobile-drawer mode on its own.",

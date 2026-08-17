@@ -57,6 +57,28 @@ export const AccountMenuDocs: ComponentDocs = {
       example: <ColorOnlySwatchesWrong />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Closed, the whole component is one tab stop: the avatar trigger. Enter, Space or Down opens the menu, and from there Tab is the dismissal key rather than the navigation key — everything inside is reached with the arrows.",
+      "Up and Down walk the rows, typing a letter jumps to a matching one, Right opens the Appearance submenu, Left closes it, and Escape closes whatever is open.",
+      "The theme options are real `menuitemradio`s, so Up and Down both move and select. Choosing one deliberately leaves the menu open — a radio row does not close on click, unlike the `items` rows and sign-out, which do.",
+      "The background swatches are a standalone `RadioGroup`, not menu items, so the menu's arrow walk never registers them and never lands on one. In practice they are pointer-only: there is no key that moves the highlight from the theme list onto the swatch row.",
+      "`shortcut` is drawn, not bound. The component registers no key handler at all, so every hint it renders is a promise your own app has to keep.",
+    ],
+    screenReader: [
+      "The trigger's whole name is `aria-label=\"Account menu for <user.name>\"`. The avatar beside it — image or initials — is `aria-hidden`, so a blank or placeholder `name` leaves the only visible control on the surface effectively unnamed.",
+      "The identity block is a plain `div`, not a menu item. Name and email never appear in the arrow-key walk; a screen reader meets them only when reading the popup as a document.",
+      "Each background swatch is named by `aria-label={option.label}` and by nothing else — its colour contributes no name. A background option added without a `label` announces as an unnamed radio in a group of five.",
+      "The `kbd` hints are `aria-hidden`, so a row with a shortcut announces exactly like a row without one.",
+      "Sign-out's `variant=\"destructive\"` is paint only. It announces identically to every other item, so the wording of `signOutLabel` is the only thing marking it as terminal.",
+      "Nothing announces an outcome. Changing theme or background updates a radio's checked state and calls your handler; there is no live region, so the appearance change itself is silent.",
+    ],
+    focus: [
+      "Closing the menu — by choosing a row, by Escape, or by clicking away — returns focus to the avatar trigger, so a decision never strands you at the top of the page.",
+      "Left out of the Appearance submenu puts the highlight back on the Appearance row rather than dropping it.",
+      "The trigger ships its own `focus-visible:ring-2`. Everything inside inherits the menu primitive's highlight styling, so a swatch focused by pointer shows the radio's own ring and not the menu's.",
+    ],
+  },
   pitfalls: [
     "Skipping the `shortcut` prop on a row that genuinely has a keyboard shortcut — an unlisted shortcut is a shortcut nobody learns, so the row must show it via `kbd`, not omit it for tidiness.",
     "Reaching for the menu's built-in radio item (with its filled-background checked state) for background swatches — the checked state has to be a border/ring so the swatch keeps showing its own colour. Use the standalone Radio primitive there, not `DropdownMenuRadioItem`.",

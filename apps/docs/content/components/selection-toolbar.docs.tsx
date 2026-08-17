@@ -72,6 +72,30 @@ export const SelectionToolbarDocs: ComponentDocs = {
       example: <ToneAsFiveButtons />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      'The whole bar is **one** tab stop, however many verbs are in it. It is a `role="toolbar"` with a roving tabindex, so Tab enters and leaves; Left and Right move between buttons inside, and they wrap at both ends.',
+      "Order along the bar is fixed: Improve, then Shorten and Expand and any `actions` you added, then Tone, then Custom prompt, then the overflow trigger. Tone and Custom prompt sit before overflow because they are children of the bar rather than rows in `actions`.",
+      "Space and Enter activate a verb. Tone opens a menu — Up and Down move through tones, typeahead jumps, Escape closes and returns focus to the Tone button. Custom prompt opens a popover; Escape closes that too.",
+      "In the prompt popover, Cmd/Ctrl+Enter submits and plain Enter inserts a newline. The Submit button is natively `disabled` while the instruction is empty, so it is not focusable at all until you have typed something.",
+      '`pending` does **not** remove the verbs from keyboard travel. Base UI\'s toolbar buttons stay focusable when disabled and report `aria-disabled="true"` rather than the native attribute, so an in-flight bar can still be arrowed through and its buttons still take focus — they simply refuse to fire.',
+    ],
+    screenReader: [
+      'The bar announces as a toolbar named "AI writing tools" by default, overridable through `label`. That name matters more than it looks: a canvas can hold several toolbars and the name is the only thing that tells them apart.',
+      'Improve, Shorten and Expand draw their labels, and every icon — including the in-flight spinner, which replaces the icon inside the same `aria-hidden` wrapper — is hidden from assistive tech. So a button\'s name does not change while its request is running: "Shorten" stays "Shorten", now `aria-disabled`.',
+      '`selection-toolbar-status` is an always-mounted `role="status"` region and is the only thing that reports work starting. It announces the verb and the contract in one breath — "Shortening the selection. The result will arrive as a change you can review" — which is deliberate: without the second sentence a user is left expecting their paragraph to change underneath them.',
+      "If your host never sets `pending`, that region stays empty and choosing a verb is announced as nothing at all. The bar has no other feedback path.",
+      'The custom-prompt popover is a dialog named by its title, with the quoted selection as its description — so entering it announces "Custom instruction" and then the snippet being rewritten. The textarea takes its name from `promptPlaceholder` via `aria-label`, which is why the placeholder and the name are the same string rather than the placeholder standing in for a label.',
+      "The tone submenu is a menu of `menuitem`s named by their tone labels. Nothing marks the current tone as chosen — this is a menu that fires an intent, not a set of radios, so no tone is ever reported as selected.",
+    ],
+    focus: [
+      "Closing either popup returns focus to the button that opened it — the Tone button after picking a tone, the Custom prompt button after submitting. That is Base UI's doing and it is correct.",
+      "The bar does not take focus when it appears over a selection. A keyboard user has to Tab to it, and where it lands in the tab order is wherever your editor renders it.",
+      "Nothing here moves focus to the result. When the rewrite comes back as a `diff-review`, moving focus to it is the host's job.",
+      "`pending` arriving while a verb has focus does not steal it, because the buttons are `aria-disabled` rather than natively disabled. This is the one place in the family where a busy state does not drop focus to `<body>`.",
+      "Every button is a vendored `Button` and ships a `focus-visible` ring.",
+    ],
+  },
   pitfalls: [
     "Expecting the bar to position itself. Like the context toolbar underneath it, this component expresses `placement` but never measures the viewport — the editor knows where the selection is, so the editor decides above or below and must keep the bar off the text it belongs to.",
     "Forgetting that Tone and Custom prompt occupy two of the eight slots. Extra `actions` overflow into the menu sooner than you would expect, which is deliberate: the ceiling counts buttons the user can see, not rows you passed in. Pass `tones={[]}` if your product has no tone list and you want the slot back.",

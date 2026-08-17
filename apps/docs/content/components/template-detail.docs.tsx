@@ -55,6 +55,33 @@ export const TemplateDetailDocs: ComponentDocs = {
       example: <DeadEndModal />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Escape closes the modal and Tab is trapped inside it — the page behind is inert until it closes. The close button is rendered after everything else, so it is the last stop in the ring, not the first.",
+      "The stop count is entirely data-driven: one per preview thumbnail plus two carousel arrows (only when there is more than one preview), one for follow (only with an `author`), one per option select, one per related tile, and the commit. A template with six previews, three options and four related tiles is sixteen stops before the close button.",
+      "Inside the thumbnail strip, Left and Right scroll the strip rather than moving between thumbnails. The carousel captures those keys and calls `preventDefault`, so arrowing does not change which preview is current — that still takes Tab and then Enter or Space.",
+      "The option selects are Base UI selects with their own keyboard model: Enter or Space to open, arrows to move through choices, Escape to dismiss the popup without changing the value. Escape there closes the select, not the dialog.",
+      "The commit button takes the native `disabled` attribute when you pass no `onUseTemplate`, which removes the modal's primary action from the tab order entirely rather than rendering it as inert-but-reachable.",
+      "There is no keyboard route from a related tile to \"open this template in a new modal\" and no Backspace-style way back to the previous one. Swapping is one-way; the only exit is Escape or the close button.",
+    ],
+    screenReader: [
+      "The dialog is named by its visible template title through `aria-labelledby`, not by a hidden string, so it opens as, for example, \"Quarterly report deck, dialog\". Losing that wiring is the `aria-dialog-name` failure this repo has shipped before.",
+      "Swapping to a related template is announced by a visually hidden `role=\"status\"` reading \"Showing <title>\". That is the only thing marking the swap — every visible part of the modal changes at once with no navigation, so without it the change would be silent.",
+      "Each thumbnail's accessible name is its `label`, which is why `label` is required. The current one carries `aria-current=\"true\"`, a real programmatic state rather than only a ring, so \"which preview am I looking at\" is answerable without sight of the selection.",
+      "The hero preview itself has no accessible name at all: it renders with `labelPlacement=\"none\"` and its `media` is meant to be decorative (`alt=\"\"`). The current preview is identifiable only through the thumbnail's `aria-current`, so a template with one preview — and therefore no strip — presents no preview to assistive tech whatsoever.",
+      "The follow control is a toggle with `aria-pressed`, named per author: the visible word is \"Follow\", and a sibling `sr-only` span carries \"Follow Marta Lin\". They are split rather than concatenated on purpose — a trailing hidden span would have produced \"FollowMarta Lin\". The avatar beside it is `aria-hidden`.",
+      "Each option is a labelled select through `field-row`, so the control announces as \"Size\" rather than as its current value. An option's `hint` is a gap: `field-row` hands the render function a `describedBy` id, and this component does not pass it on, so a hint is visible text that no select is described by.",
+      "Related tiles are named by the template title through the tile's own label, and \"Options\" and \"More like this\" are real `<h3>` headings under the dialog's `<h2>` title — so heading navigation works inside the modal.",
+      "The carousel's arrows are labelled \"Previous slide\" and \"Next slide\" from the vendored primitive, which says nothing about previews or about this template. They are the two least identifiable controls in the dialog.",
+    ],
+    focus: [
+      "Opening the modal moves focus into it and closing returns it to whatever opened it — standard dialog behaviour, and the safe part.",
+      "Picking a related template is not safe. The tile you activated is removed from the grid (the current template is excluded from its own \"more like this\"), and nothing in this component restores focus — there is no focus call anywhere in the file. The modal stays open, which is the whole guarantee, but a keyboard user's place in it does not survive the swap. Take focus to the new title yourself if you can reach it.",
+      "Choosing a preview is safe: the thumbnail stays mounted and only `aria-current` moves, so focus and position survive. Same for the follow toggle and the option selects, which re-render in place.",
+      "Swapping to a template with a single preview unmounts the entire strip, and swapping to one with no author unmounts the follow control — so the number of tab stops before the commit button changes between templates in the same modal.",
+      "Every control ships a visible focus style: the thumbnails and related tiles through their own `focus-visible:ring-2`, everything else through the vendored `Button`'s `focus-visible:ring-3`.",
+    ],
+  },
   pitfalls: [
     "A related tile can only render for a template that is actually in `templates`. Ids in `relatedIds` that are not in the pool are dropped silently, so a missing tile usually means a missing pool member rather than a rendering bug.",
     "Omitting `relatedIds` means every other pool member qualifies. That is the right default for a small hand-picked pool and the wrong one for a pool you built by dumping a search result into the prop — narrow it explicitly when the pool is large.",

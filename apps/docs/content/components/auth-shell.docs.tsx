@@ -74,6 +74,32 @@ export const AuthShellDocs: ComponentDocs = {
       example: <UnavailableProviderIsJustDimmed />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab order follows reading order, not the visual split: the providers first, one stop each, then the email field, its submit, the mode switch when `onModeChange` is given, then the terms and privacy links. The pitch pane comes last whichever side `marketingSide` puts it on, because L6 renders it after the question and moves it with `order`.",
+      "L6's Back, Skip and primary buttons are suppressed with `display: none`, which removes them from the tab order as well as from the screen. That is the whole point of the suppression — but it is CSS, so a `className` that fights those two utilities puts three dead controls back into the tab order.",
+      "A provider marked `disabled` is a real `<button disabled>` — the shell always hands A9 a handler so it takes its button branch — so Tab skips it entirely, and its written reason is reachable only in a screen reader's browse mode.",
+      "Enter in the email field submits the form: the shell prevents the default and calls `onEmailSubmit`. The field is `required`, so an empty Enter raises the browser's own validation bubble rather than anything the component draws.",
+      "The provider list is a `role=\"group\"`, not a listbox or a radiogroup, so arrow keys do nothing and there is no roving focus. Ten providers is ten tab stops before the email field.",
+      "Nothing responds to Escape. There is no dismissable surface here.",
+    ],
+    screenReader: [
+      "The provider list is a named group — `providersLabel`, defaulting to \"Sign-in providers\" or \"Sign-up providers\" from `mode`.",
+      "Each row's accessible name is everything A9 puts inside the button: the title, the description and the trailing slot together. \"Continue with Google, you@northwind.com, Last used\" is one name. Titling a row with the vendor alone gives you a button named \"Google\", which announces a brand rather than an action.",
+      "A9 does not `aria-hidden` its icon slot. A provider mark that carries a `<title>`, an `alt`, or an `aria-label` is therefore prepended to that same name — pass genuinely decorative markup, or hide it yourself.",
+      "A disabled provider's `disabledReason` is inside the same button, so \"unavailable\" is spoken as words alongside the disabled state rather than signalled by dimming. A9 truncates the description to one line visually; the full string is still in the accessible name.",
+      "The email field has a real `<label>` wired with `htmlFor`, plus `type=\"email\"` and `autoComplete=\"email\"`.",
+      "The heading is L6's `<h3>`. On a page whose only content is this shell, the main heading announces at level three with no h1 or h2 above it, so heading navigation lands mid-outline. Give the page its own h1 if that matters to you.",
+      "L6's progress bar is suppressed along with the nav, so nothing announces a step count — which is correct here, since there is only one step.",
+      "The legal links are plain anchors named by `terms.label` and `privacy.label`, painted at foreground contrast rather than muted, because that is the one line on the screen that has to stay readable.",
+      "Nothing announces the outcome of picking a provider or submitting an address. There is no live region anywhere in the shell, so an async handler needs its own status message.",
+    ],
+    focus: [
+      "L6 moves focus to its heading when the step id changes. This shell has one step whose id never changes, so that never fires: the shell steals no focus on mount and moves none of its own.",
+      "Switching mode re-renders the same tree with different copy. The mode-switch button stays mounted and keeps focus, but its label flips under the user — \"Create an account\" becomes \"Sign in\" — with nothing announcing the change and no focus move to the new heading.",
+      "Provider rows, the email field, the submit and the mode switch all carry the shared primitives' `focus-visible` ring. The two legal links carry none of their own, so they fall back to whatever outline your app provides.",
+    ],
+  },
   pitfalls: [
     "L6 is a wizard, so it always draws a progress rail and a Back / Skip / primary footer. This screen has one step and nothing to skip, so the shell suppresses both with a descendant variant on L6's root — `display:none`, which takes those three controls out of the tab order and the accessibility tree as well as off the screen. If you pass a `className` that fights those two utilities, three dead buttons come back. The real fix belongs in L6: a `progress={false}` / `nav={false}` opt-out so a single-step split-panel surface can compose it without an override at all.",
     "L6 paints its panel `bg-muted`, and this token set's muted foreground measures 4.34:1 against that surface — under the 4.5:1 minimum. Anything you drop into `marketing` brings its own `text-muted-foreground` with it, and styling this shell's slots cannot reach inside a component you passed in. The marketing region therefore rebinds `--muted-foreground` to the plain foreground for its whole subtree. Keep that rebind if you re-wrap the pane, and do not re-add `text-muted-foreground` to anything you put in it expecting it to be quiet.",

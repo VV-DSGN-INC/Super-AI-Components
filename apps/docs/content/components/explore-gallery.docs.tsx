@@ -23,17 +23,41 @@ export const ExploreGalleryDocs: ComponentDocs = {
   evidence: ["Midjourney Explore", "Spline Community", "Pixlr", "Canva templates"],
   anatomy: [
     { slot: "explore-gallery", note: "Root. Reflects the active sort, type and layout as data attributes." },
-    { slot: "explore-gallery-prompt", note: "The docked prompt bar (D1 media-prompt-bar), always above the feed." },
-    { slot: "explore-gallery-controls", note: "Holds the two filter axes as two stacked controls, never one row." },
-    { slot: "explore-gallery-sorts", note: "Axis one: the sort tablist. Reorders everything, removes nothing." },
+    {
+      slot: "explore-gallery-prompt",
+      note: "The docked prompt bar (D1 media-prompt-bar), always above the feed.",
+    },
+    {
+      slot: "explore-gallery-controls",
+      note: "Holds the two filter axes as two stacked controls, never one row.",
+    },
+    {
+      slot: "explore-gallery-sorts",
+      note: "Axis one: the sort tablist. Reorders everything, removes nothing.",
+    },
     { slot: "explore-gallery-sort", note: "A single sort tab." },
-    { slot: "explore-gallery-types", note: "Axis two: the type pill group (A4 choice-chips). Narrows, never reorders." },
-    { slot: "explore-gallery-feed", note: "The scrollable region — the tab panel when sorts exist, a labelled region when they don't." },
-    { slot: "explore-gallery-masonry", note: "The tile list itself: CSS columns in masonry layout, a grid in rows layout." },
+    {
+      slot: "explore-gallery-types",
+      note: "Axis two: the type pill group (A4 choice-chips). Narrows, never reorders.",
+    },
+    {
+      slot: "explore-gallery-feed",
+      note: "The scrollable region — the tab panel when sorts exist, a labelled region when they don't.",
+    },
+    {
+      slot: "explore-gallery-masonry",
+      note: "The tile list itself: CSS columns in masonry layout, a grid in rows layout.",
+    },
     { slot: "explore-gallery-item", note: "One tile. Owned by this component, not by preview-tile." },
-    { slot: "explore-gallery-item-media", note: "The variable-height media box; carries the item's own aspect ratio." },
+    {
+      slot: "explore-gallery-item-media",
+      note: "The variable-height media box; carries the item's own aspect ratio.",
+    },
     { slot: "explore-gallery-item-type", note: "Type badge on the tile, mirroring the type pills." },
-    { slot: "explore-gallery-item-actions", note: "Hover- and focus-revealed tile actions, including Remix." },
+    {
+      slot: "explore-gallery-item-actions",
+      note: "Hover- and focus-revealed tile actions, including Remix.",
+    },
     { slot: "explore-gallery-item-meta", note: "Title, author and metric under the media." },
     { slot: "explore-gallery-status", note: "Live region announcing how much of the feed has loaded." },
     { slot: "explore-gallery-load-more", note: "The keyboard-reachable next-page control." },
@@ -60,8 +84,31 @@ export const ExploreGalleryDocs: ComponentDocs = {
       example: <ScrollOnlyFeed />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "A tile is one tab stop for its open button, plus one more if it has a `prompt` (the Remix button) and one per node you put in `actions`. A thirty-tile feed where every item carries a prompt is sixty tab stops before the Load more button.",
+      "The tile actions are `opacity-0`, never `hidden`, so they stay in the tab order and `group-focus-within` brings them into view the moment anything inside the tile takes focus. Tabbing through the feed reveals the Remix button rather than passing an invisible one.",
+      'The sort tabs are a real tablist: one tab stop, Left and Right move between sorts. The type pills are not — A4 `choice-chips` announces `role="radiogroup"` but ships no roving tabindex, so every pill is its own tab stop and the arrow keys a radio group promises do nothing.',
+      'The feed adds a tab stop of its own in front of the first tile. The scroll container is the tab panel, or a `role="region"` with `tabIndex={0}` when there are no sorts, which is what keeps a scrollable region keyboard-reachable at all.',
+      "In the docked prompt, Enter submits and Shift+Enter inserts a newline. Nothing else is bound: there is no Escape, no shortcut onto Remix, and no route to page two other than tabbing to the Load more button.",
+    ],
+    screenReader: [
+      'A tile\'s open button is named `"<openLabel> <title>"` through `aria-label`, so it announces as "Open Neon city" whatever the media inside it is. That label also overrides the `alt` of an `<img>` you pass as `media` for naming purposes, though the image stays reachable inside the button.',
+      'The Remix button is named `"<remixLabel>: <title>"` and points at the prompt bar with `aria-controls`, so it says both which tile it belongs to and which field it fills.',
+      "The type badge is `pointer-events-none` but not `aria-hidden`, so a tile's type is announced after its open button as a loose word. Author and metric are plain text in the meta row and are announced the same way.",
+      '`explore-gallery-status` is a `role="status"` live region carrying "N of M shown", or `loadingLabel` while a page is in flight. It is the only thing in the feed that announces on its own, so a page landing is heard as a new count and never as "twelve new items".',
+      'The list carries an explicit `role="list"`, because `list-none` strips list semantics in some browsers. The item count is how a listener knows how much feed they are in, which is why a stale `totalCount` actively misleads rather than merely being untidy.',
+      'The scrollable feed is named — `feedLabel` when there are no sorts, the active tab\'s own name when there are. Two feeds on one page with the default both announce as "Community feed".',
+      "Sorting and filtering are silent. Changing the sort or a type pill re-renders the list with no announcement beyond the control's own state, and the count only moves once the host hands back a different `items` array.",
+    ],
+    focus: [
+      "Remix seeds the prompt without moving focus to it. The user stays on the tile, and the field they just filled sits above the feed in DOM order — reaching it means Shift+Tab back past every tile in between. Move focus to the prompt in your `onRemix` if Remix is meant to be one gesture.",
+      "Load more keeps focus on itself while `hasMore` stays true, which is the good case. When the last page lands and `hasMore` flips to false the button unmounts under the focus, so focus falls to `<body>` and the next Tab restarts from the top of the page.",
+      "The open button, the Load more button and the feed region each carry their own `focus-visible` ring. Anything you pass in `actions` carries whatever ring you gave it, and a tile action with none is invisible on focus even though `group-focus-within` has just revealed it.",
+    ],
+  },
   pitfalls: [
-    "Masonry layout uses CSS columns, so tiles flow down the first column before starting the second. That keeps DOM order and reading order identical, but it means position on screen does not track rank: with three columns, the second-hottest item sits near the bottom-left rather than beside the first. When the sort is genuinely the message — a leaderboard, an editorially ranked feed — switch `layout` to \"rows\", which keeps unequal tile heights but lays them out left-to-right so rank and position agree.",
+    'Masonry layout uses CSS columns, so tiles flow down the first column before starting the second. That keeps DOM order and reading order identical, but it means position on screen does not track rank: with three columns, the second-hottest item sits near the bottom-left rather than beside the first. When the sort is genuinely the message — a leaderboard, an editorially ranked feed — switch `layout` to "rows", which keeps unequal tile heights but lays them out left-to-right so rank and position agree.',
     "Swapping the tile for A8 preview-tile. It is the load-bearing primitive everywhere else in the registry and reaching for it here is the obvious 'cleanup' — but A8 exists to fix the frame to one aspect ratio, and this component exists because the heights vary. Composing it would turn the feed back into a uniform grid, which is C4 recent-grid, which already exists.",
     "Passing the same `aspectRatio` for every item (or omitting it, which defaults to square). The layout still renders, but every tile is the same height and the feed reads as a grid — the exact outcome the component is shaped to avoid.",
     "Controlling `promptValue` from the host and forgetting to update it in the `onPromptValueChange` handler. Remix reports the seeded prompt through that callback; if the controlled value never changes, the bar stays empty and the tile action appears to do nothing.",

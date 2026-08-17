@@ -61,6 +61,29 @@ export const RecordListDocs: ComponentDocs = {
       example: <ToggleHiddenInTheMenu />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One to three tab stops per row: the title (focusable only when you pass `href` or `onOpen` — with neither it is a `<span>`), the enable switch, and the overflow trigger (present only when that record has `actions`). Ten records is anywhere between ten and thirty stops.",
+      "`toggleDisabled` puts a real `disabled` on the switch, so it leaves the tab order entirely. The control stays visible and greyed, which is the point, but a keyboard user tabs straight past the row's primary control.",
+      "Space toggles the switch; Enter or Space opens the overflow menu, and inside it the vendored Base UI `DropdownMenu` supplies arrow keys, Home/End, typeahead and Escape.",
+      "The `<tr>` is inert and handles no keys. There is no arrow-key movement between rows, no Home/End to the first or last record, and no way to activate a row other than the title itself.",
+      "No column is sortable and none is focusable — the header is four plain `<th>`s.",
+    ],
+    screenReader: [
+      "The table is named by an sr-only `<caption>` carrying `label` (default \"Records\") and has four column headers: Record, Apps, Enabled, and an sr-only \"Actions\". In a screen reader's table mode, \"Enabled\" is therefore announced alongside each switch.",
+      "The app cluster is a `<ul>` named \"Apps in <title>\". Each mark is `aria-hidden` and each name sits in sr-only text beside it, so the cluster announces as a list of app names rather than a row of unnamed images.",
+      "The `+N` mark works the same way: it is `aria-hidden` and the names it covers stay in the sr-only text behind it, so `maxApps` costs a screen-reader user nothing.",
+      "A record with no apps announces \"No apps\" rather than silence — the em-dash is `aria-hidden` and the words sit behind it.",
+      "Run status is an `aria-hidden` icon plus the words from the state table, so \"Last run failed\" is read as text and the red triangle carries nothing on its own.",
+      "Each switch is named `Enable <title>` and never renames itself, so an already-on record announces as \"Enable Daily digest, switch, on\" — the verb is fixed and `aria-checked` carries the state. Two records with the same title produce two identically named switches and two identically named overflow triggers.",
+      "There is no live region. The switch announces its own state change, but only once your `onEnabledChange` handler feeds a new `enabled` back in — an optimistic UI that does not, or a request that fails quietly, leaves the announced state wrong with nothing to correct it.",
+    ],
+    focus: [
+      "Nothing in this component moves focus. Opening the overflow menu moves focus into it and closing it returns focus to the trigger, but that is Base UI's behaviour, not the list's.",
+      "Deleting a record through an overflow action unmounts the row while focus is inside the closing menu, and nothing restores it — focus falls to `<body>`. Move it to a neighbouring row's title inside your action's `onSelect`.",
+      "The title carries an explicit `focus-visible:ring-2` in both its link and its button form, and the switch and overflow trigger inherit the vendored primitives' rings. Everything focusable in a row is visible on focus without work at the call site.",
+    ],
+  },
   pitfalls: [
     "The `<tr>` is deliberately inert and has no `onClick`. Adding one would nest the switch and the overflow trigger inside a control, which axe fails and which makes every toggle click ambiguous — put navigation on the title instead.",
     "App marks are `aria-hidden` and the names sit in sr-only text beside them. If you pass an `icon` that carries its own label or `alt` text, the name is announced twice; pass a decorative node.",

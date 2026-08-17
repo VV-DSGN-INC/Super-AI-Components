@@ -137,6 +137,32 @@ export const ThreadListDocs: ComponentDocs = {
       text: "Don't reach for this when the rows are the product's own destinations rather than the user's content. If nobody can rename or delete a row, you want `sidebar-nav`; if the rows need columns of metadata, you want `record-list`.",
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Every row is two tab stops, always: the thread button and its actions button. The actions button is hidden with `opacity-0` rather than removed, so it is in the tab order whether or not it is visible — a twenty-thread sidebar is forty stops, and there is no roving tabindex, no arrow-key movement between rows and no Home/End.",
+      "The actions menu is a real menu once opened: arrows move through Rename, Pin and Delete, typeahead jumps, Enter activates, Escape closes and hands focus back to the trigger.",
+      "While a row is renaming it is not a row at all — its markup is replaced by a single text input. Enter commits, Escape reverts, and blur commits any change, which is why a handler wired only to Enter drops the rename of anyone who tabbed or clicked away.",
+      "That Escape handler does not call `stopPropagation`, so cancelling a rename inside a dialog, sheet or popover also closes the surface the list is sitting in. Worth checking wherever this list is nested.",
+      "Delete opens a modal confirmation: Tab is trapped in it, Escape cancels, and there is no way to delete a thread from the keyboard without passing through it. Nothing is bound to Delete or Backspace on a row.",
+      "Nothing in the row is ever `disabled`. A thread you should not be able to open is a thread you should not render.",
+    ],
+    screenReader: [
+      "The root renders a `<nav>` and therefore a navigation landmark — with no name of its own. Pass `aria-label`, because a product that has this component almost always has a second nav on screen and two unnamed navigation landmarks are indistinguishable in a landmark list.",
+      "Each date bucket is `role=\"group\"` labelled by its visible date text, so \"Today\" and \"Yesterday\" are announced as groups. There is no list markup inside them, though, so nothing announces how many threads a bucket holds.",
+      "A row's name is built from content: the title, plus \"Unread\" when the dot is present. That dot is a `<span aria-label=\"Unread\">` with no role — browsers currently fold it into the button's name, giving \"Unread <title>\", but ARIA does not permit `aria-label` on a generic element, so it is not a guaranteed carrier. It also puts the state first, so a run of unread threads all begin with the same word.",
+      "The pinned state is not announced at all. It renders as a `Pin` glyph that is `aria-hidden`, so a pinned row and an unpinned one are indistinguishable to assistive tech — and because the menu item only reads \"Unpin\" once opened, the state is discoverable only by opening the menu.",
+      "The open thread carries `aria-current=\"page\"`, so \"which conversation am I in\" is answerable without seeing the highlight.",
+      "Each actions button is named `\"Thread actions for <title>\"`, so the menus are distinguishable — but only as far as the titles are. A sidebar of threads all called \"New chat\" is a column of identical buttons, which is the real accessibility argument for generating distinct titles.",
+      "The rename input is labelled with the constant string \"Thread title\". Only one row can be renaming at a time, so that is unambiguous in practice, but it does not say which thread is being renamed.",
+      "Nothing announces the result of anything. Renaming, pinning, unpinning and deleting all complete with no live region, so a screen-reader user gets no confirmation that a thread was renamed or that it is gone.",
+    ],
+    focus: [
+      "Leaving rename mode drops focus. Enter and Escape both unmount the input and nothing restores focus, so it falls to `<body>` and the next Tab restarts from the top of the page. Move focus back to the row yourself after you persist the title — this is the component's sharpest keyboard defect.",
+      "Cancelling the delete confirmation returns focus to the row's actions button, which is correct. Confirming does not have anywhere safe to land: the row is removed by your handler, so the element focus was returning to no longer exists.",
+      "The actions button is invisible unless the row is hovered, the button matches `:focus-visible`, its menu is open, or the pointer is coarse. Focus restored programmatically that does not match `:focus-visible` therefore parks focus on a control nobody can see — keep all four reveals if you restyle the row.",
+      "The thread button is the one control here with no focus ring of its own — its class list carries hover styles and nothing for `focus-visible`, so it inherits whatever you have globally. The actions button, the rename input and the confirmation's buttons all bring the design system's ring with them, which means the most-used control in the list is the only one that can end up invisible on focus.",
+    ],
+  },
   pitfalls: [
     "Rename and delete-confirm are internal state with no prop to force them. There is no `renaming` prop, no `open` prop on the confirmation and no imperative handle — to reach either state in a test, open the row's actions menu and choose the item, the same way a person does.",
     "The two resolve differently, and only one of them is safe. Cancelling the delete confirmation puts focus back on the row's actions button, as it should. Committing a rename does not: the input unmounts and focus falls to the document body, so a keyboard user who presses Enter loses their place in the list entirely. Move focus back to the row yourself after you persist the new title.",

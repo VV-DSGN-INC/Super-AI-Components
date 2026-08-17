@@ -75,6 +75,31 @@ export const StudioShellDocs: ComponentDocs = {
       example: <InspectorGoesBlankWhenEmpty />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab order is DOM order, and the DOM order is the layout: rail, topbar, tool panel, drawing tools, the floating toolbar, the canvas, the page strip, then the inspector. The inspector is last, so reaching it from the rail means tabbing through every control in the middle three regions — in a full editor that is a long way, and the shell provides no skip link and no keyboard shortcut to jump between regions.",
+      "Three of the six regions take a tab stop of their own before any control inside them: the tool panel's scrolling body, the canvas surface, and the inspector column. Each is a scroll container, so each carries `tabIndex={0}` and a name (axe `scrollable-region-focusable`) — that is deliberate, and it means an empty editor is still three tab stops even with nothing on screen to press.",
+      "The canvas surface is a focus target, not an editor. It scrolls with the arrow keys once focused and does nothing else — whatever you render into `children` brings its own keyboard model, and the shell adds none.",
+      "The floating toolbar exists only while `selection` is set, so selecting something inserts a run of tab stops into the middle of the order and clearing the selection removes them. The stop count of this shell is not stable across a session.",
+      "The page strip is a carousel: its previous and next buttons are real controls, and Left/Right arrows scroll it from anywhere inside it. Those buttons sit at `-left-12` / `-right-12`, outside the strip's own box, which is why the region reserves gutters — remove that padding and the shell's `overflow-hidden` clips the strip's only keyboard-reachable scroll control.",
+      "Below the `md` breakpoint the three middle regions become one scrolling column. The three inner tab stops remain, so a narrow viewport does not shorten the run — it lengthens the scroll.",
+    ],
+    screenReader: [
+      "The shell contributes almost no landmarks. Five of the six regions are plain `<div>`s carrying `data-region`, which is a test handle and nothing more; only the topbar is a landmark, because `app-topbar` renders a bare `<header>` and so maps to `banner`. If your page already has a banner, this shell adds a second one.",
+      "The tool panel, the canvas and the inspector column are `role=\"group\"` with names — `\"<modality> tools\"`, `canvasLabel` (default \"Canvas\") and `inspectorLabel` (default \"Properties\"). Groups are not landmarks, so none of the three appears in a landmark list; they are heard when focus enters them, and not before.",
+      "The panel's name is derived, not passed: it is `\"<active modality label> tools\"`. That is the only thing tying the rail to the panel for assistive tech, so a rail item with a vague label produces a vaguely named panel.",
+      "The inspector's selection line is `role=\"status\"`, so changing what is selected announces the new element type or `selection.label`. That is the only automatic announcement in the whole shell.",
+      "Nothing announces a modality change. Switching the rail swaps the entire tool panel and renames the group, and a change to a group's accessible name is not announced — a screen-reader user has to enter the panel to discover it is now a different panel.",
+      "The canvas has no accessible content of its own. With nothing on it, the region contains the empty state's text; with something on it, whatever you render is the entire story — the shell has no description of the document, its size, or what is selected beyond the inspector's status line.",
+      "The composed children carry their own semantics unchanged: the preset grid keeps its radiogroup/checkbox chosen-ness, the frame strip's tiles keep `aria-current`, the panel's toggle tiles keep `aria-pressed`. Flattening any of them into plain buttons is the one change here that silently deletes state from assistive tech.",
+    ],
+    focus: [
+      "Clearing the selection unmounts the floating toolbar. If focus was on one of its actions, it falls to `<body>` and the next Tab restarts from the top of the page — move focus back to the canvas surface in whatever handler clears the selection.",
+      "Switching modality replaces the tool panel's contents while the panel element itself stays mounted. Focus on a tile in the old panel is therefore lost the same way; focus on the panel's own scroll region survives, because that element is not the thing being replaced.",
+      "The shell never moves focus of its own accord. Nothing pulls focus to the canvas after a generation, to the inspector after a selection, or to the panel after a rail change — every one of those is yours to do.",
+      "All three region tab stops ship `focus-visible:ring-2`, so landing on a scroll container is visible. The controls inside them inherit whatever their own component provides, which for every composed child here is the design system's ring.",
+    ],
+  },
   pitfalls: [
     "The spec said five regions and listed five, but its own `Filled by:` line named B7 and the FigJam wireframe drew a topbar. The 2026-08-08 reconciliation ruled for the wireframe, so this shell has six regions. If you are working from an older copy of the spec, the topbar is the one that is missing.",
     "I3's `selection` is a closed union of four — text, image, shape, media — while I2's element types are open strings. Sharing one selection object between them therefore narrows the inspector's variant key to those four. If you need an inspector variant for something I3 has no toolbar flavour for (a frame, a group, a camera), you currently cannot express it. The source fix is to widen I3's `selection` to a string with the four as a documented default set.",

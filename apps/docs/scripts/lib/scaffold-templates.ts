@@ -95,6 +95,10 @@ export const ${Comp}Docs: ComponentDocs = {
   usage: "",
   dos: [],
   donts: [],
+  accessibility: {
+    keyboard: [],
+    screenReader: [],
+  },
   pitfalls: [],
 };
 `;

@@ -92,6 +92,30 @@ export const StemMixerDocs: ComponentDocs = {
       example: <MeterAsTheOnlySignal />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Every lane is four tab stops — Mute, Solo, the volume thumb, the pan thumb — and that count never varies, because none of the four is optional and a lane with no meter still has both faders. A five-stem mixer is twenty stops from top to bottom, which is the strongest argument for keeping the stem count small.",
+      "Mute and Solo are real buttons: Space and Enter toggle them. The faders are Base UI sliders, so the thumb takes Left/Right and Up/Down for one step, Home and End for the ends, and Page Up / Page Down for a larger jump. Pan steps by 1 across a -100…100 range, so dragging is far faster than arrowing from hard left to hard right.",
+      "Each arrow press emits. `onValueChange` is wired straight through, not a commit-on-release handler, so holding an arrow key sends one callback per step — debounce on your side if a change is expensive.",
+      "There is no `disabled` anywhere in this component. A lane cannot be made inert, so a mixer whose audio graph is not ready yet still hands the user four live controls per lane.",
+      "Nothing is bound at the mixer level: no arrow-key movement between lanes, no keyboard shortcut for solo or mute, no Escape to clear the solo set. Tab is the only way through.",
+    ],
+    screenReader: [
+      "The root is `role=\"group\"` named by `label`, which defaults to the literal string \"Stem mixer\". Two mixers on one page announce identically unless you name them — pass `label` whenever more than one can be on screen.",
+      "The summary line is `role=\"status\" aria-live=\"polite\"`, so pressing Solo announces the whole resulting state — \"Soloing Drums, Bass. 2 of 5 stems audible.\" That is the one place exclusive mode is audible: it names the lanes that just went quiet, which no per-lane control can.",
+      'The per-lane audibility text — "Audible", "Solo", "Muted", "Silenced by solo" — is plain text beside the stem name, not part of any control\'s accessible name. Tabbing to a silenced lane\'s Mute button therefore announces "Mute Drums, toggle button, not pressed" with nothing to say the lane is inaudible; the fact is on the row, but only for someone reading it rather than tabbing it.',
+      "Mute and Solo carry `aria-pressed` and are named per stem (\"Mute Drums\", \"Solo Bass\"), so a five-lane mixer is ten distinguishable toggles rather than five pairs of \"Mute\" and \"Solo\".",
+      'Both faders name their thumb per stem via `getAriaLabel`, which is why Base UI is composed here directly — an `aria-label` on the slider wrapper lands on the root while `role="slider"` sits on the thumb. Pan also overrides `aria-valuetext`, so it announces "Centre", "30% left" or "20% right" instead of a signed number; volume announces "72 percent".',
+      "Each meter is a `role=\"progressbar\"` named `\"<stem> level\"`. It is not a live region, so a moving level announces nothing until it is queried — which is correct, and it is why mute, solo and silenced-by-solo are all carried by text that does not move when the level does.",
+      "Lineage reads as a sentence — \"Separated from Master mix · Demucs v4\" — with its origin glyph `aria-hidden`, so a separated stem never announces identically to a generated one.",
+      "The lanes are plain `<div>`s with no list semantics, so nothing announces how many stems there are. The summary's \"of 5\" is the only count available.",
+    ],
+    focus: [
+      "Nothing unmounts under focus during normal use. Lanes are keyed by `stem.id`, mute and solo re-render in place, and switching a lane to inaudible changes only text — so a keyboard user pressing Solo keeps their position, which is what makes exclusive mode usable at all.",
+      "The one thing that does vanish is a meter: stop passing `level` and the meter div unmounts. It holds no tab stop, so focus is unaffected, but the lane gets shorter under the pointer.",
+      "Every control has a visible focus indicator of its own — the buttons through the vendored `Button`'s `focus-visible:ring-3`, and both thumbs through `focus-visible:ring-3` plus an `after:-inset-2` hit area that makes a 12px thumb reachable by touch. Nothing here inherits your global focus style.",
+    ],
+  },
   pitfalls: [
     "Treating onSoloChange's stem id as the whole story. The second argument is the complete resulting solo set, and it is the only thing that expresses exclusive mode — apply it wholesale. Toggling just the pressed stem turns exclusive solo into additive solo without anyone noticing.",
     "Forking this into an ExclusiveStemMixer and an AdditiveStemMixer. They are the same markup and the same controls; only the resolution differs, which is exactly why it is a prop. Two components means two sets of accessible names to keep in sync and two places for the audibility rules to drift.",

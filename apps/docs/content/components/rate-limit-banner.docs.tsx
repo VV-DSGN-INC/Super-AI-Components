@@ -56,6 +56,27 @@ export const RateLimitBannerDocs: ComponentDocs = {
       example: <NoEstimateAndNoOptIn />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop when `onNotifyMe` is passed, plus whatever is focusable inside `action`. The frame, the title, the body, the resource line and the clock are all static — nothing else here takes focus.",
+      "The opt-in is a real button, so Space and Enter both fire `onNotifyMe`. It never disables itself once taken, so a second press fires again; make the subscription request idempotent rather than expecting the button to guard it.",
+      "There is no way to dismiss the banner from the keyboard, by Escape or otherwise. It is removed by the host when the constraint lifts, which is the whole point of it not being a toast.",
+      "It renders above the composer, so it inserts a tab stop in front of the input. Shift+Tab out of the composer lands on Notify me before it reaches whatever is above the banner.",
+    ],
+    screenReader: [
+      "The root is `role=\"note\"`, overriding the `role=\"alert\"` the vendored `Alert` defaults to. It is deliberately not a live region: the title, body, resource and countdown are read when the user navigates to them, never pushed.",
+      "The one live region is `rate-limit-banner-status` — an sr-only `role=\"status\"` (polite) span carrying the title, a bucketed wait phrase (\"about 3 minutes left\") and, once taken, the opt-in confirmation. Its text only changes when the minute or hour bucket rolls over, so it speaks about once a minute rather than sixty times.",
+      "The visible clock and the announced wait therefore disagree by design: a sighted user watches `2:34` tick down, a screen-reader user hears \"about 3 minutes left\" and then silence until the bucket changes.",
+      "The clock's accessible name is set with `aria-label` on a plain `<span>`. A `<span>` carries no role, and naming a generic element is inconsistently supported — where it is ignored, `2:34` is announced as the raw digits rather than as \"2 minutes 34 seconds\".",
+      "The opt-in keeps a fixed label and carries its state on `aria-pressed`, so it announces as \"Notify me when my limit resets, toggle button, pressed\" instead of renaming itself. The confirmation sentence beneath it is separate visible text, not a colour change on the button.",
+      "The cause glyph is `aria-hidden`, so the difference between your own quota and the provider's capacity survives entirely in the title and body wording — which is why those strings are fixed per cause and not overridable.",
+    ],
+    focus: [
+      "Nothing here moves focus. Mounting the banner does not pull focus off the composer, and taking the opt-in leaves focus on the button while the confirmation line appears below it.",
+      "When the wait ends the host unmounts the banner. If focus was on the opt-in at that moment it falls to `<body>` — move focus to the composer as you remove it.",
+      "The opt-in inherits the shared `Button` focus ring; anything you supply through `action` brings its own, so check it has one.",
+    ],
+  },
   pitfalls: [
     "Reaching for a toast. The constraint persists for minutes; a toast persists for seconds, so it is gone by the time the user retypes their prompt and they hit the same wall with no explanation on screen. This is an inline, persistent banner by design — if your shell only has a toast slot above the composer, that is the thing to fix.",
     "Wrapping a per-second value in a live region. The vendored Alert defaults to `role=\"alert\"`, which is assertive: a countdown inside it would interrupt a screen-reader user once a second for the whole wait. This component overrides the root to `role=\"note\"` and puts the only live region in an sr-only `role=\"status\"` span whose text is bucketed to whole minutes — so it speaks about once a minute, not sixty times. If you add your own ticking content to the banner, keep it out of that region.",

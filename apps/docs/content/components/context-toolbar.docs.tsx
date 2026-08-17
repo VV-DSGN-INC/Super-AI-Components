@@ -71,6 +71,28 @@ export const ContextToolbarDocs: ComponentDocs = {
       example: <AiEntryBuriedLast />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The whole bar is one tab stop. `Toolbar.Root` is a Base UI composite, so it manages a roving tabindex over its buttons: Tab enters at whichever button was last focused, and Tab again leaves the bar entirely.",
+      "Left and Right travel along the bar and wrap at both ends. The orientation is horizontal, so Up and Down do nothing — and Home and End are not enabled, so there is no jump to the first or last action.",
+      'A disabled action stays in the travel order. It reports `aria-disabled="true"` rather than the native attribute, deliberately: a keyboard user arrowing along the bar still meets it and learns the action exists, and `onAction` does not fire.',
+      "The AI entry with an `aiMenu` is a popover trigger — Space or Enter opens it, Escape closes it and returns focus to the entry. The overflow trigger opens a menu with its own Up/Down travel and its own Escape.",
+      "Anything you pass as `children` renders inside the bar but is **not** a composite item, so a bare `<button>` there keeps its own `tabIndex` of 0 and becomes a second tab stop — quietly breaking the one-tab-stop contract the rest of the bar keeps. Pass actions through `actions` instead.",
+    ],
+    screenReader: [
+      'The bar announces as a toolbar named for what is selected — "Image selection actions" and so on — so several bars on one canvas are told apart. `label` overrides that name; nothing removes it.',
+      "Every action's name is in the DOM either way: `showLabel` decides whether the label is drawn or carried in an `sr-only` span, and the tooltip only ever repeats it. A tooltip is never the source of a name here, which is why an action with an icon and no `label` is invisible to a screen reader rather than merely unlabelled.",
+      "Caller-supplied icons are wrapped in an `aria-hidden` span by the component rather than trusted to hide themselves, so a lucide icon carrying a title cannot double the button's name.",
+      'The overflow trigger is named by an `sr-only` "More actions" (or your `overflowLabel`); the collapsed actions become menu items keeping their labels and order.',
+      "Nothing announces that the selection changed. `selection` swaps the toolbar's accessible name silently, and `placement` lands on a data attribute only — so a screen-reader user who selects a different object hears nothing until they navigate back to the bar.",
+      "The AI entry's popover is not described to assistive tech by this component: `aiMenu` is whatever you pass, so its name, its roles and its focus behaviour are I4's contract rather than the toolbar's.",
+    ],
+    focus: [
+      "The component never moves focus to itself when it appears. The host draws it beside a selection, and a keyboard user has to Tab to it from wherever they are — so put it early in the DOM near the selection, not at the end of the canvas.",
+      "When the selection is cleared and the host unmounts the bar, a focused action goes with it and focus falls to `<body>`. Return focus to the canvas yourself when you tear the toolbar down.",
+      "Every button is the vendored `Button`, so all of them carry its `focus-visible` ring. The composite means only one of them is tabbable at a time — the ring appears where the roving index currently sits.",
+    ],
+  },
   pitfalls: [
     "Expecting the component to keep itself in the viewport. It measures nothing — a registry component owns no canvas and cannot know where your selection rectangle is. You position it and you decide the flip; `placement` records that decision, lands on `data-placement`, and makes the popover and tooltips open away from the selection. Never covering the selection is likewise the host's guarantee: leave room for the bar's height plus your offset before committing to a side.",
     "Assuming `maxActions` can widen the bar. It is clamped to eight, so passing twelve still draws eight buttons and collapses the rest. It can only make the bar tighter.",

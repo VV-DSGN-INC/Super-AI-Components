@@ -63,6 +63,31 @@ export const AutonomySelectorDocs: ComponentDocs = {
       example: <UnscopedUndatedGrants />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The dial is one tab stop, not three. It is a real radio group, so arrow keys move between the levels and select as they go, and Space selects the focused one — which means arrowing through the dial changes the policy on every keypress, not on commit.",
+      "Each level card is a `<label>` wrapping its radio, so clicking anywhere on the blast-radius sentence selects it. There is no separate keyboard route to the card; the radio is the control.",
+      "A level blocked by `locked` renders as a disabled radio, so it cannot be activated. Lowering is never blocked — the guard only refuses moves that raise the rank — which is the property that makes this safe to leave on screen during a run.",
+      "After the dial, one tab stop per Revoke button. Five grants is five stops, and there is no Delete or Backspace shortcut: revoking from the keyboard means tabbing to the row's button.",
+      "The denial list has no controls at all. It is deliberately zero tab stops, because deny is not revocable from here.",
+    ],
+    screenReader: [
+      "Each level's accessible name is the label and its blast-radius sentence together, because both sit inside the `<label>` the radio is in — \"Full auto, Everything not on the deny list runs unattended.\" The consequence is announced at the moment of choosing, which is the reason it is written as a sentence rather than a tooltip.",
+      "The radio group itself has no accessible name, and there is no way to give it one: `...props` spreads onto the root `<div>`, not onto the group, so an `aria-label` you pass lands on the wrong element. It announces as an unlabelled radio group with three options.",
+      "Every Revoke button is named just \"Revoke\", whichever grant it belongs to. A ledger of five grants is five identical buttons with only reading order tying each to its row — keep `tool` values short and distinct, and treat per-row labelling as a known gap rather than something to patch by passing markup into A9.",
+      "A grant's scope and date are joined with a middot into A9's description, so they are announced as part of the row's text but are not associated with the Revoke button beside them.",
+      "\"Standing permissions\" and \"Never allowed\" are rendered by A12 as plain spans inside a div, not as heading elements, so neither appears in a heading list. The two `<section>` wrappers have no accessible name either, so they are not exposed as regions — the counts and the words are visible structure only.",
+      "A9 does not `aria-hidden` its icon slot, so the Ban glyph on a denial row will contribute to that row's text if the icon you swap in carries a title or a label.",
+      "Nothing announces a revoke. The row simply disappears; there is no live region, so the only feedback is the list being shorter next time you read it.",
+      "Nothing announces `locked` either. The blocked levels dim and disable, and no message says a run is in flight — put that sentence on the surface around this component.",
+    ],
+    focus: [
+      "Revoking unmounts the button that had focus and nothing restores it, so focus falls to `<body>` and the next Tab restarts at the top of the page. Move focus inside your `onRevoke` — to the next grant's Revoke button, or to the section header when the list empties.",
+      "Revoking the last grant replaces the whole list with the empty line, with the same result.",
+      "Raising `locked` while focus sits on a level that becomes blocked disables the element under focus, which drops focus to `<body>` in most browsers. If you lock mid-run, lock before the user can be in the dial, or move focus yourself.",
+      "The radios carry the vendored `focus-visible:ring-3`; the level card around them shows nothing on focus, so the indicator is a small circle at the start of a full-width row rather than an outline on the option. Revoke uses the shared button ring.",
+    ],
+  },
   pitfalls: [
     "`locked` is not a disabled prop. It blocks raising the level and never blocks lowering it, so during a run the user can always tighten but not loosen — a safety control you cannot tighten during an incident is not one. If you want the whole control inert, this is not the prop, and it deliberately does not exist.",
     "Every Revoke button is labelled just \"Revoke\", whichever grant it belongs to. A screen-reader user moving through a ledger of five grants hears the same word five times, with only the reading order tying a button to its row. Keep `tool` values short and distinct, and treat per-row labelling as a known gap rather than something to patch by passing markup into the row.",

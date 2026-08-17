@@ -55,6 +55,23 @@ export const GenSettingsBarDocs: ComponentDocs = {
       example: <SegmentsRepeatTheirOwnLabels />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      'Every segment is its own tab stop. The bar renders role="toolbar" but has not implemented the roving tabindex that role promises — there is a TODO in the source — so crossing a five-segment strip costs five Tabs, and Left/Right do nothing.',
+      "Segments are real buttons, so Space and Enter open whatever control the segment fronts. There is no Escape handler here; dismissing that control is the control's own business.",
+      "`disabled` on the bar reaches every segment through context and removes all of them from the tab order at once, which is what makes it safe to lock the strip during a run. A segment opts back in with `disabled={false}` on itself — omitting the prop falls through to the bar's value.",
+    ],
+    screenReader: [
+      'The bar announces as a toolbar with no name unless you give it one — nothing inside it says what is being configured. Pass an `aria-label` such as "Generation settings", and note that the announced role then promises arrow-key navigation this component does not have.',
+      'A segment\'s accessible name is its children and nothing else, so the value is the name: a segment reads "1080p", never "Resolution, 1080p". An icon-only segment ships an unlabeled button unless you add an `aria-label`.',
+      'Changing a parameter rewrites a button\'s own label under the user. The bar owns no live region, so nothing announces "resolution is now 1080p" — and a name that changes while its element still holds focus is not reliably re-announced.',
+      "`data-disabled` on the bar is a styling hook only. The programmatic state lives on the segments' own `disabled` attributes; the toolbar element itself carries no `aria-disabled`.",
+    ],
+    focus: [
+      "Locking the bar mid-run disables the segment that currently has focus, so focus falls to `<body>` and the next Tab restarts from the top of the page. If a run can start while the strip has focus, move focus to the control that started it.",
+      "Each segment ships its own `focus-visible` ring. The bar is not focusable and has none.",
+    ],
+  },
   pitfalls: [
     'The bar announces role="toolbar" but does not yet implement the arrow-key roving tabindex that role promises — see the TODO in the source. Today every segment is its own tab stop, so a keyboard user pays one Tab per segment to cross the strip and arrow keys do nothing. Keep the strip to the five or six segments the pattern was drawn for until that lands.',
     'There is no value API. `GenSettingsItem` is a plain button: the value it shows is its `children`, and `onClick` hands you a MouseEvent rather than a new value, so each segment needs its own handler and the values are owned entirely upstream. Nothing here can report "resolution changed to 1080p" generically — the catalog naming Select and Toggle-group as the base describes the controls you open, not what this component ships.',

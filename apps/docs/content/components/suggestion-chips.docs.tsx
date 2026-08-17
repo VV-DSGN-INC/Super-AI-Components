@@ -60,6 +60,26 @@ export const SuggestionChipsDocs: ComponentDocs = {
       example: <SelectHandlerSubmitsImmediately />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Every chip is one tab stop, and the overflow link is one more. There is no roving tabindex and no arrow-key movement between chips — Left and Right do nothing, because the row is a flex line of independent buttons rather than a toolbar or a listbox.",
+      "A row that overflows quietly adds a tab stop of its own. The scroll viewport underneath takes `tabIndex={0}` as soon as it can scroll (Base UI's answer to axe `scrollable-region-focusable`), so a capped row and an overflowing row do not have the same stop count.",
+      "Chips are real buttons — Space and Enter both fire `onSelect`. The overflow is a real `<a href>`, so it takes Enter only; Space scrolls the page instead. That difference is the point: one fills the composer, the other navigates away.",
+      "`disabled` passes straight through to the underlying button and removes that chip from the tab order entirely. There is no disabled state on the overflow link, which is an `<a>` and cannot have one.",
+    ],
+    screenReader: [
+      "A chip's accessible name is its `suggestion` text and nothing else — the leading icon or thumbnail is wrapped in an `aria-hidden` span on purpose. An icon-only chip with empty `suggestion` text therefore ships an unlabeled button, which is the one way to break this component.",
+      "The row has no group semantics: it is a `<div>` with no role, no label and no list markup, so nothing announces how many suggestions there are or that these buttons belong together. If the set needs naming, wrap it yourself.",
+      "The overflow announces as a link, not as another chip, which is exactly the distinction a user needs — the chips write into the composer, the link leaves the surface. Its name is your `children`, falling back to \"N more\" from `count` and then to \"See more\".",
+      "The scroll viewport is `role=\"presentation\"` and focusable, so when the row overflows there is a tab stop with no role and no name between the surrounding content and the first chip.",
+      "Nothing announces the result of picking a chip. The composer's text changes and the component has no live region, so put the announcement on the composer — otherwise the only feedback is silence.",
+      "The row's scrollbar is rendered `hidden`, so there is no visual or programmatic indication that more suggestions exist beyond the edge. That is precisely why overflow has to resolve to the link rather than to more scrolling.",
+    ],
+    focus: [
+      "The component never moves focus. Whether focus survives a selection depends entirely on your handler: replacing or unmounting the row once a suggestion is taken — the common pattern for an empty-state chip row — drops focus to `<body>` and the next Tab restarts at the top of the page. Move focus to the composer instead, which is where the user was heading anyway.",
+      "Both the chips and the overflow link ship the design system's `focus-visible:ring-3`, the link because its classes are derived from `buttonVariants` rather than hand-written. Nothing here inherits your global focus style.",
+    ],
+  },
   pitfalls: [
     "The chip itself carries no data-slot of its own — it's AI Elements' vendored Button, unmodified. Passing a data-slot down through SuggestionChip would silently overwrite Button's own data-slot=\"button\" (it spreads ...props after that attribute), so this component deliberately doesn't forward one. Address a specific chip by its accessible name/role in tests, not a selector.",
     "SuggestionChips doesn't compute overflow for you — there's no maxVisible prop and no ResizeObserver watching the row's width. You decide how many SuggestionChips to render and append SuggestionChipsOverflow yourself, the same manual-count pattern as ContextChipOverflow.",

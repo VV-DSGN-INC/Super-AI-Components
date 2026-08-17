@@ -72,6 +72,33 @@ export const DocsShellDocs: ComponentDocs = {
       example: <ContentIsStretched />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab order is rail rows, then the rail toggle, then the nav rows, then each announcement's CTA and ✕, then the content column, then the citation markers inside the prose. Nothing here uses a roving tabindex, so the counts add up: three product areas and a forty-page nav is forty-four stops before the page you came to read. There is no skip link.",
+      "The content column is itself a tab stop — `tabIndex={0}` on the scroll container, so a keyboard user can scroll the page they navigated to (axe `scrollable-region-focusable`). It holds no controls of its own, so it reads as a stop that does nothing until you press an arrow key.",
+      "⌘B / Ctrl+B toggles the rail. That binding is a `window` listener from the vendored sidebar provider and it calls `preventDefault`, so it fires wherever focus is — including inside a text field, where it takes Ctrl+B away from any rich-text editor you embed in the page. The A1 keycaps in the nav header exist to advertise it.",
+      "The rail's drag handle is `tabIndex={-1}` and unreachable by keyboard, so the toggle button and the shortcut are the only two ways to collapse and expand the rail.",
+      "Rail rows and nav rows are buttons unless a nav item carries `href`, in which case that row is an anchor. Both activate on Enter; only the button form also activates on Space.",
+      "A resolved citation marker opens its quote on hover **and** on keyboard focus, so the preview is reachable — but Enter on the marker fires `onJumpToSource` rather than pinning the card open.",
+    ],
+    screenReader: [
+      'Two `nav` landmarks with two names — "Product areas" and "Pages" by default — is the split surviving into the accessibility tree. Landmark navigation is the fast path here, and it only works because the names differ; give both the same string and the distinction is gone for screen-reader users while remaining obvious on screen.',
+      'The active area and the active page both carry `aria-current="page"` alongside their filled surface, so "where am I" is programmatic rather than colour alone.',
+      "The content column is a `<section>` named by the page `<h1>` through `aria-labelledby`, so it is a region a screen reader can jump to by name.",
+      "Rail labels stay in the DOM at 3rem and are clipped rather than removed, so each row's accessible name is its label and the tooltip merely repeats it. Replace the rows with icon-only buttons and you lose the name entirely — a tooltip is never one.",
+      "A section's `action` renders inside the element the shell promotes to a level-2 heading, so it becomes part of that heading's accessible name. Two or three words; a sentence turns every entry in the heading outline into a paragraph.",
+      'Citation markers announce as their visible label — usually a bare number, which on its own says nothing about what is cited. An `unresolved` marker gets an explicit name instead, but that name is built from `typeof label === "string"`: pass a number or an element and it degrades to "Citation  — source unavailable" with the index missing.',
+      "The quote in a citation's hover card is portaled and the marker sets no `aria-describedby` pointing at it, so the card opening is not announced — the quote has to be found in the reading order once it is there.",
+      'The announcement strip is `aria-live="polite"` and always mounted, so an announcement arriving mid-read is announced in full. Each ✕ is named for its announcement ("Dismiss announcement: Multi-track timeline"), which is what keeps three of them apart.',
+      "Nothing announces a page change. Selecting a nav row swaps the whole content column with no live region and no focus move, so a screen-reader user hears silence and has to go looking for the article they just asked for.",
+    ],
+    focus: [
+      "Selecting a page or an area leaves focus on the nav row. The content changes underneath it, so pair `onSelectPage` with a focus move into the content region — it already carries a `tabIndex` and an accessible name, which is exactly what makes it a legitimate target.",
+      "Dismissing an announcement unmounts the ✕ that was activated and focus falls to `<body>`. Move focus to the next announcement, or to the content column, from `onDismissAnnouncement`.",
+      "Toggling the rail collapses it to icon width rather than unmounting it, so a focused rail row survives ⌘B — only its label clips.",
+      "Nav rows, the rail toggle and the citation markers all carry explicit `focus-visible` rings. The content column does not: it is a tab stop with no focus styling at all, so tabbing into the page gives no visible indication of where focus went.",
+    ],
+  },
   pitfalls: [
     "B1's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a preview, a panel or an app region — if you re-wrap or restyle the root, keep that containment or the rail will pin itself to the browser's left edge. The trade-off is that the rail keeps its full `h-svh` height and gets clipped to the shell's, so `railFooter` falls below the clip and is invisible whenever the shell is shorter than the viewport. Fill it only in a shell rendered at viewport height.",
     "B1 has no prop for what an icon rail is actually made of, so the area rows are the vendored sidebar's own menu primitives placed into B1's `nav` slot, and the rail's `nav` landmark is a wrapper the shell adds. That wrapper is what gives the rail a name distinct from the page nav; drop it and the two navigations become indistinguishable to a screen reader even though they look different on screen.",

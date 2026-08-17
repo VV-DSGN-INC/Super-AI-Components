@@ -56,6 +56,30 @@ export const DiffReviewDocs: ComponentDocs = {
       example: <ParagraphSizedChange />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab stop count is two per pending change, plus up to two bulk buttons. Eight pending changes with both verbs wired is sixteen stops before accept-all — and every change you resolve removes its two stops, so the tab order shortens as the review proceeds.",
+      "Nothing in the document region is focusable. The prose is `<ins>`, `<del>` and plain spans by design, so a keyboard user meets the marks only in reading order and reaches the verbs further down the page.",
+      "There is no link in either direction between a mark in the prose and its entry in the change list. `data-change-id` is on both, but nothing consumes it, so there is no key that jumps from a mark to its rationale or back.",
+      "No shortcuts exist: no A or R to accept and reject, no arrow travel through the change list, no Escape. Every verb is reached by Tab and fired with Space or Enter.",
+      "The bulk buttons use the native `disabled` attribute once nothing is pending, so they drop out of the tab order entirely rather than staying as focusable dead ends.",
+    ],
+    screenReader: [
+      "Each per-change button is named for its change — \"Accept: replace “utilise” with “use”\" — through an `sr-only` suffix, and that description is derived from the segments rather than authored, so eight buttons cannot all announce as \"Accept\".",
+      "`<ins>` and `<del>` carry the right semantics but most screen readers do not announce them by default, which is why each changed run is wrapped in visually-hidden \"insertion start\"/\"insertion end\" text. That wording is the real signal; the underline and strike-through are the sighted half.",
+      "The remaining-changes count is `role=\"status\"` with `aria-live=\"polite\"`, so resolving a change announces \"3 of 8 changes awaiting review\" after whatever the reader is currently on. Don't also toast it.",
+      "The change list is an `<ol>`, so it announces as a list with a count and each change is item N of M.",
+      "The button's description repeats the **summary**, never the rationale. Someone tabbing straight down the verbs hears what each change does and never hears why — the rationale is text inside the list item, reachable only by reading it. If the reason has to reach a keyboard user who is tabbing, give the rationale an `id` and point the button's `aria-describedby` at it from your side.",
+      "A resolved change swaps its verbs for a plain \"Accepted\" or \"Rejected\" span with no live region of its own, so the resolution itself is announced only through the polite counter — which says how many are left, not which one just moved.",
+      "`describeChange` falls back to the literal word \"change\" when a `changeId` in `changes` matches no segment in the prose, so an id that only exists on one side produces exactly the anonymous \"Accept: change\" this component was built to avoid.",
+      "The bulk region is a `role=\"group\"` named \"Whole document\", which is what keeps accept-all from sounding like the last item in the change list.",
+    ],
+    focus: [
+      "Accepting or rejecting a change unmounts the button that was just activated — both verbs are replaced by a text span — so focus falls to `<body>` and the next Tab restarts from the top of the page. The polite count then arrives with no context. This is the component's sharpest edge: after calling `onAccept` or `onReject`, move focus to the next pending change's Accept button yourself.",
+      "The same happens at the end of a bulk action: accept-all disables itself once nothing is pending, and a focused element that becomes `disabled` is blurred by the browser.",
+      "Every control here is the vendored `Button`, so all of them carry its `focus-visible` ring. The component adds no focus styling of its own and nothing inside the document region can be focused at all.",
+    ],
+  },
   pitfalls: [
     "Insertion and deletion are never signalled by colour alone. They are real `ins` and `del` elements, they carry visually-hidden lead-in text naming the kind, and on screen they differ by decoration shape — underline versus strike-through. If you restyle them, keep a non-colour distinction or you have reintroduced the exact failure this component was built around.",
     "The per-change buttons are named for their change (\"Accept: replace 'utilise' with 'use'\"), and that name is derived from the segments. Overriding `summary` with something vague gives a screen reader user eight buttons called \"Accept: change\" again.",

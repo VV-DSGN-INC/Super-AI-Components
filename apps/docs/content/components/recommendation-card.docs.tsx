@@ -58,6 +58,28 @@ export const RecommendationCardDocs: ComponentDocs = {
       example: <StepsAsProseParagraph />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Three tab stops on the collapsed row, in DOM order: Dismiss, Try it, Save for later. Dismiss is rendered first, so the tab order reaches the way off the card before either of the two useful options.",
+      "The modal adds three more — Close, Save for later, Get started. Escape closes it, focus is trapped inside it while it is open, and Tab cycles within it; all of that comes from the vendored Base UI `Dialog`, not from this component.",
+      "Both save buttons are the same element, so `saved` disables the row's and the footer's together. A disabled button leaves the tab order, and the collapsed row drops from three stops to two.",
+      "There is no keyboard shortcut for dismiss, and no arrow-key movement between cards in a feed — each card is an independent cluster of buttons.",
+    ],
+    screenReader: [
+      "The card root is a plain `<div>` with no role and no name, and the row title is a `<p>`, not a heading. A feed of these offers nothing to navigate by: no landmark, no heading, no list.",
+      "The dismiss control's name is `dismissLabel`, default \"Dismiss\", identical on every card. Pass \"Dismiss <title>\" so a rotor list of buttons is not a column of the same word.",
+      "Try it is a `DialogTrigger`, so it carries `aria-haspopup=\"dialog\"` and `aria-expanded`, and the dialog it opens is named by the same `title` the row shows — the modal announces as a continuation of the row rather than a new subject.",
+      "The steps are a real `<ol>` and the visible digits are `aria-hidden`, so the numbering is announced once, by the list semantics, instead of twice.",
+      "The save control renames itself: \"Save for later\" becomes \"Saved\", then goes disabled. That is the opposite convention to `rate-limit-banner`, which keeps a fixed label and puts the state on `aria-pressed` — here a returning user hears a control they have never heard of.",
+      "Nothing announces the outcome of either choice. `dismissed` returns `null` and the card simply stops existing; there is no live region to say it was dismissed or saved.",
+    ],
+    focus: [
+      "Dismissing unmounts the card, so the button that had focus disappears and focus falls to `<body>` — the next Tab restarts at the top of the page. In a feed, move focus to the next card inside your `onDismiss`.",
+      "Saving is the same failure in miniature: feeding `saved` back in disables the button under the user's finger, and a focused element that becomes disabled is blurred, dropping focus to `<body>` again.",
+      "The modal is the one place focus is handled for you: opening it moves focus inside, Escape or Get started closes it, and Base UI returns focus to the Try it trigger.",
+      "Every control here is the shared `Button`, so all of them carry a visible focus ring.",
+    ],
+  },
   pitfalls: [
     "Wiring `onDismiss` to a local flag that resets on reload. Dismissal that doesn't persist reads as a bug, not a missing feature — same trap as promo-card.",
     "Letting the row's Try it button commit directly instead of opening the modal. The two-level split exists so a recommendation is auditable before it runs; skipping the modal turns a suggestion back into an instruction.",

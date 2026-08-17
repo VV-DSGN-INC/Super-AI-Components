@@ -71,6 +71,31 @@ export const NotebookShellDocs: ComponentDocs = {
       example: <OutputsOpenSomewhereElse />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Three tab stops before any control: each pane carries `tabIndex={0}` because each pane scrolls. Below `lg` the panes stop scrolling independently and the root takes over, but the three stops remain — on a phone they are three Tabs that do nothing.",
+      "A citation marker is a real `<button>`, so Enter and Space jump the left pane. `loading` and `unresolved` markers are still focusable buttons with no `onClick`, so they take a tab stop and do nothing when pressed.",
+      "That makes an answer expensive to tab through. Citations are inline in the claim text, so a five-claim answer with two citations each is ten stops inside one message, with no way to skip a turn.",
+      "The composer is D1 with its negative-prompt toggle removed by `display:none`, so it is genuinely gone from the tab order rather than hidden and still reachable. Enter asks, Shift+Enter breaks the line.",
+      "The studio's output-type menu is C3's carousel: a `role=\"region\"` with its own Left/Right handling, two arrow buttons, then one stop per card.",
+      "Nothing in the shell handles Escape, and the citation jump has no keyboard route back to the sentence you were reading other than Shift+Tab.",
+    ],
+    screenReader: [
+      "Four regions, named three different ways: sources by `aria-label={sourcesLabel}`, chat by `aria-label={chatLabel}` on AI Elements' Conversation (which also brings `role=\"log\"`), studio by `aria-labelledby` onto its own `<h2>` — and the composer by nothing at all. `data-region=\"composer\"` is a bare div with no role and no name.",
+      "A resolved citation announces as its label and nothing else, which is usually a bare number. `aria-label` is set only in the `unresolved` state (\"Citation 3 — source unavailable\"), so the broken citations are the ones that announce best.",
+      "The source name and the quoted passage live in a hover card, and Base UI's preview card wires no `aria-describedby` back to the trigger and gives its popup no role. It does open on keyboard focus, but its contents are an unassociated portal at the end of the document — a screen-reader user hears \"3, button\" and has to go looking for the quote. That is the gap between the shell's promise that an answer is auditable and what assistive tech is actually handed.",
+      "The jump itself is announced: `notebook-shell-jump-status` is an sr-only `role=\"status\"` reading \"Showing {source} in {sourcesLabel}\". It has to be, because the jump only scrolls the left pane and never moves focus there.",
+      "K7's coverage warning is ordinary text inside the answer, read in document order after the claims — \"Some claims here aren't sourced\", or \"Nothing in this answer is sourced\". It is not a live region, so it is announced when the reader reaches it rather than when the answer lands.",
+      "K5 gives each source an sr-only `role=\"status\"` for its ingest stage and a `role=\"progressbar\"` named for the source and the stage, so a panel of four in-flight sources is not four identical \"Loading\" bars. Ingest is the one thing in this shell that announces itself as it happens.",
+      "The composer's own live region announces \"Generating…\" and then falls silent when the answer arrives. The chat pane's `role=\"log\"` is what covers the arrival, and only for screen readers that follow logs.",
+    ],
+    focus: [
+      "A citation jump moves the scroll and not the focus. The left pane scrolls the matching row into view and the status region names it, while focus stays on the marker in the middle pane — deliberate, since you are still mid-sentence, but it means the only keyboard route into the source you just surfaced is back through the pane's own tab stop.",
+      "The jump target is found by position in the `sources` array, not by an identifier on the row, so re-ordering `sources` between renders moves where the scroll lands. K5 growing a `data-source-id`, plus a `highlightedSourceId`, would let the destination visibly light up instead of only scrolling.",
+      "The three pane tab stops are bare `tabIndex={0}` containers with no `focus-visible` style, so tabbing into a pane shows nothing. Every actual control — citations, chips, cards, composer buttons — brings its own ring.",
+      "The shell unmounts nothing that had focus. The focus loss here comes from the composer: D1 disables its textarea while `generating`, which drops focus to `<body>` mid-run.",
+    ],
+  },
   pitfalls: [
     "K5 source-panel stamps no per-source identifier on its rows, so the citation jump finds its target by position in the `sources` array you handed the shell. It cannot drift — the two lists are the same list — but it does mean a citation cannot address a source K5 has not rendered, and re-ordering `sources` between renders moves the target. K5 growing a `data-source-id` on its row, plus a `highlightedSourceId` prop, would turn this into an attribute lookup and let the destination visibly light up rather than only scroll.",
     "A citation whose `sourceId` is not in `sources` renders as K6's `unresolved` state on purpose, complete with an accessible name saying the source is unavailable. That is the intended behaviour, not a bug to route around — but it means filtering `sources` per message, or lazily loading them, will make perfectly good citations look broken. Pass the whole source list.",

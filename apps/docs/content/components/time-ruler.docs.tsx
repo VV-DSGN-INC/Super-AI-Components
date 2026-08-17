@@ -58,6 +58,29 @@ export const TimeRulerDocs: ComponentDocs = {
       example: <RangeStandingInForThePlayhead />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop, or three. The playhead thumb is always there; the in and out handles exist only when both `inPoint` and `outPoint` are numbers. Pass one without the other and the whole range layer never renders.",
+      "Each handle is a visually hidden `<input type=\"range\">`, so it takes the native slider keys: Left/Right and Down/Up move by `step`, Shift with an arrow and Page Up/Page Down move by `largeStep` (ten steps), and Home/End jump to the ends.",
+      "`step` is your `snap` when you set one and `pixelsToTime(1, zoom)` — one pixel of ruler — when you don't. At the default `zoom` of 40 that is 0.025s per press, so arrowing across a ten-minute timeline is 24,000 keystrokes. Set `snap` on anything a person might traverse.",
+      "Home and End on the range handles clamp against each other, not against the timeline: End on the in handle stops one step short of the out point, and Home on the out handle stops one step past the in point. Neither reaches 0 or `duration`.",
+      "Keys people expect and don't get: there is no Escape to abandon a drag part-way, no arrow-key movement between the three handles (Tab is the only way across), and no keyboard equivalent of pressing the ruler body to seek — that is pointer-only.",
+      "There is no `disabled`. `TimeRulerProps` is a `div` prop set, so a read-only ruler is not expressible; withholding `onPlayheadChange` and `onRangeChange` still leaves all three handles focusable and movable, they just report to nothing.",
+    ],
+    screenReader: [
+      "The entire tick layer is `aria-hidden` — ticks, major ticks and every timecode label. Everything this component announces comes from the three slider handles, deliberately, because two hundred tick elements in the tree would bury them.",
+      "Each handle is named by `getAriaLabel` as a fixed string — \"Playhead\", \"In point\", \"Out point\" — and its value is read by `getAriaValueText` as a timecode from `formatTimecode(value, 2)`, or from your `formatTime` when you pass one. The raw seconds are never spoken.",
+      "Those names are not derived from anything you pass, and the root carries no name of its own, so two rulers on one page produce two sliders both called \"Playhead\" with nothing to tell them apart. Put an `aria-label` on each root yourself.",
+      "The timecode bubble is a `role=\"status\"` region that is mounted and unmounted with the scrub state, and `scrubbing` only turns true on a pointer drag (`details.reason === \"drag\"`) or when you drive it from outside. Seeking with the arrow keys never renders it — the handle's own value text is what carries the announcement.",
+      "A zoom change is announced as nothing. Tick interval, label interval and the ruler's own width all change, and the only record is `data-zoom` / `data-tick-interval` / `data-label-interval` on the root, which assistive tech does not read.",
+      "`TimeRulerPlayhead` rendered on its own over a stack of lanes has no role and no name unless you pass `label`. Give it one and you get a second `role=\"status\"` alongside the ruler's own.",
+    ],
+    focus: [
+      "All three handles ship a visible `focus-visible:ring-3` plus an `after:-inset-2` hit area, so focus is visible and grabbable without any global style of yours.",
+      "Clearing `inPoint`/`outPoint` unmounts the whole range layer. If focus was on one of its handles it falls to `<body>` and the next Tab restarts from the top of the page — move focus to the playhead thumb as part of clearing a range.",
+      "Focus and the playhead are independent. Seeking from a transport button elsewhere on the page moves the line and leaves focus where it was; focusing a handle does not seek.",
+    ],
+  },
   pitfalls: [
     "The horizontal scroller is yours, not the component's. That is deliberate — the ruler and the lanes have to scroll as one — but it means the scrollable region is your accessibility problem: make it focusable, or axe fails `scrollable-region-focusable` on your page rather than on this component.",
     "`zoom` is pixels per second, not a multiplier, and the root's width is `duration × zoom`. A duration of an hour at 120 px/s is a 432,000-pixel element; clamp your zoom range to something a browser can lay out.",

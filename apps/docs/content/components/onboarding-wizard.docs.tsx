@@ -73,6 +73,29 @@ export const OnboardingWizardDocs: ComponentDocs = {
       example: <ChoiceCardsAsDivs />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Four tab stops on a step with choices: the choice group, then Back, Skip and the primary. The group counts once, not once per card — it is a real radio group with a roving tabindex. Back is `disabled` on the first step, so the first step has one stop fewer than every step after it.",
+      "Arrow keys inside the choice group also answer the question. Focus moves to the next card and that card is checked in the same keystroke, firing `onAnswerChange` — there is no way to browse the options from the keyboard without committing to each one you pass through. Home and End reach the first and last card.",
+      "Space and Enter activate the footer buttons, which are native buttons. Nothing else is bound: Escape does not leave the flow, Enter does not advance a step, and there is no shortcut for Back or Skip.",
+      "The step heading takes `tabIndex={-1}` so the wizard can move focus to it programmatically. It is not a tab stop — Tab from the progress row lands on the choice group, not on the title.",
+      "Anything you pass as `content` brings its own keys. It is not wrapped in a `<form>`, so Enter in a text field submits nothing and the primary button stays the only way forward.",
+    ],
+    screenReader: [
+      'The dot rail is `aria-hidden`, so position is carried by a real progressbar instead: `ProgressLabel` renders the visible "Setup progress: step 2 of 4" and names the bar, and `aria-valuetext` reads "Step 2 of 4, 2 steps remaining". A progressbar is not a live region, so moving between steps does not announce the new position — it is there to be found, not to interrupt.',
+      "The choice group is `aria-labelledby` the step heading, so it announces under the question rather than as an unnamed group.",
+      "Each card's radio is named by the entire `<label>` wrapping it, which folds `description` into the name: a card announces as \"Product designer Templates and defaults for design work, radio button, 1 of 4\", not as a name with a separate description. Keep descriptions to one short clause or every card's name becomes a paragraph.",
+      "`icon` is `aria-hidden` and contributes nothing to a card's name — `label` and `description` carry all of it.",
+      "The `effect` line is plain text under the choices, tied to nothing. It is read when a user walks the step, and is not re-announced when the answer changes.",
+      "Skipping the last step ends the flow without moving to another step, so the heading never changes and nothing says setup is finished. Announce that yourself from `onFinish`.",
+    ],
+    focus: [
+      "Every step change moves focus to the new step's heading, deliberately — focus is not left sitting on a nav button whose meaning just changed. It is skipped on mount, so the wizard never steals focus the instant it renders.",
+      "That heading carries `outline-none` and no focus style of its own, so the move is silent for sighted keyboard users: a screen-reader user hears the new question, and everyone else watches focus disappear from the button they pressed.",
+      "Nothing moves focus at the end. Both the primary and Skip finish the flow in place, leaving focus on a button inside a card your `onFinish` is presumably about to unmount — put focus wherever you send the user next.",
+      "The footer buttons and the radios draw the vendored primitives' own `focus-visible` rings, so focus is visible everywhere except on the heading.",
+    ],
+  },
   pitfalls: [
     "Treating the four declared states as four variants to render one at a time. Choice cards, dot progress and skippability are all present at once in the default flow; split-panel is the only one that is a per-step choice, and even then it is the same machinery with one extra pane.",
     "Dropping Skip on the last step because that is what a commit-shaped wizard does. E8 generation-wizard is right to do it — its last step spends credits. Here it would make the final question the one question a user cannot get past, which is exactly where first-run flows get abandoned.",

@@ -73,6 +73,28 @@ export const HomeShellDocs: ComponentDocs = {
       example: <RecentsDisappearWhenEmpty />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The shell binds no keys of its own. Its tab order is the composed components in DOM order: the sidebar's contents, the sidebar trigger, the topbar's actions and credits, then the composer, the starter chips, the feature carousel, the recents tiles and the recommendation cards.",
+      "The scrolling page column has `overflow-y-auto` and deliberately no `tabIndex`. It gets away with that because C1 is inside it and is focusable in every one of its states, `locked` included, so axe's `scrollable-region-focusable` rule has a target. Reorder the column so the composer is not in it and that stops being true.",
+      "The feature carousel is a `role=\"region\"` with its own Left/Right handling plus two arrow buttons. Those arrows are two tab stops that exist whether or not the row actually overflows.",
+      "`sidebarPromo` and `sidebarFooter` are bottom-anchored inside a sidebar the shell clips, so in the ordinary embedded case they are invisible — but they are still rendered and still focusable. Tab reaches controls nobody can see. Fill those two slots only in a shell rendered at viewport height.",
+      "A starter chip is `type=\"button\"` on purpose, so a chip inside a form can never submit it. Enter and Space fill the composer and stop there. The overflow affordance beside the chips is a real `<a>`, so Enter follows it and Space does not.",
+    ],
+    screenReader: [
+      "Four of the five bands are `<section>` elements with an `aria-label`, which makes each a named region landmark — \"Start something new\", then the features, recents and recommendations labels. Landmark navigation is the only structural navigation this page has.",
+      "It is the only one because the band titles are not headings: A12 `section-header` renders its title as a `<span>`, so \"Popular features\" and \"Recents\" are visible text and nothing more. The page's single `h1` is `headline`, and it renders only if you pass one — omit it and the page has no heading at all.",
+      "A starter chip's accessible name is its `suggestion` string, always: the leading icon and the leading thumbnail both sit inside an `aria-hidden` span. Selecting one writes into the composer and announces nothing, so whoever pressed it gets no confirmation that anything happened.",
+      "The recents tiles are the weak point. A8 `preview-tile` renders a `below` label as a *sibling* of its frame button, and C4 uses `labelPlacement=\"below\"` in grid layout and `\"none\"` in list layout — so the button that opens a project takes its name from the thumbnail alone. Give every thumbnail real `alt` text or the band is a row of unnamed buttons.",
+      "Nothing in the shell is a live region. Filling the composer, collapsing the sidebar and paging the carousel all happen silently.",
+      "M2 `credits-indicator` announces its own text and the shell adds no wording around it, so the balance arrives with whatever name M2 gives it and nothing identifying it as an app-level cost signal.",
+    ],
+    focus: [
+      "Selecting a starter chip fills the composer and leaves focus on the chip, so the person has to Shift+Tab back into the field they just populated, past every chip that came before it. Move focus to the composer inside `onSelectSuggestion` if the chip is meant to be a shortcut rather than a stepping stone.",
+      "Nothing else in the shell moves focus. Collapsing the sidebar keeps focus on the trigger, and the carousel arrows scroll without moving it.",
+      "Focus styling is entirely the composed components'. The starter chips derive their ring from `buttonVariants`, which is what keeps the overflow link visually identical to a real chip; the recents tiles ship their own `focus-visible:ring-2`. The shell paints no focus style and adds no focusable element of its own.",
+    ],
+  },
   pitfalls: [
     "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a preview, a panel or an app region — if you re-wrap or restyle the root, keep that containment or the sidebar pins itself to the browser's left edge. The trade-off is that the sidebar keeps its full `h-svh` height and is clipped to the shell's, so anything it bottom-anchors — `sidebarPromo` and `sidebarFooter` — falls below the clip and is invisible whenever the shell is shorter than the viewport, which is the default embedded case. Fill those two slots only in a shell rendered at viewport height.",
     "The composer's value belongs to the shell, not to C1, because a starter chip has to write into it. Passing `omnibox.value` does nothing useful — the shell overwrites it. Use `promptValue` and `onPromptChange`, or leave both off and let the shell hold the text.",

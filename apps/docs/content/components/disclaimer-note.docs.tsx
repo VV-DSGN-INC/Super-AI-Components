@@ -60,6 +60,24 @@ export const DisclaimerNoteDocs: ComponentDocs = {
       example: <DismissibleWithCloseButton />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Zero tab stops without `link`, exactly one with it. The note is a `<div>` of text; the only focusable thing it can ever contain is the optional anchor.",
+      "The anchor is a plain `<a href>` with no `target` and no `rel`, so Enter follows it in the same tab and takes the user away from the output they were checking. If it should open a support article beside the work rather than instead of it, wrap or replace the link yourself.",
+      "There is nothing to dismiss and no `Escape` handler, because there is no dismissal — that absence is the component's whole contract, not an omission.",
+    ],
+    screenReader: [
+      "The note is an unlabelled `<div>` with no role and no live region, so it is announced as ordinary text at whatever point it sits in the reading order. Placement is therefore the entire accessibility design: under the composer it is read after the input, in a card it is read last, inline it is read wherever you put it.",
+      "The default copy reads as a complete sentence on its own, which is what keeps it intelligible when the icon never renders and when it is heard out of visual context.",
+      "The `Info` glyph is `aria-hidden`, so the icon contributes nothing to the announced text and the words carry the whole message — the same reason it is never the only signal on screen.",
+      "Nothing associates the note with the output it qualifies. There is no `id` and no `aria-describedby` wiring, so a screen-reader user landing on a generated card is not told the card carries a disclaimer. Give the note an `id` and point the output container's `aria-describedby` at it when the qualification has to travel with the content.",
+      "`link` needs discernible text of its own: someone pulling up a list of links hears only the label, never the sentence around it, so \"Learn about AI limits\" works and \"here\" does not.",
+      "The `inline` variant is still a `<div>`, despite the name. Putting it inside a `<p>` is invalid nesting that browsers repair by splitting the paragraph, which reorders the very reading order this component depends on — place it as a sibling of your prose, not inside it.",
+    ],
+    focus: [
+      "The link sets no `focus-visible` style of its own — it carries an underline and a hover colour and nothing else — so its focus ring is whatever your global styles provide. With no global ring, the one focusable element in this component is invisible when focused.",
+    ],
+  },
   pitfalls: [
     "Reaching for `text-muted-foreground` out of instinct because the copy is 'just a footnote'. In this token set it measures under the 4.5:1 minimum against `bg-muted`, `bg-accent`, and `bg-secondary` — use `text-foreground` and let size and placement carry the quietness instead.",
     "Adding state to make the note collapsible or auto-hiding after a timeout — both are dismissal in disguise and undo the 'permanent' requirement just as much as a close button would.",

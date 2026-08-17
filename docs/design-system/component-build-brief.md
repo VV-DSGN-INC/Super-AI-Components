@@ -143,8 +143,27 @@ Both halves of that have broken the build before. The reference pattern is
 Fill every field: `whatItIs`, `whyItMatters` (cite the spec's Evidence
 products — never invent them), `evidence`, `anatomy` (your real `data-slot`
 names), `usage`, at least two `dos` and two `donts` each with a live example,
-and at least two `pitfalls`. Translate the spec's internal voice into
-consumer-facing prose; do not paste it verbatim.
+`accessibility`, and at least two `pitfalls`. Translate the spec's internal
+voice into consumer-facing prose; do not paste it verbatim.
+
+`accessibility` has two required arms and one optional one, and the gate checks
+both required arms rather than just the block:
+
+- `keyboard` — the real tab-stop count and what changes it, which keys
+  activate, and which keys a user will expect to work and **do not**. Whether
+  `disabled` reaches every control or only some of them.
+- `screenReader` — the roles and `aria-*` actually present, how each accessible
+  name is computed, and what silently degrades it. A name derived from
+  `typeof children === "string"` collapsing to a generic label when passed an
+  element is the recurring one here. Also: which state changes have no live
+  region and are therefore announced as nothing.
+- `focus` (optional) — where focus lands when the component unmounts, opens or
+  reorders something. Omit only when nothing moves focus.
+
+Write it from your component's source, and record holes honestly rather than
+describing behaviour you wish existed: an unwritable `screenReader` note is a
+finding about the component, not about the docs. The reference implementation
+is `filter-bar.docs.tsx`.
 
 ### Escape quotes and apostrophes in JSX text
 

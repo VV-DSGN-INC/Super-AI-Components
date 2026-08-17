@@ -70,6 +70,30 @@ export const PropertyInspectorDocs: ComponentDocs = {
       example: <BadEmptyShrug />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      'Each section is at least one tab stop: the `section-header` trigger, a native button carrying `aria-expanded`. A section with a group reset adds a second — but only while that reset is enabled, since `reset-affordance` renders `disabled` at `state="default"` and leaves the tab order there.',
+      "Every `PropertyRow` reserves a row reset the same way: mounted at all times so the row never reflows, `disabled` until the value drifts. The panel's tab-stop count therefore grows as the user edits, which is the opposite of what a panel this static-looking suggests.",
+      "The controls themselves are yours. `PropertyRow` hands your render function a `controlId` and a `describedBy` and enforces nothing — how many stops a row really has, and whether Enter commits a value, is decided by what you put in it.",
+      "No arrow keys at panel level. Sections are independent buttons rather than an accordion with roving focus, so moving between them is Tab only; collapsing is Space or Enter on the trigger, and there is no Escape, no expand-all and no collapse-all.",
+      "Collapsing a section unmounts its rows outright rather than hiding them, so every control inside leaves the tab order entirely — which is the behaviour you want, and also means a keyboard user cannot reach a value they can still see the reset dot for.",
+    ],
+    screenReader: [
+      'The panel is deliberately not a landmark: no `role="region"`, because two inspectors on one page would collide on axe\'s `landmark-unique`. It is found by its `<h3>` title and by reading order, not by landmark navigation.',
+      'The selection summary is `role="status"`, a polite live region, so changing what is selected announces the new selection label without stealing focus. It is the only announcement the component makes — the entire section stack being replaced underneath it is silent.',
+      "The section trigger reports `aria-expanded` but there is no `aria-controls` tying it to the rows it opens, so the relationship is positional only.",
+      'A collapsed section that has changes in it degrades the group reset to a dot, which is `aria-hidden`, and the component adds an `sr-only` "<section> modified" beside it. The fact survives as text; the control does not, so there is no way to reset a collapsed group without expanding it first.',
+      'Every reset is named. Group scope reads "Reset Layout"; row scope defaults to "Reset <label>", which is exactly why `PropertyRow` builds that default — six rows all announcing as "Reset" is unusable. Both glyphs (↺ and the keyframed ◇) are `aria-hidden`, so `keyframed` announces identically to `modified`: the two states differ only in a character nobody hears.',
+      "`field-row`'s `<label for>` reaches your control only if your render function applies the `controlId` it is given. Ignore it and the visible label is orphaned and the control is unnamed — the same trap `parameter-panel` documents at source. `hint` behaves the same way: it renders and gets an id, and is wired up only when you spread `describedBy` onto the control.",
+      'The empty state\'s guidance is a plain paragraph. What names the state is the `role="status"` line reading `emptyTitle`; the body says what to do instead of repeating it, so an assistive-tech user gets the name once and the instruction once.',
+    ],
+    focus: [
+      "Changing `elementType` replaces the whole section stack. If focus was on a section trigger, a group reset, or any control inside a row, that element unmounts and focus falls to `<body>` — so selecting a different object on the canvas silently sends the next Tab back to the top of the page. Restore focus in your selection handler if the panel is meant to be keyboard-driven.",
+      'A reset that returns its row to `state="default"` becomes `disabled` in the same render, and a button disabled while focused is blurred by the browser: pressing a row reset drops focus to `<body>`. The group reset behaves the same way.',
+      "Collapsing is safe by construction — focus is on the trigger, which survives — but a mouse click on a trigger while focus sits inside one of that section's rows loses it.",
+      "The section trigger and both reset scopes draw their own `focus-visible:ring-2`. Anything you render inside a row brings its own, so a row built from bare elements is as visible on focus as you made it.",
+    ],
+  },
   pitfalls: [
     "Storing collapsed state per section instead of per element type. Collapsing Layout for a text object then silently collapses it for an image, and the user re-expands the same section all day. The inspector keys its memory `elementType -> sectionId`; a host that persists the state through `onSectionOpenChange` must key it the same way.",
     "Branching on element type at the call site instead of adding a key to `sections`. The moment one editor forks, the variants drift — different section order, different labels, different reset behaviour — and the panel stops being one component.",

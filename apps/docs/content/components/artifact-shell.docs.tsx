@@ -73,6 +73,32 @@ export const ArtifactShellDocs: ComponentDocs = {
       example: <TwoFacetRowsOverOneIndex />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "The shell's own tab order is: the sidebar trigger, then every facet chip in turn, then the Filters button if you passed `onOpenFilters`, then the search field, then the grid region itself, then everything inside it. The sidebar's slots come before all of that.",
+      "The grid carries `tabIndex={0}` on purpose — it is the scroll container, so it is a real tab stop that can be scrolled with the arrows. It does not skip the cards beyond it; every card link is still its own stop after it.",
+      "A5's chips have no roving tabindex, so the facet row is one Tab per chip. An index with six types costs seven presses (\"All\" included) before the search field, and Left/Right do nothing.",
+      "Cmd/Ctrl+B toggles the sidebar from anywhere on the page, including while you are typing in this shell's search field — the vendored `SidebarProvider` binds it to `window` and calls `preventDefault()` unconditionally.",
+      "Nothing focuses the search field by shortcut: there is no \"/\" handler and no skip link into the index. Reaching a card from the page body means tabbing the whole header.",
+      "With `collapsibleSessions`, each session header adds a tab stop inside the grid, activated with Space or Enter.",
+    ],
+    screenReader: [
+      "Only the grid is a landmark: `<section aria-label={gridLabel}>`, \"Artifacts\" by default. The header and search regions are plain `div`s carrying `data-region` for styling and tests, so they are not navigable as landmarks.",
+      "The index title renders as a hard-coded `<h1>`. Embed the shell in a page that already has one and you get two; the level is not configurable.",
+      "The result count is a `role=\"status\"` that is always mounted, which is the correct shape and is what makes \"the filter emptied the page\" audible. Its text is recomputed on every keystroke, though, with no debounce — typing a seven-letter query queues seven announcements.",
+      "The no-results empty state also carries `role=\"status\"`, and it mounts at the moment it becomes true. So an emptying search fires two live regions for one event, and the second one breaks the always-mounted rule the count deliberately follows.",
+      "The search field has a real visually-hidden `<label>` from `searchLabel`, so its name survives typing; the magnifier is `aria-hidden` and the placeholder is an example rather than the name.",
+      "A facet chip announces as a pressed or unpressed toggle button named \"Markdown 3\" — the count is inside the chip, so it fuses into the name. The row is a `role=\"group\"` named by `filterLabel`, not a radio group, so nothing announces that the facets are mutually exclusive even though this shell enforces that in its handler.",
+      "The draft is its own `<section>` labelled by an `<h2>` from `draftLabel`, and the K1 block inside it brings its own persistent `role=\"status\"` — so mounting a draft announces \"This block is generated and waiting on your decision\" alongside whatever the result count is saying.",
+      "Date buckets are `role=\"group\"`s named by their label and session groups are named `<section>`s inside them, so the index is navigable by region even though it exposes no headings below the `<h1>` and `<h2>`.",
+      "The sidebar trigger is named \"Toggle Sidebar\" and carries no `aria-expanded`, so the sidebar's state is never announced in either direction.",
+    ],
+    focus: [
+      "Nothing in the shell moves focus. Searching, switching a facet, and emptying the index all leave focus exactly where it was, so the reader has to go looking for the result count to learn what happened.",
+      "Collapsing the sidebar while focus is inside `sidebarPromo` drops focus to `<body>`: that slot is removed from the layout at icon-rail width rather than hidden. Focus inside the nav survives the same collapse.",
+      "The grid region and the facet chips carry their own `focus-visible` rings; the search field and the header actions inherit whatever the primitives and your own components supply.",
+    ],
+  },
   pitfalls: [
     "J4's card grid steps columns at viewport breakpoints, not at its container's width, and this shell always has a sidebar beside it — so at 1024px the grid believes it has the full window, takes three columns, and clamps the excerpt the card is built around. The shell shifts each step up one breakpoint through a descendant variant on J4's inner grid slot. If you restyle the grid region, restyle that inner slot, not the wrapper.",
     "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a preview or a panel — keep that containment if you re-wrap the root, or the sidebar pins itself to the browser's left edge. The trade-off is that the sidebar keeps its full `h-svh` height and is clipped to the shell's, so `sidebarPromo` and `sidebarFooter` fall below the clip and are invisible whenever the shell is shorter than the viewport. Fill those two slots only in a shell rendered at viewport height.",

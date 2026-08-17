@@ -63,6 +63,26 @@ export const GenerationShellDocs: ComponentDocs = {
       example: <EmptyPaneIsAnInertBox />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Tab order follows the DOM, which is the whole left column before any result: topbar actions, then the credits indicator, then every open stage of the config panel, then the cost-and-Generate row, then the canvas. There is no skip link, so reaching the third result means tabbing past the entire panel.",
+      "The results canvas is itself a tab stop. It scrolls, so it carries `tabIndex={0}` and a name — that is what keeps a scrollable region reachable — and it means one stop lands on the pane before any card inside it.",
+      'Nothing here has arrow-key navigation. Once the canvas has focus it takes the usual page keys; the grid inside it is a `role="list"` with no roving tabindex.',
+      "The shell binds no keys of its own. There is no Escape to leave select mode and no shortcut to Generate — every stop belongs to a composed component.",
+    ],
+    screenReader: [
+      'The canvas is a `<section>` with an accessible name, which makes it a `region` landmark called "Results" by default. Rename it with `resultsLabel` when the tool makes something more specific than results.',
+      'A run in flight is announced by E5\'s own live region, and a failed run by its `role="alert"`. Nothing announces the result *arriving* — the grid has no live region, so a finished batch appears in a pane the user is not in and says nothing.',
+      "The price is announced once, from one number. `cost` feeds A2's chip in the pinned row and E5's shortfall wording, which is why the shell never passes `cost` down to E5; do it yourself and the same price is announced twice from two chips.",
+      "Toggling select mode changes what each card's control means — open-this-result becomes select-this-result — without moving it or announcing anything. The bulk toolbar appearing above the grid is the only signal, and it is not live.",
+      "The empty pane is a full L1 with a before → after pair, and that pair announces as whatever you put in it. Give the two images real alt text, or the thing that teaches the tool teaches nothing.",
+    ],
+    focus: [
+      "Pressing Generate disables the button that was pressed — E5 sets `disabled` while estimating or running — so focus falls to `<body>` and the next Tab restarts at the top of the shell. The Cancel button that appears beside it is a different element and does not inherit the focus.",
+      "The shell moves focus nowhere at all. It holds no state, so every moment that ought to move focus — results arriving, select mode ending, a run failing — is left to your handlers.",
+      "Every focus ring in the shell belongs to a composed child. The one focusable element the shell owns is the canvas, and it has no `focus-visible` style of its own, so tabbing into it shows whatever the browser's default outline provides.",
+    ],
+  },
   pitfalls: [
     "E1 generation-panel already has a cost + Generate footer of its own, driven by its `cost` and `costUnit` props. This shell deliberately leaves those unset and fills only E1's `generate` slot, because E1 renders its chip as a sibling of that slot — using both would put the price outside the `cost-generate` region and leave the region holding a button with no number beside it. If you compose E1 directly somewhere else, pick one or the other; do not use both.",
     "E5 run-button renders an A2 chip of its own whenever it is given a `cost` and is idle, done or failed, and it has no way to be told not to. This shell therefore never passes `cost` to E5 — it hands it a pre-formatted `insufficientMessage` built from the same numbers instead. Pass `run={{ cost: 55 }}` yourself and you will get two chips showing the same price. The real fix belongs upstream: E5 wants a `showCost` escape hatch.",

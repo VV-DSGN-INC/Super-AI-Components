@@ -1,4 +1,12 @@
 import type { ComponentDocs } from "@/lib/component-docs";
+import {
+  CitedOnlyLooksThorough,
+  RawScoreInTheTitle,
+  UntouchedPanelSaysSo,
+  WholeRetrievedSet,
+  WithheldDocumentsAreCounted,
+  WithheldLineDropped,
+} from "./source-cards.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#k8-source-cards.
@@ -7,9 +15,10 @@ import type { ComponentDocs } from "@/lib/component-docs";
  *
  * No "use client" here: this module is plain data read by a Server Component
  * (component-docs.tsx), which destructures `docs.whatItIs`, `docs.evidence`
- * and so on directly. The dos/donts here are text-only — every rendering
- * worth showing is already a story, and this component's only interactive
- * prop (`onOpen`) could not cross the server boundary from this module.
+ * and so on directly. This component's only interactive prop (`onOpen`) is a
+ * function and cannot cross the server boundary from this module, so every
+ * live example lives in the ./source-cards.examples client sidecar and is
+ * referenced here as a zero-prop element.
  */
 export const SourceCardsDocs: ComponentDocs = {
   whatItIs:
@@ -40,25 +49,51 @@ export const SourceCardsDocs: ComponentDocs = {
   dos: [
     {
       text: "Pass every document retrieval returned, cited or not, and let the component quiet the unused ones — the gap between what was retrieved and what was used is the signal.",
+      example: <WholeRetrievedSet />,
     },
     {
       text: "Keep `hasRun` false until a search has actually run, so an untouched panel says so instead of claiming nothing matched.",
+      example: <UntouchedPanelSaysSo />,
     },
     {
       text: "Report withheld documents with `permissionFilteredCount` whenever your retrieval layer drops results for access, even when the visible list is otherwise healthy.",
+      example: <WithheldDocumentsAreCounted />,
     },
   ],
   donts: [
     {
       text: "Don't filter the array down to cited sources before passing it — a list where every card reads Cited looks like a thorough answer and hides that retrieval found nothing else worth using.",
+      example: <CitedOnlyLooksThorough />,
     },
     {
       text: "Don't put a raw similarity score in the title or snippet in place of the band — a 0.7412 is precision the retrieval does not have, and readers will treat it as if it did.",
+      example: <RawScoreInTheTitle />,
     },
     {
       text: "Don't drop the withheld-source line to keep the panel tidy. An answer that is quietly thin because three documents were filtered out reads as an answer that is simply wrong.",
+      example: <WithheldLineDropped />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "A card is a tab stop only when its source carries `onOpen`. Without one the title renders as a `<span>` and the whole card is unreachable from the keyboard, so a list where only some sources have handlers is a list with holes in it that nothing marks visually.",
+      "The title button is the only interactive element in a card. The snippet, the rank number, the Cited badge and the relevance badge are all inert — there is no expand, no copy, no Escape and no arrow-key movement between cards.",
+      "Tab order follows the component's own sort, not your array: cited sources come first. Adding `used` to a source while the panel is open moves it, and moves its tab position with it.",
+      "The permission-filtered line is text, not a control. There is no way to request access, and nothing to tab to — the count is the entire affordance.",
+    ],
+    screenReader: [
+      "The cards are a plain `<ul>` of `<li>`, so the panel announces as a list with a count. That count is the size of the retrieved set, which is the honest number and is usually larger than the number of citations in the answer above it.",
+      "A title button takes its name from `source.title` by name-from-content, so an element there still produces a name. The rank number is a sibling `<span>` outside the button, so the position is heard as loose text before the link rather than as part of it.",
+      'The Cited / "Retrieved, not used" badge is the only programmatic carrier of the used-versus-unused split. `data-used` and the 60% opacity are invisible to assistive tech, so if you restyle a card, that badge is the whole accessibility story — do not replace it with a tint.',
+      'The relevance band announces as "Strong match", "Partial match" or "Weak match" and never as a number. A source with no `relevance` simply has no second badge, which reads as unranked rather than as low.',
+      "The document and eye-off glyphs are `aria-hidden` (the lucide default), so neither adds to a name.",
+      "Nothing here announces a change. Re-running retrieval swaps the entire list, and the empty paragraph switches its wording between \"No sources matched\" and \"Sources will appear here once a search runs\", both silently — there is no live region. Announce the new result on the answer this panel sits under.",
+    ],
+    focus: [
+      "Focus is never moved by this component, but the sort can move what is under it: `used` decides ordering, so marking a source cited while the panel is open reorders the list. Cards are keyed by `source.id`, so focus stays on the card it was on — that card just jumps up the page.",
+      "The title button ships its own `focus-visible:ring-2` and is the only focusable thing here, so this list has a visible focus indicator regardless of your global style.",
+    ],
+  },
   pitfalls: [
     "The component re-sorts what you pass: cited sources move to the front, and the number on each card is its position after that sort, not the rank your retriever assigned. If the retriever's own ordering carries meaning you need to preserve, it is already gone by the time the list renders — reflect it in `relevance` instead.",
     "A source's title is a button only when you pass `onOpen`, and a plain span otherwise. Passing the handler for some sources and not others produces a list where only some cards are reachable by keyboard, with nothing visually announcing which.",

@@ -73,6 +73,29 @@ export const AiToolsMenuDocs: ComponentDocs = {
       example: <NoPrices />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "In menu mode the closed surface is one tab stop — the trigger. Enter, Space or Down opens it; Up and Down walk every row in every group, typing a letter jumps to one, Enter or Space runs it, Escape closes.",
+      "The arrow walk crosses group boundaries without stopping. The rule and the group label are not focusable, so nothing on the keyboard marks the moment you cross from the safe group into the destructive one — position is a sighted signal here.",
+      "A locked or disabled row stays in the walk, marked `aria-disabled` rather than removed, so the row you cannot run is still discoverable from the keyboard.",
+      "In inline mode there is no arrow navigation at all: each actionable row is its own tab stop inside nested `role=\"group\"` wrappers. Four groups of three actions is twelve Tab presses with no way to skip a group.",
+      "A locked or inline-disabled row is not a tab stop in inline mode — it renders as a `div`, not a button — so the keyboard passes straight over the gated capability the component exists to advertise.",
+    ],
+    screenReader: [
+      "The surface is named from the selection: \"AI tools for Hero image\". In menu mode that means clearing Base UI's default `aria-labelledby`, which is what stops three menus on one canvas announcing the same trigger word.",
+      "The visible selection header is `aria-hidden` on purpose — its words already reach assistive tech through that name, so it is not read twice. The consequence is that with no `selection` prop the surface announces the bare \"AI tools\" and nothing states what is selected.",
+      "Group labels are `aria-hidden` too; each group carries the same words as its `aria-label`. A group given `actions` but no `label` is an unnamed group, which announces as an unlabelled boundary rather than as \"Careful work\".",
+      "In inline mode every actionable row is a `<button>` with `aria-pressed=\"false\"` from the composed `entity-row`, so Remove background announces as an unpressed toggle rather than as a one-shot action.",
+      "A row's name is its whole content read as one string — title, description, price, and the word Locked. The padlock and the coin glyph are both `aria-hidden`.",
+      "`data-destructive` is a styling hook and reaches no assistive technology. A destructive row announces exactly like a safe one; the word in the group label is the only thing that says otherwise.",
+      "Nothing announces that an action started, finished or spent anything. Put the live region on the canvas or the queue that receives the result.",
+    ],
+    focus: [
+      "In menu mode, running an action closes the menu and returns focus to the trigger — usually the AI entry on a context toolbar, which is where the next selection is made.",
+      "In inline mode a row that your handler removes takes focus with it, and nothing restores it: focus falls to `<body>` and the next Tab restarts from the top of the page.",
+      "Interactive rows carry `entity-row`'s `focus-visible:ring-2`. The trigger does not — it is your element, so its focus style is yours to supply.",
+    ],
+  },
   pitfalls: [
     "Destructive is never signalled by colour here. `text-destructive` measures 4.0:1 on its own and worse over a translucent destructive tint, and the accessibility baseline forbids colour as a sole signal in any case — so the state is carried by position below the rule, by the group's label, by the row's icon and by `data-destructive`. If you restyle it, keep a non-colour signal.",
     "In menu mode the rows are deliberately not interactive themselves: the menu item is the control, and A9 rendering its own button inside one would nest two interactives and fail the accessibility gate. If you fork this component, keep that split.",

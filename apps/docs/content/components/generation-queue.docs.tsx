@@ -57,6 +57,29 @@ export const GenerationQueueDocs: ComponentDocs = {
       example: <CancelReachesFinishedSlot />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "A row's tab-stop count is a function of its state, and its state changes on its own. `queued` and `running` rows expose one Cancel, `failed` rows expose one Retry, `done` and `cancel` rows expose nothing. A queue of eight resolving one at a time sheds a tab stop each time.",
+      "Cancel-all is one more stop, and it unmounts the moment nothing is left to cancel.",
+      "The rows themselves are not focusable. A9 `entity-row` is composed without `onSelect`, so it stays a plain `<div>`: the title, description and badge are text, and the only controls are the buttons in its trailing slot.",
+      "There is no keyboard shortcut for anything. Escape does not cancel, and Delete does not dismiss a resolved row.",
+    ],
+    screenReader: [
+      'Every row carries its own visually hidden `role="status"`, so a queued → running → done transition is announced even though the badge and icon already show it. Eight rows means eight live regions, and a batch that resolves at once queues eight announcements.',
+      'That status text includes the percentage while a row is running — "Frame 3: Running, 42%" — so forwarding every server tick reads a fresh percentage aloud on every tick. Throttle to something like every 5–10%.',
+      'Progress is real `role="progressbar"` semantics with `aria-valuenow` and a formatted `aria-valuetext`, both per row and for the batch, so the number is never carried by bar width alone. Omit a running row\'s `progress` and it announces as indeterminate.',
+      "The batch's \"3/8\" counter is `aria-hidden`; that information reaches assistive tech through the progressbar's value instead of through the text.",
+      "Done and failed differ by icon shape and by a text badge, so neither depends on colour. Every icon is `aria-hidden`, and it is the badge text that gets announced.",
+      'Cancel and Retry are icon-only and take their names from `cancelItemLabel` / `retryItemLabel`, defaulting to "Cancel <title>" and "Retry <title>". Override them with something that still names the row, or a queue of eight ships eight identical "Cancel" buttons.',
+      'The heading is a `<p>`, not a heading element, so "Generating 4 images" is not reachable by heading navigation — and the `<ul>` beneath it has no accessible name of its own.',
+    ],
+    focus: [
+      "This is the component's real hole: focus lives on controls the server removes. A `running` row resolving while its Cancel button holds focus unmounts that button and focus falls to `<body>`, mid-queue, with no user action involved.",
+      "Cancel-all is the same failure by design — cancelling everything empties the cancellable set, the button unmounts, and focus lands on `<body>`. Move focus to the heading or the list inside your `onCancelAll`.",
+      "Retry is the mirror image. A failed row that retries becomes `queued`, which swaps Retry for Cancel; the element is replaced rather than relabelled, so focus is lost there too.",
+      "All four controls are vendored Buttons and carry the shared `focus-visible` ring. The queue adds no focus styling of its own.",
+    ],
+  },
   pitfalls: [
     "Cancel-all only ever receives queued/running ids from the component, but that only protects the batch action — a hand-rolled per-row Cancel button outside `onCancelItem` can still target a resolved slot if you're not careful about which rows render it.",
     "The batch bar falls back to a resolved/total ratio when `batchProgress` is omitted. That ratio is a reasonable default for same-weight slots, but silently misleading once slots represent different amounts of work — pass an explicit `batchProgress` in that case instead of trusting the fallback.",

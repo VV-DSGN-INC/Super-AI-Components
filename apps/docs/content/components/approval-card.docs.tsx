@@ -56,6 +56,29 @@ export const ApprovalCardDocs: ComponentDocs = {
       example: <ResolvedWithoutUndo />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Pending, the card is one tab stop per supplied verb, plus one more for the expand toggle when there is `detail`. A card with all four verbs and a detail block is five stops; a card with only `onConfirm` is one.",
+      "The verb row is a plain `role=\"group\"` with no roving tabindex, so the arrows do nothing and each verb costs a Tab.",
+      "In `submitting` every verb is `disabled`, so the pending card's tab stops drop to just the expand toggle. In `resolved` they are gone entirely and the only stop is Undo, for as long as its window lasts.",
+      "There is no Escape, no Enter-to-confirm and no shortcut for any verb. Every decision is a Tab-and-Space, which is deliberate for a step that exists to be read first.",
+      "The Undo window is wall-clock and cannot be extended, paused or dismissed from the keyboard. Someone reading the resolution with a screen reader can easily spend the default eight seconds before reaching the button, at which point it is simply gone.",
+    ],
+    screenReader: [
+      "A persistent `role=\"status\"` line is in the DOM in every state and changes with it — \"Awaiting your decision\", \"Submitting your decision\", then the resolution wording. That is what makes the transition audible rather than merely visible.",
+      "With several cards on screen those live regions are indistinguishable: each announces \"Awaiting your decision\" with no reference to which artifact, so the surface around them has to supply that.",
+      "The card is a plain `div` and the title renders as a `div` too, not a heading. There is no region, no landmark and no heading to jump between cards with — a queue of approvals is one undifferentiated run of text in browse mode.",
+      "The expand toggle carries `aria-expanded` and `aria-controls`, and its name flips between \"Show detail\" and \"Hide detail\". The detail is genuinely unmounted while collapsed, not clipped, so a screen reader cannot read past the fold — that is the point, and it means `aria-controls` points at an element that does not exist until you expand.",
+      "Every verb is named by its visible word; the icons and the submitting spinner are all `aria-hidden`. The spinner is therefore silent — only the status line says a submission is in flight.",
+      "The resolution line's tick is `aria-hidden` and the wording carries it, so \"Sent back for editing\" is a real sentence rather than a coloured state.",
+    ],
+    focus: [
+      "A decision costs focus twice. Pressing Confirm moves the card to `submitting`, which disables the button under the pointer or caret and drops focus to `<body>`; reaching `resolved` then unmounts the whole verb row. Nothing moves focus to the resolution or to Undo.",
+      "Undo is never focused when it appears, so the control with a countdown on it is the one control a keyboard user has to go looking for. Focus it yourself when you enter `resolved`.",
+      "When the window expires the Undo button unmounts. If it had focus, focus falls to `<body>` mid-task, and the status line does not change, so nothing announces that the option has gone.",
+      "All controls inherit the shared button's `focus-visible` ring; the card adds none of its own.",
+    ],
+  },
   pitfalls: [
     "The Undo window is wall-clock time inside the component, so it closes whether or not your backend has finished. If your undo endpoint is slow, keep `undoWindowMs` comfortably longer than the round trip or people will click Undo into a closed window.",
     "Entering `resolved` a second time restarts the window — that is deliberate, so a re-decision gets a fresh chance — but it means holding the component in `resolved` while changing `resolution` also restarts it.",

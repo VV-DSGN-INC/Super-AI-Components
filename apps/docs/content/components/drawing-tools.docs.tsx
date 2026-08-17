@@ -86,6 +86,32 @@ export const DrawingToolsDocs: ComponentDocs = {
       example: <SwatchesNamedByTheirValue />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Each rail is one tab stop, not one per tool. The underlying toggle group is a composite: Tab reaches the active button, Left and Right move between the rest, and focus wraps at both ends.",
+      "A tool with `variants` adds a second tab stop. Its chevron is a plain sibling button rather than a member of the composite, so the arrow keys skip it and only Tab reaches it — a rail of six tools where four have alternates is ten stops, not six.",
+      "Space and Enter commit a rail button. Escape and an outside click close a flyout, and choosing an alternate closes it too; nothing else is bound.",
+      "The brush section is six tab stops, not three. Every `ParameterSlider` is a slider thumb plus a number field: arrow keys step the thumb by `step`, Home and End jump to `min` and `max`, and the field takes typed values.",
+      'Every swatch is its own tab stop. The grid is a `role="group"` of plain buttons with no roving tabindex, so a 24-colour palette costs 24 Tab presses and the arrow keys do nothing inside it.',
+      "There are no tool shortcuts — no B for brush, no E for eraser, no bracket keys for size. Every change goes through Tab and Enter, which is worth knowing before this sits beside a canvas people use all day.",
+      "There is no `disabled` prop anywhere on this component. A panel that should be inert while a generation runs has to be unmounted or blocked by you.",
+    ],
+    screenReader: [
+      "Rail buttons announce as toggle buttons with `aria-pressed`, named by the visually-hidden `label`. The icon is `aria-hidden`, so a tool given no `label` announces as an unnamed button.",
+      'A rail button\'s name changes as the user works: once an alternate is chosen the button becomes that alternate and reports its label, so the same physical control announces as "Pen" and later as "Pencil".',
+      'The chevron is named "Show <tool> alternates" from the parent tool\'s label, and the flyout is a group named "<tool> alternates". Both names come from the parent, so they keep pointing at the tool family even after the face changes.',
+      'Every toggle group here passes `aria-orientation={undefined}`. The vendored wrapper writes that attribute onto a `role="group"`, which does not support it, and axe fails it as `aria-allowed-attr` — carry the line with you if you lift a rail out of this component.',
+      "A swatch announces its `name`, never its fill, and reports `aria-pressed`. The palette therefore announces as a set of independent toggles even though only one can be active — the selection rule is visual (a ring and a check), not programmatic.",
+      'Each slider thumb carries its row\'s label and speaks a formatted value ("70%", not "70"). The `endpoints` strings are `aria-hidden` and never announced, so anything they say has to survive in `description` too.',
+      'The mask panel\'s status is a `role="status"` live region — the only thing here that announces on its own. It reads the coverage and the sentence naming what the mask feeds, in full, on every change.',
+      "Nothing else announces. Switching tool, shape, colour or mode changes only `aria-pressed`, so a listener hears the new state of the control they pressed and nothing about what happened to the canvas.",
+    ],
+    focus: [
+      "Choosing an alternate closes the flyout and focus returns to the chevron that opened it, not to the rail button whose face just changed. The next Left arrow does nothing, because focus is no longer inside the composite.",
+      "Switching to mask mode unmounts the swatch grid. If focus was on a swatch it falls to `<body>` and the next Tab restarts from the top of the page — move focus to the mode switch yourself if you drive `mode` from anywhere but that control.",
+      "Rail buttons, the chevron, swatches and the mask's Clear button each ship their own `focus-visible` ring. Flyout items take theirs from the shared toggle styles and the slider thumb from `ParameterSlider`, so the three treatments are not identical.",
+    ],
+  },
   pitfalls: [
     "Looking for `brush-controls`? It is here. Size, hardness and opacity were absorbed into this component rather than shipping as their own item, because a brush-size slider with no brush is not a pattern. Pass `brush` and the section appears; omit it and it does not render.",
     "The rail button becomes whichever alternate was last chosen, and keeps that face after you switch away and back. That is deliberate — it is what keeps a tool one click deep — but it means the button's accessible name changes as the user works. Do not key tests or analytics to the parent tool's label; key them to `data-tool`, which stays put.",

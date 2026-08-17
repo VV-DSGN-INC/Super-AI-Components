@@ -64,6 +64,29 @@ export const TraceTimelineDocs: ComponentDocs = {
       example: <RetryReplacingFailedAttempt />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop per span — the row trigger — plus whatever `renderDetail` puts inside the one open row. The bars, the axis and the duration are inert, so a forty-span trace is forty stops and nothing else.",
+      "Enter and Space toggle a row. The trigger is a real `<button>` from Base UI's Collapsible, so that comes for free.",
+      "Nothing else is bound. There is no arrow-key movement between rows, no Home/End, no Escape to collapse an open row and no expand-all — Tab is the only way through a long trace.",
+      "Only one row can be open at a time, so opening a row closes whichever was open and removes that row's detail — and any tab stops inside it — from the page mid-traversal.",
+    ],
+    screenReader: [
+      "Rows are `<li>` inside a `<ul>`, so the trace announces its length and each row its position in it.",
+      "Every visible part of a trigger is `aria-hidden` — the status icon, the kind icon, the name, the attempt badge, the status text, the bar and the duration. The whole accessible name is one explicit `aria-label`: `\"<name>, Attempt <n>, <status>, <duration>\"`, with a failed span reading `Failed: <error>`. It is built that way because two adjacent spans with no text node between them fuse into `\"Attempt 2Succeeded\"`.",
+      "That name is also the only place a succeeded row says so. `trace-timeline-row-status-text` is rendered for `error` and `running` only, so on screen \"succeeded\" is carried by the tick icon and the bar colour alone.",
+      "Where a bar sits on the shared axis is announced to nobody. The track is `aria-hidden`, and the row's name carries duration but not start time — so the one thing this view exists to show, that two calls overlapped, is visual only. Start time is spoken in the built-in fallback detail, and only for the row that is open.",
+      "Base UI gives each trigger `aria-expanded` and a `data-panel-open` attribute; the open row's body is a `role=\"group\"` named by a visually hidden `<h4>` reading \"<name> detail\".",
+      "There is no live region anywhere in the component. A span moving from `running` to `ok`, a retry row appearing, a trace arriving after mount and the empty message being replaced are all silent. If your trace streams, announce it yourself.",
+      "Durations are spoken through `formatDurationMs`, so \"380ms\" and \"2.4s\" rather than a raw millisecond count.",
+    ],
+    focus: [
+      "Expanding a row keeps focus on its trigger, which stays mounted — so the normal open/close path never strands focus.",
+      "Changing `expandedId` from outside while focus is inside the open row's detail unmounts that detail and drops focus to `<body>`.",
+      "Triggers ship `focus-visible:ring-2 ring-ring`. Anything `renderDetail` returns brings its own focus styling, or your global one.",
+      "Nothing scrolls a newly opened row into view, so opening a row near the bottom of a long trace expands its detail below the fold.",
+    ],
+  },
   pitfalls: [
     "Deriving the timeline's total span from array order or index instead of startMs + durationMs — the moment a call starts after an earlier one has already finished, index-based layout stops matching reality.",
     "Treating an errored row as done once it's red. The visible \"Failed: <reason>\" text is the real signal — colour alone fails anyone who can't see it.",

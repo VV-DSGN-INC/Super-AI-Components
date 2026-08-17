@@ -57,6 +57,25 @@ export const ChoiceChipsDocs: ComponentDocs = {
       example: <UnnamedNumericGroup />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "One tab stop per chip. v1 ships Tab-per-chip rather than the roving tabindex the ARIA radiogroup pattern specifies — there is a TODO in the source saying so — which means a ten-option group is ten stops between whatever precedes and follows it.",
+      "Arrow keys do nothing. Neither do Home and End. Tab and Shift+Tab are the only way to move within the group, which is the one behavioural difference from a real radiogroup that a keyboard user will notice immediately.",
+      "Space and Enter select the focused chip, because each chip is a native `<button>` with `role=\"radio\"` on it. Selection follows activation only — moving focus never changes the value, unlike a standard radio group where arrowing selects as it goes.",
+      "`disabled` reaches the underlying button and removes the chip from the tab order, but changes nothing visually: the chip carries no disabled styling of its own, so a skipped option looks exactly like an available one.",
+    ],
+    screenReader: [
+      "The group is `role=\"radiogroup\"` and each chip `role=\"radio\"` with `aria-checked`, so the selection is in the accessibility tree rather than implied by the ring. That is the whole reason this is a component and not a styled div.",
+      "The group has no accessible name unless you give it one. Nothing here sets `aria-label` or `aria-labelledby`, and props spread onto the group's div, so pass one — a row reading \"1, 2, 4, 8\" announces four unlabelled radios and the question they answer is nowhere in the tree.",
+      "Each chip's name is its children. `value` is never announced, so a chip labelled \"16:9\" whose value is `landscape` announces \"16:9\" — write the label for the reader and keep the value for your code.",
+      "Nothing announces the effect of a pick. There is no live region here, so if choosing a chip changes a price, a preview or a result count elsewhere, that surface has to say so itself.",
+      "A `ChoiceChip` rendered outside a `ChoiceChips` throws rather than degrading, so a mis-composed group is a render crash rather than a silent semantic failure.",
+    ],
+    focus: [
+      "The selection ring and the focus ring are the same `ring-ring ring-2`, so a focused-but-unselected chip is drawn identically to the selected one. `aria-checked` keeps assistive tech correct; sighted keyboard users are the ones this misleads, and it is worst in groups of three or four visually similar chips.",
+      "Nothing here unmounts, so nothing moves focus. Changing the value re-renders the same buttons and focus stays exactly where it was — including on a chip that has just become disabled, if your handler disables it.",
+    ],
+  },
   pitfalls: [
     "`value={undefined}` does not mean \"nothing is selected\" — the component reads it as \"this group is uncontrolled\" and falls back to its own internal state. A controlled group that needs an unselected position needs a sentinel chip to point at, which is what the All chip in artifact-grid is for.",
     "Selection and keyboard focus are drawn with the same ring, so a focused-but-unselected chip looks like a selected one. `aria-checked` keeps assistive tech correct; sighted keyboard users are the ones this can mislead, which matters most in groups of three or four visually similar chips.",

@@ -87,6 +87,32 @@ export const ConnectionManagerDocs: ComponentDocs = {
       example: <KeyRenderedBack />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "How many stops a row has depends on its state. A hosted row with nothing saved is the key field plus Save; once a fingerprint exists it is Test connection plus Replace key; `unreachable` is Test connection alone, because replacing a key that was never rejected is deliberately not offered. A local-model row is one stop, Download model.",
+      "Pressing Enter in the key field does nothing. The field is not inside a `<form>` — Save is a plain button with an `onClick` — so a key has to be committed by tabbing to Save, which is the opposite of what anyone pasting a credential expects.",
+      "Save is `disabled` until the field has at least one character, so Tab skips it on an empty field and nothing states the condition.",
+      "Replace key mounts the field but does not move focus into it; Cancel unmounts the whole field again. Neither is keyboard-driven beyond the button press.",
+      "Escape does nothing. There is no handler, so an open key field cannot be dismissed from the keyboard except by tabbing to Cancel.",
+      "Download model is `disabled` whenever a requirement reports `met: false`. The reason is written above it as text, not attached to the button, so a keyboard user tabbing straight to the actions row skips past the explanation.",
+    ],
+    screenReader: [
+      "Each row's condition and remedy sit in a `role=\"status\"` region, so a test result is announced when `status` changes — both sentences, condition first. That live region is the mechanism that makes \"the words are the state\" true rather than aspirational.",
+      "It is one live region per row. Five providers is five live regions, and a re-render that moves several statuses at once queues several announcements in a row.",
+      "`testing` swaps both sentences inside that same region, so the start of a test is announced too. The spinner beside the button is `aria-hidden`, as is every status glyph on the rows — the state is carried entirely by the sentence.",
+      "The key field has a real `<label>` — \"{name} API key\" — wired with `htmlFor`, never a placeholder and never a tooltip. The hint under it (\"Saving stores the key. It does not check it\") is a sibling paragraph with no `aria-describedby`, so it is not announced with the field.",
+      "Every Test connection button is named \"Test connection\" and every Replace key button \"Replace key\", on every row. Nothing ties a button to its provider except reading order — with five providers that is five identical pairs, and `data-provider-id` is for your code, not for assistive tech.",
+      "The provider name and the fingerprint/tested-at line are A9's title and description inside a non-interactive row, so they are read as text rather than as a label for the controls below them.",
+      "Requirements are a plain list, and an unmet one says \"— this machine does not meet it\" in words rather than by colour. The blocked-download sentence states why the button is disabled, but nothing associates it with the button.",
+      "The rows are `<li>`s in a `<ul>`, so a reader gets a list with an item count; the card's own title comes from `label`.",
+    ],
+    focus: [
+      "Saving a key clears the input, closes the field and unmounts the button that had focus, so focus falls to `<body>` and the next Tab restarts at the top of the page — at the end of the one flow on this screen most likely to be driven from the keyboard. Move focus to Test connection inside your `onSaveKey`. Cancel has the same effect.",
+      "Pressing Replace key unmounts Replace key: the button renders only while the field is closed, so the press that opens the field destroys the control that had focus. Focus falls to `<body>` again, and the field it just opened is somewhere above where the user now is.",
+      "Test connection goes `disabled` while `testing` is set. Browsers drop focus from an element that becomes disabled, so the press that starts a test can also cost the user their place in the page.",
+      "Nothing here defines a focus style of its own — the input and all four buttons inherit the shared primitives' `focus-visible` rings, so every control is visible on focus without a global style.",
+    ],
+  },
   pitfalls: [
     "Testing on save. Saving stores a credential; testing asks the provider a question. Fusing them means a save failure and a provider outage produce the same message, and the user cannot tell which happened.",
     "Looking for a `keyValue` prop. There isn't one, deliberately — the input is uncontrolled and is cleared the moment its value is handed to `onSaveKey`, so the component has nothing left to leak. Derive the fingerprint on your side and pass that back.",

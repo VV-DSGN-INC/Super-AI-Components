@@ -68,6 +68,21 @@ export const EnvStatusDocs: ComponentDocs = {
       example: <ColouredDotsOnly />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Zero tab stops. Every row composes `entity-row` without `onSelect`, so each renders as a `div`, and the badge is text — there is not one focusable element in the whole component.",
+      'That is right for a read-only report, but it means the remedies are instructions rather than actions. "Replace the key for this provider in Connections" cannot be followed from here, so the control that follows it has to live outside this component and be reachable on its own.',
+      "No keys are handled. Arrow keys do not move between providers: the list is a plain `ul`, not a composite.",
+    ],
+    screenReader: [
+      'Providers are a real `ul`/`li`, so the list announces with its item count. The `label` above it — "Provider status" by default — is a plain `span` that is not wired to the list, so the list itself has no accessible name.',
+      "A row reads in slot order: the provider name, then `checkedAt` if you passed it, then the badge word. The status icon is `aria-hidden`, so nothing is carried by the glyph or by its colour.",
+      'Every row carries its own `role="status"` live region holding the condition sentence and the remedy sentence. `role="status"` is implicitly atomic, so any change re-reads both sentences in full rather than only the part that moved.',
+      "That is one live region per provider. A panel polling eight providers has eight regions competing to announce, and one refresh that changes three of them queues three complete two-sentence announcements.",
+      'The badge word and the opening of the condition sentence are the same string — "Key invalid", then "Key invalid. The provider answered and rejected this request\'s credentials." — so every failing row is announced twice over. That is the price of the badge being readable on its own, not a defect, but it is what a listener hears.',
+      "The four states are distinguished by words in three places (badge, condition, remedy) and by colour in none that carries meaning. Drop any of the three and the distinction falls back onto the border tint, which is exactly the failure this component was restored to prevent.",
+    ],
+  },
   pitfalls: [
     "Rendering a balance or credit count on this component. Reachability and spend are different facts — a run can fail with a full balance when a key has expired — and this surface answers only the first question. Pair with M2 credits-indicator for the second.",
     "Treating key-invalid and not-running as interchangeable failures. One asks the user to touch a credential; the other asks them to start a local process. Sharing copy between them sends people to fix the wrong thing.",

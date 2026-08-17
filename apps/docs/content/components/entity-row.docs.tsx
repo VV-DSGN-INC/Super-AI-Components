@@ -67,10 +67,30 @@ export const EntityRowDocs: ComponentDocs = {
       example: <ChevronOnARowThatDoesNotNavigate />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "With `onSelect` the row is one tab stop and a real `<button>`: Space and Enter both fire it. Without `onSelect` it is a `<div>` with no tab stop at all, and the only reachable thing is whatever you put in `trailing`.",
+      "A list of rows is one tab stop per row. There is no roving tabindex and no arrow-key navigation, so twenty rows is twenty Tab presses and Up and Down do nothing.",
+      "`disabled` behaves differently in the two shapes and only one of them is safe. An interactive row becomes `<button disabled>` and leaves the tab order. A non-interactive row gets `aria-disabled` and `pointer-events-none`, which stops the mouse and not the keyboard — a switch or button in `trailing` stays tabbable and stays activatable by Space on a row that looks disabled.",
+      "No Escape, no Delete, no shortcut of any kind. Acting on a row from the keyboard means a control in `trailing`, and that control is a second tab stop.",
+    ],
+    screenReader: [
+      "An interactive row announces as a toggle button, because it always renders `aria-pressed` — `true` or `false`, never absent. A row that navigates therefore reports a pressed state that nothing in the product toggles.",
+      'The row\'s accessible name is computed from its contents, so title, description and any text in `trailing` are read as one string: a row titled "Anthropic" with the description "Checked 2 minutes ago" and a "Key invalid" badge announces as all three.',
+      "The icon slot is not `aria-hidden` — it only carries a colour class. A lucide glyph hides itself, but any other node you pass adds its text to that name.",
+      "A non-interactive row has no role. It is a bare `div`: not a list item, not a group, not announced as a unit. If the list matters, wrap the rows in your own `ul`/`li`.",
+      "`aria-disabled` on a non-interactive row marks the row and nothing inside it, so descendant controls stay enabled to assistive tech. That is the same hole the keyboard note describes, seen from the other side.",
+      "Nothing announces a selection change. `selected` flips `aria-pressed` and `data-state` with no live region, so a list whose selection moves from anywhere other than the row itself changes silently.",
+    ],
+    focus: [
+      "Only the interactive shape ships a `focus-visible` ring. A non-interactive row's `trailing` control carries whatever focus style you gave it, and the row itself can never take focus.",
+      "Nothing moves focus, and the row is a `<button>` in one branch and a `<div>` in the other — so toggling `onSelect` on a focused row swaps the element out from under the focus and drops it to `<body>`.",
+    ],
+  },
   pitfalls: [
     "Any row with `onSelect` renders aria-pressed, including one whose trailing chevron says it navigates. A screen reader will announce a pressed state that nothing in the product actually toggles. Until that is fixed, prefer a plain row plus your own link for navigation rows, or accept that the row reads as a toggle.",
     'The component spreads `...props` after its own attributes, so passing `data-slot` overwrites `data-slot="entity-row"` and makes the row invisible to every selector that looks for it. Address rows by a data attribute of your own (`data-action-id` is the pattern action-stack and ai-tools-menu use) rather than renaming the slot.',
     "`disabled` produces two different renderings: an interactive row becomes a real `<button disabled>`, a non-interactive one gets `aria-disabled`. Both dim to 50% opacity, which is a visual signal only — if the reason a row is unavailable matters, say it in the description rather than relying on the dimming.",
-    'The row aligns its text with `text-start`, so the title and description follow `dir` along with the flex order. Anything you pass into `trailing` is your own markup and does not: physical classes there (`ml-*`, `text-left`, a `ChevronRight` glyph) will not mirror, so reach for the logical form or flip the icon at the call site.',
+    "The row aligns its text with `text-start`, so the title and description follow `dir` along with the flex order. Anything you pass into `trailing` is your own markup and does not: physical classes there (`ml-*`, `text-left`, a `ChevronRight` glyph) will not mirror, so reach for the logical form or flip the icon at the call site.",
   ],
 };

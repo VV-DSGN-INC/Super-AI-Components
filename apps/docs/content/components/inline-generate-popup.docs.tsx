@@ -74,6 +74,28 @@ export const InlineGeneratePopupDocs: ComponentDocs = {
       example: <InstructionTemplatePlaceholder />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Two tab stops inside the popup: the prompt field, then whichever single button the state calls for — Generate, Try again, or Cancel. It is one stop while the prompt is empty, because Generate is `disabled` until there is something to send.",
+      "Enter sends and Shift+Enter breaks the line. The handler checks `event.nativeEvent.isComposing`, so the Enter that commits an IME composition does not fire a request, and a second Enter mid-run is ignored as well.",
+      "Escape closes the popup. It does not cancel the run — cancelling is the Cancel button — so closing while `generating` leaves your request in flight, which the component cannot reach into.",
+      "While generating, the prompt field is `readOnly` rather than `disabled`. It keeps its tab stop, stays readable and stays in the accessibility tree; only editing is blocked. That is the difference between this and the prompt surfaces in the registry that grey themselves out mid-run.",
+      "There is no keyboard route to the result, because there is no result here. Commit happens through `onCommit` and the popup closes — whatever you render next has to take the focus.",
+    ],
+    screenReader: [
+      "The popup is `role=\"dialog\"` named by `title`, which is why `title` is not optional: an unnamed dialog is an outright axe `aria-dialog-name` failure. Replacing it with an icon or an empty string breaks the gate, not merely the announcement.",
+      "`context`, when supplied, becomes the dialog's accessible description, so the popup announces as \"Generate here\" plus \"Under Q3 revenue drivers\" rather than making the person hunt for what they are writing under. Omit `context` and the dialog has a name and no description at all.",
+      "The prompt field is named by `aria-label` (`promptLabel`, default \"Prompt\"). There is no visible label — the placeholder is not one, and it is deliberately four words rather than an instruction template.",
+      "`inline-generate-popup-status` is a `role=\"status\" aria-live=\"polite\"` paragraph mounted in every state with a `min-h-4` and an empty string in it. That is what makes the first announcement fire: a live region that appears at the same moment as its content is usually missed.",
+      "Cancelled is announced in words — `cancelledLabel`, \"Cancelled. Nothing was inserted.\" — and the primary button relabels itself to `retryLabel`. Neither the dashed treatment nor the icon carries the meaning; both glyphs are `aria-hidden`.",
+      "`data-state` and `data-placement` announce as nothing. They exist for tests and for your own styling; the state a screen-reader user hears is the live region's sentence.",
+    ],
+    focus: [
+      "Opening the popup moves focus into it. With a `trigger`, closing returns focus to that trigger. With an `anchor` there is no trigger at all — so when the popup closes, whether on commit, on Escape or on an outside click, focus falls to `<body>` and the next Tab restarts from the top of the page. Take focus in your `onCommit` and put it on the block you just inserted, which is the insertion point the user was aiming at anyway.",
+      "`defaultOpen` is `true`, so a popup rendered with an `anchor` takes focus the moment it mounts. That is right for a surface opened by a click on an empty line and wrong if you mount it speculatively — control `open` if the popup can exist before anyone asked for it.",
+      "The buttons use the standard Button ring and the field the standard Textarea ring, so nothing here depends on a focus style you have to supply.",
+    ],
+  },
   pitfalls: [
     "Expecting the popup to find the caret. It measures nothing — a registry component owns no editor and cannot read a selection range. You compute the caret rect (a virtual element with getBoundingClientRect is the usual trick) and pass it as `anchor`; you decide whether there is room below and pass `placement`. Both decisions land on the DOM as `data-placement` so they are visible in a snapshot.",
     "Waiting for the popup to render the result. There is no state that draws generated text, on purpose. `result` goes in, `onCommit` fires once with it, the popup closes — if nothing appears in your document, the missing piece is your `onCommit` handler, not the component.",

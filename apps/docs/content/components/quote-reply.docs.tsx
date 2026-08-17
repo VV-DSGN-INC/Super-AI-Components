@@ -51,6 +51,26 @@ export const QuoteReplyDocs: ComponentDocs = {
       example: <VagueAnchor />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "Zero tab stops without `onRemove`, one with it. The excerpt, the `<cite>` anchor and the source glyph are static text, and an `image-region` quote's thumbnail is a `preview-tile` with no `onSelect` — its frame stays a `<div>`, so the image is not focusable and cannot be opened from the keyboard.",
+      "The remove control is a real button, so Space and Enter both fire `onRemove`. There is no Delete or Backspace shortcut and no Escape handler — dropping a quote from the keyboard means tabbing to the X.",
+      "There is no `disabled` prop. Everything beyond the named props spreads onto the root `<div>`, not onto the remove button, so a `disabled` or `tabIndex` you pass lands on a container that was never focusable and the X stays live.",
+    ],
+    screenReader: [
+      "The root is a plain `<div>` with no role and no name. Several quotes stacked above one composer announce as loose blocks of text, with nothing grouping them and nothing saying how many are attached.",
+      "The excerpt is a `<blockquote>`, so it announces as a quote, and the `<cite>` reads straight after it as \"Text · <anchor>\" — the source word comes from `source`, the rest is whatever you passed as `anchor`.",
+      "`line-clamp-2` clips the excerpt visually only. The whole string stays in the accessible text, so a screen-reader user hears a full paragraph where a sighted user sees two lines and an ellipsis.",
+      "The remove button's name is `removeLabel`, which defaults to \"Remove quote\" on every instance. Three quotes above one composer give three buttons with identical names; pass `removeLabel` naming the source instead.",
+      "The source glyph is `aria-hidden`, so which of the four sources this is gets announced only through the word in the `<cite>` line.",
+      "For `image-region`, `excerpt` becomes `preview-tile`'s below-placed label and is announced as ordinary text after the image. The `thumbnail` node is yours — an `<img>` without `alt` announces as an unnamed image immediately before that caption.",
+      "Nothing announces that a quote was attached or dropped. There is no live region here, so if the attachment needs confirming, put one on the composer.",
+    ],
+    focus: [
+      "Removing a quote unmounts the button that had focus and nothing restores it, so focus falls to `<body>` and the next Tab restarts from the top of the page. Move focus to the composer's input inside your `onRemove`.",
+      "The remove button is the only focusable element and it inherits the shared `Button` focus ring, so it is visible on focus with no work at the call site.",
+    ],
+  },
   pitfalls: [
     "Four sources, one component — resist forking text-range/image-region/table-cell/timeline-range into four separate components. Only the excerpt rendering branches internally (thumbnail vs. text); the icon, the anchor line, and the removal control are identical across all four, and a fork is how one of them quietly loses the dismiss control or the anchor contract.",
     "For image-region, `excerpt` is the visible caption under the thumbnail, not just an accessibility label — leaving it as a placeholder string makes the quote unreadable at a glance even though a screen reader would still announce something.",

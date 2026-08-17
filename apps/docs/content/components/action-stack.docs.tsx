@@ -48,6 +48,28 @@ export const ActionStackDocs: ComponentDocs = {
       example: <LockedRowsRemoved />,
     },
   ],
+  accessibility: {
+    keyboard: [
+      "In menu mode the closed stack is one tab stop — the trigger. Enter, Space or Down opens it; Up and Down walk the rows, typing a letter jumps to one, Enter or Space runs it, and Escape closes.",
+      "A locked or disabled row stays in the arrow-key walk. It is a menu item marked `aria-disabled` rather than one removed from the list, so a keyboard user still meets the row they cannot run — which is the whole reason locked rows are kept on screen.",
+      "In inline mode there is no arrow-key navigation: every actionable row is its own tab stop in a plain `role=\"group\"`. Eight actions is eight Tab presses, and no key skips the group.",
+      "A locked or inline-disabled row is not a tab stop at all — it renders as a `div` rather than a button, so the keyboard passes over it entirely. Only the pointer and browse mode reach it.",
+      "There is no Escape handling in inline mode and no shortcut to reach the stack; the trigger is whatever element you pass.",
+    ],
+    screenReader: [
+      "Inline mode is a group named \"Actions for this result\" — a fixed string. Two stacks on one page announce as two identically named groups, so name the surface around them.",
+      "In inline mode every actionable row is a `<button>` carrying `aria-pressed=\"false\"`, because the composed `entity-row` always emits that attribute. A one-shot action like Upscale therefore announces as an unpressed toggle button, which is wrong about what pressing it does.",
+      "A row's name is the whole row read out: title, description, the formatted price and the word Locked, in that order. \"Upscale to 4K, adds detail without re-rendering, 400 credits\" is one long name, not a name plus a description.",
+      "The padlock is `aria-hidden` and the coin glyph in the cost chip is too, so the visible word Locked and the formatted amount are what actually carry those states.",
+      "A locked inline row carries no `aria-disabled`: `locked` never reaches `entity-row`'s `disabled` prop, so the only signal that it cannot be run is the literal word Locked in the trailing slot.",
+      "Nothing announces that an action started. `onAction` fires and the menu closes; if the work is asynchronous, the live region belongs on the surface you hand the result to.",
+    ],
+    focus: [
+      "In menu mode, choosing a row closes the menu and returns focus to the trigger, so a chained handoff leaves you where you started.",
+      "In inline mode a row that disappears — because your handler removed the action, or the tier changed — takes focus with it, and nothing restores it. Focus falls to `<body>` and the next Tab restarts from the top of the page.",
+      "Interactive rows carry a `focus-visible:ring-2` from `entity-row`. The menu trigger does not: it is your element, so its focus style is yours to supply.",
+    ],
+  },
   pitfalls: [
     "In menu mode the rows are deliberately not interactive themselves — the menu item is the control, and A9 rendering its own button inside one would nest two interactives and fail the a11y gate. If you fork this component, keep that split.",
     "`locked` and `disabled` both make a row unactionable but mean different things: `locked` is a tier fact worth showing an upgrade for, `disabled` is a temporary condition. Only `locked` gets the padlock and the word.",
