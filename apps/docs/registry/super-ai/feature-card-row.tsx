@@ -106,12 +106,31 @@ function FeatureCardRow({ items, className, ...props }: FeatureCardRowProps) {
           the card's title text at any scroll position, since the title sits
           near mid-card height and the button is wide enough to reach it. Top-
           anchored instead: it only ever touches the icon/thumbnail above the
-          title, never the text. `!top-2` is `!important` because `inset-y-0`
-          survives `cn`'s merge (tailwind-merge doesn't treat `top` and
-          `inset-y` as the same conflict group), and `my-0` is required
-          alongside it — `inset-y-0`'s surviving `bottom-0` plus the vendored
-          `my-auto` re-centers the box through the auto-margin formula even
-          once `top` is pinned, unless the auto margins are zeroed too. */}
+          title, never the text.
+
+          The `!important` on `!top-2` is deliberate, not sloppiness: what it
+          defeats is `inset-y-0` surviving `cn`'s tailwind-merge pass, because
+          tailwind-merge does not treat `top` and `inset-y` as the same
+          conflict group, so a plain `top-2` would sit alongside `inset-y-0`
+          in the class list with no guarantee which one's `top` declaration
+          wins in the generated stylesheet. `!important` removes that
+          ambiguity outright rather than relying on it. `my-0` is required
+          alongside it for the same reason: `inset-y-0`'s surviving `bottom-0`
+          plus the vendored `my-auto` re-centers the box through the CSS
+          auto-margin formula for absolutely-positioned elements even once
+          `top` is pinned, unless the auto margins are zeroed too.
+
+          This registry ships owned source, not a compiled package: a
+          consumer who needs different arrow placement edits these two lines
+          directly, the same way they would any other call-site override in
+          this file.
+
+          H5 frame-strip deliberately does NOT carry this `!top-2 my-0` pair.
+          Its tile's label/timecode renders as a caption below the tile
+          rather than as inline text, so its vertically-centered arrow only
+          ever lands on the frame image — there is no text for a vertical
+          override to protect there. The asymmetry between the two files is
+          intentional and load-bearing, not a mismatch to reconcile. */}
       <CarouselPrevious data-slot="feature-card-row-previous" className="left-2 !top-2 my-0" />
       <CarouselNext data-slot="feature-card-row-next" className="right-2 !top-2 my-0" />
     </Carousel>

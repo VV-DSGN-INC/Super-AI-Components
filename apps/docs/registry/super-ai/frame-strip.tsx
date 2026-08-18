@@ -404,7 +404,16 @@ function FrameStrip({
       {/* Vendored Carousel offsets these to -left-12/-right-12, outside the
           strip's box — clipped in any constrained column. Overridden here
           rather than in the primitive; components/ui stays upstream-identical.
-          Same fix as C3 feature-card-row. */}
+
+          Horizontal-only override — deliberately, not an oversight. C3
+          feature-card-row needs a vertical (top) override too, because its
+          arrow is vertically centered on the card and lands on the card's
+          title text. Here the tile's label/timecode is a caption rendered
+          below the tile rather than inline text, so a vertically-centered
+          arrow only ever lands on the frame image, never on text — there is
+          nothing for a vertical override to protect. The two fixes started
+          from the same suggested classes but have diverged since; this is
+          no longer "the same fix as C3", only the same starting point. */}
       <CarouselPrevious data-slot="frame-strip-previous" className="left-2" />
       <CarouselNext data-slot="frame-strip-next" className="right-2" />
     </Carousel>
