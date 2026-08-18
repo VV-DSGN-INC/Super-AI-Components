@@ -61,7 +61,7 @@ import { FilterBar, FilterChip, FiltersButton } from "@/registry/super-ai/filter
  * Containment alone would still leave B1's `h-svh` box clipped to the shell's
  * height, so `sidebarPromo` and `sidebarFooter` would fall below the clip
  * unless the shell were viewport-tall. `SIDEBAR_FILLS_SHELL`, applied to the
- * same root two lines below, is what closes that gap.
+ * same root, is what closes that gap.
  */
 const EMBEDDABLE_SHELL = "[contain:layout]";
 

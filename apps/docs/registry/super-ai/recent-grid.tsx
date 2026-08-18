@@ -194,7 +194,10 @@ function RecentGrid({
         // `@[64rem]` reproduce the old `sm`/`lg` thresholds exactly, in
         // container terms.
         <div className="@container">
-          <div className="grid grid-cols-2 gap-4 @[40rem]:grid-cols-3 @[64rem]:grid-cols-4">
+          <div
+            data-slot="recent-grid-items"
+            className="grid grid-cols-2 gap-4 @[40rem]:grid-cols-3 @[64rem]:grid-cols-4"
+          >
             {items.map((item) => (
               <RecentGridItemGrid key={item.id} item={item} />
             ))}

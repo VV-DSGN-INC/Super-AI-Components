@@ -28,6 +28,13 @@ interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect">
    * button. If both an overlay label and `frameLabel` are supplied, `aria-label`
    * (from `frameLabel`) wins over the frame's own subtree-derived name — that
    * pairing is a caller error, not a supported override.
+   *
+   * With `"below"`, `frameLabel` is silently ignored rather than combined or
+   * preferred: `namedByLabel` takes the `aria-labelledby` branch whenever
+   * `label` is set, before `frameLabel`'s `aria-label` branch is ever reached.
+   * Passing both is therefore also a caller error, just one that fails
+   * silently instead of the other way winning — the frame still gets a name,
+   * only not the one you passed.
    */
   frameLabel?: string;
   /**

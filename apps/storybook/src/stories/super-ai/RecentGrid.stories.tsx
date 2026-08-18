@@ -497,7 +497,7 @@ export const Mobile: Story = {
     // breakpoints and the new container ones — the base grid-cols-2 should
     // hold. A regression back to viewport-keyed classes would show 4 here,
     // matching this gate's own window width instead of the story's box.
-    const grid = canvasElement.querySelector<HTMLElement>('[data-layout="grid"] .grid')!;
+    const grid = canvasElement.querySelector<HTMLElement>('[data-slot="recent-grid-items"]')!;
     const columns = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
     await expect(columns).toBe(2);
   },
@@ -525,7 +525,7 @@ export const JustPastThreeColumns: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const grid = canvasElement.querySelector<HTMLElement>('[data-layout="grid"] .grid')!;
+    const grid = canvasElement.querySelector<HTMLElement>('[data-slot="recent-grid-items"]')!;
     const columns = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
     await expect(columns).toBe(3);
   },
