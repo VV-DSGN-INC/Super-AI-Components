@@ -158,21 +158,9 @@ interface ChatShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   onRenameThread?: (id: string, title: string) => void;
   onDeleteThread?: (id: string) => void;
   onTogglePinThread?: (id: string) => void;
-  /**
-   * B5 promo or any ambient sidebar CTA. Collapses away at icon-rail width.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — B1 anchors this
-   * above its footer, and the containment that keeps the shell embeddable also
-   * clips B1's `h-svh` box. See the pitfalls in the docs page.
-   */
+  /** B5 promo or any ambient sidebar CTA. Collapses away at icon-rail width. */
   sidebarPromo?: React.ReactNode;
-  /**
-   * B8 account menu, or whatever anchors the bottom of the sidebar.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — same
-   * bottom-anchoring problem as `sidebarPromo`. See the pitfalls in the docs
-   * page.
-   */
+  /** B8 account menu, or whatever anchors the bottom of the sidebar. */
   sidebarFooter?: React.ReactNode;
   /** Replaces the default L1 shown when there are no threads. */
   threadsEmpty?: React.ReactNode;

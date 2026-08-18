@@ -105,14 +105,9 @@ interface ArtifactShellProps extends Omit<React.ComponentProps<"div">, "title"> 
   nav?: React.ReactNode;
   /** Replaces the default L1 shown when `nav` is empty. */
   navEmpty?: React.ReactNode;
-  /**
-   * B5 promo or any ambient sidebar CTA.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — see
-   * `EMBEDDABLE_SHELL` and the pitfalls in the docs page.
-   */
+  /** B5 promo or any ambient sidebar CTA. */
   sidebarPromo?: React.ReactNode;
-  /** B8 account menu. Same bottom-anchoring clip as `sidebarPromo`. */
+  /** B8 account menu. */
   sidebarFooter?: React.ReactNode;
   defaultSidebarOpen?: boolean;
 

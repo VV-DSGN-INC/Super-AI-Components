@@ -167,14 +167,7 @@ interface DocsShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   railLabel?: string;
   /** B1's switcher slot — a product mark or logo. Collapses to 3rem with the rail. */
   railBrand?: React.ReactNode;
-  /**
-   * B1's footer slot — account menu, theme toggle.
-   *
-   * **Clipped out of view unless the shell is viewport-tall.** B1 bottom-anchors
-   * this inside an `h-svh` box, and the containment that keeps the shell
-   * embeddable also clips that box to the shell's height. Fill it only in a
-   * shell rendered at viewport height.
-   */
+  /** B1's footer slot — account menu, theme toggle. */
   railFooter?: React.ReactNode;
   /** The keycaps shown beside the rail toggle. The vendored sidebar really does bind this. */
   railShortcut?: string[];

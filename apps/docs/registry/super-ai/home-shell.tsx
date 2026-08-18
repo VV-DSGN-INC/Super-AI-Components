@@ -113,15 +113,9 @@ interface HomeShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   nav?: React.ReactNode;
   /** Replaces the default L1 shown when `nav` is omitted. */
   navEmpty?: React.ReactNode;
-  /**
-   * B5 promo or any ambient sidebar CTA.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — B1 bottom-anchors
-   * this, and the containment that keeps the shell embeddable also clips B1's
-   * `h-svh` box. See the pitfalls in the docs page.
-   */
+  /** B5 promo or any ambient sidebar CTA. */
   sidebarPromo?: React.ReactNode;
-  /** B8 account menu. **Same bottom-anchoring clip as `sidebarPromo`.** */
+  /** B8 account menu. Sits at the bottom of the sidebar, above the rail. */
   sidebarFooter?: React.ReactNode;
   /** Starts the sidebar collapsed — the shell's half of B1's width contract. */
   defaultSidebarOpen?: boolean;
