@@ -94,9 +94,26 @@ function FeatureCardRow({ items, className, ...props }: FeatureCardRowProps) {
       </CarouselContent>
       {/* The visible next affordance the spec calls out: trackpad-only
           scroll hides half the row, and Carousel's role="region" plus
-          arrow-key handling is what keeps the row keyboard reachable. */}
-      <CarouselPrevious data-slot="feature-card-row-previous" />
-      <CarouselNext data-slot="feature-card-row-next" />
+          arrow-key handling is what keeps the row keyboard reachable.
+
+          The vendored arrows sit at -left-12/-right-12, outside the carousel's
+          own box. That is right for a full-bleed row and wrong in any
+          constrained column, where it clips or forces a horizontal scroller.
+          Overriding here rather than in the primitive: components/ui is
+          vendored and stays byte-identical to upstream.
+
+          Vertically centered (the vendored default) lands the arrow on top of
+          the card's title text at any scroll position, since the title sits
+          near mid-card height and the button is wide enough to reach it. Top-
+          anchored instead: it only ever touches the icon/thumbnail above the
+          title, never the text. `!top-2` is `!important` because `inset-y-0`
+          survives `cn`'s merge (tailwind-merge doesn't treat `top` and
+          `inset-y` as the same conflict group), and `my-0` is required
+          alongside it — `inset-y-0`'s surviving `bottom-0` plus the vendored
+          `my-auto` re-centers the box through the auto-margin formula even
+          once `top` is pinned, unless the auto margins are zeroed too. */}
+      <CarouselPrevious data-slot="feature-card-row-previous" className="left-2 !top-2 my-0" />
+      <CarouselNext data-slot="feature-card-row-next" className="right-2 !top-2 my-0" />
     </Carousel>
   );
 }

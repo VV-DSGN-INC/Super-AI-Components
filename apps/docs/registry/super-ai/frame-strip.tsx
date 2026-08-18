@@ -401,8 +401,12 @@ function FrameStrip({
           </CarouselItem>
         ) : null}
       </CarouselContent>
-      <CarouselPrevious data-slot="frame-strip-previous" />
-      <CarouselNext data-slot="frame-strip-next" />
+      {/* Vendored Carousel offsets these to -left-12/-right-12, outside the
+          strip's box — clipped in any constrained column. Overridden here
+          rather than in the primitive; components/ui stays upstream-identical.
+          Same fix as C3 feature-card-row. */}
+      <CarouselPrevious data-slot="frame-strip-previous" className="left-2" />
+      <CarouselNext data-slot="frame-strip-next" className="right-2" />
     </Carousel>
   );
 }

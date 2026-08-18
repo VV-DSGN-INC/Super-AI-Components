@@ -330,32 +330,37 @@ export const LongContent: Story = {
 };
 
 /**
- * 375px, where the spec's own requirement — "horizontal scroll needs a
- * visible next affordance" — is the thing that breaks.
+ * 375px. The vendored Carousel draws its arrows at `-left-12`/`-right-12`,
+ * outside its own box — correct on a full-bleed marketing page, and in a
+ * constrained column it is either clipped or it makes the whole page scroll
+ * sideways. O1 measured 407px of content in a 375px column, all of it arrow.
  *
- * `CarouselPrevious` and `CarouselNext` are absolutely positioned at
- * `-left-12` and `-right-12`: 3rem *outside* the row's own box. On a
- * full-bleed mobile surface that puts both arrows past the viewport edge, and
- * because the carousel viewport is `overflow-hidden` rather than a scroller,
- * there is no scrollbar and no trackpad-scroll fallback behind them — drag is
- * the only way left to advance, which is precisely the failure the arrows
- * were added to prevent. Note the story's own frame lies about this: the
- * file's `w-[36rem]` decorator still leaves room around the 375px wrapper, so
- * the arrows render here. A real 375px surface with no gutter clips them.
+ * The arrows are pulled inside the box here. The assertion is on the
+ * container's own overflow, not on the arrow's position, because the position
+ * is the mechanism and the overflow is the defect.
  *
- * What does survive is the peek. `basis-64` is 256px against 375px, so the
+ * What still survives is the peek: `basis-64` is 256px against 375px, so the
  * second card is cut off mid-face rather than hidden — the row at least says
  * it continues, which is more than `suggestion-chips` manages at this width
- * with its hidden scrollbar. Recorded, not fixed: the arrow placement lives
- * in the shared shadcn carousel, not in this component.
+ * with its hidden scrollbar.
  */
 export const Mobile: Story = {
   args: { items: ICON_TITLE_DESC },
   render: (args) => (
-    <div className="w-[375px] max-w-full">
+    <div className="w-[375px] max-w-full overflow-x-hidden">
       <FeatureCardRow {...args} />
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector<HTMLElement>('[data-slot="feature-card-row"]')!;
+    await expect(row.scrollWidth).toBeLessThanOrEqual(row.clientWidth);
+
+    const prev = canvasElement.querySelector<HTMLElement>('[data-slot="feature-card-row-previous"]')!;
+    const rowBox = row.getBoundingClientRect();
+    const prevBox = prev.getBoundingClientRect();
+    await expect(prevBox.left).toBeGreaterThanOrEqual(rowBox.left);
+    await expect(prevBox.right).toBeLessThanOrEqual(rowBox.right);
+  },
 };
 
 /**

@@ -117,3 +117,32 @@ export const Reorder: Story = {
     await expect(canvas.getByRole("button", { name: /add artboard/i })).toBeInTheDocument();
   },
 };
+
+/**
+ * 375px. Same vendored-arrow defect C3 `feature-card-row` hit: `-left-12`/
+ * `-right-12` puts the controls outside the strip's own box, so a narrow
+ * column clips them or scrolls sideways. Reported by O3 independently of
+ * O1's report on C3.
+ */
+export const Mobile: Story = {
+  args: {
+    kind: "video",
+    items: FRAMES,
+    defaultValue: "f2",
+  },
+  render: (args) => (
+    <div className="w-[375px] max-w-full overflow-x-hidden">
+      <FrameStrip {...args} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const strip = canvasElement.querySelector<HTMLElement>('[data-slot="frame-strip"]')!;
+    await expect(strip.scrollWidth).toBeLessThanOrEqual(strip.clientWidth);
+
+    const prev = canvasElement.querySelector<HTMLElement>('[data-slot="frame-strip-previous"]')!;
+    const stripBox = strip.getBoundingClientRect();
+    const prevBox = prev.getBoundingClientRect();
+    await expect(prevBox.left).toBeGreaterThanOrEqual(stripBox.left);
+    await expect(prevBox.right).toBeLessThanOrEqual(stripBox.right);
+  },
+};
