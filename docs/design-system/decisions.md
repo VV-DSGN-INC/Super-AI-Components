@@ -332,7 +332,7 @@ viewport-keyed component must use arbitrary values to match that component's old
 the named container rungs of the same name — the names line up, the pixels do not.
 
 **Verified, not assumed, per spec §4.5's full-width guarantee.** `ArtifactGrid.stories.tsx` has
-five play-function assertions on `gridTemplateColumns`, none of them a visual check: `NarrowColumn`
+four play-function assertions on `gridTemplateColumns`, none of them a visual check: `NarrowColumn`
 (420px, what `chat-shell` and `artifact-shell` hand this grid today) stays at one column instead of
 over-columning. `FullWidth` (1200px, past the 64rem/1024px threshold) steps to three columns,
 matching the old `lg:grid-cols-3` unchanged. `JustBelowTwoColumns` (600px) and
