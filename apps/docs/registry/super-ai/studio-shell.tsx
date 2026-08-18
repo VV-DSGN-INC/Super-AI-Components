@@ -73,16 +73,6 @@ import { ToolPanel, type ToolPanelProps, type ToolPanelSection } from "@/registr
  */
 const CANVAS_SURFACE = "bg-muted [--muted-foreground:var(--accent-foreground)]";
 
-/**
- * H5 composes the vendored Carousel, whose previous/next buttons are absolutely
- * positioned at `-left-12` / `-right-12` — outside the strip's own box. Without
- * gutters they are clipped by the shell's `overflow-hidden` and the strip loses
- * its only keyboard-reachable scroll control (axe
- * `scrollable-region-focusable`, which the carousel base exists to satisfy).
- * Delete this if H5 ever moves its controls inside its own bounds.
- */
-const PAGE_STRIP_GUTTERS = "px-12";
-
 const RESULT_COLUMNS: Record<1 | 2 | 3, string> = {
   1: "grid-cols-1",
   2: "grid-cols-2",
@@ -410,7 +400,7 @@ function StudioShell({
 
             <div
               data-region="page-strip"
-              className={cn("bg-background shrink-0 border-t py-2", hasStrip ? PAGE_STRIP_GUTTERS : "px-3")}
+              className="bg-background shrink-0 border-t px-3 py-2"
             >
               {hasStrip ? (
                 <FrameStrip
