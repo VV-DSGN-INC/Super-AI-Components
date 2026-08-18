@@ -89,11 +89,11 @@ export const RecentGridDocs: ComponentDocs = {
       "Nothing here can be disabled — there is no prop for it, so every rendered control is live.",
     ],
     screenReader: [
-      "The tile's accessible name comes from what is inside `preview-tile`'s frame, and in grid layout the title is not: `labelPlacement=\"below\"` puts it in a sibling `<span>` outside the button. The duration badge *is* inside the frame, so a grid tile with a duration announces as \"12:04, toggle button\" and one without announces with no name at all unless your `thumbnail` supplies text.",
-      "List layout has the same shape and no badge to fall back on: the tile is `labelPlacement=\"none\"`, so its button contains only your `thumbnail` while the title sits beside it in a separate `<p>`. Pass an `<img>` with real `alt` or the row's only control is nameless.",
-      "`preview-tile` puts `aria-pressed` on every interactive frame, so opening a project announces as a toggle button that is not pressed. Nothing in this component ever sets it to pressed — the state is meaningless here and is announced anyway.",
+      "The tile's accessible name comes from the title even though it renders outside the button: grid layout uses `labelPlacement=\"below\"`, which puts the title in a sibling `<span>` and points the frame at it with `aria-labelledby` (`preview-tile`'s `namedByLabel` path), so the button's name is the visible title by construction, not whatever happens to be inside the frame.",
+      "List layout has the same shape and no label element to point at: the tile is `labelPlacement=\"none\"`, so `recent-grid` passes the title through `frameLabel` instead, which becomes `aria-label`. The row's control is named from the same title text either way; only the mechanism differs.",
+      "`preview-tile` reports `aria-pressed` only when `selectMode=\"toggle\"`. Both layouts here pass `selectMode=\"open\"`, because `onOpen` navigates rather than toggling a pressed state — opening a project announces as a plain button, not a toggle.",
       "The edited-ago line is rendered even when there is nothing to say, as a non-breaking space with `aria-hidden`, so the height-reserving placeholder stays silent while a real string is announced normally.",
-      "The duration badge is real text rather than colour or an icon, so it survives for assistive tech — but it survives as the tile's name, which is not the same as being read after the title.",
+      "The duration badge sits inside the frame in both layouts, but `aria-labelledby`/`aria-label` override the browser's subtree-derived name, so the badge's text never becomes part of the button's accessible name — it is read as ordinary content of the tile, after the title, not folded into it.",
       "There is no live region. Opening a project, renaming one, or the list refreshing announces nothing; whatever you navigate to owns that.",
     ],
     focus: [
