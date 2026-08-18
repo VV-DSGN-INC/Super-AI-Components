@@ -128,12 +128,15 @@ but was not. `chat-shell.docs.tsx` has seven, all real. That is the bar.
 
 - **B1 `app-sidebar` escapes its container.** Its desktop branch is `fixed inset-y-0 h-svh` — right
   when a shell owns the viewport, wrong in a docs preview or Storybook canvas, where it pins itself
-  to the browser's left edge. Put `[contain:layout]` on the shell root: per CSS Containment that
-  makes it the containing block for its own fixed descendants. **Unresolved consequence:** the
-  sidebar keeps its `h-svh` and is clipped to the shell's height, so anything B1 bottom-anchors — its
-  `promo` and `footer` slots — falls below the clip whenever the shell is shorter than the viewport,
-  the default embedded case. Leave those slots empty unless your shell is viewport-tall. Affects O1,
-  O9, O10, O11.
+  to the browser's left edge. Put `[contain:layout]` on the shell root (`EMBEDDABLE_SHELL`): per CSS
+  Containment that makes it the containing block for its own fixed descendants — but containment only
+  redirects where the fixed box is *anchored*, and `h-svh` still sizes it from the viewport, so
+  anything B1 bottom-anchors (its `promo` and `footer` slots) would still clip whenever the shell is
+  shorter than the window. Fixed, not just contained: also target `[data-slot=app-sidebar]` with
+  `h-full` (`SIDEBAR_FILLS_SHELL`) so the sidebar takes its height from the shell instead of the
+  viewport. Both classes together, on the shell root — see `home-shell.tsx`'s pair for the pattern
+  and its docstrings for why each half exists. `promo` and `footer` are safe to fill in any shell,
+  viewport-tall or not.
 - **`npx shadcn add <third-party registry URL>` is unsafe here.** From `apps/docs` it resolves the
   item's own `registryDependencies` (`button`, `button-group`, `tooltip`) against the *default*
   registry and offers to overwrite this repo's Base UI primitives with Radix ones; non-interactively
