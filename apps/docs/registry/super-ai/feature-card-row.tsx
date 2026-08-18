@@ -125,12 +125,23 @@ function FeatureCardRow({ items, className, ...props }: FeatureCardRowProps) {
           directly, the same way they would any other call-site override in
           this file.
 
-          H5 frame-strip deliberately does NOT carry this `!top-2 my-0` pair.
-          Its tile's label/timecode renders as a caption below the tile
-          rather than as inline text, so its vertically-centered arrow only
-          ever lands on the frame image — there is no text for a vertical
-          override to protect there. The asymmetry between the two files is
-          intentional and load-bearing, not a mismatch to reconcile. */}
+          H5 frame-strip deliberately does NOT carry this `!top-2 my-0`
+          pair, and the reason is narrower than "the label is somewhere
+          else": its tile's label is an *overlay* band on the tile's own
+          bottom edge (A8 preview-tile, labelPlacement="overlay"), still
+          inside the same frame the arrow sits over — not a caption below
+          it. Its vertically-centered arrow currently clears that band only
+          because, in the configuration its own stories exercise without a
+          controls row, the item's height is just the tile's height, and the
+          clearance is narrow rather than generous. Adding a controls row
+          there (onReorder, or the in-out variant) would grow the item and
+          pull that centered arrow's middle down toward the label, shrinking
+          it further — see that file for the mechanism. Top-anchoring here
+          is what makes C3 immune to the equivalent shift: pinned to `top-2`
+          rather than centered, this arrow's position never depends on how
+          tall the item is, so nothing below it — longer description text,
+          an extra row, anything — can move it. The asymmetry between the
+          two files is intentional, not a mismatch to reconcile. */}
       <CarouselPrevious data-slot="feature-card-row-previous" className="left-2 !top-2 my-0" />
       <CarouselNext data-slot="feature-card-row-next" className="right-2 !top-2 my-0" />
     </Carousel>
