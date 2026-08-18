@@ -106,4 +106,43 @@ describe("PreviewTile", () => {
     render(<PreviewTile state="failed" action={<button>Retry</button>} />);
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
+
+  it("names the frame from a below-placed label without a prop", () => {
+    render(
+      <PreviewTile label="Q3 Launch Trailer" labelPlacement="below" onSelect={() => {}}>
+        <div />
+      </PreviewTile>,
+    );
+    expect(screen.getByRole("button", { name: "Q3 Launch Trailer" })).toBeInTheDocument();
+  });
+
+  it("names the frame from frameLabel when no label element exists", () => {
+    render(
+      <PreviewTile labelPlacement="none" frameLabel="Q3 Launch Trailer" onSelect={() => {}}>
+        <div />
+      </PreviewTile>,
+    );
+    expect(screen.getByRole("button", { name: "Q3 Launch Trailer" })).toBeInTheDocument();
+  });
+
+  it("keeps aria-pressed by default and drops it for an open action", () => {
+    const { rerender } = render(<PreviewTile label="A" onSelect={() => {}} selected />);
+    expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
+    rerender(<PreviewTile label="A" onSelect={() => {}} selected selectMode="open" />);
+    expect(screen.getByRole("button")).not.toHaveAttribute("aria-pressed");
+  });
+
+  it("gives two tiles on one page distinct label ids", () => {
+    render(
+      <>
+        <PreviewTile label="One" labelPlacement="below" onSelect={() => {}} />
+        <PreviewTile label="Two" labelPlacement="below" onSelect={() => {}} />
+      </>,
+    );
+    const ids = Array.from(document.querySelectorAll('[data-slot="preview-tile-label"]')).map(
+      (el) => el.id,
+    );
+    expect(new Set(ids).size).toBe(2);
+    expect(ids.every(Boolean)).toBe(true);
+  });
 });

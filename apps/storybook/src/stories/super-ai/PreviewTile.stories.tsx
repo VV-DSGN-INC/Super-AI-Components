@@ -373,15 +373,11 @@ function ControlledPresetGrid() {
  * paywalled or validated picker possible without the grid lying for a frame
  * first.
  *
- * Two clauses of the convention's `Controlled` shape need naming rather than
- * faking. `onSelect` is a bare `() => void` with no payload, so the caller
- * has to close over the item's identity itself (`() => request(preset.id)`
- * above) — there is nothing arriving with the callback to apply. And the
- * interactive frame reports itself with `aria-pressed`, which is toggle
- * semantics: correct for a filter you turn on and off, wrong for the
- * mutually-exclusive grid rendered here. `preset-grid` avoids it by keeping
- * the tile inert and wrapping it in its own `role="radio"` button. Both are
- * API-shaped and carried in the report rather than patched here.
+ * `onSelect` is still a bare `() => void` with no payload, so the caller has
+ * to close over the item's identity itself (`() => request(preset.id)` above).
+ * The toggle-semantics half is now fixed: `selectMode="open"` drops
+ * `aria-pressed` for a tile that navigates rather than toggles. This story
+ * keeps the default, because a picker *is* a toggle set.
  */
 export const Controlled: Story = {
   render: () => <ControlledPresetGrid />,
@@ -414,34 +410,30 @@ export const Controlled: Story = {
 
 /**
  * `labelPlacement="none"` — a picture with no caption, which is how
- * `frame-strip` and `recent-grid`'s list layout both use this component. It
- * is also where an icon-only tap target fails, and this retrofit found the
- * failure is wider than the `none` placement.
+ * `frame-strip` and `recent-grid`'s list layout both use this component.
  *
- * **The frame is named by its contents and by nothing else.** The overlay
- * label renders inside the frame, so it names the button; the `below` label
- * renders as a *sibling* of the frame, so it does not; `none` renders no
- * label at all. Two of the three placements therefore leave an interactive
- * tile with a decorative fill as a button with no accessible name — and
- * `recent-grid`'s grid layout ships exactly that pair (`labelPlacement="below"`
- * with `onSelect`). It has never been caught because its own stories pass no
- * `onOpen`, so every tile there renders as an inert div.
+ * This story used to describe an unfixable defect: two of the three label
+ * placements left an interactive tile as a button with no accessible name,
+ * and it could not be fixed from outside, because props spread onto the outer
+ * wrapper and never reach the `<button>`.
  *
- * It cannot be fixed from outside either: props spread onto the outer
- * wrapper, so an `aria-label` on `<PreviewTile>` lands on the div around the
- * tile and never reaches the `<button>`. The workaround is the left tile
- * below — name the picture itself with `role="img"`, which is what makes the
- * button announce "Frame 12 — harbour at dawn". The real fix is an
- * `aria-labelledby` from the frame to the label element; that is API-shaped,
- * so it is recorded rather than done here. The unnamed case is described and
- * not rendered, because shipping it would put a live `button-name` violation
- * into a gate that runs at `test: "error"`.
+ * Both halves are now closed, by different mechanisms, and the difference is
+ * the point. `below` names itself: the label is a real element, so the frame
+ * points at it with `aria-labelledby` and the name is the visible label by
+ * construction. `none` renders no label at all, so there is nothing to point
+ * at and a name has to be supplied — `frameLabel` is that supply, and the
+ * right tile below shows what is still true without it.
  */
 export const EmptyLabel: Story = {
   render: () => (
     <div className="grid grid-cols-2 gap-3">
-      <PreviewTile aspect="video" labelPlacement="none" onSelect={() => {}}>
-        <Fill className="bg-primary" name="Frame 12 — harbour at dawn" />
+      <PreviewTile
+        aspect="video"
+        labelPlacement="none"
+        frameLabel="Frame 12 — harbour at dawn"
+        onSelect={() => {}}
+      >
+        <Fill className="bg-primary" />
       </PreviewTile>
       <PreviewTile aspect="video" labelPlacement="none">
         <Fill className="bg-secondary" />
@@ -450,12 +442,37 @@ export const EmptyLabel: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-
-    // One control, and its name comes from the picture rather than a label
-    // slot or a prop.
     const named = canvas.getByRole("button", { name: "Frame 12 — harbour at dawn" });
     await expect(named).toBeInTheDocument();
     await expect(canvasElement.querySelectorAll("button")).toHaveLength(1);
+  },
+};
+
+/**
+ * The pair `recent-grid` ships and nothing staged until now: an interactive
+ * tile whose caption sits *below* the frame. Before the `aria-labelledby`
+ * fix this was a nameless button in a shipped component, invisible to every
+ * gate because no story rendered it — obligation coverage and execution
+ * coverage are different measurements.
+ *
+ * No prop names these buttons. The frame points at the label element that was
+ * already there.
+ */
+export const BelowLabelInteractive: Story = {
+  render: () => (
+    <div className="grid grid-cols-2 gap-3">
+      <PreviewTile aspect="video" label="Q3 Launch Trailer" labelPlacement="below" onSelect={() => {}}>
+        <Fill className="bg-primary" />
+      </PreviewTile>
+      <PreviewTile aspect="video" label="Brand Explainer" labelPlacement="below" onSelect={() => {}}>
+        <Fill className="bg-secondary" />
+      </PreviewTile>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("button", { name: "Q3 Launch Trailer" })).toBeInTheDocument();
+    await expect(canvas.getByRole("button", { name: "Brand Explainer" })).toBeInTheDocument();
   },
 };
 
@@ -471,11 +488,9 @@ export const EmptyLabel: Story = {
  * tooltip, because the component sets no `title`. If the rest matters, put it
  * somewhere the eye can reach.
  *
- * Only the left tile is interactive, and the asymmetry is the point rather
- * than an oversight. An overlay label lives inside the frame and so names the
- * button; a `below` label is a sibling of the frame and names nothing.
- * Handing the right tile an `onSelect` would ship an unnamed button — see
- * `EmptyLabel`, where that defect is recorded.
+ * Only the left tile is interactive, and that is now a composition choice
+ * rather than a constraint: a `below` label names its own frame, so the right
+ * tile could take an `onSelect` safely. See `BelowLabelInteractive`.
  */
 export const LongContent: Story = {
   render: (args) => (
