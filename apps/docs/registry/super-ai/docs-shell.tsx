@@ -63,12 +63,14 @@ import { SidebarNav, type SidebarNavItemData, type SidebarNavSection } from "@/r
 const EMBEDDABLE_SHELL = "[contain:layout]";
 
 /**
- * The other half of `EMBEDDABLE_SHELL`. Containment redirects where the
- * vendored sidebar's `fixed` box is anchored, but its `h-svh` still takes its
- * height from the viewport — so in any shell shorter than the window the
- * sidebar overhangs and everything it bottom-anchors (`railFooter`, this
- * shell's name for the slot) falls below the visible edge. Clipped, not
- * hidden: the control stayed in the tab order while being invisible.
+ * The other half of `EMBEDDABLE_SHELL`, and the fix for what containment
+ * alone does not solve: it redirects where the vendored sidebar's `fixed` box
+ * is anchored, but its `h-svh` still takes its height from the viewport.
+ * Without this override, the rail would overhang in any shell shorter than
+ * the window, and everything it bottom-anchors — `railFooter`, this shell's
+ * name for the slot — would fall below the visible edge: clipped, not
+ * hidden, so the control would stay in the tab order while invisible. This
+ * class sizes the rail to the shell's own height instead, closing that gap.
  *
  * Targets `[data-slot=app-sidebar]`, not the vendored `sidebar-container`
  * default named at `components/ui/sidebar.tsx:230`: B1 renders

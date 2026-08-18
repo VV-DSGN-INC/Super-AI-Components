@@ -68,12 +68,14 @@ import { RecordList, type RecordListItem, type RecordListProps } from "@/registr
 const EMBEDDABLE_SHELL = "[contain:layout]";
 
 /**
- * The other half of `EMBEDDABLE_SHELL`. Containment redirects where the
- * vendored sidebar's `fixed` box is anchored, but its `h-svh` still takes its
- * height from the viewport — so in any shell shorter than the window the
- * sidebar overhangs and everything it bottom-anchors (`sidebarPromo`,
- * `sidebarFooter`) falls below the visible edge. Clipped, not hidden: those
- * controls stayed in the tab order while being invisible.
+ * The other half of `EMBEDDABLE_SHELL`, and the fix for what containment
+ * alone does not solve: it redirects where the vendored sidebar's `fixed` box
+ * is anchored, but its `h-svh` still takes its height from the viewport.
+ * Without this override, the sidebar would overhang in any shell shorter than
+ * the window. This shell forwards no `promo` or `footer` to B1 — there is no
+ * bottom-anchored slot for that overhang to clip — but the sidebar's own box
+ * would still extend past the shell's bottom edge. This class sizes the
+ * sidebar to the shell's own height instead, closing that gap.
  *
  * Targets `[data-slot=app-sidebar]`, not the vendored `sidebar-container`
  * default named at `components/ui/sidebar.tsx:230`: B1 renders
