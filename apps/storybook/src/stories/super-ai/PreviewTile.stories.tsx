@@ -32,10 +32,11 @@ type Story = StoryObj<typeof PreviewTile>;
 
 /**
  * Colour fill standing in for whatever media a tile holds — this component
- * never knows. Nameless by default, because the children are the only thing
- * an interactive frame can take its accessible name from; `name` is the
- * `role="img"` workaround that becomes necessary wherever the label sits
- * outside the frame (see `EmptyLabel`).
+ * never knows. Nameless by default. `name` is for a picture that wants its
+ * own accessible name regardless of how the frame gets named — the
+ * `EmptyLabel` right-hand tile deliberately withholds it to stay unnamed; a
+ * tile whose frame is already named by `aria-labelledby` or `frameLabel`
+ * does not need it.
  */
 function Fill({ className, name }: { className: string; name?: string }) {
   return <div role={name ? "img" : undefined} aria-label={name} className={`h-full w-full ${className}`} />;
@@ -521,12 +522,11 @@ export const LongContent: Story = {
  * is the whole argument for `below` placement in the bottom row and the
  * reason `recent-grid` uses it while `preset-grid` does not.
  *
- * The bottom row also carries both workarounds this component currently
- * needs from its callers: the duration is a `Badge` rather than bare text
- * (the badge slot paints no surface, so plain text lands on the picture), and
- * each thumbnail names itself, because a `below` label sits outside the frame
- * and cannot name the button. Both are recorded in `EmptyLabel` and the docs
- * page rather than patched here.
+ * The bottom row also carries the one workaround this component still needs
+ * from its callers: the duration is a `Badge` rather than bare text, because
+ * the badge slot paints no surface and plain text would land on the picture.
+ * The thumbnails themselves need no separate name — each frame is already
+ * named by its own `below` label via `aria-labelledby`.
  */
 export const Mobile: Story = {
   render: () => (
@@ -550,7 +550,7 @@ export const Mobile: Story = {
           badge={<Badge variant="secondary">12:04</Badge>}
           onSelect={() => {}}
         >
-          <Fill className="bg-primary" name="Q3 Launch Trailer" />
+          <Fill className="bg-primary" />
         </PreviewTile>
         <PreviewTile
           aspect="video"
@@ -559,7 +559,7 @@ export const Mobile: Story = {
           badge={<Badge variant="secondary">3:41</Badge>}
           onSelect={() => {}}
         >
-          <Fill className="bg-secondary" name="Brand Explainer" />
+          <Fill className="bg-secondary" />
         </PreviewTile>
       </div>
     </div>
@@ -595,7 +595,7 @@ export const Boundary: Story = {
         <p className="text-foreground text-xs font-medium">Preview tile — the frame and nothing else</p>
         <div className="w-40">
           <PreviewTile aspect="video" label="Q3 Launch Trailer" labelPlacement="below" onSelect={() => {}}>
-            <Fill className="bg-primary" name="Q3 Launch Trailer" />
+            <Fill className="bg-primary" />
           </PreviewTile>
         </div>
       </section>
