@@ -372,11 +372,22 @@ export const KeyboardOrder: Story = {
      * popup's own focus management; settling first is what makes "one key, one
      * row" a provable step rather than a generous allowance.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!stops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the menu's rows: ${nameOf(active)}`);
+        }
+        // Without this, the guard is satisfied by the row focus has not left
+        // yet: "is on a row" is already true the instant the key is dispatched,
+        // so under load the stale element is returned and the caller asserts
+        // against the previous row. That is a flake, and it is one this file
+        // has already been bitten by — the wrap-around check at the end of the
+        // lap read the last row instead of the first. Requiring the identity to
+        // change is what makes "one key, one row" provable rather than merely
+        // usually true.
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved yet: still on ${nameOf(active)}`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -396,24 +407,27 @@ export const KeyboardOrder: Story = {
     await assertVisiblyFocused(start);
 
     const seen = new Set<HTMLElement>([start]);
+    let previous = start;
     for (let i = 1; i < stops.length; i += 1) {
       await userEvent.keyboard("{ArrowDown}");
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
+      previous = focused;
     }
     await expect(seen.size).toBe(stops.length);
 
     // The lap closes: the row after the last is the first again.
     await userEvent.keyboard("{ArrowDown}");
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    await expect(nameOf(await settledStop(previous))).toBe(nameOf(start));
 
     // Into the submenu and back out, without losing the root menu.
     const appearance = within(menu).getByRole("menuitem", { name: "Appearance" });
     for (let i = 0; i < stops.length && document.activeElement !== appearance; i += 1) {
+      const before = document.activeElement as HTMLElement;
       await userEvent.keyboard("{ArrowDown}");
-      await settledStop();
+      await settledStop(before);
     }
     await expect(document.activeElement).toBe(appearance);
 

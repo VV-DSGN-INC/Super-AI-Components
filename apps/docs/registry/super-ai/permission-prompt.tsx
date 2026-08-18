@@ -150,8 +150,28 @@ function PermissionPrompt({
 
   const handleApproveEdited = () => onEditFirst?.(editedValues);
 
+  // A permission gate has exactly two acceptable outcomes, and "the human
+  // pressed Escape" was silently a third. Base UI closes an alert dialog on
+  // Escape, which reaches `onOpenChange` and nothing else, so the paused call
+  // was left neither approved nor refused — the one state this component exists
+  // to prevent. Dismissal now reports a refusal.
+  //
+  // The ref is what stops a double report: Deny is an `AlertDialogCancel`, so
+  // pressing it both fires `onDeny` and closes, and every verb below marks the
+  // decision as already made before its own handler runs. Reopening clears it.
+  const resolvedRef = React.useRef(false);
+  const resolve = (handler?: () => void) => () => {
+    resolvedRef.current = true;
+    handler?.();
+  };
+  const handleOpenChange = (next: boolean) => {
+    if (next) resolvedRef.current = false;
+    else if (!resolvedRef.current) onDeny?.();
+    onOpenChange?.(next);
+  };
+
   return (
-    <AlertDialog open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={open} defaultOpen={defaultOpen} onOpenChange={handleOpenChange}>
       {trigger ? <AlertDialogTrigger render={trigger} /> : null}
       {/* Overriding a vendored ui/ primitive's data-slot is house idiom — see
           trust-dialog.tsx for the same move. */}
@@ -248,21 +268,21 @@ function PermissionPrompt({
                 data-slot="permission-prompt-approve-edited"
                 type="button"
                 variant="default"
-                onClick={handleApproveEdited}
+                onClick={resolve(handleApproveEdited)}
               >
                 Approve edited
               </Button>
             </>
           ) : (
             <>
-              <AlertDialogCancel data-slot="permission-prompt-deny" onClick={onDeny}>
+              <AlertDialogCancel data-slot="permission-prompt-deny" onClick={resolve(onDeny)}>
                 {denyLabel}
               </AlertDialogCancel>
               <Button
                 data-slot="permission-prompt-always-allow"
                 type="button"
                 variant="outline"
-                onClick={onAlwaysAllow}
+                onClick={resolve(onAlwaysAllow)}
               >
                 {alwaysAllowLabel}
               </Button>
@@ -280,7 +300,7 @@ function PermissionPrompt({
               <AlertDialogAction
                 data-slot="permission-prompt-allow-once"
                 variant="default"
-                onClick={onAllowOnce}
+                onClick={resolve(onAllowOnce)}
               >
                 {allowOnceLabel}
               </AlertDialogAction>

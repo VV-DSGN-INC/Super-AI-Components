@@ -32,10 +32,59 @@ function ChoiceChips({
     },
     [onValueChange],
   );
+
+  const ref = React.useRef<HTMLDivElement>(null);
+  const chipsOf = (root: HTMLElement | null) =>
+    Array.from(root?.querySelectorAll<HTMLElement>('[role="radio"]:not([disabled])') ?? []);
+
+  // Roving tabindex lives on the group rather than on each chip, because a chip
+  // cannot know whether it is the first one — and with nothing selected the
+  // group still needs exactly one tab stop, or it drops out of the tab order
+  // entirely. Reconciled on every render (no dependency array) so it stays
+  // correct when chips are added, removed or reordered. This is what the
+  // standing TODO asked for: the component announced `role="radiogroup"` and
+  // shipped one tab stop per chip with inert arrow keys, advertising a pattern
+  // it did not implement.
+  React.useLayoutEffect(() => {
+    const chips = chipsOf(ref.current);
+    if (!chips.length) return;
+    const checked = chips.findIndex((c) => c.getAttribute("aria-checked") === "true");
+    const stop = checked === -1 ? 0 : checked;
+    chips.forEach((c, i) => {
+      c.tabIndex = i === stop ? 0 : -1;
+    });
+  });
+
+  // In the ARIA radio pattern an arrow key moves focus *and* selects, which is
+  // why this calls setValue rather than only focusing. It reads the chip's own
+  // `data-value` instead of firing a synthetic click, so a consumer's per-chip
+  // `onClick` is not invoked for a keyboard traversal it never saw.
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const NAV = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+    if (!NAV.includes(event.key) || event.altKey || event.ctrlKey || event.metaKey) return;
+    const chips = chipsOf(ref.current);
+    const current = chips.indexOf(document.activeElement as HTMLElement);
+    if (current === -1) return;
+    event.preventDefault();
+    const forward = event.key === "ArrowRight" || event.key === "ArrowDown";
+    const next =
+      event.key === "Home"
+        ? 0
+        : event.key === "End"
+          ? chips.length - 1
+          : (current + (forward ? 1 : -1) + chips.length) % chips.length;
+    const target = chips[next];
+    target.focus();
+    const nextValue = target.dataset.value;
+    if (nextValue !== undefined) setValue(nextValue);
+  };
+
   return (
     <ChoiceChipsContext.Provider value={{ value, setValue }}>
       <div
+        ref={ref}
         role="radiogroup"
+        onKeyDown={onKeyDown}
         data-slot="choice-chips"
         className={cn("flex flex-wrap gap-2", className)}
         {...props}
@@ -52,13 +101,16 @@ function ChoiceChip({ value, className, onClick, ...props }: ChoiceChipProps) {
   const ctx = React.useContext(ChoiceChipsContext);
   if (!ctx) throw new Error("ChoiceChip must be used within ChoiceChips");
   const selected = ctx.value === value;
-  // TODO: roving tabIndex per ARIA radiogroup pattern (v1 ships Tab-per-chip)
+  // No `tabIndex` here on purpose — ChoiceChips owns it (see the layout effect
+  // there). `data-value` is what lets the group's arrow handler select a chip
+  // without reaching back through React.
   return (
     <button
       type="button"
       role="radio"
       aria-checked={selected ? "true" : "false"}
       data-slot="choice-chip"
+      data-value={value}
       data-state={selected ? "on" : "off"}
       onClick={(e) => {
         ctx.setValue(value);

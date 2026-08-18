@@ -13,7 +13,12 @@ describe("SectionHeader", () => {
 
   it("omits the count element entirely when count is not given", () => {
     const withCount = render(<SectionHeader title="Assets" count={12} />);
-    expect(document.querySelector('[data-slot="section-header-count"]')!.textContent).toBe("12");
+    const count = document.querySelector('[data-slot="section-header-count"]')!;
+    // The slot also carries a clipped ", " so the header does not announce as
+    // "Assets12" — see "separates the title from the count" below. The number
+    // is what renders; assert that rather than the slot's raw textContent.
+    expect(count.textContent).toContain("12");
+    expect(count.querySelector(".sr-only")!.textContent).toBe(", ");
     withCount.unmount();
 
     render(<SectionHeader title="Assets" />);
@@ -62,5 +67,21 @@ describe("SectionHeader", () => {
   it("is not a button when not collapsible", () => {
     render(<SectionHeader title="Plain" />);
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  // Title and count are adjacent elements, so name-from-content used to
+  // concatenate them into "Format24". `gap-2` is layout and contributes no
+  // character to the accessible name.
+  it("separates the title from the count in the accessible name", () => {
+    render(<SectionHeader title="Format" count={24} collapsible />);
+    const name = screen.getByRole("button").textContent;
+    expect(name).not.toBe("Format24");
+    expect(name).toContain("Format,");
+    expect(name).toContain("24");
+  });
+
+  it("adds nothing to the name when there is no count", () => {
+    render(<SectionHeader title="Format" collapsible />);
+    expect(screen.getByRole("button").textContent).toBe("Format");
   });
 });

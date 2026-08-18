@@ -59,8 +59,8 @@ export const ChoiceChipsDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "One tab stop per chip. v1 ships Tab-per-chip rather than the roving tabindex the ARIA radiogroup pattern specifies — there is a TODO in the source saying so — which means a ten-option group is ten stops between whatever precedes and follows it.",
-      "Arrow keys do nothing. Neither do Home and End. Tab and Shift+Tab are the only way to move within the group, which is the one behavioural difference from a real radiogroup that a keyboard user will notice immediately.",
+      "One tab stop for the whole group, on the selected chip — or on the first chip when nothing is selected, so the group never drops out of the tab order. Tab moves past the group, not through it, so a ten-option row costs one stop rather than ten.",
+      "Arrow keys move focus and selection together, which is what the ARIA radio pattern requires: Left and Up go back, Right and Down go forward, and both ends wrap. Home and End jump to the first and last chip. Selecting by arrow fires `onValueChange`, not a chip's own `onClick`, so a traversal is not reported as a click.",
       "Space and Enter select the focused chip, because each chip is a native `<button>` with `role=\"radio\"` on it. Selection follows activation only — moving focus never changes the value, unlike a standard radio group where arrowing selects as it goes.",
       "`disabled` reaches the underlying button and removes the chip from the tab order, but changes nothing visually: the chip carries no disabled styling of its own, so a skipped option looks exactly like an available one.",
     ],
@@ -79,7 +79,7 @@ export const ChoiceChipsDocs: ComponentDocs = {
   pitfalls: [
     "`value={undefined}` does not mean \"nothing is selected\" — the component reads it as \"this group is uncontrolled\" and falls back to its own internal state. A controlled group that needs an unselected position needs a sentinel chip to point at, which is what the All chip in artifact-grid is for.",
     "Selection and keyboard focus are drawn with the same ring, so a focused-but-unselected chip looks like a selected one. `aria-checked` keeps assistive tech correct; sighted keyboard users are the ones this can mislead, which matters most in groups of three or four visually similar chips.",
-    "v1 traverses with Tab, one stop per chip, rather than the roving tabindex the ARIA radiogroup pattern specifies — arrow keys do not move the selection. A ten-chip row is ten tab stops between whatever precedes and follows it, so keep rows short and put them near the control they configure.",
+    "Arrow-key traversal selects as it moves. That is correct for a radio group and surprising if you expected focus and selection to be separable — there is no roving-focus-without-selection mode, so a keyboard user cannot browse the options without changing the value. Where that matters, a tablist or a listbox is the better role.",
     "`disabled` reaches the underlying button and does stop the click, but the chip carries no disabled styling of its own, so a disabled option is visually identical to an available one. Until that ships, pass your own disabled classes, or leave the option out and say why elsewhere.",
     "Chips that append a count after the label need a logical margin (`ms-*`), not a physical one (`ml-*`), or the gap lands on the wrong side of the count under an RTL locale.",
   ],

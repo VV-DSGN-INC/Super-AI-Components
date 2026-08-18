@@ -48,6 +48,32 @@ describe("EntityRow", () => {
     expect(onSelect).not.toHaveBeenCalled();
   });
 
+  // `selected` used to default to `false`, so every interactive row emitted
+  // aria-pressed="false" and a navigation row announced as an unpressed toggle
+  // it does not have. Presence of the prop is now what makes a row a toggle.
+  it("reports no aria-pressed when the row acts rather than toggles", () => {
+    render(<EntityRow title="Fine-tune a model" onSelect={() => {}} />);
+    expect(screen.getByRole("button")).not.toHaveAttribute("aria-pressed");
+  });
+
+  it("still reports aria-pressed=false when the caller opts into toggle semantics", () => {
+    render(<EntityRow title="Summarize" onSelect={() => {}} selected={false} />);
+    expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
+  });
+
+  // pointer-events-none stopped the mouse and nothing else, so a control handed
+  // to `trailing` stayed tabbable on a row that reads as disabled.
+  it("makes a disabled non-interactive row inert, so trailing controls die with it", () => {
+    render(<EntityRow title="Off" disabled trailing={<button type="button">Toggle</button>} />);
+    expect(document.querySelector('[data-slot="entity-row"]')).toHaveAttribute("inert");
+  });
+
+  it("leaves an enabled row's trailing control reachable", () => {
+    render(<EntityRow title="On" trailing={<button type="button">Toggle</button>} />);
+    expect(document.querySelector('[data-slot="entity-row"]')).not.toHaveAttribute("inert");
+    expect(screen.getByRole("button", { name: "Toggle" })).toBeInTheDocument();
+  });
+
   it("renders icon, title and description in their slots", () => {
     render(<EntityRow icon={<span>ICON</span>} title="Title" description="Description" />);
     expect(screen.getByText("ICON")).toBeInTheDocument();

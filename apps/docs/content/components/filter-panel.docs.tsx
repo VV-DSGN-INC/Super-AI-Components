@@ -62,7 +62,7 @@ export const FilterPanelDocs: ComponentDocs = {
       "Count the stops before you commit to the rail: one per section header, one per visible facet, one more for each section that overflows, one per saved search, one per view-option chip, and the clear-all button once anything is selected. Six sections of ten facets is over sixty stops between the top of the rail and the results.",
       'A facet toggles with Space. The checkbox is a `role="checkbox"` span and the Base UI primitive explicitly cancels Enter on it, so the key most people try second does nothing here.',
       "A facet whose `count` is `0` renders a disabled checkbox, so Tab skips it. The dead end is still in the accessibility tree for anyone reading the rail with a virtual cursor, and simply absent for anyone driving it with Tab.",
-      'View options declare `role="radiogroup"` and `role="radio"` but ship no roving tabindex — there is a TODO for it in `choice-chips`. Every chip is its own tab stop, the arrow keys the role promises do nothing, and a chip can never be un-checked from the keyboard, only replaced.',
+      'View options declare `role="radiogroup"` and `role="radio"` and implement it: A4 `choice-chips` carries the roving tabindex, so the group is one tab stop and the arrow keys move and select. What has not changed is that a chip can never be un-checked from the keyboard, only replaced — that is the radio pattern working as specified, not a gap.',
       "Section headers collapse with Space or Enter. There is no Escape handler and no expand-all or collapse-all shortcut.",
       "The clear-all button is `disabled` until something is selected, so the header's tab stop appears and disappears with the selection.",
     ],

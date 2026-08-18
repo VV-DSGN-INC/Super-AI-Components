@@ -93,7 +93,7 @@ export const ArtifactGridDocs: ComponentDocs = {
     keyboard: [
       "Each card is exactly one tab stop — the excerpt's link or button — and zero when the item has neither `href` nor `onOpen`. Nothing else on the card is focusable, so a 24-artifact index is 24 Tab presses with no way to skip a session.",
       "`href` wins over `onOpen`: pass both and the handler is silently dropped, leaving a link where you expected a button.",
-      "The facet row declares `role=\"radiogroup\"` but ships one tab stop per chip and no arrow-key movement — the roving tabindex the ARIA radio pattern expects is an open TODO in `choice-chips`. Seven types is eight Tab presses (\"All\" included) before the first card, and Left/Right do nothing.",
+      "The facet row declares `role=\"radiogroup\"` and now behaves like one: A4 `choice-chips` implements the roving tabindex the ARIA radio pattern expects, so seven types plus \"All\" is a single Tab press before the first card, and Left/Right move between facets rather than doing nothing.",
       "With `collapsibleSessions`, each session header is one more tab stop, activated with Space or Enter. There is no expand-all and no key that collapses every session at once.",
       "Nothing in the grid responds to arrow keys, Home, End, or Delete. It is a list of independent links, not a grid widget.",
     ],

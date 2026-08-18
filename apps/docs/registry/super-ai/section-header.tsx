@@ -45,6 +45,17 @@ function SectionHeader({
       </span>
       {count !== undefined ? (
         <span data-slot="section-header-count" className="text-muted-foreground tabular-nums">
+          {/* The title and the count are adjacent elements with no text node
+              between them, so name-from-content concatenates them with nothing
+              in the middle: "Format" + "24" announces as "Format24". `gap-2` is
+              layout, not content, and contributes no character to the name.
+
+              A clipped separator rather than a literal {" "}: a bare text node
+              between two flex children becomes its own anonymous flex item and
+              would widen the gap. This changes the announcement and nothing
+              else. J2 filter-panel already does the equivalent inside its facet
+              rows; the primitive never got the same treatment. */}
+          <span className="sr-only">, </span>
           {count}
         </span>
       ) : null}

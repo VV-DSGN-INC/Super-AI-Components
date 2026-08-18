@@ -165,4 +165,45 @@ describe("PermissionPrompt", () => {
     render(<PermissionPrompt open action="X" className="test-class" />);
     expect(document.querySelector('[data-slot="permission-prompt"]')!.className).toContain("test-class");
   });
+
+  // A permission gate has two acceptable outcomes. Escape used to be a silent
+  // third: it closed the dialog, reached onOpenChange, and left the paused call
+  // neither approved nor refused.
+  it("reports a refusal when the human dismisses with Escape", async () => {
+    const onDeny = vi.fn();
+    const onOpenChange = vi.fn();
+    render(<PermissionPrompt defaultOpen action="Delete the repo" onDeny={onDeny} onOpenChange={onOpenChange} />);
+
+    await userEvent.keyboard("{Escape}");
+
+    expect(onDeny).toHaveBeenCalledOnce();
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  it("does not report the refusal twice when Deny is what closed it", async () => {
+    const onDeny = vi.fn();
+    render(<PermissionPrompt defaultOpen action="Delete the repo" onDeny={onDeny} />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Deny" }));
+
+    expect(onDeny).toHaveBeenCalledOnce();
+  });
+
+  // Allow once does not close the dialog itself, so a consumer that closes in
+  // response must not have the dismissal reported as a denial.
+  it("does not turn an approval into a refusal when the consumer closes after it", async () => {
+    const onDeny = vi.fn();
+    const onAllowOnce = vi.fn();
+    const { rerender } = render(
+      <PermissionPrompt open action="Delete the repo" onDeny={onDeny} onAllowOnce={onAllowOnce} />,
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Allow once" }));
+    expect(onAllowOnce).toHaveBeenCalledOnce();
+
+    rerender(
+      <PermissionPrompt open={false} action="Delete the repo" onDeny={onDeny} onAllowOnce={onAllowOnce} />,
+    );
+    expect(onDeny).not.toHaveBeenCalled();
+  });
 });

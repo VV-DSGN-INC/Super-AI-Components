@@ -106,4 +106,37 @@ describe("PreviewTile", () => {
     render(<PreviewTile state="failed" action={<button>Retry</button>} />);
     expect(screen.getByRole("button", { name: "Retry" })).toBeInTheDocument();
   });
+
+  // With the label outside the frame the button contained only the caller's
+  // thumbnail, so it was announced by that node's alt text or by nothing.
+  it.each(["below", "none"] as const)(
+    "names the interactive frame when the label sits outside it (%s)",
+    (placement) => {
+      render(<PreviewTile label="Q3 launch" labelPlacement={placement} onSelect={() => {}} />);
+      expect(screen.getByRole("button", { name: "Q3 launch" })).toBeInTheDocument();
+    },
+  );
+
+  it("does not duplicate the label into the frame when it already sits inside", () => {
+    render(<PreviewTile label="Q3 launch" labelPlacement="overlay" onSelect={() => {}} />);
+    expect(document.querySelectorAll('[data-slot="preview-tile-frame-label"]')).toHaveLength(0);
+    expect(screen.getByRole("button", { name: "Q3 launch" })).toBeInTheDocument();
+  });
+
+  it("leaves a decorative tile out of the tab order even with a label", () => {
+    render(<PreviewTile label="Q3 launch" labelPlacement="below" />);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  // Same rule as A9 entity-row: presence of `selected`, not its value, is what
+  // makes the frame a toggle.
+  it("reports no aria-pressed when the tile opens rather than toggles", () => {
+    render(<PreviewTile label="Q3 launch" onSelect={() => {}} />);
+    expect(screen.getByRole("button")).not.toHaveAttribute("aria-pressed");
+  });
+
+  it("still reports aria-pressed=false when the caller opts into toggle semantics", () => {
+    render(<PreviewTile label="Neon" onSelect={() => {}} selected={false} />);
+    expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "false");
+  });
 });

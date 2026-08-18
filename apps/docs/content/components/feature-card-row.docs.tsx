@@ -80,7 +80,7 @@ export const FeatureCardRowDocs: ComponentDocs = {
       "There is no way to disable a card. `entity-row` takes a `disabled` prop and this component never passes it, so an unavailable feature has to be left out of `items` rather than dimmed.",
     ],
     screenReader: [
-      'Every card announces as a toggle button. `entity-row` renders `aria-pressed` whenever it has `onSelect`, so "Start from scratch" arrives as an unpressed toggle rather than as a button that opens something.',
+      'Every card announces as a plain button. A9 `entity-row` renders `aria-pressed` only when the caller passes `selected`, and this row does not, so "Start from scratch" arrives as a button that opens something.',
       "A card's accessible name is its whole face read as one string — icon text, title, description and anything in `trailing`, concatenated. A card with a two-line description has a two-line name, which is the cost of making the whole card the target.",
       "The thumbnail is part of neither that name nor that target. It renders above `entity-row` and outside the button, so its `alt` is announced separately and clicking it does nothing — which is why a decorative-sounding alt costs more here than usual.",
       'The row announces as "carousel" through `aria-roledescription`, and each item as "slide", but neither has a name. The root is a `role="region"` with nothing labelling it, so it is a region that is never exposed as a landmark. Pass `aria-label` on `FeatureCardRow` to fix it — the component spreads your props onto that region.',

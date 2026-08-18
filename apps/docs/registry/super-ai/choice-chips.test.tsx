@@ -45,4 +45,60 @@ describe("ChoiceChips", () => {
     expect(onValueChange).toHaveBeenCalledWith("b");
     expect(onClick).toHaveBeenCalledOnce();
   });
+
+  // The group announced role="radiogroup" and shipped one tab stop per chip
+  // with inert arrow keys — an ARIA pattern advertised but not implemented.
+  const Group = (props: { defaultValue?: string; onValueChange?: (v: string) => void }) => (
+    <ChoiceChips {...props}>
+      <ChoiceChip value="a">a</ChoiceChip>
+      <ChoiceChip value="b">b</ChoiceChip>
+      <ChoiceChip value="c">c</ChoiceChip>
+    </ChoiceChips>
+  );
+
+  it("exposes exactly one tab stop, on the selected chip", () => {
+    render(<Group defaultValue="b" />);
+    const chips = screen.getAllByRole("radio");
+    expect(chips.map((c) => c.tabIndex)).toEqual([-1, 0, -1]);
+  });
+
+  it("falls back to the first chip so the group never leaves the tab order", () => {
+    render(<Group />);
+    expect(screen.getAllByRole("radio").map((c) => c.tabIndex)).toEqual([0, -1, -1]);
+  });
+
+  it("moves focus and selection together, as the radio pattern requires", async () => {
+    const onValueChange = vi.fn();
+    render(<Group defaultValue="a" onValueChange={onValueChange} />);
+    const [a, b] = screen.getAllByRole("radio");
+    a.focus();
+
+    await userEvent.keyboard("{ArrowRight}");
+    expect(document.activeElement).toBe(b);
+    expect(onValueChange).toHaveBeenCalledWith("b");
+    expect(b).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("wraps at both ends and honours Home and End", async () => {
+    render(<Group defaultValue="a" />);
+    const chips = screen.getAllByRole("radio");
+    chips[0].focus();
+
+    await userEvent.keyboard("{ArrowLeft}");
+    expect(document.activeElement).toBe(chips[2]);
+
+    await userEvent.keyboard("{Home}");
+    expect(document.activeElement).toBe(chips[0]);
+
+    await userEvent.keyboard("{End}");
+    expect(document.activeElement).toBe(chips[2]);
+  });
+
+  it("leaves keys it does not own alone", async () => {
+    render(<Group defaultValue="a" />);
+    const chips = screen.getAllByRole("radio");
+    chips[0].focus();
+    await userEvent.keyboard("{Tab}");
+    expect(document.activeElement).not.toBe(chips[1]);
+  });
 });

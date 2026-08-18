@@ -28,7 +28,7 @@ interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect">
 function PreviewTile({
   aspect = "square",
   state = "default",
-  selected = false,
+  selected,
   label,
   labelPlacement = "overlay",
   badge,
@@ -40,6 +40,20 @@ function PreviewTile({
 }: PreviewTileProps) {
   const interactive = typeof onSelect === "function";
   const Frame = interactive ? "button" : "div";
+  // Same rule as A9 entity-row: presence of `selected`, not its value, is what
+  // makes the frame a toggle. Defaulting it to `false` meant a tile that merely
+  // opens a project ("Open Q3 launch") announced as an unpressed toggle.
+  const isToggle = selected !== undefined;
+  // With the label outside the frame there is nothing inside the button but the
+  // caller's thumbnail, so the control is announced by whatever alt text that
+  // node happens to carry — or, in `recent-grid`'s list layout, by nothing at
+  // all. A clipped copy inside the frame gives it a name from content.
+  //
+  // Deliberately not `typeof label === "string" ? aria-label : undefined`:
+  // that is the exact degrade-on-a-non-string-child pattern this registry keeps
+  // rediscovering (filter-bar's remove button, citation-ref's marker,
+  // reference-strip's roleLabel). Rendering the node works for any ReactNode.
+  const needsClippedLabel = interactive && label && labelPlacement !== "overlay";
 
   return (
     <div
@@ -51,7 +65,13 @@ function PreviewTile({
       <Frame
         // A native button gives Enter/Space, focus and disabled semantics for free.
         // Decorative tiles stay a div so they never enter the tab order.
-        {...(interactive ? { type: "button" as const, onClick: onSelect, "aria-pressed": selected } : {})}
+        {...(interactive
+          ? {
+              type: "button" as const,
+              onClick: onSelect,
+              ...(isToggle ? { "aria-pressed": selected } : {}),
+            }
+          : {})}
         data-slot="preview-tile-frame"
         className={cn(
           "bg-muted relative w-full overflow-hidden rounded-lg",
@@ -107,6 +127,11 @@ function PreviewTile({
         {badge ? (
           <span data-slot="preview-tile-badge" className="absolute top-2 right-2">
             {badge}
+          </span>
+        ) : null}
+        {needsClippedLabel ? (
+          <span data-slot="preview-tile-frame-label" className="sr-only">
+            {label}
           </span>
         ) : null}
         {label && labelPlacement === "overlay" ? (

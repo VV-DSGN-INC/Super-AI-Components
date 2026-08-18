@@ -25,7 +25,7 @@ export const EntityRowDocs: ComponentDocs = {
   anatomy: [
     {
       slot: "entity-row",
-      note: "The row itself. A <button> with aria-pressed when you pass `onSelect`, a plain <div> otherwise — the same markup either way, one interactive and one not.",
+      note: "The row itself. A <button> when you pass `onSelect` (carrying aria-pressed only if you also pass `selected`), a plain <div> otherwise — the same markup either way, one interactive and one not.",
     },
     {
       slot: "entity-row-icon",
@@ -75,7 +75,7 @@ export const EntityRowDocs: ComponentDocs = {
       "No Escape, no Delete, no shortcut of any kind. Acting on a row from the keyboard means a control in `trailing`, and that control is a second tab stop.",
     ],
     screenReader: [
-      "An interactive row announces as a toggle button, because it always renders `aria-pressed` — `true` or `false`, never absent. A row that navigates therefore reports a pressed state that nothing in the product toggles.",
+      "An interactive row announces as a toggle button only when you pass `selected`. Passing it — `true` or `false` — is what opts the row into `aria-pressed`; omit it and the row announces as a plain button, which is what a row that navigates or fires a one-shot action actually is.",
       'The row\'s accessible name is computed from its contents, so title, description and any text in `trailing` are read as one string: a row titled "Anthropic" with the description "Checked 2 minutes ago" and a "Key invalid" badge announces as all three.',
       "The icon slot is not `aria-hidden` — it only carries a colour class. A lucide glyph hides itself, but any other node you pass adds its text to that name.",
       "A non-interactive row has no role. It is a bare `div`: not a list item, not a group, not announced as a unit. If the list matters, wrap the rows in your own `ul`/`li`.",
@@ -88,7 +88,7 @@ export const EntityRowDocs: ComponentDocs = {
     ],
   },
   pitfalls: [
-    "Any row with `onSelect` renders aria-pressed, including one whose trailing chevron says it navigates. A screen reader will announce a pressed state that nothing in the product actually toggles. Until that is fixed, prefer a plain row plus your own link for navigation rows, or accept that the row reads as a toggle.",
+    "`selected` has no default, and that is load-bearing rather than incidental: presence of the prop, not its value, is what makes the row a toggle. A row that navigates should omit it; a toggle that happens to be off should pass `selected={false}` explicitly. Passing `undefined` from a ternary silently turns a toggle back into a plain button.",
     'The component spreads `...props` after its own attributes, so passing `data-slot` overwrites `data-slot="entity-row"` and makes the row invisible to every selector that looks for it. Address rows by a data attribute of your own (`data-action-id` is the pattern action-stack and ai-tools-menu use) rather than renaming the slot.',
     "`disabled` produces two different renderings: an interactive row becomes a real `<button disabled>`, a non-interactive one gets `aria-disabled`. Both dim to 50% opacity, which is a visual signal only — if the reason a row is unavailable matters, say it in the description rather than relying on the dimming.",
     "The row aligns its text with `text-start`, so the title and description follow `dir` along with the flex order. Anything you pass into `trailing` is your own markup and does not: physical classes there (`ml-*`, `text-left`, a `ChevronRight` glyph) will not mirror, so reach for the logical form or flip the icon at the call site.",
