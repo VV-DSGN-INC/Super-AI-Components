@@ -73,10 +73,12 @@ export const TypeBadge: Story = {
 };
 
 /**
- * A 1000px column — comfortably past the @4xl (56rem/896px) rung, and the
- * width a standalone consumer with no sidebar actually gives this grid.
- * Proves the container-query switch resolves the same as the old sm/lg
- * viewport breakpoints once this box has room: three columns, unchanged.
+ * A 1200px column — comfortably past 64rem/1024px, the old `lg` breakpoint
+ * and the exact container threshold this grid now uses for its third
+ * column. The width a standalone consumer with no sidebar actually gives
+ * this grid. Proves the container-query switch resolves the same as the old
+ * sm/lg viewport breakpoints once this box has room: three columns,
+ * unchanged.
  *
  * (Not the bare, unwrapped default story: Storybook's centered layout
  * decorator is itself a shrink-to-fit flex row, and this element's own
@@ -90,7 +92,7 @@ export const TypeBadge: Story = {
 export const FullWidth: Story = {
   args: { sessions: SESSIONS },
   render: (args) => (
-    <div className="w-[1000px] max-w-full">
+    <div className="w-[1200px] max-w-full">
       <ArtifactGrid {...args} />
     </div>
   ),
@@ -98,6 +100,49 @@ export const FullWidth: Story = {
     const items = canvasElement.querySelector<HTMLElement>('[data-slot="artifact-grid-items"]')!;
     const columns = getComputedStyle(items).gridTemplateColumns.split(" ").length;
     await expect(columns).toBe(3);
+  },
+};
+
+/**
+ * 600px — inside [448px, 640px), the band where Tailwind's *named*
+ * container rung (`@md`, 28rem/448px) and the old viewport rung it stands
+ * in for (`sm`, 40rem/640px) disagree. Below the real 640px threshold, so
+ * this must stay at one column. A regression back to the named `@md` rung
+ * would show two here instead — this story exists to catch exactly that,
+ * not to exercise a state the component itself declares.
+ */
+export const JustBelowTwoColumns: Story = {
+  args: { sessions: SESSIONS },
+  render: (args) => (
+    <div className="w-[600px] max-w-full">
+      <ArtifactGrid {...args} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = canvasElement.querySelector<HTMLElement>('[data-slot="artifact-grid-items"]')!;
+    const columns = getComputedStyle(items).gridTemplateColumns.split(" ").length;
+    await expect(columns).toBe(1);
+  },
+};
+
+/**
+ * 950px — inside [896px, 1024px), the same kind of gap one rung up:
+ * Tailwind's named `@4xl` (56rem/896px) versus the old `lg` (64rem/1024px)
+ * it stands in for. Below the real 1024px threshold, so this must stay at
+ * two columns. A regression back to the named `@4xl` rung would show three
+ * here instead.
+ */
+export const JustBelowThreeColumns: Story = {
+  args: { sessions: SESSIONS },
+  render: (args) => (
+    <div className="w-[950px] max-w-full">
+      <ArtifactGrid {...args} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = canvasElement.querySelector<HTMLElement>('[data-slot="artifact-grid-items"]')!;
+    const columns = getComputedStyle(items).gridTemplateColumns.split(" ").length;
+    await expect(columns).toBe(2);
   },
 };
 

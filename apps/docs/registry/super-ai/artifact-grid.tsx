@@ -338,14 +338,25 @@ function ArtifactSession({
         // The size query has to live on a wrapper, not the grid itself: a
         // container query only ever resolves against an *ancestor* query
         // container, never against the element that establishes it — putting
-        // `@container` and `@md:grid-cols-2` on the same node compiles clean
-        // but never matches, at any width, in every engine this was checked
+        // `@container` and a size variant on the same node compiles clean but
+        // never matches, at any width, in every engine this was checked
         // against. `artifact-grid-items` keeps its data-slot and its own
         // grid/gap classes; the wrapper carries no slot of its own.
+        //
+        // Arbitrary values, not the named `@md`/`@4xl` rungs: Tailwind's
+        // container scale and its breakpoint scale share step names but not
+        // step sizes (`--container-md` is 28rem/448px, `--breakpoint-sm` is
+        // 40rem/640px; `--container-4xl` is 56rem/896px, `--breakpoint-lg` is
+        // 64rem/1024px — see tailwindcss/theme.css). Reaching for the
+        // same-named rung would have shifted both crossover points earlier
+        // than the viewport breakpoints they replace, which breaks the one
+        // guarantee this change makes: identical behaviour at full width.
+        // `@[40rem]` and `@[64rem]` reproduce the old `sm`/`lg` thresholds
+        // exactly, in container terms.
         <div className="@container">
           <div
             data-slot="artifact-grid-items"
-            className="grid gap-3 @md:grid-cols-2 @4xl:grid-cols-3"
+            className="grid gap-3 @[40rem]:grid-cols-2 @[64rem]:grid-cols-3"
           >
             {session.items.map((item) => (
               <ArtifactCard key={item.id} item={item} />
