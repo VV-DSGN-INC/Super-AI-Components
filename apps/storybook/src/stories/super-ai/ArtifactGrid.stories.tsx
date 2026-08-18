@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect } from "storybook/test";
 
 import { ArtifactGrid, type ArtifactGridSession } from "@/registry/super-ai/artifact-grid";
 import { ArtifactGridDocs } from "@/content/components/artifact-grid.docs";
@@ -69,6 +70,58 @@ const SESSIONS: ArtifactGridSession[] = [
 /** The badge and the facet row are two renders of the same `type` value. */
 export const TypeBadge: Story = {
   args: { sessions: SESSIONS },
+};
+
+/**
+ * A 1000px column — comfortably past the @4xl (56rem/896px) rung, and the
+ * width a standalone consumer with no sidebar actually gives this grid.
+ * Proves the container-query switch resolves the same as the old sm/lg
+ * viewport breakpoints once this box has room: three columns, unchanged.
+ *
+ * (Not the bare, unwrapped default story: Storybook's centered layout
+ * decorator is itself a shrink-to-fit flex row, and this element's own
+ * `@container` containment stops that ancestor from sizing it off its
+ * content — the box collapses to the width of the session label instead.
+ * That is a real, general hazard for any consumer who places this grid
+ * inside a shrink-to-fit ancestor, e.g. a bare `flex justify-center` wrapper,
+ * not a defect introduced here; an explicit width sidesteps it, the same way
+ * NarrowColumn anchors its own width instead of leaving it to the canvas.)
+ */
+export const FullWidth: Story = {
+  args: { sessions: SESSIONS },
+  render: (args) => (
+    <div className="w-[1000px] max-w-full">
+      <ArtifactGrid {...args} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = canvasElement.querySelector<HTMLElement>('[data-slot="artifact-grid-items"]')!;
+    const columns = getComputedStyle(items).gridTemplateColumns.split(" ").length;
+    await expect(columns).toBe(3);
+  },
+};
+
+/**
+ * The grid in a 420px column, which is what every shell with a sidebar gives
+ * it. Keyed to the viewport it would step to two columns here purely because
+ * the *window* is wide, and the excerpt — the field the component is built
+ * around — clamps to nothing. Keyed to its own container it stays at one.
+ *
+ * chat-shell and artifact-shell both carried descendant-variant overrides to
+ * force this by hand before the grid measured itself.
+ */
+export const NarrowColumn: Story = {
+  args: { sessions: SESSIONS },
+  render: (args) => (
+    <div className="w-[420px] max-w-full">
+      <ArtifactGrid {...args} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const items = canvasElement.querySelector<HTMLElement>('[data-slot="artifact-grid-items"]')!;
+    const columns = getComputedStyle(items).gridTemplateColumns.split(" ").length;
+    await expect(columns).toBe(1);
+  },
 };
 
 /** The excerpt is the largest text and the accessible name of the card's link. */

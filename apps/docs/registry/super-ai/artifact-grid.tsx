@@ -329,13 +329,28 @@ function ArtifactSession({
         onOpenChange={onOpenChange}
       />
       {open ? (
-        <div
-          data-slot="artifact-grid-items"
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          {session.items.map((item) => (
-            <ArtifactCard key={item.id} item={item} />
-          ))}
+        // Columns key off this element's own width, not the window's. Every
+        // shell that puts this grid beside a sidebar gives it a column
+        // narrower than the viewport, and viewport breakpoints over-column it
+        // there — chat-shell and artifact-shell each carried a descendant
+        // override to correct it by hand.
+        //
+        // The size query has to live on a wrapper, not the grid itself: a
+        // container query only ever resolves against an *ancestor* query
+        // container, never against the element that establishes it — putting
+        // `@container` and `@md:grid-cols-2` on the same node compiles clean
+        // but never matches, at any width, in every engine this was checked
+        // against. `artifact-grid-items` keeps its data-slot and its own
+        // grid/gap classes; the wrapper carries no slot of its own.
+        <div className="@container">
+          <div
+            data-slot="artifact-grid-items"
+            className="grid gap-3 @md:grid-cols-2 @4xl:grid-cols-3"
+          >
+            {session.items.map((item) => (
+              <ArtifactCard key={item.id} item={item} />
+            ))}
+          </div>
         </div>
       ) : null}
     </section>

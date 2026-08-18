@@ -293,6 +293,40 @@ block count changes, per
 §1.1, which ruled that a second reference board becomes its own v2 project rather than reopen the
 frozen 114.
 
+### D19 · Container queries are the default for a component's own layout — 2026-08-18
+
+A component that lays itself out in columns keys them off its **own** width, never the viewport.
+J4 `artifact-grid` and C4 `recent-grid` are the pilots.
+
+Why: both shipped viewport-keyed columns, and every shell that put them beside a sidebar carried a
+hand-written descendant override to shift each breakpoint up a step — `ARTIFACTS_IN_STREAM` in
+`chat-shell`, `GRID_BESIDE_SIDEBAR` in `artifact-shell`. The defect is a container-vs-viewport
+confusion by construction, so no viewport-keyed value can fix it.
+
+Scope: this is not a sweep. Existing viewport breakpoints stay until a component is found to be
+wrong beside a narrower parent. Tailwind v4 ships container queries in core, so there is no
+dependency to add.
+
+**This is the repo's first `@container` usage, and it did not work on the first try.** A container
+query cannot match on the same element that establishes the container — `@container` and
+`@md:grid-cols-2` on one node compile without error but never fire, at any width, because the query
+only ever resolves against an *ancestor* query container. `artifact-grid` wraps its grid in a
+plain `<div className="@container">` and keeps the breakpoint classes on the grid element itself,
+one level down. Any future adopter of this convention needs the same two-element shape — a
+container wrapper, a queried descendant — not one element carrying both.
+
+**Verified, not assumed, per spec §4.5's full-width guarantee.** At a 1000px column (comfortably
+past `@4xl`/56rem) the grid still steps to three columns, matching the old `lg:grid-cols-3` — a
+standalone consumer sees no change. At a 420px column (what `chat-shell` and `artifact-shell` hand
+this grid today) it stays at one column instead of over-columning. Both are Storybook play-function
+assertions on `gridTemplateColumns`, not a visual check: `ArtifactGrid.stories.tsx`'s `FullWidth`
+and `NarrowColumn` stories. The bare, undecorated story was not usable for the full-width check —
+Storybook's `centered` layout is itself a shrink-to-fit flex row, and inline-size containment stops
+that ancestor from sizing the grid off its content, so the box collapses to the width of the
+session label instead of the viewport. That is a real, general hazard for any consumer who places
+this grid inside a shrink-to-fit ancestor (a bare `flex justify-center` wrapper, for instance), not
+a defect introduced here — an explicit width on the wrapping element sidesteps it.
+
 ---
 
 ## 2. Components dropped from the approved spec
