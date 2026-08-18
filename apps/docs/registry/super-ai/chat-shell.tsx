@@ -96,17 +96,6 @@ const SIDEBAR_FILLS_SHELL = "[&_[data-slot=app-sidebar]]:h-full";
 const COMPOSER_NO_NEGATIVE_PROMPT = "[&_[data-slot=media-prompt-bar-negative-toggle]]:hidden";
 
 /**
- * J4's card grid steps to two and three columns at the `sm` and `lg` *viewport*
- * breakpoints. The stream column is narrower than the viewport in every shell
- * that has a sidebar, so left alone the cards over-column and the excerpt —
- * the field the whole component is built around — clamps to nothing. The grid
- * lives on an inner slot that `className` cannot reach, hence the descendant
- * variant. Same call-site-override idiom as `model-picker`'s entity-row fix.
- */
-const ARTIFACTS_IN_STREAM =
-  "[&_[data-slot=artifact-grid-items]]:grid-cols-1 [&_[data-slot=artifact-grid-items]]:lg:grid-cols-2";
-
-/**
  * `use-stick-to-bottom` renders its own scroll element between
  * `ConversationContent`'s root and its children, and sets no overflow on it —
  * and AI Elements passes no `scrollClassName`, so out of the box the element
@@ -430,7 +419,6 @@ function ChatShell({
                 sessions={artifacts}
                 filterable={false}
                 emptyLabel={artifactsEmptyLabel}
-                className={ARTIFACTS_IN_STREAM}
               />
             </section>
           </ConversationContent>

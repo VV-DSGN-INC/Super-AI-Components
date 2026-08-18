@@ -86,23 +86,6 @@ const EMBEDDABLE_SHELL = "[contain:layout]";
 const SIDEBAR_FILLS_SHELL = "[&_[data-slot=app-sidebar]]:h-full";
 
 /**
- * J4's card grid steps columns at the `sm` and `lg` *viewport* breakpoints, not
- * at its container's width. This shell always has a sidebar beside it, so at
- * `lg` the grid believes it has 1024px and actually has ~768px, and three
- * columns clamp the excerpt — the one field the card is built around — to a
- * couple of words. Shifting each step up one breakpoint restores the excerpt.
- * The grid lives on an inner slot that `className` cannot reach, hence the
- * descendant variant; same call-site-override idiom as `model-picker`'s
- * `ENTITY_ROW_SELECTED_DESCRIPTION_FIX`. Delete this when J4 measures its
- * container instead of the window.
- */
-const GRID_BESIDE_SIDEBAR = [
-  "[&_[data-slot=artifact-grid-items]]:grid-cols-1",
-  "[&_[data-slot=artifact-grid-items]]:lg:grid-cols-2",
-  "[&_[data-slot=artifact-grid-items]]:xl:grid-cols-3",
-].join(" ");
-
-/**
  * A date bucket of sessions. Recency outside, session inside — the spec's
  * grouping rule is about sessions, and A3 is what gives the index the "Today /
  * Last 7 days" spine every artifact library on the board has.
@@ -493,7 +476,6 @@ function ArtifactShell({
                   // facet start disagreeing.
                   filterable={false}
                   collapsibleSessions={collapsibleSessions}
-                  className={GRID_BESIDE_SIDEBAR}
                 />
               </DateSection>
             ))

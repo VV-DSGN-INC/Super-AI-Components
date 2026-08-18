@@ -86,21 +86,6 @@ const EMBEDDABLE_SHELL = "[contain:layout]";
  */
 const SIDEBAR_FILLS_SHELL = "[&_[data-slot=app-sidebar]]:h-full";
 
-/**
- * C3 positions its carousel arrows at `-left-12`/`-right-12`: three rem of
- * gutter it assumes the page around it has. This shell's bands are `max-w-5xl`
- * inside a sidebar inset, so from roughly 768px up to about 1120px the gutter
- * is only the page's own padding and the *next* arrow lands outside the
- * scrolling column — which, because setting `overflow-y` forces `overflow-x`
- * to `auto` too, turns the entire page into a horizontal scroller. Measured at
- * 375px: 407px of content in a 375px column, all of it that one arrow.
- *
- * Insetting the carousel rather than moving the arrows keeps them where C3 put
- * them, off the cards and out of the section header's alignment with every
- * other band. Delete this when C3's arrows measure their own container.
- */
-const FEATURE_ROW_ARROW_GUTTER = "px-9";
-
 interface HomeShellSuggestion {
   id: string;
   /** The chip's text, and the exact string handed to the composer. */
@@ -380,9 +365,7 @@ function HomeShell({
           >
             <SectionHeader size="sm" title={featuresLabel} action={featuresAction} />
             {features.length > 0 ? (
-              <div className={FEATURE_ROW_ARROW_GUTTER}>
-                <FeatureCardRow items={features} />
-              </div>
+              <FeatureCardRow items={features} />
             ) : (
               (featuresEmpty ?? (
                 <EmptyState
