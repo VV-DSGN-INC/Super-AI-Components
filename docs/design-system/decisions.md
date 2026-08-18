@@ -296,9 +296,9 @@ frozen 114.
 ### D19 · Container queries are the default for a component's own layout — 2026-08-18
 
 A component that lays itself out in columns keys them off its **own** width, never the viewport.
-J4 `artifact-grid` is the pilot, shipped in this change. C4 `recent-grid` still ships its original
-`sm:grid-cols-3 lg:grid-cols-4` and is the intended next adopter, not a second pilot already done —
-its conversion is a separate, still-pending task.
+J4 `artifact-grid` is the pilot, shipped in this change. C4 `recent-grid` was the intended next
+adopter and has since converted too: it now reads `@[40rem]:grid-cols-3 @[64rem]:grid-cols-4`,
+the same two-element container-wrapper shape and the same arbitrary-value thresholds as the pilot.
 
 Why: `artifact-grid` shipped viewport-keyed columns, and every shell that put it beside a sidebar
 carried a hand-written descendant override to shift each breakpoint up a step —
