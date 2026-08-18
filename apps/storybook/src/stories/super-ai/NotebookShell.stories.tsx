@@ -203,14 +203,18 @@ export const Responsive: Story = {
 /**
  * Geometric proof for `OUTPUT_TYPES_IN_PANE`'s vertical override
  * (notebook-shell.tsx): the studio pane is a fixed twenty rem (`lg:w-80`),
- * and C3's own arrows are vertically centred by default — inside that width
- * they land on the card's title, the reason this shell repositions them at
- * all. The override moves them to the row's header line and marks its `top`
- * important to survive C3's own `!top-2`; without that `!`, C3's importance
- * wins over this selector's higher specificity and the arrows end up back
- * inside the row, over the first card's icon — the same "arrows over a card"
- * failure the header-line placement exists to avoid. See that constant's
- * docstring for the full mechanism.
+ * and C3's own arrows are top-anchored by default — inside that width they
+ * still land on the first card, over its icon or thumbnail, because the
+ * card is the full width of the pane. Top-anchoring keeps C3's own arrows
+ * off the title, but this shell wants them off the cards entirely, above
+ * the row on its header line — a placement C3's own top-anchored default
+ * does not provide, the reason this shell repositions them at all. The
+ * override moves them there and marks its `top` important to survive C3's
+ * own `!top-2`; without that `!`, C3's importance wins over this selector's
+ * higher specificity and the arrows end up back inside the row, over the
+ * first card's icon — the same "arrows over a card" failure the header-line
+ * placement exists to avoid. See that constant's docstring for the full
+ * mechanism.
  */
 export const ArrowsClearTheRow: Story = {
   args: FULL_ARGS,
