@@ -47,7 +47,7 @@ it. The shell is the proof; the component change is only the claim.
 | `FEATURE_ROW_ARROW_GUTTER = "px-9"` deleted | `home-shell.tsx:81` |
 | `ARTIFACTS_IN_STREAM` deleted | `chat-shell.tsx:85` |
 | `GRID_BESIDE_SIDEBAR` deleted | `artifact-shell.tsx:78` |
-| The four `footer`/`promo` JSDoc warnings deleted | O1, O9, O10, O11's shells |
+| The `footer`/`promo` clip warnings deleted | 5 shells' JSDoc + 5 docs pages |
 | C4's two interactive tiles carry accessible names | `recent-grid.tsx:98`, `:120` |
 | Both default-variant `TabsList` sites pass contrast | 2 of 4 TabsList consumers |
 
@@ -74,8 +74,19 @@ mechanism is two files away:
   container, so everything bottom-anchored falls below the shell's visible edge.
 
 The consequence for the plan: **one companion class in five shells fixes all four reports at
-once**, and the four JSDoc warnings the block builders wrote describe the wrong cause, so
-unwinding them is a correction rather than a deletion.
+once**.
+
+A correction to this correction, found while planning: the block builders got the mechanism
+**right**. `home-shell.tsx:110-116` says "the containment that keeps the shell embeddable also
+clips B1's `h-svh` box", and `chat-shell.docs.tsx:109` goes further, naming the fix — "until the
+sidebar primitive learns to measure its containing block instead of `svh`". Only `CONTINUE.md`
+§8's one-line summary misattributes it to `app-sidebar`. Unwinding is therefore deleting an
+accurate warning that has stopped being true, not correcting a wrong one.
+
+The unwind surface is also larger than a first read suggests: **five shells and five docs pages**,
+not four JSDoc comments. Each shell carries the warning on its `sidebarPromo` / `sidebarFooter`
+props (`docs-shell` calls its slot `railFooter`), and each docs page repeats it in both a `donts`
+entry and a `pitfalls` entry.
 
 ### 3.2 `ui/tabs.tsx` is not outside the token gate's scan scope
 
@@ -98,16 +109,28 @@ Today `interactive = typeof onSelect === "function"` and the frame renders as a 
 name is the overlay label rendered inside it, so `labelPlacement="below"` and `"none"` both ship a
 nameless control, and every interactive tile claims to be a toggle even when it opens something.
 
-Two additive props:
+The component's own story file already diagnoses this and names the better fix. `EmptyLabel` says:
+"The real fix is an `aria-labelledby` from the frame to the label element; that is API-shaped, so
+it is recorded rather than done here." Planning confirmed it is the right call, so this spec
+adopts it in preference to the string prop it originally proposed:
 
-- `frameLabel?: string` — an explicit accessible name for the frame button, used when the visible
-  label is not inside it.
-- `selectMode?: "toggle" | "open"`, default `"toggle"` — `"open"` omits `aria-pressed`.
+- **`labelPlacement="below"` self-names.** The label already renders as a sibling span
+  (`preview-tile.tsx:120-124`). Give it a `useId` and point the frame at it with
+  `aria-labelledby`. **No new prop**, no duplicated string, and the name cannot drift from the
+  visible label. This fixes `recent-grid`'s grid layout with no call-site change at all.
+- **`frameLabel?: string`** remains, for `labelPlacement="none"` only — there is no label element
+  to point at, so a name has to be supplied. This is what `recent-grid`'s list layout needs.
+- **`selectMode?: "toggle" | "open"`**, default `"toggle"` — `"open"` omits `aria-pressed`.
 
-Defaults preserve today's rendering and today's ARIA exactly. The residue is deliberate and
-recorded here: a third-party consumer using `below` + `onSelect` without passing `frameLabel`
-still gets a nameless button. Closing that by default is a non-additive change and is out of scope
-for this batch.
+The `aria-labelledby` half is the one departure from additive-only in this fix, and it is narrow:
+nothing renders differently and no prop changes meaning: a button that had no accessible name
+gains the one already sitting beside it. Nobody can depend on a control being nameless. The
+alternative, making `below` consumers pass `frameLabel` to get a name, would duplicate a string
+already in the DOM and leave the default broken.
+
+Residue, deliberate and recorded: a tile with `labelPlacement="none"` and no `frameLabel` still
+produces a nameless button. There is nothing to name it with, so this is a documentation
+obligation rather than a defect the component can close.
 
 A story exercising `labelPlacement="below"` with `onSelect` is part of this fix. The defect was
 invisible because no story staged it; the axe gate cannot fail on a combination nothing renders.
@@ -201,7 +224,9 @@ next reader does not re-derive it.
 **Phase 3 — sequential, integrator, one pass**
 
 The five shells opened once each: add §4.3's companion class, delete `FEATURE_ROW_ARROW_GUTTER`,
-`ARTIFACTS_IN_STREAM`, `GRID_BESIDE_SIDEBAR` and the four JSDoc warnings. Then correct
+`ARTIFACTS_IN_STREAM`, `GRID_BESIDE_SIDEBAR`, and the clip warning from each shell's
+`sidebarPromo` / `sidebarFooter` / `railFooter` JSDoc. Then the five matching docs pages, where
+the same warning appears twice each (a `donts` entry and a `pitfalls` entry). Finally correct
 `CONTINUE.md` §8 per §3 of this spec, and add the `vendored-token-findings.md` line from §4.2.
 
 Parallel mechanics per `CONTINUE.md` §3.4 and §1: each agent gets its own git worktree **cut from
@@ -258,6 +283,6 @@ Storybook a11y → consumer install test.
 - **The `--warning` token decision is untouched.** It is recorded in `CONTINUE.md` as deliberately
   unfixed because defining the variable turns several components red at once, and `text-warning`
   measures ~2.2:1 where it does resolve. Nothing here changes that.
-- **A8's default remains capable of producing a nameless button** for a third-party consumer who
-  does not pass `frameLabel` (§4.1). Additive-only was chosen deliberately; this is its price, and
-  it is written down rather than assumed away.
+- **A8's `labelPlacement="none"` remains capable of producing a nameless button** when no
+  `frameLabel` is passed (§4.1). Unlike the `below` case there is no label element to point at, so
+  the component cannot close this itself. Written down rather than assumed away.
