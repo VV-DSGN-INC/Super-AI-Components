@@ -67,27 +67,43 @@ const CHAT_SCROLL = "h-full overflow-y-auto";
 const COMPOSER_NO_NEGATIVE_PROMPT = "[&_[data-slot=media-prompt-bar-negative-toggle]]:hidden";
 
 /**
- * C3's carousel arrows are positioned `-left-12`/`-right-12` and vertically
- * centred — three rem *outside* the row, which is correct on a page with
- * margins and wrong in a twenty-rem studio pane, where both land outside the
- * pane and are clipped away. Pulling them inside instead (`left-1`/`right-1`)
- * was worse: at that width the cards are the full pane, so a centred arrow
- * lands on the card's own title.
+ * The vendored Carousel's own default positions its arrows at
+ * `-left-12`/`-right-12`, vertically centred — three rem *outside* the row,
+ * right for a page with margins and wrong in a twenty-rem studio pane, where
+ * both would land outside the pane and be clipped away. C3 already overrides
+ * that default itself (`feature-card-row.tsx`): `left-2`/`right-2` with
+ * `!top-2 my-0`, top-anchored inside the row's own box, so it only ever
+ * touches the icon or thumbnail above a card's title.
  *
- * So they move to the row's header line, right-aligned above the cards, which
- * is where a constrained horizontal row normally puts them. C3 exposes no
- * placement option and the arrows are inner slots a plain `className` cannot
- * reach, hence the call-site descendant variants — same idiom as
- * `model-picker`'s ENTITY_ROW_SELECTED_DESCRIPTION_FIX. Delete this the moment
- * C3 takes an `arrows` placement prop.
+ * That is still wrong here. At this pane's width the cards are the full
+ * pane, so arrows anchored to the top of the row sit directly on the first
+ * card regardless of whether they are centred or top-anchored. This shell
+ * wants them off the cards entirely, on the row's header line above it,
+ * which is where a constrained horizontal row normally puts them. C3 exposes
+ * no placement option and the arrows are inner slots a plain `className`
+ * cannot reach, hence the call-site descendant variants — same idiom as
+ * `model-picker`'s ENTITY_ROW_SELECTED_DESCRIPTION_FIX. Delete this the
+ * moment C3 takes an `arrows` placement prop.
+ *
+ * The vertical override carries its own `!` (`!-top-7`, not `-top-7`): C3
+ * top-anchors its own arrows with `!top-2` (an `!important` declaration, to
+ * defeat `inset-y-0` surviving tailwind-merge — see that file). An `!important`
+ * author declaration beats a normal one before specificity is ever consulted,
+ * so a plain `-top-7` here loses to C3's `!top-2` regardless of this
+ * selector's higher specificity, and the arrows end up back inside the row,
+ * over the first card — verified in a browser, and pinned by this file's
+ * `ArrowsClearTheRow` story. Matching the `!` is what lets this override's
+ * higher specificity decide the outcome again. `inset-y-auto` does not need
+ * the same treatment: C3 never marks `bottom` important, so this selector's
+ * plain `bottom: auto` already wins on specificity alone.
  */
 const OUTPUT_TYPES_IN_PANE = [
   "[&_[data-slot=feature-card-row-previous]]:inset-y-auto",
-  "[&_[data-slot=feature-card-row-previous]]:-top-7",
+  "[&_[data-slot=feature-card-row-previous]]:!-top-7",
   "[&_[data-slot=feature-card-row-previous]]:left-auto",
   "[&_[data-slot=feature-card-row-previous]]:right-9",
   "[&_[data-slot=feature-card-row-next]]:inset-y-auto",
-  "[&_[data-slot=feature-card-row-next]]:-top-7",
+  "[&_[data-slot=feature-card-row-next]]:!-top-7",
   "[&_[data-slot=feature-card-row-next]]:right-0",
 ].join(" ");
 

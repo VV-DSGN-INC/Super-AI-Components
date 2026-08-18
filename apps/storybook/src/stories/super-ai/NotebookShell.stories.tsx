@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AudioLines, FileText, Network, Plus } from "lucide-react";
+import { expect } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { NotebookShellDocs } from "@/content/components/notebook-shell.docs";
@@ -197,6 +198,47 @@ export const Responsive: Story = {
     },
   },
   globals: { viewport: { value: "mobile" } },
+};
+
+/**
+ * Geometric proof for `OUTPUT_TYPES_IN_PANE`'s vertical override
+ * (notebook-shell.tsx): the studio pane is a fixed twenty rem (`lg:w-80`),
+ * and C3's own arrows are top-anchored by default — inside that width they
+ * still land on the first card, over its icon or thumbnail, because the
+ * card is the full width of the pane. Top-anchoring keeps C3's own arrows
+ * off the title, but this shell wants them off the cards entirely, above
+ * the row on its header line — a placement C3's own top-anchored default
+ * does not provide, the reason this shell repositions them at all. The
+ * override moves them there and marks its `top` important to survive C3's
+ * own `!top-2`; without that `!`, C3's importance wins over this selector's
+ * higher specificity and the arrows end up back inside the row, over the
+ * first card's icon — the same "arrows over a card" failure the header-line
+ * placement exists to avoid. See that constant's docstring for the full
+ * mechanism.
+ */
+export const ArrowsClearTheRow: Story = {
+  args: FULL_ARGS,
+  play: async ({ canvasElement }) => {
+    const row = canvasElement.querySelector<HTMLElement>('[data-slot="feature-card-row"]')!;
+    const prev = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="feature-card-row-previous"]',
+    )!;
+    const next = canvasElement.querySelector<HTMLElement>('[data-slot="feature-card-row-next"]')!;
+    const pane = canvasElement.querySelector<HTMLElement>('[data-region="studio-outputs"]')!;
+
+    const rowBox = row.getBoundingClientRect();
+    const prevBox = prev.getBoundingClientRect();
+    const nextBox = next.getBoundingClientRect();
+    const paneBox = pane.getBoundingClientRect();
+
+    // Above the row's header line, never over the cards.
+    await expect(prevBox.bottom).toBeLessThanOrEqual(rowBox.top + 1);
+    await expect(nextBox.bottom).toBeLessThanOrEqual(rowBox.top + 1);
+
+    // Inside the pane — not clipped at its twenty-rem width.
+    await expect(prevBox.left).toBeGreaterThanOrEqual(paneBox.left);
+    await expect(nextBox.right).toBeLessThanOrEqual(paneBox.right);
+  },
 };
 
 /**

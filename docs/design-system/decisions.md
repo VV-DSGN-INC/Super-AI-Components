@@ -293,6 +293,59 @@ block count changes, per
 §1.1, which ruled that a second reference board becomes its own v2 project rather than reopen the
 frozen 114.
 
+### D19 · Container queries are the default for a component's own layout — 2026-08-18
+
+A component that lays itself out in columns keys them off its **own** width, never the viewport.
+J4 `artifact-grid` is the pilot, shipped in this change. C4 `recent-grid` was the intended next
+adopter and has since converted too: it now reads `@[40rem]:grid-cols-3 @[64rem]:grid-cols-4`,
+the same two-element container-wrapper shape and the same arbitrary-value thresholds as the pilot.
+
+Why: `artifact-grid` shipped viewport-keyed columns, and every shell that put it beside a sidebar
+carried a hand-written descendant override to shift each breakpoint up a step —
+`ARTIFACTS_IN_STREAM` in `chat-shell`, `GRID_BESIDE_SIDEBAR` in `artifact-shell`. The defect is a
+container-vs-viewport confusion by construction, so no viewport-keyed value can fix it.
+
+Scope: this is not a sweep. Existing viewport breakpoints stay until a component is found to be
+wrong beside a narrower parent. Tailwind v4 ships container queries in core, so there is no
+dependency to add.
+
+**This is the repo's first `@container` usage, and it did not work on the first try — twice.**
+
+First: a container query cannot match on the same element that establishes the container —
+`@container` and a `@md:grid-cols-2`-shaped size variant on one node compile without error but
+never fire, at any width, because the query only ever resolves against an *ancestor* query
+container. `artifact-grid` wraps its grid in a plain `<div className="@container">` and keeps the
+breakpoint classes on the grid element itself, one level down. Any future adopter of this
+convention needs the same two-element shape — a container wrapper, a queried descendant — not one
+element carrying both.
+
+Second, and more load-bearing: Tailwind's named container rungs are **not** the same scale as its
+named breakpoints, despite sharing step names. `--container-md` is 28rem/448px; `--breakpoint-sm`
+is 40rem/640px. `--container-4xl` is 56rem/896px; `--breakpoint-lg` is 64rem/1024px (see
+`tailwindcss/theme.css`). The first attempt reached for `@md`/`@4xl` as the "obvious" analogues of
+the old `sm`/`lg` and shipped a real regression: at a container width between 448px and 640px, or
+between 896px and 1024px — ordinary laptop widths — the new code over-columned exactly the way the
+old viewport-keyed code did beside a sidebar, just at different thresholds. `artifact-grid` uses
+arbitrary-value container queries instead, `@[40rem]:grid-cols-2` and `@[64rem]:grid-cols-3`, which
+reproduce the old `sm`/`lg` thresholds exactly. Any future adopter converting an existing
+viewport-keyed component must use arbitrary values to match that component's old breakpoints, not
+the named container rungs of the same name — the names line up, the pixels do not.
+
+**Verified, not assumed, per spec §4.5's full-width guarantee.** `ArtifactGrid.stories.tsx` has
+four play-function assertions on `gridTemplateColumns`, none of them a visual check: `NarrowColumn`
+(420px, what `chat-shell` and `artifact-shell` hand this grid today) stays at one column instead of
+over-columning. `FullWidth` (1200px, past the 64rem/1024px threshold) steps to three columns,
+matching the old `lg:grid-cols-3` unchanged. `JustBelowTwoColumns` (600px) and
+`JustBelowThreeColumns` (950px) sit inside the two bands the named-rung mistake got wrong, at one
+and two columns respectively — these two exist specifically so a regression back to `@md`/`@4xl`
+fails a test instead of shipping quietly. The bare, undecorated `TypeBadge` story was not usable
+for any of these checks — Storybook's `centered` layout is itself a shrink-to-fit flex row, and
+inline-size containment stops that ancestor from sizing the grid off its content, so the box
+collapses to the width of the session label instead of the viewport. That is a real, general hazard
+for any consumer who places this grid inside a shrink-to-fit ancestor (a bare `flex justify-center`
+wrapper, for instance), not a defect introduced here — an explicit width on the wrapping element
+sidesteps it.
+
 ---
 
 ## 2. Components dropped from the approved spec

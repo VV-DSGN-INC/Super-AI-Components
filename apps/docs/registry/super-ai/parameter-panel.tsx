@@ -291,7 +291,16 @@ function ParameterTabs({ groups, value, defaultValue, onValueChange, className, 
       className={cn("w-full", className)}
       {...props}
     >
-      <TabsList data-slot="parameter-tabs-list">
+      {/* tabsListVariants' `default` variant pairs text-muted-foreground
+          (its cva base) with bg-muted (its default variant value) — 4.34:1
+          in this token set, under the 4.5:1 minimum. Rebinding the variable
+          rather than restyling the trigger slots: composed children carry
+          their own muted classes and a slot-level override can't reach
+          them. See docs/design-system/a11y-baseline.md. */}
+      <TabsList
+        data-slot="parameter-tabs-list"
+        className="[--muted-foreground:var(--accent-foreground)]"
+      >
         {groups.map((group) => (
           <TabsTrigger key={group.value} value={group.value}>
             {group.label}

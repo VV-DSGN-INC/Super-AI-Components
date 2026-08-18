@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Clapperboard, Image as ImageIcon, Mic, Sparkles, Type, WandSparkles } from "lucide-react";
+import { expect } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { HomeShell, type HomeShellProps } from "@/registry/super-ai/home-shell";
@@ -219,5 +220,36 @@ export const OutOfCredits: Story = {
     ...FULL_ARGS,
     credits: { balance: 0, total: 1000, onManage: () => {} },
     omnibox: { ...FULL_ARGS.omnibox, state: "locked", onUnlock: () => {} },
+  },
+};
+
+/**
+ * The shell at 600px tall — shorter than any viewport, which is the ordinary
+ * embedded case and the one that used to hide the sidebar's bottom slots.
+ *
+ * The assertion is geometric rather than a class check: the footer's box has
+ * to sit inside the shell's box. A class assertion would pass against a
+ * constant that had been deleted from the cn() call and left declared.
+ *
+ * The frame is queried by `data-testid`, not `canvasElement.firstElementChild`:
+ * the meta decorator already wraps every story in its own `h-svh` div, so the
+ * first child of the canvas is that wrapper, not this story's own frame.
+ */
+export const EmbeddedWithSidebarFooter: Story = {
+  args: FULL_ARGS,
+  render: (args) => (
+    <div data-testid="embedded-frame" className="h-[600px] overflow-hidden">
+      <HomeShell {...args} sidebarFooter={<button type="button">Account</button>} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const shell = canvasElement.querySelector<HTMLElement>('[data-testid="embedded-frame"]')!;
+    const footer = canvasElement.querySelector<HTMLElement>('[data-slot="app-sidebar-footer"]')!;
+
+    const shellBox = shell.getBoundingClientRect();
+    const footerBox = footer.getBoundingClientRect();
+
+    await expect(footerBox.bottom).toBeLessThanOrEqual(shellBox.bottom + 1);
+    await expect(footerBox.height).toBeGreaterThan(0);
   },
 };

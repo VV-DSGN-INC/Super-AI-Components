@@ -1,8 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { expect } from "storybook/test";
 
 import { RunInspector } from "@/registry/super-ai/run-inspector";
 import { RunInspectorDocs } from "@/content/components/run-inspector.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { measureContrastAgainstAncestor } from "@/lib/wcag-contrast";
 
 const meta: Meta<typeof RunInspector> = {
   title: "Super AI/Run Inspector",
@@ -35,6 +37,19 @@ const METADATA = {
 
 export const InputTab: Story = {
   args: { input: INPUT, output: OUTPUT, metadata: METADATA, defaultTab: "input", className: "w-[440px]" },
+  play: async ({ canvasElement }) => {
+    // RunInspector's TabsList takes tabsListVariants' `default` variant:
+    // text-muted-foreground (cva base) on bg-muted (cva default variant) —
+    // 4.34:1 in this token set, under the 4.5:1 minimum. A rebound
+    // --muted-foreground on the list (below) is what should clear it.
+    const list = canvasElement.querySelector<HTMLElement>('[data-slot="run-inspector-tabs"]');
+    await expect(list, 'expected a [data-slot="run-inspector-tabs"] element').not.toBeNull();
+    const ratio = measureContrastAgainstAncestor(list!);
+    await expect(
+      ratio,
+      `run-inspector-tabs text/background contrast is ${ratio.toFixed(2)}:1, below the 4.5:1 minimum`,
+    ).toBeGreaterThanOrEqual(4.5);
+  },
 };
 
 export const OutputTab: Story = {

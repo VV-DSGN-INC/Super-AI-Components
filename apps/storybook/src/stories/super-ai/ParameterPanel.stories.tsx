@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
+import { expect } from "storybook/test";
 
 import {
   ParameterPanel,
@@ -10,6 +11,7 @@ import {
 import { ResetAffordance } from "@/registry/super-ai/reset-affordance";
 import { ParameterPanelDocs } from "@/content/components/parameter-panel.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { measureContrastAgainstAncestor } from "@/lib/wcag-contrast";
 
 const meta: Meta<typeof ParameterPanel> = {
   title: "Super AI/Parameter Panel",
@@ -90,6 +92,19 @@ export const Tabbed: Story = {
       ]}
     />
   ),
+  play: async ({ canvasElement }) => {
+    // ParameterTabs' TabsList takes tabsListVariants' `default` variant:
+    // text-muted-foreground (cva base) on bg-muted (cva default variant) —
+    // 4.34:1 in this token set, under the 4.5:1 minimum. A rebound
+    // --muted-foreground on the list (below) is what should clear it.
+    const list = canvasElement.querySelector<HTMLElement>('[data-slot="parameter-tabs-list"]');
+    await expect(list, 'expected a [data-slot="parameter-tabs-list"] element').not.toBeNull();
+    const ratio = measureContrastAgainstAncestor(list!);
+    await expect(
+      ratio,
+      `parameter-tabs-list text/background contrast is ${ratio.toFixed(2)}:1, below the 4.5:1 minimum`,
+    ).toBeGreaterThanOrEqual(4.5);
+  },
 };
 
 export const ResetAll: Story = {

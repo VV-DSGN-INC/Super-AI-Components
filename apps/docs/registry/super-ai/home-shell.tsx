@@ -66,19 +66,27 @@ import {
 const EMBEDDABLE_SHELL = "[contain:layout]";
 
 /**
- * C3 positions its carousel arrows at `-left-12`/`-right-12`: three rem of
- * gutter it assumes the page around it has. This shell's bands are `max-w-5xl`
- * inside a sidebar inset, so from roughly 768px up to about 1120px the gutter
- * is only the page's own padding and the *next* arrow lands outside the
- * scrolling column — which, because setting `overflow-y` forces `overflow-x`
- * to `auto` too, turns the entire page into a horizontal scroller. Measured at
- * 375px: 407px of content in a 375px column, all of it that one arrow.
+ * The other half of `EMBEDDABLE_SHELL`, and the fix for what containment
+ * alone does not solve: it redirects where the vendored sidebar's `fixed` box
+ * is anchored, but its `h-svh` still takes its height from the viewport.
+ * Without this override, the sidebar would overhang in any shell shorter than
+ * the window, and everything it bottom-anchors (`sidebarPromo`,
+ * `sidebarFooter`) would fall below the visible edge — clipped, not hidden,
+ * so those controls would stay in the tab order while invisible. This class
+ * sizes the sidebar to the shell's own height instead, closing that gap.
  *
- * Insetting the carousel rather than moving the arrows keeps them where C3 put
- * them, off the cards and out of the section header's alignment with every
- * other band. Delete this when C3's arrows measure their own container.
+ * Targets `[data-slot=app-sidebar]`, not the vendored `sidebar-container`
+ * default named at `components/ui/sidebar.tsx:230`: B1 renders
+ * `<Sidebar data-slot="app-sidebar" ...>`, and `Sidebar` spreads that prop
+ * onto the very div that also carries its own `data-slot="sidebar-container"`
+ * — the spread lands after the default, so `app-sidebar` is what's actually
+ * on the element at runtime. Verified in the browser (rendered `data-slot`
+ * inspected directly): the vendored name never appears once B1 is in use.
+ *
+ * Overriding here rather than in the primitive: `components/ui` is vendored
+ * and stays byte-identical to upstream.
  */
-const FEATURE_ROW_ARROW_GUTTER = "px-9";
+const SIDEBAR_FILLS_SHELL = "[&_[data-slot=app-sidebar]]:h-full";
 
 interface HomeShellSuggestion {
   id: string;
@@ -107,15 +115,9 @@ interface HomeShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   nav?: React.ReactNode;
   /** Replaces the default L1 shown when `nav` is omitted. */
   navEmpty?: React.ReactNode;
-  /**
-   * B5 promo or any ambient sidebar CTA.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — B1 bottom-anchors
-   * this, and the containment that keeps the shell embeddable also clips B1's
-   * `h-svh` box. See the pitfalls in the docs page.
-   */
+  /** B5 promo or any ambient sidebar CTA. */
   sidebarPromo?: React.ReactNode;
-  /** B8 account menu. **Same bottom-anchoring clip as `sidebarPromo`.** */
+  /** B8 account menu. Sits at the bottom of the sidebar, above the rail. */
   sidebarFooter?: React.ReactNode;
   /** Starts the sidebar collapsed — the shell's half of B1's width contract. */
   defaultSidebarOpen?: boolean;
@@ -239,6 +241,7 @@ function HomeShell({
       className={cn(
         "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
         EMBEDDABLE_SHELL,
+        SIDEBAR_FILLS_SHELL,
         className,
       )}
       {...props}
@@ -358,9 +361,7 @@ function HomeShell({
           >
             <SectionHeader size="sm" title={featuresLabel} action={featuresAction} />
             {features.length > 0 ? (
-              <div className={FEATURE_ROW_ARROW_GUTTER}>
-                <FeatureCardRow items={features} />
-              </div>
+              <FeatureCardRow items={features} />
             ) : (
               (featuresEmpty ?? (
                 <EmptyState

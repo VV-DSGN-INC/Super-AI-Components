@@ -94,11 +94,16 @@ function RecentGridItemGrid({ item }: { item: RecentGridItem }) {
           label — "below" placement is exactly what A8's spec reserves for
           C4's title-under-thumbnail layout, so the tile owns aspect ratio,
           loading/failed states and the selection ring; this component only
-          adds duration, edited-ago and hover actions around it. */}
+          adds duration, edited-ago and hover actions around it.
+
+          No frameLabel here: a below-placed label names its own frame, so the
+          button's name is the visible title by construction. selectMode="open"
+          because onOpen navigates — this tile holds no pressed state. */}
       <PreviewTile
         aspect="video"
         label={title}
         labelPlacement="below"
+        selectMode="open"
         onSelect={onOpen}
         badge={<RecentGridDurationBadge durationLabel={durationLabel} />}
       >
@@ -117,7 +122,18 @@ function RecentGridItemList({ item }: { item: RecentGridItem }) {
       data-slot="recent-grid-item"
       className="group/recent-grid-item hover:bg-muted/50 flex items-center gap-3 rounded-lg p-2"
     >
-      <PreviewTile aspect="video" labelPlacement="none" onSelect={onOpen} className="w-28 shrink-0">
+      {/* labelPlacement="none": the title sits beside the thumbnail in this
+          layout, not under it, so it is rendered below as a sibling. That
+          leaves the frame with nothing to name itself from — hence frameLabel.
+          selectMode="open" for the same reason as the grid layout. */}
+      <PreviewTile
+        aspect="video"
+        labelPlacement="none"
+        frameLabel={title}
+        selectMode="open"
+        onSelect={onOpen}
+        className="w-28 shrink-0"
+      >
         {thumbnail}
       </PreviewTile>
       <div className="min-w-0 flex-1">
@@ -160,19 +176,38 @@ function RecentGrid({
           </EmptyHeader>
           {emptyAction ? <EmptyContent>{emptyAction}</EmptyContent> : null}
         </Empty>
-      ) : (
-        <div
-          className={cn(
-            layout === "grid" ? "grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4" : "flex flex-col",
-          )}
-        >
-          {items.map((item) =>
-            layout === "grid" ? (
+      ) : layout === "grid" ? (
+        // A container query resolves against an *ancestor* query container,
+        // never against the element establishing it — `@container` and its
+        // own size variants cannot share one node. The wrapper carries
+        // `@container` and no grid classes of its own; the grid lives on the
+        // child, which is what the size variants actually match against.
+        //
+        // Arbitrary values, not the named `@2xl`/`@5xl` rungs: Tailwind's
+        // container scale and its breakpoint scale share step names but not
+        // step sizes (`--container-2xl` is 42rem, `--breakpoint-sm` is
+        // 40rem; `--container-5xl` happens to match `--breakpoint-lg` at
+        // 64rem, but that's a coincidence at one rung, not a rule). Reaching
+        // for `@2xl` here would move that crossover 2rem earlier than the
+        // `sm` breakpoint it replaces, which breaks the one guarantee this
+        // change makes: identical behaviour at full width. `@[40rem]` and
+        // `@[64rem]` reproduce the old `sm`/`lg` thresholds exactly, in
+        // container terms.
+        <div className="@container">
+          <div
+            data-slot="recent-grid-items"
+            className="grid grid-cols-2 gap-4 @[40rem]:grid-cols-3 @[64rem]:grid-cols-4"
+          >
+            {items.map((item) => (
               <RecentGridItemGrid key={item.id} item={item} />
-            ) : (
-              <RecentGridItemList key={item.id} item={item} />
-            ),
-          )}
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col">
+          {items.map((item) => (
+            <RecentGridItemList key={item.id} item={item} />
+          ))}
         </div>
       )}
     </div>

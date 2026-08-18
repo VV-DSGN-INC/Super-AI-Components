@@ -8,7 +8,32 @@ const ITEMS: RecentGridItem[] = [
   { id: "2", title: "Brand Explainer", durationLabel: "3:41", editedAgo: "Edited 2 days ago" },
 ];
 
+// The rows above deliberately pass no onOpen — that's the whole reason the
+// A8 naming defect went unseen. This variant exercises the interactive path.
+const OPENABLE: RecentGridItem[] = ITEMS.map((item) => ({ ...item, onOpen: () => {} }));
+
 describe("RecentGrid", () => {
+  it("names its grid tiles from the visible title", () => {
+    render(<RecentGrid items={OPENABLE} layout="grid" />);
+    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).toBeInTheDocument();
+  });
+
+  it("names its list thumbnails from the visible title", () => {
+    render(<RecentGrid items={OPENABLE} layout="list" />);
+    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).toBeInTheDocument();
+  });
+
+  it("opens rather than toggles, in both layouts", () => {
+    const { rerender } = render(<RecentGrid items={OPENABLE} layout="grid" />);
+    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute(
+      "aria-pressed",
+    );
+    rerender(<RecentGrid items={OPENABLE} layout="list" />);
+    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute(
+      "aria-pressed",
+    );
+  });
+
   it("renders the grid state", () => {
     render(<RecentGrid items={ITEMS} layout="grid" />);
     expect(document.querySelector('[data-slot="recent-grid"]')).toHaveAttribute("data-layout", "grid");

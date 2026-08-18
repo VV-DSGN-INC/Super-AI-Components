@@ -25,6 +25,11 @@ const RECENT_ITEMS = [
   { id: "4", title: "Untitled Project" },
 ];
 
+// Every item handed a real onOpen — the shape a product always passes, and
+// what no other story in this file did until now.
+const INTERACTIVE_ITEMS: RecentGridItem[] = RECENT_ITEMS.map((item) => ({ ...item, onOpen: () => {} }));
+const FIRST_TITLE = INTERACTIVE_ITEMS[0].title;
+
 export const Grid: Story = {
   args: { items: RECENT_ITEMS, layout: "grid" },
 };
@@ -64,6 +69,35 @@ export const HoverActions: Story = {
         ),
       },
     ],
+  },
+};
+
+/**
+ * Both layouts with a real `onOpen`, which is what a product always passes and
+ * what no story here did until now. That gap is why C4 shipped nameless
+ * buttons through every gate: with no handler the tile renders as an inert
+ * div, and an inert div cannot fail `button-name`.
+ *
+ * The grid tile is named by its own visible caption; the list thumbnail has no
+ * caption inside the tile, so it is named explicitly. Neither reports
+ * `aria-pressed` — opening a project is not a toggle.
+ */
+export const Interactive: Story = {
+  render: () => (
+    <div className="flex flex-col gap-8">
+      <RecentGrid layout="grid" items={INTERACTIVE_ITEMS} />
+      <RecentGrid layout="list" items={INTERACTIVE_ITEMS} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // One button per layout for the same record: the grid tile and the list
+    // thumbnail. Use the title of the file's own first fixture row.
+    const named = await canvas.findAllByRole("button", { name: FIRST_TITLE });
+    await expect(named).toHaveLength(2);
+    for (const button of named) {
+      await expect(button).not.toHaveAttribute("aria-pressed");
+    }
   },
 };
 
@@ -398,20 +432,21 @@ export const LongContent: Story = {
 };
 
 /**
- * 375px, and the honest reading of this story is that the top half is broken
- * and the bottom half is the fix.
+ * 375px, in a desktop-sized Storybook canvas. Before the container-query
+ * switch this was the one story that reliably broke: `grid-cols-2
+ * sm:grid-cols-3 lg:grid-cols-4` is keyed off the **viewport**, not the
+ * container, so a 375px column inside this gate's own 1200px window still
+ * got four columns and the titles clipped to a word or two. That's the
+ * container-vs-viewport gap `CONTINUE.md` §8 records against this component
+ * and J4 `artifact-grid` together, and it is why every shell that puts a grid
+ * beside a sidebar had to shift each breakpoint up a step by hand.
  *
- * Nothing overflows — the play function pins that, and it holds structurally:
- * the tile takes its height from its width, the grid tracks are
- * `minmax(0, 1fr)`, and every text slot truncates. What breaks is the column
- * count. `grid-cols-2 sm:grid-cols-3 lg:grid-cols-4` is keyed off the
- * **viewport**, not the container, so a 375px column inside a desktop window
- * gets four columns and the titles clip to a word or two — measured under this
- * gate's own 1200px window as `81.75px 81.75px 81.75px 81.75px`, not estimated.
- * The breakpoints only do the right thing when the narrow thing is the window.
- * That is the container-vs-viewport gap `CONTINUE.md` §8 records against this
- * component and J4 `artifact-grid` together, and it is why every shell that
- * puts a grid beside a sidebar has to shift each breakpoint up a step by hand.
+ * With `@container` on the grid's own ancestor, the grid now measures its
+ * 375px box instead of the window and stays at the base two columns — the
+ * play function pins that count, not just the absence of overflow. Nothing
+ * overflows either, which holds structurally: the tile takes its height from
+ * its width, the grid tracks are `minmax(0, 1fr)`, and every text slot
+ * truncates.
  *
  * `layout="list"` has no breakpoints to get wrong: one column, a fixed 112px
  * thumbnail, and a `min-w-0` text column that truncates. It is the layout to
@@ -457,6 +492,42 @@ export const Mobile: Story = {
       await expect(root.clientWidth).toBeGreaterThan(0);
       await expect(root.scrollWidth).toBeLessThanOrEqual(root.clientWidth);
     }
+
+    // 375px is below the 40rem/640px first rung, in both the old viewport
+    // breakpoints and the new container ones — the base grid-cols-2 should
+    // hold. A regression back to viewport-keyed classes would show 4 here,
+    // matching this gate's own window width instead of the story's box.
+    const grid = canvasElement.querySelector<HTMLElement>('[data-slot="recent-grid-items"]')!;
+    const columns = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
+    await expect(columns).toBe(2);
+  },
+};
+
+/**
+ * 660px — inside [640px, 672px), the band where the exact-width container
+ * query this component uses (`@[40rem]`, matching the old `sm` breakpoint it
+ * replaces exactly) and Tailwind's *named* `@2xl` rung (42rem/672px) disagree.
+ * At 660px the real 640px threshold has already passed, so this must show
+ * three columns. A regression to the named `@2xl` rung — the shape the task
+ * brief for this component originally specified, before it was corrected —
+ * would still be showing two here, because 672px has not been reached yet.
+ * This story exists to catch exactly that regression, not to exercise a
+ * state the component itself declares.
+ *
+ * (The upper rung has no equivalent gap to test: Tailwind's named `@5xl`
+ * happens to be exactly 64rem, the same as the old `lg` breakpoint, so a
+ * regression there would not show up as a wrong column count at any width.)
+ */
+export const JustPastThreeColumns: Story = {
+  render: () => (
+    <div className="w-[660px] max-w-full">
+      <RecentGrid items={RECENT_ITEMS} layout="grid" />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const grid = canvasElement.querySelector<HTMLElement>('[data-slot="recent-grid-items"]')!;
+    const columns = getComputedStyle(grid).gridTemplateColumns.split(" ").length;
+    await expect(columns).toBe(3);
   },
 };
 

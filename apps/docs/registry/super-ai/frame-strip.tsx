@@ -401,8 +401,32 @@ function FrameStrip({
           </CarouselItem>
         ) : null}
       </CarouselContent>
-      <CarouselPrevious data-slot="frame-strip-previous" />
-      <CarouselNext data-slot="frame-strip-next" />
+      {/* Vendored Carousel offsets these to -left-12/-right-12, outside the
+          strip's box — clipped in any constrained column. Overridden here
+          rather than in the primitive; components/ui stays upstream-identical.
+
+          Horizontal-only override, unlike C3 feature-card-row's, which also
+          pins the arrow to `top-2` (see that file for why). Here the tile's
+          label (A8 preview-tile, labelPlacement="overlay") is not a caption
+          below the tile — it's an absolutely-positioned band at the *tile's
+          own* bottom edge, inside the same Frame the arrow sits over
+          (preview-tile.tsx's "overlay" branch; "below" is a different,
+          unused branch of that same component). The vertically-centered
+          arrow clears that band only in the configuration this file's own
+          stories exercise: `hasControls` is false unless the variant is
+          "in-out" or an `onReorder` handler is passed, and without it the
+          item's height is just the tile's height, so the arrow's centered
+          band falls within the tile's image field — narrowly, not with room
+          to spare. Passing `onReorder`, or using the in-out variant, adds a
+          `min-h-6` controls row below the frame inside the same
+          `CarouselItem`; the item grows, and because the arrow re-centers on
+          the *item's* height, its middle moves down toward the label band,
+          shrinking that already-narrow clearance further. No vertical
+          override is added here because the configuration exercised today
+          doesn't need one yet — not because the label lives somewhere this
+          arrow can never reach. */}
+      <CarouselPrevious data-slot="frame-strip-previous" className="left-2" />
+      <CarouselNext data-slot="frame-strip-next" className="right-2" />
     </Carousel>
   );
 }

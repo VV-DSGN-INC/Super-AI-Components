@@ -20,6 +20,31 @@ interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect">
   selected?: boolean;
   label?: React.ReactNode;
   labelPlacement?: "overlay" | "below" | "none";
+  /**
+   * Accessible name for the interactive frame, for the one case the component
+   * cannot name itself: `labelPlacement="none"` renders no label element to
+   * point at. With `"below"` the frame is named from the label automatically
+   * and this is unnecessary; with `"overlay"` the label is already inside the
+   * button. If both an overlay label and `frameLabel` are supplied, `aria-label`
+   * (from `frameLabel`) wins over the frame's own subtree-derived name — that
+   * pairing is a caller error, not a supported override.
+   *
+   * With `"below"`, `frameLabel` is silently ignored rather than combined or
+   * preferred: `namedByLabel` takes the `aria-labelledby` branch whenever
+   * `label` is set, before `frameLabel`'s `aria-label` branch is ever reached.
+   * Passing both is therefore also a caller error, just one that fails
+   * silently instead of the other way winning — the frame still gets a name,
+   * only not the one you passed.
+   */
+  frameLabel?: string;
+  /**
+   * What pressing the frame means. `"toggle"` reports `aria-pressed` — right
+   * for a filter or a selectable cell. `"open"` omits it — right for a tile
+   * that navigates, where "pressed" is a claim about state the tile does not
+   * hold. Default is `"toggle"`, which is what every caller got before this
+   * prop existed.
+   */
+  selectMode?: "toggle" | "open";
   badge?: React.ReactNode;
   onSelect?: () => void;
   action?: React.ReactNode;
@@ -31,6 +56,8 @@ function PreviewTile({
   selected = false,
   label,
   labelPlacement = "overlay",
+  frameLabel,
+  selectMode = "toggle",
   badge,
   onSelect,
   action,
@@ -40,6 +67,13 @@ function PreviewTile({
 }: PreviewTileProps) {
   const interactive = typeof onSelect === "function";
   const Frame = interactive ? "button" : "div";
+
+  // The `below` label is a sibling of the frame, so it cannot name the button
+  // by containment the way the overlay label does. Pointing at it beats a
+  // `frameLabel` string: the name is the visible label by construction and
+  // cannot drift from it.
+  const labelId = React.useId();
+  const namedByLabel = interactive && Boolean(label) && labelPlacement === "below";
 
   return (
     <div
@@ -51,7 +85,15 @@ function PreviewTile({
       <Frame
         // A native button gives Enter/Space, focus and disabled semantics for free.
         // Decorative tiles stay a div so they never enter the tab order.
-        {...(interactive ? { type: "button" as const, onClick: onSelect, "aria-pressed": selected } : {})}
+        {...(interactive
+          ? {
+              type: "button" as const,
+              onClick: onSelect,
+              ...(selectMode === "toggle" ? { "aria-pressed": selected } : {}),
+              ...(namedByLabel ? { "aria-labelledby": labelId } : {}),
+              ...(!namedByLabel && frameLabel ? { "aria-label": frameLabel } : {}),
+            }
+          : {})}
         data-slot="preview-tile-frame"
         className={cn(
           "bg-muted relative w-full overflow-hidden rounded-lg",
@@ -119,7 +161,11 @@ function PreviewTile({
         ) : null}
       </Frame>
       {label && labelPlacement === "below" ? (
-        <span data-slot="preview-tile-label" className="text-foreground truncate text-sm">
+        <span
+          id={labelId}
+          data-slot="preview-tile-label"
+          className="text-foreground truncate text-sm"
+        >
           {label}
         </span>
       ) : null}

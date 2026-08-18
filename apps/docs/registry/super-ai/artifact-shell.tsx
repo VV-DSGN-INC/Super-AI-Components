@@ -58,28 +58,35 @@ import { FilterBar, FilterChip, FiltersButton } from "@/registry/super-ai/filter
  * shell owns the viewport and wrong in a docs preview or a Storybook canvas,
  * where it would pin itself to the browser's left edge. Same fix as O2.
  *
- * The unresolved consequence is B1's: it keeps its `h-svh` box and is clipped to
- * the shell's height, so `sidebarPromo` and `sidebarFooter` fall below the clip
- * unless the shell is viewport-tall.
+ * Containment alone would still leave B1's `h-svh` box clipped to the shell's
+ * height, so `sidebarPromo` and `sidebarFooter` would fall below the clip
+ * unless the shell were viewport-tall. `SIDEBAR_FILLS_SHELL`, applied to the
+ * same root, is what closes that gap.
  */
 const EMBEDDABLE_SHELL = "[contain:layout]";
 
 /**
- * J4's card grid steps columns at the `sm` and `lg` *viewport* breakpoints, not
- * at its container's width. This shell always has a sidebar beside it, so at
- * `lg` the grid believes it has 1024px and actually has ~768px, and three
- * columns clamp the excerpt — the one field the card is built around — to a
- * couple of words. Shifting each step up one breakpoint restores the excerpt.
- * The grid lives on an inner slot that `className` cannot reach, hence the
- * descendant variant; same call-site-override idiom as `model-picker`'s
- * `ENTITY_ROW_SELECTED_DESCRIPTION_FIX`. Delete this when J4 measures its
- * container instead of the window.
+ * The other half of `EMBEDDABLE_SHELL`, and the fix for what containment
+ * alone does not solve: it redirects where the vendored sidebar's `fixed` box
+ * is anchored, but its `h-svh` still takes its height from the viewport.
+ * Without this override, the sidebar would overhang in any shell shorter than
+ * the window, and everything it bottom-anchors (`sidebarPromo`,
+ * `sidebarFooter`) would fall below the visible edge — clipped, not hidden,
+ * so those controls would stay in the tab order while invisible. This class
+ * sizes the sidebar to the shell's own height instead, closing that gap.
+ *
+ * Targets `[data-slot=app-sidebar]`, not the vendored `sidebar-container`
+ * default named at `components/ui/sidebar.tsx:230`: B1 renders
+ * `<Sidebar data-slot="app-sidebar" ...>`, and `Sidebar` spreads that prop
+ * onto the very div that also carries its own `data-slot="sidebar-container"`
+ * — the spread lands after the default, so `app-sidebar` is what's actually
+ * on the element at runtime. Verified in the browser (rendered `data-slot`
+ * inspected directly): the vendored name never appears once B1 is in use.
+ *
+ * Overriding here rather than in the primitive: `components/ui` is vendored
+ * and stays byte-identical to upstream.
  */
-const GRID_BESIDE_SIDEBAR = [
-  "[&_[data-slot=artifact-grid-items]]:grid-cols-1",
-  "[&_[data-slot=artifact-grid-items]]:lg:grid-cols-2",
-  "[&_[data-slot=artifact-grid-items]]:xl:grid-cols-3",
-].join(" ");
+const SIDEBAR_FILLS_SHELL = "[&_[data-slot=app-sidebar]]:h-full";
 
 /**
  * A date bucket of sessions. Recency outside, session inside — the spec's
@@ -101,14 +108,9 @@ interface ArtifactShellProps extends Omit<React.ComponentProps<"div">, "title"> 
   nav?: React.ReactNode;
   /** Replaces the default L1 shown when `nav` is empty. */
   navEmpty?: React.ReactNode;
-  /**
-   * B5 promo or any ambient sidebar CTA.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — see
-   * `EMBEDDABLE_SHELL` and the pitfalls in the docs page.
-   */
+  /** B5 promo or any ambient sidebar CTA. */
   sidebarPromo?: React.ReactNode;
-  /** B8 account menu. Same bottom-anchoring clip as `sidebarPromo`. */
+  /** B8 account menu. */
   sidebarFooter?: React.ReactNode;
   defaultSidebarOpen?: boolean;
 
@@ -290,6 +292,7 @@ function ArtifactShell({
       className={cn(
         "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
         EMBEDDABLE_SHELL,
+        SIDEBAR_FILLS_SHELL,
         className,
       )}
       {...props}
@@ -471,7 +474,6 @@ function ArtifactShell({
                   // facet start disagreeing.
                   filterable={false}
                   collapsibleSessions={collapsibleSessions}
-                  className={GRID_BESIDE_SIDEBAR}
                 />
               </DateSection>
             ))

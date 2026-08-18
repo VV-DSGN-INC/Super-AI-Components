@@ -64,6 +64,29 @@ import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-
 const EMBEDDABLE_SHELL = "[contain:layout]";
 
 /**
+ * The other half of `EMBEDDABLE_SHELL`, and the fix for what containment
+ * alone does not solve: it redirects where the vendored sidebar's `fixed` box
+ * is anchored, but its `h-svh` still takes its height from the viewport.
+ * Without this override, the sidebar would overhang in any shell shorter than
+ * the window, and everything it bottom-anchors (`sidebarPromo`,
+ * `sidebarFooter`) would fall below the visible edge — clipped, not hidden,
+ * so those controls would stay in the tab order while invisible. This class
+ * sizes the sidebar to the shell's own height instead, closing that gap.
+ *
+ * Targets `[data-slot=app-sidebar]`, not the vendored `sidebar-container`
+ * default named at `components/ui/sidebar.tsx:230`: B1 renders
+ * `<Sidebar data-slot="app-sidebar" ...>`, and `Sidebar` spreads that prop
+ * onto the very div that also carries its own `data-slot="sidebar-container"`
+ * — the spread lands after the default, so `app-sidebar` is what's actually
+ * on the element at runtime. Verified in the browser (rendered `data-slot`
+ * inspected directly): the vendored name never appears once B1 is in use.
+ *
+ * Overriding here rather than in the primitive: `components/ui` is vendored
+ * and stays byte-identical to upstream.
+ */
+const SIDEBAR_FILLS_SHELL = "[&_[data-slot=app-sidebar]]:h-full";
+
+/**
  * D1 is the media-gen omnibox and offers a negative-prompt field in every
  * presentation except `node-embedded`, which is a different shape entirely.
  * A chat composer has no negative prompt, and D1 exposes no way to turn the
@@ -73,17 +96,6 @@ const EMBEDDABLE_SHELL = "[contain:layout]";
  * Delete this the moment D1 grows a real opt-out.
  */
 const COMPOSER_NO_NEGATIVE_PROMPT = "[&_[data-slot=media-prompt-bar-negative-toggle]]:hidden";
-
-/**
- * J4's card grid steps to two and three columns at the `sm` and `lg` *viewport*
- * breakpoints. The stream column is narrower than the viewport in every shell
- * that has a sidebar, so left alone the cards over-column and the excerpt —
- * the field the whole component is built around — clamps to nothing. The grid
- * lives on an inner slot that `className` cannot reach, hence the descendant
- * variant. Same call-site-override idiom as `model-picker`'s entity-row fix.
- */
-const ARTIFACTS_IN_STREAM =
-  "[&_[data-slot=artifact-grid-items]]:grid-cols-1 [&_[data-slot=artifact-grid-items]]:lg:grid-cols-2";
 
 /**
  * `use-stick-to-bottom` renders its own scroll element between
@@ -148,21 +160,9 @@ interface ChatShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   onRenameThread?: (id: string, title: string) => void;
   onDeleteThread?: (id: string) => void;
   onTogglePinThread?: (id: string) => void;
-  /**
-   * B5 promo or any ambient sidebar CTA. Collapses away at icon-rail width.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — B1 anchors this
-   * above its footer, and the containment that keeps the shell embeddable also
-   * clips B1's `h-svh` box. See the pitfalls in the docs page.
-   */
+  /** B5 promo or any ambient sidebar CTA. Collapses away at icon-rail width. */
   sidebarPromo?: React.ReactNode;
-  /**
-   * B8 account menu, or whatever anchors the bottom of the sidebar.
-   *
-   * **Clipped out of view unless the shell is viewport-tall** — same
-   * bottom-anchoring problem as `sidebarPromo`. See the pitfalls in the docs
-   * page.
-   */
+  /** B8 account menu, or whatever anchors the bottom of the sidebar. */
   sidebarFooter?: React.ReactNode;
   /** Replaces the default L1 shown when there are no threads. */
   threadsEmpty?: React.ReactNode;
@@ -290,6 +290,7 @@ function ChatShell({
       className={cn(
         "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
         EMBEDDABLE_SHELL,
+        SIDEBAR_FILLS_SHELL,
         className,
       )}
       {...props}
@@ -408,7 +409,6 @@ function ChatShell({
                 sessions={artifacts}
                 filterable={false}
                 emptyLabel={artifactsEmptyLabel}
-                className={ARTIFACTS_IN_STREAM}
               />
             </section>
           </ConversationContent>
