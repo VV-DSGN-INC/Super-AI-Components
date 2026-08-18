@@ -42,3 +42,18 @@ No other file under `components/ui/**` produced a warning: no additional
 `cva()` muted-on-muted pairings, no Tailwind palette classes (`bg-zinc-400`
 etc.), and no other raw hex/`oklch()` literals across the remaining 37
 vendored files.
+
+### `tabs.tsx` — `tabsListVariants`, default variant
+
+`text-muted-foreground` in the cva base against `bg-muted` in the `default`
+variant value: 4.34:1 against a 4.5:1 minimum. Found by `findCvaViolations`,
+warned rather than gated because the file is vendored.
+
+Handled at our two call sites (`parameter-panel`, `run-inspector`) by rebinding
+`--muted-foreground`; `explore-shell` and `tool-panel` already pass
+`variant="line"`, which paints no background.
+
+**Unhandled, and unhandleable from here:** a consumer who installs one of our
+components and takes a stock `TabsList` at its default variant gets the failing
+pairing. Fixing that means diverging from upstream, which is the open decision
+this file exists to hold.

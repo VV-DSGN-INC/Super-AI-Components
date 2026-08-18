@@ -694,10 +694,23 @@ needed it to work and could not make it work.
 
 **Found independently by three or more builders — fix these first:**
 
-- **B1 `app-sidebar`'s bottom-anchored slots are clipped** by its own
-  `[contain:layout]`, so `footer`/`promo` props render nothing. Reported by O1,
-  O9, O10 and O11 separately. Four shells now expose those props with a warning
-  in their JSDoc rather than silently shipping dead slots.
+- **~~B1 `app-sidebar`'s bottom-anchored slots are clipped~~ — fixed 2026-08-17, and
+  B1 was never the defect.** The clipping came from the vendored
+  `sidebar-container`'s `fixed inset-y-0 h-svh` meeting the non-viewport
+  containing block `EMBEDDABLE_SHELL` creates: containment redirects where the
+  box is anchored, `h-svh` still sized it from the window. `app-sidebar` wires
+  `promo` and `footer` correctly and was not changed. Fixed by
+  `SIDEBAR_FILLS_SHELL` in five shells. Note the shells' own JSDoc and docs
+  pages described the mechanism correctly all along — this entry's summary is
+  what misattributed it to B1.
+- **The sidebar-footer geometric assertion (Task 10) only covers `HomeShell`.**
+  `chat-shell` and `artifact-shell` forward `sidebarFooter` to `AppSidebar`'s
+  `footer` prop identically to `HomeShell` and could reuse
+  `EmbeddedWithSidebarFooter` almost verbatim. `docs-shell` forwards
+  `railFooter` to the same `footer` prop under a different prop name.
+  `records-shell` forwards no footer prop at all and would need either a
+  different anchor or a documented exemption. None of the other four shells
+  has this story yet — open follow-up.
 - **Carousel arrows positioned outside their own box** (`-left-12`/`-right-12`):
   C3 `feature-card-row` (O1, O13) and H5 `frame-strip` (O3). In any constrained
   column they are clipped, or they turn the page into a horizontal scroller.
@@ -748,10 +761,13 @@ composed into a surface that already has that chrome:**
 - **B4 `modality-rail`'s stacked label never renders** — `ToggleGroupItem`'s base
   `h-8` collapses the label span to zero height. The accessible name survives;
   the rail is icon-only visually. Pre-existing, verified in a browser by O4.
-- **Vendored `ui/tabs.tsx`** ships `text-muted-foreground` with `bg-muted` in one
-  class string on `tabsListVariants` — the exact pairing `check:tokens` exists to
-  catch, sitting outside its scan scope where any consumer taking the default
-  variant will hit it.
+- **~~Vendored `ui/tabs.tsx` ... sitting outside its scan scope~~ — corrected and
+  handled 2026-08-17.** It is not outside the scan scope: `check-tokens.mjs`
+  globs `components/ui` and `findCvaViolations` detects the base/variant
+  pairing correctly. It is *found and downgraded to a warning* because the file
+  is vendored. Our two default-variant call sites now rebind
+  `--muted-foreground`; the vendored default remains unsafe for consumers who
+  compose a stock `TabsList`, recorded in `vendored-token-findings.md`.
 
 **One infrastructure fix worth doing before the next fan-out:** Base UI's
 `ScrollArea` (under C2 `suggestion-chips`) schedules a timer calling
