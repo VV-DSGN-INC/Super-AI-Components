@@ -63,6 +63,27 @@ import { SidebarNav, type SidebarNavItemData, type SidebarNavSection } from "@/r
 const EMBEDDABLE_SHELL = "[contain:layout]";
 
 /**
+ * The other half of `EMBEDDABLE_SHELL`. Containment redirects where the
+ * vendored sidebar's `fixed` box is anchored, but its `h-svh` still takes its
+ * height from the viewport — so in any shell shorter than the window the
+ * sidebar overhangs and everything it bottom-anchors (`railFooter`, this
+ * shell's name for the slot) falls below the visible edge. Clipped, not
+ * hidden: the control stayed in the tab order while being invisible.
+ *
+ * Targets `[data-slot=app-sidebar]`, not the vendored `sidebar-container`
+ * default named at `components/ui/sidebar.tsx:230`: B1 renders
+ * `<Sidebar data-slot="app-sidebar" ...>`, and `Sidebar` spreads that prop
+ * onto the very div that also carries its own `data-slot="sidebar-container"`
+ * — the spread lands after the default, so `app-sidebar` is what's actually
+ * on the element at runtime. Verified in the browser (rendered `data-slot`
+ * inspected directly): the vendored name never appears once B1 is in use.
+ *
+ * Overriding here rather than in the primitive: `components/ui` is vendored
+ * and stays byte-identical to upstream.
+ */
+const SIDEBAR_FILLS_SHELL = "[&_[data-slot=app-sidebar]]:h-full";
+
+/**
  * The non-negotiable measure. `68ch` is roughly 75–80 characters at the body
  * size, which is the line length long-form documentation is actually readable
  * at. It lives on the article, never on the scroll container: the column still
@@ -309,6 +330,7 @@ function DocsShell({
       className={cn(
         "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
         EMBEDDABLE_SHELL,
+        SIDEBAR_FILLS_SHELL,
         className,
       )}
       {...props}
