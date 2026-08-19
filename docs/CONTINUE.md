@@ -776,6 +776,30 @@ resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
 its own test file; **it belongs in the shared `vitest.setup.ts`** next to the
 ResizeObserver stub, and will bite anything composing a ScrollArea.
 
+### Found while building family Q (2026-08-19)
+
+- **B8 `account-menu`'s `KeyboardOrder` story fails intermittently under
+  full-suite load.** `pnpm test:stories` fails roughly half of full runs at
+  `AccountMenu.stories.tsx:221` with `expected 'stop#4 Sign out⇧⌘Q' to be
+  'stop#0 Settings⌘,'` — the closing wrap-around tab reads the last item
+  instead of the first. The same file passes 10/10 every time in isolation
+  (`pnpm vitest run --project storybook src/stories/super-ai/AccountMenu.stories.tsx`),
+  which is what makes it a load-dependent race rather than a wrong assertion.
+  The story already uses the settle idiom from
+  [`story-conventions.md`](design-system/story-conventions.md) §4 fact 4 for
+  the walk itself, so the gap is that the **closing** tab is not settled the
+  same way: under load the frame that `enqueueFocus` schedules has not painted
+  when the read happens, so the assertion sees the pre-redirect element. This
+  is the exact mechanism that fact records, just at the one read the idiom was
+  not applied to.
+
+  Filed rather than fixed: it was found while building family Q, whose two
+  components contain no portal and no focusable element, so nothing in that
+  change can reach it. It fails on `main` too. **It will make CI red on
+  roughly half of runs until someone settles that last read**, which is why it
+  is at the top of this section rather than in it.
+
+
 ### Added by the wave 0 story retrofit (2026-08-15)
 
 Same provenance rule as the list above: each was found by someone writing a

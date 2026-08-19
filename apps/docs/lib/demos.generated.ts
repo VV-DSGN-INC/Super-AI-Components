@@ -15,6 +15,8 @@ import AssetDetailDemo from "@/components/demos/asset-detail-demo";
 import AssetLibraryDemo from "@/components/demos/asset-library-demo";
 import AuthShellDemo from "@/components/demos/auth-shell-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
+import BookCoverDemo from "@/components/demos/book-cover-demo";
+import BrowserFrameDemo from "@/components/demos/browser-frame-demo";
 import ChatShellDemo from "@/components/demos/chat-shell-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
@@ -133,6 +135,8 @@ export const demos: Record<string, ComponentType> = {
   "asset-library": AssetLibraryDemo,
   "auth-shell": AuthShellDemo,
   "autonomy-selector": AutonomySelectorDemo,
+  "book-cover": BookCoverDemo,
+  "browser-frame": BrowserFrameDemo,
   "chat-shell": ChatShellDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
