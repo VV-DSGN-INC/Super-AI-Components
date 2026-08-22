@@ -266,7 +266,7 @@ function OnboardingWizard({
                 data-slot="onboarding-wizard-dot"
                 data-state={index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming"}
                 className={cn(
-                  "h-1.5 rounded-full transition-all",
+                  "h-1.5 rounded-full transition-[background-color,width]",
                   // Current is a longer bar, not merely a different colour —
                   // the one distinction that survives a greyscale screenshot.
                   index === currentIndex ? "bg-primary w-6" : "w-1.5",

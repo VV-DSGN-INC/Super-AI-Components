@@ -49,6 +49,7 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.0.2",
     "dom-accessibility-api": "^0.7.1",
+    "ds-rules": "workspace:*",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "jsdom": "^29.1.1",

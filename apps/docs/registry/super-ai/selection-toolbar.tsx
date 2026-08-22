@@ -36,7 +36,7 @@ import {
 } from "@/registry/super-ai/context-toolbar";
 
 /**
- * Selection Toolbar — the ✨ menu on selected text.
+ * Selection Toolbar — the Sparkles-icon menu on selected text.
  *
  * Spec: docs/design-system/component-specs.md#k4-selection-toolbar
  * States: improve · shorten · expand · tone-submenu · custom-prompt

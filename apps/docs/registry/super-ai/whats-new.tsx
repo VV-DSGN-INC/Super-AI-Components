@@ -240,7 +240,7 @@ function WhatsNew({
                 key={entry.id}
                 value={entry.id}
                 data-slot="whats-new-detail"
-                className="flex min-w-0 flex-1 flex-col gap-3 overflow-y-auto pr-1 outline-none"
+                className="focus-visible:ring-ring flex min-w-0 flex-1 flex-col gap-3 overflow-y-auto pr-1 focus-visible:ring-2 focus-visible:outline-none"
               >
                 {entry.media ? (
                   <div
