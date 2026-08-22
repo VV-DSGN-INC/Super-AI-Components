@@ -108,6 +108,9 @@ importers:
       dom-accessibility-api:
         specifier: ^0.7.1
         version: 0.7.1
+      ds-rules:
+        specifier: workspace:*
+        version: link:../../packages/ds-rules
       eslint:
         specifier: ^9
         version: 9.39.4(jiti@2.7.0)

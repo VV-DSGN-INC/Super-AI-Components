@@ -28,7 +28,7 @@ import {
 } from "./lib/contract-rules";
 import { deriveExtras } from "./lib/registry-extras";
 import { pascal, statePascal } from "./lib/scaffold-templates";
-import { CONTRAST_EXEMPT_FILES } from "./lib/token-rules.mjs";
+import { CONTRAST_EXEMPT_FILES } from "ds-rules/token-rules";
 
 const manifest = MANIFEST;
 const errors: string[] = [];

@@ -1,6 +1,6 @@
 import { globSync, readFileSync } from "node:fs";
 
-import { findCvaViolations, findSingleStringViolations } from "./lib/token-rules.mjs";
+import { findCvaViolations, findSingleStringViolations } from "../../../packages/ds-rules/src/token-rules.mjs";
 
 const FILES = globSync("{registry/{super-ai,marketing},components/ui}/**/*.tsx", {
   exclude: (f) => f.includes(".test."),
