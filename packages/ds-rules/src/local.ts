@@ -110,4 +110,30 @@ export const LOCAL_RULES: Rule[] = [
     fix: "Rebind [--muted-foreground:var(--accent-foreground)] on the variant that paints the surface.",
     why: "A base class and a variant value render together at runtime; the single-string rule cannot see the pair.",
   },
+  {
+    id: "ICO-1",
+    title: "One icon library — lucide-react only in registry sources",
+    severity: "blocker",
+    detect: {
+      method: "grep",
+      pattern: "from\\s*[\"'](?:@phosphor-icons/|react-icons|@heroicons/|@radix-ui/react-icons)",
+      flags: "",
+      scope: ["apps/docs/registry/super-ai", "apps/docs/registry/marketing"],
+      include: [".tsx"],
+      exempt: [".test."],
+    },
+    fix: "Import the equivalent glyph from lucide-react at the size the component already uses (16/20/24).",
+    why: "One library, one stroke weight (anti-slop Part 2.6 / Part 3.5): mixed icon sets read as unguided assembly. Closes the zero-homes gap left when the prose grep (old anti-slop Part 4 ICO-1) was retired.",
+  },
+  {
+    id: "LAY-1",
+    title: "Arbitrary pixel values duplicate or bypass the scale",
+    severity: "review",
+    detect: {
+      method: "judgment",
+      how: "Read changed components for arbitrary Tailwind values — [17px], w-[13.5rem], gap-[11px] — that duplicate an existing scale step or invent an off-scale one. A grep is structurally false-positive-prone here (legitimate arbitrary values exist: container-query thresholds, computed track sizes), so this is read-work on the diff, not a pattern.",
+    },
+    fix: "Snap to the nearest scale step; a value the scale genuinely lacks is a proposal for the token system, not an inline literal.",
+    why: "Off-scale values are the quiet ratchet. Was anti-slop Part 4's LAY-4 grep; retired to judgment method because its false-positive rate is structural — declared unchecked beats silently dropped.",
+  },
 ];

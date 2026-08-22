@@ -22,9 +22,12 @@ Origin research (12 lenses, ~110 indicators, ~40 sources):
 `super-ai-components` is governed by contracts in `docs/design-system/` —
 `component-build-brief.md` is the law, `packages/ds-rules` (`rulecheck.mjs`,
 run via `pnpm check:tokens`) is the token gate, `a11y-baseline.md` the
-measured posture. Unslop complements the gate: the gate owns everything
-grep-expressible in the records; this skill owns the `unchecked` list (TOK-6
-→ `pnpm test:stories`, judgment rules), the rendered passes, and
+measured posture. Unslop complements the gate: the gate owns every
+grep-expressible blocker in the records; warning-severity records (CPY-2,
+COL-6) and `review`/`judgment` records (LAY-1) surface only in this skill's
+full-detector run — CI's `check:tokens` and the write-time hook both filter
+to `--severity blocker`; this skill owns the `unchecked` list (TOK-6 →
+`pnpm test:stories`, `judgment` rules), the rendered passes, and
 fix-as-substitution. Known trap that is also an unslop rule: never pair
 `text-muted-foreground` with `bg-muted`/`bg-accent`/`bg-secondary`.
 Phase 2 here means the full CI gate order in `ci.yml`.

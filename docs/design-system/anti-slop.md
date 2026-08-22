@@ -3,7 +3,10 @@
 > **Mechanical detection moved to code.** Every grep-expressible ban below is a
 > typed record in `packages/ds-rules/src/{core,local}.ts` — the record, not
 > this prose, is what `pnpm check:tokens`, the write-time hook, and the unslop
-> skill execute. This document keeps the taxonomy, the reasoning, and the fix
+> skill execute. The one ban here that resists a reliable grep — arbitrary,
+> off-scale pixel values — is instead a `judgment`-method record (LAY-1) that
+> surfaces in the detector's `unchecked` list rather than being silently
+> dropped. This document keeps the taxonomy, the reasoning, and the fix
 > ladder; when prose and record disagree, the record wins and this file has
 > drifted.
 
