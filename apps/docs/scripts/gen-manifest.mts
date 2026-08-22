@@ -167,11 +167,16 @@ const items: ManifestItem[] = rows.map((row) => {
     specAnchor: `${layer === "block" ? "block-specs.md" : "component-specs.md"}#${row.id.toLowerCase()}-${row.name.toLowerCase()}`,
     // No legacy-exemption field. This used to emit a per-item escape hatch for
     // every shipped item; wave 0 drove it to zero across the manifest, and D20
-    // then deleted the field from the manifest type outright — reintroducing
-    // the old line now fails to typecheck, not just re-trips a runtime ratchet.
-    // The state normalizations done in the same wave are regenerated from
-    // catalog.md's free text and would still revert silently if this row shape
-    // changed carelessly. Do not reintroduce either.
+    // then deleted the field from the manifest type outright. Do not
+    // reintroduce it here: this file's .map() construction gets no
+    // excess-property check, so a reintroduced field would typecheck silently
+    // — but regenerating overwrites catalog.manifest.ts, whose literal-array
+    // shape DOES excess-property-check, so the field dies again at the output.
+    // The real guarantee is D20 plus check-contract no longer honoring the
+    // field, not typechecking in this file. The state normalizations done in
+    // the same wave are regenerated from catalog.md's free text and would
+    // still revert silently if this row shape changed carelessly. Do not
+    // reintroduce that either.
   };
 });
 
