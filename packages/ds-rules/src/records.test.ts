@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { LOCAL_RULES } from "./local";
+import { STRUCTURAL, VENDORED_SCOPES as RUNTIME_VENDORED } from "../rulecheck.mjs";
+import { LOCAL_RULES, VENDORED_SCOPES } from "./local";
 import { ruleSchema } from "./schema";
 
 const all = () => [...LOCAL_RULES];
@@ -33,5 +34,20 @@ describe("rule records", () => {
         expect(existsSync(dir), `${rule.id} missing __fixtures__/${rule.id}/${kind}/`).toBe(true);
       }
     }
+  });
+});
+
+describe("structural routing", () => {
+  it("every STRUCTURAL id has a heuristic record (an entry routing to nothing is drift)", () => {
+    for (const id of Object.keys(STRUCTURAL)) {
+      const rule = LOCAL_RULES.find((r) => r.id === id);
+      expect(rule, `${id} is in STRUCTURAL but has no record`).toBeDefined();
+      expect(rule?.detect.method).toBe("heuristic");
+    }
+    expect(Object.keys(STRUCTURAL).sort()).toEqual(["TOK-4", "TOK-5"]);
+  });
+
+  it("rulecheck's vendored-scope mirror equals the source of truth", () => {
+    expect(RUNTIME_VENDORED).toEqual(VENDORED_SCOPES);
   });
 });

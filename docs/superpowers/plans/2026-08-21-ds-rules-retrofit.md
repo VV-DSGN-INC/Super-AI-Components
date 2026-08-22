@@ -514,7 +514,7 @@ git commit -m "refactor(ds-rules): move token-rules predicates into the package;
       falsePositives:
         "The pattern alone matches every legitimate muted-text usage — it is only a pre-filter. Findings come exclusively from the structural single-string check in token-rules.mjs; rulecheck routes this id there and never runs the pattern generically.",
     },
-    fix: "Rebind the variable on the painted surface — [--muted-foreground:var(--accent-foreground)] — rather than swapping the text class.",
+    fix: "Give muted text a non-muted surface (bg-card, bg-background), or rebind [--muted-foreground:var(--accent-foreground)] on the surface-painting wrapper — note the rebind lives on the wrapper, never in the same class string as the pairing.",
     why: "bg-muted/accent/secondary with text-muted-foreground is 4.34:1 against a 4.5:1 minimum (a11y-baseline.md).",
   },
   {
@@ -543,9 +543,7 @@ export const Meta = () => <p className="bg-muted text-muted-foreground">3 items<
 ```
 `__fixtures__/TOK-4/good/case.tsx`
 ```tsx
-export const Meta = () => (
-  <p className="bg-muted [--muted-foreground:var(--accent-foreground)] text-muted-foreground">3 items</p>
-);
+export const Meta = () => <p className="bg-card text-muted-foreground">3 items</p>;
 ```
 `__fixtures__/TOK-5/bad/case.tsx`
 ```tsx

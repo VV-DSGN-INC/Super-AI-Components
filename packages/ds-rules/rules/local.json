@@ -105,6 +105,54 @@
       },
       "fix": "Use a shadcn CSS variable; if a computed colour is genuinely needed, color-mix() over variables inside globals.css.",
       "why": "anti-slop.md Phase 2 bans raw colour functions in components when a token system exists; the old gate covered hex and oklch but not these."
+    },
+    {
+      "id": "TOK-4",
+      "title": "No muted text paired with a muted background in one class string",
+      "severity": "blocker",
+      "detect": {
+        "method": "heuristic",
+        "pattern": "text-muted-foreground",
+        "flags": "",
+        "scope": [
+          "apps/docs/registry/super-ai",
+          "apps/docs/registry/marketing",
+          "apps/docs/components/ui"
+        ],
+        "include": [
+          ".tsx"
+        ],
+        "exempt": [
+          ".test."
+        ],
+        "falsePositives": "The pattern alone matches every legitimate muted-text usage — it is only a pre-filter. Findings come exclusively from the structural single-string check in token-rules.mjs; rulecheck routes this id there and never runs the pattern generically."
+      },
+      "fix": "Give muted text a non-muted surface (bg-card, bg-background), or rebind [--muted-foreground:var(--accent-foreground)] on the surface-painting wrapper — note the rebind lives on the wrapper, never in the same class string as the pairing.",
+      "why": "bg-muted/accent/secondary with text-muted-foreground is 4.34:1 against a 4.5:1 minimum (a11y-baseline.md)."
+    },
+    {
+      "id": "TOK-5",
+      "title": "No muted text/background split across a cva() base and a variant value",
+      "severity": "blocker",
+      "detect": {
+        "method": "heuristic",
+        "pattern": "text-muted-foreground",
+        "flags": "",
+        "scope": [
+          "apps/docs/registry/super-ai",
+          "apps/docs/registry/marketing",
+          "apps/docs/components/ui"
+        ],
+        "include": [
+          ".tsx"
+        ],
+        "exempt": [
+          ".test."
+        ],
+        "falsePositives": "Same pre-filter as TOK-4; findings come exclusively from the balanced-paren cva scan in token-rules.mjs (the shape that let components/ui/tabs.tsx ship the exact pairing this gate exists to catch)."
+      },
+      "fix": "Rebind [--muted-foreground:var(--accent-foreground)] on the variant that paints the surface.",
+      "why": "A base class and a variant value render together at runtime; the single-string rule cannot see the pair."
     }
   ]
 }
