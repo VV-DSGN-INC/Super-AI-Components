@@ -3,13 +3,17 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
+import { CORE_RULES } from "./core";
 import { LOCAL_RULES } from "./local";
 import { CATALOGUE_VERSION } from "./schema";
 
 /** rules/*.json is what the dependency-free detector reads. It is generated,
  *  never hand-edited; this test is the drift gate, and RULES_EMIT=1 makes it
  *  the emitter (pnpm --filter ds-rules rules:emit). */
-const EMISSIONS: Array<[string, unknown[]]> = [["local.json", LOCAL_RULES]];
+const EMISSIONS: Array<[string, unknown[]]> = [
+  ["core.json", CORE_RULES],
+  ["local.json", LOCAL_RULES],
+];
 
 describe("emitted rules", () => {
   for (const [name, rules] of EMISSIONS) {

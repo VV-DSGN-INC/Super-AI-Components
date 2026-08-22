@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import { STRUCTURAL, VENDORED_SCOPES as RUNTIME_VENDORED } from "../rulecheck.mjs";
+import { CORE_RULES } from "./core";
 import { LOCAL_RULES, VENDORED_SCOPES } from "./local";
 import { ruleSchema } from "./schema";
 
-const all = () => [...LOCAL_RULES];
+const all = () => [...CORE_RULES, ...LOCAL_RULES];
 
 describe("rule records", () => {
   it("every record is schema-valid", () => {
