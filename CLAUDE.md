@@ -11,6 +11,8 @@ apps/storybook   Storybook workspace — and the accessibility gate (see CI)
 
 `pnpm-workspace.yaml` also globs `packages/*`, but that directory does not exist yet — `apps/docs` and `apps/storybook` are the only workspaces today.
 
+Design specs live under `docs/superpowers/specs/` and implementation plans under `docs/superpowers/plans/`, one file per initiative.
+
 Repo: `github.com/VV-DSGN-INC/Super-AI-Components`.
 
 **IMPORTANT — identity:** this lives under the **VV-DSGN-INC** org, not `weeeha`. Check the remote before pushing; several sibling design repos are under `weeeha` and the two have been mixed up before. Confirm the target repo and branch out loud before any push or deploy.

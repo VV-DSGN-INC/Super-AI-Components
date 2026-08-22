@@ -10,6 +10,7 @@
     "test": "turbo run test",
     "check:tokens": "turbo run check:tokens",
     "check:contract": "turbo run check:contract",
+    "check:ladder": "node tools/ds-architecture/scripts/conformance.mjs .",
     "build:registry": "turbo run build:registry",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

@@ -1,0 +1,16 @@
+{
+  "profile": "component-library",
+  "adoption": "retrofit",
+  "scopeRoles": {
+    "components": ["apps/docs/registry/super-ai/**", "apps/docs/registry/marketing/**"],
+    "styles": ["apps/docs/app/**"]
+  },
+  "paths": {
+    "nameContract": "packages/ds-rules/src/local.ts",
+    "styleEntry": ["apps/docs/app/globals.css"]
+  },
+  "axes": [{ "attribute": "data-theme", "values": ["light", "dark"] }],
+  "commands": {
+    "test": "pnpm lint && pnpm typecheck && pnpm check:tokens && pnpm check:contract && pnpm test"
+  }
+}
