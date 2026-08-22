@@ -21,9 +21,12 @@ export const CORE_RULES: Rule[] = [
       // underlying content — a video thumbnail, the tile's own children, the
       // page behind a modal — never an empty decorative panel. anti-slop.md's
       // own COL-1/3/4 entry already permits exactly this ("no glassmorphism
-      // without real underlying content"); the gradient half of this rule
-      // (bg-gradient-/bg-clip-text, zero hits) stays a blocker everywhere,
-      // including these two files.
+      // without real underlying content"). exempt is whole-file per rule:
+      // these two files are excluded from ALL of COL-1, gradients included —
+      // a deliberate two-file hole, narrower than a repo-wide downgrade. All
+      // four current hits are backdrop-blur (glass), zero gradient hits as of
+      // 2026-08-22; if a gradient lands in either file, this gate will NOT
+      // catch it.
       exempt: ["hero-video-dialog.tsx", "preview-tile.tsx"],
     },
     fix: "Flat token: the accent, or a Surface/* tint. For text, text-primary plus a weight step, or one word in text-accent.",
