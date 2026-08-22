@@ -946,6 +946,12 @@ that is where the backlog lives.
   and once because a block separated from its export that way is attached to
   the wrong declaration, so autodocs may drop it.
 
+- **cssVars liveness gate** (`scripts/lib/cssvars-liveness.test.ts`): two known
+  construction limits — `cssVarKeys()` compares bare manifest keys against
+  `--`-prefixed reads (can only over-flag, proven), and Tailwind theme-group
+  keys are consumed via derived utilities so they live permanently in
+  `cssvars-liveness.baseline.json`. Improving either shrinks the baseline.
+
 ## 9. Gaps found by the case-story pilot
 
 Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were

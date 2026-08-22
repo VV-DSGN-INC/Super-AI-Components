@@ -31,7 +31,7 @@ Read these before writing any component code. The first two are contracts, not s
 
 Specs are normative **including their prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
 
-**Catalog status: 116 of 116 shipped**, nothing `building`. There is no next batch. The `contractExempt` retrofit is **done** — the flag is now used by zero manifest entries, so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
+**Catalog status: 116 of 116 shipped**, nothing `building`. There is no next batch. The `contractExempt` retrofit is **done** — the flag has since been deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
 
 ## IMPORTANT: The registry is the product
 
@@ -119,7 +119,6 @@ Note `format:check` is **not** in CI, so markdown and prose formatting are not g
 ## Open decisions — flag, don't silently pick
 
 - **Overlap with `@weeeha/ui`** (the `Minimal Design System` repo). Both define AI-interface components. Before adding a component here, check whether it exists there and say which repo should own it — do not quietly fork a second implementation.
-- **`contractExempt` is now dead weight.** Zero manifest entries carry it, so the escape hatch in `check-contract.mts` never fires. The field is still declared in `manifest-types.ts` and still honoured by the gate. Decide whether to delete it or keep it as a deliberate valve for the next legacy import — but do not reach for it to get a red gate green. It is _not_ the a11y exemption (a separate, single-file list); don't conflate them.
 
 ## Finishing a task
 

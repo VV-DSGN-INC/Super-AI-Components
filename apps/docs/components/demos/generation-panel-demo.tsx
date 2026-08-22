@@ -55,7 +55,7 @@ export default function GenerationPanelDemo() {
                 selected={selectedPreset === preset}
                 onSelect={() => setSelectedPreset(preset)}
               >
-                {/* preview-tile's frame is bg-muted (contractExempt legacy —
+                {/* preview-tile's frame is bg-muted (pre-Wave-1.5 legacy —
                     see docs/design-system/a11y-baseline.md). text-muted-foreground
                     on it is 4.34:1, under 4.5:1; text-foreground keeps the
                     tile's muted fill and clears contrast. */}

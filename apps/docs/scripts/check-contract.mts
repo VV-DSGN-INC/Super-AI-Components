@@ -6,12 +6,6 @@
 // deriveExtras() — the same function gen-registry.mts calls — actually
 // produces for it. "building" items get exactly one assertion: they may not
 // be shadowed by an orphan file under a name absent from the manifest.
-//
-// contractExempt skips only the story-state and docs-module assertions —
-// everything else (files, consumes) still applies, and the exemption is always
-// printed, never silent. As of the accessibility-section change, zero manifest
-// entries carry the flag, so this path is dormant; it is kept as a deliberate
-// valve for a future legacy import, not as a way to quiet a red gate.
 import { execFileSync } from "node:child_process";
 // readdirSync rather than fs.globSync: globSync exists at runtime on Node 22+
 // but is absent from @types/node@20, so it would typecheck in an untyped
@@ -33,7 +27,6 @@ import { CONTRAST_EXEMPT_FILES } from "ds-rules/token-rules";
 const manifest = MANIFEST;
 const errors: string[] = [];
 let checked = 0;
-let exempt = 0;
 
 const fileFor: Record<string, (n: string) => string> = {
   component: (n) => `registry/super-ai/${n}.tsx`,
@@ -110,17 +103,11 @@ for (const item of manifest) {
   }
 
   for (const [kind, path] of Object.entries(fileFor)) {
-    if (kind === "docs" && item.contractExempt) continue;
     if (!existsSync(path(item.name))) errors.push(`${item.name}: missing ${kind} file ${path(item.name)}`);
   }
 
   // G4 — a state whose Pascal form collides with the story file's own imports.
   errors.push(...findReservedStateNames(item.name, item.states));
-
-  if (item.contractExempt) {
-    exempt++;
-    continue;
-  }
 
   if (item.layer === "block") {
     checked++;
@@ -365,4 +352,4 @@ if (errors.length) {
   console.error(`\ncheck:contract — ${errors.length} violation(s).`);
   process.exit(1);
 }
-console.log(`check:contract — ${checked} item(s) checked, ${exempt} legacy item(s) exempt.`);
+console.log(`check:contract — ${checked} item(s) checked.`);

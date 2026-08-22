@@ -134,7 +134,7 @@ export const CitationUnresolved: Story = {
  *
  * This is the first story file answer-block has ever had, so these are also
  * the first time it renders under axe (CONTINUE.md §9 — it is one of the
- * eleven contractExempt components with no story at all).
+ * eleven pre-Wave-1.5 legacy components with no story at all).
  *
  * Not written for this component, deliberately:
  *

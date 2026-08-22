@@ -75,7 +75,7 @@ interface ModelPickerProps extends Omit<React.ComponentProps<"div">, "onSelect">
   placeholder?: string;
 }
 
-// entity-row (contractExempt legacy, see a11y-baseline.md) sets bg-accent
+// entity-row (pre-Wave-1.5 legacy, see a11y-baseline.md) sets bg-accent
 // text-accent-foreground on its own root when `selected`, but its internal
 // description span keeps text-muted-foreground — 4.34:1 against bg-accent,
 // under 4.5:1. entity-row doesn't forward className to that inner span, so
