@@ -158,7 +158,7 @@ function RunButton({
                   className="absolute inset-0"
                 >
                   <ProgressTrack data-slot="run-button-progress-track" className="h-full w-full rounded-[inherit] bg-transparent">
-                    <ProgressIndicator data-slot="run-button-progress-indicator" className="bg-primary/30 h-full transition-all" />
+                    <ProgressIndicator data-slot="run-button-progress-indicator" className="bg-primary/30 h-full transition-[width]" />
                   </ProgressTrack>
                 </ProgressPrimitive.Root>
               ) : null}
