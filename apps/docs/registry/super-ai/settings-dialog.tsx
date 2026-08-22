@@ -323,7 +323,7 @@ function SettingsDialog({
           key={section.id}
           value={section.id}
           data-slot="settings-dialog-panel"
-          className="min-w-0 flex-1 overflow-y-auto outline-none"
+          className="focus-visible:ring-ring min-w-0 flex-1 overflow-y-auto focus-visible:ring-2 focus-visible:outline-none"
         >
           <div
             // Deep-link target. Stable across renders, so `#settings-billing`

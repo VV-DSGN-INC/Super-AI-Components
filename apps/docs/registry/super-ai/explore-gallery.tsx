@@ -487,7 +487,7 @@ function ExploreGallery({
           <Tabs.Panel
             value={activeSort}
             data-slot="explore-gallery-feed"
-            className="min-h-0 flex-1 overflow-y-auto outline-none"
+            className="focus-visible:ring-ring min-h-0 flex-1 overflow-y-auto focus-visible:ring-2 focus-visible:outline-none"
           >
             {feedBody}
           </Tabs.Panel>
@@ -504,7 +504,7 @@ function ExploreGallery({
             role="region"
             aria-label={feedLabel}
             tabIndex={0}
-            className="min-h-0 flex-1 overflow-y-auto outline-none"
+            className="focus-visible:ring-ring min-h-0 flex-1 overflow-y-auto focus-visible:ring-2 focus-visible:outline-none"
           >
             {feedBody}
           </div>
