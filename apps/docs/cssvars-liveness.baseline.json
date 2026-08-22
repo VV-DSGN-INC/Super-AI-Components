@@ -1,0 +1,23 @@
+[
+  "generation-panel:--card-spacing (read, resolves nowhere)",
+  "result-card:--card-spacing (read, resolves nowhere)",
+  "time-ruler:--time-ruler-playhead-height (read, resolves nowhere)",
+  "inline-generate-popup:--transform-origin (read, resolves nowhere)",
+  "credits-indicator:color-warning (declared in cssVars, read by nothing)",
+  "credits-indicator:color-warning-foreground (declared in cssVars, read by nothing)",
+  "quota-meter:color-warning (declared in cssVars, read by nothing)",
+  "quota-meter:color-warning-foreground (declared in cssVars, read by nothing)",
+  "quota-meter:warning-foreground (declared in cssVars, read by nothing)",
+  "pricing-table:color-warning (declared in cssVars, read by nothing)",
+  "pricing-table:color-warning-foreground (declared in cssVars, read by nothing)",
+  "trust-dialog:color-warning (declared in cssVars, read by nothing)",
+  "trust-dialog:color-warning-foreground (declared in cssVars, read by nothing)",
+  "trust-dialog:warning-foreground (declared in cssVars, read by nothing)",
+  "usage-dashboard:--color-spend (read, resolves nowhere)",
+  "usage-dashboard:color-warning (declared in cssVars, read by nothing)",
+  "usage-dashboard:color-warning-foreground (declared in cssVars, read by nothing)",
+  "usage-dashboard:warning-foreground (declared in cssVars, read by nothing)",
+  "env-status:color-warning (declared in cssVars, read by nothing)",
+  "env-status:color-warning-foreground (declared in cssVars, read by nothing)",
+  "env-status:warning-foreground (declared in cssVars, read by nothing)"
+]
