@@ -68,8 +68,9 @@ packages/ds-rules/
   src/core.ts            harvested portable bans, adapted (see §4)
   src/local.ts           this repo's rules (see §4)
   src/token-rules.mjs    moved from apps/docs/scripts/lib/, node:* imports only
-  rules.json             emitted from core+local; drift-gated
-  rulecheck.mjs          detector CLI; reads rules.json + the two structural checks
+  rules/core.json        emitted from src/core.ts; drift-gated
+  rules/local.json       emitted from src/local.ts; drift-gated
+  rulecheck.mjs          detector CLI; reads rules/*.json + the two structural checks
   __fixtures__/<id>/bad/ and /good/   one pair per rule
 ```
 
@@ -89,7 +90,7 @@ packages/ds-rules/
 
 | id | rule | method | severity | notes |
 |---|---|---|---|---|
-| TOK-1 | raw hex colour | `grep` | blocker | pattern `#[0-9a-fA-F]{3,8}\b`; the GH-1234 issue-ref convention stays documented in `why` — semantics identical to today |
+| TOK-1 | raw hex colour | `heuristic` | blocker | pattern `#[0-9a-fA-F]{3,8}\b`; the GH-1234 issue-ref false positive is exactly what the schema's required `falsePositives` field exists to hold, so the method is honestly `heuristic` — gate semantics identical to today (blocker severity still fails) |
 | TOK-2 | raw `oklch(` | `grep` | blocker | |
 | TOK-3 | Tailwind palette class | `grep` | blocker | the existing prefix×palette regex, unchanged |
 | TOK-4 | muted fg + muted bg in one class string | `heuristic` | blocker | pre-filter pattern `text-muted-foreground`; refined by `findSingleStringViolations` |
@@ -108,12 +109,14 @@ rest, "Get Started", chart defaults, emoji in chrome, happy-path-only views, …
 adaptations:
 
 - **Scopes repointed** to this repo's directories.
-- **The icon-adapter rule is dropped.** It enforces pegbo's `@nickv/pegbo-ui/lib/icons`
-  adapter; this repo imports `lucide-react` directly by convention, so the rule has no
-  local meaning.
+- **ICO-2 (zero emoji in chrome) is kept; only its `fix` string is repointed.** The
+  harvested fix routes through pegbo's `@nickv/pegbo-ui/lib/icons` adapter; this repo
+  imports `lucide-react` directly (90 registry files do), so the fix becomes "use
+  lucide-react at 16/20/24, or drop the glyph". The ban itself fully applies here.
 
 Reconcile against `anti-slop.md`: any ban present there but absent from the harvested
-core becomes a local record. After migration, `anti-slop.md` keeps the taxonomy, the fix
+core becomes a local record (first known addition: raw `rgb()/rgba()/hsl()` in
+components, which the old gate never covered — lands as TOK-7, `heuristic`). After migration, `anti-slop.md` keeps the taxonomy, the fix
 ladder, and every `why` — enumerated patterns are replaced by a pointer to the records.
 One rule, one home.
 
@@ -129,12 +132,17 @@ One rule, one home.
 
 ## 5. The two ratchets, made mechanical
 
-**a11y exclusion list (shrink-only).** The excluded-story list moves out of
-`apps/storybook/.storybook/preview.tsx` into a data module beside a committed
-`a11y-exclusions.baseline.json`. A test fails when the live list is not a subset of the
-baseline; the regenerate script refuses to write a larger baseline. Growing it requires
-hand-editing the JSON in a reviewed commit — the friction is the point. This upgrades the
-existing CLAUDE.md sentence ("may only shrink, never grow") from rule-in-prose to gate.
+**a11y exclusion list (shrink-only).** Reality check from implementation reading: the
+list lives in `apps/storybook/vitest.config.ts` (directory globs for vendored
+`stories/ui/**` and `stories/ai-elements/**` plus three legacy mount-crash names), it
+holds **zero super-ai entries** since the A8 retrofit, and check:contract's G3 already
+asserts it agrees with `CONTRAST_EXEMPT_FILES` — but G3 only parses super-ai entries,
+and nothing today fails when someone *adds* an exclusion. The ratchet therefore keeps
+G3 untouched and adds what's missing: a committed `a11y-exclusions.baseline.json`
+pinning the raw exclude entries, a test (in `apps/docs`, which already reads that config
+file for G3) failing when the live list is not a subset of the baseline, and a
+regenerate script that refuses to write a larger baseline. Growing it requires
+hand-editing the JSON in a reviewed commit — the friction is the point.
 
 **cssVars liveness.** New vitest in `apps/docs`: for every shipped manifest item, every
 CSS variable its registry source writes — `var(--x)`, Tailwind arbitrary forms
@@ -207,11 +215,14 @@ old script — a permanent parity test against a deleted script is how dead code
 1. **Package + records + fixtures.** `packages/ds-rules` lands complete and tested;
    nothing in CI consumes it yet.
 2. **Parity, then swap.** Parity test green → `check:tokens` delegates to rulecheck →
-   old script and parity test deleted together. PR body flags the portability change
-   (CLAUDE.md asks for exactly this so it can be carried to the sibling repo).
+   old script and parity test deleted together. The write-time hook repoints in this
+   same PR (it invokes `check-tokens.mjs` directly, so deleting the script without
+   repointing would break it). PR body flags the portability change (CLAUDE.md asks for
+   exactly this so it can be carried to the sibling repo).
 3. **Ratchets.** a11y baseline mechanism; cssVars liveness with its first-run triage;
    `contractExempt` removal + D20.
-4. **Hook + skill.** Hook repoint with preserved semantics; unslop/anti-slop.md slimming.
+4. **Hook + skill.** Hook single-file `--files` optimization + written promotion
+   criterion; unslop/anti-slop.md slimming.
 5. **Checker + score.** `tools/ds-architecture/`, root config, `check:ladder`, and the
    first recorded ladder score.
 
