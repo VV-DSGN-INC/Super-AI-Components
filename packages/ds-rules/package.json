@@ -1,0 +1,22 @@
+{
+  "name": "ds-rules",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./schema": "./src/schema.ts",
+    "./core": "./src/core.ts",
+    "./local": "./src/local.ts",
+    "./token-rules": "./src/token-rules.mjs"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "rules:emit": "RULES_EMIT=1 vitest run src/emit.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5",
+    "vitest": "^4.1.8",
+    "zod": "^3.23.0"
+  }
+}
