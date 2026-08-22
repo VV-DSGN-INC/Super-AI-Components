@@ -14,8 +14,8 @@
 // valve for a future legacy import, not as a way to quiet a red gate.
 import { execFileSync } from "node:child_process";
 // readdirSync rather than fs.globSync: globSync exists at runtime on Node 22+
-// but is absent from @types/node@20, so it typechecks in an untyped .mjs gate
-// (check-tokens.mjs) and fails in this typed .mts one.
+// but is absent from @types/node@20, so it would typecheck in an untyped
+// .mjs script but fails in this typed .mts one.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";

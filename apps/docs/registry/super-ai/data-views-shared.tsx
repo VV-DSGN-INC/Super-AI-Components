@@ -57,7 +57,7 @@ export interface ColumnDef<T> {
  * text — blue, amber and emerald at low alpha for the three toned states, and
  * a muted pair for neutral. All four failed the token contract: three reached
  * for raw Tailwind palette classes, and the neutral pair was the exact
- * muted-foreground-on-muted combination `check-tokens.mjs` exists to catch, at
+ * muted-foreground-on-muted combination `check:tokens` exists to catch, at
  * 4.34:1 against a 4.5:1 minimum.
  *
  * (Those class names are described rather than quoted on purpose: the contract

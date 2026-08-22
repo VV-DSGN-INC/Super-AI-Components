@@ -20,7 +20,7 @@ Origin research (12 lenses, ~110 indicators, ~40 sources):
 ## Phase 0 — This repo's bindings
 
 `super-ai-components` is governed by contracts in `docs/design-system/` —
-`component-build-brief.md` is the law, `check-tokens.mjs` is the token gate,
+`component-build-brief.md` is the law, `check:tokens` is the token gate,
 `a11y-baseline.md` the measured posture. Unslop complements the gate: the gate
 catches hex/palette/muted-pairs; this skill covers effects, motion, copy,
 charts, states, and responsive. Known trap that is also an unslop rule: never

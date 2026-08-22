@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "check:tokens": "node scripts/check-tokens.mjs",
+    "check:tokens": "node ../../packages/ds-rules/rulecheck.mjs --severity blocker",
     "check:contract": "tsx scripts/check-contract.mts",
     "gen:wiring": "tsx scripts/gen-wiring.mts",
     "new:component": "tsx scripts/new-component.mts",

@@ -375,7 +375,7 @@ instead: `bg-destructive text-background`.
 
 Five rounds of a documentation-only rule clearly wasn't preventing
 recurrence — every fix above landed only after a browser already caught it in
-CI. `apps/docs/scripts/check-tokens.mjs` (the existing static token-contract
+CI. `packages/ds-rules/rulecheck.mjs` (the existing static token-contract
 gate, previously just raw-hex/`oklch()`/palette-class checks) now also flags
 a bare (unprefixed by a variant like `hover:`/`dark:`) `text-muted-foreground`
 appearing in the *same quoted class-list string* as a bare `bg-muted`,
@@ -421,7 +421,7 @@ files fixed in item 4 above were all shaped.
 
 Two of the three by-name exemptions are gone. The exclusion list shrank in both
 places that carried it — `apps/storybook/vitest.config.ts` and
-`CONTRAST_EXEMPT_FILES` in `apps/docs/scripts/check-tokens.mjs` — leaving only
+`CONTRAST_EXEMPT_FILES` in `packages/ds-rules/src/token-rules.mjs` — leaving only
 `preview-tile.tsx`, whose two violations are a different defect entirely
 (`text-destructive` on the default surface, and label text over unpredictable
 image content). `contractExempt: true` in the manifest is **unchanged** for all
@@ -491,7 +491,7 @@ the symptom fix, and would not have reached 4.5:1 anyway.
 `preview-tile.tsx` remains the only name on the list.
 
 **Coupled-by-coincidence warning.** `check:contract`'s G3 gate asserts that
-`CONTRAST_EXEMPT_FILES` (`apps/docs/scripts/lib/token-rules.mjs`) and this
+`CONTRAST_EXEMPT_FILES` (`packages/ds-rules/src/token-rules.mjs`) and this
 file's a11y exclusion list are the same *set* of names — true today only
 because both happen to contain exactly `preview-tile.tsx`, and for different
 reasons: it's contrast-exempt for a `text-destructive` defect (unrelated to

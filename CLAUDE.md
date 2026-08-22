@@ -82,12 +82,14 @@ Use `pnpm`, not npm — the lockfile is `pnpm-lock.yaml` and CI installs with `-
 
 ## The token gate
 
-`apps/docs/scripts/check-tokens.mjs` enforces the design spec's token contract across `registry/super-ai/**/*.tsx`. It fails the build on:
+`packages/ds-rules/rulecheck.mjs` (invoked by `pnpm check:tokens`) enforces the design spec's token contract across `registry/super-ai/**/*.tsx`. It fails the build on:
 
 - raw hex colours (`#1a1a1a`)
 - raw `oklch(...)`
 - Tailwind palette classes (`bg-zinc-400`, `text-blue-600`, `border-slate-200`, …)
 - a bare `text-muted-foreground` in the same quoted class string as a bare `bg-muted` / `bg-accent` / `bg-secondary`
+
+Rules are typed records in `packages/ds-rules/src/`; the emitted `rules/*.json` is drift-gated, and every rule ships bad+good fixtures.
 
 **Documented limitation:** an issue reference like `#1234` in a comment false-positives as hex. Write `GH-1234` in registry sources instead.
 
