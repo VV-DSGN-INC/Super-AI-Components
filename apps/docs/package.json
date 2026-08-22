@@ -11,6 +11,7 @@
     "test": "vitest run",
     "check:tokens": "node ../../packages/ds-rules/rulecheck.mjs --severity blocker",
     "check:contract": "tsx scripts/check-contract.mts",
+    "a11y:baseline": "tsx scripts/a11y-baseline.mts",
     "gen:wiring": "tsx scripts/gen-wiring.mts",
     "new:component": "tsx scripts/new-component.mts",
     "reconcile:deps": "tsx scripts/reconcile-deps.mts",

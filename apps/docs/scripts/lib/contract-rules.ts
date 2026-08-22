@@ -61,7 +61,7 @@ export function findSlotErasures(file: string, source: string, registryComponent
  * the same reason (arbitrary Tailwind values are full of stray parens); this
  * mirrors that pattern for comments.
  */
-function stripComments(source: string): string {
+export function stripComments(source: string): string {
   let out = "";
   let quote: string | null = null;
   for (let i = 0; i < source.length; i++) {
