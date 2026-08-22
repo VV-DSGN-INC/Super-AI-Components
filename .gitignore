@@ -9,6 +9,7 @@ playwright-report/
 .env*.local
 .DS_Store
 .env
+tools/ds-architecture/node_modules/
 # Subagent-driven-development scratch: ledgers, task briefs, review packages.
 # Per-plan working state, not project history.
 .superpowers/

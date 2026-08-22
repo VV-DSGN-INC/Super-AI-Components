@@ -1,0 +1,19 @@
+# Conformance ladder
+
+Run: `node <path-to>/ds-architecture/scripts/conformance.mjs .`
+
+| Stage | Status | Notes |
+|---|---|---|
+| 00 architecture map | | |
+| 01 token contract | | |
+| 02 rule catalogue | | |
+| 03 gate moments | | |
+| 04 component meta | | |
+| 05 derivation | | |
+| 06 story coverage | | |
+| 07 docs generation | | |
+| 08 design-tool sync | | |
+| 09 loops and conventions | | |
+
+`highestContiguous` from the runner is the honest number: stage 06 conformance with
+stage 04 unmet is not "reached stage 6".
