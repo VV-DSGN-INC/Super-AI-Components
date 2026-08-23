@@ -13,6 +13,11 @@ const BASELINE = "../storybook/a11y-exclusions.baseline.json";
 
 const live = parseRawExclusions(readFileSync(CONFIG, "utf8"));
 
+if (live === null) {
+  console.error("a11y:baseline — could not locate the exclude array in vitest.config.ts; refusing to write.");
+  process.exit(1);
+}
+
 if (existsSync(BASELINE)) {
   const prev: string[] = JSON.parse(readFileSync(BASELINE, "utf8"));
   const grown = live.filter((e) => !prev.includes(e));

@@ -31,8 +31,9 @@ import { stripComments } from "./contract-rules";
 /** Every quoted entry of the storybook a11y `exclude: [...]` array — globs
  *  and filenames alike. Complements G3 (which parses only super-ai names):
  *  G3 catches the two lists disagreeing; this catches the list growing. */
-export function parseRawExclusions(source: string): string[] {
+export function parseRawExclusions(source: string): string[] | null {
   const live = stripComments(source);
-  const block = /exclude:\s*\[([\s\S]*?)\]/.exec(live)?.[1] ?? "";
-  return [...block.matchAll(/["']([^"']+)["']/g)].map((m) => m[1]);
+  const block = /exclude:\s*\[([\s\S]*?)\]/.exec(live);
+  if (!block) return null;
+  return [...block[1].matchAll(/["']([^"']+)["']/g)].map((m) => m[1]);
 }

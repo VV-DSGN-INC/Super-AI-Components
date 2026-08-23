@@ -1,0 +1,19 @@
+{
+  "name": "ds-architecture",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "conformance": "node scripts/conformance.mjs",
+    "emit": "CONFIG_SCHEMA_EMIT=1 vitest run src/config/emit.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0",
+    "zod": "^3.23.0"
+  }
+}

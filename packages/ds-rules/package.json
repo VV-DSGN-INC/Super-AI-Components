@@ -15,6 +15,7 @@
     "rules:emit": "RULES_EMIT=1 vitest run src/emit.test.ts"
   },
   "devDependencies": {
+    "@types/node": "^20",
     "typescript": "^5",
     "vitest": "^4.1.8",
     "zod": "^3.23.0"

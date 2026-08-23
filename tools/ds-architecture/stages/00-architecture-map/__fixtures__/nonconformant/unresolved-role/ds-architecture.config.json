@@ -1,0 +1,33 @@
+{
+  "profile": "component-library",
+  "adoption": "greenfield",
+  "scopeRoles": {
+    "components": [
+      "src/components/**"
+    ],
+    "styles": [
+      "src/styles/**"
+    ],
+    "docs": [
+      "docs/**"
+    ]
+  },
+  "paths": {
+    "nameContract": "src/tokens.ts",
+    "styleEntry": [
+      "src/styles/globals.css"
+    ]
+  },
+  "axes": [
+    {
+      "attribute": "data-theme",
+      "values": [
+        "default",
+        "warm"
+      ]
+    }
+  ],
+  "commands": {
+    "test": "npm test"
+  }
+}

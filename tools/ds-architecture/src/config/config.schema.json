@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "adoption",
+    "scopeRoles",
+    "paths",
+    "axes",
+    "commands"
+  ],
+  "properties": {
+    "profile": {
+      "type": "string",
+      "enum": [
+        "tokens-only",
+        "component-library",
+        "app-consumer"
+      ]
+    },
+    "adoption": {
+      "type": "string",
+      "enum": [
+        "greenfield",
+        "retrofit"
+      ]
+    },
+    "scopeRoles": {
+      "type": "object",
+      "additionalProperties": false,
+      "propertyNames": {
+        "enum": [
+          "components",
+          "styles",
+          "stories",
+          "docs",
+          "app"
+        ]
+      },
+      "patternProperties": {
+        "^(components|styles|stories|docs|app)$": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "nameContract",
+        "styleEntry"
+      ],
+      "properties": {
+        "nameContract": {
+          "type": "string",
+          "minLength": 1
+        },
+        "styleEntry": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "metaGlob": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "axes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attribute",
+          "values"
+        ],
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "pattern": "^data-[a-z][a-z0-9-]*$"
+          },
+          "values": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "commands": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "test"
+      ],
+      "properties": {
+        "test": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "typecheck": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "vendored": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

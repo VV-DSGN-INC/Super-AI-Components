@@ -22,7 +22,11 @@ import { findCvaViolations, findSingleStringViolations } from "./src/token-rules
  *   4. Exit 1 only on a post-demotion blocker (the original exits on any
  *      violation; demotion requires the distinction).
  *   5. A scan over zero files warns loudly on stderr — a gate with no
- *      coverage must say so (carried from check-tokens.mjs). */
+ *      coverage must say so (carried from check-tokens.mjs).
+ *   6. `unchecked` entries carry the rule's `how` (the discharge pointer TOK-6
+ *      prints on every run; upstream drops it).
+ *   7. `DS_RULES_DIR` env override on loadRules — the test seam the exit-code
+ *      control tests use. */
 
 const PKG_ROOT = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(PKG_ROOT, "..", "..");

@@ -6,3 +6,7 @@ node_modules/
 .turbo/
 playwright-report/
 test-results/
+
+# Harvested-verbatim files: pnpm format would rewrite their upstream style
+# and silently break the byte-provenance discipline (see packages/ds-rules/README.md).
+packages/ds-rules/
