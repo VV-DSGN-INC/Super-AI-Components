@@ -9,7 +9,7 @@ apps/docs        Next.js docs site — owns registry/super-ai/**, the token gate
 apps/storybook   Storybook workspace — and the accessibility gate (see CI)
 ```
 
-`pnpm-workspace.yaml` also globs `packages/*`, but that directory does not exist yet — `apps/docs` and `apps/storybook` are the only workspaces today.
+`pnpm-workspace.yaml` also globs `packages/*`; `packages/ds-rules` (the rule records + detector behind `check:tokens`) is its first member — `apps/docs`, `apps/storybook`, and `packages/ds-rules` are the workspaces today.
 
 Design specs live under `docs/superpowers/specs/` and implementation plans under `docs/superpowers/plans/`, one file per initiative.
 

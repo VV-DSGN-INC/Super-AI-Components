@@ -20,3 +20,9 @@
   is scoreable today. This directory is not a pnpm workspace; to run its own
   test suite: `cd tools/ds-architecture && npm install && npm test` (130
   tests; node_modules is gitignored).
+- **Known config compromise:** the schema requires `axes[].attribute` to
+  match `^data-…`, so `ds-architecture.config.json` declares `data-theme`;
+  the repo's real mechanism is the `.dark` class (globals.css
+  `@custom-variant dark`). Stage 00 never reads axes against the tree, so
+  this is inert today — revisit when a stage consumes axes (stamp
+  `data-theme` at runtime, or upstream a schema relaxation).
