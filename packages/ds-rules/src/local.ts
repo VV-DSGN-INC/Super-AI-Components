@@ -111,6 +111,26 @@ export const LOCAL_RULES: Rule[] = [
     why: "A base class and a variant value render together at runtime; the single-string rule cannot see the pair.",
   },
   {
+    id: "TOK-8",
+    title: "Foreground composites only from foreground, only at the measured steps",
+    severity: "blocker",
+    detect: {
+      method: "heuristic",
+      pattern:
+        "\\b(?:text|fill|stroke|placeholder|decoration|caret)-(?!(?:xs|sm|base|lg|[2-9]?xl)/)(?!foreground/(?:60|70|80)\\b)[a-z][a-z-]*/(?:\\d+|\\[[^\\]]*\\])",
+      ...catalogGrep,
+      /** dot-pattern: an aria-hidden, pointer-events-none decorative dot grid
+       *  painted via currentColor at muted-foreground/40 — texture, not a
+       *  readable foreground, so the floor does not apply. Same footing as
+       *  skeleton.tsx's animate-pulse exemption. */
+      exempt: [".test.", "dot-pattern.tsx"],
+      falsePositives:
+        "A comment or docs string naming a banned form rather than applying one — phrase prose as 'muted-foreground at 60% opacity', never the utility form (the GH-1234 convention; applied to calendar-view's history note when this rule landed). The size shorthand text-sm/6 is excluded by the pattern itself.",
+    },
+    fix: "Quiet text derives from the foreground token at a pinned step — text-foreground/60, /70 or /80 (floor measured 2026-08-23: /60 ≥ 5.11:1 on every shipped surface, both themes). Below the floor, any other colour's composite, and arbitrary alphas: use the flat semantic token or TOK-6's rebind device instead.",
+    why: "A composite resolves against whatever sits behind it, so neither the pair rules nor a story-scoped axe run reliably sees one. foreground/50 measures 3.65–3.71:1 in light (AA fail); composites of muted-foreground are strictly worse than its flat 4.34:1. The pinned set {60,70,80} is the live set and may only shrink — a new step is a rule change carrying a new measurement (docs/superpowers/specs/2026-08-23-foreground-opacity-floor-design.md).",
+  },
+  {
     id: "ICO-1",
     title: "Only lucide-react ships icons in registry sources",
     severity: "blocker",

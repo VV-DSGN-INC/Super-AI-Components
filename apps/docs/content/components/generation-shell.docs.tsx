@@ -39,7 +39,7 @@ export const GenerationShellDocs: ComponentDocs = {
       note: "F2 generation-grid of F1 result-cards, or L1's example pair. Scrolls, so it is focusable and named.",
     },
     { slot: "generation-shell", note: "Root. Full height, no scroll of its own — the two panes scroll independently." },
-    { slot: "data-result-id", note: "On each F1 card, so a result can be addressed without reaching for its index." },
+    { slot: "result-card", note: "Each F1 card in the results pane; carries `data-result-id` so a result can be addressed without reaching for its index." },
   ],
   usage:
     "Reach for it when your product does one thing to one input and shows you the output. Everything is a prop: `panel` is forwarded whole to E1, `presets` fills E4, `models` fills E2, `parameters` takes E3's own row components, `run` is forwarded whole to E5, and `results` (or `resultGroups`) fills F2. The prices are the shell's, not the children's — set `cost`, `costUnit` and `balance` once and they feed the chip, the shortfall wording on a blocked run and the credits indicator from one place, which is what stops a tool quoting two different numbers. Pass `examplePair` before you pass anything else: it is what the pane shows on day one, and day one is the version most people see. The shell holds no state, so directions, preset, model, parameters, run state and selection all stay wherever your data already lives.",

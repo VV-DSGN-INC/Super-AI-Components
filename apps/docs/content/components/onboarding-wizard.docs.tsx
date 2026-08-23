@@ -101,7 +101,7 @@ export const OnboardingWizardDocs: ComponentDocs = {
     "Dropping Skip on the last step because that is what a commit-shaped wizard does. E8 generation-wizard is right to do it — its last step spends credits. Here it would make the final question the one question a user cannot get past, which is exactly where first-run flows get abandoned.",
     "Collecting answers and never applying them. `onAnswerChange` fires with the step id and value for a reason; if the only consumer is analytics, the flow is a survey wearing setup's clothes.",
     "Marking the dots as the progress and stopping there. The dot rail here is aria-hidden on purpose — the position, the total and the remaining count are on the progressbar and in visible text, and a build that moves the signal back into the dots has reintroduced a colour-only state.",
-    "Reaching for `text-muted-foreground` inside the marketing pane. That pane's frame is `bg-muted`, and the pairing measures under the 4.5:1 minimum in this token set — use `text-foreground` or `text-foreground/70`, as the demo pane does.",
+    "Reaching for `text-muted-foreground` inside the marketing pane. That pane's frame is `bg-muted`, and the pairing measures under the 4.5:1 minimum in this token set — use `text-foreground` or a pinned foreground step (`text-foreground/60` floor, TOK-8), as the demo pane's `/70` does.",
     "Putting the marketing pane before the question in the DOM to get it on the left. Use `panelSide: \"start\"`, which moves it visually and leaves the question first for keyboard and screen-reader order.",
   ],
 };

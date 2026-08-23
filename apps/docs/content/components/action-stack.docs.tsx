@@ -22,7 +22,7 @@ export const ActionStackDocs: ComponentDocs = {
     { slot: "action-stack", note: "The root. Carries `data-presentation` for menu or inline." },
     { slot: "action-stack-trigger", note: "Menu mode only. Renders your own element rather than wrapping it." },
     { slot: "action-stack-menu", note: "The dropdown surface in menu mode." },
-    { slot: "action-stack-item", note: "One action, rendered as A9 `entity-row`. Carries `data-locked` when gated." },
+    { slot: "entity-row", note: "One action, rendered as A9 `entity-row` — the stack stamps no slot of its own on rows. Carries `data-locked` when gated." },
     { slot: "cost-chip", note: "A2 in the row's trailing slot, with text from the shared cost formatter." },
     { slot: "action-stack-locked", note: "The word Locked, so the padlock is never the only signal." },
   ],
