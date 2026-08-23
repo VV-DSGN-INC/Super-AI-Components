@@ -954,16 +954,8 @@ that is where the backlog lives.
 
 - ds-rules follow-ups from the retrofit's final review: config `axes` declares
   `data-theme` (schema-forced) while the real mechanism is the `.dark` class —
-  reconcile when a stage consumes axes; pin the hook's scope case-list to the
-  records (unpinned mirror); branch the hook on exit 2 (currently misreports
-  could-not-tell as a token failure); pin `rules/*.json` filenames in the emit
-  drift gate; ICO-1 is a 4-library denylist titled as an allowlist;
-  motion-at-rest lost its audit home (add a rendered pass or judgment record);
-  cssvars-liveness test shares mutable state across its two `it`s and counts
-  comment mentions as reads; `packages/ds-rules` has no lint script;
-  a11y-baseline.md's contractExempt paragraph predates D20; anti-slop.md's
-  Part-2/3 citation sentence is vacuous while Part 4 cites non-records (STA-7,
-  SYS-2).
+  reconcile when a stage consumes axes. (The rest of this entry's items closed
+  in `chore(ds-rules): close the final-review follow-ups backlog`.)
 
 ## 9. Gaps found by the case-story pilot
 

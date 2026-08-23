@@ -156,12 +156,12 @@
     },
     {
       "id": "ICO-1",
-      "title": "One icon library — lucide-react only in registry sources",
+      "title": "Only lucide-react ships icons in registry sources",
       "severity": "blocker",
       "detect": {
-        "method": "grep",
-        "pattern": "from\\s*[\"'](?:@phosphor-icons/|react-icons|@heroicons/|@radix-ui/react-icons)",
-        "flags": "",
+        "method": "heuristic",
+        "pattern": "from\\s*[\"'][^\"']*icons?[^\"']*[\"']",
+        "flags": "i",
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing"
@@ -171,10 +171,11 @@
         ],
         "exempt": [
           ".test."
-        ]
+        ],
+        "falsePositives": "A non-icon package with 'icon' in its name, or a local module named icons. lucide-react contains no 'icon' substring, so the sanctioned library never matches."
       },
       "fix": "Import the equivalent glyph from lucide-react at the size the component already uses (16/20/24).",
-      "why": "One library, one stroke weight (anti-slop Part 2.6 / Part 3.5): mixed icon sets read as unguided assembly. Closes the zero-homes gap left when the prose grep (old anti-slop Part 4 ICO-1) was retired."
+      "why": "One library, one stroke weight (anti-slop Part 2.6 / Part 3.5): mixed icon sets read as unguided assembly. Closes the zero-homes gap left when the prose grep (old anti-slop Part 4 ICO-1) was retired. Inverted from a four-library denylist (final review): any icon-ish import that is not lucide-react now needs a look."
     },
     {
       "id": "LAY-1",
