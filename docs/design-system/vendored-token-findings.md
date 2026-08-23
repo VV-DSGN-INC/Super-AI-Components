@@ -38,10 +38,37 @@ Captured from `pnpm check:tokens` after widening the glob (exit 0, warn-only):
   the same "does a default-path consumer hit this" test used for `tabs.tsx`,
   every consumer of `ChartContainer` hits it. **CONSUMER-FACING.**
 
-No other file under `components/ui/**` produced a warning: no additional
-`cva()` muted-on-muted pairings, no Tailwind palette classes (`bg-zinc-400`
-etc.), and no other raw hex/`oklch()` literals across the remaining 37
-vendored files.
+- **`components/ui/chart.tsx:68`** — (d) foreground-opacity composite (TOK-8).
+  The same className also carries `stroke-border/50` on the recharts
+  cartesian-grid selector — a gridline at half opacity, which no contrast rule
+  can resolve because a composite takes its value from whatever sits behind
+  it. Decorative rather than read, so no AA bar applies; the finding is that
+  the value is invisible to the token system. The sibling
+  `design-system-rebuild` hit this exact line in its own vendored chart (its
+  opacity spec's inventory records it as "stroke 1") and chose substitution to
+  a flat token; here it stays reported-not-fixed per this file's scope.
+  Unconditional className — same default-path reasoning as (c).
+  **CONSUMER-FACING.**
+
+- **`components/ui/alert.tsx:13`** — (d) foreground-opacity composite (TOK-8).
+  The destructive variant styles its description slot `text-destructive/90`
+  over `bg-card`. A chromatic composite, so the achromatic arithmetic that
+  pinned TOK-8's floor does not transfer, and nothing has measured this
+  pairing. Gated behind `variant="destructive"` — not the default path.
+
+- **`components/ui/sidebar.tsx:403`** — (d) foreground-opacity composite
+  (TOK-8). `SidebarGroupLabel` reads `text-sidebar-foreground/70`. Worth a
+  note beyond the mechanical finding: `text-sidebar-foreground/50` shipping an
+  AA failure under a blind gate is the incident that started the sibling
+  repo's foreground-opacity ban. `/70` matches TOK-8's pinned family, but the
+  sidebar tokens are their own scale and nobody has measured them. Default
+  path for any consumer rendering a `SidebarGroupLabel`. **CONSUMER-FACING.**
+
+No other file under `components/ui/**` produced a warning in the initial
+sweep: no additional `cva()` muted-on-muted pairings, no Tailwind palette
+classes (`bg-zinc-400` etc.), and no other raw hex/`oklch()` literals across
+the remaining 37 vendored files. The (d) entries are a later stratum, added
+2026-08-23 when TOK-8 (the foreground-opacity floor) joined the catalogue.
 
 ### `tabs.tsx` — `tabsListVariants`, default variant
 
