@@ -85,34 +85,18 @@ describe("MANIFEST", () => {
     for (const name of MAIN_PR14) expect(shipped.has(name)).toBe(true);
   });
 
-  it("exempts nothing at all", () => {
-    // Exemption is a closed set that may only shrink, and wave 0 shrank it to
-    // zero: batch A retrofitted the 11 PR #14 components, batch B the legacy
-    // 14. Every shipped component now meets the story-state and documentation
-    // contracts in full, so `contractExempt` has no members left.
-    //
-    // Keep this assertion even though the flag is unused. A new component must
-    // never be born exempt — that is how a gate quietly stops gating — and an
-    // empty expectation is what makes the next `contractExempt: true` fail
-    // loudly instead of passing as "one more legacy item".
-    expect(MANIFEST.filter((i) => i.contractExempt).map((i) => i.name)).toEqual([]);
-  });
-
-  it("never re-exempts a component the retrofit already freed", () => {
-    // The ratchet. Wave 0 brought all 25 up to the full contract; restoring
-    // `contractExempt` to any of them would silently un-gate a component that
-    // already has the stories and guidance the flag excuses.
-    const exempt = new Set(MANIFEST.filter((i) => i.contractExempt).map((i) => i.name));
-    for (const name of [...LEGACY, ...MAIN_PR14]) expect(exempt.has(name)).toBe(false);
-  });
-
   it("holds every newly shipped component to the full contract", () => {
     // Blocks are excluded here, not exempted: a shell is a layout, not a state
     // machine, so it declares `regions` where a component declares `states` —
     // and check-contract.mts's block branch asserts the regions instead. Split
     // out when O2 `chat-shell` shipped and this assertion, which predates the
     // block layer having any shipped members, failed on `states: []`.
-    const newlyShipped = shippedItems(MANIFEST).filter((i) => !i.contractExempt && i.layer !== "block");
+    //
+    // Every shipped, non-block item is checked here — there is no exemption
+    // left to filter out. D20 deleted the legacy-exemption field from
+    // ManifestItem entirely, so a new "escape hatch" entry would fail to
+    // typecheck rather than need a runtime ratchet.
+    const newlyShipped = shippedItems(MANIFEST).filter((i) => i.layer !== "block");
     expect(newlyShipped.length).toBeGreaterThan(0);
     for (const item of newlyShipped) {
       expect(item.states.length).toBeGreaterThan(0);

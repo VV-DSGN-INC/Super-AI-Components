@@ -88,11 +88,6 @@ export interface ManifestItem {
   /** Anchor into component-specs.md. */
   specAnchor: string;
   /**
-   * Shipped before Wave 1.5. Exempt from the story-state and documentation
-   * assertions until the retrofit task runs. Never set on a new component.
-   */
-  contractExempt?: true;
-  /**
    * Registry-level CSS custom properties this component's code depends on,
    * beyond stock shadcn (e.g. the `--warning` token used by near-limit /
    * over-limit states). Threaded verbatim into the emitted registry.json item

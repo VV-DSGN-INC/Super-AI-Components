@@ -31,7 +31,7 @@ Read these before writing any component code. The first two are contracts, not s
 
 Specs are normative **including their prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
 
-**Catalog status: 116 of 116 shipped**, nothing `building`. There is no next batch. The `contractExempt` retrofit is **done** — the flag is now used by zero manifest entries, so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
+**Catalog status: 116 of 116 shipped**, nothing `building`. There is no next batch. The `contractExempt` retrofit is **done** — the flag has since been deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
 
 ## IMPORTANT: The registry is the product
 
@@ -82,12 +82,16 @@ Use `pnpm`, not npm — the lockfile is `pnpm-lock.yaml` and CI installs with `-
 
 ## The token gate
 
-`apps/docs/scripts/check-tokens.mjs` enforces the design spec's token contract across `registry/super-ai/**/*.tsx`. It fails the build on:
+`packages/ds-rules/rulecheck.mjs` (invoked by `pnpm check:tokens`) enforces the design spec's token contract across `registry/super-ai/**/*.tsx`. It fails the build on:
 
 - raw hex colours (`#1a1a1a`)
 - raw `oklch(...)`
 - Tailwind palette classes (`bg-zinc-400`, `text-blue-600`, `border-slate-200`, …)
 - a bare `text-muted-foreground` in the same quoted class string as a bare `bg-muted` / `bg-accent` / `bg-secondary`
+
+Since the records swap, the same step also enforces the adopted core blockers — gradients, emoji in chrome, `animate-bounce`, `transition-all`, generic CTAs, recharts defaults, and unpaired `outline-none` — plus everything else severity `blocker` in `packages/ds-rules/rules/*.json`; that emitted JSON is the authoritative list.
+
+Rules are typed records in `packages/ds-rules/src/`; the emitted `rules/*.json` is drift-gated, and every rule ships bad+good fixtures.
 
 **Documented limitation:** an issue reference like `#1234` in a comment false-positives as hex. Write `GH-1234` in registry sources instead.
 
@@ -115,7 +119,6 @@ Note `format:check` is **not** in CI, so markdown and prose formatting are not g
 ## Open decisions — flag, don't silently pick
 
 - **Overlap with `@weeeha/ui`** (the `Minimal Design System` repo). Both define AI-interface components. Before adding a component here, check whether it exists there and say which repo should own it — do not quietly fork a second implementation.
-- **`contractExempt` is now dead weight.** Zero manifest entries carry it, so the escape hatch in `check-contract.mts` never fires. The field is still declared in `manifest-types.ts` and still honoured by the gate. Decide whether to delete it or keep it as a deliberate valve for the next legacy import — but do not reach for it to get a red gate green. It is _not_ the a11y exemption (a separate, single-file list); don't conflate them.
 
 ## Finishing a task
 

@@ -346,6 +346,16 @@ for any consumer who places this grid inside a shrink-to-fit ancestor (a bare `f
 wrapper, for instance), not a defect introduced here — an explicit width on the wrapping element
 sidesteps it.
 
+### D20 · contractExempt is deleted — 2026-08-22
+
+The Wave-1.5 retrofit drove the field to zero users, and the pattern it encoded — a
+boolean that quietly waives contract assertions — is superseded by explicit,
+baseline-ratcheted exemption lists (the a11y exclusion baseline, the cssVars liveness
+baseline): a future legacy import gets a reviewed baseline entry carrying its reason,
+not a flag. Field removed from manifest-types.ts and its honoring branches from
+check-contract.mts in the ds-rules retrofit
+(docs/superpowers/specs/2026-08-21-ds-rules-retrofit-design.md).
+
 ---
 
 ## 2. Components dropped from the approved spec

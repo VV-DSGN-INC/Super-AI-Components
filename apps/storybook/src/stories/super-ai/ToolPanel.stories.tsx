@@ -8,7 +8,7 @@ import { ToolPanelDocs } from "@/content/components/tool-panel.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { ToolPanel, type ToolPanelProps, type ToolPanelSection } from "@/registry/super-ai/tool-panel";
 
-// Thumbnail stand-in. preview-tile's frame is bg-muted (contractExempt
+// Thumbnail stand-in. preview-tile's frame is bg-muted (pre-Wave-1.5
 // legacy — see a11y-baseline.md), so tile content is text-foreground, never
 // text-muted-foreground, which measures 4.34:1 on that fill.
 function Swatch({ label }: { label: string }) {

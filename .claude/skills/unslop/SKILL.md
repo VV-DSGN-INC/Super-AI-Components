@@ -20,11 +20,16 @@ Origin research (12 lenses, ~110 indicators, ~40 sources):
 ## Phase 0 — This repo's bindings
 
 `super-ai-components` is governed by contracts in `docs/design-system/` —
-`component-build-brief.md` is the law, `check-tokens.mjs` is the token gate,
-`a11y-baseline.md` the measured posture. Unslop complements the gate: the gate
-catches hex/palette/muted-pairs; this skill covers effects, motion, copy,
-charts, states, and responsive. Known trap that is also an unslop rule: never
-pair `text-muted-foreground` with `bg-muted`/`bg-accent`/`bg-secondary`.
+`component-build-brief.md` is the law, `packages/ds-rules` (`rulecheck.mjs`,
+run via `pnpm check:tokens`) is the token gate, `a11y-baseline.md` the
+measured posture. Unslop complements the gate: the gate owns every
+grep-expressible blocker in the records; warning-severity records (CPY-2,
+COL-6) and `review`/`judgment` records (LAY-1) surface only in this skill's
+full-detector run — CI's `check:tokens` and the write-time hook both filter
+to `--severity blocker`; this skill owns the `unchecked` list (TOK-6 →
+`pnpm test:stories`, `judgment` rules), the rendered passes, and
+fix-as-substitution. Known trap that is also an unslop rule: never pair
+`text-muted-foreground` with `bg-muted`/`bg-accent`/`bg-secondary`.
 Phase 2 here means the full CI gate order in `ci.yml`.
 Taxonomy + fix ladder: `docs/design-system/anti-slop.md`.
 
@@ -68,12 +73,14 @@ justification):
 
 ## Phase 2 — Audit before "done"
 
-Greps over the project's component/source dirs (expect zero, exceptions
-justified): `bg-gradient-|bg-clip-text|backdrop-blur` · raw
-`#hex|rgba?(|hsl(` in components when a token system exists · arbitrary
-`[Npx]` values · `transition-all|animate-` outside sanctioned loaders ·
-`8884d8|82ca9d|strokeDasharray="3 3"` · emoji codepoints in chrome ·
-`elevate|unlock|empower|supercharge|seamless|effortless` in copy.
+Mechanical rules first — run the detector, do not re-grep what it owns:
+
+    node packages/ds-rules/rulecheck.mjs --json
+
+Violations are findings; apply each record's own `fix`. Then work the
+`unchecked` list: TOK-6 discharges via `pnpm test:stories`; `judgment`-method
+rules are the reading work below. The rendered passes (squint, counts,
+contrast, keyboard, 375px, hostile fixtures, ratchet) remain this skill's own.
 
 Rendered passes: **squint** (one thing dominant, no identical section
 anatomy) · **counts** (font sizes ≤7, radii/shadows ⊆ project scale, ≤1

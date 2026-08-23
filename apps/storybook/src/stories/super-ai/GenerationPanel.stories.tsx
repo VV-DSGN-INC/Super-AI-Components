@@ -16,7 +16,7 @@ const PRESETS = (
   <div className="grid grid-cols-3 gap-2">
     {["Cinematic", "Anime", "Watercolor"].map((preset) => (
       <PreviewTile key={preset} aspect="square" label={preset}>
-        {/* preview-tile's frame is bg-muted (contractExempt legacy — see
+        {/* preview-tile's frame is bg-muted (pre-Wave-1.5 legacy — see
             a11y-baseline.md). text-muted-foreground on it is 4.34:1, under
             4.5:1; text-foreground keeps the tile's muted fill and clears
             contrast, the same fix used at every other bg-muted call site. */}

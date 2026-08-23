@@ -1,5 +1,15 @@
 # AI slop in generated UIs — research + anti-slop rules (portable edition)
 
+> **Mechanical detection moved to code.** Every grep-expressible ban below is a
+> typed record in `packages/ds-rules/src/{core,local}.ts` — the record, not
+> this prose, is what `pnpm check:tokens`, the write-time hook, and the unslop
+> skill execute. The one ban here that resists a reliable grep — arbitrary,
+> off-scale pixel values — is instead a `judgment`-method record (LAY-1) that
+> surfaces in the detector's `unchecked` list rather than being silently
+> dropped. This document keeps the taxonomy, the reasoning, and the fix
+> ladder; when prose and record disagree, the record wins and this file has
+> drifted.
+
 **Date:** 2026-08-11 · **Method:** 12 parallel research lenses, ~40 practitioner sources, ~110 catalogued indicators — each with a *mechanical* detection rule. Origin: the `pegbo-inc/design-system-rebuild` anti-slop spec; this is the project-agnostic edition. The runnable companion is the `unslop` skill (`.claude/skills/unslop/`).
 
 **How to use in this repo:** the taxonomy (Part 2), audit (Part 4), and fix ladder are universal. The rules (Part 3) are written against "the project's declared system" — bind them to THIS repo's tokens, scales, and contracts, which always win over the generic phrasing.
@@ -207,33 +217,19 @@ Process rules (the system-coherence layer):
 
 ## Part 4 · The self-audit (countable, not vibes)
 
-Run on any generated/modified screen before calling it done. Expected result of every grep: **zero** (exceptions listed inline).
+Run on any generated/modified screen before calling it done.
 
-```bash
-# Effects & gradients (COL-1/3/4)
-grep -rn "bg-gradient-\|bg-clip-text\|backdrop-blur\|backdrop-filter" <component-src-dirs>
+Mechanical checks first — run the detector, do not re-grep what it owns:
 
-# Raw values in components (SYS-1)
-grep -rnE "#[0-9a-fA-F]{3,8}\b|rgba?\(|hsl\(" <component-src-dirs> --include="*.tsx"
+    node packages/ds-rules/rulecheck.mjs --json
 
-# Arbitrary Tailwind values (LAY-4, SYS-1) — review every hit
-grep -rnE "\-\[[0-9]+px\]" <component-src-dirs>
-
-# Icon discipline (ICO-1)
-grep -rn "lucide-react\|@phosphor-icons/react" <component-src-dirs> | grep -v "lib/icons"
-
-# Motion defaults (MOT-2) — sanctioned loaders exempt
-grep -rn "transition-all\|animate-bounce\|animate-spin\|animate-pulse" <component-src-dirs>
-
-# Chart defaults (CHT-1)
-grep -rn "8884d8\|82ca9d\|strokeDasharray=\"3 3\"" <src-dirs>
-
-# Emoji in chrome (ICO-2)
-grep -rnP "[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}\x{2728}]" <component-src-dirs>
-
-# Copy register (CPY-2)
-grep -rniE "elevate|unlock|empower|supercharge|seamless|effortless|game.chang|revolutioniz" <src-dirs>
-```
+Every rule ID cited by name in Part 2 and Part 3 is a typed record in
+`packages/ds-rules/src/{core,local}.ts`; the record's `detect.pattern` is
+authoritative over any grep this document used to spell out inline, and on
+disagreement the record wins. Violations are findings — apply each record's
+own `fix`. Then work the `unchecked` list: TOK-6 discharges via
+`pnpm test:stories`; the remaining unchecked coverage is the rendered checks
+below.
 
 Rendered checks (Storybook or prototype, via browser tools):
 

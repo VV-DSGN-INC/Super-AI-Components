@@ -43,7 +43,7 @@ reached zero in the same wave. The Storybook a11y exclusion in
 `apps/storybook/vitest.config.ts` now names only the vendored directories
 (`stories/ui/**`, `stories/ai-elements/**`, plus three mount-crash files already
 inside them), and `CONTRAST_EXEMPT_FILES` in
-`apps/docs/scripts/lib/token-rules.mjs` is `[]`. `preview-tile` was the last
+`packages/ds-rules/src/token-rules.mjs` is `[]`. `preview-tile` was the last
 entry on both, and putting it under the enforced gate is what found the contrast
 failure the exemption had been covering. The two lists are paired by
 `check:contract`'s G3 rule, so they can only move together.
@@ -762,9 +762,9 @@ composed into a surface that already has that chrome:**
   `h-8` collapses the label span to zero height. The accessible name survives;
   the rail is icon-only visually. Pre-existing, verified in a browser by O4.
 - **~~Vendored `ui/tabs.tsx` ... sitting outside its scan scope~~ — corrected and
-  handled 2026-08-17.** It is not outside the scan scope: `check-tokens.mjs`
-  globs `components/ui` and `findCvaViolations` detects the base/variant
-  pairing correctly. It is *found and downgraded to a warning* because the file
+  handled 2026-08-17.** It is not outside the scan scope: TOK-5's rule scope
+  (`packages/ds-rules`) covers `components/ui` and `findCvaViolations` detects
+  the base/variant pairing correctly. It is *found and downgraded to a warning* because the file
   is vendored. Our two default-variant call sites now rebind
   `--muted-foreground`; the vendored default remains unsafe for consumers who
   compose a stock `TabsList`, recorded in `vendored-token-findings.md`.
@@ -945,6 +945,12 @@ that is where the backlog lives.
   between. Worth knowing twice over — once for whoever writes the audit grep,
   and once because a block separated from its export that way is attached to
   the wrong declaration, so autodocs may drop it.
+
+- **cssVars liveness gate** (`scripts/lib/cssvars-liveness.test.ts`): two known
+  construction limits — `cssVarKeys()` compares bare manifest keys against
+  `--`-prefixed reads (can only over-flag, proven), and Tailwind theme-group
+  keys are consumed via derived utilities so they live permanently in
+  `cssvars-liveness.baseline.json`. Improving either shrinks the baseline.
 
 ## 9. Gaps found by the case-story pilot
 

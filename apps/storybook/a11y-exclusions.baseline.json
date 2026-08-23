@@ -1,0 +1,7 @@
+[
+  "**/stories/ui/**",
+  "**/stories/ai-elements/**",
+  "**/stories/ai-elements/Context.stories.tsx",
+  "**/stories/ui/DropdownMenu.stories.tsx",
+  "**/stories/ui/MessageScroller.stories.tsx"
+]

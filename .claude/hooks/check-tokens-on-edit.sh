@@ -9,7 +9,7 @@ set -uo pipefail
 # "advisory, always exit 0" promise.
 path=$(node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).tool_input?.file_path??"")}catch{process.stdout.write("")}})' 2>/dev/null) || exit 0
 
-# Mirrors check-tokens.mjs's own glob —
+# Mirrors the union of rule scopes in packages/ds-rules/rules/*.json —
 # `{registry/{super-ai,marketing},components/ui}/**/*.tsx` — so an edit-time
 # signal exists for every file the gate actually covers, not just the
 # original super-ai subset.
@@ -26,9 +26,13 @@ esac
 # tree's files and print pass/fail noise about work you did not do.
 root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || true)}"
 [ -n "$root" ] || exit 0
-cd "$root/apps/docs" || exit 0
-if ! out=$(node scripts/check-tokens.mjs 2>&1); then
+# Promotion criterion (do not flip this hook to blocking on a hunch): blocking
+# mode requires every blocker-severity rule to hold a passing known-good
+# fixture in packages/ds-rules/__fixtures__/, plus two weeks of advisory-mode
+# sessions with no false positive. Until then: always exit 0.
+rel="${path#"$root"/}"
+if ! out=$(node "$root/packages/ds-rules/rulecheck.mjs" --files "$rel" --severity blocker 2>&1); then
   echo "check:tokens is now failing after that edit:" >&2
-  printf '%s\n' "$out" | grep -E '^registry/|^components/' >&2 || true
+  printf '%s\n' "$out" | grep -E '^(WARN )?apps/' >&2 || true
 fi
 exit 0

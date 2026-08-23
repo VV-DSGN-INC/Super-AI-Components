@@ -56,11 +56,12 @@ export function findSlotErasures(file: string, source: string, registryComponent
  * and `**\/` ends in the two characters `/*`, which a naive block-comment
  * regex reads as a comment *opening*, non-greedily swallowing everything up
  * to the next `*\/` (found inside the *next* entry's own `**\/` prefix) and
- * corrupting both. Tracking quote state is what token-rules.mjs's
- * extractCvaCalls already does for the same reason (arbitrary Tailwind
- * values are full of stray parens); this mirrors that pattern for comments.
+ * corrupting both. Tracking quote state is what
+ * packages/ds-rules/src/token-rules.mjs's extractCvaCalls already does for
+ * the same reason (arbitrary Tailwind values are full of stray parens); this
+ * mirrors that pattern for comments.
  */
-function stripComments(source: string): string {
+export function stripComments(source: string): string {
   let out = "";
   let quote: string | null = null;
   for (let i = 0; i < source.length; i++) {
@@ -137,20 +138,21 @@ export function compareExemptionLists(contrastFiles: string[], storyComponents: 
   const fromStories = new Set(storyComponents);
   const errors: string[] = [];
 
-  // Report against the original token-rules.mjs filename, not just its
-  // Pascal-cased form — a reader chasing the mismatch down needs to know
-  // which literal entry to look at in CONTRAST_EXEMPT_FILES.
+  // Report against the original filename from
+  // packages/ds-rules/src/token-rules.mjs, not just its Pascal-cased form —
+  // a reader chasing the mismatch down needs to know which literal entry to
+  // look at in CONTRAST_EXEMPT_FILES.
   for (const file of contrastFiles) {
     if (!fromStories.has(pascalOf(file))) {
       errors.push(
-        `${file} is contrast-exempt in token-rules.mjs but not excluded from the a11y gate (vitest.config.ts) — one of the two lists is stale`,
+        `${file} is contrast-exempt in packages/ds-rules/src/token-rules.mjs but not excluded from the a11y gate (vitest.config.ts) — one of the two lists is stale`,
       );
     }
   }
   for (const name of fromStories) {
     if (!fromContrastNames.has(name)) {
       errors.push(
-        `${name} is excluded from the a11y gate (vitest.config.ts) but not contrast-exempt in token-rules.mjs — one of the two lists is stale`,
+        `${name} is excluded from the a11y gate (vitest.config.ts) but not contrast-exempt in packages/ds-rules/src/token-rules.mjs — one of the two lists is stale`,
       );
     }
   }
