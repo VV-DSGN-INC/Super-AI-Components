@@ -223,11 +223,13 @@ Mechanical checks first — run the detector, do not re-grep what it owns:
 
     node packages/ds-rules/rulecheck.mjs --json
 
-Every rule ID cited by name in Part 2 and Part 3 is a typed record in
-`packages/ds-rules/src/{core,local}.ts`; the record's `detect.pattern` is
-authoritative over any grep this document used to spell out inline, and on
-disagreement the record wins. Violations are findings — apply each record's
-own `fix`. Then work the `unchecked` list: TOK-6 discharges via
+Not every rule ID named in this document is a ds-rules record: ids like
+STA-7 and SYS-2, cited below, are taxonomy labels from Part 2's numbering,
+not entries in `packages/ds-rules/src/{core,local}.ts`. Where an id here
+does name a typed record, that record's `detect.pattern` is authoritative
+over any grep this document used to spell out inline, and on disagreement
+the record wins. Violations are findings — apply each record's own `fix`.
+Then work the `unchecked` list: TOK-6 discharges via
 `pnpm test:stories`; the remaining unchecked coverage is the rendered checks
 below.
 
@@ -240,6 +242,7 @@ Rendered checks (Storybook or prototype, via browser tools):
 5. **375px pass** — no horizontal scroll, headings ≤3 lines, tap targets per STA-7, tables strategy visible.
 6. **Hostile-fixture pass** — long strings, empty array, error state, mixed-sign data rendered without breakage.
 7. **Ratchet pass** — re-run count pass and compare to before the change: no inventory growth (SYS-2).
+8. **motion at rest** — idle viewport: nothing animates outside genuine, state-bound progress indicators.
 
 ### When a check fails — the fix ladder
 

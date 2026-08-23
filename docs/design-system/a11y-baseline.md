@@ -426,7 +426,7 @@ places that carried it — `apps/storybook/vitest.config.ts` and
 (`text-destructive` on the default surface, and label text over unpredictable
 image content). `contractExempt: true` in the manifest is **unchanged** for all
 three: that flag governs the story-state and documentation contracts, not this
-one, and unwinding it is a separate retrofit.
+one, and unwinding it is a separate retrofit (the field has since been deleted — D20).
 
 Method was red-first: the exemptions were removed *before* any fix, and
 `pnpm test:stories` was run to watch both files fail with the axe rule named.

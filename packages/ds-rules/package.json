@@ -12,7 +12,8 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "rules:emit": "RULES_EMIT=1 vitest run src/emit.test.ts"
+    "rules:emit": "RULES_EMIT=1 vitest run src/emit.test.ts",
+    "lint": "echo \"no lint — typecheck + the drift gate cover the records; __fixtures__ are deliberately rule-breaking\""
   },
   "devDependencies": {
     "@types/node": "^20",

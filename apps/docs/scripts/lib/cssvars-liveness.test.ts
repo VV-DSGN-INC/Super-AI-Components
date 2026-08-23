@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { MANIFEST } from "../../lib/catalog.manifest"; // match check-contract.mts's exact import
+import { stripComments } from "./contract-rules";
 
 /** Liveness, both directions (spec §5). Forward: every CSS variable a shipped
  *  component READS must resolve somewhere real — otherwise `npx shadcn add`
@@ -55,31 +56,40 @@ function transitiveConsumes(name: string, seen = new Set<string>()): string[] {
 
 const baseline: string[] = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : [];
 
-describe("cssVars liveness", () => {
-  const failures: string[] = [];
-
-  it("every var a shipped item reads resolves; every declared cssVars key is read", () => {
-    for (const item of shipped) {
-      const sources = sourcesOf(item).map((p) => readFileSync(p, "utf8"));
-      const reads = new Set(sources.flatMap((s) => [...readsOf(s)]));
-      const declares = new Set(sources.flatMap((s) => [...declaresOf(s)]));
-      const resolvable = new Set([
-        ...stockVars,
-        ...declares,
-        ...cssVarKeys(item),
-        ...transitiveConsumes(item.name).flatMap((c) => cssVarKeys(byName.get(c))),
-      ]);
-      for (const v of reads) {
-        if (!resolvable.has(v)) failures.push(`${item.name}:${v} (read, resolves nowhere)`);
-      }
-      for (const key of cssVarKeys(item)) {
-        // Boundary-guarded: `--warning` must not count as read just because
-        // `--warning-foreground` appears.
-        const keyRe = new RegExp(`${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\w-])`);
-        const referenced = sources.some((s) => keyRe.test(s));
-        if (!referenced) failures.push(`${item.name}:${key} (declared in cssVars, read by nothing)`);
-      }
+/** Computed once, at module scope — both `it`s below read this same result
+ *  instead of the first populating shared mutable state the second depends
+ *  on having run after it (order-dependent before this change). */
+function computeFailures(): string[] {
+  const out: string[] = [];
+  for (const item of shipped) {
+    const sources = sourcesOf(item).map((p) => readFileSync(p, "utf8"));
+    const reads = new Set(sources.flatMap((s) => [...readsOf(s)]));
+    const declares = new Set(sources.flatMap((s) => [...declaresOf(s)]));
+    const resolvable = new Set([
+      ...stockVars,
+      ...declares,
+      ...cssVarKeys(item),
+      ...transitiveConsumes(item.name).flatMap((c) => cssVarKeys(byName.get(c))),
+    ]);
+    for (const v of reads) {
+      if (!resolvable.has(v)) out.push(`${item.name}:${v} (read, resolves nowhere)`);
     }
+    for (const key of cssVarKeys(item)) {
+      // Boundary-guarded: `--warning` must not count as read just because
+      // `--warning-foreground` appears. Comment-stripped: a `--key` mentioned
+      // only in a comment (not live code) is not a read either.
+      const keyRe = new RegExp(`${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\w-])`);
+      const referenced = sources.some((s) => keyRe.test(stripComments(s)));
+      if (!referenced) out.push(`${item.name}:${key} (declared in cssVars, read by nothing)`);
+    }
+  }
+  return out;
+}
+
+const failures = computeFailures();
+
+describe("cssVars liveness", () => {
+  it("every var a shipped item reads resolves; every declared cssVars key is read", () => {
     const fresh = failures.filter((f) => !baseline.includes(f));
     expect(
       fresh,

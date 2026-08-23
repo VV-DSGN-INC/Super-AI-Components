@@ -31,7 +31,12 @@ root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || true)
 # fixture in packages/ds-rules/__fixtures__/, plus two weeks of advisory-mode
 # sessions with no false positive. Until then: always exit 0.
 rel="${path#"$root"/}"
-if ! out=$(node "$root/packages/ds-rules/rulecheck.mjs" --files "$rel" --severity blocker 2>&1); then
+out=$(node "$root/packages/ds-rules/rulecheck.mjs" --files "$rel" --severity blocker 2>&1)
+code=$?
+if [ "$code" -eq 2 ]; then
+  echo "check:tokens could not run (exit 2 — could-not-tell, not a token failure):" >&2
+  printf '%s\n' "$out" | head -n 3 >&2 || true
+elif [ "$code" -ne 0 ]; then
   echo "check:tokens is now failing after that edit:" >&2
   printf '%s\n' "$out" | grep -E '^(WARN )?apps/' >&2 || true
 fi

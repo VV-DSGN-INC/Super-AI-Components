@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
@@ -30,4 +30,12 @@ describe("emitted rules", () => {
       expect(readFileSync(file, "utf8")).toBe(want);
     });
   }
+
+  it("rules/ holds exactly the emitted filenames — a stray third file would inject un-drift-gated rules", () => {
+    const dir = fileURLToPath(new URL("../rules/", import.meta.url));
+    const names = readdirSync(dir)
+      .filter((f) => f.endsWith(".json"))
+      .sort();
+    expect(names).toEqual(["core.json", "local.json"]);
+  });
 });

@@ -87,7 +87,8 @@ anatomy) · **counts** (font sizes ≤7, radii/shadows ⊆ project scale, ≤1
 saturated accent per viewport) · **contrast** (≥4.5:1) · **keyboard** (focus
 visible everywhere) · **375px** · **hostile fixtures** (3× strings, empty,
 error, mixed-sign data) · **ratchet** (distinct radii/shadows/sizes did not
-grow vs. before the change).
+grow vs. before the change) · **motion at rest** (idle viewport: nothing
+animates outside genuine, state-bound progress indicators).
 
 ## Phase 3 — Fix ladder
 
