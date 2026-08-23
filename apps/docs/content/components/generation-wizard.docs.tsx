@@ -97,6 +97,6 @@ export const GenerationWizardDocs: ComponentDocs = {
     "Treating the three declared states — stepper, preview pane, skip/back/primary nav — as variants to render one at a time. They're three regions of one composed wizard; a build that renders only one of them per 'state' has misread the spec.",
     "Wiring the primary button to always say \"Next\" and always call the same handler. The last step's primary action commits (spends credits, starts the render) rather than continuing, and needs its own label and handler.",
     "Building the stepper as free-jump tabs. Only completed steps are safe to jump back to — upcoming steps depend on choices not made yet, so they stay non-interactive until the user actually reaches them via Back, Skip, or the primary action.",
-    "Reaching for `text-muted-foreground` inside the preview pane's `bg-muted` frame. That pairing measures under the 4.5:1 contrast minimum in this token set — use `text-foreground` or `text-foreground/60`+ instead, as the component's own header text and step captions do.",
+    "Reaching for `text-muted-foreground` inside the preview pane's `bg-muted` frame. That pairing measures under the 4.5:1 contrast minimum in this token set — use `text-foreground` or a pinned foreground step instead, as the component's own header text and step captions do — `text-foreground/60` is the measured floor (TOK-8): `/50` reads 3.7:1 in light mode.",
   ],
 };
