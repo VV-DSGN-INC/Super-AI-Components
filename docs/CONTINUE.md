@@ -51,13 +51,21 @@ failure the exemption had been covering. The two lists are paired by
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-**What is not done: the case-story gate.** `check:contract` still says nothing
-about the eight case-story names — presence-or-`case-skip` enforcement is the
-program's final step and lands only after the family waves (spec §4). Until
-then the convention is normative and unenforced: a story file missing `RTL` with
-no skip line is indistinguishable from one that considered it. The remaining
-work is spec §3.2's family waves — case stories only, one PR per family, the
-~91 items wave 0 did not touch.
+**The case-story gate landed as a ratchet on 2026-09-04, not as the program's
+final step.** `apps/docs/scripts/lib/story-coverage.test.ts` derives the
+obligations from the manifest — the eight case names present-or-`case-skip`,
+and a JSDoc description above every declared-state export — and compares the
+unmet set with a committed `story-coverage.baseline.json` in both directions.
+The baseline holds the adoption-time debt: **817** obligations (615 case, 202
+described) — 76 story files with no case block at all, one partial, and 50
+files with undocumented state exports. Family coverage at adoption (files
+with all eight accounted for): A 12/12 · B 8/8 · C 5/5 · D 1/7 · E 1/10 ·
+F 0/7 · H 0/7 · I 0/5 · J 0/7 · K 3/8 · L 2/6 · M 3/7 · N 4/12 · O 0/13 ·
+P 0/2. The remaining family waves (spec §3.2) are now "shrink the baseline":
+a wave writes its stories or skips, then runs `pnpm story-coverage:baseline`
+from `apps/docs` to lock the progress in — the script refuses to grow the
+file. These figures are derived by that test; recount with it rather than
+maintaining them here.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -935,6 +943,11 @@ that is where the backlog lives.
   the one being asked. Count it mechanically, from the manifest's declared
   states rather than from export names, and state the scope you counted.
 
+  **Ratcheted since 2026-09-04:** each of the 202 is a `described` key in
+  `apps/docs/scripts/lib/story-coverage.baseline.json`, derived by
+  `story-coverage.test.ts` from the manifest's states exactly as the caution
+  below prescribes; the count can now only go down.
+
   **Why it is a follow-up and not a blocker: zero case stories lack a
   description.** Every undocumented export is a declared-state story — the kind
   that restates the types and the manifest by construction — so nothing a case
@@ -1061,7 +1074,8 @@ it honestly without noticing.
 
 The convention became a program on 2026-08-14: eight names (`Controlled`
 joined), manifest-shape rules, and a retrofit —
-`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`.
+`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md` — and
+a shrink-only ratchet on 2026-09-04 (§1).
 
 ### Wave 0 — the 25 `contractExempt` items (2026-08-15)
 

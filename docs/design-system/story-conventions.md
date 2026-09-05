@@ -47,15 +47,16 @@ tree animates" is a useful sentence; silence is not, because the next reader
 cannot tell a considered omission from an oversight.
 
 Write each skip as its own line in that comment, in exactly this grammar, so
-the eventual gate (spec §4) can parse presence-or-annotated-absence. That
-comment is a block comment, so the line carries the block's leading asterisk:
+the gate (`apps/docs/scripts/lib/story-coverage.ts`) can parse
+presence-or-annotated-absence. That comment is a block comment, so the line
+carries the block's leading asterisk:
 
     * // case-skip: RTL — no directional layout, icons or motion
 
-One line per skipped name: `case-skip: <StoryName> — <reason>`. Every skip
-line shipped today is that form — 48 of them across 24 story files, none of
-them bare — so the gate should allow an optional leading `*` rather than
-anchoring `//` to the start of the line. The pilot files carry the pattern.
+One line per skipped name: `case-skip: <StoryName> — <reason>`. The gate
+allows an optional leading `*` rather than anchoring `//` to the start of the
+line, requires the em dash, and treats a skip with nothing after the dash as
+silence. The pilot files carry the pattern.
 
 ## Rules
 
@@ -212,6 +213,13 @@ chosen.
   that true is the story-guarantees program
   (`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`);
   wave status lives in `CONTINUE.md`.
-- **Not yet gated.** The gate (presence or `case-skip` annotation for each of
-  the eight names) is the program's final step, landing only after every
-  family wave — a red gate can never sit on `main`.
+- **Gated as a ratchet since 2026-09-04.**
+  `apps/docs/scripts/lib/story-coverage.test.ts` derives two obligations per
+  item from the manifest — each of the eight names present or
+  `case-skip`-annotated, and a JSDoc description above every declared-state
+  export — and compares the unmet set with `story-coverage.baseline.json`,
+  the debt committed at adoption. Both directions fail: a newly unmet
+  obligation is a regression, and a resolved one still in the baseline must
+  be locked in with `pnpm story-coverage:baseline` (from `apps/docs`), which
+  refuses to grow the file. The family waves are therefore "shrink the
+  baseline", not a prerequisite for the gate.
