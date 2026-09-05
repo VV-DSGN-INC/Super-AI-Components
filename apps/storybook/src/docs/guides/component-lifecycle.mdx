@@ -1,0 +1,94 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Component Lifecycle" />
+
+# Component Lifecycle
+
+Components move through stages here, but not the stages a published library uses. There is no semver
+to tier against and no `/legacy` import path to demote things into, because shadcn copies source into
+the consumer's app: a change to the registry never reaches an installed component, only new installs.
+What exists instead is a **status on the manifest row**, a set of gates that decide what the status
+means, and a catalog whose scope was frozen on purpose.
+
+## The statuses
+
+| Status     | What it means                                                            | Who sets it                    |
+| ---------- | ------------------------------------------------------------------------ | ------------------------------ |
+| `planned`  | On the catalog, not started. Nothing is planned today                    | the catalog                    |
+| `building` | Scaffolded, five files exist, tests start red. Nothing is building today | the integrator, before fan-out |
+| `shipped`  | Every gate passes and the row is reconciled from real imports            | the integrator, at integration |
+| `cut`      | Removed from scope by a recorded decision, retained as a record          | a decision in `decisions.md`   |
+
+The scaffolder enforces the ladder: `pnpm new:component` refuses a name that is `cut` or already
+`shipped`, and refuses to overwrite any of the five files. The contract gate asserts the rest: for a
+`shipped` item the five surfaces exist, every declared state has a story export, the docs module
+carries real guidance with both accessibility arms, `consumes` resolves to other shipped items, and
+the registry-derivable fields match what the registry generator actually produces. A `building` item
+gets exactly one assertion, that it is not shadowed by an orphan file under a name absent from the
+manifest.
+
+## What "shipped" actually requires
+
+The five files are the checklist. What makes the status mean something is what each gate reads:
+
+- **Tokens.** `check:tokens` runs every blocker rule over the source.
+- **Stories under axe.** Every declared state renders in the Storybook gate with `test: "error"`, and
+  no `super-ai` story is excluded. The exclusion list reached zero in August 2026 and may only shrink.
+- **Guidance with receipts.** The docs module's citations must be reachable from the component's
+  source graph.
+- **Real dependencies.** `consumes`, `shadcn` and `npm` are reconciled from imports, never from the
+  catalog's assumed bases, which name primitives this repo does not vendor.
+- **Installability.** The consumer install test installs every registry item into a fresh app.
+
+Blocks differ in one way: a shell is a layout, not a state machine, so it declares `regions` where a
+component declares `states`, mounts every region unconditionally as `data-region="<id>"`, and must
+export `Empty` and `Responsive` stories. `Empty` earns its mandate; `Responsive` proves nothing
+mechanically and is written anyway, with the narrow layout verified by hand and said so in the
+report.
+
+## The waiver that was deleted
+
+Twenty-five legacy items once carried `contractExempt: true`, a boolean that quietly waived the
+contract assertions. The story-guarantees retrofit drove it to zero users, and decision D20 deleted
+the field and its branches from the gate. What replaced it is explicit, baseline-ratcheted lists: the
+a11y exclusion baseline and the cssVars liveness baseline, each entry carrying its reason. A future
+legacy import gets a reviewed baseline entry, never a flag. The deletion mattered because the flag had
+been covering more than it documented: eleven exempt components had no story file at all, and one of
+them, `safety-block`, had shipped a 4.33:1 contrast failure for as long as it existed, found only when
+a neighbour's `Boundary` story rendered it.
+
+## Frozen, and counted twice on purpose
+
+The A–O catalog is frozen at 114 items. The gate counts 116, and the two figures are reconciled in a
+test rather than a comment: family P, the second reference board's first family, is counted
+separately by construction, so "the catalog is complete at 114" stays literally true while P grows.
+P is provisional (D18): its evidence is desk research rather than a collected board of screens, and
+the consumer flip that would point the sibling shells repo at the registry is its own PR.
+
+Eleven items were **cut** in July 2026 (D9): the node builder, family G and the `flow-shell` block.
+Cut is a record, not a deletion. The specs and wireframes stay in the catalog and on the Figma
+boards, marked, and an unmerged branch holds the reference implementation. Some of those designs were
+a colleague's; their provenance is recorded and is not grounds to revive the family.
+
+## What is deliberately absent
+
+There is **no deprecation or removal policy**, and this page says so rather than papering over it.
+A published library needs one; this registry has no installed base that a registry change can
+reach, so removing a component means deleting it and fixing the call sites in this repo in the same
+change. When the registry gains consumers who report breakage, a real policy has to be written, and
+that is the moment to write it.
+
+The same copy semantics make one strategy legitimate that would not be in a conventional library:
+**ship incomplete, complete later**. `field-row` shipped without the reset slot its spec required and
+gained it additively afterwards, safe because a registry change never affects an already-installed
+component. Decision D13 records the reasoning.
+
+## The roadmap is the gap backlog
+
+Nothing is planned, so the work that remains is the backlog `docs/CONTINUE.md` §8 keeps: the
+composition gaps twelve block builders reported when a component they composed did not fit, the
+divergences the story retrofit found (duplicate accessible names across per-row controls, an ARIA
+range that exceeds its own maximum, an answer surface with no failure state), and the
+reduced-motion guards nineteen of the thirty animating components still lack. Each item was found by someone who
+needed it to work and could not make it work, which is why it is the best-evidenced backlog in the
+repo. A component that surfaces a new gap adds it there, in the same PR.

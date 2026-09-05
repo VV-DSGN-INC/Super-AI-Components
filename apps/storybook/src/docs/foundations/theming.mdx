@@ -1,0 +1,102 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+
+<Meta title="Foundations/Theming" />
+
+# Theming
+
+One theme, two modes, and every knob a consumer may turn lives in a stylesheet rather than in a
+component. Dark mode is a class; the corner scale is a variable; the type families are variables the
+host supplies; and the registry's own additions travel as `cssVars` on the items that need them.
+Nothing on this page requires a component edit, and that is the test of whether a thing is themable
+here.
+
+## Dark is a class
+
+`src/index.css` declares `@custom-variant dark (&:is(.dark *))`, so a `dark:` utility fires for any
+element under an ancestor carrying the `.dark` class, and the `.dark { … }` block re-declares every
+token for that scope. Toggle the class on `<html>` and the whole tree re-skins, because no component
+holds a colour of its own. The toolbar above does exactly that, and the docs pages mirror it, so
+every example on this page follows the toggle.
+
+Two facts worth carrying: the dark block is a second set of decisions, not an inversion (the accent
+goes near-white, the border becomes ten percent white), and `account-menu` ships the user-facing
+control for it, a theme radio in its Appearance submenu, while the _host_ applies the class. The
+registry decides what the control looks like; it never decides where the class is written.
+
+## Shape is one variable
+
+`--radius` is `0.625rem`, and every `rounded-*` step is a `calc()` multiple of it in the `@theme
+inline` block. A consumer who wants sharper corners changes one line. A component that wrote a pixel
+corner would be the one thing that did not follow.
+
+## Type is supplied by the host
+
+The token sheet references `--font-sans` and `--font-geist-mono` and never loads a face. The docs
+site supplies Geist through `next/font`; this workbench supplies the same faces from Google Fonts; a
+consumer supplies whatever they choose, and the whole registry follows. That is what makes "swap the
+type per project" real. One trap already cost a fix: a variable that resolves to itself
+(`--font-sans: var(--font-sans)`) renders serif everywhere and fails no gate (PR #7).
+
+## What a consumer changes, and what they do not
+
+<DoDont doExample={<div className="bg-card border-border rounded-lg border p-4"><p className="text-foreground text-sm font-medium">Reads the token</p><p className="text-muted-foreground mt-1 font-mono text-xs">bg-card text-foreground rounded-lg</p></div>
+  }
+  doCaption="follows the sheet through both modes and any --radius a consumer sets."
+  dontExample={
+    <div style={{ background: "#ffffff", color: "#0a0a0a", border: "1px solid #e5e5e5", borderRadius: 10, padding: 16, }} >
+      <p style={{ fontSize: 14, fontWeight: 500 }}>Hardcoded</p>
+      <p style={{ color: "#737373", fontSize: 12, fontFamily: "monospace", marginTop: 4 }}>#ffffff / #0a0a0a / 10px</p>
+    </div>
+  }
+  dontCaption="identical in light mode, which is the trap. Switch this page to dark and only one of these two boxes follows."
+/>
+
+A consumer re-themes by editing `:root` and `.dark` in their own stylesheet, the sheet `shadcn init`
+gave them. They never edit a component to do it, and the registry's gates are what guarantee that
+promise: a hex, an `oklch()` or a palette class in a component would be a value the theme cannot
+reach, so `check:tokens` fails the build on each.
+
+## The registry's own additions travel as cssVars
+
+Stock shadcn has no `--warning`. The items that paint the near-limit state declare it as `cssVars`
+in the manifest (`WARNING_CSS_VARS`), the registry emits it into the item's JSON, and `shadcn add`
+writes the variable, its dark value and its `--color-warning` theme mapping into the consumer's
+stylesheet. The consumer install test asserts all three land, because Tailwind v4 emits nothing for
+an undefined utility rather than failing. The Marketing tier does the same with its `--marketing-*`
+palette variables and keyframes.
+
+The rule this implies: a token the registry adds is declared on **every** item that paints it.
+`rate-limit-banner` and `data-views` paint warning classes without declaring the variable and ship
+colourless to a consumer who installs only them; `CONTINUE.md` §8 keeps that as the gap to close.
+
+<Example className="flex flex-wrap items-center gap-3">
+  <Button>Generate a render</Button>
+  <Button variant="outline">Attach reference</Button>
+  <p className="text-muted-foreground w-full text-xs">Flip the theme in the toolbar: both buttons follow, and nothing on this page was told to.</p>
+</Example>
+
+## What this workbench does not have
+
+There is no brand or density axis. `packages/ds-rules`' config declares a `data-theme` axis because
+its schema requires one, while the real mechanism is the `.dark` class; `CONTINUE.md` §8 records the
+reconciliation as a follow-up. A second palette or a dense finish would arrive the same way dark did,
+as a scope that re-declares tokens, and would need no component edit to prove itself. Until one
+exists, the toolbar's two axes, theme and writing direction, are the whole set, and
+[Style axes](?path=/story/foundations-style-axes--dark-applies) asserts that each reaches the
+document.
+
+## Rules
+
+- Dark mode is the `.dark` class on an ancestor. Components never branch on it; the sheet does.
+- Corners follow `--radius`. Never write a pixel corner.
+- Type families are variables the host supplies. Never load a face from a component, and never let a
+  variable resolve to itself.
+- A consumer re-themes in their stylesheet, never in a component. The gates make that promise true.
+- A token the registry adds is declared as `cssVars` on every item that paints it, and the consumer
+  test asserts it lands.
+- Adding a theme never adds a token. A new scope re-points names that already exist.
+
+The names and live values are in [Design Tokens](?path=/docs/foundations-design-tokens--docs);
+which of them a component may reach for is [Color](?path=/docs/foundations-color--docs).

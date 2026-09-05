@@ -1,0 +1,81 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import { QuotaMeter } from "@/registry/super-ai/quota-meter";
+import { CreditsIndicator } from "@/registry/super-ai/credits-indicator";
+
+<Meta title="Foundations/Data Visualization" />
+
+# Data visualization
+
+This registry draws very few charts, on purpose. One component renders a chart, `usage-dashboard`,
+through the vendored `chart` wrapper over Recharts; everything else that shows a number is a meter or
+a readout. The rules below are therefore short, and two of them are gates: CHT-1 fails the build on
+Recharts' default colours, and CHT-3 on its dashed gridline default, because both are the clearest
+single tell of an unguided chart.
+
+## Series are a lightness ramp
+
+<Example>
+  <div className="flex gap-2">
+    <div className="bg-chart-1 border-border size-8 rounded-sm border" />
+    <div className="bg-chart-2 border-border size-8 rounded-sm border" />
+    <div className="bg-chart-3 border-border size-8 rounded-sm border" />
+    <div className="bg-chart-4 border-border size-8 rounded-sm border" />
+    <div className="bg-chart-5 border-border size-8 rounded-sm border" />
+  </div>
+  <p className="text-muted-foreground mt-3 text-xs">chart-1 to chart-5: five greys, light to dark, in both modes</p>
+</Example>
+
+Identity across series comes from lightness order and direct labels, never from hue. Assign slots in
+fixed order starting at `chart-1` and never cycle; colour follows the entity, so a filter that
+removes a series must not repaint the survivors. A sixth series is "Other" or a second chart.
+`usage-dashboard` binds its one series to `var(--chart-1)` through a `ChartConfig` and turns on
+Recharts' `accessibilityLayer`, which is the shape to copy.
+
+## Most numbers are not charts
+
+<Example className="flex flex-wrap items-start gap-8">
+  <div className="w-72">
+    <QuotaMeter resources={[
+        { label: "Messages", used: 1240, limit: 5000, resetsIn: "Resets in 12 days" },
+        { label: "Image generations", used: 34, limit: 200, resetsIn: "Resets in 12 days" }, ]} /></div>
+  <div className="flex flex-col gap-2">
+    <CreditsIndicator form="ring" balance={640} total={1000} onManage={() => {}} />
+    <p className="text-muted-foreground text-xs">the ring form of the cost contract</p>
+  </div>
+</Example>
+
+The cost contract has three forms, and none of them is a chart: a per-action chip, a pre-commit
+line, and this ring. `quota-meter` is a `progressbar` per resource with `aria-valuetext` reading "6 of
+30 min used", and the number is always written beside the bar, so the bar never carries the fact
+alone. One number is a `stat-readout`, not a chart; twelve numbers with a shape over time are a
+chart, not twelve readouts.
+
+## What the vendored wrapper carries
+
+`components/ui/chart.tsx` re-skins Recharts' hardcoded SVG attributes with token classes through
+attribute selectors, which is why `check:tokens` reports two hex literals in it: they are match
+targets for Recharts' own `stroke="#ccc"`, not colours this system chose. The same class list carries
+a `stroke-border/50` gridline, a composite the token system cannot resolve. Both are recorded in
+`vendored-token-findings.md` as consumer-facing and not fixed, because fixing them means diverging
+from upstream. A chart built here inherits both.
+
+## Rules
+
+- Chart colours are `chart-1` to `chart-5`, in order, never cycled. Recharts' defaults are an
+  automatic fail (CHT-1).
+- Marks are flat and gridlines are hairline and solid. The dashed `"3 3"` default fails the build
+  (CHT-3).
+- One axis. Two measures of different scale are two charts, small multiples, or an indexed series.
+- Text wears text tokens. Values, labels and legends stay in the foreground tiers; a mark beside
+  them carries the identity.
+- A legend exists for two or more series and is absent for one; the heading names a single series.
+- A single value is a readout or a meter with the number written beside it, never a gauge that
+  carries the fact alone.
+- Fewer than four points is a readout, not a chart. No pies over a handful of slices, no donut for a
+  single value.
+- The anti-slop audit's chart lens applies before "done": no gradient fills under lines, no
+  oversmoothed curves on sparse data, axes with units and zero-based bars.
+
+The five chart tokens and their live values are in
+[Design Tokens](?path=/docs/foundations-design-tokens--docs).

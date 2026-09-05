@@ -1,0 +1,136 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { EnvStatus } from "@/registry/super-ai/env-status";
+
+<Meta title="Foundations/Inclusive design" />
+
+# Inclusive design
+
+Accessibility here is a constraint, not a phase: the same status as "it has to compile". Every
+registry story renders under axe with violations as errors, the exclusion list may only shrink, and
+each component's docs module records what the keyboard and a screen reader actually get. What is left
+for a builder is smaller than it looks and mostly about not reaching past a decision that was already
+made correctly. This page owns the constraint; the mechanics live where the thing lives.
+
+## The gate, and what it cannot see
+
+`pnpm test:stories` runs axe over every `super-ai` and `marketing` story with `test: "error"`. It was
+proven the hard way: with the addon's default, the gate mounted every story and asserted nothing,
+and a deliberately broken story passed. Excluded, by directory, are the vendored `ui/` and
+`ai-elements/` stories, because fixing their violations means diverging from upstream, a decision
+nobody has made; and, by exact selector, Base UI's own focus-guard spans, which are focusable and
+hidden by design. No `super-ai` story is excluded.
+
+Three things the gate cannot see, each with a reader-side consequence:
+
+- **The composed contrast shape.** Muted text under an ancestor's muted surface. Axe does catch this
+  one at runtime; `check:tokens` cannot, and it is how every real instance shipped.
+- **Duplicate accessible names on per-row controls.** Five rows that each say "Reset" read as "Reset,
+  Reset, Reset" in the element list, and axe has no rule against two controls sharing a name.
+  `record-list` and `slot-summary` carry the fix (`More actions for ${title}`); five components still
+  ship the defect (`CONTINUE.md` §8).
+- **The warning surfaces.** `--warning` is undefined in this workbench, so every near-limit state
+  renders unpainted under the gate and has never been measured.
+
+## Contrast, measured
+
+The palette is monochrome, so most pairs are far above the line. The three that are not are worth
+knowing by number, because all three look fine to the eye.
+
+| Foreground              | Background                                | Ratio       | Passes 4.5:1                        |
+| ----------------------- | ----------------------------------------- | ----------- | ----------------------------------- |
+| `text-muted-foreground` | `bg-muted` / `bg-accent` / `bg-secondary` | 4.34:1      | No, five rounds running             |
+| `text-destructive`      | `bg-destructive/10`                       | 4.0:1       | No                                  |
+| `text-warning`          | `bg-background`, where the token resolves | about 2.2:1 | No, which is why warning went solid |
+| `text-foreground`       | `bg-muted`                                | about 18:1  | Yes                                 |
+
+The fixes are recipes, not judgment: rebind `--muted-foreground` on the surface-painting wrapper, go
+solid on destructive and warning, and derive quiet text from the foreground at the measured steps.
+[Design Tokens](?path=/docs/foundations-design-tokens--docs) has each.
+
+## The traps that have actually bitten
+
+Written down in `component-build-brief.md` because each one cost a gate failure, and each names the
+component that carries the fix:
+
+- **Nothing conveyed by colour alone.** A selected, running or warning state needs text, an icon
+  shape or a programmatic state as well.
+- **A tooltip is never the only accessible name.** Visible label or `sr-only`; see `modality-rail`.
+- **No nested interactives.** A removable chip is a `span` with a sibling `button`, never a button
+  inside a button; see `filter-bar`, and `skill-menu` for the same fix inside a `CommandItem`.
+- **Hover-revealed affordances are keyboard reachable.** `opacity-0` plus `group-focus-within`, never
+  `display: none`; see `recent-grid`, `thread-list`.
+- **A scrollable region is focusable**, or uses a carousel whose transform-scrolling sidesteps the
+  rule; see `feature-card-row`.
+- **State changes are announced.** `role="status"` or `aria-live` for submitted and generating
+  transitions; see `feedback`.
+- **An `sr-only` suffix fuses with the visible text.** Set an outright `aria-label`, or hide the
+  visual half and put the complete phrase in the span. Two components shipped this on the same
+  afternoon.
+
+<Example className="w-full max-w-md">
+  <EnvStatus label="Model providers" providers={[
+      { id: "anthropic", name: "Anthropic", state: "degraded", checkedAt: "Checked 2 minutes ago" }, ]} /></Example>
+
+`env-status` is the shape most of those rules add up to: the state is a word ("Degraded"), a
+sentence ("Requests are succeeding, but answering slower than usual."), a glyph and a colour, all
+four, and the recovery action is written as text rather than hidden behind a hover.
+
+## Documented per component, and gated
+
+Every docs module carries an `accessibility` block with two required arms, and the contract gate
+checks both are present:
+
+- **keyboard**: the real tab-stop count and what changes it, which keys activate, which keys a user
+  will expect to work and do not, and whether `disabled` reaches every control or only some.
+- **screenReader**: the roles and `aria-*` actually present, how each accessible name is computed,
+  and what silently degrades it. A name derived from `typeof children === "string"` that collapses
+  to a generic label when passed an element is the recurring one.
+
+It is written from the source, and holes are recorded rather than wished away. `empty-state`'s
+module says plainly that its title renders as a `div`, so a page-sized state leaves the route without
+a heading unless the caller passes one. That sentence is a finding about the component, kept where a
+consumer will read it.
+
+## Reduced motion, targets, and the small viewport
+
+Motion that carries information is re-authored under `prefers-reduced-motion`, never deleted; motion
+that carries none stops. The runner emulates the preference for every story, and
+[Motion](?path=/docs/foundations-motion--docs) records honestly that nineteen animating components
+still lack a guard.
+
+Pointer targets have a 24px floor (WCAG 2.5.8, and anti-slop's hard rule for the 375px pass), and
+the smallest registry buttons sit on it: `icon-xs` and `h-6` are exactly 24.
+[Mobile viewport](?path=/story/foundations-mobile-viewport--home-shell) turns the small-viewport
+pass into a test for five shells, and its first run (2026-09-04) found no horizontal scroll at any
+width and **six control shapes under the floor**, each the component's own resting height rather
+than a squeeze: the vendored `checkbox` (16×16) and `switch` (32×18), and four registry primitives,
+`section-header`'s trigger (16 to 20px tall), `reset-affordance` (20×20), `filter-bar`'s chip
+remove button (16×16) and `credits-indicator`'s counter (16px tall). They are carried in the sweep's
+shrink-only ledger with their owners, and in `CONTINUE.md` §8 as backlog; deleting a ledger entry is
+how a fix re-arms the check.
+
+<Example className="flex flex-wrap items-center gap-3">
+  <Button size="icon-xs" variant="outline" aria-label="Pin thread"><span aria-hidden>·</span></Button>
+  <span className="text-muted-foreground text-xs">icon-xs is 24px: at the floor, not above it. Nothing shrinks it further.</span>
+</Example>
+
+## Rules
+
+- A passing axe panel is not a passing screen: it cannot see the composed contrast shape in
+  `check:tokens`'s scope, duplicate names, unpainted warning surfaces, or whether motion still says
+  what it said.
+- Never use a fill token as a text colour, and never compose quiet text from any token but the
+  foreground at `/60`, `/70` or `/80`.
+- Check the three failing pairs by number, not by eye. All three look fine.
+- Every per-row control carries the row's identity in its name.
+- Every state has a word, a shape or a programmatic state beside its colour.
+- Every state change has a live region.
+- 24px is a floor, not a target. `icon-xs` and `h-6` are already standing on it, and six control
+  shapes are below it today; the sweep's ledger names them and shrinks as they are fixed.
+- The exclusion list only shrinks. Fix the component.
+
+[States](?path=/docs/foundations-states--docs) owns focus,
+[Iconography](?path=/docs/foundations-iconography--docs) the naming mechanisms,
+[Inclusive writing](?path=/docs/content-inclusive-writing--docs) the words.

@@ -1,0 +1,131 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Motion here answers one of two questions and never a third: transitions and enter/exit animations
+answer _you did something_, looping animation answers _something is in progress_. Nothing loops for
+decoration, and the rule is a gate: MOT-1 fails the build on `animate-bounce`, and MOT-2 on
+`transition-all`. What is honest to say about the rest is that the registry's reduced-motion guard is
+a convention that exists and was then lost across half the tree, which is why this page spends most
+of its length on that.
+
+## Motion answers an action or a wait
+
+<Example className="flex flex-wrap items-center gap-8">
+  <div className="flex w-56 flex-col gap-2">
+    <div className="flex flex-col gap-2">
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-4/5" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+    <p className="text-muted-foreground text-xs">Skeleton: a slow pulse, sized to the content that is coming</p>
+  </div>
+  <div className="flex w-56 flex-col gap-2">
+    <div className="flex items-center gap-2">
+      <Spinner />
+      <span className="text-muted-foreground text-sm">Estimating cost…</span>
+    </div>
+    <p className="text-muted-foreground text-xs">Spinner: a point indicator, for a wait with no shape to hold</p>
+  </div>
+</Example>
+
+Counted on 2026-09-04: `animate-spin` carries 16 sites (queue rows, running threads, the checking
+glyph in `sidebar-nav`), `animate-pulse` 4 (`preview-tile`'s loading frame, `citation-ref`'s
+resolving marker, `source-panel`, `voice-clone-recorder`'s level), and `animate-in` / `animate-out`
+9 sites on the Base UI popup surfaces the registry composes (`account-menu`, `shortcuts-sheet`,
+`workspace-switcher`, `modality-rail`, `recommendation-card`). Transitions are named properties,
+48 sites, mostly `transition-colors` under the pointer with a few `transition-opacity` for controls
+that fade in and `transition-transform` for chevrons that rotate.
+
+<DoDont
+  doExample={
+    <Card className="w-full">
+      <CardHeader><CardTitle>Harbour at dawn</CardTitle></CardHeader>
+      <CardContent className="flex min-h-16 flex-col gap-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-4/5" />
+        <Skeleton className="h-4 w-2/3" />
+      </CardContent>
+    </Card>
+  }
+  doCaption="three bars where three lines will land, so nothing resizes when they do."
+  dontExample={
+    <Card className="w-full">
+      <CardHeader><CardTitle>Harbour at dawn</CardTitle></CardHeader>
+      <CardContent className="flex min-h-16 items-center justify-center">
+        <Spinner />
+      </CardContent>
+    </Card>
+  }
+  dontCaption="a point indicator in a region-sized hole reports activity but hides the shape."
+/>
+
+## Durations and curves
+
+The registry names no duration scale. Nearly every transition rides Tailwind's 150ms default, one
+site writes `duration-200`, and the marketing tier owns its own keyframes. Curves are Tailwind's
+`ease-out` where stated and the default otherwise; overshoot is banned outright, which is what MOT-1's
+`animate-bounce` grep enforces. That is a thinner vocabulary than a named scale, and it is stated
+here rather than dressed up: a component that needs a longer travel (a sheet, a sidebar collapse)
+inherits its timing from the vendored primitive it composes.
+
+## Reduced motion: the convention that was lost
+
+The runner behind `pnpm test:stories` emulates `prefers-reduced-motion: reduce` for every story, so
+the axe gate always measures the reduced form. A component therefore only _has_ a reduced form if it
+branches on the media feature, and two idioms create the branch, both sanctioned by
+`story-conventions.md`:
+
+- `motion-reduce:animate-none` beside an `animate-*` class.
+- `motion-reduce:transition-none` beside a `transition-*` that a user would perceive as motion: a
+  thumb that slides, a panel that grows. A `transition-colors` moves nothing, so suppressing it
+  documents no branch.
+
+On a Base UI popup surface the bare guard is inert. `dialog`, `popover`, `tooltip`, `hover-card`,
+`dropdown-menu` and `select` animate through `data-open:animate-in`, and Tailwind v4 compiles the
+attribute test inside `:where()`, which contributes no specificity, so the tie falls to source order
+and the animation wins. The guard has to restate the variant on both halves,
+`motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none`, which sorts after its
+counterpart. `sheet` is a third case: it animates by transition, so `motion-reduce:transition-none`
+is what suppresses it. `shortcuts-sheet`'s `ReducedMotion` story reads `animationName` back rather
+than trusting the class, and that is the assertion to copy.
+
+The state of the tree, counted on 2026-09-04: thirty registry components animate or transition
+something a user perceives, and **eleven** carry a guard (`account-menu`, `citation-ref`,
+`modality-rail`, `preview-tile`, `pricing-table`, `recommendation-card`, `shortcuts-sheet`,
+`sidebar-nav`, `task-tray`, `trace-timeline`, `workspace-switcher`). **Nineteen** do not, including
+`generation-queue` and `render-queue`, which are `task-tray`'s
+own near-twins and use the identical spinner. Nothing in the pipeline sees it: `check:tokens` reads
+colour, and axe does not evaluate the media feature at all. `CONTINUE.md` §9 records it as drift
+rather than an open question, and the fix is one class per site, with the restated-variant form on
+any popup surface.
+
+## Rules
+
+- Motion answers an action or a wait. Overlays animate on open and close, progress loops, and
+  nothing loops for decoration. `animate-bounce` fails the build (MOT-1).
+- Name the properties that change: `transition-colors`, `transition-opacity`,
+  `transition-transform`. `transition-all` fails the build (MOT-2), because it animates layout by
+  accident.
+- Use `Skeleton` when the shape of the region is known and `Spinner` when it is not: inside a button,
+  as a row glyph, beside a status. `Progress` is the third case, for a wait whose proportion is known.
+- Every animation branches on `prefers-reduced-motion`, with the idiom that matches its mechanism:
+  `motion-reduce:animate-none` on a spinner or pulse, `motion-reduce:transition-none` on a perceived
+  transition, and the restated-variant pair on a Base UI popup.
+- A `ReducedMotion` story documents the branch by reading the computed animation back, or documents
+  the branch's absence in its description. It never renders identically to its neighbour and implies
+  coverage.
+- Treat the nineteen unguarded components as known debt, not precedent. Copy `task-tray` for a
+  spinner, `preview-tile` for a pulse, `shortcuts-sheet` for a sheet.
+- The marketing tier honours reduced motion in every animated component and is the model for a
+  component-owned keyframe.
+
+What is being transitioned, the washes and rings a control shifts under the pointer, belongs to
+[States](?path=/docs/foundations-states--docs). The runner's emulation is asserted in
+[Style axes](?path=/story/foundations-style-axes--reduced-motion-applies).

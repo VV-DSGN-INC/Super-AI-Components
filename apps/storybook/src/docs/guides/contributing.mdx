@@ -1,0 +1,87 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Contributing" />
+
+# Contributing
+
+How a change moves through this repo: branch, build, gates, review. The authoritative versions of
+these rules live in `docs/design-system/component-build-brief.md` (the house contract every component
+is built to) and `docs/CONTINUE.md` (the build loop and the traps). This page is the tour; if it ever
+disagrees with either, they win, and `CLAUDE.md` is only a map that points at them.
+
+## Identity and branches
+
+- The repo lives under the **`VV-DSGN-INC`** org, not `weeeha`. Several sibling design repos are
+  under `weeeha` and the two have been mixed up before, so check the remote and say the target repo
+  and branch out loud before any push.
+- **Never commit to `main`.** One branch per task, merged by pull request.
+- **One session, one worktree.** Never use a bare `git stash`: the stash stack is shared across
+  worktrees, and an agent has already lost work to a sibling session popping it.
+- Deploys are manual, from `apps/docs`, and need the `weeeha` GitHub account. Nothing deploys on
+  merge.
+
+## The build loop
+
+A component change is five co-located files moving together, and the same five whether it is a
+primitive or a block:
+
+1. **The manifest row**, prepared centrally in `apps/docs/lib/catalog.manifest.ts`: status
+   `building`, states normalised into kebab-case identifiers. Never name a state `default`; it
+   becomes the story export `Default`, and only the scaffolder's refusal to emit one stands in the
+   way.
+2. **Scaffold** with `cd apps/docs && pnpm new:component <name>`. Five files, deliberately failing
+   tests.
+3. **Build to the brief.** Read the registry first: a component that reimplements a shipped primitive
+   is a defect. Tokens only. Replace every `expect.fail` stub with a real assertion and then pin
+   whatever the spec calls load-bearing.
+4. **Write the guidance** in `<name>.docs.tsx`: no `"use client"`, no JSX with event handlers, live
+   examples in a `.examples.tsx` sidecar. Both halves of that have broken the build before.
+5. **Write the stories.** One export per declared state, then the case stories that are true for the
+   component, with the skips recorded.
+
+Parallel builds are the throughput mechanism, not an optimisation: one agent per component, each in
+its own git worktree, each writing only its own five files. Sequential building runs at roughly seven
+components per session; twelve concurrent agents have twice done a wave in one pass. A build agent
+never touches the manifest, never runs `pnpm build` or the full `pnpm test`, and never runs a git
+write command. The integrator reconciles `consumes`, `shadcn` and `npm` from real imports, flips the
+status, regenerates wiring and runs every gate.
+
+## The gates
+
+Before any change is called done, the eleven steps `.github/workflows/ci.yml` runs, in its order.
+[Getting Started](?path=/docs/guides-getting-started--docs) lists the commands. Three of them protect
+people downstream and are never disabled to get a PR green:
+
+- **`check:tokens`**: the token contract and every other blocker rule in `packages/ds-rules`.
+- **The Storybook a11y gate**: axe over every `super-ai` and `marketing` story, with the exclusion
+  list a ratchet that may only shrink.
+- **The consumer install test**: a fresh Next.js app installs every item and builds. Treat a red
+  `consumer-test.sh` as a shipping bug, never as a flake.
+
+Do not add a step that duplicates one of these, and keep any written gate list in `ci.yml`'s order:
+a gate missing from a task's list has already gone unrun for a whole phase, and because CI stops at
+the first failure, one red gate hid the two behind it that verified the phase's most novel work.
+
+## Review, and what a rejection means
+
+Review approves judgment, since the mechanical layer already approved the syntax. A rejection is not
+finished when the instance is fixed. The lesson goes back into the primitives: a pitfall in the
+component's docs module, a trap in `CONTINUE.md` §4, a rule record in `packages/ds-rules`, or a new
+gate. Several of this system's best decisions came from a builder saying "the spec is ambiguous here
+and I chose X", so flag judgment calls in the report rather than burying them.
+
+Two rules that are easy to break by accident, each with its reasoning in the linked file:
+
+- **Blocks compose; they do not implement.** When a composed component does not fit, use a labelled
+  sibling or a documented override and write the gap in `CONTINUE.md` §8. A reimplemented row passes
+  every gate and is still wrong (`block-build-brief.md`).
+- **Report a defect a story surfaces; do not delete the story or pin the bug with an assertion that
+  expects the wrong behaviour** (`story-conventions.md`).
+
+## After the merge
+
+- Add the PR's line to the [Changelog](?path=/docs/changelog--docs) in the PR that merges.
+- If the token checker improved, say so in the PR body: it is the most portable thing in the repo and
+  the sibling `Minimal Design System` has no equivalent.
+- Before adding a component that also exists in `@weeeha/ui`, say which repo should own it. Do not
+  quietly fork a second implementation.

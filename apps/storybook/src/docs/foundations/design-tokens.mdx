@@ -1,0 +1,107 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import * as DesignTokensStories from "./design-tokens.stories";
+
+<Meta of={DesignTokensStories} />
+
+# Design tokens
+
+A token is a decision that has been given a name so it can only be made once. `--card` is not
+"white"; it is _the answer to what a panel sits on_, and it stays that answer in both modes. This
+registry runs on the stock shadcn **base-nova** token sheet with one addition, and what is worth
+knowing is not the list (the [Tokens](?path=/story/foundations-design-tokens--tokens) story renders
+it live) but the three rules that decide which names a component may reach for.
+
+## One sheet, two modes, one knob
+
+The sheet is `:root` for light and `.dark` for dark, in `apps/docs/app/globals.css` for the docs site
+and `apps/storybook/src/index.css` for this workbench. Every value is an `oklch()` literal; the
+neutrals carry zero chroma, so the whole ramp is lightness steps. Tailwind's utilities map onto the
+sheet through the `@theme inline` block (`--color-background: var(--background)` and so on), which
+is why `bg-background` is the only way a component ever says "the page".
+
+<Example className="flex flex-wrap items-center gap-3">
+  <Button>Primary is ink</Button>
+  <Button variant="secondary">Secondary</Button>
+  <Button variant="outline">Outline</Button>
+  <Button variant="destructive">Destructive is the one red</Button>
+</Example>
+
+Shape is a single knob. `--radius` is `0.625rem`, and `rounded-sm`, `md`, `lg`, `xl` and `2xl` are
+`calc()` multiples of it in the theme block. Moving the one variable retunes every corner in the
+registry, which is the whole argument for never writing a pixel radius.
+
+## The registry adds exactly one token
+
+Stock shadcn is monochrome plus `--destructive`. The monetisation family needed a third state that
+must be noticed before zero without reading as an error (quota thresholds, a low credit balance, a
+rate-limit cooldown), so the manifest declares `--warning` and `--warning-foreground` as `cssVars`
+on the items that paint it. The registry ships those into a consumer's stylesheet, and the consumer
+install test asserts the variable and its `--color-warning` mapping actually land, because Tailwind
+v4 emits nothing for an undefined utility rather than failing.
+
+That same silence is why the token is **deliberately undefined in this workbench**. `src/index.css`
+never gained it, so every `bg-warning` and `text-warning` in the registry renders unpainted under the
+axe gate, and no warning surface has ever been measured there. Defining it means choosing its value,
+and `text-warning` measures about 2.2:1 where it does resolve, so the fix is a design decision
+recorded in `a11y-baseline.md` ("Gate hole") and `CONTINUE.md` §8 rather than a one-line patch. The
+Tokens story shows the two names as `(unset)` for that reason.
+
+## Three names, one value: the pairing that fails
+
+`--muted`, `--accent` and `--secondary` hold the same value in this sheet. That is fine as surfaces,
+and it is the trap: `text-muted-foreground` on any of them measures **4.34:1** against a 4.5:1
+minimum, and the pairing has failed the browser gate five separate rounds.
+
+<DoDont
+  doExample={
+    <span className="bg-muted text-foreground inline-flex h-7 items-center rounded-md px-2 text-xs">17 credits</span>
+  }
+  doCaption="text-foreground on bg-muted measures about 18:1, and it is what cost-chip ships today."
+  dontExample={
+    <span className="bg-muted text-muted-foreground inline-flex h-7 items-center rounded-md px-2 text-xs">17 credits</span>
+  }
+  dontCaption="the same chip with text-muted-foreground: 4.34:1, and it reads fine to the eye, which is why it kept shipping."
+/>
+
+Two gates cover two shapes. `check:tokens` fails the single-element shape at build time: a bare
+`text-muted-foreground` and a bare `bg-muted`, `bg-accent` or `bg-secondary` in one class string, or
+split across a `cva()` base and a variant value. It cannot see the cross-component shape, muted text
+in a child whose ancestor paints the surface, and every instance that actually shipped broken was that
+shape. Only the Storybook axe gate catches it. The fix for the composed shape is to **rebind the
+variable on the surface-painting element**, `[--muted-foreground:var(--accent-foreground)]`, never to
+restyle the child's slots: composed children carry their own muted classes and a slot-level override
+cannot reach them. Thirteen sites in the registry carry the rebind today.
+
+A second pairing fails the same way for a different reason: `text-destructive` on a translucent
+`bg-destructive/10` tint measures 4.0:1. Go solid instead, `bg-destructive text-background`.
+
+## Quiet text derives from the foreground, at pinned steps
+
+Opacity composites are how the last silent AA failure shipped in the sibling system, so this
+registry pins them. A text composite may only derive from `foreground`, and only at `/60`, `/70` or
+`/80`, the measured steps; `text-foreground/70` carries 26 of the registry's 37 uses.
+`text-muted-foreground/50` and its kin are banned outright (TOK-8), because a composite takes its
+value from whatever sits behind it and no contrast rule can resolve it.
+
+## Rules
+
+- Components read semantic variables only, through the utilities the theme block maps: never a hex,
+  an `oklch()`, an `rgb()` or a Tailwind palette class. `check:tokens` fails the build on each.
+- Never pair `text-muted-foreground` with `bg-muted`, `bg-accent` or `bg-secondary`, on one element
+  or across a composition. Rebind the variable on the wrapper that paints the surface.
+- Never tint destructive text over a destructive tint. Solid fill, `text-background` on it.
+- Quiet text is `text-foreground/60`, `/70` or `/80` and nothing else.
+- Write a radius utility, never a pixel; the scale is five multiples of one variable.
+- A token the registry adds ships as `cssVars` on every item that paints it, and the consumer test
+  asserts it lands. `rate-limit-banner` and `data-views` paint `--warning` without declaring it and
+  are the recorded exception to fix, not a precedent.
+- Values render live from the stylesheet. Never copy a value into documentation, a story or a spec;
+  a stored copy is wrong the first time the sheet is edited.
+
+This page owns _which names a component may reach for and what may be added_.
+[Color](?path=/docs/foundations-color--docs) decides when to reach for a colour,
+[Typography](?path=/docs/foundations-typography--docs) the type scale,
+[Layout & spacing](?path=/docs/foundations-layout-spacing--docs) the spacing and radius ladders, and
+[Theming](?path=/docs/foundations-theming--docs) what a consumer may move.

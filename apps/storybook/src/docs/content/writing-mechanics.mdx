@@ -1,0 +1,143 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { SectionHeader } from "@/registry/super-ai/section-header";
+import { DateSection } from "@/registry/super-ai/date-section";
+import { Kbd, KbdGroup } from "@/registry/super-ai/kbd";
+import { CostChip } from "@/registry/super-ai/cost-chip";
+
+<Meta title="Content/Writing mechanics" />
+
+# Writing mechanics
+
+Mechanics are the invisible half of voice: nobody finishes a screen thinking "good capitalisation",
+and the reader only notices when it wobbles. [Voice & principles](?path=/docs/content-voice-principles--docs)
+decides how a line _sounds_; this page decides how it is _spelled_, from what the registry ships.
+Counted on 2026-09-04, and the two wobbles the count found are named as defects rather than
+precedents.
+
+## Case
+
+<Example className="w-full max-w-sm">
+  <SectionHeader title="Recent projects" count={3} />
+</Example>
+
+Sentence case everywhere a person reads words: titles, labels, buttons, tabs, menu items, table
+headers, chips. "Recent projects", "Images per run", "Output resolution", "Generation settings",
+"Search assets", "New folder", "Select all" are all shipped strings, and a search of the registry's
+JSX text for two capitalised words in a row returns nothing. Capitals are for proper nouns and
+product names ("Claude Opus 4.5", "Northwind").
+
+Uppercase is a style, never a spelling. Eight sites apply `uppercase` in CSS, all of them micro-labels
+with `tracking-wide`, and none of them types the capitals into the string. Title Case appears only in
+the AI Elements and shadcn layers, as inheritance rather than house style.
+
+<DoDont
+  doExample={<Button variant="outline">Check generation status</Button>}
+  doCaption="sentence case, the way every registry label is written."
+  dontExample={<Button variant="outline">Check Generation Status</Button>}
+  dontCaption="the same label, Title Cased. Nothing else changed, and it already reads like a different product."
+/>
+
+## Punctuation
+
+The test is what the line does, not whether it parses as a sentence. A line that makes its own
+statement closes with a period, even as a fragment: "Describe a shot and every result lands here.",
+"Fixing the seed reproduces the same result across runs with identical settings.", "Resets in 12
+days" scoping a bar does not. A title, a button, a tab, a chip or a menu item never ends in a period;
+one that asks keeps its question mark ("Was this helpful?", "What went wrong?").
+
+One mark per job, and the registry is consistent about which:
+
+- The **interpunct** joins two facts of equal weight, 328 times: "Image · 1:1", "Audio · 0:32",
+  "Text · 240 words", "Image generations · 50 of 50 used today".
+- A **spaced em dash** sets off a consequence or an aside, 20 times: "Saved — this runs as-is once
+  you have the credits", "Capacity is back — you can send again."
+- An **unspaced en dash** marks a numeric range, 22 times: "Lines 40–58".
+- The **ellipsis** is one character, `…`, on every running state: "Generating…", "Estimating
+  cost…", 36 sites. One string still spells it as three periods, `skill-menu`'s
+  "Search skills...", and it is the defect, not the pattern.
+
+## Numbers and dates
+
+<Example className="flex flex-wrap items-center gap-3">
+  <CostChip amount={17} />
+  <CostChip amount={900} unit="credits/min" />
+  <span className="text-muted-foreground text-sm tabular-nums">Edited 19 hours ago</span>
+</Example>
+
+A quantity the reader counts or acts on is a numeral however small: "4 credits", "3 open items",
+"6 of 30 min used", "50 of 50". A number that belongs to a phrase rather than to a count stays a
+word. Values that sit in a column carry `tabular-nums` (50 sites) so digits keep their width.
+
+Relative time ships, and it ships consistently: "Edited 19 hours ago", "Checked 2 minutes ago",
+"Last saved 5 days ago", "Resets in 3 days", "Last run 4 min ago". The registry never computes it;
+every one of those is a finished sentence the host passes in (`savedLabel`, `checkedAt`,
+`editedAgo`, `resetsIn`), which is what keeps the wording under this page's control rather than a
+formatter's. Absolute dates spell the month: "March 2026", and `date-section` groups by the buckets
+"Today", "Yesterday", then the month.
+
+<Example className="w-64">
+  <DateSection label="Yesterday">
+    <div className="text-foreground px-2 py-1.5 text-sm">Brand audit for Northwind</div>
+    <div className="text-foreground px-2 py-1.5 text-sm">Export the Q3 deck</div>
+  </DateSection>
+</Example>
+
+## Keys and shortcuts
+
+<Example>
+  <KbdGroup>
+    <Kbd>⌘</Kbd>
+    <span className="text-xs">+</span>
+    <Kbd>⇧</Kbd>
+    <span className="text-xs">+</span>
+    <Kbd>Z</Kbd>
+  </KbdGroup>
+</Example>
+
+A chord is written modifier-first in every locale, one `Kbd` per key. `kbd`'s group is a plain
+inline row, which means it reverses under `dir="rtl"` and paints a different instruction that still
+looks correct; `CONTINUE.md` §8 records the `dir="ltr"` pin the primitive still needs.
+
+## Truncation
+
+Labels truncate; states and counts never do. `truncate` carries 65 sites and `line-clamp` only 3,
+because `line-clamp-N` compiles to `display: -webkit-box` and dies against any `flex` on the same
+element, while `truncate` composes with anything. A count or a chip beside a truncating label takes
+`shrink-0`, so "Generation failed" survives whole at any width and the filename gives way instead.
+
+## The words already settled
+
+- **credits**: the unit of the Cost contract, on the chip, the line and the ring. Never "tokens" for
+  spend, never "points".
+- **generate · run · render**: the verb the composer performs, the thing it starts, and the result
+  it produces for visual media. "Generating…" while it runs, "Generation failed" when it does not.
+- **thread**: a conversation in the sidebar; **task**: a thread that is running.
+- **workspace**: the container a person works in; **team** is people, never a container.
+- **asset · artifact**: a generated or uploaded file in the library, and a document a conversation
+  produced. `artifact-grid` and `asset-library` keep them apart.
+- **model · preset · skill · source**: what generates, a saved configuration, an agent capability,
+  and a cited document.
+- **the six generation states**: `idle · queued · streaming · done · failed · locked`, from the
+  `cost` contract, and their visible labels.
+- **the four approval verbs**: Confirm, Edit, Regenerate, Skip, always in that order.
+- **the cost sentence**: "Need X, you have Y", the shape `run-button` and `paywall-message` share.
+
+## Rules
+
+- Sentence case for every label a person reads. Capitals are proper nouns and product names.
+- Uppercase is applied in CSS on a micro-label, never typed into a string.
+- No terminal period on a title, button, tab, chip or menu item; a question keeps its mark. A line
+  that makes its own statement closes with a period, even as a fragment.
+- Interpunct for two equal facts, spaced em dash for a consequence, unspaced en dash for a range,
+  and the one-character ellipsis on every running state. Three periods is a bug.
+- A quantity the reader acts on is a numeral. Aligned values carry `tabular-nums`.
+- Relative time is a finished sentence the host passes in; the registry never formats it.
+- Labels truncate; numbers and states do not, and they take `shrink-0` beside a label that does.
+- Chords are modifier-first, one key per `Kbd`.
+- Reuse the settled words rather than coining a synonym.
+
+This page owns _how the interface is written_.
+[Voice & principles](?path=/docs/content-voice-principles--docs) owns _how it sounds_: that page
+when the question is which words, this one when the question is which marks.

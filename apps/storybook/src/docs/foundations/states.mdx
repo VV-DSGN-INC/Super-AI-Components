@@ -1,0 +1,137 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ChoiceChips, ChoiceChip } from "@/registry/super-ai/choice-chips";
+import { RunButton } from "@/registry/super-ai/run-button";
+import { Feedback } from "@/registry/super-ai/feedback";
+
+<Meta title="Foundations/States" />
+
+# States
+
+Every interactive element answers four questions with its own body: **can I touch it** (hover),
+**am I on it** (focus), **is it chosen** (selected) and **is it available** (disabled). Each answer is
+a different CSS property, a wash, a ring, an ARIA attribute with a paint, an opacity, so they stack
+rather than compete. Colour never answers alone: the four are built from a neutral wash, a grey ring
+and geometry, which is what lets [Color](?path=/docs/foundations-color--docs) keep saturated colour
+for meaning. Generation-aware components answer a fifth question, **where is my work**, with a shared
+vocabulary this page ends on. The recipes below are the registry's own, counted on 2026-09-04.
+
+## Four answers, four properties
+
+<Example className="flex flex-wrap items-start gap-6">
+  <div className="flex w-44 flex-col gap-2">
+    <Button variant="outline" className="w-fit">Attach reference</Button>
+    <p className="text-muted-foreground text-xs">hover: the accent wash with its own ink. Live: hover it.</p>
+  </div>
+  <div className="flex w-44 flex-col gap-2">
+    <Button variant="outline" className="w-fit">Browse presets</Button>
+    <p className="text-muted-foreground text-xs">focus: a 2px grey ring arrives. Live: tab to it.</p>
+  </div>
+  <div className="flex w-44 flex-col gap-2">
+    <Button variant="outline" aria-pressed="true" className="w-fit">Pinned</Button>
+    <p className="text-muted-foreground text-xs">selected: an ARIA state first, then a paint keyed on it</p>
+  </div>
+  <div className="flex w-44 flex-col gap-2">
+    <Button disabled className="w-fit">Generate</Button>
+    <p className="text-muted-foreground text-xs">disabled: half opacity, and the pointer passes through</p>
+  </div>
+</Example>
+
+**Hover** is `hover:bg-accent hover:text-accent-foreground` (22 and 21 uses), the inset step washed
+over a control with its own foreground travelling with it. Rows inside a floating surface take the
+same wash. Not everything hovers by filling: link-shaped things underline (8 uses), quiet controls
+step their text up a tier (`hover:text-foreground`, 13 uses), and controls that hide until wanted
+fade in with `group-focus-within` beside `opacity-0` so the keyboard reaches them too.
+
+**Disabled** is `disabled:opacity-50 disabled:pointer-events-none`. Because pointer events are off, a
+tooltip attached to the disabled control never fires, so the reason a thing is unavailable lives
+beside it, the way `run-button` writes "Need 4 credits, you have 2" as text rather than as a hover.
+
+## The ring is one recipe
+
+<Example className="flex flex-wrap items-start gap-6">
+  <div className="flex w-56 flex-col gap-2">
+    <Input placeholder="Describe a shot…" aria-label="Prompt" />
+    <p className="text-muted-foreground text-xs">live: click in. Text inputs show the ring on pointer focus too.</p>
+  </div>
+  <div className="flex w-56 flex-col gap-2">
+    <div className="border-border ring-ring bg-background text-foreground flex h-8 items-center rounded-lg border px-2.5 text-sm font-medium ring-2">Browse presets</div>
+    <p className="text-muted-foreground text-xs">static facsimile, the ring pinned on so the recipe is legible without tabbing</p>
+  </div>
+</Example>
+
+`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring` is the whole thing, 74
+sites in the registry. `--ring` is a mid-grey, so focus reads as a position marker and not as a
+status. The rule STA-3 gates the half people forget: `outline-none` never ships without a
+`focus-visible` replacement on the same element, because a bare `outline-none` is a focus indicator
+deleted. Note the `focus-visible:` prefix: the ring is for the keyboard. Menu rows key off
+`data-highlighted` instead, because Base UI moves real DOM focus as the arrow keys travel.
+
+## Selection is an ARIA state, then a paint
+
+<Example>
+  <ChoiceChips aria-label="Aspect ratio" defaultValue="16:9">
+    <ChoiceChip value="1:1">1:1</ChoiceChip>
+    <ChoiceChip value="4:5">4:5</ChoiceChip>
+    <ChoiceChip value="16:9">16:9</ChoiceChip>
+  </ChoiceChips>
+  <p className="text-muted-foreground mt-4 text-xs">choice-chips: selection is a ring plus a fill, keyed on aria-checked. Live: pick another, then tab between them to see focus stack on top.</p>
+</Example>
+
+The registry carries selection on the attribute that means it, and paints from there:
+`aria-pressed` (99 uses, toggles and pinned things), `aria-current` (47, the active place in a nav),
+`aria-checked` (33, chips and options), `aria-selected` (22, tabs and rows). A paint keyed on
+`data-selected` or `data-active` (7 and 14) is the fallback where no ARIA state applies. The ring is a
+`box-shadow` and nothing else on a control writes one, so a selected chip that is also focused shows
+both. Never spend the ring on selection, and never let selection suppress the ring; both are the
+same defect, focus made invisible.
+
+Selection also never reads by colour alone. It has a shape (the ring), a text change, or a
+programmatic state, because "nothing conveyed by colour alone" is the first trap the build brief
+lists and the a11y gate measures.
+
+## Where is my work: the generation vocabulary
+
+<Example className="flex flex-wrap items-start gap-6">
+  <RunButton state="idle" cost={4} onRun={() => {}} />
+  <RunButton state="estimating" />
+</Example>
+
+Every generation-aware component reports the same six states: `idle · queued · streaming · done ·
+failed · locked`, exported as a union in the shared `cost` contract. Their visuals are shared too:
+a shimmer while streaming, an inline failure where the result would have been (never only a toast),
+and a lock that replaces the control with a call to action. `run-button` folds cost into the same
+control: idle shows the chip, estimating disables the button and announces "Estimating cost…" in a
+`role="status"`, insufficient credits says the number, locked upgrades. A component that invents a
+seventh word for one of these has left the contract.
+
+<Example>
+  <Feedback onRate={() => {}} onSubmit={() => {}} />
+</Example>
+
+Transitions between states announce themselves: `feedback` moves to a `role="status"` on submit, and
+50 registry sites carry that role, with 19 `aria-live` regions beside them. A state change with no
+live region is announced as nothing.
+
+## Rules
+
+- Hover, focus, selected and disabled are four properties on one element. Never let one stand in for
+  another, and never drop one to make room.
+- Hover is the accent wash with its own foreground; the two halves travel together.
+- Focus is `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`, one recipe.
+  `outline-none` never ships alone (STA-3). Use `focus-visible:`, not `focus:`, on a control.
+- Selection is carried on `aria-pressed`, `aria-current`, `aria-checked` or `aria-selected`, and
+  the paint keys on that attribute. Focus stacks on top; nothing suppresses the ring.
+- No state reads by colour alone: a shape, a text change, or a programmatic state as well.
+- Disabled is half opacity with pointer events off, and the reason lives beside the control, never
+  in a tooltip on it.
+- Generation state is `idle · queued · streaming · done · failed · locked`, with the shared visuals.
+  Failure renders inline where the result would have been.
+- A state change gets a live region. `role="status"` for progress and confirmation; a change with
+  none is silent.
+
+The timing on the transitions these states ride belongs to
+[Motion](?path=/docs/foundations-motion--docs). The ring and wash tokens live in
+[Design Tokens](?path=/docs/foundations-design-tokens--docs).

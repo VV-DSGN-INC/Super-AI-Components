@@ -1,0 +1,105 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import { AppTopbar } from "@/registry/super-ai/app-topbar";
+
+<Meta title="Foundations/App structure" />
+
+# App structure
+
+Every screen built from this registry is a **block**: a shell that owns arrangement and nothing
+else. Thirteen shells ship in family O, plus family P's `detail-view-shell` and its `data-views`
+axis, and each one is a composition of already-shipped components that keep their own props, state
+model and accessibility contract. Knowing the anatomy means never inventing chrome: a screen that
+needs a shape not listed here is a design-system conversation, not a local improvisation.
+
+## The invariants
+
+Two components appear in almost every shell, and they are the ones a product's chrome is made of:
+
+- **`app-sidebar` (B1)**, the assembled product sidebar: a workspace switcher, a nav list, an ambient
+  promo card and a footer, stacked in that order inside the vendored Sidebar. Below 768px the Sidebar
+  swaps to a drawer (`useIsMobile`), which is the only viewport branch the shells rely on.
+- **`app-topbar` (B7)**, the single header across the top: breadcrumb, title, status and actions, in
+  a `document` context (breadcrumb and privacy chip) or an `editor` context (zoom and history). A chat
+  title bar is this with fewer slots filled.
+
+<Example>
+  <AppTopbar context="document" title="Q3 Roadmap" breadcrumb={[
+      { label: "Projects", href: "#" },
+      { label: "Marketing", href: "#" },
+      { label: "Q3 Roadmap" }, ]} privacy={{ label: "Private" }} savedLabel="Last saved 5 days ago" /></Example>
+
+Under those, a content column, and depth without navigation: `settings-dialog` for a blocking
+decision, a sheet for one object's detail, a popover for local controls. One level of panel, never
+two.
+
+## The shells and their regions
+
+A shell declares `regions` where a component declares `states`, taken from its `Regions:` line in
+`block-specs.md`, and every region renders as `data-region="<id>"`, mounted unconditionally even when
+empty.
+
+| Shell              | Regions                                                                          | Evidence                                                         |
+| ------------------ | -------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `home-shell`       | sidebar · topbar · hero omnibox · feature cards · recents grid                   | the most consistent archetype on the reference board             |
+| `chat-shell`       | sidebar + task list · topbar · message stream · artifact cards · composer        | composes AI Elements' conversation and message                   |
+| `studio-shell`     | modality rail · topbar · tool panel · canvas · inspector · page strip            | rail, topbar and inspector are the invariants; the middle varies |
+| `timeline-shell`   | rail · content panel · preview · inspector · transport · tracks + ruler          | a variant of the studio shell, one flag apart                    |
+| `generation-shell` | config panel · cost + Generate · topbar · result canvas                          | config left, result right, Generate pinned                       |
+| `library-shell`    | facet rail · header + search · dense grid                                        | the personal archive                                             |
+| `explore-shell`    | rail · docked prompt bar · sort tabs + type pills · masonry feed                 | the community gallery                                            |
+| `artifact-shell`   | sidebar · header + filter · search · artifact card grid                          | the document index                                               |
+| `records-shell`    | sidebar · header + create · filter + sort · record rows                          | the project or scenario list                                     |
+| `docs-shell`       | icon rail · doc nav · announcement strip · content column                        | two navigation props, kept apart                                 |
+| `settings-shell`   | search + grouped nav · breadcrumb · info callout · setting sections · code block | full-page settings                                               |
+| `notebook-shell`   | sources · chat · composer · studio outputs                                       | three panes, all empty at once on first load                     |
+| `auth-shell`       | marketing panel · provider rows · email fallback · legal footer                  | kept as a consequence of full archetype coverage (D12)           |
+
+`flow-shell` was cut with the node builder (D9) and stays in the specs as a record.
+
+## Two things every shell had to learn
+
+Both are recorded in `block-build-brief.md` because the first shell, `chat-shell`, was built alone
+by hand so that the other twelve would not each rediscover them.
+
+- **The sidebar escapes its container.** B1's desktop branch is `fixed inset-y-0 h-svh`, right when
+  a shell owns the viewport and wrong in a docs preview or a Storybook canvas, where it pins itself
+  to the browser's edge. Every shell root carries `[contain:layout]` to become the containing block
+  for its own fixed descendants, and targets `[data-slot=app-sidebar]` with `h-full` so the sidebar
+  takes its height from the shell instead of the window. Both halves, or the bottom-anchored promo
+  and footer clip.
+- **Composed components will be missing props the spec assumes.** `thread-list` has no `running`
+  (the shell renders a labelled `role="status"` sibling), the composer cannot be told "no negative
+  prompt", the topbar has no leading slot for a sidebar trigger. Sibling or documented override,
+  never a reimplementation, and the gap written down. The list of those gaps is the repo's roadmap.
+
+## Empty, and Responsive
+
+A shell must export an `Empty` story, and it earns its mandate: the empty state is the view most
+users actually see, and writing `chat-shell`'s surfaced that the shell needed three independent empty
+affordances, sidebar, stream and artifact region, which nobody would have derived from the spec.
+
+It must also export `Responsive`, and that story proves nothing mechanically: the viewport global
+only reaches the Storybook manager, and the runner behind the axe gate has none, so `Responsive`
+is measured at desktop width like any other story. The narrow layout is verified by hand and said so
+in the report. [Mobile viewport](?path=/story/foundations-mobile-viewport--home-shell) resizes the
+real browser for five of the shells and asserts no horizontal scroll and no control under the 24px
+floor at 375, 430 and 768px.
+
+## Rules
+
+- A shell composes; it does not implement. The only hand-written markup is region wrappers and the
+  small labelled affordances a composed component had no prop for.
+- One primary action per screen, and it lives in the header or pinned beside the result, never
+  floating in the content.
+- Every declared region mounts unconditionally and shows the composed component's own empty
+  affordance. A region that appears from nowhere cannot teach that it exists.
+- Nothing renders above the topbar. Depth is a sheet, a dialog or a popover, one level deep.
+- The sidebar's drawer swap at 768px is the one viewport branch; a component's own columns key off
+  its container ([Layout & spacing](?path=/docs/foundations-layout-spacing--docs)).
+- Prove composition in the test file: assert against the composed components' own `data-slot`
+  values and route interactions through their own controls, so swapping composition for hand-rolled
+  markup breaks a test rather than needing a reviewer to notice.
+
+Which shell a product's navigation lives in, and how its levels relate, is
+[Navigation](?path=/docs/foundations-navigation--docs).

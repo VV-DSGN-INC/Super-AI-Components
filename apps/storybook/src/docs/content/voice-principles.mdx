@@ -1,0 +1,130 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/registry/super-ai/empty-state";
+import { RunButton } from "@/registry/super-ai/run-button";
+import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
+import { SuggestionChips, SuggestionChip } from "@/registry/super-ai/suggestion-chips";
+import { ImagePlus, Sparkles } from "lucide-react";
+
+<Meta title="Content/Voice & principles" />
+
+# Voice & principles
+
+Plain words, short sentences, no cheer. The interface is a competent colleague: it says what
+happened and what to do, then stops. That voice is not aspirational. Every principle below is quoted
+from copy the registry already ships, with the component named, and the one place the register slips
+is named too. Two rules are gates: CPY-1 fails the build on a generic call to action, and CPY-2
+warns on the marketing register.
+
+## Front-load the verdict
+
+<Example className="flex flex-wrap items-center gap-3">
+  <RunButton state="estimating" />
+  <RunButton state="idle" cost={4} onRun={() => {}} />
+</Example>
+
+`run-button` announces "Estimating cost…" and "Generating…" in a status, and `result-card` labels its
+states "Generation failed", "Result ready", "Not started". `env-status` opens every sentence with the
+state word: "Key invalid. The provider answered and rejected this request's credentials." A reader
+who stops after the first word still has the verdict; the clause after the period is the why.
+
+## Verbs over nouns
+
+<Example>
+  <SuggestionChips>
+    <SuggestionChip suggestion="Summarize this document" onSelect={() => {}} />
+    <SuggestionChip suggestion="Find action items" onSelect={() => {}} />
+    <SuggestionChip suggestion="Draft a reply" onSelect={() => {}} />
+  </SuggestionChips>
+</Example>
+
+Name an action by what it does to what: verb, then object. The starter chips above are
+`suggestion-chips`' own story; `run-button` says "Add credits" and "Upgrade to run";
+`permission-prompt` offers "Allow once", "Always allow", "Edit first"; `approval-card` carries the
+four approval verbs in the same order every time. The gate behind this is CPY-1: "Get Started" and
+"Learn More" fail the build, because a label predicts the next screen and those two predict nothing.
+
+## Say the number
+
+<Example className="w-full max-w-lg">
+  <RateLimitBanner cause="your-limit" resource="Image generations · 50 of 50 used today" remainingSeconds={1847} /></Example>
+
+A count says how much is left; a hedge does not. `paywall-message` says "Need 900 credits, you have
+120.", `quota-meter` reads "6 of 30 min used" to a screen reader, `credits-indicator` shows the
+balance and `rate-limit-banner` the wait. The Cost contract makes this structural: cost is disclosed
+before commit as a number beside the control, "Need 4 credits, you have 2", never as "insufficient".
+
+## No cheerleading: outcomes speak
+
+<Example className="w-full max-w-lg">
+  <EmptyState size="panel" icon={<ImagePlus />} title={<span className="text-lg font-medium tracking-tight">No renders yet</span>} description="Describe a shot and every result lands here." action={
+      <Button>
+        <Sparkles aria-hidden />Generate a render</Button>
+    } /></Example>
+
+`result-card`'s "Result ready" is the success state: a fact, no adjective. `approval-card` reports
+"Sent back for editing"; `paywall-message` says "The run was not started, so nothing was charged."
+One string in the registry congratulates the reader: `feedback`'s default `submittedLabel`, "Thanks
+for the feedback!", carries the registry's only exclamation mark in user-facing copy. The anti-slop
+rules treat an exclamation mark in microcopy as a failure, so that default is a gap to close, not a
+precedent.
+
+<DoDont
+  doExample={<p className="text-sm">Result ready</p>}
+  doCaption="the event, stated. result-card ships this string verbatim."
+  dontExample={<p className="text-sm">Nice work! Your render is on its way.</p>}
+  dontCaption="praise nobody asked for plus an exclamation mark; the reader learns nothing new."
+/>
+
+## Calm about problems
+
+Errors are calm because the reader already is not. `rate-limit-banner` says "This is the cap on your
+plan, not a problem with your request." and, for the provider case, "Demand is high right now.
+Nothing is wrong with your account or your request." `safety-block` says "This request wasn't sent."
+and names the policy. `connection-manager` tells a rejected key what to do and why retrying will not
+help. [Error messages](?path=/docs/content-error-messages--docs) owns the formula.
+
+## No marketing register inside a workflow
+
+CPY-2 warns on "elevate", "unlock", "empower", "supercharge", "seamless", "effortless" and their
+kin. It is a warning rather than a blocker for one reason: the paywall family uses "unlock" as the
+literal mechanism ("Upgrade to unlock it"), and a gate that failed the plain description of gating
+would be wrong. Everywhere else the word is filler that fakes confidence a description would earn.
+Feature copy belongs to the Marketing tier, which has its own components for it.
+
+## Which voice, by situation
+
+- **A completed action**: a neutral past-tense or state phrase, "Result ready", "Sent back to
+  regenerate".
+- **A running action**: the present participle with an ellipsis, in a status: "Generating…",
+  "Estimating cost…".
+- **A destructive confirmation**: consequence first, then buttons that name their outcomes.
+  `permission-prompt` shows the action, the reason and the arguments before "Allow once".
+- **A status label**: the fact, never a judgment on the reader: "Degraded", "Key invalid", "Not
+  running".
+- **A gate**: what it costs and what it buys, with a real path beside it: "Need 900 credits, you
+  have 120." beside "Upgrade for more credits".
+- **A primary action**: verb plus object: "Generate a render", "Browse presets", "New folder".
+- **A tooltip or a title**: a label, no sentence, no full stop.
+- **An error**: [Error messages](?path=/docs/content-error-messages--docs).
+- **A zero state**: [Empty states](?path=/docs/content-empty-states--docs).
+
+## Rules
+
+- The verdict lands in the first word or two: "Key invalid.", "Result ready", "Generation failed".
+  The why is a second sentence.
+- Name an action verb-then-object. Generic wayfinding labels fail the build (CPY-1).
+- Say the number wherever one exists: credits, counts, minutes, waits. Never "some", never
+  "insufficient".
+- No praise, no exclamation marks. The one in `feedback` is a gap.
+- A status label states the fact and never grades the reader.
+- A destructive or costly confirmation puts the consequence before the choice, and each button names
+  its own outcome.
+- No marketing register in product copy (CPY-2). "Unlock" is allowed only as the literal gating
+  mechanism.
+- Reuse a shipped default label before inventing one; the shipped strings are the register.
+
+This page decides _how the interface sounds_.
+[Writing mechanics](?path=/docs/content-writing-mechanics--docs) records _how it is written_: case,
+punctuation, numerals, and the words the registry has already settled.

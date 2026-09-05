@@ -1,0 +1,166 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { SuggestionChips, SuggestionChip } from "@/registry/super-ai/suggestion-chips";
+import { CostChip } from "@/registry/super-ai/cost-chip";
+import { Copy, Paperclip, Plus, ArrowRight, Sparkles, Trash2 } from "lucide-react";
+
+<Meta title="Foundations/Iconography" />
+
+# Iconography
+
+An icon clarifies or it leaves. One library supplies all of them, **lucide-react**, and the rule is a
+gate: ICO-1 fails the build on any other icon import in a registry source, and ICO-2 fails it on an
+emoji in chrome. The vocabulary the registry actually ships is derived from its sources and browsable
+in [Icons](?path=/story/foundations-icons--all-icons): as of 2026-09-04, 121 lucide names imported by 86 of the
+128 registry sources, with `X`, `Check`, `Loader2`, `AlertTriangle`, `RotateCcw` and
+`CheckCircle2` at the top. An icon never carries meaning its label does not; it is the same claim,
+drawn.
+
+## The ladder that exists
+
+<Example className="flex flex-wrap items-start gap-6">
+  <div className="flex w-52 flex-col gap-2">
+    <CostChip amount={17} />
+    <p className="text-muted-foreground text-xs">12px, the chip rung: size-3 (26 uses)</p>
+  </div>
+  <div className="flex w-52 flex-col gap-2">
+    <Button size="sm" variant="outline" className="w-fit"><Paperclip data-icon="inline-start" />Attach</Button>
+    <p className="text-muted-foreground text-xs">14px, small controls: size-3.5 (44 uses)</p>
+  </div>
+  <div className="flex w-52 flex-col gap-2">
+    <Button variant="outline" className="w-fit"><Paperclip data-icon="inline-start" />Attach</Button>
+    <p className="text-muted-foreground text-xs">16px, the default rung: size-4 (74 uses)</p>
+  </div>
+  <div className="flex w-52 flex-col gap-2">
+    <div className="bg-muted flex size-8 items-center justify-center rounded-lg"><Sparkles aria-hidden className="size-5" /></div>
+    <p className="text-muted-foreground text-xs">20 and 24px head a tile or an empty state: size-5, size-6 (18 uses)</p>
+  </div>
+</Example>
+
+Six rungs are in use: **12, 14, 16, 20, 24, 32**. The bottom three carry the interface, and 16 is
+the default nearly everything runs at. Above 16 the carriers are countable: an empty state's mark, a
+tile's glyph, a shell's rail. The floor for a glyph you read is 12.
+
+Pick a rung against the label, never in isolation: level with its text or one step above it on the
+[Typography](?path=/docs/foundations-typography--docs) scale, never below. `text-sm` body takes 16,
+the `text-xs` in a chip takes 12.
+
+Containers set these sizes with a descendant selector. The vendored `Button` uses
+`[&_svg:not([class*='size-'])]:size-4` (and `size-3` at `xs`, `size-3.5` at `sm`), which
+auto-sizes an **unclassed** glyph and steps aside the moment the caller writes their own `size-*`.
+Reach for the same form when a caller may legitimately want a different size, and the bare
+`[&_svg]:size-3` form when they may not.
+
+## Colour rides the label
+
+<Example className="flex flex-wrap items-start gap-6">
+  <div className="flex w-64 flex-col gap-2">
+    <SuggestionChips><SuggestionChip suggestion="Draft a reply" icon={<Sparkles />} onSelect={() => {}} /><SuggestionChip suggestion="Summarize this document" icon={<Sparkles />} onSelect={() => {}} /></SuggestionChips>
+    <p className="text-muted-foreground text-xs">no colour class on the glyphs: they inherit the chip's ink through currentColor</p>
+  </div>
+  <div className="flex w-64 flex-col gap-2">
+    <Button variant="destructive" className="w-fit"><Trash2 data-icon="inline-start" />Delete render</Button>
+    <p className="text-muted-foreground text-xs">the destructive variant paints its glyph with the label's ink; the glyph never needs a class</p>
+  </div>
+</Example>
+
+The default is inheritance, and it is what makes "an icon is never more saturated than its label"
+true by construction: the icon _is_ the label's colour. Where a component does name an icon colour it
+moves in one of two directions and never a third. Down a tier, a glyph dropped to
+`text-muted-foreground` beside foreground text. Or to a state colour, on a glyph that reports state:
+a failed row's red, a running row's spinner. Both obey the _state, never style_ rule
+[Color](?path=/docs/foundations-color--docs) sets.
+
+Stroke stays at lucide's default. The registry sets `strokeWidth` in exactly two places, both marks
+that draw a value rather than glyphs, and a new component leaves the prop alone.
+
+## An icon alone needs a name
+
+<Example className="flex flex-wrap items-start gap-6">
+  <div className="flex w-56 flex-col gap-2">
+    <Button variant="ghost" size="icon-sm" title="Copy seed">
+      <Copy />
+      <span className="sr-only">Copy seed</span>
+    </Button>
+    <p className="text-muted-foreground text-xs">icon-only: an sr-only name for the reader, a title for the pointer</p>
+  </div>
+  <div className="flex w-56 flex-col gap-2">
+    <Button variant="outline" className="w-fit"><Copy data-icon="inline-start" />Copy seed</Button>
+    <p className="text-muted-foreground text-xs">labelled: the name is already on screen, so the glyph is decoration and takes aria-hidden</p>
+  </div>
+</Example>
+
+A tooltip must never be the only source of an accessible name; it is the second trap the build brief
+lists and `modality-rail` is the fix to copy. Give icon-only controls a visible label or an sr-only
+one. The registry writes `sr-only` 108 times and `aria-hidden` 311 times, and the two are the same
+rule from both ends: a glyph beside its own label is decoration and takes `aria-hidden`; a glyph that
+is the only announcement of something keeps its name. One shape to avoid when writing the name: an
+`sr-only` suffix fuses with the visible text (`<span>In</span><span class="sr-only"> point</span>`
+computes as "Inpoint"), so either set an outright `aria-label` or mark the visual half hidden and put
+the complete phrase in the span.
+
+Per-row icon-only controls need **distinct** names. `record-list` writes `More actions for
+${record.title}` and `slot-summary` writes `Change ${slot.label}`; a list of five rows that each say
+"Reset" reads as "Reset, Reset, Reset" in the element list, and no gate can see it. `CONTINUE.md` §8
+keeps the five components still doing it.
+
+## Placement is an attribute
+
+<Example className="flex flex-wrap items-center gap-3">
+  <Button variant="outline"><Plus data-icon="inline-start" />Add reference</Button>
+  <Button variant="outline">Continue<ArrowRight data-icon="inline-end" /></Button>
+  <Button variant="outline"><Plus />Add reference</Button>
+  <p className="text-muted-foreground w-full text-xs">the third button omits data-icon: the glyph side keeps the text side's padding instead of the trimmed inset</p>
+</Example>
+
+Mark a leading or trailing glyph with `data-icon="inline-start"` or `"inline-end"`. The vendored
+`Button` reads it and trims the padding on the glyph's side so the optical inset matches the text
+side. It is a padding hook and nothing else: order comes from the JSX, and the gap from the size
+variant. Lead with the object or category, trail with direction and disclosure.
+
+<DoDont
+  doExample={
+    <Button variant="destructive">
+      <Trash2 data-icon="inline-start" />Delete render</Button>
+  }
+  doCaption="the label carries the consequence, so the glyph only has to confirm it."
+  dontExample={
+    <Button variant="destructive" size="icon">
+      <Trash2 />
+    </Button>
+  }
+  dontCaption="the same destructive action with nothing for a screen reader to read and nothing to hover."
+/>
+
+## One glyph, two names
+
+lucide-react exports many glyphs under two names, and the registry imports both halves of several
+pairs: `AlertTriangle` and `TriangleAlert`, `CheckCircle2` and `CircleCheck`, `Loader2` and
+`LoaderCircle`. They render the same path, so nothing is visually wrong, but a glyph imported under
+two names is one decision written twice. The [Icons](?path=/story/foundations-icons--usage) usage
+sheet lists the pairs; when touching a component that carries the older name, move it to the current
+one.
+
+## Rules
+
+- One library: `lucide-react`, at the size the component already uses. Any other icon import fails
+  the build (ICO-1); an emoji in chrome fails it too (ICO-2).
+- Size by rung: 12, 14, 16, 20, 24, 32. 16 is the default and 12 is the floor for anything meant to
+  be read.
+- Pick the rung from the label: level with its text or one step above, never below.
+- Auto-size with the `:not([class*='size-'])` selector when a caller may override, and with the bare
+  form when they may not.
+- Icons inherit their label's colour. Name a colour only to drop a tier or to report state on a
+  glyph that reports state.
+- Leave `strokeWidth` alone; the two sites that set it are value-drawing marks, not glyphs.
+- An icon-only control has an accessible name, and a tooltip is never the only one. Per-row controls
+  carry the row's identity in the name.
+- A glyph beside its own label is `aria-hidden`. A glyph that is the only announcement keeps its
+  name.
+- Mark leading and trailing glyphs with `data-icon`; it sets padding only.
+- Sparkles is the AI glyph and appears seven times in the registry. The anti-slop audit flags more
+  than one sparkle per screen and any sparkle without a text label, so compose it beside a word.
+
+When nothing in the set says the thing at all,
+[Icon creation](?path=/docs/foundations-icon-creation--docs) sets the bar a new mark has to clear.

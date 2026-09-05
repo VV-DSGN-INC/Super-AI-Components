@@ -1,0 +1,158 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { EntityRow } from "@/registry/super-ai/entity-row";
+import { SectionHeader } from "@/registry/super-ai/section-header";
+import { FileText, Sparkles } from "lucide-react";
+
+<Meta title="Foundations/Layout & spacing" />
+
+# Layout & spacing
+
+Space is the first hierarchy tool, a background shift is the second, and a painted line is the
+third. The rhythm underneath is Tailwind's 4px grid, which components write directly as `gap-*` and
+`p-*` utilities. There is no named spacing ladder in this registry; the ladder is the set of steps
+the registry actually lands on, counted below as of 2026-09-04, and the anti-slop rule LAY-1 treats
+any arbitrary pixel value that duplicates or bypasses those steps as review work rather than a grep.
+
+## Space separates before a line does
+
+<Example className="w-full max-w-sm">
+  <SectionHeader title="Recent projects" count={3} />
+  <div className="mt-2 flex flex-col"><EntityRow icon={<FileText aria-hidden className="size-4" />} title="quarterly-review.pdf" description="Attached to this thread" /><EntityRow icon={<Sparkles aria-hidden className="size-4" />} title="Summarize" description="Condense a long document" /><EntityRow icon={<FileText aria-hidden className="size-4" />} title="standup-notes.md" description="Edited 2 hours ago" /></div>
+</Example>
+
+Three rows, nothing but the gap between them. `entity-row` is the registry's proof: seventeen
+components compose it, and none of them paints a border between rows. A section earns a
+`section-header`, and a hard stop earns one `Separator`; a second box is the last resort.
+
+## The steps the registry lands on
+
+| Utility                         | Uses              | What it spaces                                          |
+| ------------------------------- | ----------------- | ------------------------------------------------------- |
+| `gap-2` (8px)                   | 186               | the default: icon to label, chip to chip, row internals |
+| `gap-1` (4px)                   | 85                | title to description, the two halves of one thought     |
+| `gap-3` (12px)                  | 80                | siblings inside a panel                                 |
+| `gap-1.5` (6px)                 | 57                | inline glyph to text in compact controls                |
+| `gap-4` (16px)                  | 43                | panel to panel                                          |
+| `px-3` · `px-2` · `p-3` · `p-2` | 40 · 39 · 24 · 23 | control and cell insets                                 |
+| `py-1` · `py-1.5` · `py-2`      | 28 · 25 · 21      | row heights, with `h-6` to `h-9` for controls           |
+
+24px and 32px barely appear, because page-level composition belongs to the shells, and a shell owns
+arrangement through its regions rather than through padding on its children. Land on a step, or say
+why not.
+
+## Radius says what kind of thing this is
+
+<Example className="flex flex-wrap items-start gap-6">
+  <div className="flex w-40 flex-col gap-2">
+    <div className="bg-muted border-border h-14 w-full rounded-md border" />
+    <p className="text-muted-foreground text-xs">rounded-md, the inner step: menu items, chips inside a control (27 uses)</p>
+  </div>
+  <div className="flex w-40 flex-col gap-2">
+    <div className="bg-muted border-border h-14 w-full rounded-lg border" />
+    <p className="text-muted-foreground text-xs">rounded-lg, the workhorse: controls, cards, panels (67 uses)</p>
+  </div>
+  <div className="flex w-40 flex-col gap-2">
+    <div className="bg-muted border-border h-14 w-full rounded-xl border" />
+    <p className="text-muted-foreground text-xs">rounded-xl and 2xl, the largest claims: overlays and page-sized panels (9 uses)</p>
+  </div>
+  <div className="flex w-40 flex-col gap-2">
+    <div className="bg-muted border-border h-14 w-14 rounded-full border" />
+    <p className="text-muted-foreground text-xs">rounded-full: pills, dots, avatars (73 uses), never a size step</p>
+  </div>
+</Example>
+
+Every named radius is a multiple of `--radius` (`0.625rem`), so the ladder retunes from one variable
+and no component writes a pixel corner. Nest tighter, never looser: `rounded-md` sits inside a
+`rounded-lg` container, the way a menu item sits inside its menu.
+
+## A card is an entity; a section is not
+
+<Example className="flex flex-col gap-4">
+  <Card className="max-w-sm">
+    <CardHeader>
+      <CardTitle>Brand audit for Northwind</CardTitle>
+      <CardDescription>3 open items</CardDescription>
+    </CardHeader>
+  </Card>
+  <Card className="max-w-sm">
+    <CardHeader>
+      <CardTitle>Q3 launch film</CardTitle>
+      <CardDescription>Awaiting render</CardDescription>
+    </CardHeader>
+  </Card>
+  <p className="text-muted-foreground text-xs">Two things with a name and a state, two cards.</p>
+</Example>
+
+A `Card` claims that identity for what it wraps. A flat region of one thing (a settings section, a
+form, one record's detail) is not several entities, so it does not get several boxes; it gets space,
+and where the eye needs a hard stop, one `Separator`.
+
+<DoDont
+  doExample={
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Generation settings</CardTitle>
+        <CardDescription>Applies to every run in this project</CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-3">
+        <p className="text-muted-foreground text-sm">Fixing the seed reproduces the same result across runs with identical settings.</p>
+        <Separator />
+        <p className="text-muted-foreground text-sm">Longer clips cost proportionally more credits.</p>
+      </CardContent>
+    </Card>
+  }
+  doCaption="one panel, one box: space between its paragraphs and a single Separator for the hard stop."
+  dontExample={
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Generation settings</CardTitle>
+        <CardDescription>Applies to every run in this project</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="border-border rounded-lg border p-3">
+          <p className="text-muted-foreground text-sm">Fixing the seed reproduces the same result across runs with identical settings.</p>
+          <div className="border-border mt-3 rounded-md border p-2"><p className="text-muted-foreground text-sm">Longer clips cost proportionally more credits.</p></div>
+        </div>
+      </CardContent>
+    </Card>
+  }
+  dontCaption="the same panel boxed inside a box. Nesting flattens hierarchy instead of building it, and the anti-slop audit counts it."
+/>
+
+## Columns key off the container, not the viewport
+
+Since decision D19, a component that lays itself out in columns reads its **own** width. The
+registry's viewport breakpoints (`sm:` 45 uses, `md:` 44, `lg:` 30) are mostly the shells' and the
+mobile drawer's; `artifact-grid` and `recent-grid` were converted after every shell that put a grid
+beside a sidebar had to shift each breakpoint up a step by hand. Two facts cost real regressions and
+are worth carrying:
+
+- A container query cannot match on the element that establishes the container. Wrap the grid in a
+  plain `<div className="@container">` and put the `@[40rem]:grid-cols-2`-shaped classes on the grid
+  itself, one level down.
+- Tailwind's named container rungs are **not** the breakpoint scale, despite sharing names:
+  `--container-md` is 448px while `--breakpoint-sm` is 640px. Convert with arbitrary values that
+  reproduce the old thresholds, never with the named rung of the same name.
+
+## Rules
+
+- Separate with space first, then a background shift, then a painted line. `entity-row` lists paint
+  no borders; a hard stop is one `Separator`.
+- Land on the grid: 4, 6, 8, 12, 16. `gap-2` is the default. Off-step values need a reason, and
+  LAY-1 is the rule that asks for it.
+- Radius encodes the kind of thing: `rounded-md` inside a control, `rounded-lg` for controls, cards
+  and panels, `rounded-xl` and `2xl` for overlays and page-sized panels, `rounded-full` for pills and
+  dots. Nest tighter, never looser, and never write a pixel corner.
+- Cards wrap entities: things with a name and a state. A flat region of one thing gets space, not a
+  second box.
+- A component's own columns read its container width with the two-element `@container` shape.
+  Viewport breakpoints belong to shells and to the sidebar's drawer swap.
+- Nothing scrolls sideways at 375px. The `Mobile` case story starts failing the build there, and
+  [Mobile viewport](?path=/story/foundations-mobile-viewport--home-shell) sweeps the shells.
+
+The radius variable and the scale it drives are in
+[Design Tokens](?path=/docs/foundations-design-tokens--docs); the shells' regions are in
+[App structure](?path=/docs/foundations-app-structure--docs).

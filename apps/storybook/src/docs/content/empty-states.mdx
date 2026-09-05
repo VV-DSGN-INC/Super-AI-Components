@@ -1,0 +1,121 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/registry/super-ai/empty-state";
+import { ImagePlus, Search } from "lucide-react";
+
+<Meta title="Content/Empty states" />
+
+# Empty states
+
+An empty state is the interface teaching itself: the one moment a region has nothing to show, so
+every word has to carry. In an AI product it is also the default view, not an edge case: a new
+account sees every surface empty at once, which is why the Empty contract binds eleven families and
+every block must export an `Empty` story. Three things make a region empty and they are not
+interchangeable: **nothing yet**, **nothing matched**, **nothing loaded**. Each gets its own script,
+and a generic "Nothing here" answers none of them.
+
+## Nothing yet
+
+<Example className="w-full max-w-lg">
+  <EmptyState size="panel" icon={<ImagePlus />} title={<span className="text-lg font-medium tracking-tight">No renders yet</span>} description="Describe a shot and every result lands here." action={<Button>Generate a render</Button>} secondaryAction={<Button variant="ghost">Browse presets</Button>} /></Example>
+
+`empty-state` (L1) in one component, three sizes: a page takeover for a whole route, a panel state
+for a sidebar or pane, and an in-grid tile that occupies one cell so the grid keeps its columns. The
+title names what the place holds ("No renders yet"), the body says how the first one comes to exist
+("Describe a shot and every result lands here."), and the action is the surface's own verb
+("Generate a render"). `asset-library` says "Nothing here yet" over "Files and folders you create or
+upload will appear in this list."; `generation-queue` says "No generations queued."
+
+The action is caller-supplied on purpose, and there is deliberately no `ctaLabel` prop: a shared
+"Get started" button is exactly the default the component exists to prevent, and CPY-1 fails the
+build on it anyway. Give the CTA the same verb as the primary action of the surface it replaces.
+
+## Nothing matched
+
+<DoDont
+  doExample={
+    <EmptyState
+      size="panel"
+      icon={<Search />}
+      title={<span className="text-base font-medium">No assets match those filters</span>}
+      description="Clear the search or a chip above to see the rest of the library."
+      action={<Button variant="outline">Clear filters</Button>}
+    />
+  }
+  doCaption="the action undoes the thing that emptied the list. Title and body are asset-library's own no-results copy."
+  dontExample={
+    <EmptyState
+      size="panel"
+      icon={<Search />}
+      title={<span className="text-base font-medium">No assets match those filters</span>}
+      description="Clear the search or a chip above to see the rest of the library."
+      action={<Button>Upload asset</Button>}
+    />
+  }
+  dontCaption="one action changed: it sends the reader off to make a new asset while the library sits one click away, behind a filter."
+/>
+
+The filter did this, so the copy names it as the cause and the action undoes it. `asset-library`'s
+no-results state carries no action at all when the chips are still on screen a click away, which is
+right; where they are not, add the button that clears them. The count does the other half of the
+work: "None of the 14 assets" separates a filtered list from an empty library, and the two want
+opposite actions.
+
+## Nothing loaded
+
+A load that failed leaves an empty region too, and it is the species the registry has not shipped:
+no component says a _collection_ failed to load, and `answer-block` has no answer-level failure
+state at all (`CONTINUE.md` §8 records it as an API gap). Rule going forward: the words are an error
+message in an empty state's frame, so the formula is
+[Error messages](?path=/docs/content-error-messages--docs)': what happened in plain past tense, why
+in one clause when it helps, then a verb the reader can act on. What must never happen is a failure
+wearing the first-use script: "No renders yet. Generate a render." on a screen where six renders
+exist and the request timed out is a lie the reader then acts on.
+
+## In a grid, keep the columns
+
+<Example>
+  <div className="grid grid-cols-3 gap-3"><div className="bg-muted aspect-video rounded-lg" /><div className="bg-muted aspect-video rounded-lg" /><EmptyState size="in-grid" icon={<ImagePlus />} title={<span className="text-sm font-medium">Nothing rendered yet</span>} description="Results land in this slot." /></div>
+  <p className="text-muted-foreground mt-3 text-xs">size="in-grid": a tile the grid's empty slot takes directly, so the geometry never changes underneath the reader</p>
+</Example>
+
+Size by the surface, not by how much there is to say. A long message does not make a panel state
+into a page state; an oversized empty state inside a grid or a sidebar reflows everything around it,
+which is the failure the in-grid tile exists to prevent. A page-sized state passes a real heading
+element as its title, because the title renders as a `div` and a route without a heading is a
+document defect.
+
+## Which empty
+
+- **A region with no data yet**: `empty-state` with the mark, the title, a one-sentence body and the
+  creating action.
+- **A generation surface with nothing generated**: the same, with `examplePair`, because a before
+  and after explains the product faster than any sentence about it.
+- **A filtered or searched region with no matches**: the same without a mark, with the clearing
+  action, or no action where the controls are on screen.
+- **A picker's search with no results**: one line, no action, the noun the reader searched.
+- **A collection that failed to load**: `empty-state` with a retry, worded as an error. Nothing
+  ships this today.
+- **A single value with no data**: not an empty state. `stat-readout` renders an em dash.
+- **Data still in flight**: not an empty state. A skeleton where the shape is known, a spinner where
+  it is not; [Motion](?path=/docs/foundations-motion--docs) owns the choice.
+
+## Rules
+
+- Three species, three scripts: nothing yet, nothing matched, nothing loaded. Where two could
+  apply, the failure wins.
+- First use: the title names what the region holds, the body says how the first one comes to
+  exist, the action creates it with the surface's own verb.
+- No results: the copy names the filter as the cause and the action undoes it. Never "create".
+- Say the count behind the filter when it is known.
+- A failed load says it failed and offers a retry. Never the first-use script.
+- The body is one sentence; two is the ceiling.
+- The mark is decoration and is wrapped `aria-hidden` by the component, so it can never add to an
+  accessible name. No illustrations that render words.
+- Pick the size from the surface. In a grid, the in-grid tile; on a route, a real heading as the
+  title.
+- Sentence case, no terminal period on the title, a period on the body.
+
+This page owns _what a zero state says_. [Error messages](?path=/docs/content-error-messages--docs)
+owns what a failure says once there is something to report; the two meet at the failed load.

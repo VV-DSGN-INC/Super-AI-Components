@@ -1,0 +1,108 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { CostChip } from "@/registry/super-ai/cost-chip";
+
+<Meta title="Foundations/Color" />
+
+# Color
+
+The palette is deliberately neutral: grey surfaces, grey text, and an accent that is near-black.
+Saturated colour always carries meaning, and there are exactly two saturated tokens to carry it:
+`--destructive` for errors and destructive actions, and `--warning` for the near-limit state the
+monetisation family needs. Chart series are a lightness ramp. Nothing is coloured for looks, and the
+rules that keep it that way are gates rather than taste (COL-1 bans gradients, COL-6 bans indigo,
+violet and purple anywhere but the fourth chart slot).
+
+## Surfaces establish depth, not decoration
+
+<Example className="bg-background">
+  <div className="bg-card border-border rounded-xl border p-4">
+    <p className="text-foreground text-sm font-medium">bg-card, a raised panel: equal to the page, so the edge is the border</p>
+    <div className="bg-muted mt-3 rounded-lg p-3">
+      <p className="text-foreground text-sm">bg-muted, the one inset step. Ink stays text-foreground here.</p>
+      <div className="bg-popover border-border mt-2 rounded-md border p-2 shadow-sm"><p className="text-popover-foreground text-xs">bg-popover, a floating surface: menus, tooltips, dialogs</p></div>
+    </div>
+  </div>
+</Example>
+
+Three steps: page, inset, floating. `bg-card` equals `bg-background` in this sheet, so a card's edge
+comes from `border-border` and never from tint, and the registry writes `bg-muted` (92 uses) for the
+one inset step. Dark mode keeps the same three steps with the values re-tuned, never inverted: the
+`.dark` block is a second set of decisions, not a flipped copy.
+
+## Text has two tiers, and a pinned way to whisper
+
+<Example>
+  <p className="text-foreground text-sm">text-foreground, the content itself</p>
+  <p className="text-muted-foreground mt-1 text-sm">text-muted-foreground, supporting detail on the page or a card</p>
+  <p className="text-foreground/70 mt-1 text-sm">text-foreground/70, the quiet step for meta inside a painted surface</p>
+</Example>
+
+Two tiers per block is the ceiling. The third line is not a third tier: it is what quiet text becomes
+inside a surface where the muted token cannot be used, and it may only be `/60`, `/70` or `/80` of
+the foreground (TOK-8), because those are the steps that were measured.
+
+## Saturated colour encodes state, never style
+
+<Example className="flex flex-wrap items-center gap-3">
+  <Badge variant="destructive">Generation failed</Badge>
+  <Button variant="destructive">Delete render</Button>
+  <CostChip amount={17} />
+</Example>
+
+Red belongs to destruction and errors, and a red anything implies data loss or failure. `run-button`
+reports `failed` in it, `preview-tile` paints its failed frame with it, and the destructive button is
+the single control that paints a state red, because the action was red already. The cost chip beside
+them is deliberately neutral: money is information, not alarm, and the near-limit state gets
+`--warning` rather than a shade of red so that it is noticed before zero without reading as an error.
+
+<DoDont
+  doExample={<Badge variant="destructive">Generation failed</Badge>}
+  doCaption="destructive on a failure that happened."
+  dontExample={<p className="text-destructive text-sm font-semibold">Ready to generate</p>}
+  dontCaption="the same red as emphasis dilutes what red means everywhere else on the screen."
+/>
+
+## The accent is ink
+
+<Example className="flex flex-wrap gap-2">
+  <Button>Generate a render</Button>
+  <Button variant="secondary">Browse presets</Button>
+  <Button variant="outline">Attach reference</Button>
+  <Button variant="ghost">Cancel</Button>
+</Example>
+
+`--primary` is near-black in light and near-white in dark, so the primary action is the darkest
+thing on the page rather than the most colourful. Hover is a neutral wash: `hover:bg-accent
+hover:text-accent-foreground` is the registry's hover recipe, and `--accent` equals `--muted`, so the
+wash is the inset step painted over a control. Selection reads through geometry and text weight
+first; [States](?path=/docs/foundations-states--docs) owns that.
+
+## Charts are a lightness ramp
+
+`chart-1` through `chart-5` are five greys from light to dark, in both modes. Identity across series
+comes from lightness order and labels, never from hue, and the recharts defaults that would introduce
+one (`#8884d8`, the dashed grid) are automatic failures (CHT-1, CHT-3).
+[Data Visualization](?path=/docs/foundations-data-visualization--docs) has the rest.
+
+## Rules
+
+- Components read semantic tokens only. Never a hex, an `oklch()`, an `rgb()`, or a palette class:
+  `check:tokens` fails the build on each.
+- Dark mode is decided in the sheet, not in the component. Pick the right semantic token and both
+  modes are already answered.
+- Red is destruction and failure. Warning is near-limit. Nothing else is saturated, and nothing is a
+  gradient.
+- Quiet text on a painted surface derives from the foreground at `/60`, `/70` or `/80`, never from
+  the muted token, and never as a composite of any other colour.
+- `text-muted-foreground` never sits on `bg-muted`, `bg-accent` or `bg-secondary`, on one element or
+  across a composition. Rebind the variable on the wrapper instead.
+- Destructive text never sits on a destructive tint. Go solid.
+- Hover is the accent wash with its own foreground, and both halves travel together: a fill swapped
+  without swapping the ink on it is how the trap ships.
+
+Token names, live values and both modes live in
+[Design Tokens](?path=/docs/foundations-design-tokens--docs). This page decides _when_; that page
+records _what_.

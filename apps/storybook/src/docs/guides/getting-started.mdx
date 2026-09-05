@@ -1,0 +1,87 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Getting Started" />
+
+# Getting Started
+
+Super AI Components is a **shadcn registry**, not an npm package. A consumer runs `npx shadcn add`
+against a JSON URL and the component's source is copied into their app, where it is theirs to keep.
+Everything below follows from that one fact: there is nothing to version, nothing to upgrade in
+place, and the only install test that counts is the one that runs `shadcn add` for real.
+
+## Installing into an app
+
+Any app set up with shadcn (Tailwind v4, `components.json`) can install an item by URL:
+
+```bash
+npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
+```
+
+What lands: the component under `components/super-ai/<name>.tsx` (marketing items under
+`components/marketing/`), every `registryDependencies` it declares, and any `cssVars` it carries into
+your global stylesheet. `quota-meter`, `credits-indicator` and the rest of the near-limit family carry
+the registry's one added token, `--warning`, exactly so that a consumer who installs one of them does
+not get a colourless state; the consumer install test asserts that the variable and its
+`--color-warning` theme mapping actually land, because Tailwind v4 emits nothing for an undefined
+utility rather than failing.
+
+Two facts about the primitives underneath:
+
+- The vendored shadcn layer is **Base UI** (`@base-ui/react`), not Radix. Read the actual wrapper
+  before assuming an API: several forward fewer props than upstream (`toggle-group` drops
+  `orientation`, `slider` drops the thumb-label callbacks). `docs/CONTINUE.md` §4 keeps the list.
+- Icons come from `lucide-react` and nowhere else, at the sizes the components already use.
+
+## Running the workbench
+
+```bash
+pnpm install
+pnpm dev
+```
+
+`pnpm dev` starts every workspace through turbo. The two you will look at:
+
+| Workspace        | What it is                                 | Port |
+| ---------------- | ------------------------------------------ | ---- |
+| `apps/docs`      | The docs site, and the registry itself     | 3000 |
+| `apps/storybook` | This workbench, and the accessibility gate | 6007 |
+
+CI installs with `pnpm install --frozen-lockfile` on Node 24 and pnpm `11.1.0`, the version pinned in
+the root `packageManager` field. Use pnpm, never npm: the lockfile is `pnpm-lock.yaml`.
+
+If you are running more than one agent session against this repo, each one needs **its own git
+worktree** and its own port and browser tab. Agents sharing a tree race on `tsbuildinfo` and
+typecheck against each other's half-written files, and a sibling worktree's dev server on your port
+will serve _its_ build while your preview reports success. Check the base commit of a fresh worktree
+before you rely on it carrying your prep; an isolated worktree may be cut from `main` rather than
+from your integration branch.
+
+## Before you call a change done
+
+The gates, in the order CI runs them (`.github/workflows/ci.yml`):
+
+```bash
+pnpm lint && pnpm typecheck && pnpm check:tokens && pnpm check:contract && pnpm test
+pnpm build:registry && pnpm build
+cd apps/docs && pnpm exec playwright test
+cd ../storybook && pnpm test:stories
+apps/docs/scripts/consumer-test.sh
+```
+
+Four things that have each cost a real debugging session:
+
+- **Run `pnpm build:registry` after changing any registry source.** A stale registry is invisible
+  locally and broken for consumers.
+- **Rebuild before the smoke run.** `playwright.config.ts` runs `pnpm start`, and `next start` serves
+  the prebuilt output, so editing source without rebuilding tests a stale app. A green run there can
+  prove nothing.
+- **Clear Storybook's cache before `test:stories` after adding components:**
+  `rm -rf apps/storybook/node_modules/.cache/storybook`. Otherwise Vite's dependency optimiser
+  invalidates mid-run and produces a wall of fake failures that read like a11y errors.
+- **`check:tokens` passing does not mean you are clear of the contrast trap.** It sees the
+  single-element shape only; the composed shape shows up when axe measures real computed colours in
+  `test:stories`.
+
+New or restyled UI has one more gate: the anti-slop audit, run through the `unslop` skill
+(`.claude/skills/unslop/`). Run it _before_ designing, so the constraints shape what you generate,
+and again before calling the screen done.

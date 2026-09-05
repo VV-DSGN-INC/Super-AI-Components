@@ -1,0 +1,123 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { EntityRow } from "@/registry/super-ai/entity-row";
+import { QuotaMeter } from "@/registry/super-ai/quota-meter";
+import { Copy, FileText } from "lucide-react";
+
+<Meta title="Content/Inclusive writing" />
+
+# Inclusive writing
+
+Write for the person you cannot see: the one listening to the screen instead of looking at it, the
+one reading a machine translation, the one who has never touched a mouse. That is a precision
+practice, not a list of banned words; every rule here makes a sentence mean the same thing to more
+people. [Voice & principles](?path=/docs/content-voice-principles--docs) already requires plain
+words and short sentences. This page asks a narrower question about the same words: which one, for a
+reader who cannot see the layout, cannot hear the idiom, or cannot click. Counted on 2026-09-04.
+
+## Any person, no pronoun
+
+The registry addresses the reader as _you_ and names everyone else by role: "Projects you pin",
+"you have 120", "the provider answered", "Requester". No gendered pronoun appears in any registry
+string, and "the user" appears in none either. Where a third person needs a pronoun at all it is
+_they_, a rule going forward since no singular _they_ ships yet.
+
+## Verbs the reader's device answers to
+
+<DoDont
+  doExample={<p className="text-sm">Drag and drop, or choose a file.</p>}
+  doCaption="a gesture as one route, a universal verb as the other. Written for this page."
+  dontExample={<p className="text-sm">Drag and drop, or click to browse</p>}
+  dontCaption="generation-panel's shipped string: someone driving this by keyboard, switch or voice has no click."
+/>
+
+Two shipped strings name a device: `generation-panel`'s "Drag and drop, or click to browse" and
+`home-shell`'s "Projects you pin show up here for one-click access." Both are gaps, not precedents.
+_Select_ and _choose_ cover every input; a gesture is named only as one path among several.
+
+Position words fail the same way, since a zoomed viewport, a phone and a screen reader's linear read
+all put "below" somewhere else. `auth-shell`'s "let people continue with email below" is the shipped
+instance. Point by name: "in Connections", "on the Library tab", the way `env-status` writes "replace
+the key for this provider in Connections".
+
+## What a name says
+
+<Example className="flex flex-wrap items-start gap-6">
+  <div className="flex w-56 flex-col gap-2">
+    <Button variant="ghost" size="icon-sm" title="Copy seed">
+      <Copy />
+      <span className="sr-only">Copy seed</span>
+    </Button>
+    <p className="text-muted-foreground text-xs">a control: the verb and the thing it acts on</p>
+  </div>
+  <div className="flex w-64 flex-col gap-2"><EntityRow icon={<FileText aria-hidden className="size-4" />} title="quarterly-review.pdf" description="Attached to this thread" /><p className="text-muted-foreground text-xs">a glyph beside its label: decoration, aria-hidden, and the file name is the name</p></div>
+</Example>
+
+A control's name is the verb and its object, and per-row controls carry the row's identity:
+`filter-bar` writes "Remove {label} filter", `asset-library` "Actions for {name}" and "Select
+{name}", `generation-queue` "Cancel {title}" and "Retry {title}", `credits-indicator` "{label} —
+manage plan". The category the registry still gets wrong is the constant name on a repeated control:
+`stat-readout`'s "Copy", `autonomy-selector`'s "Revoke", `reset-affordance`'s "Reset", `filter-bar`'s
+generic fallback when a chip's child is not a string, and `preview-tile`'s nameless frame button
+below an overlay label. A list of five reads "Reset, Reset, Reset", and no gate can see it.
+
+Name a control once. A button carrying both an `aria-label` and an `sr-only` span reads only the
+label; the second name is dead text. And an `sr-only` suffix fuses with the visible text into one
+word, so the hidden span carries the complete phrase or the control carries an outright `aria-label`.
+
+<Example className="w-full max-w-sm">
+  <QuotaMeter resources={[{ label: "Video minutes", used: 6, limit: 30, unit: "min", resetsIn: "Resets in 12 days" }]} /></Example>
+
+A meter's name is what it measures and its value is a sentence: `quota-meter`'s bar is labelled by
+its row and reads "6 of 30 min used" through `aria-valuetext`, so a listener gets the fact the
+sighted reader gets from the fill. The unit is spelled the way the label spells it.
+
+## What an image says
+
+Eight images in the registry take `alt=""`, because they are decoration beside a label that already
+says the thing. Thumbnails take the file name (`alt={file.name}`); a caller-supplied thumbnail takes
+the caller's words (`alt={thumbnail.alt}`), and the component leaves that prop optional, so a
+meaningful picture ships nameless unless the caller writes them. `empty-state` wraps its mark
+`aria-hidden` for the same reason: an illustration that renders words would leak them into the name
+of whatever encloses it.
+
+## Words that travel
+
+The idiom-class words (sanity, crazy, insane, grandfathered, blacklist, whitelist, dummy) appear
+zero times in registry strings, and the figures of speech that translate badly ("end to end", "kick
+off", "reach out") appear zero times too. Nothing to fix, and nothing to start. Units are spelled as
+the label spells them ("min", "MB"), and the settled words in
+[Writing mechanics](?path=/docs/content-writing-mechanics--docs) are terms of art a translator
+renders deliberately: credits, thread, workspace, artifact.
+
+## What the words say, by slot
+
+- **The reader**: _you_. Never "the user".
+- **A third person**: the role, and _they_ where a pronoun is unavoidable.
+- **An action in body copy**: a verb no device owns, _select_ or _choose_.
+- **A place in the flow**: its name, never its position.
+- **An icon-only control**: the verb and its object, with the row's identity when it repeats.
+- **A control that reports rather than acts**: the verdict or the measure, "Helpful", "Model
+  context usage".
+- **A meter**: what it measures, and a value sentence in `aria-valuetext`.
+- **A decorative image or glyph**: `alt=""` or `aria-hidden`, written explicitly.
+- **A meaningful image**: what it shows, in the sentence's terms; a thumbnail, the file name.
+
+## Rules
+
+- Address the reader as _you_; name a third person by role, _they_ where unavoidable. No gendered
+  pronoun and no "the user" ship today; keep it that way.
+- Verbs name no device: _select_ and _choose_, never _click_ or _tap_. The two shipped "click"s are
+  gaps.
+- Point by name, never by position. `auth-shell`'s "below" is the gap.
+- An icon-only control's name is the verb and its object, and a repeated control carries the row's
+  identity. Five components still ship a constant name.
+- Name a control once, and never let an `sr-only` suffix fuse with visible text.
+- A meter is labelled by what it measures and speaks its value as a sentence.
+- Every image gets an `alt`: `""` for decoration, the subject or file name for meaning. A
+  component that leaves `alt` to the caller documents that in its pitfalls.
+- Idioms and device-bound figures of speech stay at zero.
+
+This page owns _which word reaches everyone_. Voice, mechanics, errors and empties are the other
+four pages of Content, and the set is complete.

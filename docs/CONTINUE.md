@@ -957,6 +957,37 @@ that is where the backlog lives.
   reconcile when a stage consumes axes. (The rest of this entry's items closed
   in `chore(ds-rules): close the final-review follow-ups backlog`.)
 
+### Added by the mobile viewport sweep (2026-09-04)
+
+`apps/storybook/src/docs/foundations/mobile-viewport.stories.tsx` resizes the
+real browser to 375, 430 and 768px over five shells' docs-site demos (D9's
+defensible subset: home, chat, studio, library, settings) and asserts no
+horizontal scroll and no tappable control under the 24px floor anti-slop's
+375px pass prescribes. First run: **no screen spills at any width**, and the
+sub-floor list below is every control's own resting height, identical at all
+three widths, so none of it is a squeeze that layout room would fix. Each is
+carried in the sweep's shrink-only `TAP_EXEMPT` ledger with its owner; delete
+the entry once the component clears 24px and the check re-arms.
+
+| component | control | measured | owner |
+| --- | --- | --- | --- |
+| vendored `ui/checkbox` | the box (`size-4`) | 16×16, ten on the library facet rail | upstream shadcn geometry: same reported-not-fixed status as `vendored-token-findings.md` |
+| vendored `ui/switch` | the track | 32×18, four on settings sections | upstream shadcn geometry, as above |
+| A12 `section-header` | `section-header-trigger` (the collapsible heading) | 16 to 20px tall | registry: the trigger needs a min-height; one fix in the primitive covers studio and library |
+| A11 `reset-affordance` | the icon button | 20×20 | registry: one size step up |
+| A5 `filter-bar` | `filter-chip-remove` | 16×16, the hardest target on any of the five screens | registry: the chip is 24px tall, so the button can take its full height |
+| M2 `credits-indicator` | `credits-indicator-trigger` (counter form) | 86×16 | registry: vertical padding on the trigger |
+
+Three copy defects the Content pages of the same workbench found while
+quoting shipped strings, filed here so they have an owner: `feedback`'s
+default `submittedLabel` "Thanks for the feedback!" is the registry's only
+exclamation mark in user-facing copy (the anti-slop copy rules treat one as a
+failure); `skill-menu`'s "Search skills..." is the one three-period ellipsis
+against 36 `…`; and two strings name a device or a position (`generation-panel`
+"Drag and drop, or click to browse", `home-shell` "one-click access",
+`auth-shell` "continue with email below"), where `select`/`choose` and a place
+name would reach every reader.
+
 ## 9. Gaps found by the case-story pilot
 
 Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were

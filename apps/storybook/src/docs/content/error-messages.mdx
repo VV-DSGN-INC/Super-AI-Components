@@ -1,0 +1,113 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
+import { SafetyBlock } from "@/registry/super-ai/safety-block";
+import { EnvStatus } from "@/registry/super-ai/env-status";
+import { TriangleAlert } from "lucide-react";
+
+<Meta title="Content/Error messages" />
+
+# Error messages
+
+An error message has one job: get the person moving again. Every error answers three questions in
+order, **what happened**, **why** if it helps, and **what to do next**, and stops. If the way out
+cannot be stated, the message is not ready to ship. The registry has an unusually large error
+vocabulary, because failure is a first-class state in AI products (the design spec's own principle:
+rendered inline where the result would have been, never only a toast), and every example here is
+shipped copy.
+
+## The formula
+
+<Example className="w-full max-w-md">
+  <EnvStatus label="Model providers" providers={[{ id: "openai", name: "OpenAI", state: "key-invalid", checkedAt: "Checked 2 minutes ago" }]} /></Example>
+
+`env-status` is the formula in one row. **What happened**: "Key invalid." **Why**: "The provider
+answered and rejected this request's credentials." **The way out**: "Go fix the credential: replace
+the key for this provider in Connections." Its `not-running` state has the same three parts
+("Nothing answered — no local runtime is up for this provider." then "Start it locally, then this
+will recover on its own."), and its `degraded` state deliberately has no way out, because there is
+none: "Wait — this typically clears on its own, without anything to configure here."
+
+Not every error earns a why. `connection-manager`'s rejected key gets one because it changes what
+the reader does next: "Generate a new key and replace this one. The provider itself is healthy, so
+retrying the same key will fail the same way."
+
+## Say what is not wrong
+
+<Example className="w-full max-w-lg">
+  <RateLimitBanner cause="provider-capacity" resource="Claude Opus 4.5" remainingSeconds={95} />
+</Example>
+
+A limit reads like a fault unless the message says otherwise. `rate-limit-banner` names the cause
+and clears the reader: "Demand is high right now. Nothing is wrong with your account or your
+request." for provider capacity, and "This is the cap on your plan, not a problem with your request."
+for the reader's own limit. Then the number, a countdown, and a verb: "Notify me when capacity
+returns". When no estimate exists it says so, "No estimate yet — the provider hasn't given one.",
+rather than inventing one.
+
+## A blocked request names the policy
+
+<Example className="w-full max-w-lg">
+  <SafetyBlock variant="input-blocked" policy="Clinical advice boundary" alternatives="Clinical questions go to the medical information team." /></Example>
+
+`safety-block` distinguishes "Request blocked" (the request was not sent) from "Response withheld"
+(it ran, and the response cannot be shown), names the policy that fired, quotes the triggering
+fragment, and offers alternatives. A block with no policy named is a wall; a block with the policy
+named is a boundary the reader can work with.
+
+## Where an error lives
+
+- **Where the result would have been.** `result-card` reports "Generation failed" in the card;
+  `preview-tile` paints its failed frame; `generation-queue` puts "Retry {title}" on the failed row.
+  Never only a toast.
+- **Above the thing it blocks.** `rate-limit-banner` sits over the composer it throttles, and
+  `paywall-message` renders in the stream as the final turn: "You are out of credits", "The run was
+  not started, so nothing was charged.", "Upgrade for more credits".
+- **Beside the control, before commit.** `run-button` says "Need 4 credits, you have 2" as text next
+  to Generate, because a disabled control cannot show a tooltip.
+- **In the status row.** `env-status` and `connection-manager` for infrastructure the reader does not
+  own.
+- **Under the field.** The vendored `field` ships `FieldError` with `role="alert"` for a single
+  wrong value; the registry's forms compose it.
+
+<Example className="w-full max-w-md">
+  <Alert variant="destructive">
+    <TriangleAlert />
+    <AlertTitle>Upload failed</AlertTitle>
+    <AlertDescription>The file is over 25 MB. Compress it or split it, then try again.</AlertDescription>
+  </Alert>
+</Example>
+
+The alert above is written for this page: the vendored `Alert` is the surface for a whole-form
+operational failure, and the copy follows the formula with the limit as a number and the way out as
+two verbs.
+
+<DoDont
+  doExample={<p className="text-destructive text-sm">Enter a date after today.</p>}
+  doCaption="states the correction directly."
+  dontExample={<p className="text-destructive text-sm">That date is invalid.</p>}
+  dontCaption="names the defect, not the fix; the reader still does not know what to do."
+/>
+
+## Rules
+
+- Every error answers what happened, why if it helps, and the way out, in that order. If the way
+  out cannot be stated, hold the message; if there is none, say so, as `env-status` does for
+  degraded.
+- Say what is not wrong when a limit could read as a fault. `rate-limit-banner` is the model.
+- Name the policy, quote the fragment, offer an alternative. A block without a policy is a wall.
+- Say the limit as a number ("over 25 MB", "50 of 50 used today"), never the category.
+- The recovery action is a verb the reader can act on: try again, add credits, replace the key. If
+  retrying cannot work, say why and do not offer it.
+- No "oops", no "something went wrong" alone, no exclamation marks. Errors are calm because the
+  reader already is not.
+- Failure renders inline where the result would have been. A toast may echo it; it never replaces
+  it.
+- Error text keeps the destructive styling it ships with, and destructive text never sits on a
+  destructive tint: 4.0:1. Solid fill, `text-background` on it.
+- A failed load of a collection is an empty state, not an error message.
+  [Empty states](?path=/docs/content-empty-states--docs) owns that case.
+
+This page owns _what an error says_. [Voice & principles](?path=/docs/content-voice-principles--docs)
+owns the calm these examples already speak in.

@@ -1,0 +1,125 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { StatReadout } from "@/registry/super-ai/stat-readout";
+import { EntityRow } from "@/registry/super-ai/entity-row";
+import { FileText } from "lucide-react";
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+One family does all the UI work, and it runs small. Hierarchy comes from **size**, **weight** and
+**colour tier**, never from switching typeface. The registry writes Tailwind's utilities directly;
+there is no named type-role layer here, so the scale below is the whole vocabulary, and the counts are
+what the registry actually does as of 2026-09-04.
+
+## Two families
+
+<Example className="flex flex-col gap-2">
+  <p className="font-sans text-sm">Geist, every screen and every component</p>
+  <p className="font-mono text-sm">Geist Mono, what a machine wrote: seeds, ids, paths, values you can copy</p>
+</Example>
+
+The docs site loads both through `next/font` and exposes them as `--font-geist-sans` and
+`--font-geist-mono`; this workbench loads the same faces from Google Fonts in `src/index.css` and
+points the same variables at them, because the base-nova theme references those variables and would
+otherwise fall through to a serif. `--font-heading` is an alias of the sans, not a third family: it
+exists so heading type can diverge later without touching a component.
+
+## The scale runs small
+
+<Example className="flex flex-col gap-4">
+  <div>
+    <p className="text-2xl font-semibold tracking-tight">1,240</p>
+    <p className="text-muted-foreground text-xs">text-2xl font-semibold tracking-tight: a display value (4 uses)</p>
+  </div>
+  <div>
+    <p className="text-lg font-medium">No renders yet</p>
+    <p className="text-muted-foreground text-xs">text-lg font-medium: a page-sized empty state's title (1 use)</p>
+  </div>
+  <div>
+    <p className="text-base font-medium">Generation settings</p>
+    <p className="text-muted-foreground text-xs">text-base: a surface title, never a bigger body step (6 uses)</p>
+  </div>
+  <div>
+    <p className="text-sm">Describe a shot and every result lands here.</p>
+    <p className="text-muted-foreground text-xs">text-sm: UI body, labels, rows (162 uses)</p>
+  </div>
+  <div>
+    <p className="text-xs">Edited 19 hours ago · 12 credits</p>
+    <p className="text-muted-foreground text-xs">text-xs: meta, chips, counts, keycaps (206 uses)</p>
+  </div>
+</Example>
+
+`text-xs` and `text-sm` together are 368 of the registry's 380 size utilities. That is not a
+coincidence of dense components; it is the posture. `text-base` is the **title** step for a surface,
+`text-lg` heads a whole region, and `text-2xl` is the ceiling, reached only by display numbers. A
+new component that writes `text-lg` for body copy has left the scale.
+
+## Weight moves one step at a time
+
+<Example className="flex flex-col gap-2">
+  <p className="text-sm font-normal">font-normal, 400, the body default (5 explicit uses; the rest inherit it)</p>
+  <p className="text-sm font-medium">font-medium, 500, the emphasis step (145 uses)</p>
+  <p className="text-sm font-semibold">font-semibold, 600, titles and display values (15 uses)</p>
+</Example>
+
+`font-bold` appears zero times in the registry. Emphasis is one step of weight **or** one step of
+colour tier, never both.
+
+<DoDont doExample={<div><p className="text-foreground text-sm font-medium">Q3 launch film</p><p className="text-muted-foreground mt-1 text-xs">12:04 · Edited 2 days ago</p></div>
+  }
+  doCaption="a recent-grid row: one lever up on the title, one lever down on the meta."
+  dontExample={
+    <div>
+      <p className="text-foreground text-lg font-semibold">Q3 launch film</p>
+      <p className="text-foreground mt-1 text-xs font-semibold">12:04 · Edited 2 days ago</p>
+    </div>
+  }
+  dontCaption="the same row shouting: size, weight and tier all pushed at once."
+/>
+
+## Numbers line up, machine text is mono
+
+<Example>
+  <StatReadout items={[
+      { label: "Model", value: "flux-1-dev" },
+      { label: "Seed", value: "884201773", copyable: true },
+      { label: "Guidance", value: "3.5" },
+      { label: "Negative", value: undefined }, ]} /></Example>
+
+`tabular-nums` is the registry's most used type modifier after truncation (50 uses): counts,
+credits, timestamps and any value in a column carry it so digits keep their width. `font-mono` (10
+uses) marks what a machine wrote. `stat-readout` is the precedent for both: values are `font-mono
+tabular-nums`, a missing value renders as an em dash rather than an empty cell, and the copy button
+sits beside the value it copies.
+
+## Labels truncate; states and counts never do
+
+<Example>
+  <div className="w-64"><EntityRow icon={<FileText aria-hidden className="size-4" />} title="quarterly-review-final-v3-with-comments-and-legal-redlines.pdf" description="Attached to this thread" /></div>
+</Example>
+
+`truncate` carries 65 sites in the registry and `line-clamp` only 3, because a clamp of one line is a
+`truncate` case wearing the wrong name, and `line-clamp-N` compiles to `display: -webkit-box`, which
+dies against any `flex` on the same element. Choose by shape: `truncate` where the string must stay
+on one line, `line-clamp-N` only where extra lines still read. A count or a state beside a truncating
+label takes `shrink-0` so the number survives whole at any width.
+
+## Rules
+
+- Default to `text-sm`. Meta, chips, counts and keycaps are `text-xs`. `text-base` titles a surface,
+  `text-lg` heads a region, `text-2xl` is the display ceiling.
+- Emphasis is one step of weight or one step of colour tier. Never both, and never `font-bold`.
+- Sentence case for titles, labels, buttons, tabs and menu items;
+  [Writing mechanics](?path=/docs/content-writing-mechanics--docs) owns the case rules, and the
+  registry's 8 `uppercase` sites are micro-labels that apply it in CSS, never in the string.
+- Letter-spacing is reserved: `tracking-tight` on a display value, `tracking-wide` on an uppercase
+  micro-label. Body text gets none.
+- Values that align in a column carry `tabular-nums`; values a machine wrote carry `font-mono` on top.
+- Labels truncate with `truncate`; numbers and states never truncate.
+- A page-sized empty state or a shell passes a real heading element as its title, because a `div`
+  styled like a heading leaves the document without one.
+
+Family and size utilities map onto the sheet in [Design Tokens](?path=/docs/foundations-design-tokens--docs).
+This page decides _when_; that page records _what_.

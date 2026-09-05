@@ -1,0 +1,214 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { systemCounts } from "./_shared/system-counts";
+
+<Meta title="Architecture" />
+
+# Architecture
+
+Super AI Components is a design system whose rules are executable. Most systems write their
+conventions into a document and hope reviewers remember them. Here a convention that matters is a
+gate, so breaking one turns CI red instead of waiting for someone to notice in review.
+
+If you read only this paragraph: every component is five co-located files that ship in one commit;
+every colour arrives through a semantic shadcn variable; one manifest is the single source of truth
+that every gate reads; {systemCounts.rules.total} design rules are typed records that a checker
+executes; and eleven CI steps, in a fixed order, check that all of that is still true, ending with
+the one test that installs everything into a fresh app. The rest of this page is the same statement
+at increasing depth.
+
+Every number below is counted from the repository as this page renders. None of them are typed in
+by hand: the figures for this catalog have already drifted once between three hand-kept copies
+(114 frozen items, 116 checked by the gate), until a test reconciled them.
+
+## 1 · What a component is
+
+A component is not a file. It is five files that move together or not at all, scaffolded by
+`pnpm new:component <name>` with deliberately failing tests:
+
+| File                                                       | What it is                                                                                     |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `apps/docs/registry/super-ai/<name>.tsx`                   | the component, the thing consumers install                                                     |
+| `apps/docs/registry/super-ai/<name>.test.tsx`              | a co-located vitest suite, one test per declared state                                         |
+| `apps/docs/components/demos/<name>-demo.tsx`               | the docs-site demo                                                                             |
+| `apps/docs/content/components/<name>.docs.tsx`             | the guidance module: what it is, when to reach for it, dos and don'ts, accessibility, pitfalls |
+| `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx` | one story per declared state, plus the case stories                                            |
+
+The row that ties them together lives in `apps/docs/lib/catalog.manifest.ts`: the item's family,
+layer, declared `states` (or `regions` for a block), and what it `consumes`. That file is the one
+shared file, prepared centrally and never written by a build agent, and its `consumes`, `shadcn` and
+`npm` fields are reconciled from real imports rather than from anyone's list. As this page renders
+the manifest carries **{systemCounts.statesDeclared} declared states** and
+**{systemCounts.regionsDeclared} declared regions**, and every one of them is a gated story export.
+
+## 2 · The layer model
+
+Each layer may depend downward only. That rule is what keeps {systemCounts.components} components
+from collapsing into {systemCounts.components} mutually entangled files
+(`docs/design-system/concept-model.md`).
+
+| Layer                                          | Contents                                                                                                                                           | Rule                                                                   |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **L4 Blocks** · {systemCounts.blocks}          | The layout archetypes: shells for home, chat, studio, timeline, generation, library, explore, artifact, records, docs, settings, notebook and auth | May compose anything. Own arrangement and nothing else                 |
+| **L3 Components** · {systemCounts.components}  | Families B to N, plus family P                                                                                                                     | Never depend on each other                                             |
+| **L2 Primitives** · {systemCounts.primitives}  | Family A: `kbd`, `cost-chip`, `entity-row`, `preview-tile`, `section-header` and the rest                                                          | Shared DNA. If two L3 components need the same piece, it moves up here |
+| **L1 AI Elements** · {systemCounts.aiElements} | conversation, message, prompt-input, reasoning, tool, sources, and the rest                                                                        | Composed across registries, never copied                               |
+| **L0 shadcn** · {systemCounts.shadcn}          | The base-nova primitives, all Base UI                                                                                                              | `registryDependencies`                                                 |
+
+The promotion rule is the interesting one. `preview-tile` was hiding inside `preset-grid`,
+`result-card`, `frame-strip`, `artifact-grid` and `tool-panel` before it became A8; it is the
+highest fan-out primitive in the catalog and was built first for that reason. Sideways imports
+between L3 components are forbidden, so a shared piece has exactly one place to go.
+
+Two more things cross the layers. **Contracts** bind families rather than owning pixels: the token
+contract (all families), the generation state vocabulary `idle · queued · streaming · done · failed ·
+locked`, cost in three forms (chip, line, ring), provenance travelling with every asset, an empty
+state on every panel, the four approval verbs, and the Dialog contract for multi-turn surfaces. And
+**Marketing** is a separate registry namespace of {systemCounts.marketing} mini-components with its
+own `--marketing-*` palette variables, held to the same token and reduced-motion rules.
+
+## 3 · Where everything lives
+
+```
+Super-AI-Components/
+├── CLAUDE.md                     ← the map; the rulebook lives in docs/ and is never restated here
+├── docs/
+│   ├── CONTINUE.md               ← where things stand, the build loop, traps, the gap backlog (§8)
+│   ├── design-system/            ← the contracts: build briefs, catalog, specs, decisions, a11y baseline
+│   └── superpowers/              ← dated specs and plans, one file per initiative
+├── apps/docs/                    ← the Next.js docs site, and THE REGISTRY
+│   ├── registry/super-ai/        ← what consumers install
+│   ├── registry/marketing/       ← the second namespace
+│   ├── content/components/       ← the guidance modules
+│   ├── lib/catalog.manifest.ts   ← the one shared file
+│   └── scripts/                  ← the gates: check-contract, check-citations, consumer-test.sh
+├── apps/storybook/               ← this workbench, and the axe gate
+└── packages/ds-rules/            ← the design rules as typed records, behind pnpm check:tokens
+```
+
+## 4 · The token contract
+
+Components read semantic shadcn CSS variables and nothing else: no raw hex, no `oklch()`, no
+Tailwind palette class, no `rgb()`. The palette itself is monochrome plus `--destructive`, and the
+registry adds exactly one token beyond stock shadcn, `--warning`, for the near-limit state the
+monetisation family needs. [Design Tokens](?path=/docs/foundations-design-tokens--docs) records the
+names and the live values; [Color](?path=/docs/foundations-color--docs) decides when to reach for
+each.
+
+The contract is enforced by `pnpm check:tokens`, which runs `packages/ds-rules/rulecheck.mjs` over
+every registry source. The rules it executes are typed records: **{systemCounts.rules.total} rules**
+as this page renders, {systemCounts.rules.blocker} of them blockers that fail the build,
+{systemCounts.rules.warning} warnings, and {systemCounts.rules.review} that resist a reliable grep
+and are declared as judgment work rather than silently dropped. Beyond colour they cover gradients,
+emoji in chrome, infinite loops, `transition-all`, generic CTAs, recharts defaults, unpaired
+`outline-none`, and the icon library. Every rule ships bad and good fixtures, and the emitted JSON is
+drift-gated against the records.
+
+One limitation is documented because it matters: the contrast rule catches only the single-element
+shape of the muted-on-muted pairing. The cross-component shape, muted text in a child whose ancestor
+paints the muted background, is invisible to any single-file analysis, and every instance that has
+actually shipped broken was that shape. The Storybook axe gate is the real backstop.
+
+## 5 · The gates
+
+`.github/workflows/ci.yml`, job `verify`, in this order. The order matters: CI stops at the first
+failure, so an early red hides every gate behind it, which has already happened here once.
+
+| Step                             | What it protects                                                                                                                                                                   |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile` | the lockfile is the truth                                                                                                                                                          |
+| `pnpm lint`                      | ESLint over the docs app; `react/no-unescaped-entities` is an error here                                                                                                           |
+| `pnpm typecheck`                 | every workspace, including the registry sources this workbench imports                                                                                                             |
+| `pnpm check:tokens`              | the token contract and every other blocker rule                                                                                                                                    |
+| `pnpm check:contract`            | the five files exist, every declared state has a story, the docs module has real guidance, `consumes` resolves, and every backticked citation in claim-position prose is reachable |
+| `pnpm test`                      | the co-located vitest suites, and the gates' own tests                                                                                                                             |
+| `pnpm build:registry`            | `public/r/*.json` regenerates from the manifest                                                                                                                                    |
+| `pnpm build`                     | the docs site and this workbench build                                                                                                                                             |
+| Playwright smoke                 | every docs page renders with zero console errors, against the prebuilt site                                                                                                        |
+| Storybook a11y + interaction     | axe over every `super-ai` and `marketing` story, `test: "error"`                                                                                                                   |
+| Consumer install test            | a fresh Next.js app installs every registry item and builds                                                                                                                        |
+
+Three properties of this roster are deliberate. The last three are the ones that actually exercise
+the product, and they are last. Several gates are **control-tested**: the a11y gate was proven by
+breaking a passing story and watching it fail, because a scanner that reports clean and a scanner
+that is blind produce identical output. And two lists are **ratchets** that may only shrink: the a11y
+exclusion list and the contrast-exempt file list, both at their floor today.
+
+## 6 · Usage guidance
+
+Every component ships a typed `ComponentDocs` module beside it, and both the docs site and this
+workbench render the same module, so the two surfaces cannot describe a component differently.
+
+| Field                       | What it holds                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------- |
+| `whatItIs`                  | the pattern, in two or three sentences                                                            |
+| `whyItMatters` · `evidence` | why it earns registry status, citing the reference products it was observed in                    |
+| `anatomy[]`                 | named slots, matching real `data-slot` attributes, rendered as callouts over the live component   |
+| `usage`                     | how to reach for it: the decision, never the API                                                  |
+| `dos[]` · `donts[]`         | at least two each, every one with a live example                                                  |
+| `accessibility`             | `keyboard`, `screenReader` and optional `focus` arms, written from the source, gated for presence |
+| `pitfalls[]`                | things that go wrong in practice, each one something a builder actually hit                       |
+
+The citation gate is what stops this prose from rotting: a backticked utility, slot or name in a
+claim-position field must appear in the component's reachable source (its own files, what it
+consumes, and its vendored primitives). Its first run raised 227 findings, all triaged, and three of them
+were real rot corrected in the prose. `donts` and `pitfalls` are exempt, because they cite what must not be
+written.
+
+## 7 · Stories and the case-story convention
+
+Declared-state stories restate what the types and the manifest already say. The case stories are
+the only place a component's real situations are recorded: `RTL`, `ReducedMotion`, `KeyboardOrder`,
+`Controlled`, `EmptyLabel`, `LongContent`, `Mobile`, `Boundary`. A component writes only the ones
+that are true for it and records each skip in a parseable comment, because a story written to
+complete the set reads as coverage and proves nothing. Every story is axe-gated from the moment it
+exists, so `Mobile` does not merely document 375px, it starts failing the build there.
+[Documentation Guidelines](?path=/docs/guides-documentation-guidelines--docs) carries the full
+convention; **{systemCounts.storyFiles} story files** exist as this page renders.
+
+## 8 · A change, end to end
+
+1. **Read first.** `component-build-brief.md` (the house contract), the component's spec entry, and
+   the registry, because a component that reimplements a shipped primitive is a defect.
+2. **Prepare the manifest centrally.** Set `building`, normalise states to kebab-case identifiers,
+   never name one `default`.
+3. **Scaffold five files.** `pnpm new:component <name>`; the tests start red.
+4. **Fan out.** One agent per component, each in its own git worktree, each writing only its own
+   five files. Twelve concurrent agents have twice done a wave in one pass.
+5. **Run the anti-slop audit.** The `unslop` skill, before designing and again before "done".
+6. **Integrate.** Reconcile declared dependencies against real imports, flip to `shipped`, regenerate
+   wiring, run every gate in CI's order, and rebuild before trusting a smoke run.
+7. **Branch, pull request, CI.** Never `main`, under the `VV-DSGN-INC` org.
+8. **Report gaps.** When a composed component does not fit, use a labelled sibling or a documented
+   override and write the gap down in `CONTINUE.md` §8. Never fork it.
+
+## 9 · The principles underneath
+
+> **The registry is the product.** Storybook proves a component renders; only the consumer install
+> test proves a consumer can have it.
+
+> **A green run can prove nothing.** The smoke gate serves prebuilt output, and an a11y gate once
+> asserted nothing for a whole suite. Control-test the scanner before believing a clean report.
+
+> **A gate list mirrors `ci.yml`, in `ci.yml`'s order.** A gate missing from a written list goes
+> unrun for a whole phase, and a red gate early hides everything behind it.
+
+> **Blocks compose; they do not implement.** A reimplemented row passes every gate and is still
+> wrong.
+
+> **An exclusion list may only shrink.** Adding a file to silence a failure defeats the gate; fix the
+> component instead.
+
+> **A fact has one home.** The manifest is the truth, the docs module is the guidance, the story is
+> the situation, and a citation in prose has to be reachable from the source it describes.
+
+## Where to go next
+
+- [Contributing](?path=/docs/guides-contributing--docs) covers the same build loop as a working
+  procedure.
+- [Component Lifecycle](?path=/docs/guides-component-lifecycle--docs) covers what "shipped" means
+  and what is deliberately absent.
+- [Design Tokens](?path=/docs/foundations-design-tokens--docs) and
+  [Theming](?path=/docs/foundations-theming--docs) cover the token sheet in the detail a person
+  building screens needs.
+- [App structure](?path=/docs/foundations-app-structure--docs) covers the block layer.

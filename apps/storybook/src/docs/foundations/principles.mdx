@@ -1,0 +1,79 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Foundations/Principles" />
+
+# Principles
+
+Nine decisions that make everything else in this system follow. When a design question has no
+obvious answer, one of these usually settles it. When a new component or screen violates one, that is
+a finding, not a style choice. Each principle names the file or gate that holds it, because a
+principle without an enforcement point is a preference.
+
+## 1. The registry is the product
+
+What consumers install is `apps/docs/registry/**`, copied into their app by `shadcn add`. A component
+that looks right in this workbench but breaks on install has failed. The consumer install test is the
+last step of CI for that reason, and a red run there is a shipping bug, never a flake. (`CLAUDE.md`,
+`scripts/consumer-test.sh`)
+
+## 2. Compose before you build
+
+A component that reimplements a shipped primitive is a defect. Layers depend downward only; if two
+components need the same piece it moves up to the primitive layer, never sideways. Blocks compose
+and do not implement: when a composed component does not fit, the answer is a labelled sibling or a
+documented override plus a written gap, because a reimplemented row passes every gate and is still
+wrong. (`concept-model.md` §1, `block-build-brief.md`)
+
+## 3. One accent, and it is ink
+
+The palette is monochrome plus destructive. The primary action is near-black, hover is a neutral
+wash, and saturated colour always carries meaning: red for errors and destruction, the registry's one
+added token for the near-limit state, and nothing for decoration. Gradients, glows and purple are
+banned by name, because they are what an unguided generator reaches for. When a screen feels bland
+the answer is hierarchy, never more colour. (`packages/ds-rules`, COL-1, COL-6)
+
+## 4. Every value arrives through a token
+
+Components read semantic shadcn variables and nothing else: no hex, no `oklch()`, no palette class.
+A colour literal is unreachable by any theme, and a value that exists only in one component is a
+decision the system cannot see. The gate fails the build on it. (`check:tokens`, TOK-1 to TOK-7)
+
+## 5. Accessibility is a gate, not a phase
+
+Every registry story renders under axe with violations as errors, and the exclusion list may only
+shrink. The traps that have actually bitten are written down and named: nothing conveyed by colour
+alone, a tooltip never the only accessible name, no nested interactives, hover-revealed affordances
+reachable by keyboard, scrollable regions focusable, state changes announced. A passing panel is not
+a passing screen, so the docs module records keyboard and screen-reader behaviour per component.
+(`a11y-baseline.md`, `component-build-brief.md` §Accessibility)
+
+## 6. A fact has one home
+
+The manifest is the truth about states and dependencies, the docs module is the guidance, the story
+is the situation, and the props table is generated. A story that enumerates props is a fourth copy of
+a fact already gated elsewhere; a citation in prose has to be reachable from the source it describes.
+When a fact appears twice, one copy is already stale. (`check:contract`, the citation gate,
+`story-conventions.md`)
+
+## 7. Empty is the default view
+
+Every panel, list, grid and pane ships an empty state, because a new account sees every surface empty
+at once and that is the version most users actually meet first. Blocks must export an `Empty` story;
+writing one surfaced that a chat shell needs three independent empty affordances nobody would have
+derived from the spec. (`decisions.md` F4, the Empty contract)
+
+## 8. Show the receipts
+
+Anything the system asserts it must be able to defend: provenance travelling with every asset, cost
+disclosed before commit ("Need 4 credits, you have 2" beside Generate), citations that resolve to a
+source, a permission prompt before an agent acts, the four approval verbs on every artifact. Trust is
+a UI surface built from receipts, not from tone of voice. (the Provenance, Cost, Approval and Dialog
+contracts in `concept-model.md` §4)
+
+## 9. A gap reported beats a gap hidden
+
+The best-evidenced backlog in the repo was written by builders who needed a component to work and
+could not make it work. A story that surfaces a defect is reported, never deleted or pinned green. A
+scanner that reports clean is control-tested before it is believed. And a rejection in review is not
+finished when the instance is fixed; it is finished when the lesson is a rule, a pitfall or a gate.
+(`CONTINUE.md` §8, `story-conventions.md`)

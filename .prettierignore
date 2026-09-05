@@ -10,3 +10,8 @@ test-results/
 # Harvested-verbatim files: pnpm format would rewrite their upstream style
 # and silently break the byte-provenance discipline (see packages/ds-rules/README.md).
 packages/ds-rules/
+
+# Storybook docs pages: prettier's MDX printer moves inline JSX text onto its
+# own line, which MDX then renders as a nested <p> inside the element (a
+# hydration error on every Example). Format these by hand.
+apps/storybook/src/docs/**/*.mdx

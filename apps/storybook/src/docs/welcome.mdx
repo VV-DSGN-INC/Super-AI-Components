@@ -1,0 +1,80 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { systemCounts } from "./_shared/system-counts";
+
+<Meta title="Welcome" />
+
+# Super AI Components
+
+A shadcn-style registry of components for AI applications, distributed by `npx shadcn add` rather
+than as an npm package. It is the missing half of [AI Elements](https://elements.ai-sdk.dev): AI
+Elements gives you the conversation, this gives you the application around it. As this page renders,
+**{systemCounts.catalogItems} catalog items** ship ({systemCounts.primitives} primitives,
+{systemCounts.components} components and {systemCounts.blocks} blocks across {systemCounts.families}
+families), plus {systemCounts.marketing} marketing mini-components in a second registry namespace and
+{systemCounts.libContracts} shared contracts.
+
+This workbench is where the system is read and argued with. Every example on every page is the real
+component, imported from the same registry source the consumer install test installs into a fresh
+app. Nothing here is a screenshot or a copy.
+
+**The registry is the product.** A component that looks right in this workbench but breaks on
+`shadcn add` has failed. That is why the consumer install test is the last step of CI, and why the
+numbers above are counted from the tree rather than typed in.
+
+Start here:
+
+- [Architecture](?path=/docs/architecture--docs): what the system is and how it is put together.
+- [Getting Started](?path=/docs/guides-getting-started--docs): install from the registry, run the
+  workbench, and the gates to pass before calling a change done.
+- [Changelog](?path=/docs/changelog--docs): every pull request that has landed on `main`, newest
+  first.
+- [Contributing](?path=/docs/guides-contributing--docs): how a component gets built, in parallel,
+  without anyone touching the one shared file.
+- [Documentation Guidelines](?path=/docs/guides-documentation-guidelines--docs): where each fact
+  about a component lives, and the case-story convention.
+
+## The layers in the sidebar
+
+All four layers sit on the same shadcn **base-nova** theme (Base UI, not Radix), with the theme and
+writing-direction toggles in the toolbar above.
+
+- **Super AI** is the curated registry: the {systemCounts.catalogItems} items this repo authors and
+  publishes. Primitives such as `kbd`, `cost-chip` and `entity-row`; components for composing,
+  generating, reviewing, monetising and observing; and the shells that compose them into whole
+  screens. Every one of them is under the full story-state and documentation contract.
+- **AI Elements** is the {systemCounts.aiElements} components of
+  [elements.ai-sdk.dev](https://elements.ai-sdk.dev), shown with static mock data. Vendored and
+  displayed, never authored here.
+- **shadcn** is the {systemCounts.shadcn} primitives in the base-nova style, the foundation everything
+  else composes on top of. Also vendored.
+- **Marketing** is the {systemCounts.marketing} landing-page mini-components, rebuilt to the same
+  token and reduced-motion standards and installed the same way.
+
+```bash
+npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
+```
+
+## The rulebook
+
+Foundations and Content in the sidebar are the rulebook. Each page is written from what this repo
+actually does, cites the file or gate that makes a claim true, and states what is still a gap. Read
+[Principles](?path=/docs/foundations-principles--docs) once; the rest of Foundations applies to every
+screen you draw with these parts, and [Voice & principles](?path=/docs/content-voice-principles--docs)
+to every word on it.
+
+Two guides describe the edges of the system: [Component
+Lifecycle](?path=/docs/guides-component-lifecycle--docs), what "shipped" means here and what is
+deliberately absent, and [Browser Support](?path=/docs/guides-browser-support--docs), the floor and
+what sets it.
+
+## Status
+
+The catalog is closed: nothing is `building`, and the remaining work is the composition-gap backlog in
+`docs/CONTINUE.md` §8. {systemCounts.cut} items were cut from scope in July 2026 (the node builder,
+decision D9) and are retained as records rather than deleted. Family P is the second reference board's
+first family and is counted separately from the frozen A–O catalog, which is what keeps "closed"
+literally true.
+
+Deploys are manual, from `apps/docs`; nothing deploys on merge. The registry is served from
+`super-ai-components.vercel.app`.

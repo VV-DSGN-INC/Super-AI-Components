@@ -1,0 +1,77 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
+import { ModeTabs } from "@/registry/super-ai/mode-tabs";
+
+<Meta title="Foundations/Navigation" />
+
+# Navigation
+
+Three levels, each with one component, and depth earned by the object model rather than by feature
+sprawl. The registry's navigation family is B, and every shell composes it the same way: a sidebar of
+places on the left, a topbar that says where you are, and tabs that switch views of the same thing.
+The active item is an ARIA state first (`aria-current`, 47 sites) and a paint second.
+
+## Level 1: the sidebar is a place list
+
+<Example className="w-56">
+  <SidebarNav activeId="chat" sections={[
+      { label: "Workspace", items: [
+          { id: "chat", label: "Chat", count: 3 },
+          { id: "library", label: "Library" },
+          { id: "automations", label: "Automations" }, ],
+      }, ]} /></Example>
+
+`sidebar-nav` (B3) is the primary, always-visible list: icon-and-label rows grouped under section
+headers, a trailing slot per row for a count, a tier badge, an unread dot, a running spinner or an
+external-link glyph, and a pinned group that sits above every section. It is controlled: pass
+`activeId` and handle `onSelect` yourself. `app-sidebar` (B1) assembles it with `workspace-switcher`
+above, `promo-card` and a footer below, and the vendored Sidebar's expand, icon-rail and drawer
+behaviour underneath. The sidebar is a place list, not a feature list: if a candidate item is not a
+place the user _goes_, it is a control that belongs on a page.
+
+`thread-list` (B6) is the sidebar's second face, for products whose places are conversations or
+tasks: date-grouped rows with pin, inline rename, delete-confirm, and a `running` state that turns the
+list into a job queue, so background work is visible without leaving the thread.
+
+## Level 2: the topbar says where you are
+
+`app-topbar` (B7) carries the breadcrumb trail, the title, a saved-state sentence and the page's
+actions, in a `document` or an `editor` context. The current page is the last crumb and is not a
+link; ancestors are. A shell passes `savedLabel` as a finished sentence ("Last saved 5 days ago"),
+because the component never guesses relative time for you.
+
+`docs-shell` shows the level split at its clearest: `areas` with `activeAreaId` move between
+products on an icon rail, `navSections` with `activePageId` move between pages of the product you are
+already in, and the rail changing is what changes the nav.
+
+## Level 3: within a page, views are not places
+
+<Example>
+  <ModeTabs modes={[
+      { value: "chat", label: "Chat" },
+      { value: "cowork", label: "Cowork" }, ]} defaultValue="chat" /></Example>
+
+`mode-tabs` (D4) switch arrangements or modes of the same surface, two to five of them, and
+`data-views` (P1) switches a collection between list, kanban, table, calendar and feed, remembering
+the choice per section through the `use-view-mode` contract. `modality-rail` (B4) does the same job
+for an editor, selecting which tool panel shows without ever changing the canvas. None of these
+change location: closing a sheet, a dialog or `settings-dialog` always lands you exactly where you
+were.
+
+## Rules
+
+- Three levels, one component each: `sidebar-nav` for places, `app-topbar` for location, tabs for
+  views. Never two navigation components for the same level on one screen.
+- A sidebar item passes the place test: do users _go_ there? Otherwise it is a page control.
+- The active item carries `aria-current`; the paint keys on it. Selection and hover are two
+  different washes, and the ring is neither.
+- Breadcrumb ancestors are links; the current page is not. Collapse the middle past four levels.
+- Sheets and dialogs never change location. Back always agrees with the trail.
+- Every nav item routes somewhere real, or it does not render. A counted, badged or running row is
+  the trailing slot's job, not a second item.
+- The sidebar becomes a drawer below 768px and nothing else about navigation changes with the
+  viewport.
+
+The shells that place these components are in
+[App structure](?path=/docs/foundations-app-structure--docs).

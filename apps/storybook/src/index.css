@@ -14,8 +14,7 @@
     "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
   --font-geist-mono:
-    "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
-    monospace;
+    "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -144,10 +143,12 @@
   }
 }
 
-
 /* Storybook: ensure Tailwind scans component + story sources */
 @source "./components";
 @source "./stories";
+/* ...and the docs pages: MDX prose pages and the Foundations story folders
+   under src/docs render token-backed examples of their own. */
+@source "./docs";
 /* ...and the registry components themselves. vite.config.ts aliases
    `@/registry/(.*)` to `../docs/registry/$1` (apps/docs/registry), a sibling
    package outside Tailwind's automatic (same-package) content detection —

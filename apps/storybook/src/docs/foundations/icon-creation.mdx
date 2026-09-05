@@ -1,0 +1,91 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import { CreditsIndicator } from "@/registry/super-ai/credits-indicator";
+
+<Meta title="Foundations/Icon creation" />
+
+# Icon creation
+
+Drawing a glyph is the last resort, and in this registry it has never been the first move: no
+registry component ships a custom icon. lucide-react carries about 1,700 glyphs, ICO-1 makes it the
+only icon library allowed in registry sources, and the one inline SVG a shipped component draws is
+not an icon at all. That is the bar. If a lucide glyph is merely close, ship the close one and move
+on; if nothing in the set says the thing, this page is the construction a new mark has to match.
+
+## Seventeen hundred glyphs come first
+
+Search the set by concept rather than by the name in your head. lucide renames glyphs and keeps the
+old name as an alias, which is how the registry came to import `AlertTriangle` and `TriangleAlert`,
+`CheckCircle2` and `CircleCheck`, `Loader2` and `LoaderCircle` for the same three paths. Before adding
+a name, check the [usage sheet](?path=/story/foundations-icons--usage): it groups names by the glyph
+they resolve to, so a second name for a glyph the registry already ships is visible before it lands.
+
+The genuine gaps are narrower than they look. A glyph that would encode a number, a proportion or a
+running state is not missing from lucide; it is outside what any static icon set can do, and it
+belongs on the second track below. A brand mark or a product logo is not missing either;
+[Iconography](?path=/docs/foundations-iconography--docs) rules those out of chrome entirely.
+
+## The set's construction
+
+lucide draws on a 24-unit grid with a 2-unit stroke, round caps and round joins, and every glyph
+inherits its colour from `currentColor`. The registry never sets `strokeWidth` on a glyph, so at the
+16px default rung the stroke lands at 1.33px, at 12px at 1px, and a custom mark drawn heavier than
+that will be the heaviest thing in any row it shares. Draw once at 24 and check at 16 **and** 12:
+detail that survives 24 and dies at 12 is detail the mark cannot afford.
+
+## The second track is for marks, not icons
+
+<Example className="flex flex-wrap items-start gap-8">
+  <div className="flex flex-col gap-2">
+    <CreditsIndicator form="ring" balance={640} total={1000} onManage={() => {}} />
+    <p className="text-muted-foreground text-xs">credits-indicator's ring: a 16-unit viewBox, a 2.5 stroke, and an arc whose length is the balance</p>
+  </div>
+</Example>
+
+A stroked SVG on its own viewBox is allowed for exactly one kind of thing: a mark that draws a value
+or a frame of an animation. `credits-indicator`'s ring form sets `strokeWidth="2.5"` on a 16-unit
+grid and computes the arc from `balance / total`, so the arc _is_ the data; a filled path could not
+be, because the shape is not fixed. It is heavier than a lucide glyph at the same rung, and that is
+survivable only because it never sits inline beside one: it heads its own control. That is the whole
+licence. A mark on this track may not be used as a glyph in a button, a chip or a menu item.
+
+## What breaks a mark
+
+- **A live `stroke` heavier than the set.** 2 units on a 24 grid is the reference; anything drawn
+  to look right in a 40px preview thins to nothing or bloats at 16.
+- **Detail that only exists at 24.** An inner line, a notch, a two-pixel gap; check at 12 before
+  keeping it.
+- **Text inside the mark**, including a single letter. It will not translate and will not scale.
+- **A mark that restates its own label.** Iconography already rules that out at the usage end.
+- **A silhouette that already means something in the set.** A check, a warning triangle, a
+  magnifier: the vocabulary is shared, and you cannot redefine one word locally.
+- **A colour of its own.** Every paint is `currentColor`, so the mark inherits its label's ink the
+  way every lucide glyph does.
+
+## Ship it as a component, not an asset
+
+There are no loose `.svg` files in the registry and a new mark does not start the practice. Copy the
+shape of the one that exists: a small TSX element inside the component that needs it, `currentColor`
+for every paint, `aria-hidden` when a visible label sits beside it and `role="img"` with a name when
+it is the only announcement. Size it from the container where the container already does the work;
+the `[&_svg:not([class*='size-'])]:size-4` selector in the vendored `Button` reaches a hand-drawn
+`<svg>` as long as it takes a `className`.
+
+## Rules
+
+- Exhaust lucide first, searching by concept. Check the usage sheet for a glyph already shipping
+  under another name before adding one.
+- Leave `strokeWidth` alone on glyphs. The registry sets it in two places, both value-drawing marks.
+- Draw a new mark on a 24-unit grid at a 2-unit stroke with round caps and joins, and check it at 16
+  and 12.
+- A stroked, small-viewBox SVG is permitted only for a mark that draws a value or an animation frame,
+  and such a mark never sits inline beside a glyph.
+- Ship it as a TSX component, never a loose file. Paint with `currentColor`, take a `className`, and
+  give it no colour class of its own.
+- Name it as Iconography names any glyph: `aria-hidden` beside a visible label, `role="img"` plus a
+  name when it is the only announcement.
+- ICO-1 and ICO-2 stay in force: no second library, no emoji, whatever the mark is standing in for.
+
+Where a glyph goes once it exists, the size rungs, colour inheritance, accessible names and the
+`data-icon` placement hook, is [Iconography](?path=/docs/foundations-iconography--docs). This page
+decides _how a mark is drawn_; that page decides _how it is used_.

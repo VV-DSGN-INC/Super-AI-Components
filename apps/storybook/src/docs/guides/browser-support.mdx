@@ -1,0 +1,71 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Browser Support" />
+
+# Browser Support
+
+The registry targets modern evergreen browsers. The floor is inherited from the build rather than
+chosen: the binding constraint is **Tailwind CSS v4**, and nothing the registry does on its own
+pushes the floor above it.
+
+## The support floor
+
+| Browser                | Minimum version |
+| ---------------------- | --------------- |
+| Chrome                 | 111             |
+| Edge                   | 111             |
+| Safari (macOS and iOS) | 16.4            |
+| Firefox                | 128             |
+
+This is Tailwind v4's own documented requirement; this repo resolves `tailwindcss@4.3.0`. Tailwind
+v4 generates CSS that depends on `@property`, cascade layers and modern colour functions, so no
+configuration here can lower the floor. Only removing Tailwind could.
+
+## What the registry and its primitives use
+
+Everything below the line is at or under the floor, so the floor is set once and the component layer
+never raises it. Counted from the sources on 2026-09-04.
+
+| Feature                 | Where                                                                                                              | Note                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `oklch()`               | the token sheet, 66 declarations in `apps/docs/app/globals.css`; zero in registry sources (TOK-2 forbids it there) | perceptual lightness is what makes the neutral ramp step evenly          |
+| `@container`            | `artifact-grid`, `recent-grid`; vendored `card` and `field`                                                        | container queries are the default for a component's own layout since D19 |
+| `:has()`                | vendored `button-group`, `table`                                                                                   | slot-driven layout in the primitives                                     |
+| `color-mix()`           | vendored `button`                                                                                                  | one use, in the outline variant                                          |
+| `backdrop-blur`         | `preview-tile` (exempt from COL-1 by name); vendored `dialog`, `alert-dialog`, `sheet` overlays                    |                                                                          |
+| `@starting-style`       | vendored `sheet`                                                                                                   | entry transitions                                                        |
+| `field-sizing: content` | vendored `textarea`                                                                                                | the one progressive enhancement, below                                   |
+
+## The one progressive enhancement
+
+`field-sizing-content`, which lets the vendored `textarea` grow with its content, landed in browsers
+later than the floor and is not available everywhere in it. Where the property is unsupported the
+element keeps its minimum height and behaves as a normal fixed-height, scrolling textarea. Nothing is
+unreachable and no layout breaks; the box simply does not auto-grow. If a component needs auto-growth
+as a guarantee rather than an enhancement, measure and set the height in JS. Do not raise the floor
+for it.
+
+## No legacy build
+
+The registry ships **source**, and the consuming app bundles it. There is therefore no
+transpile-for-old-browsers guidance to give and no polyfill list to maintain: whatever the consumer's
+bundler targets is what the component gets compiled to. The floor above is about CSS features at
+runtime, which no bundler can polyfill away. Internet Explorer and other pre-evergreen browsers are
+not supported and are not a goal.
+
+## Verifying a change
+
+Check **Chrome and Safari** both, every time. The features this system leans on hardest, container
+queries, `:has()` and the overlay primitives, are exactly the ones where engine behaviour diverges,
+and cross-browser bugs have recurred in the projects around this one. A change that renders correctly
+in Chrome is half-verified.
+
+The gates do not do this for you, and the page says so plainly:
+
+| Suite                                                  | Engine                                                                  |
+| ------------------------------------------------------ | ----------------------------------------------------------------------- |
+| `pnpm test:stories` (axe and interaction, every story) | Chromium only: `vitest.config.ts` declares a single `chromium` instance |
+| Playwright smoke (`apps/docs`)                         | Chromium only: CI installs `chromium` with `--with-deps`                |
+
+WebKit is not in CI. Until it is, the Safari pass is a manual step in the verification checklist,
+recorded in the PR body, and a green run says nothing about it.
