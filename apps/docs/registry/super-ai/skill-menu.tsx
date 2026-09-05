@@ -107,7 +107,11 @@ function SkillMenu({
       )}
       {...props}
     >
-      <div className="flex w-72 shrink-0 flex-col border-r">
+      {/* `border-e`, not `border-r`: the seam belongs between the list and the
+          preview pane, which is the list's left edge under `dir="rtl"`. Same
+          pixel in LTR — the sanctioned physical→logical swap (CONTINUE.md §8,
+          "Logical properties"; `modality-rail` is the precedent for this one). */}
+      <div className="flex w-72 shrink-0 flex-col border-e">
         <CommandInput placeholder={searchPlaceholder} />
         <CommandList aria-label={searchLabel}>
           <CommandEmpty>{emptyMessage}</CommandEmpty>
