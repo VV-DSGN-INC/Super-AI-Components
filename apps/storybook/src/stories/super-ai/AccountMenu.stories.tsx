@@ -24,6 +24,12 @@ const meta: Meta<typeof AccountMenu> = {
 export default meta;
 type Story = StoryObj<typeof AccountMenu>;
 
+/**
+ * `theme="dark"` selected in the Appearance submenu's radio group. At rest the
+ * canvas shows the avatar trigger; the radio is two levels in — the menu, then
+ * Appearance — which is the spec's point: theme changes often and should cost a
+ * hover, not a modal. `theme` is controlled; pair it with `onThemeChange`.
+ */
 export const ThemeRadio: Story = {
   args: {
     theme: "dark",
@@ -31,6 +37,11 @@ export const ThemeRadio: Story = {
   },
 };
 
+/**
+ * `background="forest"` selected in the swatch row of the same Appearance
+ * submenu, with a light theme. Background and theme are separate controlled
+ * props because a user changes one without the other.
+ */
 export const BackgroundSwatches: Story = {
   args: {
     theme: "light",
@@ -38,6 +49,12 @@ export const BackgroundSwatches: Story = {
   },
 };
 
+/**
+ * `shortcut` arrays on the product rows and `signOutShortcut` on the last
+ * action render as `Kbd` groups (A1) at the trailing edge. The spec is blunt
+ * about why: a row that has a shortcut must show it, or the shortcut is never
+ * learned.
+ */
 export const ShortcutHints: Story = {
   args: {
     theme: "system",

@@ -17,6 +17,12 @@ const meta: Meta<typeof SuggestionChips> = {
 export default meta;
 type Story = StoryObj<typeof SuggestionChips>;
 
+/**
+ * Three text-only chips. Each `SuggestionChip` carries its own `suggestion`
+ * and `onSelect`; the row supplies only the horizontal scroll. Clicking fills a
+ * composer elsewhere — chips are prompts, not filters, and never navigate or
+ * submit on their own.
+ */
 export const Plain: Story = {
   render: (args) => (
     <SuggestionChips {...args}>
@@ -27,6 +33,11 @@ export const Plain: Story = {
   ),
 };
 
+/**
+ * A leading icon per chip. The icon is decoration: the chip's accessible name
+ * is still the suggestion text, which is also why `EmptyLabel` is skipped —
+ * there is no optional text slot to empty.
+ */
 export const WithIcon: Story = {
   render: (args) => (
     <SuggestionChips {...args}>
@@ -36,6 +47,11 @@ export const WithIcon: Story = {
   ),
 };
 
+/**
+ * A thumbnail slot for starters that point at something visual — a template,
+ * a report to resume. The thumbnail is a node the caller supplies at the chip's
+ * fixed size; the row does not grow to fit it.
+ */
 export const WithThumbnail: Story = {
   render: (args) => (
     <SuggestionChips {...args}>
@@ -61,6 +77,11 @@ export const WithThumbnail: Story = {
   ),
 };
 
+/**
+ * `SuggestionChipsOverflow` appended after the visible chips: a real link with
+ * a count, pointing at wherever the rest live. The spec resolves overflow to a
+ * link because a half-visible chip reads as a layout bug.
+ */
 export const OverflowLink: Story = {
   render: (args) => (
     <SuggestionChips {...args}>

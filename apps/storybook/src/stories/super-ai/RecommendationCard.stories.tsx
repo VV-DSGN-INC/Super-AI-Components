@@ -54,6 +54,11 @@ function ControlledRecommendationCard(props: RecommendationCardProps) {
   );
 }
 
+/**
+ * The one-line feed row at rest: title, "Try it" with `aria-expanded="false"`,
+ * and no dialog in the document. This is the level a feed shows; the modal is
+ * what "Try it" reveals.
+ */
 export const Collapsed: Story = {
   args: { ...BASE_ARGS },
   play: async ({ canvasElement }) => {
@@ -64,6 +69,12 @@ export const Collapsed: Story = {
   },
 };
 
+/**
+ * `defaultOpen` opens the second level: a dialog laying out the apps involved
+ * and the steps as numbered rows — three list items asserted through the portal.
+ * The spec's rule is that "How it works" is numbered, never prose, because a
+ * recommendation you cannot audit is an instruction you should not follow.
+ */
 export const Expanded: Story = {
   args: { ...BASE_ARGS, defaultOpen: true },
   play: async ({ canvasElement }) => {
@@ -74,6 +85,12 @@ export const Expanded: Story = {
   },
 };
 
+/**
+ * Controlled `dismissed`/`onDismiss` through `ControlledRecommendationCard`:
+ * the play dismisses and the row unmounts. Same convention as `promo-card` —
+ * the component renders the choice, the consuming app persists it, and across a
+ * reload a dismissed recommendation must still read as dismissed.
+ */
 export const Dismissible: Story = {
   args: { ...BASE_ARGS },
   render: (args) => <ControlledRecommendationCard {...args} />,
@@ -87,6 +104,12 @@ export const Dismissible: Story = {
   },
 };
 
+/**
+ * Controlled `saved`/`onSaveForLater`: after the click the button reads
+ * "Saved" and is disabled, and the unsaved affordance is gone. The spec wants
+ * this middle option as much as "Try it" — dismissal without one trains
+ * dismissal.
+ */
 export const SaveForLater: Story = {
   args: { ...BASE_ARGS },
   render: (args) => <ControlledRecommendationCard {...args} />,

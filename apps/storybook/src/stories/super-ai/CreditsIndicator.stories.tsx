@@ -17,10 +17,20 @@ const meta: Meta<typeof CreditsIndicator> = {
 export default meta;
 type Story = StoryObj<typeof CreditsIndicator>;
 
+/**
+ * The bare counter: `balance` with no `total`, so there is no ring and no
+ * derived low threshold — the component cannot know what "low" means without a
+ * denominator. `onManage` makes the number a route into billing.
+ */
 export const Counter: Story = {
   args: { balance: 414, onManage: () => {} },
 };
 
+/**
+ * `form="ring"` at 640 of 1000: the normal state, the ring drawn against the
+ * plan total. The default low threshold is 10% of `total`, so this balance is
+ * well clear of it.
+ */
 export const Ring: Story = {
   args: { form: "ring", balance: 640, total: 1000, onManage: () => {} },
 };
@@ -53,10 +63,22 @@ export const Low: Story = {
   args: { form: "ring", balance: 80, total: 1000, onManage: () => {} },
 };
 
+/**
+ * `balance: 0`: the empty state repaints the whole pill (`bg-destructive`
+ * with `text-background`) rather than tinting the text. The source records why:
+ * `text-destructive` on the pill's own muted surface measures 4.37:1, and a
+ * surface repaint is legible at 12px where a tint is not.
+ */
 export const Empty: Story = {
   args: { form: "ring", balance: 0, total: 1000, onManage: () => {} },
 };
 
+/**
+ * `onTopUp` adds a Top up control beside the number, for products where
+ * buying more is a first-class action. At 200 of 1000 the pill is still in its
+ * normal state — 20% sits above the default 10% threshold — so this shows the
+ * control, not the alarm.
+ */
 export const WithTopUp: Story = {
   args: { form: "ring", balance: 200, total: 1000, onManage: () => {}, onTopUp: () => {} },
 };

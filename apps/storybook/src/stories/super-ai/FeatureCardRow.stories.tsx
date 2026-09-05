@@ -91,14 +91,31 @@ const meta: Meta<typeof FeatureCardRow> = {
 export default meta;
 type Story = StoryObj<typeof FeatureCardRow>;
 
+/**
+ * Three cards of icon, title and description — the "Start from scratch" shape.
+ * Each card is an entity row's four slots turned on their side and stacked, so
+ * the row and its menu-list cousins cannot drift apart in behaviour.
+ */
 export const IconTitleDesc: Story = {
   args: { items: ICON_TITLE_DESC },
 };
 
+/**
+ * The same component with thumbnails instead of icons — the "Popular
+ * features" shape, for features whose result is worth previewing. The
+ * difference is entirely in the data passed; there is no variant prop.
+ */
 export const WithThumbnail: Story = {
   args: { items: WITH_THUMBNAIL },
 };
 
+/**
+ * More cards than the row can show, with the carousel's next affordance,
+ * because trackpad-only scroll hides half the content. `CONTINUE.md` §8 records
+ * that the arrows sit outside the row's own box (`-left-12` / `-right-12`) and
+ * clip in a constrained column — O1 measured 407px of content in a 375px
+ * column, all of it the arrow. Recorded, not fixed here.
+ */
 export const HorizontalScroll: Story = {
   args: { items: HORIZONTAL_SCROLL },
 };

@@ -20,6 +20,11 @@ const meta: Meta<typeof AppTopbar> = {
 export default meta;
 type Story = StoryObj<typeof AppTopbar>;
 
+/**
+ * The document configuration: breadcrumb and privacy chip lead, saved state
+ * trails, title in the middle. This is the bar for anything read top to bottom
+ * — docs, pages, notes — where where-am-I and who-can-see-this matter most.
+ */
 export const DocumentContext: Story = {
   args: {
     context: "document",
@@ -34,6 +39,12 @@ export const DocumentContext: Story = {
   },
 };
 
+/**
+ * The editor configuration: a zoom label and undo/redo history lead instead of
+ * a breadcrumb. `canUndo: true, canRedo: false` renders redo disabled, which is
+ * the normal state right after an edit. Same title and trailing slots as the
+ * document context — one component, two lead configurations.
+ */
 export const EditorContext: Story = {
   args: {
     context: "editor",
@@ -44,6 +55,11 @@ export const EditorContext: Story = {
   },
 };
 
+/**
+ * The privacy chip carries its state as text ("Team"), so sharing is readable
+ * rather than inferred from a glyph, and the breadcrumb is shortened to two
+ * levels to show the chip is independent of crumb depth.
+ */
 export const PrivacyChip: Story = {
   args: {
     context: "document",
@@ -53,6 +69,11 @@ export const PrivacyChip: Story = {
   },
 };
 
+/**
+ * `savedLabel` is a finished sentence the caller writes. The component never
+ * formats relative time and never swaps the text for a cloud icon — the spec's
+ * point is that "Last saved 5 days ago" answers a question a glyph only raises.
+ */
 export const SavedState: Story = {
   args: {
     context: "document",

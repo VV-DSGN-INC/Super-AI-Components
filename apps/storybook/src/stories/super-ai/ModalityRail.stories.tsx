@@ -41,6 +41,12 @@ const TOOLS = [
   { id: "layers", label: "Layers", icon: <Layers /> },
 ];
 
+/**
+ * `activeId` marks the current tool. The rail is controlled — feed `activeId`
+ * back from `onSelect` the same way the switcher and sidebar-nav expect — and
+ * each item is an icon over a label in a fixed-width column, with the tooltip
+ * opening toward the canvas.
+ */
 export const Active: Story = {
   args: {
     items: TOOLS,
@@ -48,6 +54,12 @@ export const Active: Story = {
   },
 };
 
+/**
+ * Six tools with `maxVisible: 3`: the rest collapse behind a "More tools"
+ * chevron into a popover, because the spec rules out a scrollbar in a 92px
+ * column. Base UI renders that popup as a dialog with no heading, so it takes
+ * the trigger's label as its name — the source explains why.
+ */
 export const Overflow: Story = {
   args: {
     items: [
@@ -60,6 +72,12 @@ export const Overflow: Story = {
   },
 };
 
+/**
+ * `badge: "new"` and `badge: "pro"` marks on two items — the rail is where a
+ * product advertises features you have not bought. The mark is drawn on the
+ * icon and repeated as visually hidden text (" New", " Pro"), so the badge
+ * reaches the accessible name and is never colour alone.
+ */
 export const WithBadge: Story = {
   args: {
     items: [
@@ -71,6 +89,11 @@ export const WithBadge: Story = {
   },
 };
 
+/**
+ * `pinned` is a second array rendered below the scrollable middle, so
+ * settings and plugins never get swallowed when the tool list grows. Same item
+ * shape, different group; the separation is the component's, not the caller's.
+ */
 export const BottomPinned: Story = {
   args: {
     items: TOOLS,

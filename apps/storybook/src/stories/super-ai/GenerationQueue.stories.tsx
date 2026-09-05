@@ -17,6 +17,12 @@ const meta: Meta<typeof GenerationQueue> = {
 export default meta;
 type Story = StoryObj<typeof GenerationQueue>;
 
+/**
+ * Three slots reserved the moment the batch is submitted, all `queued`. The
+ * docs page asks for exactly this: create the rows before any result exists, so
+ * the list never reflows as work resolves. Cancel exists at both levels from the
+ * start.
+ */
 export const Queued: Story = {
   args: {
     heading: "Generating 3 images",
@@ -30,6 +36,11 @@ export const Queued: Story = {
   },
 };
 
+/**
+ * Two rows in flight with per-slot `progress` (24 and 71) beside a third still
+ * queued. Batch progress in the header and per-slot progress in the rows are
+ * different numbers, and the spec wants both visible.
+ */
 export const Running: Story = {
   args: {
     heading: "Generating 3 images",
@@ -43,6 +54,11 @@ export const Running: Story = {
   },
 };
 
+/**
+ * Every slot resolved and the heading changed to "Generation complete". No
+ * cancel handlers are passed, so no cancel controls render — there is nothing
+ * left to stop.
+ */
 export const Done: Story = {
   args: {
     heading: "Generation complete",
@@ -54,6 +70,12 @@ export const Done: Story = {
   },
 };
 
+/**
+ * One slot `failed` with an `errorMessage`, one done, one still running, and
+ * `onRetryItem` so the failed slot can re-queue on its own. `CONTINUE.md` §9
+ * records that the component does not move focus when a row's Cancel unmounts on
+ * resolution; that gap is described in `KeyboardOrder` rather than pinned.
+ */
 export const Failed: Story = {
   args: {
     heading: "Generating 3 images",
@@ -73,6 +95,11 @@ export const Failed: Story = {
   },
 };
 
+/**
+ * A cancelled batch: two rows `cancel`, the heading "Generation cancelled", and
+ * the first slot still `done`. The spec's rule under test is that cancelling a
+ * batch must not orphan completed slots — the finished result stays.
+ */
 export const Cancel: Story = {
   args: {
     heading: "Generation cancelled",

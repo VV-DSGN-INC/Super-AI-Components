@@ -30,6 +30,11 @@ const meta: Meta<typeof SidebarNav> = {
 export default meta;
 type Story = StoryObj<typeof SidebarNav>;
 
+/**
+ * A trailing count on a row: Chat with 3. The count is the trailing slot's
+ * loudest form and it joins the row's accessible name, which is why
+ * `KeyboardOrder` in `AppSidebar` identifies stops by slot rather than by name.
+ */
 export const CountBadge: Story = {
   args: {
     activeId: "chat",
@@ -45,6 +50,11 @@ export const CountBadge: Story = {
   },
 };
 
+/**
+ * `tier: "Pro"` on a row the user can see but has not bought. The spec's
+ * cheapest paywall: it shows what exists without hiding it, and the row stays
+ * in the list rather than disappearing behind the plan.
+ */
 export const TierBadge: Story = {
   args: {
     activeId: "chat",
@@ -60,6 +70,11 @@ export const TierBadge: Story = {
   },
 };
 
+/**
+ * `unread: true` renders a dot in the trailing slot — the lightest of the five
+ * trailing signals, and the one that contributes no text to the row's name.
+ * Anything that needs the unread state announced has to say it elsewhere.
+ */
 export const UnreadDot: Story = {
   args: {
     activeId: "chat",
@@ -75,6 +90,11 @@ export const UnreadDot: Story = {
   },
 };
 
+/**
+ * `running: true` puts a spinner in the trailing slot (`sidebar-nav-running`)
+ * for a destination with work in flight. `ReducedMotion` reads the spinner's
+ * `animationName` back as `none` under the emulated preference.
+ */
 export const Running: Story = {
   args: {
     activeId: "chat",
@@ -90,6 +110,12 @@ export const Running: Story = {
   },
 };
 
+/**
+ * `pinned` rows render above every section and outside the grouping
+ * entirely — the handful of destinations that must survive any amount of
+ * scrolling or reordering below them. Sections keep their own labels; the pinned
+ * group has none.
+ */
 export const PinnedGroup: Story = {
   args: {
     activeId: "chat",

@@ -19,10 +19,22 @@ const meta: Meta<typeof SectionHeader> = {
 export default meta;
 type Story = StoryObj<typeof SectionHeader>;
 
+/**
+ * The title alone on the row's baseline, every other slot empty. The component
+ * renders the header line and nothing else; whatever sits underneath is the
+ * caller's, and this story shows how little the row needs to earn its place in a
+ * stack of groups.
+ */
 export const Plain: Story = {
   args: { title: "Recent projects" },
 };
 
+/**
+ * A trailing action on the same baseline. The spec insists it is a link, never
+ * a button — "View all" navigates, it does not act — and the slot takes a node,
+ * so the component cannot enforce that; this story shows the shape the spec
+ * asks for, with a real `<a href>`.
+ */
 export const WithAction: Story = {
   args: {
     title: "Recent projects",
@@ -34,10 +46,23 @@ export const WithAction: Story = {
   },
 };
 
+/**
+ * `count` renders beside the title in its own slot, for groups where the number
+ * is worth knowing at a glance (12 assets). When the header is also collapsible,
+ * title and count both live inside the disclosure button and feed its accessible
+ * name — `KeyboardOrder` asserts exactly that.
+ */
 export const WithCount: Story = {
   args: { title: "Assets", count: 12 },
 };
 
+/**
+ * The uncontrolled disclosure: `collapsible` with `defaultOpen`, so the header
+ * owns its own open state and knows nothing about the panel it toggles — that
+ * panel is the caller's. `size="sm"` is the dense-rail size the spec uses for
+ * filter rails and inspectors. `Controlled`, below, is the same header driven by
+ * an external `open`.
+ */
 export const Collapsible: Story = {
   args: { title: "Filters", count: 3, collapsible: true, defaultOpen: true, size: "sm" },
 };

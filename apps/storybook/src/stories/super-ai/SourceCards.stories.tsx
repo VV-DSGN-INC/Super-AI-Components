@@ -48,12 +48,22 @@ const RETRIEVED: RetrievedSource[] = [
   },
 ];
 
+/**
+ * Every retrieved document `used: true`: numbered cards in retrieval order,
+ * each badged Cited. No `relevance` is passed, so position alone is the ranking
+ * signal — a legitimate one, and better than a manufactured band.
+ */
 export const Ranked: Story = {
   args: {
     sources: RETRIEVED.map((s) => ({ ...s, used: true })),
   },
 };
 
+/**
+ * `relevance` high, medium and low alongside position. Pass it only when the
+ * retriever reports a calibrated band; the docs page says to leave it off
+ * otherwise, so this story is the "we have one" case, not the default.
+ */
 export const RelevanceBanded: Story = {
   args: {
     sources: [
@@ -84,6 +94,12 @@ export const UsedAndUnused: Story = {
   },
 };
 
+/**
+ * A `used: false` document stays in the list and says so — "Retrieved, not
+ * used" — rather than disappearing, and `permissionFilteredCount: 3` renders the
+ * count of documents withheld for permissions below the list. Both are the
+ * honesty the spec asks of a grounded answer.
+ */
 export const PermissionFiltered: Story = {
   args: {
     sources: [
@@ -94,10 +110,19 @@ export const PermissionFiltered: Story = {
   },
 };
 
+/**
+ * `hasRun: true` with no sources: the search ran and found nothing. This is
+ * the state that must be told apart from the next one.
+ */
 export const EmptySearched: Story = {
   args: { sources: [], hasRun: true },
 };
 
+/**
+ * `hasRun: false` with no sources: an untouched panel before the first search.
+ * Without the flag it would read as a search that failed, which is why the docs
+ * page asks callers to set it.
+ */
 export const NotYetRun: Story = {
   args: { sources: [], hasRun: false },
 };

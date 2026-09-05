@@ -29,6 +29,12 @@ const meta: Meta<typeof HeroOmnibox> = {
 export default meta;
 type Story = StoryObj<typeof HeroOmnibox>;
 
+/**
+ * `state="idle"`: the empty field with modes, model select, cost and submit
+ * inside the card. `state` is a prop, driven from product state rather than
+ * derived from DOM focus, because two of its values are business states. Same
+ * slot arrangement inside the field as D1 `media-prompt-bar`.
+ */
 export const Idle: Story = {
   args: {
     state: "idle",
@@ -41,6 +47,11 @@ export const Idle: Story = {
   },
 };
 
+/**
+ * `state="focused"`: the attention treatment, set by the product. It is a prop
+ * value rather than a `:focus` style so it can coexist with `generating` and
+ * `locked` — the field can hold focus while a request is in flight.
+ */
 export const Focused: Story = {
   args: {
     ...Idle.args,
@@ -48,6 +59,11 @@ export const Focused: Story = {
   },
 };
 
+/**
+ * `state="generating"` with `onStop`: a request is in flight and the field
+ * offers "Stop generating" in place of submit. Without `onStop` there is nothing
+ * to cancel with, so the handler is what makes this state usable.
+ */
 export const Generating: Story = {
   args: {
     ...Idle.args,
@@ -56,6 +72,12 @@ export const Generating: Story = {
   },
 };
 
+/**
+ * `state="locked"` swaps the textarea for a paywall CTA in place — the composer
+ * is the gate, per the spec. `lockedTitle`, `lockedDescription` and
+ * `lockedCtaLabel` are the copy, `onUnlock` the action; models and cost are
+ * omitted because there is nothing to spend on.
+ */
 export const Locked: Story = {
   args: {
     state: "locked",

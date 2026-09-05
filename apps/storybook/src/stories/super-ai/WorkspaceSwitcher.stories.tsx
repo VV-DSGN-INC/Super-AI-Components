@@ -31,6 +31,12 @@ const meta: Meta<typeof WorkspaceSwitcher> = {
 export default meta;
 type Story = StoryObj<typeof WorkspaceSwitcher>;
 
+/**
+ * The first flavour: plain `{ id, name, plan }` entries render as a checked
+ * list of `menuitemradio` rows, the current workspace checked. The play opens
+ * the menu and reads `aria-checked` through the portal. With `onCreate` present
+ * the creation row sits last, below a rule, as the spec requires.
+ */
 export const WorkspaceList: Story = {
   args: {
     workspaces: WORKSPACE_LIST,
@@ -49,6 +55,13 @@ export const WorkspaceList: Story = {
   },
 };
 
+/**
+ * The second flavour, selected by data alone: once any entry carries a
+ * `description`, every row renders as an entity row (A9) with name and
+ * description instead of a bare label. Pick one shape for your data up front —
+ * the docs page says so because mixing the two in one list is the failure this
+ * story exists to make visible.
+ */
 export const MultiProduct: Story = {
   args: {
     workspaces: MULTI_PRODUCT,
@@ -58,6 +71,11 @@ export const MultiProduct: Story = {
   },
 };
 
+/**
+ * The trigger at rest, showing the current workspace and its plan badge — the
+ * spec calls that badge the cheapest upgrade prompt in the shell. No `onCreate`,
+ * so the menu has no creation row: the switcher is not required to offer it.
+ */
 export const WithPlanBadge: Story = {
   args: {
     workspaces: WORKSPACE_LIST,
