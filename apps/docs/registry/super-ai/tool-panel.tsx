@@ -188,7 +188,9 @@ function ToolPanelTile({ item, aspect }: { item: ToolPanelItem; aspect: PreviewT
       // Only a toggle tile gets aria-pressed; an insert tile is a plain
       // action and must not claim a persistent on/off state it doesn't have.
       {...(item.selected === undefined ? {} : { "aria-pressed": item.selected })}
-      className="focus-visible:ring-ring rounded-lg text-left focus-visible:ring-2 focus-visible:outline-none"
+      // `text-start`, not `text-left`: identical in LTR, and in RTL the tile's
+      // overlay label has to hang off the same edge the grid flows from.
+      className="focus-visible:ring-ring rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none"
     >
       {tile}
     </button>
@@ -308,9 +310,14 @@ function ToolPanel({
       <div data-slot="tool-panel-header" className="flex shrink-0 flex-col gap-2 border-b p-3">
         {searchable ? (
           <div data-slot="tool-panel-search" className="relative">
+            {/* `start-2.5` and `ps-8` below, not `left-2.5`/`pl-8`: the glyph and
+                the gutter it needs are one pair, and a pair that only half
+                mirrors puts the icon on top of the text in RTL. Identical
+                rendering in LTR; `promo-card` and `modality-rail` already use
+                the logical inset utilities. */}
             <Search
               aria-hidden
-              className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
+              className="text-muted-foreground pointer-events-none absolute top-1/2 start-2.5 size-4 -translate-y-1/2"
             />
             {/* No data-slot here: Input already sets its own, and passing one
                 would replace it. Reach for this by role instead. */}
@@ -321,7 +328,7 @@ function ToolPanel({
               value={searchValue}
               defaultValue={defaultSearchValue}
               onChange={(event) => onSearchChange?.(event.target.value)}
-              className="pl-8"
+              className="ps-8"
             />
           </div>
         ) : null}
