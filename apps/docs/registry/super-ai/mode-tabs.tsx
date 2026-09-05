@@ -94,7 +94,19 @@ function ModeTabs({
     return (
       <Tooltip key={mode.value}>
         <TooltipTrigger render={trigger} />
-        <TooltipContent side="bottom">{mode.label}</TooltipContent>
+        {/* The motion-reduce pair is restated on both data-attribute halves.
+            A bare `motion-reduce:animate-none` is inert on a Base UI popup:
+            `data-open:animate-in` compiles to a data-attribute selector that
+            wins the tie on source order, so the popup keeps animating and
+            `animation-name` reads back "enter". Measured on `shortcuts-sheet`
+            (see docs/design-system/story-conventions.md §3); the identical
+            pair already sits on the identical primitive in modality-rail.tsx. */}
+        <TooltipContent
+          side="bottom"
+          className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+        >
+          {mode.label}
+        </TooltipContent>
       </Tooltip>
     );
   });
