@@ -55,9 +55,9 @@ Three findings follow, and each one changed this design:
   those, then dumps full file contents. **This repo has 131 demo files and publishes
   none of them**, so the tool returns nothing for every query against this registry.
 - **Findability rests entirely on `description`.** Not on `categories`, not on
-  `docs`. The current descriptions name the shape (`"Keycap chip for keyboard
-shortcuts."`), which is what a _designer browsing a catalog_ needs and not what an
-  agent matching intent needs.
+  `docs`. The current descriptions name the shape, as A1's does in naming a keycap
+  chip, which is what a _designer browsing a catalog_ needs and not what an agent
+  matching intent needs.
 
 Nothing reconciles `description` against `catalog.md`: `gen-manifest.mts` is wired
 to no script and to no CI step, and the two already differ (`catalog.md` row A1 says
@@ -73,10 +73,16 @@ to no script and to no CI step, and the two already differ (`catalog.md` row A1 
    are covered: 116 super-ai demos and 15 marketing demos. `cost` and
    `use-view-mode` have no demo and get no example item.
 
-   **Targets and dependencies.** An example lands at
-   `components/super-ai/examples/<name>-demo.tsx` (marketing: `components/marketing/
-examples/<name>-demo.tsx`), a subfolder chosen so an example can never collide
-   with a component file. Its `registryDependencies` are reconciled from the demo's
+   **Targets and dependencies.** An example lands in an `examples/` subfolder
+   beside its tier's components:
+
+   | tier      | example target                                   |
+   | --------- | ------------------------------------------------ |
+   | super-ai  | `components/super-ai/examples/<name>-demo.tsx`   |
+   | marketing | `components/marketing/examples/<name>-demo.tsx`  |
+
+   The subfolder is chosen so an example can never collide with a component
+   file. Its `registryDependencies` are reconciled from the demo's
    _real_ imports, the same rule `CONTINUE.md` §3.5 already sets for components and
    `reconcile-deps.mts` already implements — never from an assumed list. That
    reconciliation must at minimum resolve the demo's own component, so that adding
