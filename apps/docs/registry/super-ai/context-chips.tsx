@@ -64,8 +64,12 @@ function ContextChip({
       data-kind={kind}
       data-state={unresolved ? "unresolved" : "resolved"}
       className={cn(
-        "border-border inline-flex max-w-full items-center gap-1 rounded-md border py-1 pl-2 text-xs",
-        onRemove ? "pr-1" : "pr-2",
+        // Logical inline padding, not `pl-`/`pr-`: the icon leads and the remove
+        // control trails, so under `dir="rtl"` the tight edge has to follow the
+        // X rather than stay on the right. Byte-identical in LTR — same swap
+        // `field-row` and `promo-card` already carry.
+        "border-border inline-flex max-w-full items-center gap-1 rounded-md border py-1 ps-2 text-xs",
+        onRemove ? "pe-1" : "pe-2",
         unresolved && "border-destructive/60 text-destructive border-dashed",
         className,
       )}
@@ -81,7 +85,7 @@ function ContextChip({
           data-slot="context-chip-remove"
           onClick={onRemove}
           className={cn(
-            "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring ml-0.5 shrink-0 rounded-sm p-0.5 transition-colors focus-visible:ring-2 focus-visible:outline-none",
+            "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring ms-0.5 shrink-0 rounded-sm p-0.5 transition-colors focus-visible:ring-2 focus-visible:outline-none",
             unresolved ? "text-destructive" : "text-foreground",
           )}
         >
