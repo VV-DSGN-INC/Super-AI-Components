@@ -149,7 +149,20 @@ function ContextToolbarButton({
             supplies it. */}
         <span className={action.showLabel ? undefined : "sr-only"}>{action.label}</span>
       </TooltipTrigger>
-      <TooltipContent side={side}>{action.label}</TooltipContent>
+      {/*
+       * The motion-reduce pair is restated on both data-attribute halves. A
+       * bare `motion-reduce:animate-none` is inert on a Base UI popup:
+       * `data-open:animate-in` compiles to a data-attribute selector of the
+       * same specificity that wins the tie on source order, so the popup keeps
+       * animating and `animation-name` reads back "enter". Measured on
+       * `shortcuts-sheet`; see docs/design-system/story-conventions.md §3.
+       */}
+      <TooltipContent
+        side={side}
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+      >
+        {action.label}
+      </TooltipContent>
     </Tooltip>
   );
 }
@@ -216,11 +229,19 @@ function ContextToolbar({
         {aiMenu ? (
           <Popover open={aiOpen} onOpenChange={onAiOpenChange}>
             <PopoverTrigger render={aiButton} />
+            {/*
+             * `aria-label` because Base UI renders the popup as
+             * `role="dialog"` and `aria-dialog-name` fails without one. The
+             * content is `aiMenu`, a caller slot, so the toolbar cannot rely
+             * on it carrying a title — the trigger's label is the only name
+             * this component can be sure of. Same repair as `modality-rail`.
+             */}
             <PopoverContent
               data-slot="context-toolbar-ai-menu"
               side={side}
               align="start"
-              className="w-auto min-w-64 p-1"
+              aria-label={aiLabel}
+              className="w-auto min-w-64 p-1 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
             >
               {aiMenu}
             </PopoverContent>
@@ -259,13 +280,18 @@ function ContextToolbar({
                 </ActionIcon>
                 <span className="sr-only">{overflowLabel}</span>
               </TooltipTrigger>
-              <TooltipContent side={side}>{overflowLabel}</TooltipContent>
+              <TooltipContent
+                side={side}
+                className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+              >
+                {overflowLabel}
+              </TooltipContent>
             </Tooltip>
             <DropdownMenuContent
               data-slot="context-toolbar-overflow-menu"
               side={side}
               align="end"
-              className="w-56"
+              className="w-56 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
             >
               {overflowActions.map((action) => (
                 <DropdownMenuItem
