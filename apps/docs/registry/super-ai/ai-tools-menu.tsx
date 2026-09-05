@@ -305,7 +305,18 @@ function AiToolsMenu({
           // announce the trigger's word. Clearing it lets the selection name
           // the menu, which is the point of the component.
           aria-labelledby={undefined}
-          className="w-80"
+          // The popup opens with `data-open:animate-in zoom-in-95` and closes
+          // with `data-closed:animate-out`, neither of which reads the media
+          // feature. The registry's usual bare `motion-reduce:animate-none` is
+          // inert against a Base UI popup — Tailwind emits the plain
+          // `motion-reduce:` block before the `data-*` variants and both
+          // compile to one class of specificity, so source order hands the win
+          // to `animation: enter`. Restating the variant on both halves sorts
+          // it after its counterpart instead. Measured on `shortcuts-sheet`;
+          // see story-conventions.md, "Four mechanical facts", and the
+          // `ReducedMotion` story, which reads `animation-name` back rather
+          // than trusting the class.
+          className="w-80 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
         >
           {selection ? <SelectionHeader selection={selection} /> : null}
           {ordered.map((group, index) => (
