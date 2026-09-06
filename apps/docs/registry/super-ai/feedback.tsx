@@ -183,7 +183,21 @@ function Feedback({
           </PopoverTrigger>
         </ButtonGroup>
 
-        <PopoverContent data-slot="feedback-reason" align="start" className="w-72">
+        {/*
+          The vendored `PopoverContent` animates through
+          `data-open:animate-in` / `data-closed:animate-out`, and a plain
+          `motion-reduce:animate-none` is inert against those: Tailwind v4
+          compiles both sides to a single class of specificity and emits the
+          plain `motion-reduce:` block first, so the data-attribute variant
+          wins the source-order tie. The pair has to be restated per surface —
+          measured here as `animationName: "enter"` before and `"none"` after.
+          See docs/design-system/story-conventions.md, mechanical fact 3.
+        */}
+        <PopoverContent
+          data-slot="feedback-reason"
+          align="start"
+          className="w-72 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+        >
           <PopoverHeader>
             <PopoverTitle>{reasonTitle}</PopoverTitle>
           </PopoverHeader>
