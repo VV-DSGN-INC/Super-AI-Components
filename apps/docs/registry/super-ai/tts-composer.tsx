@@ -287,7 +287,13 @@ function TtsComposerSegmentRow({
                     <SelectTrigger size="sm" aria-label={`Voice for ${label}`} className="w-full">
                       <SelectValue placeholder="Voice" />
                     </SelectTrigger>
-                    <SelectContent>
+                    {/* Named because Base UI renders this popup as `role="listbox"` and
+                        axe's `aria-input-field-name` fails an unnamed one — found on
+                        H1 `transport-controls`, whose story opened a select for the
+                        first time. Fixed here rather than left for a wave because
+                        family E has no case-story debt left to bring anyone back to
+                        this file. CONTINUE.md §8 lists the call sites still unnamed. */}
+                    <SelectContent aria-label={`Voice for ${label}`}>
                       {voiceOptions.map((option) => (
                         <SelectItem key={option} value={option}>
                           {option}
@@ -312,7 +318,7 @@ function TtsComposerSegmentRow({
                       <SelectTrigger size="sm" aria-label={`Emotion for ${label}`} className="w-full">
                         <SelectValue placeholder="Emotion" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent aria-label={`Emotion for ${label}`}>
                         {emotionOptions.map((option) => (
                           <SelectItem key={option} value={option}>
                             {option}

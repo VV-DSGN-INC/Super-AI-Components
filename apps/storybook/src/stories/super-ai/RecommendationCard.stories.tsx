@@ -318,11 +318,20 @@ export const KeyboardOrder: Story = {
      * whether the frame painted, and a walk that counts the miss steps over
      * the stop the redirect had just reached.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!dialogStops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the modal's stops: ${nameOf(active)}`);
+        }
+        // Settle on *departure*, not arrival: a key that has not applied yet
+        // leaves focus on the previous stop, which is itself a stop, so an
+        // arrival-only wait returns a stale read and the lap appears to end
+        // where it began. story-conventions.md, mechanical fact 4 — added
+        // after `ai-tools-menu` found it, and `account-menu` flaked on exactly
+        // this in a full-suite run before the same change was made there.
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved off ${nameOf(previous)} yet`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -331,13 +340,15 @@ export const KeyboardOrder: Story = {
     // A portal focuses its own first tabbable descendant on open, so the walk
     // is seeded from where focus actually landed rather than from stop zero.
     const start = await settledStop();
+    let previous = start;
     await expect(nameOf(start)).toBe(nameOf(dialogStops[0]));
     await assertVisiblyFocused(start);
 
     const seen = new Set<HTMLElement>([start]);
     for (let i = 1; i < dialogStops.length; i += 1) {
       await userEvent.tab();
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
+      previous = focused;
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
@@ -347,7 +358,7 @@ export const KeyboardOrder: Story = {
     // Trapped: the tab past the last stop closes the lap on the first one
     // rather than leaking to the inert row behind the modal.
     await userEvent.tab();
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    await expect(nameOf(await settledStop(previous))).toBe(nameOf(start));
 
     // Escape dismisses the modal and the trigger gets the ring back — the
     // half of "where focus returns" that this component gets right.

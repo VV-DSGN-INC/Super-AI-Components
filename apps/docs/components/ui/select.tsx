@@ -64,6 +64,8 @@ function SelectContent({
   align = "center",
   alignOffset = 0,
   alignItemWithTrigger = true,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   ...props
 }: SelectPrimitive.Popup.Props &
   Pick<
@@ -87,7 +89,19 @@ function SelectContent({
           {...props}
         >
           <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          {/* The name goes on the List, not the Popup. Base UI puts
+              `role="listbox"` here, so axe's `aria-input-field-name` reads this
+              element — and a caller spreading `aria-label` onto SelectContent
+              would otherwise land it on the Popup, where nothing reads it. The
+              trigger cannot supply the name either: it is labelled by an
+              `aria-label` attribute rather than an element, so there is no id
+              for Base UI to point `aria-labelledby` at. Local patch, recorded
+              in vendored-token-findings.md — every SelectContent in the
+              registry was an unnamed listbox until H1 `transport-controls`
+              opened one in a story. */}
+          <SelectPrimitive.List aria-label={ariaLabel} aria-labelledby={ariaLabelledBy}>
+            {children}
+          </SelectPrimitive.List>
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>

@@ -232,10 +232,22 @@ These decide the shape of the stories, and all five cost time to rediscover.
      had shipped, and independently on H7 `stem-mixer`; F5 `compare-viewer` is a
      third. All three components have handles that paint no ring at all.
 
+   - **A permanent shadow reading as a ring.** This is the limit of the whole
+     approach, found on H6 `waveform-editor`: an absolute check answers "does
+     this element paint a treatment", never "did focus cause it", so a span
+     carrying `shadow-sm` passes while focused and passes equally when it is
+     not. Three of that component's slider spans are in exactly that position.
+     Where you can focus an element directly, take
+     `focusTreatmentSignature(el)` before and after and assert it *changed* —
+     that is the claim worth making. `settledFocusRing` remains the right tool
+     inside a tab walk, where blurring to take a baseline would disturb the
+     sequence under test.
+
    Use `settledFocusRing` from `@/lib/focus-ring`, which inspects the layers for
    non-zero alpha *and* non-zero geometry, ignores an element that is not
    painted, and waits for the treatment to settle; `ThreadList.stories.tsx` is
-   the reference call site. It is additive: 63 story
+   the reference call site, and `WaveformEditor.stories.tsx` shows the
+   differential beside it. It is additive: 63 story
    files still carry the inline string check and were not rewritten, so a
    "shows a ring" claim in an older file is weaker than it reads.
 

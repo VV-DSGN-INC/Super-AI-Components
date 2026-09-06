@@ -203,6 +203,14 @@ export const DeleteConfirm: Story = {
     await expect(dialog).toHaveTextContent("Storyboard the 30-second cut");
     await expect(within(dialog).getByRole("button", { name: "Delete" })).toBeInTheDocument();
     await expect(within(dialog).getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+
+    // Wait for the menu to finish leaving. axe scans the document once the play
+    // returns, and a destructive row caught mid-fade-out measures its own
+    // partial opacity as a contrast failure — which is what happened in a
+    // full-suite run, against a story that passes three times in isolation.
+    // The assertion is also worth having on its own: choosing Delete must
+    // dismiss the menu rather than stack a dialog on top of it.
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull());
   },
 };
 

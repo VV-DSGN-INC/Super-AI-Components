@@ -348,7 +348,17 @@ function TransportControls({
               `data-open:` on source order. Inert in the default aligned mode,
               which zeroes the animation anyway; it covers the unaligned
               fallback, where `zoom-in-95` is real motion. */}
-          <SelectContent className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
+          {/* `aria-label` because Base UI renders the popup as `role="listbox"`
+              and axe's `aria-input-field-name` fails an unnamed one. The
+              trigger is named "Playback speed"; the list is what that trigger
+              opens, so it takes the same subject. Same repair as the unnamed
+              `PopoverContent`s CONTINUE.md §8 records — found here the same
+              way, by a story opening the popup for the first time, and only
+              intermittently, because axe has to run while it is open. */}
+          <SelectContent
+            aria-label="Playback speed"
+            className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+          >
             {speeds.map((option) => (
               <SelectItem key={option} value={String(option)}>
                 {option}×

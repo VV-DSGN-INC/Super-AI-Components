@@ -258,11 +258,20 @@ export const KeyboardOrder: Story = {
      * That is a 6-of-7 that no allowance fixes, because widening the budget
      * only buys more laps that skip the same stop.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!stops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the panel's controls: ${nameOf(active)}`);
+        }
+        // Settle on *departure*, not arrival: a key that has not applied yet
+        // leaves focus on the previous stop, which is itself a stop, so an
+        // arrival-only wait returns a stale read and the lap appears to end
+        // where it began. story-conventions.md, mechanical fact 4 — added
+        // after `ai-tools-menu` found it, and `account-menu` flaked on exactly
+        // this in a full-suite run before the same change was made there.
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved off ${nameOf(previous)} yet`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -282,12 +291,14 @@ export const KeyboardOrder: Story = {
     // The trap installs asynchronously — wait for it rather than tabbing from
     // wherever focus happens to be when the story mounts.
     const start = await settledStop();
+    let previous = start;
     await assertVisiblyFocused(start);
 
     const seen = new Set<HTMLElement>([start]);
     for (let i = 1; i < stops.length; i += 1) {
       await userEvent.tab();
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
+      previous = focused;
       // One control per tab, never a repeat — the walk cannot reach seven by
       // circling six.
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
@@ -304,7 +315,7 @@ export const KeyboardOrder: Story = {
     // first, so the panel cycles rather than leaking focus to the inert page
     // behind it.
     await userEvent.tab();
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    await expect(nameOf(await settledStop(previous))).toBe(nameOf(start));
     await expect(dialog.contains(document.activeElement)).toBe(true);
   },
 };

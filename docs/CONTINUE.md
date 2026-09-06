@@ -79,6 +79,13 @@ obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
 fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
 entry has what was fixed and what was found.
 
+**Wave 4 — family H — landed 2026-09-06.** Baseline **427 → 362** (328 case,
+34 described). Seven agents, seven items, all at zero unmet. It found more that
+the gates cannot see than any wave before it: four components whose slider
+handles paint no focus ring at all, a whole class of reduced-motion assertions
+that cannot fail, and two more holes in the focus-ring helper introduced during
+wave 3. §8's H subsection and §9's wave 4 entry have the detail.
+
 **Wave 3 — family F — landed 2026-09-06.** Baseline **490 → 427** (383 case,
 44 described). Seven agents, seven items, all at zero unmet. Its findings are
 in §8's F subsection and §9's wave 3 entry; the one with the widest reach is
@@ -90,8 +97,8 @@ now fixed with a shared helper.
 other seven were killed by a session rate limit *between finishing their work
 and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
 carries the salvage procedure, because it will happen again. Remaining, all
-case-block debt after wave 3: H 7 · J 7 · K 5 · L 4 · M 4 · N 8 · O 13 = 48
-items; recount with the test rather than trusting this line.
+case-block debt after wave 4: J 7 · K 5 · L 4 · M 4 · N 8 · O 13 = 41 items;
+recount with the test rather than trusting this line.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -1284,6 +1291,126 @@ that stayed open, plus what the wave learned about the primitives underneath.
   worktree can be masked by another worktree's cache. Verify a lint result in
   the integration tree, not in an agent's.
 
+### Added by the H case-story wave (2026-09-06)
+
+- **`components/ui/**` exists twice, and only one copy is what the gate
+  renders.** `apps/docs/components/ui` has 39 primitives; `apps/storybook/src/components/ui`
+  has 60. Storybook's Vite alias sends `@/components/ui/*` to its own copy, so a
+  registry component renders against the docs copy on the docs site and against
+  the storybook copy under the a11y gate. Today the overlap differs only
+  cosmetically — `"use client"` directives the Next app needs and Vite does not,
+  plus semicolon formatting — so nothing is broken, **but a substantive fix has
+  to be made in both and nothing checks that.** Found the hard way: the fix for
+  the unnamed select listbox went into the docs copy, the gate kept failing
+  intermittently, and the probe that explained it showed the listbox still
+  unlabelled. Both copies now carry it.
+
+
+- **Every `SelectContent` in the registry is an unnamed listbox.** Base UI
+  renders the popup as `role="listbox"`, and axe's `aria-input-field-name`
+  fails one with no accessible name. Found the way the popover equivalents were
+  — a story opened a select for the first time — and it surfaced
+  *intermittently*, because axe has to run while the popup is open. Named at
+  four call sites: H1 `transport-controls` (the one that found it), plus C1
+  `hero-omnibox` and E9 `tts-composer`'s two, whose families have no case-story
+  debt left to bring anyone back. **Still unnamed, and belonging to their own
+  waves: `records-shell`, `template-detail`, `trust-dialog`,
+  `usage-dashboard`.** The name comes from the trigger, which already has one.
+
+
+- **Four components have slider handles that paint no focus ring, and four docs
+  pages said otherwise.** Base UI renders a real `<input>` inside each thumb and
+  clips it away with `position: fixed; clip-path: inset(50%)`. Focus lands on
+  that input; the `focus-visible:ring-3` sits on the thumb wrapper, which
+  therefore never matches `:focus-visible`. F5 `compare-viewer`'s wipe handle,
+  H2 `time-ruler`'s three handles, H7 `stem-mixer`'s two faders — half of every
+  mixer lane — and H6 `waveform-editor`'s four thumbs, which is four of its
+  twelve tab stops. The prose in `time-ruler`, `stem-mixer` and
+  `waveform-editor`'s docs modules promised that ring and has been corrected to
+  say what is there. **The repair is one decision across all four**, and the
+  in-repo idiom exists: `input-group.tsx` rings a wrapper with
+  `has-[…:focus-visible]`. Not swept, because choosing which element carries the
+  ring is a design call.
+
+- **A whole class of reduced-motion assertions cannot fail.**
+  `components/ui/select.tsx` defaults `alignItemWithTrigger` to `true` and the
+  content carries `data-[align-trigger=true]:animate-none`, so a default
+  `SelectContent` computes `animationName: "none"` with or without any
+  suppression. H1's agent wrote that assertion, watched it pass before applying
+  any fix, and rewrote it. Eight registry components mount a `SelectContent`;
+  H1 `transport-controls` is the only one carrying the restated pair, and the
+  other seven are in the same position. Two stories already merged assert it:
+  E2 `model-picker`'s comment already said it was a regression guard on the
+  primitive's branch, which is honest; E9 `tts-composer`'s claimed it measured
+  the frame a bare class fails to reach, and was corrected.
+
+- **The focus-ring helper introduced in wave 3 had two more holes, both found
+  after it shipped.** It reported a ring on the clipped `<input>` above, because
+  a clipped element still carries the user agent's `outline: auto 1px` — fixed
+  with an `isPainted` guard. And more fundamentally, **an absolute check answers
+  "does this element paint a treatment", never "did focus cause it"**, so a span
+  with a permanent `shadow-sm` passes whether focused or not; H6 found three
+  slider spans in exactly that position. `focusTreatmentSignature` now exists
+  for the differential, which is the stronger claim wherever an element can be
+  focused directly. H2's agent hit the first hole, correctly declined to use the
+  helper rather than manufacture green, and said so — which is how it was found.
+
+- **Direction-blind arrow keys, now measured on a hand-rolled handler too.**
+  Wave 1 recorded that Base UI composites never learn about right-to-left
+  because no `DirectionProvider` is mounted. H4 `transcript-editor` has the same
+  defect from a different cause: its own `handleKeyDown` maps ArrowRight to
+  `index + 1` with no reference to `dir`, so focus moves to the token painted
+  left. H2 and H7 measured the Base UI half again, and H7 added a consequence
+  worth naming — Base UI takes a thumb's centring `translate` sign from
+  `useDirection()`, so under RTL every thumb is offset by half its own width.
+
+- **A Latin transcript renders backwards under right-to-left.** H4's tokens are
+  flex items, so bidi never runs across the sentence and the flex main axis
+  alone orders the words. Correct for an Arabic or Hebrew transcript, wrong for
+  an English one in an RTL shell, and there is no API separating the chrome's
+  direction from the transcript's language. Its word gaps are also `gap-x-1`
+  rather than whitespace, so `textContent` reads `"Sothesecondpass"` and a
+  copy out of the transcript runs the words together.
+
+- **`landmark-unique`, a rule no story had tripped before.** H5 `frame-strip`'s
+  root is `role="region"` named from `kind` alone, so two strips of the same
+  kind on one page are two identically named landmarks — it failed two stories
+  outright until each strip got its own `aria-label`. The escape hatch works;
+  nothing in the component or its docs says a caller must use it.
+
+- **Two more empty-string collapses, and one that fails the gate.** H4's word
+  token with `text: ""` renders `role="option"` with no name and an 8×0 box —
+  `aria-toggle-field-name`, a red gate, so the story documents it rather than
+  rendering it. H4's speaker fallback is nullish (`?? "Unknown speaker"`), so
+  `""` survives and the listbox is named `"Transcript, "`; the same fallback is
+  seeded into the editable field, so renaming on the first keystroke stores the
+  placeholder. H7's `label=""` renders `aria-label=""` rather than falling back
+  to its default.
+
+- **The don't-swap rule now has four negatives to two positives.** A physical
+  class is safe to swap only when every participant in the layout is a class.
+  H3 `track-lane`'s trim handles pair `left-0`/`right-0` with clip geometry, so
+  a swap puts "Trim start" on the later edge; H2 `time-ruler`'s tick label and
+  scrub bubble each pair a class with an inline `left` that has no logical form;
+  H5 `frame-strip`'s arrows pair with Embla's LTR axis in JavaScript. Against
+  those, the F1/A8 corner pair and H3's own gutter border were swapped and
+  pinned. H3's is the pattern to copy: it added an RTL assertion on
+  `borderLeftWidth`/`borderRightWidth` so the swap cannot silently regress.
+
+- **Two more spec-and-docs corrections that only writing a story would find.**
+  H2's docs claimed Home and End on the range handles stop one step short of
+  each other; `minStepsBetweenValues` is 0, so they clamp to equality and one
+  keypress produces a zero-length range with no keyboard route back. And both
+  H6 `waveform-editor`'s file header and its docs module opened by saying the
+  component has no `component-specs.md` entry — it has had one since
+  2026-08-04, written shortly before the wave that built it. Both corrected.
+
+- **H1's `aria-keyshortcuts="Space"` never fires, and the unit suite hid it.**
+  `transport-controls.test.tsx` dispatches synthetic keydowns at the root
+  `<div>`, which has no `tabIndex` and can never be the event target in a
+  browser; every element that *can* hold focus takes an early return. The docs
+  module already carried the sentence — this is the measurement behind it.
+
 ## 9. Gaps found by the case-story pilot
 
 Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were
@@ -1752,3 +1879,106 @@ records the conditions actually tested rather than declaring the reports wrong:
 two agents saw something on their own machines that a third measurement could
 not reproduce, and if it resurfaces the thing to capture is the injected
 `<style>` element itself alongside the failing story that preceded it.
+
+### Wave 4 — family H (2026-09-06)
+
+Seven agents, seven items, all at zero unmet. Six wrote all eight case stories
+with no skips; the seventh skipped only `ReducedMotion`, and wrote its reason as
+a grep it had run rather than an argument — which is the shape the convention
+started asking for after wave 3's false skip.
+
+**This wave found more that no gate can see than any before it**, and the reason
+is worth naming: family H is timelines, faders and waveforms, so almost
+everything it does is a direct-manipulation surface with a keyboard story
+underneath. Four components turned out to have handles that paint no focus ring
+at all, and four docs pages promised one — see §8. Nothing in the registry could
+have caught that, because the ring is present in the source; it is simply on the
+element that never receives focus.
+
+**The wave audited the tooling this program itself introduced.** Wave 3 shipped
+`focus-ring.ts` after four agents independently found the old ring predicate
+could not fail. Wave 4 found two more holes in it, one of them fundamental:
+
+- H2 `time-ruler` measured a false positive on the clipped `<input>` Base UI
+  focuses, which still carries the user agent's outline. Its agent noticed,
+  **declined to use the helper rather than manufacture the green it exists to
+  prevent**, and explained the absence in the story. Fixed with an `isPainted`
+  guard the same day; H7 `stem-mixer` reported the identical shape independently
+  while the fix was being written.
+- H6 `waveform-editor` went further and named the limit of the approach: an
+  absolute check asks whether an element paints a treatment, never whether focus
+  caused it, so a span carrying a permanent `shadow-sm` passes either way. Three
+  of its slider spans are exactly that. `focusTreatmentSignature` now exists for
+  the before/after differential, and `story-conventions.md` fact 5 says which
+  tool to reach for: the differential where an element can be focused directly,
+  `settledFocusRing` inside a tab walk where blurring to take a baseline would
+  disturb the sequence under test.
+
+The general lesson is the same one wave 2 recorded about unverified stories,
+pointed at the harness instead of the components: **a checker written to catch a
+class of defect is itself in that class until something measures it.** Three
+waves used the old predicate before anyone read what it computed, and one wave
+used the replacement before anyone found what it still missed.
+
+**One claim was true and one was not, and the difference was checkability.**
+H1's report said a whole class of reduced-motion assertions cannot fail because
+`select.tsx` kills the popup animation by default — it named the file, the prop
+and the class, all three checked out, and two already-merged stories were
+audited against it. H5's report refined F6's transition claim into a specific
+condition (the suppressor appears only after an earlier story in the same file
+has failed); that condition was tested directly and did not reproduce, and §9's
+wave 3 entry now records what was tested rather than declaring the reports
+wrong. Both reports were written with the same confidence. Only one named
+something a reader could go and read.
+
+**The gate failed twice during integration, and both failures were real.** Worth
+writing down, because the reflex on an intermittent gate is to re-run it.
+
+The first run failed on B8 `account-menu`'s `KeyboardOrder`, a file this wave
+did not touch: the closing wrap read `stop#4 Sign out` where it expected
+`stop#0 Settings`. That is the settle-on-*arrival* hole exactly — wave 1 found
+it on `ai-tools-menu`, wave 3 wrote it into mechanical fact 4, and this file
+predates both. A key that has not applied yet leaves focus on the previous row,
+which is itself a row, so an arrival-only wait returns a stale read and the lap
+looks like it never wrapped. Hardened to settle on departure, and the three
+other files still on the arrival form went with it: `recommendation-card`,
+`shortcuts-sheet` and `task-tray` — wave 1 had already recorded the last two as
+holding the hole. Four files, 48 tests, green twice.
+
+The second run failed somewhere else entirely: axe's `aria-input-field-name` on
+a Base UI listbox, from H1 `transport-controls`' `ReducedMotion` story opening
+the speed select. **Every `SelectContent` in the registry was unnamed**, and the
+failure is intermittent only because axe has to run while the popup is open —
+which is why eight call sites shipped that way. §8 has the four now named and
+the four left to their waves.
+
+So neither failure was flakiness in the ordinary sense. One was a test that
+could not reliably observe what it asserted, the other a defect that could only
+be seen in a window a story had just learned to open. Both were found because a
+full run with a cleared cache was run twice rather than once.
+
+**A postscript on those two gate failures: there were four, and the last one
+took three attempts to fix.** Worth the space, because every wrong turn was
+plausible.
+
+The unnamed select listbox was fixed three times before it was fixed. The first
+attempt put `aria-label` on `<SelectContent>` — the wrapper spreads its props
+onto Base UI's `Popup`, and `role="listbox"` is on the `List` inside it, so the
+attribute landed one element away from the thing axe reads. A probe that dumped
+every `[role="listbox"]` and its name is what showed that; the story had been
+passing four runs in five, so nothing else would have.
+
+The second attempt forwarded the name to the `List` in
+`apps/docs/components/ui/select.tsx`, and the gate kept failing. **The storybook
+workspace has its own copy of every vendored primitive**, and its Vite alias
+sends `@/components/ui/*` there, so the gate had never seen the fix. That is
+now §8's own entry: 39 primitives in one copy, 60 in the other, identical today
+apart from `"use client"` and formatting, synced by hand, and unchecked. The
+third attempt patched both and the probe read the name back.
+
+The lesson is not about selects. **Four runs in five is what a defect looks like
+when the thing that reveals it is a race**, and a story that passes is not
+evidence the thing it asserts is true — the same sentence wave 2 wrote about
+stories nobody had run, reached from the other direction. Both full-suite runs
+after the real fix were green, and so were the two before it, which is exactly
+why the fix had to be confirmed with a probe rather than a passing run.

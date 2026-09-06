@@ -120,9 +120,40 @@ export function hasVisibleFocusRing(el: Element): boolean {
 }
 
 /**
- * The form to use in a play function. Waits for the treatment to settle,
- * because the vendored `Button` fades its ring in and an immediate read is a
- * false negative.
+ * A comparable snapshot of everything that could read as a focus treatment.
+ *
+ * `hasVisibleFocusRing` answers "does this element paint a treatment", never
+ * "did focus cause it" — so an element with a permanent `shadow-sm` passes
+ * while focused and passes just as well when it is not. H6 `waveform-editor`
+ * found three slider spans in exactly that position, each carrying `shadow-sm`
+ * and a `focus-visible:ring-3` that never fires because Base UI focuses a
+ * clipped `<input>` inside them instead.
+ *
+ * Take a signature before focusing and again after; if they are equal, focus
+ * changed nothing and there is no ring however solid the shadow looks:
+ *
+ *     const before = focusTreatmentSignature(el);
+ *     el.focus();
+ *     await waitFor(() => expect(focusTreatmentSignature(el)).not.toBe(before));
+ *
+ * The differential is the stronger claim and the one to prefer where an
+ * element can be focused directly. `settledFocusRing` stays useful for a tab
+ * walk, where blurring to take a baseline would disturb the sequence under
+ * test.
+ */
+export function focusTreatmentSignature(el: Element): string {
+  const style = getComputedStyle(el);
+  return `${style.outlineStyle}/${style.outlineWidth}/${style.outlineColor}|${style.boxShadow}|${style.borderColor}`;
+}
+
+/**
+ * The form to use in a play function during a tab walk. Waits for the treatment
+ * to settle, because the vendored `Button` fades its ring in and an immediate
+ * read is a false negative.
+ *
+ * Read its limit before relying on it: it is an absolute check, so it cannot
+ * tell a focus ring from a permanent shadow on the same element. Where you can
+ * focus an element directly, `focusTreatmentSignature` proves more.
  *
  * Pass `waitFor` from `storybook/test` rather than importing it here, so this
  * module stays free of test-runner imports:

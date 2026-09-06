@@ -356,11 +356,20 @@ export const KeyboardOrder: Story = {
      * the redirect had just landed on. That stop is the one focus started on,
      * so it is the one a budgeted walk can silently never count.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!stops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the sheet's stops: ${nameOf(active)}`);
+        }
+        // Settle on *departure*, not arrival: a key that has not applied yet
+        // leaves focus on the previous stop, which is itself a stop, so an
+        // arrival-only wait returns a stale read and the lap appears to end
+        // where it began. story-conventions.md, mechanical fact 4 — added
+        // after `ai-tools-menu` found it, and `account-menu` flaked on exactly
+        // this in a full-suite run before the same change was made there.
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved off ${nameOf(previous)} yet`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -380,6 +389,7 @@ export const KeyboardOrder: Story = {
     // The trap installs asynchronously — wait for it rather than tabbing from
     // wherever focus happens to be at mount.
     const start = await settledStop();
+    let previous = start;
     await assertVisiblyFocused(start);
 
     // Exactly one lap: every settled tab moves by one stop, so `stops.length`
@@ -387,7 +397,8 @@ export const KeyboardOrder: Story = {
     const seen = new Set<HTMLElement>([start]);
     for (let i = 1; i < stops.length; i += 1) {
       await userEvent.tab();
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
+      previous = focused;
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
         `${nameOf(focused)} repeat=false`,
       );
@@ -399,7 +410,7 @@ export const KeyboardOrder: Story = {
     // Trapped: the tab past the last stop closes the lap on the first one
     // rather than leaking to the inert page behind the sheet.
     await userEvent.tab();
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    await expect(nameOf(await settledStop(previous))).toBe(nameOf(start));
     await expect(sheet.contains(document.activeElement)).toBe(true);
 
     // Escape dismisses, and the trigger gets the ring back.

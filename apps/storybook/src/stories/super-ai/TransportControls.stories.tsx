@@ -239,7 +239,11 @@ export const ReducedMotion: Story = {
       if (!found) throw new Error("speed popup never opened");
     });
     const surface = found as unknown as HTMLElement;
-    await expect(surface).toHaveAttribute("data-open");
+    // Settled, not read once: the popup is in the document a frame before Base
+    // UI marks it open, and under a full-suite run — 131 story files sharing
+    // one browser — that frame is wide enough to lose. Failed exactly here in
+    // a parallel run while passing three times in isolation.
+    await waitFor(() => expect(surface).toHaveAttribute("data-open"));
 
     // Why the popup is still: aligned mode, not reduced motion. Pinning the
     // mechanism keeps the next reader from mistaking this green for evidence

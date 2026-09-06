@@ -7,10 +7,14 @@ import {
 } from "./waveform-editor.examples";
 
 /**
- * H6 has no entry in component-specs.md. It is a D12 restoration, and this
- * guidance is derived from catalog.md row H6, gaps.md R3 and decisions.md D12
- * instead. `evidence` is deliberately empty rather than invented — the same
- * precedent E9 `tts-composer` and E10 `voice-clone-recorder` set.
+ * H6 does have a `component-specs.md` entry (`#h6-waveform-editor`), written on
+ * 2026-08-04; this note said otherwise until 2026-09-06, when the H wave's
+ * agent checked. The guidance below was derived from catalog.md row H6,
+ * gaps.md R3 and decisions.md D12, which is why it reads as it does, and it
+ * agrees with the entry. `evidence` is deliberately empty rather than invented,
+ * following the precedent set for E9 `tts-composer` and E10
+ * `voice-clone-recorder` — and note those two genuinely have no entry, which is
+ * recorded in CONTINUE.md §5.
  *
  * No "use client" here: this module is plain data read by a Server Component
  * (component-docs.tsx), which destructures `docs.whatItIs`, `docs.evidence`,
@@ -131,7 +135,7 @@ export const WaveformEditorDocs: ComponentDocs = {
     focus: [
       "Clearing the selection unmounts both band thumbs, both boundary fields and Zoom to region at once, so focus falls to `<body>` and the next Tab restarts from the top of the page. That includes the case where a destructive region action is what cleared it — the button that was just pressed is one of the things that disappears.",
       "Zooming never moves focus. A boundary that scrolls out of the window keeps its thumb, parked at the window edge, so a focused thumb is not lost — but it stops tracking the value it reports until you zoom back out.",
-      "All four thumbs draw `focus-visible:ring-3`, and `UnitInput` rings its whole wrapper on `focus-within`. The zoom, Fit and region-action buttons inherit the shared `Button` ring, so every control here is visible on focus without help from you.",
+      "The four thumbs carry `focus-visible:ring-3` and it never fires: Base UI focuses an `input` clipped to nothing inside each thumb, so the wrapping span never matches `:focus-visible`, and what a keyboard user sees is the span's permanent `shadow-sm` rather than a ring. Four of this component's twelve tab stops are therefore invisible. `UnitInput` does ring its whole wrapper on `focus-within`, and the zoom, Fit and region-action buttons inherit the shared `Button` ring, so the rest of the component is fine. Recorded in CONTINUE.md §8 — F5 `compare-viewer`, H2 `time-ruler` and H7 `stem-mixer` have the identical shape, and the repair is one decision across all four.",
     ],
   },
   pitfalls: [
