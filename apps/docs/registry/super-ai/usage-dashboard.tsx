@@ -230,7 +230,29 @@ function UsageDashboardPeriodSelect({
             trust-dialog.tsx for the same fix. */}
         <SelectValue placeholder={label}>{current?.label ?? label}</SelectValue>
       </SelectTrigger>
-      <SelectContent data-slot="usage-dashboard-period-content">
+      {/* `aria-label` because Base UI renders the popup's list as
+          `role="listbox"` and axe's `aria-input-field-name` fails an unnamed
+          one — measured here as `role=listbox label=null` the first time a
+          story opened it. `SelectContent` forwards the attribute to
+          `SelectPrimitive.List`, the element that carries the role; the
+          trigger cannot supply the name because it is labelled by an
+          attribute rather than an element. Same repair as H1
+          `transport-controls`, C1 `hero-omnibox`, E9 `tts-composer` and J6
+          `template-detail`. The subject is the trigger's, without the current
+          value appended: "Period", not "Period: Last 7 days".
+
+          The `motion-reduce:` pair is restated on both halves because
+          Tailwind compiles `motion-reduce:animate-none` and `data-open:` to
+          one specificity and breaks the tie on source order — see
+          story-conventions.md fact 3. It covers Base UI's unaligned fallback
+          only; in the default aligned mode the primitive's own
+          `data-[align-trigger=true]:animate-none` already stops the
+          animation, so nothing in the gate can demonstrate this class. */}
+      <SelectContent
+        data-slot="usage-dashboard-period-content"
+        aria-label={label}
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+      >
         {periods.map((p) => (
           <SelectItem key={p.id} value={p.id} data-slot="usage-dashboard-period-item">
             {p.label}
@@ -304,17 +326,39 @@ function UsageDashboardModelBreakdown({
                   Spend, tokens, and latency by model for the selected period
                 </caption>
                 <thead>
-                  <tr className="text-muted-foreground border-b text-left">
-                    <th scope="col" className="py-1.5 pr-3 font-medium">
+                  {/* `text-start` / `pe-3`, not `text-left` / `pr-3`: both
+                      compile to the same declaration in LTR, and physical
+                      classes here put every heading against the opposite
+                      edge from its own data under `dir="rtl"` — the cells
+                      below carry no alignment class, so they already inherit
+                      the document's start edge. Measured in `RTL`, which
+                      pins the pairing so the swap cannot silently regress
+                      (H3 `track-lane`'s pattern). The gutter follows: under
+                      RTL `pr-3` lands between a column's text and the
+                      column before it rather than after it.
+
+                      The alignment sits on each `th`, not on the `tr` where
+                      the physical class used to live, and that is not
+                      cosmetic. Chrome's UA sheet gives `th`
+                      `text-align: -internal-center`, which defers to an
+                      inherited value only when that value is *not* the
+                      initial `start` — so an inherited `text-left` reaches
+                      these headings and an inherited `text-start` does not,
+                      and moving the class across without moving it down
+                      centres all four in LTR. Caught by `RTL`'s assertion
+                      before it shipped; a declaration on the element itself
+                      beats the UA rule in both directions. */}
+                  <tr className="text-muted-foreground border-b">
+                    <th scope="col" className="py-1.5 pe-3 text-start font-medium">
                       Model
                     </th>
-                    <th scope="col" className="py-1.5 pr-3 font-medium">
+                    <th scope="col" className="py-1.5 pe-3 text-start font-medium">
                       Spend
                     </th>
-                    <th scope="col" className="py-1.5 pr-3 font-medium">
+                    <th scope="col" className="py-1.5 pe-3 text-start font-medium">
                       Tokens
                     </th>
-                    <th scope="col" className="py-1.5 font-medium">
+                    <th scope="col" className="py-1.5 text-start font-medium">
                       Latency
                     </th>
                   </tr>
@@ -327,13 +371,13 @@ function UsageDashboardModelBreakdown({
                       data-model-id={m.id}
                       className="border-b last:border-b-0"
                     >
-                      <th scope="row" className="text-foreground py-1.5 pr-3 text-left font-medium">
+                      <th scope="row" className="text-foreground py-1.5 pe-3 text-start font-medium">
                         {m.name}
                       </th>
-                      <td className="py-1.5 pr-3">
+                      <td className="py-1.5 pe-3">
                         <CostChip amount={m.spend.toLocaleString()} unit={spendUnit} />
                       </td>
-                      <td className="py-1.5 pr-3 tabular-nums">{m.tokens.toLocaleString()}</td>
+                      <td className="py-1.5 pe-3 tabular-nums">{m.tokens.toLocaleString()}</td>
                       <td className="py-1.5 tabular-nums">{formatLatencyMs(m.latencyMs)}</td>
                     </tr>
                   ))}
