@@ -79,13 +79,19 @@ obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
 fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
 entry has what was fixed and what was found.
 
+**Wave 3 — family F — landed 2026-09-06.** Baseline **490 → 427** (383 case,
+44 described). Seven agents, seven items, all at zero unmet. Its findings are
+in §8's F subsection and §9's wave 3 entry; the one with the widest reach is
+that the focus-ring assertion the convention asks for could not fail, which is
+now fixed with a shared helper.
+
 **Wave 2 — families E and P — landed the same day.** Baseline **625 → 490**
 (439 case, 51 described). Four of the eleven agents reported normally; the
 other seven were killed by a session rate limit *between finishing their work
 and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
 carries the salvage procedure, because it will happen again. Remaining, all
-case-block debt: F 7 · H 7 · J 7 · K 5 · L 4 · M 4 · N 8 · O 13 = 55 items;
-recount with the test rather than trusting this line.
+case-block debt after wave 3: H 7 · J 7 · K 5 · L 4 · M 4 · N 8 · O 13 = 48
+items; recount with the test rather than trusting this line.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -1173,6 +1179,100 @@ that stayed open, plus what the wave learned about the primitives underneath.
   and alpha, "every stop shows a ring" means "every stop has *something* in
   those two properties".
 
+### Added by the F case-story wave (2026-09-06)
+
+- **The focus-ring assertion could not fail, and that is now fixed.** Four
+  agents across three waves reached the same finding independently, and between
+  them they measured the whole mechanism. A Tailwind `ring-*` utility composes
+  shadow layers that are *always present*, reading
+  `rgba(0, 0, 0, 0) 0px 0px 0px 0px` when the ring is off — not the string
+  `"none"`, so `boxShadow !== "none"` passes on an element painting nothing.
+  `focus-visible:outline-none` leaves `outline-width` at its used value while
+  `outline-style` reads `none`, so a width-based check has the same hole. And
+  the vendored `Button`'s `transition-all` *fades the ring in*, so an immediate
+  read on a control that does paint one is a false negative — the same element
+  reads transparent and zero-sized on the frame focus lands and
+  `oklab(0.708 0 0 / 0.5) 0px 0px 0px 3px` at 250ms. F5's agent put it best:
+  this is the default reading for every shadcn-v4 control in the registry, not
+  a quirk of two components. `apps/storybook/src/lib/focus-ring.ts` now checks
+  the layers for non-zero alpha *and* non-zero geometry and waits for them to
+  settle; `story-conventions.md`'s mechanical fact 5 has the details.
+  **Additive: 63 story files still carry the inline string check**, so a
+  "shows a ring" claim in an older file is weaker than it reads.
+
+- **A third vendored primitive does not mirror.** `components/ui/toggle-group.tsx`
+  joins its children physically, exactly as `switch.tsx` and `button-group.tsx`
+  do: measured under `dir="rtl"` with `spacing={0}`, the leftmost item loses its
+  border (`border-left-width: 0` on the group's outer edge), 1px stacks against
+  1px at the seam, and both 10px radii land on inner corners. It is gated on
+  `data-spacing=0`, so today it reaches F5 `compare-viewer` and J1
+  `asset-library` only — the registry's four other toggle groups keep the
+  default gap and are unaffected.
+
+- **A physical class is not always safe to swap, and F5 is the counter-example
+  worth keeping.** The sanctioned swap assumes the class is the only thing
+  deciding a side. In `compare-viewer` the pane numbers are `top-2 left-2` /
+  `right-2` *and* the wipe clip is `clipPath: inset(0 0 0 N%)`, which is
+  physical and has no logical form. The badges pair with the content today
+  because both halves are physical, so swapping only the classes would put each
+  number over the other pane's picture — a class-only swap makes RTL worse. The
+  same shape, resolved the other way, is F1/A8's corner pair: there both halves
+  *were* classes, so the integrator swapped them together (a half-swap would
+  have stacked the badge on the checkbox). The rule the two cases give: swap
+  when every participant in the layout is a class, and check what else decides
+  the side before you do.
+
+- **The wipe handle detaches from its seam under RTL.** Base UI positions the
+  thumb with `inset-inline-start`, which mirrors; the clip is physical, which
+  does not. Measured at `wipePosition={25}` in a 640px frame: the seam sits at
+  160px and the handle at 465px, and ArrowRight moves them further apart. The
+  fix is a direction-aware value in JS rather than a class.
+
+- **Three more controls have no accessible name or no visible focus.** F5's
+  resize divider renders `role="separator"` with `aria-valuemin/max/now` and no
+  `aria-label`, so with three panes two stops both announce as "separator, N%",
+  and no axe rule covers it. F5's wipe handle puts `focus-visible:ring-3` on the
+  thumb while focus actually lands on Base UI's clipped `<input type="range">`
+  inside it, so the ring is on an element that is never focused — the docs' own
+  focus bullet claims that ring exists. And F1 `result-card` does not forward
+  A8's `frameLabel`, so an unlabelled interactive card is a `button-name`
+  violation with no escape hatch.
+
+- **`components/ui/table.tsx`'s scroll container is the third
+  `scrollable-region-focusable`.** After L5 `shortcuts-sheet` (wave 0) and P1
+  `data-views`' kanban board (wave 2), F6 `render-queue` found the same shape one
+  level down: a bare `div` with `overflow-x-auto`, no `tabIndex`, no role, no
+  name. A read-only queue rendered at 375px with no handlers fails axe outright,
+  because nothing inside it is focusable. Shared by every table in the registry.
+
+- **`asset-detail`'s `onRemix` declares a field it never sends.** The type is
+  `{ prompt?: string; span?: string }` and the button fires
+  `onRemix({ prompt })` unconditionally, so the spec's "selecting a phrase feeds
+  Remix" holds only if the host stitches `onSpanSelect`'s text to it. The docs
+  page said the click "hands that exact text to Remix"; both that sentence and
+  the prop's own comment were corrected, and populating the field stays an API
+  decision.
+
+- **Two more geometry guarantees are conditional.** F1 `result-card`'s spec
+  promises identical card geometry in every state so grids never reflow; the
+  media half holds and is asserted, but the footer's `min-h-9` is a floor, so a
+  full provenance line makes one card 309px against a neighbour's 304px. And
+  F2 `generation-grid`'s bulk bar overflows at 375px — 432px of content in a
+  373px box — so the grid's own chrome is what scrolls sideways.
+
+- **Every per-cell checkbox in a generation grid has the same accessible name.**
+  `result-card.tsx` labels from a fixed `sr-only` "Select this result", so a
+  four-result grid offers four identical names and a compact row offers eight.
+  F1 already receives the prompt as `label`. Third instance of the per-row
+  naming contract, after `property-inspector`'s resets and `context-chips`'
+  empty label.
+
+- **The turbo cache is shared across worktrees, confirmed.** Wave 1 filed it as
+  unconfirmed; three F agents saw it. A cached `docs:lint` replay prints paths
+  under a *sibling* worktree, which means a docs lint error in an agent's
+  worktree can be masked by another worktree's cache. Verify a lint result in
+  the integration tree, not in an agent's.
+
 ## 9. Gaps found by the case-story pilot
 
 Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were
@@ -1570,3 +1670,61 @@ story, so `canvasElement.firstElementChild` is the ~1200px centring div rather
 than the story's own frame — a `Mobile` overflow assertion against it measures
 the wrapper and passes for the wrong reason. Give the frame a `data-testid`.
 Found on E7 `member-gate-row`; it will bite the next `Mobile` author.
+
+### Wave 3 — family F (2026-09-06)
+
+Seven agents, seven items, all at zero unmet, and no rate-limit casualties —
+the batch was deliberately smaller than the eleven that hit the session wall in
+wave 2. Six of the seven wrote all eight case stories with no skips at all,
+which is worth noting against the D/I wave's eleven `case-skip` lines: family F
+is result surfaces, and a result surface genuinely meets every one of the eight
+situations.
+
+**Fixed in-wave:** reduced-motion branches on F3 `asset-detail`'s dialog (the
+fifth popup family off §8's list), F6 `render-queue`'s streaming spinner, F7
+`approval-card`'s chevron *and* its Confirm spinner, and F4 `action-stack`'s
+menu popup. F4's measurement is the one that generalises: suppressing the popup
+animation changed `animation-name` from `enter` to `none` **and** the popup's
+width from 304px to 320px, because `data-open:animate-in` composes `zoom-in-95`
+— the popup was arriving at 95% and growing, so this is real motion rather than
+a fade. That agent also stated the rule the whole program had been circling:
+the animation classes live on the vendored primitive, but the suppression has
+to be restated per call site, **so fixing one consumer fixes none of the
+others.**
+
+**Which is how a false skip surfaced.** Acting on that rule, the integrator
+swept the registry for `DropdownMenuContent` call sites without the pair and
+found four. Three belong to families J and K and were left to their waves. The
+fourth was B6 `thread-list`, whose `ReducedMotion` skip read "nothing this
+component owns animates", on the grounds that the motion belonged to the
+vendored popups and was therefore upstream — a reasonable position when it was
+written and wrong under the per-call-site rule, since the component renders both
+a dropdown menu and a delete confirmation and both animated. **Family B had no
+case-story debt at adoption, so no later wave was going to reopen that file.**
+Both surfaces now carry the pair and the skip is a real story that reads
+`animationName` back on each. A skip is the one part of this convention with no
+gate behind it: `story-coverage` checks that a reason exists, never that it is
+true.
+
+**Two integrator fixes an agent correctly declined to make.** F1's agent found
+that A8 `preview-tile` owns the badge at `right-2` while F1 `result-card` owns
+the select checkbox and hover actions at `left-2`, so swapping either alone
+stacks both occupants on one edge — and it may not edit A8. It wrote an RTL
+assertion that fails on a half-swap and passes on a full one, then left both.
+Done centrally, with all eight `preview-tile` consumers re-run. F5's agent
+declined the *same* swap for the opposite reason and was equally right: its wipe
+clip is `clipPath: inset(...)`, physical with no logical form, so a class-only
+swap would put each pane number over the other pane's picture. §8 carries the
+rule the pair gives.
+
+**A claim that was checked and refuted.** F6's report stated that transition
+assertions are vacuous in this gate — that the browser runner injects
+`*, ::before, ::after { transition-property: none }`, defeating every Tailwind
+`transition-*`, and that wave 2's `run-button` assertion therefore passes with
+or without the fix it was written to prove. Measured directly: a plain vendored
+`Button` computes `transition-property: all` at `0.15s`, and sweeping every
+stylesheet in the document finds exactly one `transition-property: none` —
+Tailwind's own `.transition-none` utility definition. There is no global
+suppressor, F7's independent measurement agrees, and the transition assertions
+written in waves 2 and 3 are real. Recorded because a plausible, specific,
+wrong claim in an otherwise excellent report is exactly what gets repeated.

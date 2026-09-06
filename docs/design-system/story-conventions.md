@@ -53,7 +53,14 @@ carries the block's leading asterisk:
 
     * // case-skip: RTL — no directional layout, icons or motion
 
-One line per skipped name: `case-skip: <StoryName> — <reason>`. The gate
+One line per skipped name: `case-skip: <StoryName> — <reason>`. **A skip is
+the one part of this convention with no gate behind it:** `story-coverage`
+checks that a reason exists, never that it is true. B6 `thread-list` carried
+"nothing this component owns animates" while rendering two Base UI popups that
+both animated, and it survived because the reasoning was plausible and the
+component's family had no remaining debt to bring anyone back to the file. When
+you skip, write the reason as something a reader can check — a grep you ran, a
+property you read back — rather than a conclusion. The gate
 allows an optional leading `*` rather than anchoring `//` to the start of the
 line, requires the em dash, and treats a skip with nothing after the dash as
 silence. The pilot files carry the pattern.
