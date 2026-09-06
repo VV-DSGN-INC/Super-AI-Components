@@ -312,7 +312,7 @@ function StemMixer({
                   {stateText}
                 </span>
 
-                <div className="ml-auto flex items-center gap-1.5">
+                <div className="ms-auto flex items-center gap-1.5">
                   <Button
                     type="button"
                     size="xs"
