@@ -341,7 +341,14 @@ function TransportControls({
           <SelectTrigger size="sm" aria-label="Playback speed">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          {/* The animation classes live on the vendored primitive, so the
+              reduced-motion suppression has to be restated at every call
+              site — and restated on both halves, because a plain
+              `motion-reduce:animate-none` loses the specificity tie to
+              `data-open:` on source order. Inert in the default aligned mode,
+              which zeroes the animation anyway; it covers the unaligned
+              fallback, where `zoom-in-95` is real motion. */}
+          <SelectContent className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
             {speeds.map((option) => (
               <SelectItem key={option} value={String(option)}>
                 {option}×
