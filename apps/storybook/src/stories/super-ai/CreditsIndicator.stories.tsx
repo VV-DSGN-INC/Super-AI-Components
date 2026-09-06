@@ -123,12 +123,18 @@ export const WithTopUp: Story = {
  * between the two controls — and the padding pair that hugs the pill's
  * inner edge in LTR now pushes the wrong way.
  *
- * Recorded rather than fixed. No component in this registry uses logical
- * properties (`border-s`, `ps-*`, `-me-*` appear zero times across all 114),
- * so adopting them here would make this the only one, and that is a
- * system-wide decision rather than a per-component one. `empty-state`'s RTL
- * story sets the same precedent for a directional defect it documents
- * instead of fixing. Carried in the retrofit report.
+ * Recorded rather than fixed, and **the reason has since expired**. This block
+ * used to argue that no component in the registry used logical properties, so
+ * adopting them here would make this the only one and that was a system-wide
+ * decision rather than a per-component one. The decision was made: the
+ * physical-to-logical swap is a sanctioned mechanical fix in the case-story
+ * wave brief, and by wave 8 a `grep` of `registry/super-ai` finds `border-s` in
+ * 4 files, `ps-*` in 8, `pe-*` in 8, `ms-*` in 7 and `text-start` in 17. Only
+ * `-me-*` is still unused. So this component is now simply an unswept instance
+ * rather than a deliberate abstainer — a candidate for the same swap, which
+ * would need this story's assertions rewritten in the same commit because they
+ * pin the current physical rendering. `empty-state`'s RTL story is in the same
+ * position.
  */
 export const RTL: Story = {
   render: (args) => (
