@@ -154,10 +154,22 @@ function PermissionPrompt({
     <AlertDialog open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
       {trigger ? <AlertDialogTrigger render={trigger} /> : null}
       {/* Overriding a vendored ui/ primitive's data-slot is house idiom — see
-          trust-dialog.tsx for the same move. */}
+          trust-dialog.tsx for the same move.
+
+          The restated `motion-reduce:data-*:animate-none` pair is the panel
+          half of story-conventions.md fact 3: a bare `motion-reduce:` class
+          loses the source-order tie to `data-open:animate-in`, so both sides
+          have to carry the variant. It lives at this call site because that is
+          where `dialog.tsx` expects a panel's pair to live — the *backdrop*
+          half went into the vendored file in the K/L wave, and
+          `alert-dialog.tsx` did not get that change, so this component's
+          overlay still fades under reduce. See ReducedMotion. */}
       <AlertDialogContent
         data-slot="permission-prompt"
-        className={cn("gap-4 sm:max-w-md", className)}
+        className={cn(
+          "gap-4 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-md",
+          className,
+        )}
         {...props}
       >
         <AlertDialogHeader data-slot="permission-prompt-header">
@@ -179,9 +191,17 @@ function PermissionPrompt({
               aria-controls={argsListId}
               onClick={toggleArgsExpanded}
             >
+              {/* `motion-reduce:transition-none` beside the transition: a 180°
+                  turn is travel rather than a colour crossfade, so it is the
+                  second sanctioned idiom in story-conventions.md fact 3 —
+                  the `pricing-table` / `generation-panel` shape. The rotation
+                  itself is kept, so the affordance survives the suppression. */}
               <ChevronDown
                 aria-hidden
-                className={cn("transition-transform", isArgsExpanded && "rotate-180")}
+                className={cn(
+                  "transition-transform motion-reduce:transition-none",
+                  isArgsExpanded && "rotate-180",
+                )}
               />
               {isArgsExpanded
                 ? "Hide arguments"
