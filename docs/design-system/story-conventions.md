@@ -223,9 +223,19 @@ These decide the shape of the stories, and all five cost time to rediscover.
      and a real one ~250ms later. An immediate read is a false negative —
      measured on F1 `result-card`'s Retry.
 
+   - **A treatment on an element that is not painted.** Base UI's slider puts a
+     real `<input>` inside the thumb and clips it away with
+     `position: fixed; clip-path: inset(50%)`. Focus lands on that input, the
+     user agent paints its own `outline: auto 1px` on it, and an outline check
+     reports a ring — while the thumb carrying `focus-visible:ring-3` never
+     matches `:focus-visible`. Found on H2 `time-ruler` *after* the helper below
+     had shipped, and independently on H7 `stem-mixer`; F5 `compare-viewer` is a
+     third. All three components have handles that paint no ring at all.
+
    Use `settledFocusRing` from `@/lib/focus-ring`, which inspects the layers for
-   non-zero alpha *and* non-zero geometry and waits for them to settle;
-   `ThreadList.stories.tsx` is the reference call site. It is additive: 63 story
+   non-zero alpha *and* non-zero geometry, ignores an element that is not
+   painted, and waits for the treatment to settle; `ThreadList.stories.tsx` is
+   the reference call site. It is additive: 63 story
    files still carry the inline string check and were not rewritten, so a
    "shows a ring" claim in an older file is weaker than it reads.
 

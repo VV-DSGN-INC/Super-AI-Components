@@ -316,8 +316,15 @@ export const ReducedMotion: Story = {
     const regenerate = canvas.getByRole("button", { name: "Regenerate Segment 1" });
     await expect(getComputedStyle(regenerate.querySelector("svg")!).animationName).toBe("none");
 
-    // The popup: a Base UI select, opened so the frame the bare class fails to
-    // reach is the one measured.
+    // The popup, and this assertion is weaker than it looks — say so rather
+    // than let it read as evidence. `select.tsx` defaults
+    // `alignItemWithTrigger` to true and kills the animation with
+    // `data-[align-trigger=true]:animate-none`, so a default select popup
+    // computes `animationName: "none"` whether or not anything suppresses it.
+    // This is a regression guard on that branch, not proof of a
+    // reduced-motion fix: the two spinner assertions above are the ones that
+    // can fail. Measured on H1 `transport-controls`, whose agent wrote the
+    // same assertion, watched it pass before applying any fix, and rewrote it.
     await userEvent.click(canvas.getByRole("combobox", { name: "Voice for Segment 1" }));
     await within(document.body).findByRole("listbox");
     const popup = document.body.querySelector<HTMLElement>('[data-slot="select-content"]')!;

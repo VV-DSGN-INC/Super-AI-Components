@@ -28,8 +28,18 @@
  *   Measured on F1 `result-card`'s Retry (`oklab(0 0 0 / 0) 0px 0px 0px 0px`
  *   immediately, `oklab(0.708 0 0 / 0.5) 0px 0px 0px 3px` at 250ms).
  *
- * So a correct check has to look at the layers rather than the string, and it
- * has to be given time to settle. `settledFocusRing` does both.
+ * - **False positive, third shape — a treatment on an invisible element.** Base
+ *   UI's slider puts a real `<input>` inside the thumb, clipped away with
+ *   `position: fixed; clip-path: inset(50%)`. Focus lands there and the user
+ *   agent paints its own `outline: auto 1px` on it, so an outline check reports
+ *   a ring while the thumb that carries `focus-visible:ring-3` never matches
+ *   `:focus-visible`. Measured on H2 `time-ruler` — whose three handles paint no
+ *   ring at all — after this helper had already shipped, which is why
+ *   `isPainted` exists.
+ *
+ * So a correct check has to look at the layers rather than the string, ignore
+ * an element that is not painted, and be given time to settle.
+ * `settledFocusRing` does all three.
  *
  * This is additive: 63 story files still carry the inline string check, and
  * they were not rewritten. Use this one in new work — see
@@ -80,8 +90,30 @@ export function layerIsVisible(layer: string): boolean {
   return (lengths ?? []).some((l) => Math.abs(parseFloat(l)) > 0);
 }
 
+/**
+ * Whether the element is painted at all. A treatment on something clipped to
+ * nothing is not a treatment.
+ *
+ * The case that forced this: Base UI's slider renders a real `<input>` inside
+ * the thumb and styles it `position: fixed; clip-path: inset(50%)`. Focus lands
+ * on that input, which carries the user agent's own `outline: auto 1px` — so an
+ * outline check reports a ring on an element with nothing on screen, while the
+ * thumb `<div>` that actually carries `focus-visible:ring-3` never matches
+ * `:focus-visible`. Measured on H2 `time-ruler`, whose three handles paint no
+ * ring at all; F5 `compare-viewer`'s wipe handle is the same shape.
+ */
+function isPainted(el: Element): boolean {
+  const style = getComputedStyle(el);
+  if (style.visibility === "hidden" || style.display === "none") return false;
+  // `inset(50%)` and friends collapse the box to nothing; any full inset does.
+  if (/inset\(\s*(?:50%|100%)/.test(style.clipPath)) return false;
+  const rect = el.getBoundingClientRect();
+  return rect.width >= 2 && rect.height >= 2;
+}
+
 /** True when the element paints a focus treatment right now. */
 export function hasVisibleFocusRing(el: Element): boolean {
+  if (!isPainted(el)) return false;
   const style = getComputedStyle(el);
   if (style.outlineStyle !== "none" && parseFloat(style.outlineWidth || "0") > 0) return true;
   return shadowLayers(style.boxShadow).some(layerIsVisible);

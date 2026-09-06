@@ -766,10 +766,21 @@ needed it to work and could not make it work.
   `records-shell` forwards no footer prop at all and would need either a
   different anchor or a documented exemption. None of the other four shells
   has this story yet — open follow-up.
-- **Carousel arrows positioned outside their own box** (`-left-12`/`-right-12`):
-  C3 `feature-card-row` (O1, O13) and H5 `frame-strip` (O3). In any constrained
-  column they are clipped, or they turn the page into a horizontal scroller.
-  O1 measured 407px of content in a 375px column, all of it the arrow.
+- **~~Carousel arrows positioned outside their own box~~ (`-left-12`/`-right-12`)
+  — both named components were fixed at the call site; the open one is a third.**
+  The finding stands: the vendored `Carousel` puts its arrows outside the box, so
+  in a constrained column they clip or turn the page into a horizontal scroller,
+  and O1 measured 407px of content in a 375px column, all of it the arrow. But
+  C3 `feature-card-row` and H5 `frame-strip`, the two this entry named, each
+  carry a horizontal override at their own call site rather than in the
+  primitive — C3 also pins the arrow to `top-2`, H5 does not need to, and both
+  files explain why in a comment. The H wave re-measured H5 in the configuration
+  its own source calls narrow (square tiles plus a controls row) and the arrow
+  clears A8's label band by 9px, now asserted in its `Mobile` story. **What is
+  actually open is D2 `reference-strip`**, found in wave 1 composing `Carousel`
+  with no override at all: measured 471px of footprint in a 375px column, 96px
+  of arrow outside it. Corrected 2026-09-06 — this entry had been read as three
+  open instances when it was one.
 - **Grid columns keyed off the viewport rather than the container**: J4
   `artifact-grid` (O9) and C4 `recent-grid` (O1). Every shell that puts a grid
   beside a sidebar has to shift each breakpoint up a step by hand.
@@ -1717,14 +1728,27 @@ clip is `clipPath: inset(...)`, physical with no logical form, so a class-only
 swap would put each pane number over the other pane's picture. §8 carries the
 rule the pair gives.
 
-**A claim that was checked and refuted.** F6's report stated that transition
-assertions are vacuous in this gate — that the browser runner injects
+**A claim that was checked twice and not reproduced.** F6's report stated that
+transition assertions are vacuous in this gate — that the browser runner injects
 `*, ::before, ::after { transition-property: none }`, defeating every Tailwind
-`transition-*`, and that wave 2's `run-button` assertion therefore passes with
-or without the fix it was written to prove. Measured directly: a plain vendored
-`Button` computes `transition-property: all` at `0.15s`, and sweeping every
-stylesheet in the document finds exactly one `transition-property: none` —
-Tailwind's own `.transition-none` utility definition. There is no global
-suppressor, F7's independent measurement agrees, and the transition assertions
-written in waves 2 and 3 are real. Recorded because a plausible, specific,
-wrong claim in an otherwise excellent report is exactly what gets repeated.
+`transition-*`, so wave 2's `run-button` assertion would pass with or without
+the fix it was written to prove. H5's report later refined it: the suppressor is
+Playwright's animations-disabled CSS, left behind by the runner's
+screenshot-on-failure, so it is present *only after an earlier story in the same
+file has failed* — which is exactly when a story is being written.
+
+Two experiments, neither reproducing it. A plain vendored `Button` inside a
+deliberately failing story computes `transition-property: all` at `0.15s`, and a
+sweep of every stylesheet in the document finds one `transition-property: none`:
+Tailwind's own `.transition-none` utility definition. Adding a second story
+*after* a deliberate failure in the same file — the exact condition H5 named —
+the later story still reads `all` / `0.15s`, and no 185-character injected style
+is present. F7's independent measurement (its unfixed chevron read
+`transform, translate, scale, rotate`, suppressed `none`) agrees that the
+suppression does real work.
+
+So the transition assertions written in waves 2 and 3 stand, and this entry
+records the conditions actually tested rather than declaring the reports wrong:
+two agents saw something on their own machines that a third measurement could
+not reproduce, and if it resurfaces the thing to capture is the injected
+`<style>` element itself alongside the failing story that preceded it.
