@@ -349,7 +349,7 @@ function LibraryShell({
         data-region="facet-rail"
         tabIndex={0}
         aria-label="Filters"
-        className="max-h-56 w-full shrink-0 overflow-y-auto border-b p-4 md:h-full md:max-h-none md:w-64 md:border-r md:border-b-0"
+        className="max-h-56 w-full shrink-0 overflow-y-auto border-b p-4 md:h-full md:max-h-none md:w-64 md:border-e md:border-b-0"
       >
         <FilterPanel
           title={filtersTitle}
