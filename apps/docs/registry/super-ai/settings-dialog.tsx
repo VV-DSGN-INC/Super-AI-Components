@@ -271,7 +271,7 @@ function SettingsDialog({
       <Tabs.List
         data-slot="settings-dialog-nav"
         aria-label="Settings sections"
-        className="flex w-44 shrink-0 flex-col gap-0.5 border-r pr-2"
+        className="flex w-44 shrink-0 flex-col gap-0.5 border-e pe-2"
       >
         {filtered.map(({ section, rows }) => (
           <Tabs.Tab
@@ -290,7 +290,7 @@ function SettingsDialog({
               .filter(Boolean)
               .join(" ")}
             className={cn(
-              "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-foreground transition-colors",
+              "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-start text-sm text-foreground transition-colors",
               "hover:bg-accent hover:text-accent-foreground",
               "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
               "data-active:bg-accent data-active:font-medium data-active:text-accent-foreground",
@@ -360,7 +360,7 @@ function SettingsDialog({
       <div className="relative">
         <Search
           aria-hidden
-          className="text-muted-foreground pointer-events-none absolute top-2 left-2 size-4"
+          className="text-muted-foreground pointer-events-none absolute top-2 start-2 size-4"
         />
         <Input
           id={searchId}
@@ -368,7 +368,7 @@ function SettingsDialog({
           value={search ?? ""}
           placeholder="Search settings"
           onChange={(event) => onSearchChange?.(event.target.value)}
-          className="pl-7"
+          className="ps-7"
         />
       </div>
       {searching ? (
@@ -404,7 +404,19 @@ function SettingsDialog({
       <DialogContent
         data-slot="settings-dialog"
         data-variant="dialog"
-        className={cn("flex max-h-[80vh] flex-col gap-4 sm:max-w-2xl", className)}
+        className={cn(
+          // Restated on both halves rather than a bare `motion-reduce:animate-none`:
+          // `data-open:animate-in` compiles to a data-attribute variant that a
+          // plain `motion-reduce:` block loses the source-order tie to, so the
+          // popup kept animating under `prefers-reduced-motion: reduce`.
+          // Measured here: `animation-name` read "enter" before this pair and
+          // "none" after. See story-conventions.md, mechanical fact 3. The
+          // backdrop is not this call site's to fix and does not need to be —
+          // `DialogOverlay` carries the same pair in the vendored file.
+          "motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none",
+          "flex max-h-[80vh] flex-col gap-4 sm:max-w-2xl",
+          className,
+        )}
         {...props}
       >
         <DialogHeader data-slot="settings-dialog-header">
