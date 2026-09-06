@@ -12,7 +12,7 @@ import {
  */
 export const AssetDetailDocs: ComponentDocs = {
   whatItIs:
-    "The lightbox for a single result: the media at full size beside a provenance rail carrying the prompt, the parameters that produced it, the cost, and the three handoff verbs — Copy prompt, Remix, Edit. Phrases within the prompt can be marked selectable, and clicking one hands that exact text to Remix.",
+    "The lightbox for a single result: the media at full size beside a provenance rail carrying the prompt, the parameters that produced it, the cost, and the three handoff verbs — Copy prompt, Remix, Edit. Phrases within the prompt can be marked selectable; clicking one reports its exact text through `onSpanSelect`, and it is the host that decides what to do with it — `onRemix` fires with the whole prompt, not the phrase.",
   whyItMatters:
     "Opening a result full-size is almost never about looking at it. It is about doing it again, slightly differently — which means the prompt is editable material, not a caption underneath the picture. Highlighting the phrases worth changing and feeding a clicked phrase straight into Remix is what turns a viewer into a starting point. The parameters matter for the same reason but a stricter one: seed and sampler are what make a result reproducible at all, so they render through A10 `stat-readout` — the same grid N5 `run-inspector` uses, down to its em-dash for a value that is missing — and they are copyable. A lightbox that shows a beautiful image and none of what made it is a dead end.",
   evidence: ["Midjourney", "Playground", "Freepik"],

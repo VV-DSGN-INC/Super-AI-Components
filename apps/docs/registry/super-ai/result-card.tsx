@@ -184,7 +184,7 @@ function ResultCard({
               hover actions with checkboxes. Both cannot be live at once."
               (component-specs.md:447) */}
           {selectable ? (
-            <div data-slot="result-card-select" className="absolute top-2 left-2">
+            <div data-slot="result-card-select" className="absolute top-2 start-2">
               <Checkbox
                 checked={selected}
                 onCheckedChange={onSelect ? () => onSelect() : undefined}
@@ -200,7 +200,7 @@ function ResultCard({
               // opacity, never display:none — a hover affordance that is not
               // keyboard reachable is an a11y failure, so focus-within reveals
               // it too and it stays in the tab order throughout.
-              className="absolute top-2 left-2 opacity-0 transition-opacity group-hover/card:opacity-100 group-focus-within/card:opacity-100"
+              className="absolute top-2 start-2 opacity-0 transition-opacity group-hover/card:opacity-100 group-focus-within/card:opacity-100"
             >
               {actions}
             </div>

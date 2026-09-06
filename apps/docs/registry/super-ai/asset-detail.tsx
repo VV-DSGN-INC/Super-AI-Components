@@ -54,7 +54,16 @@ interface AssetDetailProps {
   /** A10's `items` shape verbatim, so this grid and N5's are the same grid. */
   params?: AssetDetailParam[];
   onCopyPrompt?: () => void;
-  /** Carries prompt and params into D1 `media-prompt-bar`. */
+  /**
+   * Carries prompt and params into D1 `media-prompt-bar`.
+   *
+   * `span` is declared and never emitted: the Remix button fires
+   * `onRemix({ prompt })` with the whole prompt whatever is selected, so a host
+   * that wants phrase-level remixing has to stitch `onSpanSelect`'s text to it
+   * itself. Recorded in `CONTINUE.md` §8 rather than changed here, because
+   * populating the field is an API decision about which of the two the button
+   * should mean.
+   */
   onRemix?: (payload: { prompt?: string; span?: string }) => void;
   onEdit?: () => void;
   moreLikeThis?: React.ReactNode;

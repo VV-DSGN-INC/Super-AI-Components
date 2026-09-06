@@ -147,7 +147,7 @@ function PreviewTile({
           </>
         )}
         {badge ? (
-          <span data-slot="preview-tile-badge" className="absolute top-2 right-2">
+          <span data-slot="preview-tile-badge" className="absolute top-2 end-2">
             {badge}
           </span>
         ) : null}
