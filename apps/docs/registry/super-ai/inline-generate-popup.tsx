@@ -283,7 +283,17 @@ function InlineGeneratePopup({
               aria-live="polite"
               className="text-foreground flex min-h-4 items-center gap-1.5 text-xs"
             >
-              {isGenerating ? <Loader2 aria-hidden="true" className="size-3.5 animate-spin" /> : null}
+              {/* The one animation this component owns. A plain `motion-reduce:`
+                  variant is enough here: the popup surface is Base UI's `Popup`
+                  with this file's own classes, not the vendored `PopoverContent`,
+                  so there are no `data-open:animate-in` / `data-closed:animate-out`
+                  classes to lose the source-order tie against. */}
+              {isGenerating ? (
+                <Loader2
+                  aria-hidden="true"
+                  className="size-3.5 animate-spin motion-reduce:animate-none"
+                />
+              ) : null}
               {isCancelled ? <Ban aria-hidden="true" className="size-3.5" /> : null}
               {statusText}
             </p>
