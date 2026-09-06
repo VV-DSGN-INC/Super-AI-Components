@@ -211,7 +211,15 @@ function ChatShellRunningJob({ label }: { label: string }) {
       role="status"
       className="text-foreground flex items-center gap-1.5 px-2 pb-1 text-xs"
     >
-      <LoaderCircle aria-hidden className="size-3 shrink-0 animate-spin" />
+      {/* `motion-reduce:animate-none` beside the `animate-*`, which is the
+          plain form of the idiom — the restated `data-open`/`data-closed`
+          pair is only needed on a Base UI popup, where the data-attribute
+          variant would win the source-order tie. Suppressing the spin leaves
+          the label as the only signal, which is what the label is for. */}
+      <LoaderCircle
+        aria-hidden
+        className="size-3 shrink-0 animate-spin motion-reduce:animate-none"
+      />
       {label}
     </p>
   );
@@ -343,10 +351,18 @@ function ChatShell({
       <SidebarInset className="min-w-0 overflow-hidden">
         {/* B7 has no leading slot, so the sidebar trigger is a sibling and the
             topbar's own bottom border moves out to this row — otherwise the
-            trigger sits above the rule the header draws. */}
+            trigger sits above the rule the header draws.
+
+            `ps-2`, not `pl-2`: the gutter belongs before the trigger, which is
+            the right edge under RTL. Byte-identical in LTR — measured, not
+            assumed (8px/0px before and after the swap), because the same swap
+            is not free on an ancestor whose descendants the user agent has an
+            opinion about (CONTINUE.md §8, N6 `usage-dashboard`). Both frames
+            are read back: `RTL` asserts 0px/8px, `LongContent` asserts the
+            LTR 8px/0px this replaced. */}
         <div
           data-region="topbar"
-          className="bg-background flex h-12 shrink-0 items-center gap-1 border-b pl-2"
+          className="bg-background flex h-12 shrink-0 items-center gap-1 border-b ps-2"
         >
           <SidebarTrigger />
           <AppTopbar
@@ -355,7 +371,12 @@ function ChatShell({
             {...topbar}
             // cn last, like the composer below: a bare className after the
             // spread would silently swallow a caller's `topbar.className`.
-            className={cn("h-11 min-w-0 flex-1 border-b-0 pl-1", topbar?.className)}
+            // `ps-1` for the same reason as the row's `ps-2` above: it closes
+            // the gap to the trigger, so it has to follow direction. B7's own
+            // base is `px-3`, a logical shorthand, and this longhand still
+            // wins the cascade — verified by reading the LTR frame back
+            // (4px/12px before the swap and after it).
+            className={cn("h-11 min-w-0 flex-1 border-b-0 ps-1", topbar?.className)}
           />
         </div>
 
