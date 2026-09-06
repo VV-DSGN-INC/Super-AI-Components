@@ -360,7 +360,13 @@ function ProviderRow({
             onClick={() => onTest?.(id)}
             disabled={testing}
           >
-            {testing ? <Loader2 className="animate-spin" aria-hidden /> : null}
+            {/* The spin is decoration, and it is the only thing in this file
+                that moves. Both sentences in the live region above already
+                say a test is in flight, and the button relabels to "Testing…",
+                so suppressing it under `prefers-reduced-motion` removes no
+                state — unlike the pulses in `preset-grid` and `source-panel`,
+                where stopping the motion collapsed two states into one. */}
+            {testing ? <Loader2 className="animate-spin motion-reduce:animate-none" aria-hidden /> : null}
             {testing ? "Testing…" : "Test connection"}
           </Button>
         ) : null}
