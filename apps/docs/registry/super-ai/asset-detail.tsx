@@ -104,7 +104,15 @@ function AssetDetail({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent data-slot="asset-detail" className="sm:max-w-4xl">
+      {/* The reduced-motion variant is restated on both halves rather than
+          written bare: `data-open:animate-in` and a plain
+          `motion-reduce:animate-none` compile to the same single-class
+          specificity, so the tie falls to source order and the animation wins.
+          See story-conventions.md fact 3. */}
+      <DialogContent
+        data-slot="asset-detail"
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-4xl"
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>Result detail</DialogTitle>
           <DialogDescription>
