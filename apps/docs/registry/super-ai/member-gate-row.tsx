@@ -129,7 +129,7 @@ function MemberGateRow({
         <div
           data-slot="member-gate-row-upsell"
           role="status"
-          className="ml-3 flex flex-col gap-2 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm"
+          className="ms-3 flex flex-col gap-2 rounded-lg border bg-muted/30 px-3 py-2.5 text-sm"
         >
           <p data-slot="member-gate-row-upsell-title" className="text-foreground font-medium">
             {upsellTitle ?? (
