@@ -236,7 +236,7 @@ function PaywallMessage({
             // Greyed, and captioned. The dimming says "not real yet" to someone
             // who can see it; the caption says the same thing to everyone else,
             // which is the rule about never conveying state by colour alone.
-            <div data-slot="paywall-message-preview" className="border-border flex flex-col gap-1 border-l-2 pl-3">
+            <div data-slot="paywall-message-preview" className="border-border flex flex-col gap-1 border-s-2 ps-3">
               <span data-slot="paywall-message-preview-label" className="text-foreground text-xs font-medium">
                 Would have produced
               </span>
