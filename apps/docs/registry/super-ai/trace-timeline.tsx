@@ -320,7 +320,7 @@ function TraceTimelineRow({
         <CollapsibleTrigger
           data-slot="trace-timeline-row-trigger"
           aria-label={accessibleName}
-          className="group hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-start gap-3 px-3 py-2.5 text-left focus-visible:ring-2 focus-visible:outline-none"
+          className="group hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex w-full items-start gap-3 px-3 py-2.5 text-start focus-visible:ring-2 focus-visible:outline-none"
         >
           <span aria-hidden className={cn("mt-0.5 shrink-0", span.status === "error" && "text-destructive")}>
             {statusIcon(span.status)}
@@ -372,7 +372,7 @@ function TraceTimelineRow({
           </span>
           <ChevronDown
             aria-hidden
-            className="group-data-[panel-open]:rotate-180 mt-0.5 size-4 shrink-0 transition-transform"
+            className="group-data-[panel-open]:rotate-180 mt-0.5 size-4 shrink-0 transition-transform motion-reduce:transition-none"
           />
         </CollapsibleTrigger>
         <CollapsibleContent data-slot="trace-timeline-row-detail">
