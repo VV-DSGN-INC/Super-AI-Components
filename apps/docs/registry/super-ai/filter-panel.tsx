@@ -447,7 +447,10 @@ function FilterPanel({
                 ]
                   .filter(Boolean)
                   .join(", ")}
-                className="hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex items-center gap-2 rounded-md px-1.5 py-1.5 text-left text-sm focus-visible:ring-2 focus-visible:outline-none"
+                // `text-start`, not `text-left`: byte-identical in LTR, and the
+                // only physical class in this file. Every other participant in
+                // the row is a class, so the swap is safe — CONTINUE.md §8.
+                className="hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring flex items-center gap-2 rounded-md px-1.5 py-1.5 text-start text-sm focus-visible:ring-2 focus-visible:outline-none"
               >
                 {/* Shape, not colour: the tick is the visible signal, and
                     "active" is spelled into the accessible name beside it. */}
