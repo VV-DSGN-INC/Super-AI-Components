@@ -241,7 +241,14 @@ function CoachMark({
         // aria-hidden. The host owns where focus goes when a step closes —
         // usually the next step's coach-mark. See the guidance module.
         finalFocus={false}
-        className="w-80 gap-3 p-4"
+        // The reduced-motion pair is restated on both halves rather than
+        // written once as a bare `motion-reduce:animate-none`. Tailwind v4
+        // wraps the `data-*` test in `:where(…)`, so both sides are one class
+        // of specificity and source order breaks the tie — and the plain
+        // `motion-reduce:` block is emitted first, so `animation: enter` wins.
+        // Measured here before the fix: `animation-name` read `"enter"` under
+        // emulated reduce. See story-conventions.md, mechanical fact 3.
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none w-80 gap-3 p-4"
       >
         <PopoverPrimitive.Arrow
           data-slot="coach-mark-arrow"
