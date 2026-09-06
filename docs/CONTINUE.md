@@ -61,11 +61,18 @@ described) — 76 story files with no case block at all, one partial, and 50
 files with undocumented state exports. Family coverage at adoption (files
 with all eight accounted for): A 12/12 · B 8/8 · C 5/5 · D 1/7 · E 1/10 ·
 F 0/7 · H 0/7 · I 0/5 · J 0/7 · K 3/8 · L 2/6 · M 3/7 · N 4/12 · O 0/13 ·
-P 0/2. The remaining family waves (spec §3.2) are now "shrink the baseline":
-a wave writes its stories or skips, then runs `pnpm story-coverage:baseline`
-from `apps/docs` to lock the progress in — the script refuses to grow the
-file. These figures are derived by that test; recount with it rather than
-maintaining them here.
+P 0/2. Each family wave then "shrank the baseline": a wave wrote its stories or
+skips and ran `pnpm story-coverage:baseline` from `apps/docs` to lock the
+progress in, and the script refuses to grow the file. **Eight waves later the
+baseline is `[]`.** The figures above are the adoption-time snapshot, kept
+because the shape of the debt is the argument for the program; they are all
+derived by that test, so recount with it rather than maintaining them here.
+
+With the file empty the ratchet stops being a ledger and becomes a plain
+guarantee: every declared state has a documented export, every item has the
+eight case names or a written reason one is absent, and a regression has nothing
+to hide behind. Do not delete the file — an empty baseline is what makes the
+next unmet obligation fail.
 
 **Wave 1 of the family waves — families D and I — landed 2026-09-05, together
 with the description-only debt.** The brief the agents were handed is
@@ -78,6 +85,18 @@ exports (76 descriptions across A/B/C/E/K/M/N) and the 11 D/I items (88 case
 obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
 fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
 entry has what was fixed and what was found.
+
+**Wave 8 — family O — landed 2026-09-06, and the baseline reached zero.**
+Baseline **104 → 0**: thirteen shells, thirteen agents, all at zero unmet. Every
+one of the 116 registry items now carries the eight case names or an annotated
+skip, and every declared-state export carries a JSDoc description.
+`story-coverage.baseline.json` is an empty list, which turns the ratchet from a
+debt ledger into a plain regression guard — an obligation that goes unmet from
+here is a new failure with nothing to hide behind. The wave's distinguishing
+feature is one line of tooling: `page.viewport(375, 812)` from `vitest/browser`
+makes a `Mobile` story move the real breakpoint, and everything it found had been
+unreachable for seven waves. §8's family O subsection and §9's wave 8 entry have
+the detail; what stays open is listed at the end of that entry.
 
 **Wave 7 — families M and N — landed 2026-09-06.** Baseline **219 → 104** (104
 case, **0 described**): twelve agents, twelve items, all at zero unmet, and the
@@ -118,10 +137,7 @@ now fixed with a shared helper.
 (439 case, 51 described). Four of the eleven agents reported normally; the
 other seven were killed by a session rate limit *between finishing their work
 and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
-carries the salvage procedure, because it will happen again. Remaining after
-wave 7: **family O's 13 shells and nothing else** — 104 case obligations, no
-description debt anywhere in the registry; recount with the test rather than
-trusting this line.
+carries the salvage procedure, because it will happen again.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -1713,11 +1729,19 @@ that stayed open, plus what the wave learned about the primitives underneath.
   closed in wave 6 and the alert-dialog backdrop closed here, no registry
   surface *reachable at desktop width* still animates under
   `prefers-reduced-motion: reduce`. **Wave 8 found the qualifier the sentence
-  needed**: the vendored `sheet.tsx` drawer that every B1 sidebar swaps to below
-  768px was never suppressed — panel `0.2s`, backdrop `0.15s`, 40px of
+  needed, twice.** The vendored `sheet.tsx` drawer that every B1 sidebar swaps
+  to below 768px was never suppressed — panel `0.2s`, backdrop `0.15s`, 40px of
   translate — and nothing could reach it, because the branch needs a real
   viewport media query and every `Mobile` story until wave 8 constrained a
-  wrapper instead. Fixed in both copies once `page.viewport` made it visible.
+  wrapper instead. Then `components/ui/sidebar.tsx`'s *desktop* collapse turned
+  out to be unsuppressed as well — `transition-[width]` on the in-flow gap and
+  `transition-[left,right,width]` on the fixed container, 256px of travel — which
+  needed no new tooling at all, only a story that opened a sidebar under reduce.
+  Both fixed in both copies; O1, O2, O9 and O10 measured them between them.
+  Inside `components/ui/` only `dialog`, `alert-dialog`, `sheet` and `sidebar`
+  carry a branch; for `popover`, `dropdown-menu`, `select`, `tooltip` and
+  `hover-card` it lives at the call sites, which is why those sweeps were
+  per-consumer.
 
 - **Two findings narrowed rather than added.** N1 `feedback` narrowed K1's
   `button-group` border defect further: the `border-l-0` is invisible on *ghost*
@@ -1787,6 +1811,131 @@ that stayed open, plus what the wave learned about the primitives underneath.
   should clear `apps/storybook/node_modules/.cache/storybook` and run
   `test:stories` once per wave** — a warm cache had been hiding this since wave
   6.
+
+### Added by the family O case-story wave (2026-09-06)
+
+The last wave, and the first whose `Mobile` stories move the real viewport
+(`page.viewport(375, 812)` from `vitest/browser`, imported dynamically inside the
+play — see `story-conventions.md` fact 2). Most of what follows was unreachable
+before that one line.
+
+- **Three vendored surfaces were still animating under
+  `prefers-reduced-motion: reduce`, and the wave-7 entry above was wrong to
+  imply none were left.** `sheet.tsx`'s mobile drawer (panel `0.2s`, backdrop
+  `0.15s`, 40px of translate) is the one nothing could see, because the drawer
+  branch needs a genuine viewport media query. `sidebar.tsx`'s *desktop*
+  collapse (`transition-[width]` on the in-flow gap, `transition-[left,right,width]`
+  on the fixed container, 256px of travel) needed no new tooling at all — only a
+  story that opened a sidebar under reduce. And `tooltip.tsx` had no branch and
+  one consumer that cannot supply one, because the vendored `sidebar.tsx`
+  renders its own `<TooltipContent>` for every collapsed rail row with no
+  className threaded through. All three fixed in both copies; each guard was
+  watched fail on a reverted class first. **`hover-card.tsx` is in the same
+  state and was deliberately left**: it has exactly one consumer
+  (`citation-ref`) which *can* reach it, so by this file's own rule the branch
+  belongs at that call site, and taking it without writing the assertion would
+  be worse than recording it.
+
+- **Guarding a fixed defect usually means rewriting the assertion that found
+  it, and three of them were passing green against a fix they could not see.**
+  An agent that measures a motion defect naturally asserts
+  `transition-duration`; `motion-reduce:transition-none` sets
+  `transition-property` to `none` and leaves the duration alone, so those
+  assertions kept passing after the repair and would have kept passing after a
+  revert. `ChatShell`, `ArtifactShell` (twice) were rewritten to read
+  `transition-property`. This is the predictable cost of the record-don't-pin
+  rule and it is cheap; the alternative is not recording.
+
+- **The vendored sidebar does not mirror.** Under `dir="rtl"` the in-flow
+  `sidebar-gap` follows direction while the `fixed` container is placed by
+  `data-[side=left]:left-0` and does not, so a 256px blank strip sits at the
+  inline-start edge and the sidebar lies on top of the first 256px of content.
+  Measured four times by four shells at two widths (O1 at full width with C3's
+  carousel arrow underneath it, O2, O9, O11 at icon width: gap `1152..1200`,
+  container `0..48`). Recorded, not fixed — a vendored layout change rather than
+  a class swap, and no shell may take it.
+
+- **An invisible tooltip eats the first Escape in the mobile drawer.**
+  `sidebar.tsx:546` passes `hidden={state !== "collapsed" || isMobile}` to
+  `TooltipContent`, so the popup opens on focus and is merely `hidden` rather
+  than unmounted. Measured in sequence by O11: Escape #1 closes a tooltip the
+  user cannot see and leaves the drawer open; Escape #2 closes the drawer. Every
+  B1 consumer with tooltip rows has this.
+
+- **Two family O shells cannot share a document, for three separate reasons.**
+  Each `SidebarInset` renders a `<main>` (`landmark-no-duplicate-main`); two
+  shells bring two banners and two identically-named regions
+  (`landmark-no-duplicate-banner`, `landmark-unique` twice, measured by O6); and
+  two index shells break the heading outline, because O9 emits an `<h1>` while
+  O7's first heading is `filter-panel`'s hardcoded `<h3>` with no `<h2>` between
+  — O9-first fails `heading-order` outright, and neither component has a
+  heading-level prop. O1 turned this into the boundary rule itself — "a shell is
+  the page", asserted as `querySelectorAll("main").length === 1` — rather than
+  suppressing a rule or inerting one shell, which would trade a duplicate
+  landmark for focusable content inside `aria-hidden`. O11 and O12 *can* share
+  one, because O12 renders no `main`.
+
+- **The empty-label gate hole is settled, by probe rather than by argument.**
+  Wave 6 recorded that the same empty string is a red gate on one field and
+  silent on the next, and this wave produced two competing explanations. A
+  five-shape probe story run against the real gate settles it: an empty
+  `<label for>` **with a placeholder** is the only shape of five that passes.
+  Empty `<label for>` with no placeholder, no label at all, `aria-label=""`, and
+  an empty `<label for>` beside `placeholder=""` all fail `label` outright. So
+  **the escape hatch is axe's `non-empty-placeholder` check**, O14 `auth-shell`
+  and O12 `settings-shell` reached that independently, and O9's proposed
+  refinement (`<label for>` versus `aria-label`) was wrong. Say it the way O12
+  did: **an empty `<label for>` is worse than none**, because it satisfies the
+  rule while the name query stops finding the field.
+
+- **`modality-rail` never narrows — 92px at every width** — so a rail-based
+  shell has no narrow layout to swap into, where a B1 sidebar swaps to a drawer.
+  Measured by O8 and confirmed by O3 and O4, and only findable with a real
+  viewport move. Its stacked label is also 63×0 CSS px with the truncation
+  machinery intact inside a zero-height box, which three agents pinned after §8
+  had carried it as prose since family O shipped.
+
+- **`shortcuts-sheet`'s scroll-container repair cannot reach the notebook chat
+  pane.** O13 reproduced O2's cross-shell measurement of
+  `scrollable-region-focusable` (`scrollHeight 1484` against `clientHeight 743`,
+  zero focusables) and then established why the standard idiom is unavailable:
+  `StickToBottom.Content` renders the scrolling div itself and accepts exactly
+  one prop for it, `scrollClassName` — a class, never `tabIndex` or
+  `aria-label`, verified in `use-stick-to-bottom@1.1.6`'s own types. Fifth
+  instance of the shape, and the first that cannot be fixed the usual way. The
+  same dependency springs `scrollTop` in a rAF loop with no `matchMedia`
+  anywhere, so its smooth scroll also ignores reduced motion.
+
+- **Activating a real link closes the browser and fails the run.** B3
+  `sidebar-nav`'s rows are anchors; `userEvent.click` and Enter both trigger the
+  default hash navigation and kill the vitest browser runner ("Was the page
+  closed unexpectedly?"). Assigning `location.hash` survives, as does a wrapper
+  that cancels the event the way a router would. Now mechanical fact 6.
+
+- **Eleven docs focus bullets said a control paints nothing when it paints the
+  user agent's outline**, recoloured by the repo's global `outline-ring/50` —
+  thin against the ring-2 its neighbours draw, not absent. Every family O docs
+  module carried one. **Two more had a tab order backwards** (O2, O10): both
+  said the sequence starts with the sidebar trigger, and in both the rail comes
+  first, because the topbar is a DOM sibling *after* the sidebar. O10's read
+  true only because the default `nav` is an L1 with nothing focusable in it —
+  which is why a walk with a filled rail is what found it.
+
+- **`model-picker` is the last unnamed `SelectContent` listbox in the
+  registry.** O10 named its own and measured the gate first, as this file's
+  configuration-dependent note asks: with the name stripped and the popup open,
+  axe 4.12 raised nothing, so the story's own assertion is the only thing
+  keeping it named — verified by stripping the attribute and watching exactly
+  one test fail.
+
+- **The `matchesQuery` divergence is reachable, not theoretical.** O12 measured
+  a query that matches only a gated description: B3's badge reads 1, the status
+  line reads "1 setting matches across 4 sections", the gated row renders — and
+  M1's panel one region up reads "No settings in MCP match this search". Neither
+  copy of the predicate can see the other's set. The shell's own constant saying
+  to delete its overrides when M1 grows an opt-out is still the right
+  instruction, and `KeyboardOrder` now measures the cost: zero tabs, and one
+  orphan `tabpanel` announcing as a tab panel with no tab list.
 
 ## 9. Gaps found by the case-story pilot
 
@@ -2512,3 +2661,63 @@ since wave 6. Clearing
 `apps/storybook/node_modules/.cache/storybook` and running `test:stories` once
 per wave is now part of integration — with the dev server down, per the trap in
 §4.
+
+### Wave 8 — family O (2026-09-06) — the last one
+
+Thirteen shells, thirteen agents, all at zero unmet. **Baseline 104 → 0.** Every
+one of the 116 registry items now carries the eight case names or an annotated
+skip, and every declared-state export carries a JSDoc description. The ratchet
+file is an empty list, which turns it from a debt ledger into a plain
+regression guard: any obligation that goes unmet from here is a new failure with
+nothing to hide behind.
+
+**One line of tooling changed what the wave could see.** The block brief had
+said since family O shipped that the mandatory `Responsive` story proves nothing
+mechanically — the viewport addon contributes only `initialGlobals`, all
+resizing happens in Storybook's manager, and the vitest runner has no manager —
+and its proposed fix was a second vitest project pinned to a mobile viewport,
+which would have doubled a 1,300-test suite. `page.viewport(375, 812)` from
+`vitest/browser`, called inside a play, does the same job in one line and does
+not leak into the next story. What it found: the mobile drawer every sidebar
+swaps to had never been suppressed under reduced motion, `modality-rail` is
+92px at every width so a rail-based shell has no narrow layout to swap into, and
+a claim recorded as *conditional* in wave 2 (E1's "Generate never scrolls away")
+turned out to hold in this composition after all. Seven waves of width-wrapper
+`Mobile` stories could not have reached any of it.
+
+**Three agents corrected the instruction they were given, and none of them acted
+alone.** The import path in the convention was wrong twice over —
+`@vitest/browser/context` is deprecated, and `vitest/browser` throws on
+evaluation outside Browser Mode, so a top-level import breaks the whole story
+file in a built Storybook. Three agents used a dynamic in-play import for that
+reason and said so; three used a static one, and one of those verified
+`storybook build` exits 0, which is true and a different claim, because the
+throw happens at evaluation time in the browser. Both halves were needed to see
+the whole thing.
+
+**The wave's own steering was wrong four times and the agents caught all four.**
+`pricing-table` is not a table and never touches the vendored `text-left` that
+was cited at it. §8's citation-jump entry says the jump has to find rows
+positionally; the paraphrase handed to O13 said it "cannot be built", and O13
+built a story that measures it. The `scrollable-region-focusable` instance count
+in one prompt was off by one, and the agent cited no number rather than pick
+between two contradicting sources. And a merge-base artifact produced two more
+apparent corrections that were true of what the agent had and false of the
+branch — **batch 2 was dispatched while the updated brief and a vendored fix were
+still uncommitted**, which is now written into the brief's step 0 as a rule:
+commit before dispatching.
+
+**Eleven docs modules said a control paints no focus treatment when it paints
+the user agent's outline.** Every family O docs module had one. Together with
+waves 6 and 7 that is eighteen corrections to written claims across three waves,
+and the distribution is worth reading: almost all of them are prose written from
+reading a class list, contradicted the first time someone rendered it. The two
+exceptions are the sharper kind — a documented tab order that was backwards in
+two shells, because the topbar is a DOM sibling after the sidebar and nobody had
+walked it.
+
+**What the program leaves open** is in §8: the vendored sidebar's RTL mirroring,
+the tooltip that eats an Escape, `hover-card.tsx`'s missing branch, the
+`matchesQuery` divergence, `model-picker`'s unnamed listbox, and the notebook
+chat pane that cannot take the standard scroll-container repair. Each is
+recorded with a measurement, and none of them is a case story's to fix.

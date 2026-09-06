@@ -96,7 +96,7 @@ export const ArtifactShellDocs: ComponentDocs = {
     focus: [
       "Nothing in the shell moves focus. Searching, switching a facet, and emptying the index all leave focus exactly where it was, so the reader has to go looking for the result count to learn what happened.",
       "Collapsing the sidebar while focus is inside `sidebarPromo` drops focus to `<body>`: that slot is removed from the layout at icon-rail width rather than hidden. Focus inside the nav survives the same collapse.",
-      "The grid region and the facet chips carry their own `focus-visible` rings; the search field and the header actions inherit whatever the primitives and your own components supply.",
+      "The grid region carries its own `focus-visible` ring. The facet chips do not — A5's toggle ships no focus utility, so what paints on them is the user agent's `outline: auto`, recoloured by the global `outline-ring/50`. Two visibly different treatments in one row of controls, both real; the search field and the header actions inherit whatever the primitives and your own components supply.",
     ],
   },
   pitfalls: [

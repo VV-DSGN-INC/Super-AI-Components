@@ -52,6 +52,14 @@ pnpm install --offline --frozen-lockfile
 Confirm `git log --oneline -1` shows a commit on or after `feat(stories):
 story-coverage ratchet`. If the fast-forward refuses, stop and report.
 
+**Integrator: commit the brief before you dispatch, not after.** An agent
+fast-forwards at step 0, so it sees the branch as it was at dispatch time. Wave
+8 dispatched its second batch while the updated §2b and a vendored fix were
+still uncommitted in the integrator's working tree, and two agents duly reported
+that guidance was missing and that a fixed file was still broken. Both were
+right about what they had and wrong about the branch, which costs a round of
+reconciliation every time.
+
 ### 2. Read, in this order
 
 1. [`docs/design-system/story-conventions.md`](../../design-system/story-conventions.md) — whole file. The eight, the skip grammar, the five mechanical facts, the play-function rule.

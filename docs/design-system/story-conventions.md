@@ -80,9 +80,9 @@ silence. The pilot files carry the pattern.
 - **No "every variant at once" story.** A grid of all eight of something
   markets optionality the system exists to remove.
 
-## Five mechanical facts about this repo
+## Six mechanical facts about this repo
 
-These decide the shape of the stories, and all five cost time to rediscover.
+These decide the shape of the stories, and all six cost time to rediscover.
 
 1. **Extra exports are legal.** `check-contract.mts` asserts *declared states
    ⊆ story exports*, never the reverse. Case stories cannot break the
@@ -318,6 +318,16 @@ Because `preview.tsx` sets `a11y: { test: "error" }` as the default for every
 story, each case story you add is axe-gated from the moment it exists. That
 is most of the value: `Mobile` does not merely document 375px, it starts
 failing the build at 375px.
+
+6. **Activating a real link closes the browser and fails the run.** A play that
+   clicks or presses Enter on an `<a href>` — B3 `sidebar-nav`'s rows are real
+   anchors — triggers the default navigation, and the vitest browser runner dies
+   with "Was the page closed unexpectedly?". Assigning `location.hash` directly
+   survives; so does a wrapper that calls `preventDefault` on the capture phase,
+   which is what a router would do anyway. O12 `settings-shell` lost a run to
+   this and ships the wrapper as `NoNavigate`. Any story that activates a
+   navigation row needs one.
+
 
 ## Play functions
 

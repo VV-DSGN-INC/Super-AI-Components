@@ -290,17 +290,26 @@ export const ReducedMotion: Story = {
     )!;
     await expect(streaming.textContent).toBe("Streaming");
 
-    // 3. THE DEFECT, measured. Collapsing the rail slides 256px of layout under
-    // `prefers-reduced-motion: reduce`. Recorded as the durations rather than
-    // claimed correct — see this story's description.
+    // 3. The defect this story found, now fixed and guarded. Collapsing the
+    // rail used to slide 256px of layout under `prefers-reduced-motion:
+    // reduce`: `components/ui/sidebar.tsx` put `transition-[width]` on the
+    // in-flow gap and `transition-[left,right,width]` on the fixed container
+    // with no `motion-reduce` on either. O1 `home-shell` and O9 measured it
+    // independently, and the integrator took it in both copies of the vendored
+    // file, where every B1 consumer shares it.
+    //
+    // Read as `transition-property`, on both halves. The fix sets the property
+    // list to `none` and leaves `0.2s` in place, so the duration is not the
+    // value that moves — an earlier form of this assertion read the container's
+    // duration only and would have passed after a revert.
     const gap = canvasElement.querySelector<HTMLElement>('[data-slot="sidebar-gap"]')!;
     const container = canvasElement.querySelector<HTMLElement>('[data-slot="app-sidebar"]')!;
     await expect(
       [
-        `gap ${getComputedStyle(gap).transitionDuration} ${getComputedStyle(gap).transitionProperty}`,
-        `container ${getComputedStyle(container).transitionDuration}`,
+        `gap ${getComputedStyle(gap).transitionProperty}`,
+        `container ${getComputedStyle(container).transitionProperty}`,
       ].join(" · "),
-    ).toBe("gap 0.2s width · container 0.2s");
+    ).toBe("gap none · container none");
 
     // And the distance it travels, so "motion, not a crossfade" is a number
     // rather than a reading of the class list. B1 collapses to an icon rail
@@ -914,23 +923,26 @@ export const Controlled: StoryObj<typeof PinnedIndex> = {
  * different ways. Three are rendered here; four are measured and described
  * rather than rendered, because they are red gates.
  *
- * **`searchLabel=""` unnames the search field and no gate says so — and this
- * is a sharper case than the one wave 6 recorded on K1.** The `<label for>` is
- * still there, still associated, and paints nothing, leaving the placeholder as
- * the field's only candidate name. That much is K1's `rePromptLabel` shape.
- * What is new is what happens when the fallback is taken away too: setting
- * `searchLabel=""` *and* `searchPlaceholder=""` leaves a `searchbox` with **no
- * accessible name at all**, and axe is still silent — measured in this wave, a
- * clean run with zero violations, while the name computation testing-library
- * uses (`dom-accessibility-api`, the accessible-name spec) finds no named
- * searchbox. So the difference between silent and red is not the placeholder
- * after all: it is `<label for>` versus `aria-label`. K1's `editLabel=""`
- * writes `aria-label=""` on a textarea and axe fails it outright; an empty
- * `<label for>` on this field is accepted whether or not anything remains to
- * fall back to. That is the same "one red, one silent" family §8 has been
- * collecting, with the structural difference located one step further back.
- * Only the first half is rendered here, since the second half is the same
- * silence with less to look at.
+ * **`searchLabel=""` unnames the search field and no gate says so.** The
+ * `<label for>` is still there, still associated, and paints nothing, leaving
+ * the placeholder as the field's only candidate name. That is K1's
+ * `rePromptLabel` shape, reached from a second component.
+ *
+ * **What is rendered here is the case that passes, and the reason it passes is
+ * the placeholder.** An earlier draft of this block claimed the divider between
+ * silent and red was `<label for>` versus `aria-label`, on the strength of an
+ * unrendered measurement. The integrator probed the gate directly with five
+ * shapes and that is not what it does: an empty `<label for>` **with** a
+ * placeholder is the only one of the five that passes. Empty `<label for>` with
+ * no placeholder, no label at all, `aria-label=""`, and an empty `<label for>`
+ * beside `placeholder=""` on a `type="search"` all fail `label` outright, with
+ * axe naming all four candidate mechanisms in its output. So wave 6's original
+ * reading holds: **the escape hatch is axe's `non-empty-placeholder` check**,
+ * and O14 `auth-shell` reached the same conclusion independently on
+ * `emailLabel=""`. This story renders the passing shape — `searchLabel=""` with
+ * the default placeholder intact — which is exactly the configuration a real
+ * caller reaches, and it is nameless to a screen reader while green to the
+ * gate.
  *
  * **`filterLabel=""` and `gridLabel=""` unname a group and a landmark in
  * silence.** Neither is name-from-content, so `aria-label=""` leaves them
@@ -1137,13 +1149,17 @@ export const Mobile: Story = {
       return el!;
     });
 
-    // THE DEFECT, measured, and only reachable once the viewport has actually
-    // moved — which is why twelve waves of width-wrapper stories never found
-    // it. See this story's description.
+    // The drawer's reduced-motion branch, guarded. `components/ui/sheet.tsx`
+    // had none until this wave, and it was reachable only once the viewport had
+    // actually moved — which is why seven waves of width-wrapper stories never
+    // found it. O2 `chat-shell` reported it and the integrator fixed both
+    // copies. Read as `transition-property`: the fix sets the list to `none`
+    // and leaves `0.2s`/`0.15s` in place, so a duration check would still pass
+    // after a revert.
     const backdrop = document.querySelector<HTMLElement>('[data-slot="sheet-overlay"]');
     await expect(
-      `panel ${getComputedStyle(drawer).transitionDuration} · backdrop ${backdrop ? getComputedStyle(backdrop).transitionDuration : "none"}`,
-    ).toBe("panel 0.2s · backdrop 0.15s");
+      `panel ${getComputedStyle(drawer).transitionProperty} · backdrop ${backdrop ? getComputedStyle(backdrop).transitionProperty : "missing"}`,
+    ).toBe("panel none · backdrop none");
 
     // Let it settle before asserting anything about what is on screen, and
     // before the play returns — axe scans a fading panel at its transitional

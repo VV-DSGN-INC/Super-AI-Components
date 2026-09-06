@@ -96,7 +96,7 @@ export const DocsShellDocs: ComponentDocs = {
       "Selecting a page or an area leaves focus on the nav row. The content changes underneath it, so pair `onSelectPage` with a focus move into the content region — it already carries a `tabIndex` and an accessible name, which is exactly what makes it a legitimate target.",
       "Dismissing an announcement unmounts the ✕ that was activated and focus falls to `<body>`. Move focus to the next announcement, or to the content column, from `onDismissAnnouncement`.",
       "Toggling the rail collapses it to icon width rather than unmounting it, so a focused rail row survives ⌘B — only its label clips.",
-      "Nav rows, the rail toggle and the citation markers all carry explicit `focus-visible` rings. The content column does not: it is a tab stop with no focus styling at all, so tabbing into the page gives no visible indication of where focus went.",
+      "Nav rows, the rail toggle and the citation markers all carry explicit `focus-visible` rings. The content column carries none of its own, so it falls back to the user agent's `outline: auto 1px`, recoloured by the global `outline-ring/50`. Tabbing into the page does show where focus went, thinly — a 1px outline against the ring-2 every control around it draws. Add a ring if the column should read as loudly as they do.",
     ],
   },
   pitfalls: [

@@ -66,7 +66,7 @@ export const RecordsShellDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "Tab order runs sidebar trigger → rail contents → header actions → create → filter chips → add-filter chip → Filters → sort → the record region itself → folder search → folder rows → record rows → feedback. A shell with six filter chips, ten folders and twenty records is well over sixty stops from the trigger to the last row.",
+      "Tab order runs rail contents → sidebar trigger → header actions → create → filter chips → add-filter chip → Filters → sort → the record region itself → folder search → folder rows → record rows → feedback. The rail comes *before* the trigger that collapses it, because the nav is a DOM sibling ahead of the header — this note read the other way round until a walk with a filled rail measured it, and the old order looked right only because the default `nav` is an L1 with nothing focusable in it. A shell with six filter chips, ten folders and twenty records is well over sixty stops from the rail to the last row.",
       "The record region is a `section` with `tabIndex={0}`, so it is a tab stop in its own right — the one that makes the scroll container reachable without a mouse wheel. Expect a Tab press that appears to focus nothing visible before the first folder control.",
       "Mounting the shell registers a **window-level** Cmd/Ctrl+B listener that toggles the rail. It is global, not scoped to the shell, so it fires from anywhere on the page and two shells mounted together both respond to one press.",
       "An applied filter chip is two stops, not one — A5 renders the toggle and the remove X as siblings — so `filters` with `onRemove` on every entry doubles that section of the tab order.",
@@ -85,7 +85,7 @@ export const RecordsShellDocs: ComponentDocs = {
     focus: [
       "Collapsing the rail does not move focus — the trigger keeps it — but the rail's contents leave the tab order while collapsed, so a Tab press from the trigger lands in the header instead of the nav.",
       "Emptying the list swaps J5's table for L1 `empty-state`. If focus was on a row control when the last record went away it falls to `<body>`; the same applies to the folder table.",
-      "The scroll region takes focus without painting anything — it has no `focus-visible` style of its own, so on some pages the only sign it is focused is that the arrow keys start scrolling. Every actual control inside it (sidebar trigger, create, chips, sort, folder names, row titles, switches, overflow triggers) carries a ring from its own component.",
+      "The scroll region has no `focus-visible` style of its own, so it falls back to the user agent's `outline: auto 1px`, recoloured by the global `outline-ring/50`. It is thin next to the ring-2 the controls draw, which is worth knowing before you decide whether the arrow keys starting to scroll is the clearer signal. Three of A5's controls are in the same position — the chip toggle, the add-filter chip and the Filters button paint only the user agent's outline, while the remove X inside an applied chip has a real ring. Everything else inside (sidebar trigger, create, sort, folder names, row titles, switches, overflow triggers) carries a ring from its own component.",
     ],
   },
   pitfalls: [

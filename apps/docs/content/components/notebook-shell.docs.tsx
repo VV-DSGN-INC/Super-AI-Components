@@ -92,7 +92,7 @@ export const NotebookShellDocs: ComponentDocs = {
     focus: [
       "A citation jump moves the scroll and not the focus. The left pane scrolls the matching row into view and the status region names it, while focus stays on the marker in the middle pane — deliberate, since you are still mid-sentence, but it means the only keyboard route into the source you just surfaced is back through the pane's own tab stop.",
       "The jump target is found by position in the `sources` array, not by an identifier on the row, so re-ordering `sources` between renders moves where the scroll lands. K5 growing a `data-source-id`, plus a `highlightedSourceId`, would let the destination visibly light up instead of only scrolling.",
-      "The three pane tab stops are bare `tabIndex={0}` containers with no `focus-visible` style, so tabbing into a pane shows nothing. Every actual control — citations, chips, cards, composer buttons — brings its own ring.",
+      "The three pane tab stops are bare `tabIndex={0}` containers with no `focus-visible` style of their own, so what paints on them is the user agent's `outline: auto 1px`, recoloured by the global `outline-ring/50` — thin against the ring-2 the controls inside them draw, but not nothing. Every actual control — citations, chips, cards, composer buttons — brings its own ring.",
       "The shell unmounts nothing that had focus. The focus loss here comes from the composer: D1 disables its textarea while `generating`, which drops focus to `<body>` mid-run.",
     ],
   },
