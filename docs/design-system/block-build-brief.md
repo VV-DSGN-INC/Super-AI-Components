@@ -67,10 +67,16 @@ source; an `Empty` story export; a `Responsive` story export. Two are weaker tha
    `Responsive` at Chromium's default width, identically to any other story. Use the Storybook 9 API
    — `globals: { viewport: { value: "mobile" } }` plus explicit `parameters.viewport.options`;
    `parameters.viewport.defaultViewport` was removed in 9 and does nothing while looking configured
-   — then **verify narrow layout by hand in a browser** and say so in your report. *Integrator:* a
-   second vitest storybook project pinned to a mobile `instances[].viewport` would make this
-   mechanical once for all thirteen. A container-width decorator is not a substitute — B1's drawer
-   swap keys on a viewport media query.
+   — then **verify narrow layout by hand in a browser** and say so in your report. A
+   container-width decorator is not a substitute — B1's drawer swap keys on a viewport media query.
+
+   **Superseded for the case-story `Mobile` export, and cheaply.** The second vitest project this
+   entry used to propose is not needed: `page.viewport(375, 812)` from `@vitest/browser/context`,
+   called at the top of a play function, resizes the test iframe itself. Probed 2026-09-06 —
+   `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false → true, `hidden
+   md:block` goes to `display: none` — and it does not leak into the next story, so it costs one
+   line and no cleanup. `Responsive` still proves nothing; `Mobile` now can. See
+   `story-conventions.md`, mechanical fact 2.
 
 ## Prove the composition
 

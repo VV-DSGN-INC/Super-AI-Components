@@ -62,6 +62,41 @@ story-coverage ratchet`. If the fast-forward refuses, stop and report.
 6. Your own item: the component source `apps/docs/registry/super-ai/<name>.tsx`, its docs module `apps/docs/content/components/<name>.docs.tsx`, its spec anchor in `component-specs.md` or `block-specs.md`, and the existing story file `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`.
 7. `cd apps/docs && pnpm story-coverage:report <name>` — your exact obligations.
 
+### 2b. If your item is a family O shell — read this too
+
+Family O is the last wave and the only one made of **blocks**, and four things
+differ:
+
+1. **Read [`docs/design-system/block-build-brief.md`](../../design-system/block-build-brief.md)
+   in full**, before the exemplars. Its rule outranks convenience: *when a
+   composed component does not fit, report it, do not fork it.* A reimplemented
+   row passes every gate and is still wrong.
+2. **There is no step 3b for you.** A shell declares `regions`, not `states`
+   (`states: []` in the manifest), so it has no declared-state exports and no
+   description obligations. Your report will say `0 described` because there
+   were none, not because you skipped them. Your whole obligation is the eight
+   case names — confirm with `pnpm story-coverage:report <name>`.
+3. **`Empty` and `Responsive` are mandatory exports and `check:contract`
+   enforces them.** Do not rename, merge or remove either while adding the
+   eight. `Responsive` proves nothing mechanically — the viewport addon has no
+   manager in the vitest runner — and it stays anyway; your `Mobile` is what
+   makes the narrow claim real.
+4. **Your `Mobile` must move the real breakpoint, not just the box.** The width
+   wrapper the other twelve waves used is not enough here: B1 `app-sidebar`'s
+   drawer swap keys on a viewport media query, so a 375px wrapper renders the
+   desktop rail inside a narrow box and reports success. Call
+   `page.viewport(375, 812)` from `@vitest/browser/context` at the top of the
+   play — probed 2026-09-06, it moves `window.innerWidth`, flips `matchMedia`,
+   and does not leak into the next story. See `story-conventions.md`,
+   mechanical fact 2.
+
+**And §8's opening section is your own backlog.** "Composition gaps found by
+family O" was written by the twelve builders who built these shells — each item
+is a place the component layer was not good enough to compose. Read the entries
+that name your shell, cite them where a case story reaches one, and say which
+are now stale: several have been fixed since, and at least one was found to
+misattribute the defect.
+
 ### 3. Write
 
 **3a. The case-story block.** Each of the eight is either written or recorded as

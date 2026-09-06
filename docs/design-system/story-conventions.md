@@ -115,6 +115,21 @@ These decide the shape of the stories, and all five cost time to rediscover.
    viewport parameter would render at desktop width in the run that gates.
    Use `<div className="w-[375px] max-w-full">`.
 
+   - **There is one mechanism that does move the breakpoint, and the wrapper
+     rule is not a substitute for it where a layout keys on a media query.**
+     `page.viewport(375, 812)` from `@vitest/browser/context`, called at the top
+     of a play function, resizes the test iframe itself. Probed 2026-09-06:
+     `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false →
+     true, and a `hidden md:block` element goes from `display: block` to
+     `display: none`. It does **not** leak — a second story in the same file
+     reads 1200 again — so no cleanup is needed. Use it where the component
+     under test swaps layout on a breakpoint rather than merely reflowing:
+     family O's shells do, because B1 `app-sidebar`'s drawer swap keys on a
+     viewport media query, and a width wrapper renders the desktop rail inside a
+     375px box while reporting success. Everywhere else the wrapper is still the
+     right tool, and it is what the shipped stories use — it constrains the box
+     without pretending to be a phone.
+
 3. **`ReducedMotion` documents a branch, or it documents its absence.**
    `vitest.config.ts` sets Playwright's `reducedMotion: "reduce"` for every
    test, so the story only differs from its neighbour if the component
