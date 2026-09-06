@@ -81,7 +81,28 @@ These decide the shape of the stories, and all four cost time to rediscover.
    ⊆ story exports*, never the reverse. Case stories cannot break the
    contract gate, and they do not need manifest entries.
 
-2. **`Mobile` must be wrapper-constrained, not `parameters.viewport`.**
+2. **`Mobile` must be wrapper-constrained, not `parameters.viewport`.** Three
+   things about that wrapper cost time in the D/I and E/P waves, so they are
+   written down here rather than rediscovered:
+
+   - A `layout: "centered"` in the meta wraps every story, so
+     `canvasElement.firstElementChild` is the ~1200px centring div and **not**
+     your 375px frame. An overflow assertion against it measures the wrapper and
+     passes for the wrong reason. Give the frame a `data-testid` and measure
+     that.
+   - A wrapper constrains **width, not the breakpoint**. The gate's chromium is
+     1200×900, so `sm:` and `md:` variants still apply inside a 375px box:
+     `preset-grid` renders its four-column layout where a real phone gets three,
+     and `generation-wizard` renders its desktop two-column grid throughout.
+     Where that is true, say so in the description — the story proves the wide
+     layout squeezed narrow does not scroll sideways, which is a different (and
+     stronger) claim than the phone case.
+   - Some defects **only** exist at narrow width, which is the whole reason the
+     story is mandatory: `data-views`' kanban board had a keyboard-unreachable
+     scroll container that nothing overflowed at desktop size, so no other story
+     could have found it.
+
+   The original reason for the rule still stands:
    `.storybook/main.ts` loads only `addon-docs`, `addon-a11y` and
    `addon-vitest`, and the gate runs headless chromium at its own size. A
    viewport parameter would render at desktop width in the run that gates.

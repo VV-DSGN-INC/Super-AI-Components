@@ -77,9 +77,15 @@ case, 98 described): the 18 items whose only debt was undocumented state
 exports (76 descriptions across A/B/C/E/K/M/N) and the 11 D/I items (88 case
 obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
 fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
-entry has what was fixed and what was found. Remaining, all case-block debt:
-E 9 · F 7 · H 7 · J 7 · K 5 · L 4 · M 4 · N 8 · O 13 · P 2 = 66 items; recount
-with the test rather than trusting this line.
+entry has what was fixed and what was found.
+
+**Wave 2 — families E and P — landed the same day.** Baseline **625 → 490**
+(439 case, 51 described). Four of the eleven agents reported normally; the
+other seven were killed by a session rate limit *between finishing their work
+and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
+carries the salvage procedure, because it will happen again. Remaining, all
+case-block debt: F 7 · H 7 · J 7 · K 5 · L 4 · M 4 · N 8 · O 13 = 55 items;
+recount with the test rather than trusting this line.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -1089,6 +1095,84 @@ that stayed open, plus what the wave learned about the primitives underneath.
   swap would be "a system-wide decision"; that premise expired when the sweep
   was decided, and the description should be corrected when the sweep runs.
 
+### Added by the E/P case-story wave (2026-09-05)
+
+- **A second vendored primitive does not mirror, and this one is measurable.**
+  `components/ui/switch.tsx` moves its thumb with
+  `translate-x-[calc(100%-2px)]`, a physical axis. Measured settled under
+  `dir="rtl"` on E7 `member-gate-row`: the track spans 12–44px and the thumb
+  41–57px, so **thirteen of the thumb's sixteen pixels sit outside its own
+  track**; in LTR the same pair is flush. Every switch in the registry inherits
+  it. Its sibling is `components/ui/button-group.tsx`, which joins children with
+  `rounded-r-none` / `rounded-r-lg!` / `rounded-l-none` / `border-l-0` — measured
+  on E8 `generation-wizard`, the radii land on the seam instead of the outer
+  edges and `border-l-0` strips the border from the group's *outer* edge while
+  two borders stack at the seam. Each is one logical-utility fix that would
+  repair every consumer at once, and both are vendored, so neither was swept.
+
+- **A group with an empty label loses its heading, its count and its tone
+  together.** `feed-view.tsx` guards the entire `<header>` on `section.label ?`
+  and renders `null`, so P1 `data-views` drops the group's separator and never
+  calls `groupAccessibleName` for it. That function's own docstring is what
+  makes this sharp: the tone marks are `aria-hidden` decoration and the
+  function is "where the meaning actually reaches assistive tech", so an empty
+  label silently deletes the only channel carrying tone. Measured: four groups,
+  three headers. A caller passing `""` to hide a heading gets a data loss, not
+  a visual tweak.
+
+- **An unselected tab's count badge measures 4.34:1.** `detail-tabs.tsx` dims
+  the badge with `opacity-70` rather than choosing a token, and against its
+  surface that lands under the 4.5:1 minimum; the *selected* tab's badge
+  measures 18.15:1, so the failure exists only in the state nobody is looking
+  at. axe does not catch it, because the rule reads composited colour rather
+  than an opacity applied to a foreground — the same blind spot TOK-8 exists to
+  describe, reached from the other side. Recorded in P2's `LongContent`
+  description, asserted nowhere.
+
+- **E1 `generation-panel`'s "Generate never scrolls away" is conditional, and
+  nothing enforces the condition.** Measured at 375px with identical content:
+  constrained to a 600px column the body scrolls and the footer sits on the
+  card's bottom edge, as the spec promises; **unconstrained, the root's `h-full`
+  resolves to `auto`, `flex-1` and `overflow-y-auto` never engage, and the card
+  grows to 740px — putting Generate 140px below a phone fold.** The docs
+  module's focus note inherits the same conditional. Both panels are rendered in
+  that component's `Mobile` story; only the constrained one is asserted.
+
+- **Under reduced motion, a loading tile and a failed tile become
+  indistinguishable.** A8 `preview-tile` paints both on `bg-muted` and adds text
+  for neither, and E4 `preset-grid` passes no `action` node, so suppressing the
+  pulse removes the only signal separating them. The docs already record that
+  the two *announce* alike; the visual collapse is new. Both are rendered side
+  by side in `preset-grid`'s `ReducedMotion`, and nothing asserts they are
+  distinguishable.
+
+- **Three more components hold state a host cannot reach.** E4 `preset-grid`'s
+  see-more expansion is internal, one-way and never reset, so a host swapping
+  `items` on a mounted grid — the natural move, since four content types are one
+  component — carries the old expansion in and `visibleCount` is ignored from
+  then on. E1 `generation-panel` exposes no
+  `openSections`/`onSectionOpenChange` at all, one step past I2's
+  after-the-fact callback. E8 `generation-wizard` focuses its step title on
+  *any* change of the active step except the first render, so a host restoring
+  a saved position a tick after mount yanks focus into the wizard.
+
+- **Four more rotating chevrons animate with no reduced-motion branch.** E1's
+  was fixed in-wave with the `pricing-table` idiom; the same shape is still
+  live at `approval-card.tsx:162`, `permission-prompt.tsx:184` and
+  `trace-timeline.tsx:375`, all verified present 2026-09-05. Each is a
+  one-class fix for whoever owns the file, so they are left to the F and N
+  waves rather than swept here.
+
+- **The shared ring-check helper is weaker than it reads.** Story play
+  functions assert a visible focus treatment with
+  `boxShadow !== "none" || outlineStyle !== "none"`, and both halves have now
+  produced a false positive: a fully transparent, zero-size shadow
+  (`rgba(0, 0, 0, 0) 0px 0px 0px 0`, measured on P2 `detail-view-shell`'s close
+  button) is not the string `"none"`, and an `sr-only` input clipped to 1×1
+  still carries the UA outline (measured on E1). Until the helper checks size
+  and alpha, "every stop shows a ring" means "every stop has *something* in
+  those two properties".
+
 ## 9. Gaps found by the case-story pilot
 
 Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were
@@ -1412,3 +1496,77 @@ apply (`variant="line"`, `text-foreground/60` at TOK-8's floor). One agent also
 reported a repo-root `pnpm lint` cache hit whose output named a sibling agent
 worktree's paths; `turbo.json` configures no shared cache dir, so the mechanism
 is unconfirmed — noted here rather than in §4 until it bites again.
+
+### Wave 2 — families E and P (2026-09-05)
+
+Eleven agents, same shape as wave 1. All eleven reached zero unmet obligations
+and families E and P are complete, but only four reported: **the other seven
+were killed by a session rate limit in the window between finishing their work
+and verifying it.** That window is the interesting part, because the work was
+not lost — and the recovery is worth writing down, since the next long wave will
+hit the same wall.
+
+**The salvage procedure.** A killed agent's worktree survives with its working
+tree intact. Every one of the seven had fast-forwarded correctly (step 0 of the
+brief) and left a complete, uncommitted tree. So:
+
+1. `git -C <agent worktree> diff > patch` for each, then `git apply --check`
+   every patch against the integration branch before applying any. All seven
+   applied clean, because each wave agent writes only its own files.
+2. Read every registry-source hunk before adopting it. Seven of the seven were
+   the sanctioned shapes, so nothing needed rejecting — but the review is the
+   point, not a formality: nobody had verified this code.
+3. Run `pnpm story-coverage:report <the whole list>`. All seven printed zero
+   unmet, which is what established the work was finished rather than
+   abandoned mid-file — including the one whose last words were "now the story
+   file, writing it in full".
+4. Run the story files. **Five passed as delivered. The two that had never been
+   run once both failed**, which is the lesson: an unverified story file is not
+   evidence of anything, and the two failures were of completely different
+   kinds (see below).
+5. Commit as one reviewed change rather than seven forged agent commits, and
+   say in the message that the verification was done centrally.
+
+**What the two unverified files were hiding.**
+
+- **P1 `data-views` had a real defect and two false assertions.** The defect:
+  the kanban board's scroll container was a bare `<div class="overflow-x-auto">`
+  with no keyboard access — axe `scrollable-region-focusable`, the same rule
+  L5 `shortcuts-sheet` failed in wave 0, and with the same consequence, that a
+  keyboard user reaches the first columns of a board and no further. It is
+  invisible at desktop width because nothing overflows there; the `Mobile`
+  story is the only reason it was found. Fixed with that wave-0 idiom exactly:
+  a `<section>` rather than a `<div>` (a bare div is `role="generic"`, where
+  ARIA prohibits `aria-label`, so the tab stop would arrive anonymous),
+  `tabIndex={0}`, a name for its contents, and a focus ring.
+
+  The two false assertions are the more useful half, because **both were
+  written from reading the source rather than running it, and both read
+  perfectly.** One asserted that a group with an empty label "still announces
+  its count and its tone", reasoning correctly about `groupAccessibleName` and
+  never noticing that `feed-view.tsx` guards the whole header on
+  `section.label ?` so the function is never called. The other asserted that a
+  long title wraps in a table cell and grows the row — true in principle, false
+  at the width the gate runs, where the title column takes 974px of a 1200px
+  table and absorbs it on one line. Both descriptions asserted the same wrong
+  things in prose. Rewritten against measurements, with the measurements in the
+  descriptions.
+
+- **P2 `detail-view-shell` failed on its own debugging probes**, left behind
+  mid-run: two `expect(...).toBe("PROBE")` calls whose whole purpose was to
+  print measurements into a failure message. Deleting them restored the real
+  assertions underneath, which pass. One probe was worth keeping the output of
+  — the 4.34:1 badge contrast now recorded in §8.
+
+**The general lesson, and it is not about rate limits.** A story file that has
+never been executed is a draft, however good it looks; two of two unverified
+files failed, and the failures were a live accessibility defect and two
+confidently-argued untruths. The convention already says a story earns its place
+by being the only place a fact exists — this wave adds that **a fact nobody ran
+is not yet a fact.**
+
+**Also worth carrying forward:** `layout: "centered"` in a meta wraps every
+story, so `canvasElement.firstElementChild` is the ~1200px centring div rather
+than the story's own frame — a `Mobile` overflow assertion against it measures
+the wrapper and passes for the wrong reason. Give the frame a `data-testid`.
+Found on E7 `member-gate-row`; it will bite the next `Mobile` author.
