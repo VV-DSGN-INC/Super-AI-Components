@@ -363,7 +363,11 @@ function NotebookShell({
         // The pane scrolls, so it needs its own tab stop and its own name
         // (axe `scrollable-region-focusable`).
         tabIndex={0}
-        className="bg-card flex shrink-0 flex-col gap-3 border-b p-3 lg:h-full lg:w-72 lg:overflow-y-auto lg:border-r lg:border-b-0"
+        // `border-e`, not `border-r`: this is the divider between this pane and
+        // the conversation, so it belongs on the inline end. Compiles to the
+        // same declaration in LTR and stays between the two panes under RTL,
+        // where `border-r` painted it on the shell's outer edge instead.
+        className="bg-card flex shrink-0 flex-col gap-3 border-b p-3 lg:h-full lg:w-72 lg:overflow-y-auto lg:border-e lg:border-b-0"
       >
         <SourcePanel
           sources={sources}
@@ -461,7 +465,10 @@ function NotebookShell({
         data-region="studio-outputs"
         aria-labelledby={studioLabelId}
         tabIndex={0}
-        className="bg-card flex shrink-0 flex-col gap-4 border-t p-3 lg:h-full lg:w-80 lg:overflow-y-auto lg:border-t-0 lg:border-l"
+        // `border-s` for the same reason as the sources pane's `border-e`: the
+        // divider faces the conversation, which is the inline start of this
+        // pane in both directions.
+        className="bg-card flex shrink-0 flex-col gap-4 border-t p-3 lg:h-full lg:w-80 lg:overflow-y-auto lg:border-t-0 lg:border-s"
       >
         <h2 id={studioLabelId} className="text-sm font-medium">
           {studioLabel}
