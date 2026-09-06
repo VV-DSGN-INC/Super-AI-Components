@@ -50,9 +50,10 @@ story-coverage ratchet`. If the fast-forward refuses, stop and report.
 1. [`docs/design-system/story-conventions.md`](../../design-system/story-conventions.md) — whole file. The eight, the skip grammar, the four mechanical facts, the play-function rule.
 2. [`docs/design-system/component-build-brief.md`](../../design-system/component-build-brief.md) §Story.
 3. The spec's §3.4 fix policy (link above): mechanical fixes land in-wave, behavioural fixes are recorded and never pinned.
-4. Exemplars: `apps/storybook/src/stories/super-ai/SuggestionChips.stories.tsx` (pilot — the skip-comment block), `RunButton.stories.tsx` (wave 0). If your component renders inside a Base UI portal (dialog, popover, sheet, menu, select, tooltip), also `TaskTray.stories.tsx` and `ShortcutsSheet.stories.tsx` before writing `KeyboardOrder`.
-5. Your own item: the component source `apps/docs/registry/super-ai/<name>.tsx`, its docs module `apps/docs/content/components/<name>.docs.tsx`, its spec anchor in `component-specs.md` or `block-specs.md`, and the existing story file `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`.
-6. `cd apps/docs && pnpm story-coverage:report <name>` — your exact obligations.
+4. `CONTINUE.md` §8's "Added by the D/I case-story wave" and §9's "Wave 1" entry. Wave 1 found four traps that live in the primitives rather than in any one component — unnamed `PopoverContent`s, the missing `DirectionProvider`, the vendored `Button`'s press nudge, and `Tabs.Panel` as an unstyled extra stop. Read them before you conclude your component is the first to hit one.
+5. Exemplars: `apps/storybook/src/stories/super-ai/SuggestionChips.stories.tsx` (pilot — the skip-comment block), `RunButton.stories.tsx` (wave 0), and from wave 1 `ContextToolbar.stories.tsx` (all eight, a real `role="toolbar"` walk) and `QuoteReply.stories.tsx` (three well-argued skips). If your component renders inside a Base UI portal (dialog, popover, sheet, menu, select, tooltip), also `AiToolsMenu.stories.tsx` — it carries the settle-on-departure form of the focus walk, which is the one to copy — and note that `TaskTray.stories.tsx` and `ShortcutsSheet.stories.tsx` still use the older arrival form.
+6. Your own item: the component source `apps/docs/registry/super-ai/<name>.tsx`, its docs module `apps/docs/content/components/<name>.docs.tsx`, its spec anchor in `component-specs.md` or `block-specs.md`, and the existing story file `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`.
+7. `cd apps/docs && pnpm story-coverage:report <name>` — your exact obligations.
 
 ### 3. Write
 
