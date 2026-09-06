@@ -319,9 +319,18 @@ function StudioShell({
             worse than a tall one. Above `md` they are three columns and each
             owns its own overflow. */}
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row md:overflow-hidden">
+          {/* `md:border-e`, not `md:border-r`: the seam belongs between the
+              panel and the canvas, which is the panel's *left* edge in an RTL
+              shell. Byte-identical in LTR — measured, because the swap is only
+              free on the element that paints the border (N6's `<tr>` is the
+              counter-example): panel 92..380 with a 1px right border before and
+              after. Under RTL the physical class had stacked a second border
+              against the rail's own `border-e` at 1108 and left the
+              panel/canvas seam at 820 unpainted. Same fix as the rail's, which
+              `modality-rail.tsx` already carries. */}
           <div
             data-region="tool-panel"
-            className="flex shrink-0 flex-col gap-2 border-b p-2 md:w-72 md:border-r md:border-b-0"
+            className="flex shrink-0 flex-col gap-2 border-b p-2 md:w-72 md:border-e md:border-b-0"
           >
             <ToolPanel
               sections={panelSections}
@@ -430,7 +439,12 @@ function StudioShell({
             role="group"
             aria-label={inspectorLabel}
             tabIndex={0}
-            className="focus-visible:ring-ring shrink-0 overflow-y-auto border-t p-3 focus-visible:ring-2 focus-visible:outline-none md:w-72 md:border-t-0 md:border-l"
+            // `md:border-s`, not `md:border-l`: the seam belongs between the
+            // canvas and the inspector, which is the inspector's *right* edge
+            // in an RTL shell. Byte-identical in LTR — measured: inspector
+            // 912..1200 with a 1px left border before and after. Under RTL the
+            // physical class painted on the shell's outer edge instead.
+            className="focus-visible:ring-ring shrink-0 overflow-y-auto border-t p-3 focus-visible:ring-2 focus-visible:outline-none md:w-72 md:border-t-0 md:border-s"
           >
             <PropertyInspector
               elementType={selection?.type ?? null}
