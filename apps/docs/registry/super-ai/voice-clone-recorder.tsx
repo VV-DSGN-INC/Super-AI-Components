@@ -157,7 +157,17 @@ function VoiceCloneRecorderConsentDialog({
         if (!open) onConsentCancel?.();
       }}
     >
-      <AlertDialogContent data-slot="voice-clone-recorder-consent">
+      {/* The reduced-motion variant is restated on both halves rather than
+          written as a bare `motion-reduce:animate-none`: on a Base UI popup the
+          plain form is inert, because Tailwind wraps the data-attribute test in
+          `:where(…)` and emits the plain block first, so source order hands the
+          tie to `animation: enter`. Measured on this dialog — animation-name
+          read "enter" under emulated reduce before this line and "none" after.
+          See story-conventions.md, mechanical fact 3. */}
+      <AlertDialogContent
+        data-slot="voice-clone-recorder-consent"
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+      >
         <AlertDialogHeader>
           <AlertDialogTitle>{consentTitle}</AlertDialogTitle>
           <AlertDialogDescription>
@@ -271,7 +281,7 @@ function VoiceCloneRecorder({
               beside it rather than folded into the live region (which would
               re-announce every tick). */}
           <div className="text-destructive flex items-center gap-2 text-sm font-medium">
-            <span aria-hidden="true" className="bg-destructive size-2 shrink-0 animate-pulse rounded-full" />
+            <span aria-hidden="true" className="bg-destructive size-2 shrink-0 animate-pulse rounded-full motion-reduce:animate-none" />
             <span role="status" aria-live="polite" data-slot="voice-clone-recorder-status">
               Recording
             </span>

@@ -49,7 +49,10 @@ export function FeedView<T extends ViewItem>({
                   onClick={() => onItemClick?.(item)}
                   aria-current={selectedId === item.id ? "true" : undefined}
                   className={cn(
-                    "hover:bg-muted/50 focus-visible:ring-ring w-full border-b px-4 py-2.5 text-left text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
+                    // `text-start`, not `text-left`: byte-identical in LTR, and
+                    // the row's padding is symmetric, so this is the one class
+                    // that was pinning a mirrored row's text to the wrong edge.
+                    "hover:bg-muted/50 focus-visible:ring-ring w-full border-b px-4 py-2.5 text-start text-sm transition-colors focus-visible:ring-2 focus-visible:outline-none",
                     selectedId === item.id && "bg-accent",
                   )}
                 >

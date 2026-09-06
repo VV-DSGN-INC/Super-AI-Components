@@ -32,7 +32,11 @@ export function KanbanColumn({ title, count, tone = "neutral", children, classNa
       <header className={GROUP_HEADER_CLASS}>
         {GROUP_TONE_MARK[tone]}
         <h2 className="text-sm font-medium">{title}</h2>
-        <span className="ml-auto text-xs tabular-nums opacity-70">{count}</span>
+        {/* `ms-auto`, not `ml-auto`: identical in LTR, and under `dir="rtl"` a
+            physical left margin absorbs the free space on the wrong side, so
+            the count jams against the title instead of sitting at the header's
+            inline end. Measured on the RTL case story. */}
+        <span className="ms-auto text-xs tabular-nums opacity-70">{count}</span>
       </header>
       <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto p-2">{children}</div>
     </section>

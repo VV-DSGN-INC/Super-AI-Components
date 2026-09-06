@@ -63,7 +63,7 @@ const POPUP_EXPANDED = "sm:max-w-[1534px]";
    note stays as the record of why they were ever there — anyone reinstating a
    Sheet here has to reinstate them too.
    ─────────────────────────────────────────────────────────────────────────── */
-const OVERLAY_INSET = "inset-y-2 right-2 h-auto rounded-lg";
+const OVERLAY_INSET = "inset-y-2 end-2 h-auto rounded-lg";
 /* Overlay mode only earns its keep while the board behind stays usable — that
    is the whole reason it is de-modalized. So the width is capped by what the
    viewport can actually spare, not just by a share of it.
@@ -152,7 +152,7 @@ export function DetailViewShell({
     panes = (
       <>
         {attributesPane}
-        <div className="flex min-h-0 min-w-0 flex-1 border-l">{conversationPane}</div>
+        <div className="flex min-h-0 min-w-0 flex-1 border-s">{conversationPane}</div>
       </>
     );
   } else if (collapse === "tabs") {
@@ -208,6 +208,11 @@ export function DetailViewShell({
           aria-label={ariaLabel}
           className={cn(
             "flex w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 transition-[max-width] duration-200 ease-out",
+            /* The frame grows when a conversation arrives, and the Dialog zooms in
+               on open. Both are motion. The `data-*` halves have to be restated
+               because a bare `motion-reduce:animate-none` loses the source-order
+               tie to `data-open:animate-in` — story-conventions.md, fact 3. */
+            "motion-reduce:transition-none motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none",
             POPUP_HEIGHT,
             showExpanded ? POPUP_EXPANDED : POPUP_COLLAPSED,
             className,
