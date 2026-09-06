@@ -79,6 +79,13 @@ obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
 fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
 entry has what was fixed and what was found.
 
+**Wave 6 — families K and L — landed 2026-09-06.** Baseline **305 → 219** (200
+case, 19 described). Nine agents, nine items, all at zero unmet. It closed the
+last unrestated dropdown popup in the registry, fixed the dialog backdrop that
+no call site could reach, and corrected five more written claims — four docs
+notes and, for the third time, this file's own entry on right-to-left. §8's K/L
+subsection and §9's wave 6 entry have the detail.
+
 **Wave 5 — family J — landed 2026-09-06.** Baseline **362 → 305** (272 case,
 33 described). Seven agents, seven items, all at zero unmet. Its distinguishing
 feature is how much of it was an audit of earlier work: three claims recorded in
@@ -103,8 +110,8 @@ now fixed with a shared helper.
 other seven were killed by a session rate limit *between finishing their work
 and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
 carries the salvage procedure, because it will happen again. Remaining, all
-case-block debt after wave 5: K 5 · L 4 · M 4 · N 8 · O 13 = 34 items; recount
-with the test rather than trusting this line.
+case-block debt after wave 6: M 4 · N 8 · O 13 = 25 items; recount with the test
+rather than trusting this line.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -1074,15 +1081,24 @@ that stayed open, plus what the wave learned about the primitives underneath.
   `time-ruler`, `stem-mixer` and `transcript-editor`: under `dir="rtl"`,
   ArrowRight advances in DOM order, which paints to the left.
 
-  **Positioning is a separate mechanism and does work.** K4
-  `selection-toolbar` measured the distinction: floating-ui's
-  `platform.isRTL` reads *computed style*, so `align` and `side` mirror
-  correctly whenever `dir` sits on the document — while the keyboard travel
-  above reads React context and does not. Two consequences. A wrapper
-  `<div dir="rtl">` silently fails the positioning half, which is why an RTL
-  story for anything portalled has to set `dir` on the document (the
-  `RtlDocument` idiom). And a component whose popup lands on the right side
-  under RTL is not evidence that its arrow keys do.
+  **`align` is a separate mechanism and does work; `side` is not.** Three
+  agents narrowed this in turn. K4 `selection-toolbar` and K2
+  `inline-generate-popup` measured that floating-ui's `platform.isRTL` reads
+  *computed style*, so `align="start"` mirrors correctly whenever `dir` sits on
+  the document — K2's numbers: RTL popup 495..815 against a trigger at 685..815,
+  LTR 385..705 against 385..515. L2 `coach-mark` then measured the half that
+  does **not**: a physical `side="right"` request stays physically right
+  (596..916 against an anchor at 483..584), because Base UI reads *that* from
+  the same `DirectionContext` nothing mounts. So the split is not
+  positioning-versus-keyboard, it is which source each property happens to
+  read: `align` off rendered direction, `side` and composite arrow travel off
+  React context.
+
+  Two consequences either way. A wrapper `<div dir="rtl">` silently fails the
+  `align` half, which is why an RTL story for anything portalled has to set
+  `dir` on the document (the `RtlDocument` idiom). And a popup that lands on the
+  correct side under RTL is not evidence that its arrow keys, or its `side`
+  request, do.
 
   The fix for the keyboard half is one provider at the app shell, or the
   primitive reading `dir` — a shell-level decision, recorded, not made here.
@@ -1505,6 +1521,70 @@ that stayed open, plus what the wave learned about the primitives underneath.
   elsewhere.** J1 `asset-library`'s per-row controls are named `Select {name}`
   and `Actions for {name}` — distinct, derived from the row's own data. That is
   what the per-row naming contract looks like when it holds.
+
+### Added by the K/L case-story wave (2026-09-06)
+
+- **Every dialog in the registry was still fading its backdrop under reduced
+  motion, and no call site could fix it.** `DialogContent` renders
+  `<DialogOverlay />` with no `className` threaded through, so the pair that
+  waves 3, 4 and 6 applied to dialog *panels* never reached the scrim. L3
+  `feature-announcement` measured it: its popup read `animation-name: none`
+  while its overlay read `enter`. The pair now lives on `DialogOverlay`'s own
+  class string in both copies of the vendored file, verified by probe.
+
+- **Tabbing past the last control destroys work in two components.** L2
+  `coach-mark`: Base UI's trigger focus guard closes the popup on `focusOut`
+  before forwarding, so Tab past Next ends the tour — and the guard forwards to
+  the tabbable *after* the anchor, so forward-tabbing never reaches the control
+  being pointed at, which is the opposite of the intent. L3
+  `feature-announcement`: the same close path fires `onDismiss(id)`, and the
+  contract says a dismissed id must never re-show, so a Tab permanently
+  dismisses an announcement. K2 `inline-generate-popup` has the milder form —
+  the popup closes but nothing is lost.
+
+- **The same empty string is a red gate on one field and silent on the next.**
+  K1 `ai-doc-block` has two textareas: `editLabel=""` fails axe `label`
+  outright, while `rePromptLabel=""` raises nothing even though
+  `dom-accessibility-api` computes an empty name. The only structural
+  difference is that the second field has a placeholder to fall back on. That is
+  the clearest statement yet of why the gate is a floor and not a check: whether
+  this defect is caught depends on an unrelated property of the field it lands
+  on.
+
+- **Suppressing motion can turn a progress bar into a lie.** K5
+  `source-panel`'s indeterminate bar is a full-width pulse; stopping the pulse
+  leaves a solid 100% bar under a row reading "Step 1 of 3", so a stalled import
+  reads as finished. Distinct from E4 `preset-grid`'s collapse, where two states
+  became indistinguishable — here one state reads as a *different* state. K5 is
+  otherwise the counter-case: all five stage names survive as visible text.
+
+- **Neither focus helper can see a menu row's treatment.** `DropdownMenuItem`
+  marks focus with `focus:bg-accent`, and `focusTreatmentSignature` reads
+  outline, box-shadow and border colour only. K4 `selection-toolbar` takes its
+  own signature including `background-color`, which doubles as the regression
+  guard for the `focus:bg-transparent` override F7 and I4 carry — a candidate
+  for the shared helper.
+
+- **`check:tokens` false-positives on prose.** L6 `onboarding-wizard` found that
+  writing the literal class name `transition-all` inside a source *comment*
+  fails MOT-2 as a blocker. Same shape as the documented `#1234`-reads-as-hex
+  limitation, and not written down anywhere until now.
+
+- **Two vendored findings narrowed rather than added.** K1 measured that the
+  `button-group` border defect costs nothing visible on a consumer whose
+  children are `variant="default"`, because those are `border-transparent` — it
+  is the radii that are seen, so the severity depends on the variants a call
+  site uses. And L6 measured that the vendored `Progress` transition is inert
+  where the call site hides the track, which is real registry-wide and a no-op
+  there.
+
+- **Three positives worth recording, because the program has mostly logged
+  failures.** K2 `inline-generate-popup` does *not* lose focus on cancel — the
+  shape broken in four other components — because Cancel and Try again are the
+  same element in the same slot of one ternary, so React relabels one node in
+  place. L4 `whats-new`'s vertical composite never consults direction, so the
+  missing provider costs it nothing. And L2 `coach-mark`'s popover was already
+  named through Base UI's own title, unlike the four that shipped unnamed.
 
 ## 9. Gaps found by the case-story pilot
 
@@ -2120,3 +2200,48 @@ measuring something it had been handed as settled.** The instructions said cite,
 not verify, and the citation was wrong four times out of four attempts to check.
 A note in a file is not evidence; the thing that made these findable was that
 writing a story forces you to render the claim.
+
+### Wave 6 — families K and L (2026-09-06)
+
+Nine agents, nine items, all at zero unmet, and the last reduced-motion holdouts
+closed: K4 `selection-toolbar` carried the final unrestated `DropdownMenuContent`
+in the registry, and the integrator closed the dialog backdrop that no call site
+could reach. §8 has what the wave found in the components.
+
+**What is worth reading twice is how much of it was correction.** Five written
+claims were wrong, and every one was caught by an agent that had been handed the
+claim as background:
+
+- L4 `whats-new`'s docs said its detail pane carries no focus ring. It carries
+  one and paints it — **the first correction in this program that made a
+  component look better than its documentation**, and it was verified in the
+  source before the text was changed.
+- L3 `feature-announcement`'s docs said its card and chip are both
+  CTA-then-dismiss. The chip is; the card is reversed, because its action slot
+  sits inside the header.
+- L6 `onboarding-wizard`'s docs said Home and End reach the first and last
+  choice card. Neither is bound, nor is PageUp, so arrowing is the only route to
+  a later option — and arrowing *answers the question* with every card it
+  passes.
+- K3 `diff-review`'s docs quoted a button name without the space the
+  accessible-name computation inserts before a hidden suffix.
+- L2 `coach-mark`'s docs said Tab past Next continues into the page so the
+  control being pointed at stays usable. It ends the tour instead.
+
+**And this file's own right-to-left entry was narrowed for the third time**,
+which is worth stating plainly because the first two versions were also written
+here with confidence. Wave 1 said Base UI composites never learn about
+direction. Wave 5 split that into positioning-works and keyboard-does-not. Wave
+6 shows the real split is neither: `align` reads rendered direction and mirrors,
+while `side` reads the same missing React context the arrow keys do. Three
+measurements, each narrowing the last, none of which required new tooling —
+only rendering the claim.
+
+**The sharpest single finding is about the gate itself.** K1 `ai-doc-block` has
+two textareas. Giving both an empty label produces a red gate on one and silence
+on the other, and the only structural difference is that the silent one has a
+placeholder to fall back on. The gate is a floor, not a check: whether it
+catches this defect depends on an unrelated property of the field the defect
+lands on. That is the argument for case stories in one sentence, and it took
+six waves and a component with two nearly identical fields to say it this
+cleanly.
