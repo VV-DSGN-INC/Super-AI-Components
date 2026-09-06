@@ -96,7 +96,7 @@ export const WhatsNewDocs: ComponentDocs = {
     focus: [
       "Opening the dialog moves focus to the selected entry's tab — the first tabbable element inside it — and traps focus there. Closing returns focus to the trigger, unless you passed `trigger={null}`, in which case there is no return target and focus falls to `<body>`.",
       "Committing a different entry leaves focus on the tab and never moves it into the pane, so the reader is one Tab away from content that has silently changed underneath them.",
-      "The detail pane is a tab stop with no visible focus indicator: it carries `outline-none` and no replacement ring. The tabs draw `focus-visible:ring-2`, and the CTA and close button inherit the shared `Button` ring, so the scrollable pane is the one place a keyboard user can land and see nothing.",
+      "Every stop here paints a ring, the detail pane included: it carries `focus-visible:ring-ring focus-visible:ring-2` and draws it, verified by deleting those two classes and watching the story fail. This note previously said the pane had `outline-none` and no replacement; it does not. The tabs draw their own ring, and the CTA and close button inherit the shared `Button` one",
     ],
   },
   pitfalls: [

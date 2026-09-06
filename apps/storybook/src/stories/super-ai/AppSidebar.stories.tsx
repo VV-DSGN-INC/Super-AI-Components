@@ -70,16 +70,36 @@ const FULL_ARGS: AppSidebarProps = {
   footer: <div className="text-muted-foreground px-2 text-xs">nick@acme.com</div>,
 };
 
+/**
+ * All four slots filled — switcher, nav, promo card, footer — in the one order
+ * the component allows, inside a provider with `defaultOpen`. AppSidebar owns
+ * the arrangement only; expanding, collapsing and the mobile drawer belong to
+ * the vendored shadcn Sidebar it sits in.
+ */
 export const Expanded: Story = {
   args: FULL_ARGS,
   render: (args) => <AppSidebarShell {...args} defaultOpen />,
 };
 
+/**
+ * Identical args to `Expanded` with the provider's `defaultOpen` set to false.
+ * That single flag is the entire difference between the two widths, which is
+ * the spec's "three widths are one component" made concrete: nothing in the
+ * slot props changes when the rail collapses.
+ */
 export const IconRail: Story = {
   args: FULL_ARGS,
   render: (args) => <AppSidebarShell {...args} defaultOpen={false} />,
 };
 
+/**
+ * Below 768px the vendored Sidebar swaps itself for a Sheet-based drawer. The
+ * swap keys off the real viewport (`useIsMobile` is a `matchMedia` query), so
+ * neither `parameters.viewport` nor a 375px wrapper reaches it in the headless
+ * gate — this story renders as the expanded sidebar there and documents intent;
+ * the drawer itself is verified by resizing the browser. Only two slots are
+ * passed, because the promo card and footer are not what a drawer is for.
+ */
 export const MobileDrawer: Story = {
   args: {
     switcher: <WorkspaceSwitcher workspaces={WORKSPACES} currentId="acme" onSelect={() => {}} />,

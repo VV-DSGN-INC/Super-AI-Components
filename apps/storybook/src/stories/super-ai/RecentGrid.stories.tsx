@@ -30,22 +30,48 @@ const RECENT_ITEMS = [
 const INTERACTIVE_ITEMS: RecentGridItem[] = RECENT_ITEMS.map((item) => ({ ...item, onOpen: () => {} }));
 const FIRST_TITLE = INTERACTIVE_ITEMS[0].title;
 
+/**
+ * The default layout: fixed-height thumbnails with the title below, each frame
+ * a `preview-tile` with `labelPlacement="below"`. The tile's frame button takes
+ * its accessible name from that title through `aria-labelledby`, so an open
+ * action is named without the caller writing a label.
+ */
 export const Grid: Story = {
   args: { items: RECENT_ITEMS, layout: "grid" },
 };
 
+/**
+ * The same items with `layout="list"`: thumbnail beside title in a denser,
+ * scannable row (`labelPlacement="none"`, the title rendered by the row
+ * instead). One component, two renderings of the same item data — switching
+ * layouts never means re-mapping the data.
+ */
 export const List: Story = {
   args: { items: RECENT_ITEMS, layout: "list" },
 };
 
+/**
+ * `durationLabel` renders in the badge slot as a finished string ("12:04").
+ * The grid formats nothing; the caller decides what a duration reads as.
+ */
 export const DurationBadge: Story = {
   args: { items: [{ id: "1", title: "Q3 Launch Trailer", durationLabel: "12:04" }] },
 };
 
+/**
+ * `editedAgo` is finished text — "Edited 19 hours ago" beats a timestamp,
+ * because recency is the only reason this surface exists. The component never
+ * computes relative time from a date.
+ */
 export const EditedAgo: Story = {
   args: { items: [{ id: "1", title: "Q3 Launch Trailer", editedAgo: "Edited 19 hours ago" }] },
 };
 
+/**
+ * `items: []` renders an in-grid tile carrying `emptyTitle` and
+ * `emptyDescription`, not a page takeover. The empty state keeps the grid's
+ * geometry so the page does not jump when the first project arrives.
+ */
 export const Empty: Story = {
   args: {
     items: [],
@@ -54,6 +80,11 @@ export const Empty: Story = {
   },
 };
 
+/**
+ * `actions` on an item renders controls in the tile's corner — here a single
+ * icon button with its own `aria-label`. "Hover" names the reveal, not the
+ * reachability: the control is in the tab order regardless of pointer.
+ */
 export const HoverActions: Story = {
   args: {
     items: [

@@ -81,7 +81,7 @@ export function DetailTabs({ items, activeId, onSelect, ariaLabel, className }: 
           >
             <span>{item.label}</span>
             {item.count === undefined ? null : (
-              <span className="bg-muted ml-1.5 rounded px-1 text-xs tabular-nums opacity-70">
+              <span className="bg-muted ms-1.5 rounded px-1 text-xs tabular-nums opacity-70">
                 {item.count}
               </span>
             )}

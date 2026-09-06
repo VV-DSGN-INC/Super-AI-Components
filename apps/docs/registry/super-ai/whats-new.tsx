@@ -162,7 +162,19 @@ function WhatsNew({
       {trigger === null ? null : <DialogTrigger render={trigger ?? defaultTrigger} />}
       <DialogContent
         data-slot="whats-new"
-        className={cn("flex h-[30rem] max-h-[85vh] flex-col gap-3 sm:max-w-3xl", className)}
+        className={cn(
+          "flex h-[30rem] max-h-[85vh] flex-col gap-3 sm:max-w-3xl",
+          // The variant is restated on both halves rather than written bare.
+          // `DialogContent` animates through `data-open:animate-in` /
+          // `data-closed:animate-out`, and Tailwind v4 wraps the
+          // data-attribute test in `:where(…)`, so a plain
+          // `motion-reduce:animate-none` ties on specificity and loses on
+          // source order — the class sits in the string and the popup still
+          // animates. Measured on `shortcuts-sheet`; the `ReducedMotion`
+          // story reads `animation-name` back rather than trusting the class.
+          "motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none",
+          className,
+        )}
         {...props}
       >
         <DialogHeader>
@@ -187,7 +199,7 @@ function WhatsNew({
             <TabsPrimitive.List
               data-slot="whats-new-list"
               aria-label="Updates"
-              className="flex w-44 shrink-0 flex-col gap-0.5 overflow-y-auto border-r pr-2 sm:w-56"
+              className="flex w-44 shrink-0 flex-col gap-0.5 overflow-y-auto border-e pe-2 sm:w-56"
             >
               {entries.map((entry) => {
                 const selected = entry.id === selectedId;
@@ -197,7 +209,7 @@ function WhatsNew({
                     value={entry.id}
                     data-slot="whats-new-entry"
                     className={cn(
-                      "flex w-full shrink-0 flex-col items-start gap-0.5 rounded-md px-2 py-1.5 text-left transition-colors",
+                      "flex w-full shrink-0 flex-col items-start gap-0.5 rounded-md px-2 py-1.5 text-start transition-colors",
                       "focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none",
                       selected
                         ? "bg-accent text-accent-foreground"
@@ -240,7 +252,7 @@ function WhatsNew({
                 key={entry.id}
                 value={entry.id}
                 data-slot="whats-new-detail"
-                className="focus-visible:ring-ring flex min-w-0 flex-1 flex-col gap-3 overflow-y-auto pr-1 focus-visible:ring-2 focus-visible:outline-none"
+                className="focus-visible:ring-ring flex min-w-0 flex-1 flex-col gap-3 overflow-y-auto pe-1 focus-visible:ring-2 focus-visible:outline-none"
               >
                 {entry.media ? (
                   <div

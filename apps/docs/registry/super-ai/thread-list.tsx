@@ -174,7 +174,15 @@ function ThreadListItem({
         >
           <MoreHorizontal />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        {/* The restated motion-reduce pair, not a bare `motion-reduce:animate-none`.
+            Both halves are needed because Tailwind emits the plain block before
+            the `data-*` variants and the two compile to one class of
+            specificity, so source order otherwise hands the win to
+            `animation: enter`. story-conventions.md, mechanical fact 3. The
+            suppression cannot live on the vendored primitive and reach every
+            consumer — it has to be restated per call site, which is why ten
+            components now carry this exact string. */}
+        <DropdownMenuContent align="start" className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
           {/* Base UI adaptation: MenuItem uses onClick (not onSelect). The menu
               closes automatically (closeOnClick default true), which triggers
               onOpenChangeComplete where we enter rename mode. */}
@@ -200,7 +208,7 @@ function ThreadListItem({
           so onClick works directly. AlertDialogCancel uses AlertDialogPrimitive.Close
           with a render= Button underneath — the wrapper accepts standard close props. */}
       <AlertDialog open={confirmingDelete} onOpenChange={setConfirmingDelete}>
-        <AlertDialogContent>
+        <AlertDialogContent className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this conversation?</AlertDialogTitle>
             <AlertDialogDescription>

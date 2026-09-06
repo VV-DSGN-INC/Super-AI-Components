@@ -85,9 +85,19 @@ const STAGE_ICON: Record<SourcePanelStage, React.ReactNode> = {
  * "working". Same arbitrary-descendant-variant idiom as model-picker's
  * ENTITY_ROW_SELECTED_DESCRIPTION_FIX — a call-site override for a child a
  * plain `className` cannot reach.
+ *
+ * The `motion-reduce:` half is the same idiom applied to the same child: the
+ * indicator's pulse is unreachable from a plain class, so the branch has to be
+ * restated as an arbitrary descendant variant too. Measured under emulated
+ * reduce — `animation-name` reads "pulse" without it and "none" with it, so
+ * source order goes the right way here (unlike on a Base UI popup surface,
+ * where the same shape needs the variant restated on both animation halves).
+ * The `SourcePanel` `ReducedMotion` story reads it back rather than trusting
+ * the class.
  */
 const INDETERMINATE_INDICATOR_FIX =
-  "[&_[data-slot=progress-indicator]]:w-full [&_[data-slot=progress-indicator]]:animate-pulse";
+  "[&_[data-slot=progress-indicator]]:w-full [&_[data-slot=progress-indicator]]:animate-pulse " +
+  "[&_[data-slot=progress-indicator]]:motion-reduce:animate-none";
 
 /**
  * A failed row's description *is* the error message, so it must not be the
@@ -266,7 +276,7 @@ function SourcePanel({
               {heading}
             </p>
           ) : null}
-          {action ? <div className="ml-auto">{action}</div> : null}
+          {action ? <div className="ms-auto">{action}</div> : null}
         </div>
       ) : null}
 

@@ -91,7 +91,12 @@ function PresetGridTile({
       data-slot="preset-grid-tile"
       data-state={selected ? "on" : "off"}
       onClick={onSelect}
-      className="focus-visible:ring-ring rounded-lg text-left focus-visible:ring-2 focus-visible:outline-none"
+      // `text-start`, not `text-left`: a `<button>` centres its text by
+      // default, so something has to override it for the overlay label, and
+      // the logical form compiles to the same declaration in LTR while
+      // mirroring under `dir="rtl"`. Sanctioned swap class — CONTINUE.md §8,
+      // "Logical properties"; A9 entity-row carries the same note.
+      className="focus-visible:ring-ring rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none"
     >
       {/* `onSelect` intentionally not forwarded to preview-tile: its own
           interactive Frame would add a second, nested aria-pressed button.
@@ -134,7 +139,8 @@ function PresetGridSeeMore({
       type="button"
       data-slot="preset-grid-see-more"
       onClick={onSelect}
-      className="focus-visible:ring-ring rounded-lg text-left focus-visible:ring-2 focus-visible:outline-none"
+      // Same sanctioned swap as the tile above.
+      className="focus-visible:ring-ring rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none"
     >
       <PreviewTile aspect="square" labelPlacement="none">
         <div className="text-foreground flex h-full w-full flex-col items-center justify-center gap-1 p-2 text-center text-xs font-medium">

@@ -34,6 +34,13 @@ function ControlledPromoCard(props: PromoCardProps) {
   );
 }
 
+/**
+ * The upgrade pitch, wrapped in `ControlledPromoCard` so the story holds
+ * `dismissed` the way a consumer must — the component only renders the choice.
+ * The play clicks dismiss and asserts the card is gone; persisting that across
+ * sessions is the consumer's job, and the spec calls a CTA that returns every
+ * session a bug.
+ */
 export const Upgrade: Story = {
   args: {
     flavour: "upgrade",
@@ -54,6 +61,11 @@ export const Upgrade: Story = {
   },
 };
 
+/**
+ * The invite pitch. Same anatomy as `Upgrade` — title, description, CTA,
+ * dismiss — with `flavour` selecting the icon shape and tone: four flavours,
+ * one component, and the flavour is data rather than a variant to fork.
+ */
 export const Invite: Story = {
   args: {
     flavour: "invite",
@@ -65,6 +77,11 @@ export const Invite: Story = {
   },
 };
 
+/**
+ * The product-update pitch, for a version the user can install now. The copy is
+ * something this system could really emit — a version number and two named
+ * changes — rather than marketing filler.
+ */
 export const UpdateAvailable: Story = {
   args: {
     flavour: "update-available",
@@ -76,6 +93,12 @@ export const UpdateAvailable: Story = {
   },
 };
 
+/**
+ * The one flavour tied to consumption, and the only one the source marks
+ * `urgent`: a near-limit warning gets a solid CTA where the others stay neutral.
+ * It is still ambient — a message that must block a specific action belongs to
+ * that action, not to this card.
+ */
 export const QuotaWarning: Story = {
   args: {
     flavour: "quota-warning",
@@ -87,6 +110,12 @@ export const QuotaWarning: Story = {
   },
 };
 
+/**
+ * `dismissed: true` renders nothing at all — the component returns `null`, so
+ * the canvas is intentionally empty. That is the contract: dismissal is a prop
+ * the consumer persists and feeds back in, and a dismissed promo leaves no
+ * placeholder behind.
+ */
 export const Dismissed: Story = {
   args: {
     flavour: "upgrade",

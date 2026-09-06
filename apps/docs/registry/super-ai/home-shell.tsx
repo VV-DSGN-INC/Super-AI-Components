@@ -271,10 +271,16 @@ function HomeShell({
       <SidebarInset className="min-w-0 overflow-hidden">
         {/* B7 has no leading slot, so the sidebar trigger is a sibling and the
             topbar's own bottom border moves out to this row — otherwise the
-            trigger sits above the rule the header draws. */}
+            trigger sits above the rule the header draws.
+
+            `ps-` rather than `pl-` on this row and on B7 below: the padding
+            leads the trigger, and the trigger leads the row in whichever
+            direction the row runs. Byte-identical in LTR — measured, not
+            assumed, by reading the whole frame back with and without the swap
+            (HomeShell.stories.tsx, `RTL`, which pins the mirrored half). */}
         <div
           data-region="topbar"
-          className="bg-background flex h-12 shrink-0 items-center gap-1 border-b pl-2"
+          className="bg-background flex h-12 shrink-0 items-center gap-1 border-b ps-2"
         >
           <SidebarTrigger />
           <AppTopbar
@@ -292,7 +298,7 @@ function HomeShell({
                 </>
               ) : undefined
             }
-            className={cn("h-11 min-w-0 flex-1 border-b-0 pl-1", topbar?.className)}
+            className={cn("h-11 min-w-0 flex-1 border-b-0 ps-1", topbar?.className)}
           />
         </div>
 

@@ -63,7 +63,7 @@ export const TimeRulerDocs: ComponentDocs = {
       "One tab stop, or three. The playhead thumb is always there; the in and out handles exist only when both `inPoint` and `outPoint` are numbers. Pass one without the other and the whole range layer never renders.",
       "Each handle is a visually hidden `<input type=\"range\">`, so it takes the native slider keys: Left/Right and Down/Up move by `step`, Shift with an arrow and Page Up/Page Down move by `largeStep` (ten steps), and Home/End jump to the ends.",
       "`step` is your `snap` when you set one and `pixelsToTime(1, zoom)` — one pixel of ruler — when you don't. At the default `zoom` of 40 that is 0.025s per press, so arrowing across a ten-minute timeline is 24,000 keystrokes. Set `snap` on anything a person might traverse.",
-      "Home and End on the range handles clamp against each other, not against the timeline: End on the in handle stops one step short of the out point, and Home on the out handle stops one step past the in point. Neither reaches 0 or `duration`.",
+      "Home and End on the range handles clamp against each other, not against the timeline — but they clamp to equality, not one step short. `minStepsBetweenValues` is 0, so End on the in handle reports `{in: out, out: out}` and Home on the out handle collapses the range the same way, in one keypress and with no keyboard route back to a non-zero range. Measured on the KeyboardOrder story. Neither reaches 0 or `duration`.",
       "Keys people expect and don't get: there is no Escape to abandon a drag part-way, no arrow-key movement between the three handles (Tab is the only way across), and no keyboard equivalent of pressing the ruler body to seek — that is pointer-only.",
       "There is no `disabled`. `TimeRulerProps` is a `div` prop set, so a read-only ruler is not expressible; withholding `onPlayheadChange` and `onRangeChange` still leaves all three handles focusable and movable, they just report to nothing.",
     ],
@@ -76,7 +76,7 @@ export const TimeRulerDocs: ComponentDocs = {
       "`TimeRulerPlayhead` rendered on its own over a stack of lanes has no role and no name unless you pass `label`. Give it one and you get a second `role=\"status\"` alongside the ruler's own.",
     ],
     focus: [
-      "All three handles ship a visible `focus-visible:ring-3` plus an `after:-inset-2` hit area, so focus is visible and grabbable without any global style of yours.",
+      "The `after:-inset-2` hit area makes all three handles grabbable, but none of them paints a focus ring today. `focus-visible:ring-3` sits on the thumb `div`, while focus lands on the `input` Base UI renders inside it — which is clipped to nothing — so the thumb never matches `:focus-visible` and the only treatment is the user agent outline on an invisible element. Recorded in CONTINUE.md §8 rather than fixed, because moving the ring is a decision about which element carries it.",
       "Clearing `inPoint`/`outPoint` unmounts the whole range layer. If focus was on one of its handles it falls to `<body>` and the next Tab restarts from the top of the page — move focus to the playhead thumb as part of clearing a range.",
       "Focus and the playhead are independent. Seeking from a transport button elsewhere on the page moves the line and leaves focus where it was; focusing a handle does not seek.",
     ],

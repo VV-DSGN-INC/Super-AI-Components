@@ -187,7 +187,26 @@ function ModelPicker({
             ) : null}
             <span className="truncate">{current?.name ?? placeholder}</span>
           </PopoverTrigger>
-          <PopoverContent data-slot="model-picker-content" align="start" className="w-72 gap-3 p-2">
+          {/* Base UI renders the popup `role="dialog"`, and neither the vendored
+              PopoverContent nor anything inside supplies a name — an unnamed
+              dialog is an axe `aria-dialog-name` violation the moment a story
+              opens it. Named from the same string as the trigger, so the panel
+              and the control that opened it agree. The modality-rail idiom;
+              CONTINUE.md §8 has the general finding.
+
+              The motion-reduce pair is restated on both data-attribute halves.
+              A bare `motion-reduce:animate-none` is inert on a Base UI popup —
+              Tailwind emits it before the `data-*` variants and both compile to
+              one class of specificity, so `animation: enter` wins the tie.
+              Measured on this surface: `animationName` reads back "enter" under
+              emulated reduce without the restatement. story-conventions.md,
+              mechanical fact 3. */}
+          <PopoverContent
+            data-slot="model-picker-content"
+            aria-label={triggerName}
+            align="start"
+            className="w-72 gap-3 p-2 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+          >
             {Array.from(groups.entries()).map(([group, groupModels]) => (
               <div key={group} data-slot="model-picker-group" className="flex flex-col gap-1">
                 <SectionHeader title={group} size="sm" className="px-1 py-0.5" />

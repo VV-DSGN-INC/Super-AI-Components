@@ -30,7 +30,16 @@ function AlertDialogOverlay({
     <AlertDialogPrimitive.Backdrop
       data-slot="alert-dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        // Same shape as `DialogOverlay`, and a separate file, which is why the
+        // wave-6 fix there did not reach here: `AlertDialogContent` renders
+        // `<AlertDialogOverlay />` with no className, so no call site can add
+        // the pair. Two agents measured it independently on N8
+        // `permission-prompt` and N2 `trust-dialog` — panel `animation-name:
+        // none`, backdrop `enter` — after both had already fixed their own
+        // panels. Shared by `permission-prompt`, `thread-list`, `trust-dialog`
+        // and `voice-clone-recorder`. Both halves restated for the source-order
+        // reason in story-conventions.md, fact 3.
+        "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none",
         className
       )}
       {...props}

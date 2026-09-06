@@ -54,7 +54,16 @@ interface AssetDetailProps {
   /** A10's `items` shape verbatim, so this grid and N5's are the same grid. */
   params?: AssetDetailParam[];
   onCopyPrompt?: () => void;
-  /** Carries prompt and params into D1 `media-prompt-bar`. */
+  /**
+   * Carries prompt and params into D1 `media-prompt-bar`.
+   *
+   * `span` is declared and never emitted: the Remix button fires
+   * `onRemix({ prompt })` with the whole prompt whatever is selected, so a host
+   * that wants phrase-level remixing has to stitch `onSpanSelect`'s text to it
+   * itself. Recorded in `CONTINUE.md` §8 rather than changed here, because
+   * populating the field is an API decision about which of the two the button
+   * should mean.
+   */
   onRemix?: (payload: { prompt?: string; span?: string }) => void;
   onEdit?: () => void;
   moreLikeThis?: React.ReactNode;
@@ -104,7 +113,15 @@ function AssetDetail({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent data-slot="asset-detail" className="sm:max-w-4xl">
+      {/* The reduced-motion variant is restated on both halves rather than
+          written bare: `data-open:animate-in` and a plain
+          `motion-reduce:animate-none` compile to the same single-class
+          specificity, so the tie falls to source order and the animation wins.
+          See story-conventions.md fact 3. */}
+      <DialogContent
+        data-slot="asset-detail"
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-4xl"
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>Result detail</DialogTitle>
           <DialogDescription>

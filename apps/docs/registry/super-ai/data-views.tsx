@@ -256,9 +256,17 @@ export function DataViewsSwitcher({
               selected
                 ? "bg-accent text-accent-foreground"
                 : "bg-background text-muted-foreground hover:text-foreground",
-              i === 0 && "rounded-l-md",
-              i > 0 && "-ml-px",
-              i === views.length - 1 && "rounded-r-md",
+              /* Logical, not physical. The segmented group is a plain flex
+                 row, so it mirrors under `dir="rtl"` on its own — but with
+                 `rounded-l`/`rounded-r`/`-ml-px` the rounded corners then
+                 landed on the two INNER edges and the 1px border overlap
+                 pulled the wrong way, measured on the RTL case story. All
+                 three compile identically in LTR, and swapping only one of
+                 them would have left the corners and the overlap on opposite
+                 sides — see CONTINUE.md §8, "Logical properties". */
+              i === 0 && "rounded-s-md",
+              i > 0 && "-ms-px",
+              i === views.length - 1 && "rounded-e-md",
             )}
           >
             <Icon className="size-4" />

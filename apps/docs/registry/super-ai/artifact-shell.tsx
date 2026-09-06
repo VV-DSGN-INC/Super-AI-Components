@@ -359,13 +359,21 @@ function ArtifactShell({
                         own: the facet and J4's badge read from one function so
                         they cannot drift. */}
                     {artifactTypeLabel(type)}
-                    <span className="ml-1 tabular-nums">{count}</span>
+                    {/* Logical, not physical: the count trails its label in
+                        both directions. Byte-identical in LTR — measured
+                        4px/0px before and after the swap in `LongContent` —
+                        which is what makes it a sweep rather than a decision.
+                        CONTINUE.md §8, "Logical properties". */}
+                    <span className="ms-1 tabular-nums">{count}</span>
                   </FilterChip>
                 ))}
               </>
             ) : null}
             {onOpenFilters ? (
-              <FiltersButton className="ml-auto" onClick={onOpenFilters}>
+              // `ms-auto`: the Filters button belongs at the row's end edge,
+              // which is the right in LTR and the left in RTL. Same sanctioned
+              // swap, same measurement — the LTR frame is unchanged.
+              <FiltersButton className="ms-auto" onClick={onOpenFilters}>
                 {filtersLabel}
               </FiltersButton>
             ) : null}
@@ -385,9 +393,18 @@ function ArtifactShell({
             <label htmlFor={searchId} className="sr-only">
               {searchLabel}
             </label>
+            {/* `start-2.5` and `ps-8`, not `left-2.5` and `pl-8`. The glyph
+                and the gutter it sits in are one thing and have to stay on the
+                same edge: unswapped, an RTL reader got the icon parked in dead
+                space at the trailing end while the query text ran into the
+                start edge with no gutter at all. Both are byte-identical in
+                LTR — measured `left 10px` and `padding 32px/10px` before and
+                after the swap in `LongContent` — per CONTINUE.md §8's
+                "Logical properties" sweep, which requires the LTR frame to be
+                read back rather than assumed. */}
             <Search
               aria-hidden
-              className="text-foreground/60 pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
+              className="text-foreground/60 pointer-events-none absolute top-1/2 start-2.5 size-4 -translate-y-1/2"
             />
             <Input
               id={searchId}
@@ -395,7 +412,7 @@ function ArtifactShell({
               value={query}
               placeholder={searchPlaceholder}
               onChange={(event) => setQuery(event.target.value)}
-              className="pl-8"
+              className="ps-8"
             />
           </div>
           {/* Always mounted, never conditional: a live region has to be in the

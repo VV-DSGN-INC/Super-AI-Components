@@ -248,7 +248,18 @@ function TemplateDetail({
         // aria-dialog-name. Pointed at the visible title, not a hidden string.
         aria-labelledby={titleId}
         showCloseButton={showCloseButton}
-        className={cn("sm:max-w-3xl", className)}
+        // The popup opens with `data-open:animate-in zoom-in-95`, which reads no
+        // media feature: measured under emulated reduce, `animation-name` came
+        // back "enter" and the whole card zoomed. A plain
+        // `motion-reduce:animate-none` is inert here — Tailwind v4 wraps the
+        // data-attribute test in `:where(…)`, so both halves are one class of
+        // specificity and source order decides, and the plain block is emitted
+        // first. Restating the variant on both halves sorts after its
+        // counterpart and wins the same tie (story-conventions.md fact 3).
+        className={cn(
+          "motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-3xl",
+          className,
+        )}
         {...props}
       >
         <div className="grid gap-5 md:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
@@ -282,7 +293,12 @@ function TemplateDetail({
                           // state so the ring is never the only carrier.
                           aria-current={active ? "true" : undefined}
                           onClick={() => selectPreview(preview.id)}
-                          className="focus-visible:ring-ring w-full rounded-lg text-left focus-visible:ring-2 focus-visible:outline-none"
+                          // text-start, not text-left: byte-identical in LTR and
+                          // correct under RTL (CONTINUE.md §8 "Logical
+                          // properties"; A4 entity-row and source-cards are the
+                          // precedents). The class is the only thing deciding
+                          // this side, which is the condition for swapping it.
+                          className="focus-visible:ring-ring w-full rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none"
                         >
                           <PreviewTile aspect="video" selected={active} label={preview.label} labelPlacement="overlay">
                             {preview.thumbnail ?? preview.media}
@@ -376,7 +392,32 @@ function TemplateDetail({
                         <SelectTrigger id={controlId} size="sm" className="w-full">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent>
+                        {/* Base UI puts role="listbox" on the List inside the
+                            popup, and it carries no name of its own: measured
+                            open, the list had neither aria-label nor
+                            aria-labelledby while its combobox trigger was named
+                            "Size" through A6's <label for>. The vendored
+                            SelectContent forwards `aria-label` to that List.
+                            One of the four call sites CONTINUE.md §8's H-wave
+                            entry left unnamed.
+
+                            The name derives from the option rather than
+                            repeating the trigger's exactly — E9 tts-composer's
+                            `Voice for {label}` shape, not H1's bare repeat.
+                            Measured reason: Base UI renders this popup into the
+                            DOM `aria-hidden` while it is closed (it has to
+                            measure the list for `alignItemWithTrigger`), so a
+                            list labelled "Size" is a second element carrying
+                            that label and `getByLabelText("Size")` — how the
+                            unit suite addresses every option row — becomes
+                            ambiguous.
+
+                            Note the gate does not enforce this here: with the
+                            list unnamed and the popup open, axe 4.12 did not
+                            raise `aria-input-field-name` (verified against a
+                            deliberately nameless button in the same story,
+                            which did fail `button-name`). */}
+                        <SelectContent aria-label={`${option.label} choices`}>
                           {option.choices.map((choice) => (
                             <SelectItem key={choice.value} value={choice.value}>
                               {choice.label}
@@ -403,7 +444,8 @@ function TemplateDetail({
                   data-slot="template-detail-related-item"
                   data-template-id={entry.id}
                   onClick={() => selectRelated(entry.id)}
-                  className="focus-visible:ring-ring rounded-lg text-left focus-visible:ring-2 focus-visible:outline-none"
+                  // text-start for the same reason as the thumbnail above.
+                  className="focus-visible:ring-ring rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none"
                 >
                   {/* An inert A8 tile inside one real button: A8's own
                       `onSelect` would make the frame a second interactive and

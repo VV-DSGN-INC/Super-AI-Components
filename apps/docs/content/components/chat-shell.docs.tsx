@@ -75,7 +75,7 @@ export const ChatShellDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "The shell's own order is: sidebar trigger, `switcher`, one stop per thread row plus its actions trigger, `sidebarPromo` and `sidebarFooter`, the topbar's controls, the stream itself, then the composer. Everything inside those slots keeps the keyboard model of the component that fills it.",
+      "The shell's own order is: `switcher`, one stop per thread row plus its actions trigger, `sidebarPromo` and `sidebarFooter`, then the sidebar trigger and the rest of the topbar's controls, the stream itself, and the composer. The trigger is the seventh stop rather than the first — it lives in the topbar, which is a DOM sibling *after* the sidebar, so a keyboard user passes the whole thread list before reaching the control that collapses it. Everything inside those slots keeps the keyboard model of the component that fills it.",
       "Cmd/Ctrl+B toggles the sidebar from anywhere. That shortcut is registered on `window` by the vendored sidebar, so it fires while you are typing in the composer too — which is worth knowing before you bind Cmd+B to bold text in a rich composer.",
       "The stream carries `tabIndex={0}`, so it is a focusable scroll region: arrow keys, Page Up/Down and Home/End scroll the conversation once you tab into it. That is deliberate — it is what keeps a scrollable region reachable without a mouse.",
       "In the composer, Enter sends and Shift+Enter inserts a newline. D1 fixes that and the shell exposes no way to change it, so a product that wants Enter to break lines has to replace the composer.",

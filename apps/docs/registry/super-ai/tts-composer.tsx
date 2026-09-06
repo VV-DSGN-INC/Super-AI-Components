@@ -114,7 +114,11 @@ const STATUS_META: Record<TtsComposerSegmentStatus, { label: string; badgeLabel:
 function StatusIcon({ status }: { status: TtsComposerSegmentStatus }) {
   switch (status) {
     case "generating":
-      return <Loader2 aria-hidden className="size-4 animate-spin" />;
+      // motion-reduce:animate-none: the spinner is the only thing that moves
+      // in a resting row, and a rotation with no branch on the media feature
+      // is the registry's most common reduced-motion offender. Measured
+      // before the fix, `animation-name` read "spin" under emulated reduce.
+      return <Loader2 aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />;
     case "ready":
       return <CheckCircle2 aria-hidden className="size-4" />;
     case "failed":
@@ -225,7 +229,11 @@ function TtsComposerSegmentRow({
           data-slot="tts-composer-segment-regenerate"
           onClick={() => onRegenerateSegment?.(id)}
         >
-          <RefreshCw aria-hidden className={cn(status === "generating" && "animate-spin")} />
+          {/* Same branch as the status icon above: this is a second
+              `animate-spin` on the same state, and it needs its own
+              `motion-reduce:animate-none` because it is a separate class
+              string. */}
+          <RefreshCw aria-hidden className={cn(status === "generating" && "animate-spin motion-reduce:animate-none")} />
         </Button>
         {regenerateCost != null ? (
           <CostChip amount={regenerateCost} unit={costUnit} />
@@ -279,7 +287,13 @@ function TtsComposerSegmentRow({
                     <SelectTrigger size="sm" aria-label={`Voice for ${label}`} className="w-full">
                       <SelectValue placeholder="Voice" />
                     </SelectTrigger>
-                    <SelectContent>
+                    {/* Named because Base UI renders this popup as `role="listbox"` and
+                        axe's `aria-input-field-name` fails an unnamed one — found on
+                        H1 `transport-controls`, whose story opened a select for the
+                        first time. Fixed here rather than left for a wave because
+                        family E has no case-story debt left to bring anyone back to
+                        this file. CONTINUE.md §8 lists the call sites still unnamed. */}
+                    <SelectContent aria-label={`Voice for ${label}`}>
                       {voiceOptions.map((option) => (
                         <SelectItem key={option} value={option}>
                           {option}
@@ -304,7 +318,7 @@ function TtsComposerSegmentRow({
                       <SelectTrigger size="sm" aria-label={`Emotion for ${label}`} className="w-full">
                         <SelectValue placeholder="Emotion" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent aria-label={`Emotion for ${label}`}>
                         {emotionOptions.map((option) => (
                           <SelectItem key={option} value={option}>
                             {option}

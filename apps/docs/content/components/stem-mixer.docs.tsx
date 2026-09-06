@@ -113,7 +113,7 @@ export const StemMixerDocs: ComponentDocs = {
     focus: [
       "Nothing unmounts under focus during normal use. Lanes are keyed by `stem.id`, mute and solo re-render in place, and switching a lane to inaudible changes only text — so a keyboard user pressing Solo keeps their position, which is what makes exclusive mode usable at all.",
       "The one thing that does vanish is a meter: stop passing `level` and the meter div unmounts. It holds no tab stop, so focus is unaffected, but the lane gets shorter under the pointer.",
-      "Every control has a visible focus indicator of its own — the buttons through the vendored `Button`'s `focus-visible:ring-3`, and both thumbs through `focus-visible:ring-3` plus an `after:-inset-2` hit area that makes a 12px thumb reachable by touch. Nothing here inherits your global focus style.",
+      "The buttons carry the vendored `Button`'s `focus-visible:ring-3`, and `after:-inset-2` makes a 12px thumb reachable by touch. The thumbs, though, paint no focus indicator: `focus-visible:ring-3` sits on `Slider.Thumb`, while focus lands on the `input` Base UI renders inside it — an element clipped to nothing — so the thumb never matches `:focus-visible`. Half of every lane is therefore an invisible tab stop. Recorded in CONTINUE.md §8; F5 `compare-viewer` and H2 `time-ruler` have the identical shape, so the repair is one decision across all three.",
     ],
   },
   pitfalls: [

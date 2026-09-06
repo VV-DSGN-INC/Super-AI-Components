@@ -67,10 +67,16 @@ source; an `Empty` story export; a `Responsive` story export. Two are weaker tha
    `Responsive` at Chromium's default width, identically to any other story. Use the Storybook 9 API
    — `globals: { viewport: { value: "mobile" } }` plus explicit `parameters.viewport.options`;
    `parameters.viewport.defaultViewport` was removed in 9 and does nothing while looking configured
-   — then **verify narrow layout by hand in a browser** and say so in your report. *Integrator:* a
-   second vitest storybook project pinned to a mobile `instances[].viewport` would make this
-   mechanical once for all thirteen. A container-width decorator is not a substitute — B1's drawer
-   swap keys on a viewport media query.
+   — then **verify narrow layout by hand in a browser** and say so in your report. A
+   container-width decorator is not a substitute — B1's drawer swap keys on a viewport media query.
+
+   **Superseded for the case-story `Mobile` export, and cheaply.** The second vitest project this
+   entry used to propose is not needed: `page.viewport(375, 812)` from `vitest/browser`,
+   called at the top of a play function, resizes the test iframe itself. Probed 2026-09-06 —
+   `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false → true, `hidden
+   md:block` goes to `display: none` — and it does not leak into the next story, so it costs one
+   line and no cleanup. `Responsive` still proves nothing; `Mobile` now can. See
+   `story-conventions.md`, mechanical fact 2.
 
 ## Prove the composition
 
@@ -157,8 +163,12 @@ but was not. `chat-shell.docs.tsx` has seven, all real. That is the bar.
   be told "no negative prompt" — `negativePrompt={false}` only closes the panel; B7 has no leading
   slot for a sidebar trigger. Sibling or documented override, never a reimplementation, and write the
   gap down as a recommended source fix.
-- **J4 `artifact-grid` columns key off the viewport, not the container**, so it over-columns inside a
-  stream narrower than the window and clamps the excerpt the card is built around. Affects O7, O8, O9.
+- ~~**J4 `artifact-grid` columns key off the viewport, not the container**, so it over-columns inside a
+  stream narrower than the window and clamps the excerpt the card is built around. Affects O7, O8,
+  O9.~~ **Fixed by D19; `CONTINUE.md` §8 closed it on 2026-09-06 and O9's case-story wave re-verified
+  both directions** — one column at 375px, two in a half-width pane, with no call-site override in
+  `artifact-shell.tsx`. Kept struck through rather than deleted, because this entry was cited as live
+  in three shells' notes after it stopped being true.
 - **A call-site descendant variant (`[&_[data-slot=x]]:…`) is the house escape hatch** when a
   composed component's inner element is unreachable via `className`. Name it a documented constant
   with a "delete this when X lands" comment — do not inline it. Same idiom as `model-picker`'s

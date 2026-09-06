@@ -72,7 +72,7 @@ export const MemberGateRowDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "One tab stop in `locked`, `unlocked` and `trial-available`: the switch. `inline-upsell` is three — the switch, the upgrade CTA, then the dismiss button. The row itself is never focusable, because `entity-row` is composed without `onSelect` and stays a plain div.",
-      "Space toggles the switch and Enter does not — the native switch contract, and it applies to the gated switch too.",
+      "Space and Enter both activate the switch. The native checkbox contract would swallow Enter, but this is not a native checkbox — Base UI renders a span carrying role=\"switch\" and handles both keys — and the gated switch routes both of them to the upsell rather than to a toggle. Measured in the KeyboardOrder story.",
       "A locked switch is deliberately neither `disabled` nor `readOnly`. It keeps its tab stop and stays activatable so the attempt can be reported; either attribute would swallow the press before `onRequestUpgrade` fires and would also drop the row's state out of the accessibility tree.",
       "Escape does nothing to the inline upsell. Collapsing it means tabbing to the dismiss button — the panel is revealed content, not a dialog, so it has no dismiss key.",
       "The tier and trial badges are static text in every state. The switch is the only thing the keyboard can reach in the trailing slot.",

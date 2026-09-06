@@ -180,7 +180,31 @@ function DrawingRailItem({
         >
           <ChevronDown aria-hidden="true" className="size-3" />
         </PopoverTrigger>
-        <PopoverContent side="bottom" align="start" className="w-48 gap-1 p-1">
+        {/*
+          `aria-label`: Base UI's popup renders role="dialog", and a dialog with
+          no accessible name is an axe `aria-dialog-name` violation. This
+          surface has no title part to borrow one from — it is a bare list — so
+          it takes the trigger's own subject. The group inside it is separately
+          labelled; a label on the group never reaches the dialog wrapping it.
+          Same fix as modality-rail.tsx, on the same flyout. Found by
+          DrawingTools.stories.tsx's ReducedMotion story, the first one to leave
+          this popover open under the gate.
+
+          The restated motion-reduce pair is the second thing a Base UI popup
+          needs. The surface enters and leaves through `data-open:animate-in` /
+          `data-closed:animate-out`, and the registry's usual bare
+          `motion-reduce:animate-none` is inert against it: Tailwind compiles
+          both to one class of specificity and emits the plain `motion-reduce:`
+          block before the `data-*` variants, so `animation: enter` wins the tie
+          on source order. Matching the variant on both halves sorts after its
+          counterpart and wins.
+        */}
+        <PopoverContent
+          aria-label={`${item.label} alternates`}
+          side="bottom"
+          align="start"
+          className="w-48 gap-1 p-1 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+        >
           <ToggleGroup
             data-slot="drawing-tools-flyout"
             // The vendored wrapper does not forward `orientation` to the Base UI
@@ -208,7 +232,7 @@ function DrawingRailItem({
                 key={variant.id}
                 value={variant.id}
                 data-slot="drawing-tools-flyout-item"
-                className="text-foreground hover:bg-accent hover:text-accent-foreground w-full items-center justify-start gap-2 px-2 py-1.5 text-left"
+                className="text-foreground hover:bg-accent hover:text-accent-foreground w-full items-center justify-start gap-2 px-2 py-1.5 text-start"
               >
                 <span
                   aria-hidden="true"

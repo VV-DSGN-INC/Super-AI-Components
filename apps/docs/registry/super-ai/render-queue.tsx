@@ -76,7 +76,9 @@ const STATE_TEXT: Record<RenderJobState, string> = {
 
 const STATE_ICON: Record<RenderJobState, React.ReactNode> = {
   queued: <span aria-hidden className="bg-foreground/30 size-2 rounded-full" />,
-  streaming: <Loader2 aria-hidden className="size-4 animate-spin" />,
+  // The word "Rendering" sits beside this in the same cell, so the spin can
+  // stop under `prefers-reduced-motion` without the row losing its state.
+  streaming: <Loader2 aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />,
   done: <CheckCircle2 aria-hidden className="size-4" />,
   failed: <AlertTriangle aria-hidden className="text-destructive size-4" />,
 };

@@ -251,7 +251,7 @@ function TranscriptEditor({
           Restore
         </Button>
         {/* Selection and pending deletions are announced, not just drawn. */}
-        <p data-slot="transcript-editor-status" role="status" className="text-foreground ml-auto text-xs">
+        <p data-slot="transcript-editor-status" role="status" className="text-foreground ms-auto text-xs">
           {status}
         </p>
       </div>

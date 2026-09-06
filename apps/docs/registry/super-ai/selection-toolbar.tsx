@@ -257,7 +257,7 @@ function SelectionToolbar({
   const budget = Math.max(1, Math.min(maxActions, MAX_TOOLBAR_ACTIONS) - popupVerbs);
 
   const verbIcon = (verb: SelectionVerb, icon: React.ReactNode) =>
-    pending === verb ? <Loader2 className="animate-spin" /> : icon;
+    pending === verb ? <Loader2 className="animate-spin motion-reduce:animate-none" /> : icon;
 
   const barActions: ContextToolbarAction[] = [
     {
@@ -326,15 +326,28 @@ function SelectionToolbar({
               }
             >
               <VerbIcon>
-                {pending === "tone" ? <Loader2 className="animate-spin" /> : <SlidersHorizontal />}
+                {pending === "tone" ? (
+                  <Loader2 className="animate-spin motion-reduce:animate-none" />
+                ) : (
+                  <SlidersHorizontal />
+                )}
               </VerbIcon>
               {toneLabel}
             </DropdownMenuTrigger>
+            {/*
+             * The motion-reduce pair is restated on both data-attribute
+             * halves. A bare `motion-reduce:animate-none` is inert on a Base
+             * UI popup — `data-open:animate-in` compiles to a selector of the
+             * same specificity that wins the tie on source order — so the menu
+             * keeps animating and `animation-name` reads back "enter". Same
+             * repair as `context-toolbar`'s three surfaces; see
+             * docs/design-system/story-conventions.md, mechanical fact 3.
+             */}
             <DropdownMenuContent
               data-slot="selection-toolbar-tone-menu"
               side={side}
               align="start"
-              className="w-44"
+              className="w-44 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
             >
               {tones.map((tone) => (
                 <DropdownMenuItem
@@ -367,7 +380,11 @@ function SelectionToolbar({
             }
           >
             <VerbIcon>
-              {pending === "custom" ? <Loader2 className="animate-spin" /> : <MessageSquarePlus />}
+              {pending === "custom" ? (
+                <Loader2 className="animate-spin motion-reduce:animate-none" />
+              ) : (
+                <MessageSquarePlus />
+              )}
             </VerbIcon>
             {customLabel}
           </PopoverTrigger>
@@ -375,7 +392,7 @@ function SelectionToolbar({
             data-slot="selection-toolbar-prompt"
             side={side}
             align="start"
-            className="w-80"
+            className="w-80 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
           >
             {/* A Base UI popup is a dialog. Without a title it has no
                 accessible name and axe fails outright, so the title is

@@ -178,7 +178,11 @@ function ArtifactCard({ item }: { item: ArtifactGridItem }) {
               {excerpt}
             </a>
           ) : onOpen ? (
-            <button type="button" onClick={onOpen} className={cn(stretched, "text-left")}>
+            // `text-start`, not `text-left`: the excerpt is author text, so in
+            // an RTL document it aligns to the reading edge. Same sanctioned
+            // swap class as the facet count below, byte-identical in LTR, and
+            // the only thing deciding this alignment.
+            <button type="button" onClick={onOpen} className={cn(stretched, "text-start")}>
               {excerpt}
             </button>
           ) : (
@@ -268,8 +272,17 @@ function ArtifactGrid({
                 {artifactTypeLabel(type)}
                 {/* No text-muted-foreground here: the chip turns bg-accent on
                     hover, and muted-on-accent is 4.34:1. It inherits the
-                    chip's own foreground instead. */}
-                <span className="ml-1.5 tabular-nums">{count}</span>
+                    chip's own foreground instead.
+
+                    `ms-`, not `ml-`: the gap belongs between the label and the
+                    count, and under dir="rtl" the count paints to the label's
+                    left, so a physical left margin moves the gap to the chip's
+                    outer edge. Byte-identical in LTR, and nothing else decides
+                    this side — the chip is a plain inline button with a
+                    symmetric px-3 and no flex, so this class is the only
+                    participant in the layout. Pinned by the RTL story's margin
+                    assertion. CONTINUE.md §8, "Logical properties" sweep. */}
+                <span className="ms-1.5 tabular-nums">{count}</span>
               </ChoiceChip>
             ))}
           </ChoiceChips>

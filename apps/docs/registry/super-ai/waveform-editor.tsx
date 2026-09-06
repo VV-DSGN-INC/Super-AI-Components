@@ -16,9 +16,11 @@ import { StatReadout } from "@/registry/super-ai/stat-readout";
  * editing: region select, zoom to sample, scrub, region actions."
  * States: region-select · zoom-to-sample · scrub · region-actions
  *
- * There is no component-specs.md entry for H6. It is a D12 restoration and its
- * design is derived from gaps.md R3, which is unusually explicit about why it
- * exists: it was wrongly collapsed into H3 `track-lane`, "which selects whole
+ * H6's `component-specs.md` entry (`#h6-waveform-editor`) was written on
+ * 2026-08-04, shortly before the wave that built this component — this comment
+ * predates it and said there was none until 2026-09-06. The entry is the
+ * normative text; `gaps.md` R3 is why the component exists at all, and it is
+ * unusually explicit: it was wrongly collapsed into H3 `track-lane`, "which selects whole
  * clips. Region selection has no equivalent there, and H2's ruler tops out at
  * frames rather than samples."
  *

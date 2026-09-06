@@ -158,7 +158,18 @@ function RunButton({
                   className="absolute inset-0"
                 >
                   <ProgressTrack data-slot="run-button-progress-track" className="h-full w-full rounded-[inherit] bg-transparent">
-                    <ProgressIndicator data-slot="run-button-progress-indicator" className="bg-primary/30 h-full transition-[width]" />
+                    {/*
+                      The fill is the only thing in this component that moves,
+                      so it is the only place a reduced-motion branch can live:
+                      `transition-[width]` glides the fill across the button on
+                      every progress tick. `motion-reduce:transition-none`
+                      snaps it to each value instead — the percentage still
+                      arrives, it just stops sliding.
+                    */}
+                    <ProgressIndicator
+                      data-slot="run-button-progress-indicator"
+                      className="bg-primary/30 h-full transition-[width] motion-reduce:transition-none"
+                    />
                   </ProgressTrack>
                 </ProgressPrimitive.Root>
               ) : null}

@@ -218,23 +218,30 @@ export const Failed: Story = {
  * ---------------------------------------------------------------------- */
 
 /**
- * Right-to-left, and one thing here does not mirror.
+ * Right-to-left, and everything here mirrors now.
  *
- * What does: the label overlay is `inset-x-0` and takes its alignment from
- * direction, so the caption right-aligns and truncates from the left, and the
- * grid lays its tiles out right to left.
+ * The label overlay is `inset-x-0` and takes its alignment from direction, so
+ * the caption right-aligns and truncates from the left, and the grid lays its
+ * tiles out right to left. The badge follows: it was `absolute top-2 right-2`
+ * and stayed visually top-right under `dir="rtl"` — the *start* of the tile
+ * rather than its end, which in a strip of frames marked "In"/"Out" put the
+ * mark on the wrong corner of every tile.
  *
- * What does not: the badge is `absolute top-2 right-2` — physical classes —
- * so it stays visually top-right, which under `dir="rtl"` is the *start* of
- * the tile rather than its end. In a strip of frames marked "In"/"Out" that
- * puts the mark on the wrong corner of every tile.
+ * This description used to end by declining the fix, on the grounds that no
+ * component in the registry used logical inset utilities so adopting them here
+ * would set a convention by accident. That premise expired: `CONTINUE.md` §8
+ * settled the physical→logical swap as a sanctioned change, on the argument
+ * that it is byte-identical in the shipped direction and therefore has nothing
+ * to weigh against the RTL correctness, and eight components have since made
+ * it.
  *
- * Recorded rather than fixed. No component in this registry uses logical
- * inset utilities (`start-*`/`end-*` appear zero times across all 114, while
- * 23 files use the physical pair), so adopting them here would make this the
- * only one — a system-wide decision, not a per-component one. Same posture
- * as `credits-indicator`'s RTL story, which documents an identical defect in
- * its divider. Carried in the retrofit report.
+ * It was swapped as one change with F1 `result-card`'s opposite corner, and
+ * that pairing is the reason it waited for an integrator rather than an agent.
+ * A8 owns the badge at the end of the tile; F1 owns the select checkbox and
+ * the hover actions at the start of it. Swapping either alone puts both
+ * occupants on the same edge, so a half-swap is worse than neither — which is
+ * exactly what `ResultCard.stories.tsx`'s `RTL` play function asserts, by
+ * measuring that the badge and the checkbox never overlap in either direction.
  */
 export const RTL: Story = {
   render: (args) => (

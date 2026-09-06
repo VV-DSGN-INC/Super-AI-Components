@@ -47,15 +47,23 @@ tree animates" is a useful sentence; silence is not, because the next reader
 cannot tell a considered omission from an oversight.
 
 Write each skip as its own line in that comment, in exactly this grammar, so
-the eventual gate (spec §4) can parse presence-or-annotated-absence. That
-comment is a block comment, so the line carries the block's leading asterisk:
+the gate (`apps/docs/scripts/lib/story-coverage.ts`) can parse
+presence-or-annotated-absence. That comment is a block comment, so the line
+carries the block's leading asterisk:
 
     * // case-skip: RTL — no directional layout, icons or motion
 
-One line per skipped name: `case-skip: <StoryName> — <reason>`. Every skip
-line shipped today is that form — 48 of them across 24 story files, none of
-them bare — so the gate should allow an optional leading `*` rather than
-anchoring `//` to the start of the line. The pilot files carry the pattern.
+One line per skipped name: `case-skip: <StoryName> — <reason>`. **A skip is
+the one part of this convention with no gate behind it:** `story-coverage`
+checks that a reason exists, never that it is true. B6 `thread-list` carried
+"nothing this component owns animates" while rendering two Base UI popups that
+both animated, and it survived because the reasoning was plausible and the
+component's family had no remaining debt to bring anyone back to the file. When
+you skip, write the reason as something a reader can check — a grep you ran, a
+property you read back — rather than a conclusion. The gate
+allows an optional leading `*` rather than anchoring `//` to the start of the
+line, requires the em dash, and treats a skip with nothing after the dash as
+silence. The pilot files carry the pattern.
 
 ## Rules
 
@@ -72,19 +80,63 @@ anchoring `//` to the start of the line. The pilot files carry the pattern.
 - **No "every variant at once" story.** A grid of all eight of something
   markets optionality the system exists to remove.
 
-## Four mechanical facts about this repo
+## Six mechanical facts about this repo
 
-These decide the shape of the stories, and all four cost time to rediscover.
+These decide the shape of the stories, and all six cost time to rediscover.
 
 1. **Extra exports are legal.** `check-contract.mts` asserts *declared states
    ⊆ story exports*, never the reverse. Case stories cannot break the
    contract gate, and they do not need manifest entries.
 
-2. **`Mobile` must be wrapper-constrained, not `parameters.viewport`.**
+2. **`Mobile` must be wrapper-constrained, not `parameters.viewport`.** Three
+   things about that wrapper cost time in the D/I and E/P waves, so they are
+   written down here rather than rediscovered:
+
+   - A `layout: "centered"` in the meta wraps every story, so
+     `canvasElement.firstElementChild` is the ~1200px centring div and **not**
+     your 375px frame. An overflow assertion against it measures the wrapper and
+     passes for the wrong reason. Give the frame a `data-testid` and measure
+     that.
+   - A wrapper constrains **width, not the breakpoint**. The gate's chromium is
+     1200×900, so `sm:` and `md:` variants still apply inside a 375px box:
+     `preset-grid` renders its four-column layout where a real phone gets three,
+     and `generation-wizard` renders its desktop two-column grid throughout.
+     Where that is true, say so in the description — the story proves the wide
+     layout squeezed narrow does not scroll sideways, which is a different (and
+     stronger) claim than the phone case.
+   - Some defects **only** exist at narrow width, which is the whole reason the
+     story is mandatory: `data-views`' kanban board had a keyboard-unreachable
+     scroll container that nothing overflowed at desktop size, so no other story
+     could have found it.
+
+   The original reason for the rule still stands:
    `.storybook/main.ts` loads only `addon-docs`, `addon-a11y` and
    `addon-vitest`, and the gate runs headless chromium at its own size. A
    viewport parameter would render at desktop width in the run that gates.
    Use `<div className="w-[375px] max-w-full">`.
+
+   - **There is one mechanism that does move the breakpoint, and the wrapper
+     rule is not a substitute for it where a layout keys on a media query.**
+     `page.viewport(375, 812)` from `vitest/browser`, called at the top
+     of a play function, resizes the test iframe itself. **Import it
+     dynamically, inside the play** — `const { page } = await
+     import("vitest/browser")`. The module throws on evaluation outside Browser
+     Mode ("can be imported only inside the Browser Mode", measured in node), so
+     a top-level import breaks the whole story file wherever it is evaluated
+     outside the vitest runner, the built static Storybook included. Three
+     wave-8 agents chose the dynamic form independently for that reason. It is
+     `vitest/browser`, not `@vitest/browser/context`, which vitest 4.1
+     deprecated. Probed 2026-09-06:
+     `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false →
+     true, and a `hidden md:block` element goes from `display: block` to
+     `display: none`. It does **not** leak — a second story in the same file
+     reads 1200 again — so no cleanup is needed. Use it where the component
+     under test swaps layout on a breakpoint rather than merely reflowing:
+     family O's shells do, because B1 `app-sidebar`'s drawer swap keys on a
+     viewport media query, and a width wrapper renders the desktop rail inside a
+     375px box while reporting success. Everywhere else the wrapper is still the
+     right tool, and it is what the shipped stories use — it constrains the box
+     without pretending to be a phone.
 
 3. **`ReducedMotion` documents a branch, or it documents its absence.**
    `vitest.config.ts` sets Playwright's `reducedMotion: "reduce"` for every
@@ -158,15 +210,124 @@ These decide the shape of the stories, and all four cost time to rediscover.
    `apps/storybook/src/stories/super-ai/` both carry it — read either before
    writing a `KeyboardOrder` inside a portal.
 
+   **Settle on departure, not on arrival.** The wait above — "until
+   `document.activeElement` is one of the expected stops" — has a hole the
+   D/I wave found on `ai-tools-menu`: when a key press has not applied yet,
+   focus is still on the *previous* stop, which is itself an expected stop, so
+   the wait returns immediately with a stale read and the lap appears to end
+   one row early. It passed 13 warm runs and failed the first run against a
+   cleared Storybook cache. The tightened form takes the previous stop and
+   waits for focus to *leave* it before reading, so every press is provably
+   one move; `AiToolsMenu.stories.tsx` carries it, and it is the form to reuse
+   inside any portal from now on. `TaskTray` and `ShortcutsSheet` still use the
+   arrival form and share the hole.
+
    The general lesson outlives the library: **a bounded "did we reach all N
    stops within M tabs" loop is environment-sensitive; asserting the cycle
    directly is not.** One infers the property from a count reached inside an
    allowance; the other states it.
 
+5. **A `box-shadow` string is not a focus ring.** `KeyboardOrder` must show a
+   visible treatment at every stop, and the obvious predicate —
+   `style.boxShadow !== "none" || style.outlineStyle !== "none"` — is wrong in
+   both directions on this registry's own primitives. Four agents hit it
+   independently across the D/I, E/P and F waves:
+
+   - A Tailwind `ring-*` utility composes shadow *layers that are always
+     present*, reading `rgba(0, 0, 0, 0) 0px 0px 0px 0px` when the ring is off.
+     That is not the string `"none"`, so the check passes on an element painting
+     nothing — measured on a plain vendored `Button` (five such layers) and on
+     `detail-view-shell`'s close button.
+   - `focus-visible:outline-none` leaves `outline-width` at its used value while
+     `outline-style` reads `none`, so a width-based check reports a treatment on
+     a row that has none — measured on A9 `entity-row`.
+   - The vendored `Button` carries `transition-all`, so the ring **fades in**: the
+     same element gives a transparent zero-size shadow on the frame focus lands
+     and a real one ~250ms later. An immediate read is a false negative —
+     measured on F1 `result-card`'s Retry.
+
+   - **A treatment on an element that is not painted.** Base UI's slider puts a
+     real `<input>` inside the thumb and clips it away with
+     `position: fixed; clip-path: inset(50%)`. Focus lands on that input, the
+     user agent paints its own `outline: auto 1px` on it, and an outline check
+     reports a ring — while the thumb carrying `focus-visible:ring-3` never
+     matches `:focus-visible`. Found on H2 `time-ruler` *after* the helper below
+     had shipped, and independently on H7 `stem-mixer`; F5 `compare-viewer` is a
+     third. All three components have handles that paint no ring at all.
+
+   - **A permanent shadow reading as a ring.** This is the limit of the whole
+     approach, found on H6 `waveform-editor`: an absolute check answers "does
+     this element paint a treatment", never "did focus cause it", so a span
+     carrying `shadow-sm` passes while focused and passes equally when it is
+     not. Three of that component's slider spans are in exactly that position.
+     Take `focusTreatmentSignature(el)` before and after focus and assert it
+     *changed*.
+
+     **Use both checks, because they answer different questions and can
+     disagree.** `settledFocusRing` asks whether anything is painted; the
+     differential asks whether focus is what painted it. Each catches what the
+     other misses, measured both ways round:
+
+     - J2 `filter-panel`'s selected chip has a permanent ring the same colour
+       and width as its focus ring, so `settledFocusRing` passes and the
+       differential correctly reports no change.
+     - J3 `explore-gallery`'s composer textarea gains a *colour* on focus while
+       its geometry stays zero — `rgba(0, 0, 0, 0) 0px 0px 0px 0px` to
+       `oklab(0.708 0 0 / 0.5) 0px 0px 0px 0px` — so the differential reports a
+       change and `settledFocusRing` correctly reports no ring.
+     - K3 `diff-review`'s vendored `Button` rests at `box-shadow: none`, so the
+       differential flips on the transition's *first frame*, where all five ring
+       layers are still `rgba(0, 0, 0, 0) 0px 0px 0px 0px` and nothing is
+       painted yet. `settledFocusRing` is what proves the ring actually arrives
+       (`oklab(0.708 0 0 / 0.22) 0px 0px 0px 1.35px`). **So the differential is
+       never a substitute:** on anything carrying `transition-all` it can report
+       a change before there is anything to see, and all it rules out on its own
+       is a permanent shadow.
+
+     **The differential works inside a tab walk too**, which this rule used to
+     deny: read the *next* stop's signature while focus is still on the previous
+     one. No blur, so nothing disturbs the sequence. J5 `record-list` and J2
+     `filter-panel` found that independently and both carry it.
+
+   Use `settledFocusRing` from `@/lib/focus-ring`, which inspects the layers for
+   non-zero alpha *and* non-zero geometry, ignores an element that is not
+   painted, and waits for the treatment to settle; `ThreadList.stories.tsx` is
+   the reference call site, and `WaveformEditor.stories.tsx` shows the
+   differential beside it. It is additive: 63 story
+   files still carry the inline string check and were not rewritten, so a
+   "shows a ring" claim in an older file is weaker than it reads.
+
+   Two smaller traps in the same area. Base UI leaves `tabindex="0"` on a
+   natively-`disabled` button, so `[tabindex]:not([tabindex="-1"])` counts inert
+   controls — query for buttons that are not disabled instead. And a wrapper
+   cannot reach a portal, so an `RTL` story for a dialog needs `dir` on the
+   document rather than on a `<div>`.
+
+**A play function that leaves a popup mid-dismissal hands axe a moving
+target.** The scan runs once your play returns, so an element still fading out
+is measured at its transitional opacity — a destructive menu row caught that way
+fails `color-contrast` against a story that passes on its own. It surfaced three
+times in the H and J waves, always under full-suite load and never in isolation.
+End any play that dismisses a popup by waiting for it to be gone
+(`await waitFor(() => expect(body.queryByRole("menu")).toBeNull())`). That is
+also an assertion worth having: choosing a destructive item should dismiss the
+menu rather than stack a dialog on top of it. Suppressing the animation does not
+help, because the frames where the element is still mounted and dimmed remain.
+
 Because `preview.tsx` sets `a11y: { test: "error" }` as the default for every
 story, each case story you add is axe-gated from the moment it exists. That
 is most of the value: `Mobile` does not merely document 375px, it starts
 failing the build at 375px.
+
+6. **Activating a real link closes the browser and fails the run.** A play that
+   clicks or presses Enter on an `<a href>` — B3 `sidebar-nav`'s rows are real
+   anchors — triggers the default navigation, and the vitest browser runner dies
+   with "Was the page closed unexpectedly?". Assigning `location.hash` directly
+   survives; so does a wrapper that calls `preventDefault` on the capture phase,
+   which is what a router would do anyway. O12 `settings-shell` lost a run to
+   this and ships the wrapper as `NoNavigate`. Any story that activates a
+   navigation row needs one.
+
 
 ## Play functions
 
@@ -212,6 +373,13 @@ chosen.
   that true is the story-guarantees program
   (`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`);
   wave status lives in `CONTINUE.md`.
-- **Not yet gated.** The gate (presence or `case-skip` annotation for each of
-  the eight names) is the program's final step, landing only after every
-  family wave — a red gate can never sit on `main`.
+- **Gated as a ratchet since 2026-09-04.**
+  `apps/docs/scripts/lib/story-coverage.test.ts` derives two obligations per
+  item from the manifest — each of the eight names present or
+  `case-skip`-annotated, and a JSDoc description above every declared-state
+  export — and compares the unmet set with `story-coverage.baseline.json`,
+  the debt committed at adoption. Both directions fail: a newly unmet
+  obligation is a regression, and a resolved one still in the baseline must
+  be locked in with `pnpm story-coverage:baseline` (from `apps/docs`), which
+  refuses to grow the file. The family waves are therefore "shrink the
+  baseline", not a prerequisite for the gate.

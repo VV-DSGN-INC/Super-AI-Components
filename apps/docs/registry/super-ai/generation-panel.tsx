@@ -112,14 +112,20 @@ function GenerationPanelSection({
     >
       <CollapsibleTrigger
         data-slot="generation-panel-section-trigger"
-        className="group focus-visible:ring-ring flex w-full items-center justify-between gap-2 text-left focus-visible:ring-2 focus-visible:outline-none"
+        className="group focus-visible:ring-ring flex w-full items-center justify-between gap-2 text-start focus-visible:ring-2 focus-visible:outline-none"
       >
         <h3 id={headingId} className="text-foreground text-sm font-semibold">
           {title}
         </h3>
         <ChevronDown
           aria-hidden
-          className="text-muted-foreground size-4 shrink-0 transition-transform group-data-[panel-open]:rotate-180"
+          // The chevron is the only thing in this component that moves: it
+          // rotates 180° as the stage opens. `motion-reduce:transition-none`
+          // is the same one-class branch pricing-table uses beside its
+          // sliding switch thumb — a rotation is travel, not a colour
+          // crossfade, so it is the second sanctioned idiom in
+          // story-conventions.md fact 3 rather than the declined one.
+          className="text-muted-foreground size-4 shrink-0 transition-transform motion-reduce:transition-none group-data-[panel-open]:rotate-180"
         />
       </CollapsibleTrigger>
       <CollapsibleContent data-slot="generation-panel-section-content">

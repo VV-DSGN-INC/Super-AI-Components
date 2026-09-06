@@ -379,19 +379,31 @@ function SettingsShell({
         {/* Search and grouped nav are one region because they are one
             affordance. Unpainted on purpose: a `bg-muted` column would put
             every composed child's `text-muted-foreground` at 4.34:1, and a
-            slot-level override cannot reach inside B3 or M3. */}
+            slot-level override cannot reach inside B3 or M3.
+
+            `md:border-e`, not `md:border-r`: the separator belongs on the seam
+            between the two columns. Physical, it stayed on the window's outer
+            edge under `dir="rtl"`. Byte-identical in LTR — measured 0px left,
+            1px right on a column spanning 0..240 either way — and pinned by
+            `SettingsShell.stories.tsx`'s `RTL`, which fails on a revert. */}
         <div
           data-region="grouped-nav"
-          className="flex max-h-64 w-full shrink-0 flex-col gap-4 overflow-y-auto border-b p-3 md:max-h-none md:w-60 md:border-r md:border-b-0"
+          className="flex max-h-64 w-full shrink-0 flex-col gap-4 overflow-y-auto border-b p-3 md:max-h-none md:w-60 md:border-e md:border-b-0"
         >
           <div className="flex flex-col gap-1">
             <label htmlFor={searchId} className="sr-only">
               {searchLabel}
             </label>
+            {/* `start-2` on the glyph and `ps-7` on the field are one swap and
+                not two: every participant in this layout is a class, which is
+                the test for whether a physical→logical swap is safe (F5
+                `compare-viewer`). Physical, the magnifier sat at the empty end
+                of the field under RTL — and M1's own search field, the one this
+                replaces, already used the logical pair. */}
             <div className="relative">
               <Search
                 aria-hidden
-                className="text-muted-foreground pointer-events-none absolute top-2 left-2 size-4"
+                className="text-muted-foreground pointer-events-none absolute top-2 start-2 size-4"
               />
               <Input
                 id={searchId}
@@ -400,7 +412,7 @@ function SettingsShell({
                 value={searchValue}
                 placeholder={searchPlaceholder}
                 onChange={(event) => changeSearch(event.target.value)}
-                className="pl-7"
+                className="ps-7"
               />
             </div>
             {/* Always mounted, empty when idle: a live region created at the
@@ -548,7 +560,10 @@ function SettingsShell({
               <h3 id={codeLabelId} className="text-sm font-medium">
                 {code?.label ?? codeFallbackLabel}
                 {code?.language ? (
-                  <span data-slot="settings-shell-code-language" className="ml-2 text-xs font-normal">
+                  // `ms-2` so the gap sits between the heading and the chip in
+                  // both directions; `ml-2` put it on the chip's far side under
+                  // RTL. Byte-identical in LTR (margin-left 8px either way).
+                  <span data-slot="settings-shell-code-language" className="ms-2 text-xs font-normal">
                     {code.language}
                   </span>
                 ) : null}

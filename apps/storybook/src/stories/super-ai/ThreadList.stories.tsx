@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { settledFocusRing } from "@/lib/focus-ring";
+
 import { RecordList } from "@/registry/super-ai/record-list";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-ai/thread-list";
@@ -201,6 +203,14 @@ export const DeleteConfirm: Story = {
     await expect(dialog).toHaveTextContent("Storyboard the 30-second cut");
     await expect(within(dialog).getByRole("button", { name: "Delete" })).toBeInTheDocument();
     await expect(within(dialog).getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+
+    // Wait for the menu to finish leaving. axe scans the document once the play
+    // returns, and a destructive row caught mid-fade-out measures its own
+    // partial opacity as a contrast failure — which is what happened in a
+    // full-suite run, against a story that passes three times in isolation.
+    // The assertion is also worth having on its own: choosing Delete must
+    // dismiss the menu rather than stack a dialog on top of it.
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull());
   },
 };
 
@@ -228,16 +238,6 @@ export const Empty: Story = {
  *
  * Not written for this component, deliberately:
  *
- * // case-skip: ReducedMotion — nothing this component owns animates
- * `thread-list.tsx` contains no `animate-*`, no `transition-*` and no
- * keyframe. The dropdown and the confirmation do animate, but that motion
- * belongs to the vendored `components/ui` popups (`data-open:animate-in`,
- * `data-closed:animate-out`) and is shared by every consumer of them; this
- * component neither adds it nor branches on the media feature. A story here
- * would render identically to `InlineRename` and imply coverage of a branch
- * that does not exist. The vendored popups' own missing `motion-reduce:` is
- * upstream of this component and is the drift CONTINUE.md §8 already tracks.
- *
  * // case-skip: EmptyLabel — `title` is required and is the row's only name
  * `ThreadListItemProps.title` is `string`, not `string | undefined`, and
  * `ThreadListSection` requires `label` the same way. There is no optional text
@@ -261,6 +261,63 @@ export const Empty: Story = {
  * hard-coded menu side, would look correct in this repo's default direction
  * and break only here.
  */
+/**
+ * Two animating surfaces, both of them opened here, because this component
+ * turned out to own the branch after all.
+ *
+ * The skip line this story replaces argued that the motion belongs to the
+ * vendored popups and is therefore upstream — reasonable when it was written,
+ * and wrong. The suppression cannot live on the primitive and reach every
+ * consumer: `data-open:animate-in` and a bare `motion-reduce:animate-none`
+ * compile to one class of specificity, so source order decides, and the only
+ * form that wins is the pair restated at the call site. That makes it a
+ * per-consumer obligation, and ten components in this registry now carry the
+ * same string. This one did not, and no later wave was going to look: family B
+ * had no case-story debt at adoption, so nothing would have reopened the file.
+ *
+ * Both surfaces are read back rather than trusted. The menu is checked while
+ * `data-open` is still on it, and the confirmation after it replaces the menu —
+ * the closing halves are not asserted, because the popup is detached before
+ * `data-closed` is observable and `getComputedStyle` returns an empty
+ * declaration for a node out of the document.
+ */
+export const ReducedMotion: Story = {
+  render: () => (
+    <Column>
+      <ThreadList aria-label="Conversations">
+        <ThreadListSection label="Today">
+          {TODAY.map((t) => (
+            <ThreadListItem key={t.id} id={t.id} title={t.title} />
+          ))}
+        </ThreadListSection>
+      </ThreadList>
+    </Column>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body);
+
+    await userEvent.click(actionsTrigger(rowsOf(canvasElement)[0]));
+    const menu = await body.findByRole("menu");
+    await expect(menu).toHaveAttribute("data-open");
+    await expect(getComputedStyle(menu).animationName).toBe("none");
+
+    // The confirmation is the second surface, and it animates through the same
+    // pair on a different primitive.
+    await userEvent.click(await body.findByRole("menuitem", { name: "Delete" }));
+    const dialog = await body.findByRole("alertdialog");
+    await waitFor(() => expect(dialog).toHaveAttribute("data-open"));
+    await expect(getComputedStyle(dialog).animationName).toBe("none");
+
+    // Wait for the menu to finish leaving before the play returns. axe scans
+    // once it does, and a destructive row caught on its way out measures its
+    // own partial opacity as a contrast failure — the same race `DeleteConfirm`
+    // hit, in the story that opens the menu one step earlier. Suppressing the
+    // animation does not remove the frames in which the row is still mounted
+    // and dimmed.
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull());
+  },
+};
+
 export const RTL: Story = {
   render: () => (
     <div dir="rtl">
@@ -345,8 +402,14 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(focused).toBe(stops[i]);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // `settledFocusRing`, not `boxShadow !== "none"`. Tailwind's ring
+      // compiles to composed shadow layers that are present-but-transparent
+      // when the ring is off, so the string check passes on an element
+      // painting nothing; and the Button base's `transition-all` fades the
+      // real ring in, so an immediate read is a false negative. The helper
+      // inspects the layers and waits for them to settle — see
+      // `@/lib/focus-ring` for the four measurements behind it.
+      await settledFocusRing(focused, waitFor);
       // Odd stops are the actions triggers, which are invisible until hover.
       // Focus has to reveal them or a keyboard user is aiming at nothing.
       // Waited rather than read once: the Button base carries `transition-all`,

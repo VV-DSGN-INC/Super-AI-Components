@@ -195,7 +195,13 @@ function HeroOmnibox({
                     <SelectTrigger size="sm" aria-label="Model" disabled={isGenerating}>
                       <SelectValue placeholder="Model" />
                     </SelectTrigger>
-                    <SelectContent>
+                    {/* Named because Base UI renders this popup as `role="listbox"` and axe's
+                    `aria-input-field-name` fails an unnamed one — found on H1
+                    `transport-controls`, whose story opened a select for the first
+                    time. Fixed here rather than left for a wave because family C
+                    has no case-story debt left to bring anyone back to this file.
+                    CONTINUE.md §8 lists the four call sites still unnamed. */}
+                    <SelectContent aria-label="Model">
                       {models.map((item) => (
                         <SelectItem key={item.value} value={item.value}>
                           {item.label}

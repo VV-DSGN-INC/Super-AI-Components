@@ -140,7 +140,22 @@ function TrustDialog({
       {trigger ? <AlertDialogTrigger render={trigger} /> : null}
       {/* Overriding a vendored ui/ primitive's data-slot is house idiom — see
           settings-dialog.tsx and voice-clone-recorder.tsx for the same move. */}
-      <AlertDialogContent data-slot="trust-dialog" className={cn("gap-4 sm:max-w-md", className)} {...props}>
+      {/* The restated motion-reduce pair, never a bare `motion-reduce:animate-none`:
+          on a Base UI popup the plain variant is emitted before the `data-*`
+          ones and loses the specificity tie, so `animation-name` still reads
+          "enter" under emulated reduce (story-conventions.md, mechanical fact 3).
+          voice-clone-recorder's consent dialog carries the same pair on this same
+          primitive. It reaches the popup only: AlertDialogContent renders its own
+          <AlertDialogOverlay /> with no className, so the backdrop still fades and
+          no call site can reach it — see the ReducedMotion story. */}
+      <AlertDialogContent
+        data-slot="trust-dialog"
+        className={cn(
+          "gap-4 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-md",
+          className,
+        )}
+        {...props}
+      >
         <AlertDialogHeader data-slot="trust-dialog-header">
           <AlertDialogTitle>{title}</AlertDialogTitle>
           {description ? <AlertDialogDescription>{description}</AlertDialogDescription> : null}
@@ -213,7 +228,12 @@ function TrustDialog({
                 >
                   <SelectValue>{currentAccount?.name}</SelectValue>
                 </SelectTrigger>
-                <SelectContent data-slot="trust-dialog-account-content">
+                {/* Base UI puts `role="listbox"` on the List inside the popup, and an
+                    unnamed listbox is an `aria-input-field-name` failure the moment a
+                    story opens it. The vendored SelectContent forwards `aria-label` to
+                    that List; the name comes from the trigger, which already has one.
+                    Same fix as transport-controls, hero-omnibox and tts-composer. */}
+                <SelectContent data-slot="trust-dialog-account-content" aria-label={accountLabel}>
                   {accounts!.map((account) => (
                     <SelectItem
                       key={account.id}

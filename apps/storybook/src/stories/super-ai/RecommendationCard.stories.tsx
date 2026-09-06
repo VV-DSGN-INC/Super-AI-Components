@@ -54,6 +54,11 @@ function ControlledRecommendationCard(props: RecommendationCardProps) {
   );
 }
 
+/**
+ * The one-line feed row at rest: title, "Try it" with `aria-expanded="false"`,
+ * and no dialog in the document. This is the level a feed shows; the modal is
+ * what "Try it" reveals.
+ */
 export const Collapsed: Story = {
   args: { ...BASE_ARGS },
   play: async ({ canvasElement }) => {
@@ -64,6 +69,12 @@ export const Collapsed: Story = {
   },
 };
 
+/**
+ * `defaultOpen` opens the second level: a dialog laying out the apps involved
+ * and the steps as numbered rows — three list items asserted through the portal.
+ * The spec's rule is that "How it works" is numbered, never prose, because a
+ * recommendation you cannot audit is an instruction you should not follow.
+ */
 export const Expanded: Story = {
   args: { ...BASE_ARGS, defaultOpen: true },
   play: async ({ canvasElement }) => {
@@ -74,6 +85,12 @@ export const Expanded: Story = {
   },
 };
 
+/**
+ * Controlled `dismissed`/`onDismiss` through `ControlledRecommendationCard`:
+ * the play dismisses and the row unmounts. Same convention as `promo-card` —
+ * the component renders the choice, the consuming app persists it, and across a
+ * reload a dismissed recommendation must still read as dismissed.
+ */
 export const Dismissible: Story = {
   args: { ...BASE_ARGS },
   render: (args) => <ControlledRecommendationCard {...args} />,
@@ -87,6 +104,12 @@ export const Dismissible: Story = {
   },
 };
 
+/**
+ * Controlled `saved`/`onSaveForLater`: after the click the button reads
+ * "Saved" and is disabled, and the unsaved affordance is gone. The spec wants
+ * this middle option as much as "Try it" — dismissal without one trains
+ * dismissal.
+ */
 export const SaveForLater: Story = {
   args: { ...BASE_ARGS },
   render: (args) => <ControlledRecommendationCard {...args} />,
@@ -295,11 +318,20 @@ export const KeyboardOrder: Story = {
      * whether the frame painted, and a walk that counts the miss steps over
      * the stop the redirect had just reached.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!dialogStops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the modal's stops: ${nameOf(active)}`);
+        }
+        // Settle on *departure*, not arrival: a key that has not applied yet
+        // leaves focus on the previous stop, which is itself a stop, so an
+        // arrival-only wait returns a stale read and the lap appears to end
+        // where it began. story-conventions.md, mechanical fact 4 — added
+        // after `ai-tools-menu` found it, and `account-menu` flaked on exactly
+        // this in a full-suite run before the same change was made there.
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved off ${nameOf(previous)} yet`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -308,13 +340,15 @@ export const KeyboardOrder: Story = {
     // A portal focuses its own first tabbable descendant on open, so the walk
     // is seeded from where focus actually landed rather than from stop zero.
     const start = await settledStop();
+    let previous = start;
     await expect(nameOf(start)).toBe(nameOf(dialogStops[0]));
     await assertVisiblyFocused(start);
 
     const seen = new Set<HTMLElement>([start]);
     for (let i = 1; i < dialogStops.length; i += 1) {
       await userEvent.tab();
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
+      previous = focused;
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
@@ -324,7 +358,7 @@ export const KeyboardOrder: Story = {
     // Trapped: the tab past the last stop closes the lap on the first one
     // rather than leaking to the inert row behind the modal.
     await userEvent.tab();
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    await expect(nameOf(await settledStop(previous))).toBe(nameOf(start));
 
     // Escape dismisses the modal and the trigger gets the ring back — the
     // half of "where focus returns" that this component gets right.

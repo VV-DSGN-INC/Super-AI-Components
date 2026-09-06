@@ -29,14 +29,35 @@ const RECIPE = [
   { label: "Negative", value: undefined },
 ];
 
+/**
+ * The two-column form, and the default: `columns` is 2 unless told otherwise,
+ * which compiles to `grid-cols-[auto_1fr]` — the label column sizes to its
+ * longest label and every value shares the rest, so a five-row recipe reads as
+ * one aligned table. This is the spec's "inline rows"; wave 0 recorded that the
+ * catalog's wording had been read as `columns={1}`, which stacks instead. The
+ * `Negative` row is deliberately `undefined` and prints an em dash, so an
+ * absent value is visibly absent rather than a blank cell.
+ */
 export const LabelBesideValue: Story = {
   args: { items: RECIPE },
 };
 
+/**
+ * `columns={1}` collapses the grid to `grid-cols-1`, so each label sits above
+ * its value — the sidebar form, where there is no room for a label column.
+ * Same rows, same order, same copy controls; only the grid changes, which is the
+ * whole reason column count is a prop and not a second component.
+ */
 export const LabelAboveValue: Story = {
   args: { columns: 1, items: RECIPE },
 };
 
+/**
+ * `copyable` puts a copy control beside the value. The spec reserves it for
+ * the reproducibility fields — seed, sampler, model — because the point of the
+ * readout is that a result can be made again. Those controls are the only
+ * focusable things in the list, which is what `KeyboardOrder` proves.
+ */
 export const CopyableValue: Story = {
   args: {
     items: [
@@ -47,6 +68,13 @@ export const CopyableValue: Story = {
   },
 };
 
+/**
+ * What absence looks like: an `undefined` value prints an em dash in the value
+ * cell, never an empty cell, so a reader can tell "no negative prompt" from "the
+ * row failed to render". `copyable` on an absent value is dropped rather than
+ * disabled — there is nothing to put on the clipboard, so the control is simply
+ * not there.
+ */
 export const MissingValue: Story = {
   args: {
     items: [

@@ -266,7 +266,19 @@ function OnboardingWizard({
                 data-slot="onboarding-wizard-dot"
                 data-state={index < currentIndex ? "done" : index === currentIndex ? "current" : "upcoming"}
                 className={cn(
-                  "h-1.5 rounded-full transition-[background-color,width]",
+                  // The width half of this transition is real motion, not a
+                  // crossfade: the current dot is a 24px bar and its
+                  // neighbours are 6px, so every step change grows one and
+                  // shrinks another over 150ms. `motion-reduce:transition-none`
+                  // is the registry's second sanctioned reduced-motion idiom
+                  // (`pricing-table`'s switch thumb, `run-button`'s fill), and
+                  // it is the only branch in this component — measured, the
+                  // vendored Progress track this flow suppresses is
+                  // `display: none`, so the unbranched transition its indicator
+                  // carries never paints. (Naming that class here in prose is
+                  // what MOT-2 reads as a violation, so it is described rather
+                  // than spelled.)
+                  "h-1.5 rounded-full transition-[background-color,width] motion-reduce:transition-none",
                   // Current is a longer bar, not merely a different colour —
                   // the one distinction that survives a greyscale screenshot.
                   index === currentIndex ? "bg-primary w-6" : "w-1.5",
@@ -310,7 +322,12 @@ function OnboardingWizard({
                     // Selection is carried by the radio's own `aria-checked`
                     // and by the ring, never by a fill colour alone.
                     className={cn(
-                      "border-border flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-left",
+                      // `text-start`, not `text-left`: byte-identical in LTR,
+                      // and measured under `dir="rtl"` the physical class
+                      // computed `text-align: left` inside a card whose own
+                      // direction was `rtl`, so an Arabic label sat against
+                      // the wrong edge of its own box.
+                      "border-border flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-start",
                       selected && "border-ring ring-ring ring-1",
                     )}
                   >

@@ -421,7 +421,11 @@ function TimelineShell({
         role="group"
         aria-label={inspectorLabel}
         tabIndex={0}
-        className="focus-visible:ring-ring hidden w-80 shrink-0 overflow-y-auto border-l p-3 focus-visible:ring-2 focus-visible:outline-none lg:block"
+        // `border-s`, not `border-l`: the rule is the edge that faces the
+        // stage, which is the left one only while the document is LTR. Byte
+        // identical in LTR (measured: 1px left, 0 right, box unmoved), and the
+        // RTL story asserts the mirrored pair so the swap cannot regress.
+        className="focus-visible:ring-ring hidden w-80 shrink-0 overflow-y-auto border-s p-3 focus-visible:ring-2 focus-visible:outline-none lg:block"
       >
         <PropertyInspector {...inspector} />
       </div>

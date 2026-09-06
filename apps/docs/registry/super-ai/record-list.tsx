@@ -118,11 +118,17 @@ const RUN_STATE_TEXT: Record<RecordRunState, string> = {
  * Icon shape carries the state as well as the colour, and the words carry it a
  * third time. The colour is on the icon only: `text-destructive` measures
  * 4.0:1, which is fine for a graphic and not fine for a label.
+ *
+ * The `running` spinner is the only thing this component animates, so it takes
+ * the registry's one-class branch: `animate-spin` does not read the media
+ * feature on its own, and the words stay in place with the icon still, which is
+ * what keeps `running` distinguishable from the other three under reduced
+ * motion. See the `ReducedMotion` story.
  */
 const RUN_STATE_ICON: Record<RecordRunState, React.ReactNode> = {
   success: <CheckCircle2 aria-hidden className="text-primary size-3.5" />,
   failed: <AlertTriangle aria-hidden className="text-destructive size-3.5" />,
-  running: <Loader2 aria-hidden className="size-3.5 animate-spin" />,
+  running: <Loader2 aria-hidden className="size-3.5 animate-spin motion-reduce:animate-none" />,
   never: <CircleDashed aria-hidden className="size-3.5" />,
 };
 
@@ -243,7 +249,7 @@ function RecordList({
                 data-slot="record-list-title"
                 type="button"
                 onClick={() => onOpen(record.id)}
-                className={cn(titleClassName, "focus-visible:ring-ring rounded-sm text-left hover:underline focus-visible:ring-2 focus-visible:outline-none")}
+                className={cn(titleClassName, "focus-visible:ring-ring rounded-sm text-start hover:underline focus-visible:ring-2 focus-visible:outline-none")}
               >
                 {record.title}
               </button>
@@ -337,7 +343,21 @@ function RecordList({
                         >
                           <MoreHorizontal />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent
+                          align="end"
+                          // The popup opens with `data-open:animate-in zoom-in-95` and
+                          // closes with `data-closed:animate-out`; neither reads the
+                          // media feature. A bare `motion-reduce:animate-none` is inert
+                          // against a Base UI popup — Tailwind emits the plain
+                          // `motion-reduce:` block before the `data-*` variants and both
+                          // compile to one class of specificity, so source order hands
+                          // the win to `animation: enter`. Restating the variant on both
+                          // halves sorts it after its counterpart. The suppression has
+                          // to live at every call site, so fixing one consumer fixes no
+                          // other. See story-conventions.md mechanical fact 3, and the
+                          // `ReducedMotion` story, which reads `animation-name` back.
+                          className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+                        >
                           {record.actions.map((action) => (
                             // Base UI adaptation: MenuItem uses onClick, not onSelect.
                             <DropdownMenuItem

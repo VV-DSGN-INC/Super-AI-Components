@@ -321,7 +321,7 @@ function RunInspector({
             <span aria-hidden={error ? "true" : undefined}>Error</span>
             {error ? (
               <>
-                <span aria-hidden className="bg-destructive ml-1 inline-block size-1.5 rounded-full" />
+                <span aria-hidden className="bg-destructive ms-1 inline-block size-1.5 rounded-full" />
                 <span className="sr-only">Error, this run failed</span>
               </>
             ) : null}

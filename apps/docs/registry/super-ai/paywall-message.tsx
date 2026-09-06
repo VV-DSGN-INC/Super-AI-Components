@@ -236,7 +236,7 @@ function PaywallMessage({
             // Greyed, and captioned. The dimming says "not real yet" to someone
             // who can see it; the caption says the same thing to everyone else,
             // which is the rule about never conveying state by colour alone.
-            <div data-slot="paywall-message-preview" className="border-border flex flex-col gap-1 border-l-2 pl-3">
+            <div data-slot="paywall-message-preview" className="border-border flex flex-col gap-1 border-s-2 ps-3">
               <span data-slot="paywall-message-preview-label" className="text-foreground text-xs font-medium">
                 Would have produced
               </span>
@@ -251,10 +251,13 @@ function PaywallMessage({
               {resolved.cost ? (
                 // A2 cost-chip, fed by formatCost so this card, the run button
                 // and the queue cannot print three different prices for one job.
-                // `text-foreground` is the documented call-site contrast fix:
-                // A2 sets text-muted-foreground on its own bg-muted (4.34:1)
-                // and is gate-exempt only under its own story name. Remove once
-                // A2's retrofit lands. See action-stack.tsx.
+                // Composed unmodified: no className is passed here at all. A2
+                // used to need a `text-foreground` override at every call site,
+                // and the A-family retrofit moved that fix into the chip, which
+                // now ships `text-foreground` and rebinds `--muted-foreground`
+                // for composed children. This comment described the deleted
+                // override until 2026-09-06 — the same staleness corrected in
+                // `ai-tools-menu.tsx` and `action-stack.tsx`.
                 <CostChip amount={formatCost(resolved.cost)} unit="" />
               ) : null}
               {shortfall ? (

@@ -173,7 +173,9 @@ function AssetName({
   );
 
   const shared =
-    "text-foreground focus-visible:ring-ring flex min-w-0 items-center gap-2 rounded-sm text-left font-medium focus-visible:ring-2 focus-visible:outline-none";
+    // Logical, not physical: `text-start` compiles to the same declaration as
+    // `text-left` in LTR and mirrors under RTL. CONTINUE.md §8, the sweep.
+    "text-foreground focus-visible:ring-ring flex min-w-0 items-center gap-2 rounded-sm text-start font-medium focus-visible:ring-2 focus-visible:outline-none";
 
   if (item.href) {
     return (
@@ -230,7 +232,17 @@ function RowOverflow({
       >
         <MoreHorizontal aria-hidden className="size-4" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">{actions}</DropdownMenuContent>
+      {/* The `motion-reduce:` variant has to be restated on both data-attribute
+          halves: Tailwind emits the plain block before the `data-*` variants and
+          both compile to one specificity, so a bare `motion-reduce:animate-none`
+          loses the source-order tie and the popup still animates under reduce.
+          story-conventions.md, mechanical fact 3. */}
+      <DropdownMenuContent
+        align="end"
+        className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
+      >
+        {actions}
+      </DropdownMenuContent>
     </DropdownMenu>
   );
 }
@@ -317,14 +329,14 @@ function AssetLibrary({
         <label htmlFor={searchId} className="sr-only">
           {searchPlaceholder}
         </label>
-        <Search aria-hidden className="text-foreground/60 pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2" />
+        <Search aria-hidden className="text-foreground/60 pointer-events-none absolute top-1/2 start-2.5 size-4 -translate-y-1/2" />
         <Input
           id={searchId}
           type="search"
           value={searchValue}
           placeholder={searchPlaceholder}
           onChange={(event) => handleSearch(event.target.value)}
-          className="pl-8"
+          className="ps-8"
         />
       </div>
 
@@ -337,7 +349,7 @@ function AssetLibrary({
           size="sm"
           variant="outline"
           spacing={0}
-          className="ml-auto"
+          className="ms-auto"
           value={[view] as string[]}
           onValueChange={(next) => {
             const [value] = next as AssetLibraryView[];
@@ -460,7 +472,7 @@ function AssetLibrary({
                   {item.modified ?? "—"}
                 </TableCell>
 
-                <TableCell className="text-right">
+                <TableCell className="text-end">
                   {/* Selection mode owns the row; the overflow menu stands down
                       rather than competing with the checkbox. */}
                   {!selectionMode && rowActions ? (

@@ -65,7 +65,7 @@ export const DiffReviewDocs: ComponentDocs = {
       "The bulk buttons use the native `disabled` attribute once nothing is pending, so they drop out of the tab order entirely rather than staying as focusable dead ends.",
     ],
     screenReader: [
-      "Each per-change button is named for its change — \"Accept: replace “utilise” with “use”\" — through an `sr-only` suffix, and that description is derived from the segments rather than authored, so eight buttons cannot all announce as \"Accept\".",
+      "Each per-change button is named for its change — announced as \"Accept : replace “utilise” with “use”\", with a space the accessible-name computation inserts between the visible word and the `sr-only` suffix, where `textContent` reads \"Accept:\" without it — through an `sr-only` suffix, and that description is derived from the segments rather than authored, so eight buttons cannot all announce as \"Accept\".",
       "`<ins>` and `<del>` carry the right semantics but most screen readers do not announce them by default, which is why each changed run is wrapped in visually-hidden \"insertion start\"/\"insertion end\" text. That wording is the real signal; the underline and strike-through are the sighted half.",
       "The remaining-changes count is `role=\"status\"` with `aria-live=\"polite\"`, so resolving a change announces \"3 of 8 changes awaiting review\" after whatever the reader is currently on. Don't also toast it.",
       "The change list is an `<ol>`, so it announces as a list with a count and each change is item N of M.",

@@ -196,7 +196,11 @@ function AiDocBlock({
             data-slot="ai-doc-block-streaming"
             className="text-foreground flex items-center gap-1.5"
           >
-            <Loader2 aria-hidden className="size-3 animate-spin" />
+            {/* `motion-reduce:animate-none` because the word beside it carries
+                the whole message: with the spin suppressed, "Streaming" still
+                says the text is arriving, so nothing is lost by holding the
+                glyph still. */}
+            <Loader2 aria-hidden className="size-3 animate-spin motion-reduce:animate-none" />
             Streaming
           </span>
         ) : null}

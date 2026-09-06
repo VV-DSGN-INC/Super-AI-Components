@@ -89,7 +89,7 @@ interface TrackLaneProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
 
 /** Fixed, and fixed on purpose: it is what makes stacked lanes line up. */
 const HEADER_CLASS =
-  "bg-card flex w-40 shrink-0 flex-col justify-center gap-1 overflow-hidden border-r px-2 py-2";
+  "bg-card flex w-40 shrink-0 flex-col justify-center gap-1 overflow-hidden border-e px-2 py-2";
 
 /** The one horizontal scroller in the lane. */
 const CLIPS_CLASS =
@@ -176,7 +176,7 @@ function ClipBody({ clip, type }: { clip: TrackClip; type: TrackType }) {
         {clip.adjustment?.name ?? clip.label}
       </span>
       {clip.adjustment?.amount != null ? (
-        <span className="text-secondary-foreground ml-auto shrink-0 text-xs tabular-nums">
+        <span className="text-secondary-foreground ms-auto shrink-0 text-xs tabular-nums">
           {clip.adjustment.amount}%
         </span>
       ) : null}
@@ -281,7 +281,7 @@ function TrackLane({
             // on the control below.
             <span
               data-slot="track-lane-locked-badge"
-              className="text-foreground ml-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 text-[0.625rem] leading-4"
+              className="text-foreground ms-auto inline-flex shrink-0 items-center gap-1 rounded-full border px-1.5 text-[0.625rem] leading-4"
             >
               <Lock className="size-2.5" aria-hidden="true" />
               Locked

@@ -339,7 +339,13 @@ function ExploreShell({
           <ChoiceChip key={option.value} value={option.value}>
             {option.label}
             {option.count === undefined ? null : (
-              <span className="text-foreground/70 ml-1.5 text-xs tabular-nums">{option.count}</span>
+              // `ms-1.5`, not `ml-1.5`: the gap belongs between the label and
+              // the count, which swaps sides under RTL. Byte-identical in LTR
+              // (6px inline-start either way, measured in `LongContent`) and
+              // read back mirrored in `RTL`. Same swap J3 took in wave 5 — the
+              // shell renders its own copy of this span because J3 exposes no
+              // slot for the pills, so it inherited the class too.
+              <span className="text-foreground/70 ms-1.5 text-xs tabular-nums">{option.count}</span>
             )}
           </ChoiceChip>
         ))}

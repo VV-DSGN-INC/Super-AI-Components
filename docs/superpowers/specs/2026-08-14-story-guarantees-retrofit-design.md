@@ -131,6 +131,16 @@ A case story that surfaces a defect follows a two-tier rule:
 
 ## 4. The gate, last
 
+> **2026-09-04 — landed earlier than this section sequences it, as a ratchet.**
+> `apps/docs/scripts/lib/story-coverage.test.ts` derives the obligations below
+> from the manifest and compares the unmet set with a committed
+> `story-coverage.baseline.json`, shrink-only, per the ds-architecture retrofit
+> track ("stage 06's baseline starts large, legitimately"). It also carries a
+> second obligation this section did not: a JSDoc description above every
+> declared-state export. It lives in the `test` step beside the cssVars and
+> a11y ratchets rather than in `check:contract`, which has no baseline concept.
+> The family waves shrink the baseline instead of gating on it.
+
 After wave 0 plus at least one family wave hold, `check:contract` learns the case-story
 contract. For every story file of a non-exempt item (which by then means: every item), each of
 the **eight names** must be either exported or skip-annotated with a parseable line:

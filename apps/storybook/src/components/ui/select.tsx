@@ -62,6 +62,8 @@ function SelectContent({
   align = "center",
   alignOffset = 0,
   alignItemWithTrigger = true,
+  "aria-label": ariaLabel,
+  "aria-labelledby": ariaLabelledBy,
   ...props
 }: SelectPrimitive.Popup.Props &
   Pick<
@@ -85,7 +87,16 @@ function SelectContent({
           {...props}
         >
           <SelectScrollUpButton />
-          <SelectPrimitive.List>{children}</SelectPrimitive.List>
+          {/* Kept in step with apps/docs/components/ui/select.tsx. The name
+              belongs on the List, which is where Base UI puts
+              `role="listbox"` — a caller spreading `aria-label` onto
+              SelectContent otherwise lands it on the Popup, where nothing
+              reads it, and axe fails `aria-input-field-name`. This copy is the
+              one the Storybook a11y gate renders; the docs copy is the one the
+              docs site renders, and they are synced by hand. */}
+          <SelectPrimitive.List aria-label={ariaLabel} aria-labelledby={ariaLabelledBy}>
+            {children}
+          </SelectPrimitive.List>
           <SelectScrollDownButton />
         </SelectPrimitive.Popup>
       </SelectPrimitive.Positioner>

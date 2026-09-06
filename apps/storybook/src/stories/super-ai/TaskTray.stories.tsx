@@ -71,26 +71,58 @@ export const Running: Story = {
   args: { tasks: [RENDERING, { ...INDEXED, id: "transcribe", title: "Transcribe 3 interviews", status: "running", description: "Library · Uploads" }] },
 };
 
+/**
+ * `needs-input` sorts to the top no matter when it arrived: the fixture passes
+ * the approval second and it renders first. A background task blocked on an
+ * approval is invisible work until someone answers, so the tray refuses to let
+ * arrival order bury it.
+ */
 export const NeedsInput: Story = {
   args: { tasks: [RENDERING, AWAITING_APPROVAL, INDEXED] },
 };
 
+/**
+ * Two finished tasks. A done row keeps its link back to the surface that owns
+ * it but carries no cancel and no notify control — those exist only on live
+ * rows, and `done` is not live.
+ */
 export const Done: Story = {
   args: { tasks: [INDEXED, { ...INDEXED, id: "export-csv", title: "Export 4 tables to CSV", description: "Reports · Monthly" }] },
 };
 
+/**
+ * A failed migration above a finished index. Failed sorts second, after
+ * `needs-input` and ahead of running and done, and the row's description says
+ * where it stopped ("step 4 of 9") — the actionable part of a failure.
+ */
 export const Failed: Story = {
   args: { tasks: [MIGRATION_FAILED, INDEXED] },
 };
 
+/**
+ * `tasks: []`: "Nothing running. Tasks you start in the background collect
+ * here." The tray still mounts, because it lives in the shell and not in the
+ * flow that starts work — this is its resting rendering between tasks.
+ */
 export const Empty: Story = {
   args: { tasks: [] },
 };
 
+/**
+ * `onCancelTask` adds a cancel button to each live row — running and
+ * `needs-input` — and to nothing else. Cancellation is per task, never a
+ * tray-wide action.
+ */
 export const PerTaskCancel: Story = {
   args: { tasks: [AWAITING_APPROVAL, RENDERING, INDEXED], onCancelTask: () => {} },
 };
 
+/**
+ * `onNotifyChange` adds a per-row opt-in for a completion notification on live
+ * rows, with `notify` reflecting the current choice (on for the render, off for
+ * the approval). The docs page frames it as the one run out of five a user
+ * actually wants to hear about.
+ */
 export const NotifyOptIn: Story = {
   args: {
     tasks: [{ ...RENDERING, notify: true }, { ...AWAITING_APPROVAL, notify: false }, INDEXED],
@@ -226,11 +258,20 @@ export const KeyboardOrder: Story = {
      * That is a 6-of-7 that no allowance fixes, because widening the budget
      * only buys more laps that skip the same stop.
      */
-    const settledStop = async () => {
+    const settledStop = async (previous?: HTMLElement) => {
       await waitFor(() => {
         const active = document.activeElement;
         if (!stops.includes(active as HTMLElement)) {
           throw new Error(`focus is not on one of the panel's controls: ${nameOf(active)}`);
+        }
+        // Settle on *departure*, not arrival: a key that has not applied yet
+        // leaves focus on the previous stop, which is itself a stop, so an
+        // arrival-only wait returns a stale read and the lap appears to end
+        // where it began. story-conventions.md, mechanical fact 4 — added
+        // after `ai-tools-menu` found it, and `account-menu` flaked on exactly
+        // this in a full-suite run before the same change was made there.
+        if (previous && active === previous) {
+          throw new Error(`focus has not moved off ${nameOf(previous)} yet`);
         }
       });
       return document.activeElement as HTMLElement;
@@ -250,12 +291,14 @@ export const KeyboardOrder: Story = {
     // The trap installs asynchronously — wait for it rather than tabbing from
     // wherever focus happens to be when the story mounts.
     const start = await settledStop();
+    let previous = start;
     await assertVisiblyFocused(start);
 
     const seen = new Set<HTMLElement>([start]);
     for (let i = 1; i < stops.length; i += 1) {
       await userEvent.tab();
-      const focused = await settledStop();
+      const focused = await settledStop(previous);
+      previous = focused;
       // One control per tab, never a repeat — the walk cannot reach seven by
       // circling six.
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
@@ -272,7 +315,7 @@ export const KeyboardOrder: Story = {
     // first, so the panel cycles rather than leaking focus to the inert page
     // behind it.
     await userEvent.tab();
-    await expect(nameOf(await settledStop())).toBe(nameOf(start));
+    await expect(nameOf(await settledStop(previous))).toBe(nameOf(start));
     await expect(dialog.contains(document.activeElement)).toBe(true);
   },
 };

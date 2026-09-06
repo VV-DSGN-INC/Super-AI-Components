@@ -51,13 +51,93 @@ failure the exemption had been covering. The two lists are paired by
 Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
 114. See §5.9.
 
-**What is not done: the case-story gate.** `check:contract` still says nothing
-about the eight case-story names — presence-or-`case-skip` enforcement is the
-program's final step and lands only after the family waves (spec §4). Until
-then the convention is normative and unenforced: a story file missing `RTL` with
-no skip line is indistinguishable from one that considered it. The remaining
-work is spec §3.2's family waves — case stories only, one PR per family, the
-~91 items wave 0 did not touch.
+**The case-story gate landed as a ratchet on 2026-09-04, not as the program's
+final step.** `apps/docs/scripts/lib/story-coverage.test.ts` derives the
+obligations from the manifest — the eight case names present-or-`case-skip`,
+and a JSDoc description above every declared-state export — and compares the
+unmet set with a committed `story-coverage.baseline.json` in both directions.
+The baseline holds the adoption-time debt: **817** obligations (615 case, 202
+described) — 76 story files with no case block at all, one partial, and 50
+files with undocumented state exports. Family coverage at adoption (files
+with all eight accounted for): A 12/12 · B 8/8 · C 5/5 · D 1/7 · E 1/10 ·
+F 0/7 · H 0/7 · I 0/5 · J 0/7 · K 3/8 · L 2/6 · M 3/7 · N 4/12 · O 0/13 ·
+P 0/2. Each family wave then "shrank the baseline": a wave wrote its stories or
+skips and ran `pnpm story-coverage:baseline` from `apps/docs` to lock the
+progress in, and the script refuses to grow the file. **Eight waves later the
+baseline is `[]`.** The figures above are the adoption-time snapshot, kept
+because the shape of the debt is the argument for the program; they are all
+derived by that test, so recount with it rather than maintaining them here.
+
+With the file empty the ratchet stops being a ledger and becomes a plain
+guarantee: every declared state has a documented export, every item has the
+eight case names or a written reason one is absent, and a regression has nothing
+to hide behind. Do not delete the file — an empty baseline is what makes the
+next unmet obligation fail.
+
+**Wave 1 of the family waves — families D and I — landed 2026-09-05, together
+with the description-only debt.** The brief the agents were handed is
+[`superpowers/plans/2026-09-05-case-story-family-waves.md`](superpowers/plans/2026-09-05-case-story-family-waves.md),
+and `pnpm story-coverage:report [item …]` (from `apps/docs`) is the report-only
+view it gave them: the unmet obligations for one item, computed on the same code
+path as the ratchet, never touching the baseline. Baseline **817 → 625** (527
+case, 98 described): the 18 items whose only debt was undocumented state
+exports (76 descriptions across A/B/C/E/K/M/N) and the 11 D/I items (88 case
+obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
+fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
+entry has what was fixed and what was found.
+
+**Wave 8 — family O — landed 2026-09-06, and the baseline reached zero.**
+Baseline **104 → 0**: thirteen shells, thirteen agents, all at zero unmet. Every
+one of the 116 registry items now carries the eight case names or an annotated
+skip, and every declared-state export carries a JSDoc description.
+`story-coverage.baseline.json` is an empty list, which turns the ratchet from a
+debt ledger into a plain regression guard — an obligation that goes unmet from
+here is a new failure with nothing to hide behind. The wave's distinguishing
+feature is one line of tooling: `page.viewport(375, 812)` from `vitest/browser`
+makes a `Mobile` story move the real breakpoint, and everything it found had been
+unreachable for seven waves. §8's family O subsection and §9's wave 8 entry have
+the detail; what stays open is listed at the end of that entry.
+
+**Wave 7 — families M and N — landed 2026-09-06.** Baseline **219 → 104** (104
+case, **0 described**): twelve agents, twelve items, all at zero unmet, and the
+description-only debt reaches zero across the whole registry. Everything left is
+family O's 13 shells. The wave closed the dialog backdrop that wave 6 fixed one
+primitive short of — `components/ui/alert-dialog.tsx`, found independently by
+two agents — and it produced the first negative against the
+physical-to-logical swap rule that six waves had treated as free. §8's M/N
+subsection and §9's wave 7 entry have the detail.
+
+**Wave 6 — families K and L — landed 2026-09-06.** Baseline **305 → 219** (200
+case, 19 described). Nine agents, nine items, all at zero unmet. It closed the
+last unrestated dropdown popup in the registry, fixed the dialog backdrop that
+no call site could reach, and corrected five more written claims — four docs
+notes and, for the third time, this file's own entry on right-to-left. §8's K/L
+subsection and §9's wave 6 entry have the detail.
+
+**Wave 5 — family J — landed 2026-09-06.** Baseline **362 → 305** (272 case,
+33 described). Seven agents, seven items, all at zero unmet. Its distinguishing
+feature is how much of it was an audit of earlier work: three claims recorded in
+this file turned out to be stale or overstated, each caught by an agent that had
+been told to cite them. §8's J subsection and §9's wave 5 entry have the detail.
+
+**Wave 4 — family H — landed 2026-09-06.** Baseline **427 → 362** (328 case,
+34 described). Seven agents, seven items, all at zero unmet. It found more that
+the gates cannot see than any wave before it: four components whose slider
+handles paint no focus ring at all, a whole class of reduced-motion assertions
+that cannot fail, and two more holes in the focus-ring helper introduced during
+wave 3. §8's H subsection and §9's wave 4 entry have the detail.
+
+**Wave 3 — family F — landed 2026-09-06.** Baseline **490 → 427** (383 case,
+44 described). Seven agents, seven items, all at zero unmet. Its findings are
+in §8's F subsection and §9's wave 3 entry; the one with the widest reach is
+that the focus-ring assertion the convention asks for could not fail, which is
+now fixed with a shared helper.
+
+**Wave 2 — families E and P — landed the same day.** Baseline **625 → 490**
+(439 case, 51 described). Four of the eleven agents reported normally; the
+other seven were killed by a session rate limit *between finishing their work
+and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
+carries the salvage procedure, because it will happen again.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -544,8 +624,29 @@ pre-existing.
 3. **Inconsistent accessible-name convention** for model selection:
    `model-picker` uses `"Model: Veo 3.1 Fast"`, `hero-omnibox` a static
    `"Model"`. One should win.
-4. **RESOLVED — the spec gap is closed.** All five genuinely missing entries
-   were written on 2026-08-04 from `catalog.md` + `gaps.md` + D12: **H6
+4. **PARTLY RESOLVED — two entries are still missing, found 2026-09-05.** **E9
+   `tts-composer` and E10 `voice-clone-recorder` have no section in
+   `component-specs.md` at all**, and never have (`git log -S` finds none).
+   Their manifest rows still carry `specAnchor:
+   "component-specs.md#e9-tts-composer"` / `#e10-voice-clone-recorder`, because
+   `gen-manifest.mts` synthesises that string from the catalog row rather than
+   from a heading that exists — so both anchors are dead links, and **nothing
+   checks them**: `check:contract` asserts the manifest's shape and
+   `check-citations.mts` covers docs-module prose, neither resolves a
+   `specAnchor`. A sweep of all 116 shipped items finds exactly these two.
+   Their normative text today is the `catalog.md` row (E9/E10, both
+   `RESTORED`), `gaps.md` §2 R6 and R7, and the shipped docs module. **Hand a
+   wave agent those, not the anchor**, until the sections are written — and
+   writing them is a design act that needs a human, since it would bless
+   whatever shipped.
+
+   The paragraph below compounds it: it cites "the precedent E9/E10 set" for
+   how a restored entry should handle its `Evidence` line, and that precedent
+   is not written down anywhere either. The rule it describes is still right;
+   its citation is not.
+
+   The rest stands. All five *other* missing entries were written on 2026-08-04
+   from `catalog.md` + `gaps.md` + D12: **H6
    `waveform-editor`** (gaps R3), **H7 `stem-mixer`** (R4), **J7 `track-list`**
    (R5), **M7 `connection-manager`** (T5) and **N7 `env-status`** (R1). The
    sixth on the old list, `N8 permission-prompt`, had already been specced by
@@ -711,13 +812,30 @@ needed it to work and could not make it work.
   `records-shell` forwards no footer prop at all and would need either a
   different anchor or a documented exemption. None of the other four shells
   has this story yet — open follow-up.
-- **Carousel arrows positioned outside their own box** (`-left-12`/`-right-12`):
-  C3 `feature-card-row` (O1, O13) and H5 `frame-strip` (O3). In any constrained
-  column they are clipped, or they turn the page into a horizontal scroller.
-  O1 measured 407px of content in a 375px column, all of it the arrow.
-- **Grid columns keyed off the viewport rather than the container**: J4
-  `artifact-grid` (O9) and C4 `recent-grid` (O1). Every shell that puts a grid
-  beside a sidebar has to shift each breakpoint up a step by hand.
+- **~~Carousel arrows positioned outside their own box~~ (`-left-12`/`-right-12`)
+  — both named components were fixed at the call site; the open one is a third.**
+  The finding stands: the vendored `Carousel` puts its arrows outside the box, so
+  in a constrained column they clip or turn the page into a horizontal scroller,
+  and O1 measured 407px of content in a 375px column, all of it the arrow. But
+  C3 `feature-card-row` and H5 `frame-strip`, the two this entry named, each
+  carry a horizontal override at their own call site rather than in the
+  primitive — C3 also pins the arrow to `top-2`, H5 does not need to, and both
+  files explain why in a comment. The H wave re-measured H5 in the configuration
+  its own source calls narrow (square tiles plus a controls row) and the arrow
+  clears A8's label band by 9px, now asserted in its `Mobile` story. **What is
+  actually open is D2 `reference-strip`**, found in wave 1 composing `Carousel`
+  with no override at all: measured 471px of footprint in a 375px column, 96px
+  of arrow outside it. Corrected 2026-09-06 — this entry had been read as three
+  open instances when it was one.
+- **~~Grid columns keyed off the viewport rather than the container~~ — fixed by
+  D19, and this entry outlived it.** J4 `artifact-grid` (O9) and C4 `recent-grid`
+  (O1) both shipped viewport-keyed columns, so every shell that put a grid beside
+  a sidebar carried a hand-written override to shift each breakpoint up a step.
+  D19 (2026-08-18) made container queries the default for a component's own
+  layout, with J4 as the pilot and C4 converting after it; both files carry
+  `@container` wrappers with arbitrary-value thresholds today, and four
+  pre-existing stories already assert them. Closed 2026-09-06, by the J-wave
+  agent that was told to cite this bullet and checked it instead.
 
 **Missing opt-outs — a component that always renders its own chrome cannot be
 composed into a surface that already has that chrome:**
@@ -828,6 +946,7 @@ that is where the backlog lives.
   | `source-cards.tsx:100` | title button | `text-left` → `text-start` |
   | `explore-gallery.tsx:418` | facet count | `ml-1.5` → `ms-1.5` |
   | `artifact-grid.tsx:272` | count badge | `ml-1.5` → `ms-1.5` |
+  | `preview-tile.tsx:150` | badge slot | `right-2` → `end-2` (added 2026-09-05, flagged independently by two D/I agents) |
 
   **Changes that are *not* byte-identical stay open decisions, and must not be
   swept in with the above.** Two of them:
@@ -935,6 +1054,11 @@ that is where the backlog lives.
   the one being asked. Count it mechanically, from the manifest's declared
   states rather than from export names, and state the scope you counted.
 
+  **Ratcheted since 2026-09-04:** each of the 202 is a `described` key in
+  `apps/docs/scripts/lib/story-coverage.baseline.json`, derived by
+  `story-coverage.test.ts` from the manifest's states exactly as the caution
+  below prescribes; the count can now only go down.
+
   **Why it is a follow-up and not a blocker: zero case stories lack a
   description.** Every undocumented export is a declared-state story — the kind
   that restates the types and the manifest by construction — so nothing a case
@@ -956,6 +1080,862 @@ that is where the backlog lives.
   `data-theme` (schema-forced) while the real mechanism is the `.dark` class —
   reconcile when a stage consumes axes. (The rest of this entry's items closed
   in `chore(ds-rules): close the final-review follow-ups backlog`.)
+
+### Added by the D/I case-story wave (2026-09-05)
+
+Same provenance rule: each was found by an agent writing a story who could not
+write it honestly without noticing. The sanctioned mechanical fixes landed
+in-wave (spec §3.4) and are listed under §9's wave 1 entry; these are the gaps
+that stayed open, plus what the wave learned about the primitives underneath.
+
+- **`PopoverContent` supplies no accessible name.** Base UI renders the popup
+  `role="dialog"`, so every registry popover without an explicit `aria-label`
+  is an `aria-dialog-name` violation the moment a story opens it — and the
+  declared-state stories open none of them, which is how `context-toolbar`'s
+  AI popover and `drawing-tools`' flyout shipped unnamed from wave 6 until this
+  wave's `ReducedMotion`/`Controlled` stories opened them. Both fixed in-wave
+  with the `modality-rail` idiom (`aria-label` on the content). Named today:
+  `modality-rail`, `feature-announcement`, `context-toolbar`, `drawing-tools`.
+  Every other popover in the registry is latently in this position until its
+  case stories open it — a candidate for a ds-rules rule (a `PopoverContent`
+  with neither `aria-label` nor `aria-labelledby`).
+- **No `DirectionProvider` is mounted anywhere, so Base UI composites never
+  learn about RTL — but only the keyboard half, and this entry originally said
+  more than it should.** `CompositeRoot` reads `useDirection()`, which falls
+  back to `"ltr"` without a provider, and `dir="rtl"` on a wrapper is invisible
+  to React context. Measured on `mode-tabs`, and again on `selection-toolbar`,
+  `time-ruler`, `stem-mixer` and `transcript-editor`: under `dir="rtl"`,
+  ArrowRight advances in DOM order, which paints to the left.
+
+  **`align` is a separate mechanism and does work; `side` is not.** Three
+  agents narrowed this in turn. K4 `selection-toolbar` and K2
+  `inline-generate-popup` measured that floating-ui's `platform.isRTL` reads
+  *computed style*, so `align="start"` mirrors correctly whenever `dir` sits on
+  the document — K2's numbers: RTL popup 495..815 against a trigger at 685..815,
+  LTR 385..705 against 385..515. L2 `coach-mark` then measured the half that
+  does **not**: a physical `side="right"` request stays physically right
+  (596..916 against an anchor at 483..584), because Base UI reads *that* from
+  the same `DirectionContext` nothing mounts. So the split is not
+  positioning-versus-keyboard, it is which source each property happens to
+  read: `align` off rendered direction, `side` and composite arrow travel off
+  React context.
+
+  Two consequences either way. A wrapper `<div dir="rtl">` silently fails the
+  `align` half, which is why an RTL story for anything portalled has to set
+  `dir` on the document (the `RtlDocument` idiom). And a popup that lands on the
+  correct side under RTL is not evidence that its arrow keys, or its `side`
+  request, do.
+
+  The fix for the keyboard half is one provider at the app shell, or the
+  primitive reading `dir` — a shell-level decision, recorded, not made here.
+- **The vendored `Button` moves on press with no reduced-motion branch.**
+  `components/ui/button.tsx` carries `transition-all` and
+  `active:not-aria-[haspopup]:translate-y-px`, so every button in the registry
+  nudges a pixel while pressed under `prefers-reduced-motion: reduce`. Found
+  independently by the `quote-reply` and `media-prompt-bar` agents. **This entry
+  originally said the token gate downgrades it to a warning for vendored files;
+  M5 `paywall-message` checked and it is worse than that.** MOT-2, the
+  `transition-all` blocker, is a core rule scoped to
+  `apps/docs/registry/super-ai` and `apps/docs/registry/marketing` only, so
+  `components/ui` is outside it entirely — the finding is not demoted, it is
+  never made. The demotion mechanism is real but belongs to the *local* rules,
+  whose `CATALOG_SCOPES` do include `components/ui`; that is why
+  `check:tokens` reports vendored warnings for TOK-8 and none for MOT-2. The
+  triage is still in `vendored-token-findings.md` (`vendored-token-findings.md`) — a primitive-wide posture, not any one
+  component's, so no case story adds `motion-reduce:transition-none` for it.
+- **Base UI's `Tabs.Panel` is an extra keyboard stop with no visible focus.**
+  A tabbed panel puts two keyless stops in front of its sections, not one, and
+  the vendored `ui/tabs.tsx` styles `TabsContent` `outline-none` with no
+  `focus-visible` ring — the unpaired-`outline-none` shape the token gate exists
+  to catch and does not see in a vendored file. `tool-panel`'s `KeyboardOrder`
+  pins the order and filters that one slot out of its ring check so nothing is
+  pinned in either direction. Its docs keyboard list omits the stop.
+- **The carousel-arrow shape has a third instance: D2 `reference-strip`.** It
+  composes `Carousel` with no override, so the arrows sit at `-left-12` /
+  `-right-12`; measured 471px of footprint in a 375px column (96px of arrow
+  outside it). C3 and H5 are recorded above; D2 is the first still open on both
+  counts. Position is a design decision, so it stays recorded.
+- **Reorder controls are named and iconed by physical direction.** D2
+  `reference-strip`'s "Move X left" carries `ChevronLeft` and calls
+  `onMove(id, "left")`, meaning "toward index 0" — which renders on the *right*
+  under RTL. The array semantics stay correct; the label and icon mislead. H5
+  `frame-strip`'s `onReorder(id, "left" | "right")` has the same shape. An API
+  naming decision (`"start" | "end"`, or index deltas), not a class swap.
+- **A keyboard-focused menu row in I4 `ai-tools-menu` has no perceptible focus
+  treatment.** `focus:bg-transparent` on the `DropdownMenuItem` overrides the
+  primitive's `focus:bg-accent` — presumably to keep A9's muted description off
+  an accent surface — and leaves the focused row distinguishable only by title
+  colour (oklch 0.205 vs 0.145). F4 `action-stack` carries the identical
+  override on the identical row, so it is one decision for both and belongs
+  with the shared row the I4 docs module's last pitfall already asks for.
+- **Two more accessible-name collapses in the empty-string class.** D3
+  `context-chips` with `label=""` names its remove control bare "Remove" (its
+  docs module says the name cannot collapse — that sentence has a hole); I2
+  `property-inspector`'s `Reset <label>` default cannot see the section above
+  it, so a property under two groups produces duplicate names ("Reset Opacity"
+  twice, which `EmptyLabel` asserts), and its `selectionLabel` fallback
+  announces the raw `elementType` lookup key.
+- **`aria-activedescendant` on D6 `skill-menu` is empty until the first arrow
+  key.** cmdk 1.1.1 writes `selectedItemId` only inside `setState("value", …)`,
+  and its select-first fallback runs only when the store value is empty — never
+  true because `skill-menu` controls cmdk's `value`. A screen-reader user is
+  told the field controls a listbox and never which option is current, while
+  the preview is already rendering that option. The first Down repairs it.
+- **Tap targets under WCAG 2.2's 24×24 in two rails.** I5 `drawing-tools`'
+  flyout chevron measures 16×32 CSS px against a 32×32 tool button with no gap,
+  so the spacing exception cannot apply; A11 `reset-affordance`'s 20×20 row
+  target is multiplied across I2's column of rows. Axe's `target-size` is
+  experimental and off, so no gate sees either.
+- **Sweep-table addition, above.** A8 `preview-tile`'s badge slot is `absolute
+  top-2 right-2` — the byte-identical `end-2` swap, flagged independently by
+  the `quote-reply` and `tool-panel` agents. Its own `RTL` story still says the
+  swap would be "a system-wide decision"; that premise expired when the sweep
+  was decided, and the description should be corrected when the sweep runs.
+
+### Added by the E/P case-story wave (2026-09-05)
+
+- **A second vendored primitive does not mirror, and this one is measurable.**
+  `components/ui/switch.tsx` moves its thumb with
+  `translate-x-[calc(100%-2px)]`, a physical axis. Measured settled under
+  `dir="rtl"` on E7 `member-gate-row`: the track spans 12–44px and the thumb
+  41–57px, so **thirteen of the thumb's sixteen pixels sit outside its own
+  track**; in LTR the same pair is flush. Every switch in the registry inherits
+  it. Its sibling is `components/ui/button-group.tsx`, which joins children with
+  `rounded-r-none` / `rounded-r-lg!` / `rounded-l-none` / `border-l-0` — measured
+  on E8 `generation-wizard`, the radii land on the seam instead of the outer
+  edges and `border-l-0` strips the border from the group's *outer* edge while
+  two borders stack at the seam. Each is one logical-utility fix that would
+  repair every consumer at once, and both are vendored, so neither was swept.
+
+- **A group with an empty label loses its heading, its count and its tone
+  together.** `feed-view.tsx` guards the entire `<header>` on `section.label ?`
+  and renders `null`, so P1 `data-views` drops the group's separator and never
+  calls `groupAccessibleName` for it. That function's own docstring is what
+  makes this sharp: the tone marks are `aria-hidden` decoration and the
+  function is "where the meaning actually reaches assistive tech", so an empty
+  label silently deletes the only channel carrying tone. Measured: four groups,
+  three headers. A caller passing `""` to hide a heading gets a data loss, not
+  a visual tweak.
+
+- **An unselected tab's count badge measures 4.34:1.** `detail-tabs.tsx` dims
+  the badge with `opacity-70` rather than choosing a token, and against its
+  surface that lands under the 4.5:1 minimum; the *selected* tab's badge
+  measures 18.15:1, so the failure exists only in the state nobody is looking
+  at. axe does not catch it, because the rule reads composited colour rather
+  than an opacity applied to a foreground — the same blind spot TOK-8 exists to
+  describe, reached from the other side. Recorded in P2's `LongContent`
+  description, asserted nowhere.
+
+- **E1 `generation-panel`'s "Generate never scrolls away" is conditional, and
+  nothing enforces the condition.** Measured at 375px with identical content:
+  constrained to a 600px column the body scrolls and the footer sits on the
+  card's bottom edge, as the spec promises; **unconstrained, the root's `h-full`
+  resolves to `auto`, `flex-1` and `overflow-y-auto` never engage, and the card
+  grows to 740px — putting Generate 140px below a phone fold.** The docs
+  module's focus note inherits the same conditional. Both panels are rendered in
+  that component's `Mobile` story; only the constrained one is asserted.
+
+- **Under reduced motion, a loading tile and a failed tile become
+  indistinguishable.** A8 `preview-tile` paints both on `bg-muted` and adds text
+  for neither, and E4 `preset-grid` passes no `action` node, so suppressing the
+  pulse removes the only signal separating them. The docs already record that
+  the two *announce* alike; the visual collapse is new. Both are rendered side
+  by side in `preset-grid`'s `ReducedMotion`, and nothing asserts they are
+  distinguishable.
+
+- **Three more components hold state a host cannot reach.** E4 `preset-grid`'s
+  see-more expansion is internal, one-way and never reset, so a host swapping
+  `items` on a mounted grid — the natural move, since four content types are one
+  component — carries the old expansion in and `visibleCount` is ignored from
+  then on. E1 `generation-panel` exposes no
+  `openSections`/`onSectionOpenChange` at all, one step past I2's
+  after-the-fact callback. E8 `generation-wizard` focuses its step title on
+  *any* change of the active step except the first render, so a host restoring
+  a saved position a tick after mount yanks focus into the wizard.
+
+- **Four more rotating chevrons animate with no reduced-motion branch.** E1's
+  was fixed in-wave with the `pricing-table` idiom; the same shape is still
+  live at `approval-card.tsx:162`, `permission-prompt.tsx:184` and
+  `trace-timeline.tsx:375`, all verified present 2026-09-05. Each is a
+  one-class fix for whoever owns the file, so they are left to the F and N
+  waves rather than swept here.
+
+- **The shared ring-check helper is weaker than it reads.** Story play
+  functions assert a visible focus treatment with
+  `boxShadow !== "none" || outlineStyle !== "none"`, and both halves have now
+  produced a false positive: a fully transparent, zero-size shadow
+  (`rgba(0, 0, 0, 0) 0px 0px 0px 0`, measured on P2 `detail-view-shell`'s close
+  button) is not the string `"none"`, and an `sr-only` input clipped to 1×1
+  still carries the UA outline (measured on E1). Until the helper checks size
+  and alpha, "every stop shows a ring" means "every stop has *something* in
+  those two properties".
+
+### Added by the F case-story wave (2026-09-06)
+
+- **The focus-ring assertion could not fail, and that is now fixed.** Four
+  agents across three waves reached the same finding independently, and between
+  them they measured the whole mechanism. A Tailwind `ring-*` utility composes
+  shadow layers that are *always present*, reading
+  `rgba(0, 0, 0, 0) 0px 0px 0px 0px` when the ring is off — not the string
+  `"none"`, so `boxShadow !== "none"` passes on an element painting nothing.
+  `focus-visible:outline-none` leaves `outline-width` at its used value while
+  `outline-style` reads `none`, so a width-based check has the same hole. And
+  the vendored `Button`'s `transition-all` *fades the ring in*, so an immediate
+  read on a control that does paint one is a false negative — the same element
+  reads transparent and zero-sized on the frame focus lands and
+  `oklab(0.708 0 0 / 0.5) 0px 0px 0px 3px` at 250ms. F5's agent put it best:
+  this is the default reading for every shadcn-v4 control in the registry, not
+  a quirk of two components. `apps/storybook/src/lib/focus-ring.ts` now checks
+  the layers for non-zero alpha *and* non-zero geometry and waits for them to
+  settle; `story-conventions.md`'s mechanical fact 5 has the details.
+  **Additive: 63 story files still carry the inline string check**, so a
+  "shows a ring" claim in an older file is weaker than it reads.
+
+- **A third vendored primitive does not mirror.** `components/ui/toggle-group.tsx`
+  joins its children physically, exactly as `switch.tsx` and `button-group.tsx`
+  do: measured under `dir="rtl"` with `spacing={0}`, the leftmost item loses its
+  border (`border-left-width: 0` on the group's outer edge), 1px stacks against
+  1px at the seam, and both 10px radii land on inner corners. It is gated on
+  `data-spacing=0`, so today it reaches F5 `compare-viewer` and J1
+  `asset-library` only — the registry's four other toggle groups keep the
+  default gap and are unaffected.
+
+- **A physical class is not always safe to swap, and F5 is the counter-example
+  worth keeping.** The sanctioned swap assumes the class is the only thing
+  deciding a side. In `compare-viewer` the pane numbers are `top-2 left-2` /
+  `right-2` *and* the wipe clip is `clipPath: inset(0 0 0 N%)`, which is
+  physical and has no logical form. The badges pair with the content today
+  because both halves are physical, so swapping only the classes would put each
+  number over the other pane's picture — a class-only swap makes RTL worse. The
+  same shape, resolved the other way, is F1/A8's corner pair: there both halves
+  *were* classes, so the integrator swapped them together (a half-swap would
+  have stacked the badge on the checkbox). The rule the two cases give: swap
+  when every participant in the layout is a class, and check what else decides
+  the side before you do.
+
+- **The wipe handle detaches from its seam under RTL.** Base UI positions the
+  thumb with `inset-inline-start`, which mirrors; the clip is physical, which
+  does not. Measured at `wipePosition={25}` in a 640px frame: the seam sits at
+  160px and the handle at 465px, and ArrowRight moves them further apart. The
+  fix is a direction-aware value in JS rather than a class.
+
+- **Three more controls have no accessible name or no visible focus.** F5's
+  resize divider renders `role="separator"` with `aria-valuemin/max/now` and no
+  `aria-label`, so with three panes two stops both announce as "separator, N%",
+  and no axe rule covers it. F5's wipe handle puts `focus-visible:ring-3` on the
+  thumb while focus actually lands on Base UI's clipped `<input type="range">`
+  inside it, so the ring is on an element that is never focused — the docs' own
+  focus bullet claims that ring exists. And F1 `result-card` does not forward
+  A8's `frameLabel`, so an unlabelled interactive card is a `button-name`
+  violation with no escape hatch.
+
+- **`components/ui/table.tsx`'s scroll container is the third
+  `scrollable-region-focusable`.** After L5 `shortcuts-sheet` (wave 0) and P1
+  `data-views`' kanban board (wave 2), F6 `render-queue` found the same shape one
+  level down: a bare `div` with `overflow-x-auto`, no `tabIndex`, no role, no
+  name. A read-only queue rendered at 375px with no handlers fails axe outright,
+  because nothing inside it is focusable. Shared by every table in the registry.
+
+- **`asset-detail`'s `onRemix` declares a field it never sends.** The type is
+  `{ prompt?: string; span?: string }` and the button fires
+  `onRemix({ prompt })` unconditionally, so the spec's "selecting a phrase feeds
+  Remix" holds only if the host stitches `onSpanSelect`'s text to it. The docs
+  page said the click "hands that exact text to Remix"; both that sentence and
+  the prop's own comment were corrected, and populating the field stays an API
+  decision.
+
+- **Two more geometry guarantees are conditional.** F1 `result-card`'s spec
+  promises identical card geometry in every state so grids never reflow; the
+  media half holds and is asserted, but the footer's `min-h-9` is a floor, so a
+  full provenance line makes one card 309px against a neighbour's 304px. And
+  F2 `generation-grid`'s bulk bar overflows at 375px — 432px of content in a
+  373px box — so the grid's own chrome is what scrolls sideways.
+
+- **Every per-cell checkbox in a generation grid has the same accessible name.**
+  `result-card.tsx` labels from a fixed `sr-only` "Select this result", so a
+  four-result grid offers four identical names and a compact row offers eight.
+  F1 already receives the prompt as `label`. Third instance of the per-row
+  naming contract, after `property-inspector`'s resets and `context-chips`'
+  empty label.
+
+- **The turbo cache is shared across worktrees, confirmed.** Wave 1 filed it as
+  unconfirmed; three F agents saw it. A cached `docs:lint` replay prints paths
+  under a *sibling* worktree, which means a docs lint error in an agent's
+  worktree can be masked by another worktree's cache. Verify a lint result in
+  the integration tree, not in an agent's.
+
+### Added by the H case-story wave (2026-09-06)
+
+- **`components/ui/**` exists twice, and only one copy is what the gate
+  renders.** `apps/docs/components/ui` has 39 primitives; `apps/storybook/src/components/ui`
+  has 60. Storybook's Vite alias sends `@/components/ui/*` to its own copy, so a
+  registry component renders against the docs copy on the docs site and against
+  the storybook copy under the a11y gate. Today the overlap differs only
+  cosmetically — `"use client"` directives the Next app needs and Vite does not,
+  plus semicolon formatting — so nothing is broken, **but a substantive fix has
+  to be made in both and nothing checks that.** Found the hard way: the fix for
+  the unnamed select listbox went into the docs copy, the gate kept failing
+  intermittently, and the probe that explained it showed the listbox still
+  unlabelled. Both copies now carry it.
+
+
+- **Every `SelectContent` in the registry is an unnamed listbox.** Base UI
+  renders the popup as `role="listbox"`, and axe's `aria-input-field-name`
+  fails one with no accessible name. Found the way the popover equivalents were
+  — a story opened a select for the first time — and it surfaced
+  *intermittently*, because axe has to run while the popup is open. Named at
+  four call sites: H1 `transport-controls` (the one that found it), plus C1
+  `hero-omnibox` and E9 `tts-composer`'s two, whose families have no case-story
+  debt left to bring anyone back. **Still unnamed, and belonging to their own
+  waves: `records-shell`, `template-detail`, `trust-dialog`,
+  `usage-dashboard`.** The name comes from the trigger, which already has one.
+
+
+- **Four components have slider handles that paint no focus ring, and four docs
+  pages said otherwise.** Base UI renders a real `<input>` inside each thumb and
+  clips it away with `position: fixed; clip-path: inset(50%)`. Focus lands on
+  that input; the `focus-visible:ring-3` sits on the thumb wrapper, which
+  therefore never matches `:focus-visible`. F5 `compare-viewer`'s wipe handle,
+  H2 `time-ruler`'s three handles, H7 `stem-mixer`'s two faders — half of every
+  mixer lane — and H6 `waveform-editor`'s four thumbs, which is four of its
+  twelve tab stops. The prose in `time-ruler`, `stem-mixer` and
+  `waveform-editor`'s docs modules promised that ring and has been corrected to
+  say what is there. **The repair is one decision across all four**, and the
+  in-repo idiom exists: `input-group.tsx` rings a wrapper with
+  `has-[…:focus-visible]`. Not swept, because choosing which element carries the
+  ring is a design call.
+
+- **The unnamed-listbox rule is configuration-dependent, and the entry below
+  overstated it.** H1 `transport-controls` failed axe outright on
+  `aria-input-field-name` with its select popup open; J6 `template-detail`
+  measured its own unnamed listbox open under the same gate and axe 4.12 raised
+  nothing, while a deliberately nameless button in the same story did fail
+  `button-name` — so the gate was running and the rule simply did not apply
+  there. Both are measurements, neither explains the other, and the fix is
+  right either way: an unnamed listbox is wrong whether or not a rule catches
+  it. Read the entry below as "fails axe in at least one shape", not always.
+
+- **A whole class of reduced-motion assertions cannot fail.**
+  `components/ui/select.tsx` defaults `alignItemWithTrigger` to `true` and the
+  content carries `data-[align-trigger=true]:animate-none`, so a default
+  `SelectContent` computes `animationName: "none"` with or without any
+  suppression. H1's agent wrote that assertion, watched it pass before applying
+  any fix, and rewrote it. Eight registry components mount a `SelectContent`;
+  H1 `transport-controls` is the only one carrying the restated pair, and the
+  other seven are in the same position. Two stories already merged assert it:
+  E2 `model-picker`'s comment already said it was a regression guard on the
+  primitive's branch, which is honest; E9 `tts-composer`'s claimed it measured
+  the frame a bare class fails to reach, and was corrected.
+
+- **The focus-ring helper introduced in wave 3 had two more holes, both found
+  after it shipped.** It reported a ring on the clipped `<input>` above, because
+  a clipped element still carries the user agent's `outline: auto 1px` — fixed
+  with an `isPainted` guard. And more fundamentally, **an absolute check answers
+  "does this element paint a treatment", never "did focus cause it"**, so a span
+  with a permanent `shadow-sm` passes whether focused or not; H6 found three
+  slider spans in exactly that position. `focusTreatmentSignature` now exists
+  for the differential, which is the stronger claim wherever an element can be
+  focused directly. H2's agent hit the first hole, correctly declined to use the
+  helper rather than manufacture green, and said so — which is how it was found.
+
+- **Direction-blind arrow keys, now measured on a hand-rolled handler too.**
+  Wave 1 recorded that Base UI composites never learn about right-to-left
+  because no `DirectionProvider` is mounted. H4 `transcript-editor` has the same
+  defect from a different cause: its own `handleKeyDown` maps ArrowRight to
+  `index + 1` with no reference to `dir`, so focus moves to the token painted
+  left. H2 and H7 measured the Base UI half again, and H7 added a consequence
+  worth naming — Base UI takes a thumb's centring `translate` sign from
+  `useDirection()`, so under RTL every thumb is offset by half its own width.
+
+- **A Latin transcript renders backwards under right-to-left.** H4's tokens are
+  flex items, so bidi never runs across the sentence and the flex main axis
+  alone orders the words. Correct for an Arabic or Hebrew transcript, wrong for
+  an English one in an RTL shell, and there is no API separating the chrome's
+  direction from the transcript's language. Its word gaps are also `gap-x-1`
+  rather than whitespace, so `textContent` reads `"Sothesecondpass"` and a
+  copy out of the transcript runs the words together.
+
+- **`landmark-unique`, a rule no story had tripped before.** H5 `frame-strip`'s
+  root is `role="region"` named from `kind` alone, so two strips of the same
+  kind on one page are two identically named landmarks — it failed two stories
+  outright until each strip got its own `aria-label`. The escape hatch works;
+  nothing in the component or its docs says a caller must use it.
+
+- **Two more empty-string collapses, and one that fails the gate.** H4's word
+  token with `text: ""` renders `role="option"` with no name and an 8×0 box —
+  `aria-toggle-field-name`, a red gate, so the story documents it rather than
+  rendering it. H4's speaker fallback is nullish (`?? "Unknown speaker"`), so
+  `""` survives and the listbox is named `"Transcript, "`; the same fallback is
+  seeded into the editable field, so renaming on the first keystroke stores the
+  placeholder. H7's `label=""` renders `aria-label=""` rather than falling back
+  to its default.
+
+- **The don't-swap rule now has four negatives to two positives.** A physical
+  class is safe to swap only when every participant in the layout is a class.
+  H3 `track-lane`'s trim handles pair `left-0`/`right-0` with clip geometry, so
+  a swap puts "Trim start" on the later edge; H2 `time-ruler`'s tick label and
+  scrub bubble each pair a class with an inline `left` that has no logical form;
+  H5 `frame-strip`'s arrows pair with Embla's LTR axis in JavaScript. Against
+  those, the F1/A8 corner pair and H3's own gutter border were swapped and
+  pinned. H3's is the pattern to copy: it added an RTL assertion on
+  `borderLeftWidth`/`borderRightWidth` so the swap cannot silently regress.
+
+- **Two more spec-and-docs corrections that only writing a story would find.**
+  H2's docs claimed Home and End on the range handles stop one step short of
+  each other; `minStepsBetweenValues` is 0, so they clamp to equality and one
+  keypress produces a zero-length range with no keyboard route back. And both
+  H6 `waveform-editor`'s file header and its docs module opened by saying the
+  component has no `component-specs.md` entry — it has had one since
+  2026-08-04, written shortly before the wave that built it. Both corrected.
+
+- **H1's `aria-keyshortcuts="Space"` never fires, and the unit suite hid it.**
+  `transport-controls.test.tsx` dispatches synthetic keydowns at the root
+  `<div>`, which has no `tabIndex` and can never be the event target in a
+  browser; every element that *can* hold focus takes an early return. The docs
+  module already carried the sentence — this is the measurement behind it.
+
+### Added by the J case-story wave (2026-09-06)
+
+- **The vendored carousel is broken under right-to-left, not merely
+  mis-positioned.** J6 `template-detail` measured it: the same eight previews in
+  the same 430px strip report `canScrollPrev` *and* `canScrollNext` both false
+  under `dir="rtl"`, so both arrows are natively disabled and **the four
+  previews past the fold cannot be reached at all**; the LTR control has next
+  enabled and steps one thumbnail. At 375px with four previews, RTL's "Next"
+  moves the track 17px the wrong way against LTR's clean 95px. The cause is
+  Embla never being told `direction` in `components/ui/carousel.tsx` — recorded
+  since wave 1 as a positioning nuisance, and this is the first measurement
+  showing it removes content.
+
+- **A file name rendered as a button never truncates.** J1 `asset-library`
+  measured the same name in all three of its variants at 832px: the link and
+  span forms clip 552px into 421px, the button form paints 8..584 in a cell
+  ending at 461 — **123px of file name across the next column** — and reports
+  `scrollWidth === clientWidth`, so nothing sees it as overflowing. A button's
+  `width: auto` is shrink-to-fit even at `display: flex`, so `truncate` never
+  engages, and the cell's `max-w-64` cannot save it because `table-layout: auto`
+  treats a cell max-width as advisory. At 375px in grid view it is real
+  horizontal page scroll.
+
+- **A fifth vendored primitive does not mirror, and this one is in every
+  table.** `components/ui/table.tsx` gives each `<th>` a physical `text-left`
+  while cells inherit `start`. Measured under RTL on J1's Name column: the
+  heading paints at 488..526 and its data at 695..824 — **title and data on
+  opposite edges, 207px apart**. F6 and J7 both saw the class; this is the first
+  measurement of what it costs.
+
+- **Facet counts announce with no separator, third and fourth instances.** J4
+  `artifact-grid`'s chips read `"Markdown3"` and J3 `explore-gallery`'s read
+  `"Images180"`, because the gap is a margin and a margin is invisible to name
+  computation. J4's own docs page warns about exactly this shape under a
+  different name (its "1,204views" pitfall) — corrected to say what it measures.
+  H4 `transcript-editor`'s `gap-x-1` word spacing is the same defect in prose.
+
+- **Viewport-keyed columns survive in a third component.** D19 fixed J4 and C4;
+  J3 `explore-gallery` was never on that list and still keys `sm:columns-2
+  lg:columns-3` off the viewport, so any 375px container on a desktop page gets
+  three ~114px columns.
+
+- **Two more host-unreachable states, making four.** J4 `artifact-grid` keeps
+  its per-session fold in an internal record with no prop and no callback, so a
+  saved fold cannot be restored. J2 `filter-panel`'s see-more lives in a
+  section's own `useState` and the section never remounts, so swapping
+  `sections` carries the old expansion in — milder than E4 `preset-grid`'s,
+  because it toggles, so it strands the host rather than the person.
+
+- **The empty-string class keeps producing new shapes.** J4: a session `label`
+  of `""` is *not* an axe failure and is worse for it, because `aria-labelledby`
+  pointing at an empty span leaves a region with no name, so the session stops
+  being a landmark. J1: `searchPlaceholder=""` deletes the field's only
+  accessible name and is a red gate. J7 and H7: `label=""` defeats its own
+  default parameter, leaving a table or group unnamed with no rule covering it.
+
+- **One positive worth recording, because the contract has failed four times
+  elsewhere.** J1 `asset-library`'s per-row controls are named `Select {name}`
+  and `Actions for {name}` — distinct, derived from the row's own data. That is
+  what the per-row naming contract looks like when it holds.
+
+### Added by the K/L case-story wave (2026-09-06)
+
+- **Every dialog in the registry was still fading its backdrop under reduced
+  motion, and no call site could fix it.** `DialogContent` renders
+  `<DialogOverlay />` with no `className` threaded through, so the pair that
+  waves 3, 4 and 6 applied to dialog *panels* never reached the scrim. L3
+  `feature-announcement` measured it: its popup read `animation-name: none`
+  while its overlay read `enter`. The pair now lives on `DialogOverlay`'s own
+  class string in both copies of the vendored file, verified by probe.
+
+- **Tabbing past the last control destroys work in two components.** L2
+  `coach-mark`: Base UI's trigger focus guard closes the popup on `focusOut`
+  before forwarding, so Tab past Next ends the tour — and the guard forwards to
+  the tabbable *after* the anchor, so forward-tabbing never reaches the control
+  being pointed at, which is the opposite of the intent. L3
+  `feature-announcement`: the same close path fires `onDismiss(id)`, and the
+  contract says a dismissed id must never re-show, so a Tab permanently
+  dismisses an announcement. K2 `inline-generate-popup` has the milder form —
+  the popup closes but nothing is lost.
+
+- **The same empty string is a red gate on one field and silent on the next.**
+  K1 `ai-doc-block` has two textareas: `editLabel=""` fails axe `label`
+  outright, while `rePromptLabel=""` raises nothing even though
+  `dom-accessibility-api` computes an empty name. The only structural
+  difference is that the second field has a placeholder to fall back on. That is
+  the clearest statement yet of why the gate is a floor and not a check: whether
+  this defect is caught depends on an unrelated property of the field it lands
+  on.
+
+- **Suppressing motion can turn a progress bar into a lie.** K5
+  `source-panel`'s indeterminate bar is a full-width pulse; stopping the pulse
+  leaves a solid 100% bar under a row reading "Step 1 of 3", so a stalled import
+  reads as finished. Distinct from E4 `preset-grid`'s collapse, where two states
+  became indistinguishable — here one state reads as a *different* state. K5 is
+  otherwise the counter-case: all five stage names survive as visible text.
+
+- **Neither focus helper can see a menu row's treatment.** `DropdownMenuItem`
+  marks focus with `focus:bg-accent`, and `focusTreatmentSignature` reads
+  outline, box-shadow and border colour only. K4 `selection-toolbar` takes its
+  own signature including `background-color`, which doubles as the regression
+  guard for the `focus:bg-transparent` override F7 and I4 carry — a candidate
+  for the shared helper.
+
+- **`check:tokens` false-positives on prose.** L6 `onboarding-wizard` found that
+  writing the literal class name `transition-all` inside a source *comment*
+  fails MOT-2 as a blocker. Same shape as the documented `#1234`-reads-as-hex
+  limitation, and not written down anywhere until now.
+
+- **Two vendored findings narrowed rather than added.** K1 measured that the
+  `button-group` border defect costs nothing visible on a consumer whose
+  children are `variant="default"`, because those are `border-transparent` — it
+  is the radii that are seen, so the severity depends on the variants a call
+  site uses. And L6 measured that the vendored `Progress` transition is inert
+  where the call site hides the track, which is real registry-wide and a no-op
+  there.
+
+- **Three positives worth recording, because the program has mostly logged
+  failures.** K2 `inline-generate-popup` does *not* lose focus on cancel — the
+  shape broken in four other components — because Cancel and Try again are the
+  same element in the same slot of one ternary, so React relabels one node in
+  place. L4 `whats-new`'s vertical composite never consults direction, so the
+  missing provider costs it nothing. And L2 `coach-mark`'s popover was already
+  named through Base UI's own title, unlike the four that shipped unnamed.
+
+### Added by the M/N case-story wave (2026-09-06)
+
+- **The dialog backdrop fix landed one primitive short, and two agents found it
+  independently.** Wave 6 put the restated reduced-motion pair on
+  `DialogOverlay`'s own class string because no call site could reach it.
+  `components/ui/alert-dialog.tsx` is a separate file and did not get it, and
+  `AlertDialogContent` renders `<AlertDialogOverlay />` with no `className`
+  either — the identical unreachability, one file over. N8 `permission-prompt`
+  and N2 `trust-dialog` each measured the same values after fixing their own
+  panels: popup `animation-name: none`, backdrop `enter` at `0.1s` with
+  `opacity: 0`. Four consumers (`permission-prompt`, `thread-list`,
+  `trust-dialog`, `voice-clone-recorder`). Fixed centrally in both copies and
+  guarded in `TrustDialog.stories.tsx`'s `ReducedMotion`, which was verified to
+  fail on a reverted class before it was kept.
+
+- **A modal can put every control off-screen with no scrollbar and no way to
+  scroll.** N8 `permission-prompt` expanded its arguments to a 24-line file
+  body at 1200×900: the panel measured 1193px tall, top **−146**, footer at
+  982..1047, `scrollHeight === clientHeight`, document 900/900.
+  `AlertDialogContent` sets no `max-height` and no `overflow`, and a `fixed`
+  element cannot be scrolled into view, so Escape is the only exit — and Escape
+  reports nothing to the host. A phone's viewport reaches this far sooner. This
+  is the shared primitive again, not one component's layout.
+
+- **Two components need direction handled in JS, not in a class swap.** N4
+  `trace-timeline` positions its waterfall bars with an inline
+  `style={{ left }}`, so under RTL the time axis runs backwards: the first span
+  sits 0px from the *left* under both directions. N5 `run-inspector`'s `<pre>`
+  inherits `direction: rtl` and JSON reorders inside it — on one line, LTR puts
+  the opening quote at x27 and the trailing comma 159px to its right, RTL puts
+  them at x1165 and 159px to its *left*. The fix there is `dir="ltr"` on the
+  `<pre>`. Neither is on the sanctioned physical-to-logical list, and H2
+  `time-ruler` has the same shape as the first.
+
+- **A trailing full stop renders at the wrong end under RTL.** N3
+  `disclaimer-note` measured it reading `.AI can make mistakes. Check important
+  info` — `.` is a bidi neutral with nothing strong after it, so it takes the
+  paragraph level. Passing a `link` hides the defect, because the link's Latin
+  text makes the stop interior. A new shape: every earlier RTL finding in this
+  file was a physical utility or a positioning API.
+
+- **`scrollable-region-focusable` is now at four instances, and the fourth is a
+  red gate nobody can see.** N5 `run-inspector`'s JSON payload measured 2680px
+  of content in a 318px box with zero focusable descendants. It is not rendered
+  in a story, because rendering it would fail the a11y gate — after
+  `shortcuts-sheet`, the `data-views` kanban and the vendored table, all fixed
+  with the same `<section tabIndex={0} aria-label>` idiom.
+
+- **The vendored `text-left` collection is six files**, not one: `alert.tsx`,
+  `alert-dialog.tsx`, `field.tsx`, `sidebar.tsx`, `table.tsx`, `select.tsx`
+  (`grep -l` across `components/ui`). M6 `rate-limit-banner` measured `alert.tsx`
+  putting a heading and its body on *opposite edges* of a 32rem RTL frame, 256px
+  apart; N2 `trust-dialog` measured `alert-dialog.tsx`'s header doing the same
+  inside a mirrored dialog at 1200px. Byte-identical swaps in a shared file, so
+  still not taken from a consumer.
+
+- **One component cannot be localised at all.** M6 `rate-limit-banner` holds
+  eight fixed English strings, including the clock's `aria-label`, in a
+  module-level `COPY` constant that is neither exported nor reachable by prop.
+  Its auto-updating clock also has no pause, stop or hide (WCAG 2.2 SC 2.2.2),
+  and the docs do not mention it.
+
+- **A permission editor seeded once at mount emits the previous call's
+  arguments.** N8 `permission-prompt` swapped `to/subject/attachment` for
+  `to/subject/amount_usd` on a mounted prompt: carried fields showed the *old*
+  values, the new field rendered empty, and Approve-edited emitted three
+  arguments including one the current call does not have. A permission gate is
+  the natural singleton, so this is the shape a real host reaches.
+
+- **A long label can push a dialog's footer outside the dialog with no rule
+  seeing it.** N2 `trust-dialog`: `button-group`'s `w-fit` plus the trigger's
+  `whitespace-nowrap` gave a `scrollWidth` of 768 against a `clientWidth` of
+  384. The `entity-row` truncation that would have saved it is defeated by
+  `w-(--anchor-width)` sizing off the same over-wide trigger. Related: this
+  component's own `sm:max-w-md` never applies, because the vendored
+  `data-[size=default]:sm:max-w-sm` outranks it.
+
+- **The one-red-one-silent empty string reached its third and fourth
+  instances**, and N2 `trust-dialog` named the rule it actually trips: Base UI
+  renders its checkbox as `<span role="checkbox">`, so `trustLabel=""` fails
+  `aria-toggle-field-name`, not `label`. N3 `disclaimer-note`'s `children=""`
+  deletes the disclaimer in silence while `link={{label: ""}}` fails
+  `link-name`; N1 `feedback`'s `reasonPlaceholder=""` fails `label` because that
+  one prop is both the placeholder and the `aria-label` — the counter-case to
+  K1's pair, which survived by having a placeholder to fall back on.
+
+- **Two more docs focus bullets were wrong in the same direction.** N3
+  `disclaimer-note`'s said its one focusable element is "invisible when
+  focused"; the user agent supplies `outline: auto 1px`, recoloured by the
+  repo's global `outline-ring/50`, so it is *thin* against the registry's ring-2
+  and ring-3, not absent. M1 `settings-dialog`'s said the panel "sets
+  `outline-none` without adding a ring"; the `Tabs.Panel` has carried
+  `focus-visible:ring-2` since before this program, verified in the source at
+  the commit before the wave, and the differential measures it arriving. Both
+  corrected centrally.
+
+- **A written claim about the a11y gate was corrected.** L5 `shortcuts-sheet`'s
+  stated reason for not rendering a modal beside focusable neighbours does not
+  hold: N2 `trust-dialog` measured the canvas as `aria-hidden="true"` with
+  `data-base-ui-inert` and no real `inert` (`el.inert === false`), and axe
+  raises nothing because `aria-hidden-focus` carries a `focusable-modal-open`
+  check, verified present in `axe-core@4.12.1`. `Boundary` renders both surfaces
+  live.
+
+- **The reduced-motion popover sweep is complete.** N1 `feedback` carried the
+  last of eight `<PopoverContent` call sites in the registry
+  (`inline-generate-popup` never used the wrapper). With the dropdown holdout
+  closed in wave 6 and the alert-dialog backdrop closed here, no registry
+  surface *reachable at desktop width* still animates under
+  `prefers-reduced-motion: reduce`. **Wave 8 found the qualifier the sentence
+  needed, twice.** The vendored `sheet.tsx` drawer that every B1 sidebar swaps
+  to below 768px was never suppressed — panel `0.2s`, backdrop `0.15s`, 40px of
+  translate — and nothing could reach it, because the branch needs a real
+  viewport media query and every `Mobile` story until wave 8 constrained a
+  wrapper instead. Then `components/ui/sidebar.tsx`'s *desktop* collapse turned
+  out to be unsuppressed as well — `transition-[width]` on the in-flow gap and
+  `transition-[left,right,width]` on the fixed container, 256px of travel — which
+  needed no new tooling at all, only a story that opened a sidebar under reduce.
+  Both fixed in both copies; O1, O2, O9 and O10 measured them between them.
+  Inside `components/ui/` only `dialog`, `alert-dialog`, `sheet` and `sidebar`
+  carry a branch; for `popover`, `dropdown-menu`, `select`, `tooltip` and
+  `hover-card` it lives at the call sites, which is why those sweeps were
+  per-consumer.
+
+- **Two findings narrowed rather than added.** N1 `feedback` narrowed K1's
+  `button-group` border defect further: the `border-l-0` is invisible on *ghost*
+  children too, because `buttonVariants`' base is `border-transparent`, so the
+  severity depends on the call site's variants and not on the group. And N4
+  `trace-timeline` kept a `text-left` → `text-start` swap that changes no box in
+  its RTL frame, said so plainly, and pinned it by reading `textAlign` back
+  rather than claiming a visual repair.
+
+- **Two positives.** N4 `trace-timeline` is the counter-case to the four
+  host-unreachable-fold findings (E4, E1, J4, J2): `expandedId`,
+  `defaultExpandedId` and `onExpandedChange` are a complete trio, so a saved
+  fold can be restored *and* held against the user. And M1
+  `settings-dialog`'s nav rows paint a real focus ring — the wave-3
+  suppressed-treatment check came back negative, asserted rather than assumed.
+
+- **The sanctioned `text-left` → `text-start` swap is not always byte-identical,
+  and where the class *sits* decides it.** N6 `usage-dashboard` put the swap on a
+  `<tr>` whose alignment is consumed by its `<th>`s: Chrome's user-agent rule is
+  `th { text-align: -internal-center }`, which defers to an inherited value only
+  when that value is not the initial `start`, so `text-left` was being inherited
+  and `text-start` was not — the swap centred all four headings in LTR. Caught
+  by the agent's own RTL assertion before it shipped; the class now sits on each
+  `th`. Six waves have treated this swap as free. It is free on the element that
+  paints the text, and not on an ancestor of one the user agent has an opinion
+  about.
+
+- **A chart can be pinned left-to-right in three independent ways.** N6
+  `usage-dashboard`: the bars share a physical left baseline (684..1165 in LTR
+  against 684..695 in RTL), the category axis stays left while the table's
+  matching column moves right, and the trend glyph's diagonal encodes "later is
+  to the right". None of the three is a class swap. Its signed delta also comes
+  apart under RTL — `+` at 1164, `%` at 1153, `7` at 1146, reading `7 % +` —
+  while A2 `cost-chip`, composed one row below it, already solves exactly this
+  with `dir="ltr"`.
+
+- **Two vendored lists in this file were stale, and both were re-derived rather
+  than edited.** By `grep` across `registry/super-ai` after this wave, the
+  `SelectContent` popups still shipping without an `aria-label` are
+  **`model-picker` and `records-shell`** — `template-detail` was named in wave 5,
+  `trust-dialog` and `usage-dashboard` in this one, and `model-picker` was never
+  on the written list. The reduced-motion half of that list should not be kept at
+  all: five call sites carry no `motion-reduce` pair, and no registry call site
+  passes `alignItemWithTrigger={false}`, so `data-[align-trigger=true]:animate-none`
+  already suppresses every one of them. H1 `transport-controls` measured that in
+  wave 4; listing them as holdouts invites a fix that changes nothing.
+
+- **The first reduced-motion branch in this program supplied by a dependency.**
+  Recharts 3.8 defaults `isAnimationActive` to `"auto"`, which reads
+  `prefers-reduced-motion` itself, so N6's bars need no `motion-reduce:` class.
+  Worth knowing before someone adds one. No recharts default leaks either: the
+  bar fill resolves to `--chart-1`, with no `#8884d8` and no `strokeDasharray`.
+
+- **Two query shapes that cost an agent real time**, both now in N6's file
+  header: a component's own `data-slot` override *replaces* the vendored
+  `select-trigger` / `select-content` name, so querying the vendored name reads
+  as "the popup never opened"; and Base UI's select popup never unmounts — the
+  *positioner* takes `hidden` — so `waitFor(() => expect(popup).toBeNull())`
+  times out rather than passing.
+
+- **A cold-cache-only flake in landed work, found by running the full suite
+  cold.** L4 `whats-new`'s `KeyboardOrder` read the detail pane once after
+  waiting on `aria-selected`; the `hidden` attribute moves between the two Base
+  UI tab panels a tick later, so the read could still return the previous
+  entry's pane. Warm: passed on every run, including three repeats. Cold: failed
+  deterministically. Fixed by re-querying inside the `waitFor`. **The integrator
+  should clear `apps/storybook/node_modules/.cache/storybook` and run
+  `test:stories` once per wave** — a warm cache had been hiding this since wave
+  6.
+
+### Added by the family O case-story wave (2026-09-06)
+
+The last wave, and the first whose `Mobile` stories move the real viewport
+(`page.viewport(375, 812)` from `vitest/browser`, imported dynamically inside the
+play — see `story-conventions.md` fact 2). Most of what follows was unreachable
+before that one line.
+
+- **Three vendored surfaces were still animating under
+  `prefers-reduced-motion: reduce`, and the wave-7 entry above was wrong to
+  imply none were left.** `sheet.tsx`'s mobile drawer (panel `0.2s`, backdrop
+  `0.15s`, 40px of translate) is the one nothing could see, because the drawer
+  branch needs a genuine viewport media query. `sidebar.tsx`'s *desktop*
+  collapse (`transition-[width]` on the in-flow gap, `transition-[left,right,width]`
+  on the fixed container, 256px of travel) needed no new tooling at all — only a
+  story that opened a sidebar under reduce. And `tooltip.tsx` had no branch and
+  one consumer that cannot supply one, because the vendored `sidebar.tsx`
+  renders its own `<TooltipContent>` for every collapsed rail row with no
+  className threaded through. All three fixed in both copies; each guard was
+  watched fail on a reverted class first. **`hover-card.tsx` is in the same
+  state and was deliberately left**: it has exactly one consumer
+  (`citation-ref`) which *can* reach it, so by this file's own rule the branch
+  belongs at that call site, and taking it without writing the assertion would
+  be worse than recording it.
+
+- **Guarding a fixed defect usually means rewriting the assertion that found
+  it, and three of them were passing green against a fix they could not see.**
+  An agent that measures a motion defect naturally asserts
+  `transition-duration`; `motion-reduce:transition-none` sets
+  `transition-property` to `none` and leaves the duration alone, so those
+  assertions kept passing after the repair and would have kept passing after a
+  revert. `ChatShell`, `ArtifactShell` (twice) were rewritten to read
+  `transition-property`. This is the predictable cost of the record-don't-pin
+  rule and it is cheap; the alternative is not recording.
+
+- **The vendored sidebar does not mirror.** Under `dir="rtl"` the in-flow
+  `sidebar-gap` follows direction while the `fixed` container is placed by
+  `data-[side=left]:left-0` and does not, so a 256px blank strip sits at the
+  inline-start edge and the sidebar lies on top of the first 256px of content.
+  Measured four times by four shells at two widths (O1 at full width with C3's
+  carousel arrow underneath it, O2, O9, O11 at icon width: gap `1152..1200`,
+  container `0..48`). Recorded, not fixed — a vendored layout change rather than
+  a class swap, and no shell may take it.
+
+- **An invisible tooltip eats the first Escape in the mobile drawer.**
+  `sidebar.tsx:546` passes `hidden={state !== "collapsed" || isMobile}` to
+  `TooltipContent`, so the popup opens on focus and is merely `hidden` rather
+  than unmounted. Measured in sequence by O11: Escape #1 closes a tooltip the
+  user cannot see and leaves the drawer open; Escape #2 closes the drawer. Every
+  B1 consumer with tooltip rows has this.
+
+- **Two family O shells cannot share a document, for three separate reasons.**
+  Each `SidebarInset` renders a `<main>` (`landmark-no-duplicate-main`); two
+  shells bring two banners and two identically-named regions
+  (`landmark-no-duplicate-banner`, `landmark-unique` twice, measured by O6); and
+  two index shells break the heading outline, because O9 emits an `<h1>` while
+  O7's first heading is `filter-panel`'s hardcoded `<h3>` with no `<h2>` between
+  — O9-first fails `heading-order` outright, and neither component has a
+  heading-level prop. O1 turned this into the boundary rule itself — "a shell is
+  the page", asserted as `querySelectorAll("main").length === 1` — rather than
+  suppressing a rule or inerting one shell, which would trade a duplicate
+  landmark for focusable content inside `aria-hidden`. O11 and O12 *can* share
+  one, because O12 renders no `main`.
+
+- **The empty-label gate hole is settled, by probe rather than by argument.**
+  Wave 6 recorded that the same empty string is a red gate on one field and
+  silent on the next, and this wave produced two competing explanations. A
+  five-shape probe story run against the real gate settles it: an empty
+  `<label for>` **with a placeholder** is the only shape of five that passes.
+  Empty `<label for>` with no placeholder, no label at all, `aria-label=""`, and
+  an empty `<label for>` beside `placeholder=""` all fail `label` outright. So
+  **the escape hatch is axe's `non-empty-placeholder` check**, O14 `auth-shell`
+  and O12 `settings-shell` reached that independently, and O9's proposed
+  refinement (`<label for>` versus `aria-label`) was wrong. Say it the way O12
+  did: **an empty `<label for>` is worse than none**, because it satisfies the
+  rule while the name query stops finding the field.
+
+- **`modality-rail` never narrows — 92px at every width** — so a rail-based
+  shell has no narrow layout to swap into, where a B1 sidebar swaps to a drawer.
+  Measured by O8 and confirmed by O3 and O4, and only findable with a real
+  viewport move. Its stacked label is also 63×0 CSS px with the truncation
+  machinery intact inside a zero-height box, which three agents pinned after §8
+  had carried it as prose since family O shipped.
+
+- **`shortcuts-sheet`'s scroll-container repair cannot reach the notebook chat
+  pane.** O13 reproduced O2's cross-shell measurement of
+  `scrollable-region-focusable` (`scrollHeight 1484` against `clientHeight 743`,
+  zero focusables) and then established why the standard idiom is unavailable:
+  `StickToBottom.Content` renders the scrolling div itself and accepts exactly
+  one prop for it, `scrollClassName` — a class, never `tabIndex` or
+  `aria-label`, verified in `use-stick-to-bottom@1.1.6`'s own types. Fifth
+  instance of the shape, and the first that cannot be fixed the usual way. The
+  same dependency springs `scrollTop` in a rAF loop with no `matchMedia`
+  anywhere, so its smooth scroll also ignores reduced motion.
+
+- **Activating a real link closes the browser and fails the run.** B3
+  `sidebar-nav`'s rows are anchors; `userEvent.click` and Enter both trigger the
+  default hash navigation and kill the vitest browser runner ("Was the page
+  closed unexpectedly?"). Assigning `location.hash` survives, as does a wrapper
+  that cancels the event the way a router would. Now mechanical fact 6.
+
+- **Eleven docs focus bullets said a control paints nothing when it paints the
+  user agent's outline**, recoloured by the repo's global `outline-ring/50` —
+  thin against the ring-2 its neighbours draw, not absent. Every family O docs
+  module carried one. **Two more had a tab order backwards** (O2, O10): both
+  said the sequence starts with the sidebar trigger, and in both the rail comes
+  first, because the topbar is a DOM sibling *after* the sidebar. O10's read
+  true only because the default `nav` is an L1 with nothing focusable in it —
+  which is why a walk with a filled rail is what found it.
+
+- **`model-picker` is the last unnamed `SelectContent` listbox in the
+  registry.** O10 named its own and measured the gate first, as this file's
+  configuration-dependent note asks: with the name stripped and the popup open,
+  axe 4.12 raised nothing, so the story's own assertion is the only thing
+  keeping it named — verified by stripping the attribute and watching exactly
+  one test fail.
+
+- **The `matchesQuery` divergence is reachable, not theoretical.** O12 measured
+  a query that matches only a gated description: B3's badge reads 1, the status
+  line reads "1 setting matches across 4 sections", the gated row renders — and
+  M1's panel one region up reads "No settings in MCP match this search". Neither
+  copy of the predicate can see the other's set. The shell's own constant saying
+  to delete its overrides when M1 grows an opt-out is still the right
+  instruction, and `KeyboardOrder` now measures the cost: zero tabs, and one
+  orphan `tabpanel` announcing as a tab panel with no tab list.
 
 ## 9. Gaps found by the case-story pilot
 
@@ -1061,7 +2041,8 @@ it honestly without noticing.
 
 The convention became a program on 2026-08-14: eight names (`Controlled`
 joined), manifest-shape rules, and a retrofit —
-`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`.
+`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md` — and
+a shrink-only ratchet on 2026-09-04 (§1).
 
 ### Wave 0 — the 25 `contractExempt` items (2026-08-15)
 
@@ -1168,3 +2149,575 @@ The reduced-motion backlog moved from three branching components to seven —
 branches — and `shortcuts-sheet` is what produced the Base UI popup correction
 recorded above. `generation-queue`'s focus-loss finding is untouched and stays
 open. The remaining ~91 items are spec §3.2's family waves; the gate is §4.
+
+### Wave 1 — families D and I (2026-09-05)
+
+Eleven agents, one per item, each in its own worktree cut from `origin/main` and
+fast-forwarded to the integration branch as step 0 of the brief (the base-commit
+trap from §1, handled rather than re-hit). All eleven reached zero unmet
+obligations: 88 case obligations and 28 descriptions resolved, the baseline
+regenerated once at the end. Brief and integrator procedure:
+[`superpowers/plans/2026-09-05-case-story-family-waves.md`](superpowers/plans/2026-09-05-case-story-family-waves.md).
+
+**Skips versus writes.** 11 `case-skip` lines across six files (`quote-reply`
+3, `property-inspector` 2, `context-chips` 2, `skill-menu` 2,
+`media-prompt-bar` 1, `ai-tools-menu` 1) and five files with all eight written
+(`reference-strip`, `mode-tabs`, `context-toolbar`, `tool-panel`,
+`drawing-tools`). Every skip is one of three shapes: `Controlled` where no
+value/onChange pair exists (six items — `onSelect`/`onRemove`/`onAction`
+report an intent and carry no value), `ReducedMotion` where nothing moves or
+only a colour crossfades (four), and `EmptyLabel` where the only optional text
+slot is a defaulted label whose empty case would ship a `button-name` violation
+into the gate (two). `Controlled` was skipped *against* the steering on
+`property-inspector`, correctly: its `onSectionOpenChange` fires after the
+section has already moved, so it is half a controlled pair and a host cannot
+refuse; the reasoning is in the skip block.
+
+**Mechanical fixes landed in-wave (seven source files):**
+
+- Reduced-motion pairs restated on Base UI popups, each measured
+  (`animationName` "enter" → "none" under emulated reduce): `mode-tabs`
+  (tooltip), `context-toolbar` (tooltip, menu, popover), `ai-tools-menu`
+  (menu), `drawing-tools` (popover). Four more off §8's 33-item list.
+- Logical-property swaps, byte-identical in LTR: `context-chips`
+  (`pl-2`/`pr-1`/`pr-2`/`ml-0.5` → `ps`/`pe`/`ms`), `skill-menu` (`border-r` →
+  `border-e`), `tool-panel` (`left-2.5` → `start-2.5`, `pl-8` → `ps-8`,
+  `text-left` → `text-start`), `drawing-tools` (`text-left` → `text-start`).
+  `left-` → `start-` is not one of the four swaps §8's sweep entry enumerates;
+  it was taken because it meets that entry's own test, and because swapping
+  only the gutter would have left icon and gutter on opposite sides.
+- `aria-label` on two unnamed `PopoverContent`s (`context-toolbar`,
+  `drawing-tools`) — the one fix outside §3.4's literal list, accepted because
+  it is a one-attribute drift correction with an in-repo idiom
+  (`modality-rail`) and the alternative was leaving the popover closed so the
+  gate stayed quiet. §8 has the general finding.
+
+**Recorded, never pinned** — every play function in the wave stops short of
+the defect its description names:
+
+- Focus lost on removal or dismissal: `quote-reply` and `context-chips` (the
+  remove control is the only focusable a chip owns), `reference-strip` (the
+  last enabled Move disables itself under the cursor), plus the two
+  `media-prompt-bar` behaviours its docs module already carried.
+- No visible focus treatment: `media-prompt-bar`'s two textareas
+  (`border-none focus-visible:ring-0`, no container `focus-within`);
+  `skill-menu`'s search field (`InputGroup` keys its ring off
+  `has-[[data-slot=input-group-control]:focus-visible]`, but cmdk's input sets
+  `data-slot="command-input"`, so the selector never matches); `ai-tools-menu`'s
+  menu rows (§8).
+- `mode-tabs`: Tab lands on the first mode, not the active one (as
+  `modality-rail` records on the same primitive); five modes with icons measure
+  422px in a 375px column with no overflow handling, so the fifth is off-column
+  with nothing saying it exists.
+- `context-chips`: mention labels reorder under RTL (`@teammate` paints
+  `teammate@` — the `@` is a neutral with no Latin before it), fix is
+  `dir="ltr"` on the label; no `title` on the `max-w-40` truncated label.
+- `quote-reply`: `<cite>` interpolates a caller-supplied `anchor` with no
+  `<bdi>` isolation, so a mixed-script anchor reorders around the `·`.
+- `reference-strip`: inherits C3's three RTL findings (Embla `direction` never
+  set, physical `-ml-4`/`pl-4` gutter, previous/next on the wrong sides);
+  Embla's JS tween has no reduced-motion branch; the empty slot still carries
+  `aria-pressed` from `preview-tile`'s default `selectMode="toggle"`.
+- `property-inspector`: a long value scrolls inside the fixed `w-20`
+  `UnitInput` and loses its leading digits — 1920000 reads as a smaller number,
+  not a clipped one.
+- `drawing-tools`: long alternate labels spill (`toggleVariants`' base
+  `whitespace-nowrap` plus a fixed `h-8`, the B4 trap again).
+- `ai-tools-menu`: no `open`/`onOpenChange`, so a host cannot close the menu
+  when the selection changes behind it.
+
+**Spec and docs drift found by writing stories:**
+
+- `component-specs.md` D3 lists `resolved · resolving · unresolved`; the
+  component and manifest have no `resolving` state. Same class as wave 0's
+  "declared states name behaviour no component implements".
+- D6 `skill-menu`'s spec says search filters titles *and* descriptions;
+  `CommandItem` gets `value={skill.id}` with the description as its only
+  `keywords`, so a title-only skill is findable by nothing the user can see.
+  `Search`'s play asserts only the honoured half.
+- Three docs corrections made centrally in the integration commit:
+  `skill-menu.docs.tsx`'s second "do" told callers to override `cost-chip`'s
+  `text-muted-foreground`, which the chip stopped shipping in the A retrofit;
+  `drawing-tools.docs.tsx`'s keyboard note counted ten stops where roving
+  tabindex makes five; and a stale comment in `ai-tools-menu.tsx`'s `ToolCost`
+  described the same deleted override.
+- `choice-chips`' `Boundary` one-liner ("if a chip can be removed, it is a
+  filter chip") is one line short — context chips are removable too.
+
+**Idiom hardening.** `ai-tools-menu`'s `KeyboardOrder` passed 13 warm runs and
+failed the first run against a cleared Storybook cache: a key press read before
+it applied leaves focus on the *previous* stop, which is itself an expected
+stop, so the "settle until focus is on some expected stop" wait cannot see it.
+The tightened form waits for focus to *leave* the previous stop before reading.
+Recorded in `story-conventions.md` fact 4; `TaskTray` and `ShortcutsSheet`
+still use the arrival form.
+
+**Steering that did not bind** — for the next wave's prompts: `quote-reply`
+has no `border-l`/`pl-` quote bar (it is icon + `gap-2`), so the predicted swap
+did not exist; `property-inspector` is not controlled; `context-toolbar` needed
+no frame/group/camera variant; `tool-panel`'s tabs contrast concern does not
+apply (`variant="line"`, `text-foreground/60` at TOK-8's floor). One agent also
+reported a repo-root `pnpm lint` cache hit whose output named a sibling agent
+worktree's paths; `turbo.json` configures no shared cache dir, so the mechanism
+is unconfirmed — noted here rather than in §4 until it bites again.
+
+### Wave 2 — families E and P (2026-09-05)
+
+Eleven agents, same shape as wave 1. All eleven reached zero unmet obligations
+and families E and P are complete, but only four reported: **the other seven
+were killed by a session rate limit in the window between finishing their work
+and verifying it.** That window is the interesting part, because the work was
+not lost — and the recovery is worth writing down, since the next long wave will
+hit the same wall.
+
+**The salvage procedure.** A killed agent's worktree survives with its working
+tree intact. Every one of the seven had fast-forwarded correctly (step 0 of the
+brief) and left a complete, uncommitted tree. So:
+
+1. `git -C <agent worktree> diff > patch` for each, then `git apply --check`
+   every patch against the integration branch before applying any. All seven
+   applied clean, because each wave agent writes only its own files.
+2. Read every registry-source hunk before adopting it. Seven of the seven were
+   the sanctioned shapes, so nothing needed rejecting — but the review is the
+   point, not a formality: nobody had verified this code.
+3. Run `pnpm story-coverage:report <the whole list>`. All seven printed zero
+   unmet, which is what established the work was finished rather than
+   abandoned mid-file — including the one whose last words were "now the story
+   file, writing it in full".
+4. Run the story files. **Five passed as delivered. The two that had never been
+   run once both failed**, which is the lesson: an unverified story file is not
+   evidence of anything, and the two failures were of completely different
+   kinds (see below).
+5. Commit as one reviewed change rather than seven forged agent commits, and
+   say in the message that the verification was done centrally.
+
+**What the two unverified files were hiding.**
+
+- **P1 `data-views` had a real defect and two false assertions.** The defect:
+  the kanban board's scroll container was a bare `<div class="overflow-x-auto">`
+  with no keyboard access — axe `scrollable-region-focusable`, the same rule
+  L5 `shortcuts-sheet` failed in wave 0, and with the same consequence, that a
+  keyboard user reaches the first columns of a board and no further. It is
+  invisible at desktop width because nothing overflows there; the `Mobile`
+  story is the only reason it was found. Fixed with that wave-0 idiom exactly:
+  a `<section>` rather than a `<div>` (a bare div is `role="generic"`, where
+  ARIA prohibits `aria-label`, so the tab stop would arrive anonymous),
+  `tabIndex={0}`, a name for its contents, and a focus ring.
+
+  The two false assertions are the more useful half, because **both were
+  written from reading the source rather than running it, and both read
+  perfectly.** One asserted that a group with an empty label "still announces
+  its count and its tone", reasoning correctly about `groupAccessibleName` and
+  never noticing that `feed-view.tsx` guards the whole header on
+  `section.label ?` so the function is never called. The other asserted that a
+  long title wraps in a table cell and grows the row — true in principle, false
+  at the width the gate runs, where the title column takes 974px of a 1200px
+  table and absorbs it on one line. Both descriptions asserted the same wrong
+  things in prose. Rewritten against measurements, with the measurements in the
+  descriptions.
+
+- **P2 `detail-view-shell` failed on its own debugging probes**, left behind
+  mid-run: two `expect(...).toBe("PROBE")` calls whose whole purpose was to
+  print measurements into a failure message. Deleting them restored the real
+  assertions underneath, which pass. One probe was worth keeping the output of
+  — the 4.34:1 badge contrast now recorded in §8.
+
+**The general lesson, and it is not about rate limits.** A story file that has
+never been executed is a draft, however good it looks; two of two unverified
+files failed, and the failures were a live accessibility defect and two
+confidently-argued untruths. The convention already says a story earns its place
+by being the only place a fact exists — this wave adds that **a fact nobody ran
+is not yet a fact.**
+
+**Also worth carrying forward:** `layout: "centered"` in a meta wraps every
+story, so `canvasElement.firstElementChild` is the ~1200px centring div rather
+than the story's own frame — a `Mobile` overflow assertion against it measures
+the wrapper and passes for the wrong reason. Give the frame a `data-testid`.
+Found on E7 `member-gate-row`; it will bite the next `Mobile` author.
+
+### Wave 3 — family F (2026-09-06)
+
+Seven agents, seven items, all at zero unmet, and no rate-limit casualties —
+the batch was deliberately smaller than the eleven that hit the session wall in
+wave 2. Six of the seven wrote all eight case stories with no skips at all,
+which is worth noting against the D/I wave's eleven `case-skip` lines: family F
+is result surfaces, and a result surface genuinely meets every one of the eight
+situations.
+
+**Fixed in-wave:** reduced-motion branches on F3 `asset-detail`'s dialog (the
+fifth popup family off §8's list), F6 `render-queue`'s streaming spinner, F7
+`approval-card`'s chevron *and* its Confirm spinner, and F4 `action-stack`'s
+menu popup. F4's measurement is the one that generalises: suppressing the popup
+animation changed `animation-name` from `enter` to `none` **and** the popup's
+width from 304px to 320px, because `data-open:animate-in` composes `zoom-in-95`
+— the popup was arriving at 95% and growing, so this is real motion rather than
+a fade. That agent also stated the rule the whole program had been circling:
+the animation classes live on the vendored primitive, but the suppression has
+to be restated per call site, **so fixing one consumer fixes none of the
+others.**
+
+**Which is how a false skip surfaced.** Acting on that rule, the integrator
+swept the registry for `DropdownMenuContent` call sites without the pair and
+found four. Three belong to families J and K and were left to their waves. The
+fourth was B6 `thread-list`, whose `ReducedMotion` skip read "nothing this
+component owns animates", on the grounds that the motion belonged to the
+vendored popups and was therefore upstream — a reasonable position when it was
+written and wrong under the per-call-site rule, since the component renders both
+a dropdown menu and a delete confirmation and both animated. **Family B had no
+case-story debt at adoption, so no later wave was going to reopen that file.**
+Both surfaces now carry the pair and the skip is a real story that reads
+`animationName` back on each. A skip is the one part of this convention with no
+gate behind it: `story-coverage` checks that a reason exists, never that it is
+true.
+
+**Two integrator fixes an agent correctly declined to make.** F1's agent found
+that A8 `preview-tile` owns the badge at `right-2` while F1 `result-card` owns
+the select checkbox and hover actions at `left-2`, so swapping either alone
+stacks both occupants on one edge — and it may not edit A8. It wrote an RTL
+assertion that fails on a half-swap and passes on a full one, then left both.
+Done centrally, with all eight `preview-tile` consumers re-run. F5's agent
+declined the *same* swap for the opposite reason and was equally right: its wipe
+clip is `clipPath: inset(...)`, physical with no logical form, so a class-only
+swap would put each pane number over the other pane's picture. §8 carries the
+rule the pair gives.
+
+**A claim that was checked twice and not reproduced.** F6's report stated that
+transition assertions are vacuous in this gate — that the browser runner injects
+`*, ::before, ::after { transition-property: none }`, defeating every Tailwind
+`transition-*`, so wave 2's `run-button` assertion would pass with or without
+the fix it was written to prove. H5's report later refined it: the suppressor is
+Playwright's animations-disabled CSS, left behind by the runner's
+screenshot-on-failure, so it is present *only after an earlier story in the same
+file has failed* — which is exactly when a story is being written.
+
+Two experiments, neither reproducing it. A plain vendored `Button` inside a
+deliberately failing story computes `transition-property: all` at `0.15s`, and a
+sweep of every stylesheet in the document finds one `transition-property: none`:
+Tailwind's own `.transition-none` utility definition. Adding a second story
+*after* a deliberate failure in the same file — the exact condition H5 named —
+the later story still reads `all` / `0.15s`, and no 185-character injected style
+is present. F7's independent measurement (its unfixed chevron read
+`transform, translate, scale, rotate`, suppressed `none`) agrees that the
+suppression does real work.
+
+So the transition assertions written in waves 2 and 3 stand, and this entry
+records the conditions actually tested rather than declaring the reports wrong:
+two agents saw something on their own machines that a third measurement could
+not reproduce, and if it resurfaces the thing to capture is the injected
+`<style>` element itself alongside the failing story that preceded it.
+
+### Wave 4 — family H (2026-09-06)
+
+Seven agents, seven items, all at zero unmet. Six wrote all eight case stories
+with no skips; the seventh skipped only `ReducedMotion`, and wrote its reason as
+a grep it had run rather than an argument — which is the shape the convention
+started asking for after wave 3's false skip.
+
+**This wave found more that no gate can see than any before it**, and the reason
+is worth naming: family H is timelines, faders and waveforms, so almost
+everything it does is a direct-manipulation surface with a keyboard story
+underneath. Four components turned out to have handles that paint no focus ring
+at all, and four docs pages promised one — see §8. Nothing in the registry could
+have caught that, because the ring is present in the source; it is simply on the
+element that never receives focus.
+
+**The wave audited the tooling this program itself introduced.** Wave 3 shipped
+`focus-ring.ts` after four agents independently found the old ring predicate
+could not fail. Wave 4 found two more holes in it, one of them fundamental:
+
+- H2 `time-ruler` measured a false positive on the clipped `<input>` Base UI
+  focuses, which still carries the user agent's outline. Its agent noticed,
+  **declined to use the helper rather than manufacture the green it exists to
+  prevent**, and explained the absence in the story. Fixed with an `isPainted`
+  guard the same day; H7 `stem-mixer` reported the identical shape independently
+  while the fix was being written.
+- H6 `waveform-editor` went further and named the limit of the approach: an
+  absolute check asks whether an element paints a treatment, never whether focus
+  caused it, so a span carrying a permanent `shadow-sm` passes either way. Three
+  of its slider spans are exactly that. `focusTreatmentSignature` now exists for
+  the before/after differential, and `story-conventions.md` fact 5 says which
+  tool to reach for: the differential where an element can be focused directly,
+  `settledFocusRing` inside a tab walk where blurring to take a baseline would
+  disturb the sequence under test.
+
+The general lesson is the same one wave 2 recorded about unverified stories,
+pointed at the harness instead of the components: **a checker written to catch a
+class of defect is itself in that class until something measures it.** Three
+waves used the old predicate before anyone read what it computed, and one wave
+used the replacement before anyone found what it still missed.
+
+**One claim was true and one was not, and the difference was checkability.**
+H1's report said a whole class of reduced-motion assertions cannot fail because
+`select.tsx` kills the popup animation by default — it named the file, the prop
+and the class, all three checked out, and two already-merged stories were
+audited against it. H5's report refined F6's transition claim into a specific
+condition (the suppressor appears only after an earlier story in the same file
+has failed); that condition was tested directly and did not reproduce, and §9's
+wave 3 entry now records what was tested rather than declaring the reports
+wrong. Both reports were written with the same confidence. Only one named
+something a reader could go and read.
+
+**The gate failed twice during integration, and both failures were real.** Worth
+writing down, because the reflex on an intermittent gate is to re-run it.
+
+The first run failed on B8 `account-menu`'s `KeyboardOrder`, a file this wave
+did not touch: the closing wrap read `stop#4 Sign out` where it expected
+`stop#0 Settings`. That is the settle-on-*arrival* hole exactly — wave 1 found
+it on `ai-tools-menu`, wave 3 wrote it into mechanical fact 4, and this file
+predates both. A key that has not applied yet leaves focus on the previous row,
+which is itself a row, so an arrival-only wait returns a stale read and the lap
+looks like it never wrapped. Hardened to settle on departure, and the three
+other files still on the arrival form went with it: `recommendation-card`,
+`shortcuts-sheet` and `task-tray` — wave 1 had already recorded the last two as
+holding the hole. Four files, 48 tests, green twice.
+
+The second run failed somewhere else entirely: axe's `aria-input-field-name` on
+a Base UI listbox, from H1 `transport-controls`' `ReducedMotion` story opening
+the speed select. **Every `SelectContent` in the registry was unnamed**, and the
+failure is intermittent only because axe has to run while the popup is open —
+which is why eight call sites shipped that way. §8 has the four now named and
+the four left to their waves.
+
+So neither failure was flakiness in the ordinary sense. One was a test that
+could not reliably observe what it asserted, the other a defect that could only
+be seen in a window a story had just learned to open. Both were found because a
+full run with a cleared cache was run twice rather than once.
+
+**A postscript on those two gate failures: there were four, and the last one
+took three attempts to fix.** Worth the space, because every wrong turn was
+plausible.
+
+The unnamed select listbox was fixed three times before it was fixed. The first
+attempt put `aria-label` on `<SelectContent>` — the wrapper spreads its props
+onto Base UI's `Popup`, and `role="listbox"` is on the `List` inside it, so the
+attribute landed one element away from the thing axe reads. A probe that dumped
+every `[role="listbox"]` and its name is what showed that; the story had been
+passing four runs in five, so nothing else would have.
+
+The second attempt forwarded the name to the `List` in
+`apps/docs/components/ui/select.tsx`, and the gate kept failing. **The storybook
+workspace has its own copy of every vendored primitive**, and its Vite alias
+sends `@/components/ui/*` there, so the gate had never seen the fix. That is
+now §8's own entry: 39 primitives in one copy, 60 in the other, identical today
+apart from `"use client"` and formatting, synced by hand, and unchecked. The
+third attempt patched both and the probe read the name back.
+
+The lesson is not about selects. **Four runs in five is what a defect looks like
+when the thing that reveals it is a race**, and a story that passes is not
+evidence the thing it asserts is true — the same sentence wave 2 wrote about
+stories nobody had run, reached from the other direction. Both full-suite runs
+after the real fix were green, and so were the two before it, which is exactly
+why the fix had to be confirmed with a probe rather than a passing run.
+
+### Wave 5 — family J (2026-09-06)
+
+Seven agents, seven items, all at zero unmet. Family J is libraries, grids and
+filter rails, so most of what it found is about tables, names and layout under
+pressure — §8 has those. What distinguishes the wave is that **three of the
+things it corrected were written in this file by earlier waves**, and each was
+caught by an agent that had been told to cite an entry and read it first.
+
+- J4 `artifact-grid` was told to cite §8's "grid columns keyed off the viewport"
+  bullet and not fix it. That bullet described a defect D19 had already removed
+  in August, with J4 itself as the pilot and C4 converting after; both files
+  carry container queries and four stories already assert the thresholds. It is
+  the second stale §8 entry a wave agent has caught, after the carousel one.
+- J2 `filter-panel` found a hole in `focusTreatmentSignature`, added one wave
+  earlier: it read `outline-width`, which flips 3px to 1px on focus on Base UI's
+  controls while `outline-style` stays `none`, so the signature reported a
+  change on all fourteen of that component's stops including one painting
+  nothing new.
+- J6 `template-detail` measured its own unnamed listbox open under the gate and
+  axe raised nothing, where H1 `transport-controls` had failed outright on the
+  same rule a wave earlier. §8's entry now says "fails axe in at least one
+  shape" and carries both measurements, neither of which explains the other.
+
+**And the wave settled how the two focus checks relate, which two waves had got
+wrong in opposite directions.** Wave 4 introduced the differential and this file
+said to prefer it. J3 `explore-gallery` then measured a composer textarea whose
+focus moves a shadow layer from transparent to coloured *while its geometry
+stays zero* — so the differential reports a change and `settledFocusRing`
+correctly reports no ring. J2's selected chip is the mirror image: a permanent
+ring identical in colour and width to its focus ring, where the absolute check
+passes and the differential correctly reports nothing. They answer different
+questions. `story-conventions.md` fact 5 now says to use both and carries both
+measurements; it also drops the claim that the differential cannot work inside a
+tab walk, which J5 `record-list` and J2 disproved independently by reading the
+*next* stop's signature while focus is still on the previous one.
+
+The pattern across three waves is worth naming, because it is the argument for
+the whole retrofit. **Every one of these corrections came from an agent
+measuring something it had been handed as settled.** The instructions said cite,
+not verify, and the citation was wrong four times out of four attempts to check.
+A note in a file is not evidence; the thing that made these findable was that
+writing a story forces you to render the claim.
+
+### Wave 6 — families K and L (2026-09-06)
+
+Nine agents, nine items, all at zero unmet, and the last reduced-motion holdouts
+closed: K4 `selection-toolbar` carried the final unrestated `DropdownMenuContent`
+in the registry, and the integrator closed the dialog backdrop that no call site
+could reach. §8 has what the wave found in the components.
+
+**What is worth reading twice is how much of it was correction.** Five written
+claims were wrong, and every one was caught by an agent that had been handed the
+claim as background:
+
+- L4 `whats-new`'s docs said its detail pane carries no focus ring. It carries
+  one and paints it — **the first correction in this program that made a
+  component look better than its documentation**, and it was verified in the
+  source before the text was changed.
+- L3 `feature-announcement`'s docs said its card and chip are both
+  CTA-then-dismiss. The chip is; the card is reversed, because its action slot
+  sits inside the header.
+- L6 `onboarding-wizard`'s docs said Home and End reach the first and last
+  choice card. Neither is bound, nor is PageUp, so arrowing is the only route to
+  a later option — and arrowing *answers the question* with every card it
+  passes.
+- K3 `diff-review`'s docs quoted a button name without the space the
+  accessible-name computation inserts before a hidden suffix.
+- L2 `coach-mark`'s docs said Tab past Next continues into the page so the
+  control being pointed at stays usable. It ends the tour instead.
+
+**And this file's own right-to-left entry was narrowed for the third time**,
+which is worth stating plainly because the first two versions were also written
+here with confidence. Wave 1 said Base UI composites never learn about
+direction. Wave 5 split that into positioning-works and keyboard-does-not. Wave
+6 shows the real split is neither: `align` reads rendered direction and mirrors,
+while `side` reads the same missing React context the arrow keys do. Three
+measurements, each narrowing the last, none of which required new tooling —
+only rendering the claim.
+
+**The sharpest single finding is about the gate itself.** K1 `ai-doc-block` has
+two textareas. Giving both an empty label produces a red gate on one and silence
+on the other, and the only structural difference is that the silent one has a
+placeholder to fall back on. The gate is a floor, not a check: whether it
+catches this defect depends on an unrelated property of the field the defect
+lands on. That is the argument for case stories in one sentence, and it took
+six waves and a component with two nearly identical fields to say it this
+cleanly.
+
+### Wave 7 — families M and N (2026-09-06)
+
+Twelve agents, twelve items, all at zero unmet. Baseline **219 → 104**, and the
+description-only debt reaches **zero** — every declared-state export in the
+registry now carries a JSDoc description. What is left is family O's 13 shells
+and nothing else.
+
+**The wave's defining moment is that two agents disproved their own steering.**
+Both were told, in the prompt, that the dialog backdrop had been fixed centrally
+in wave 6 and that they should not add a branch for it. Both fixed their panels,
+measured the backdrop anyway, and found it still reading `animation-name: enter`
+under emulated reduce. The wave-6 fix went into `components/ui/dialog.tsx`;
+`components/ui/alert-dialog.tsx` is a separate file with the identical
+unreachable overlay, and it had been missed. N2 `trust-dialog` said so in as many
+words — "your steering was wrong about the backdrop, and this is the finding to
+carry" — which is the behaviour the brief asks for and the first time an agent
+has contradicted a *current-wave* instruction rather than an old written claim.
+Fixed centrally in both copies, and the regression guard in
+`TrustDialog.stories.tsx` was verified to fail on a reverted class before it was
+kept, because a guard that has never been seen red is not a guard.
+
+**The most useful single finding is a negative against a rule this program has
+leaned on for six waves.** `text-left` → `text-start` has been treated as a
+free, byte-identical swap in every wave since the first. N6 `usage-dashboard`
+measured it centring all four table headings in LTR: the class sat on a `<tr>`
+and the alignment was consumed by `<th>`s, and Chrome's user-agent
+`th { text-align: -internal-center }` defers to an inherited value only when
+that value is not the initial `start`. The swap is free on the element that
+paints the text and not on an ancestor the user agent has an opinion about. It
+was caught by the agent's own RTL assertion, before it shipped, which is the
+case for writing the assertion before making the change rather than after.
+
+**Two more docs focus bullets were wrong, both in the same direction** — a note
+claiming a control has no visible focus treatment when it has one. N3
+`disclaimer-note`'s element takes the user agent's own outline, recoloured by
+this repo's global `outline-ring/50`: thin against the registry's ring-2, not
+absent. M1 `settings-dialog`'s panel has carried `focus-visible:ring-2` since
+before this program began, verified in the source at the commit before the wave.
+That is seven docs corrections across waves 6 and 7, and the pattern in them is
+consistent: prose written from reading a class list, contradicted by rendering
+it.
+
+**Two lists in this file were stale and were re-derived rather than edited.**
+N6 flagged that the "unnamed `SelectContent`" list no longer matched the
+registry; a `grep` across `registry/super-ai` after the wave gives
+`model-picker` and `records-shell`, and N6's own correction was itself one item
+stale, because `trust-dialog` had been named in a sibling worktree it could not
+see. The reduced-motion half of that list should not be kept at all: no call
+site passes `alignItemWithTrigger={false}`, so the five call sites without the
+pair are already suppressed and listing them invites a fix that changes nothing.
+Both figures in this file are now derivations, with the command that produces
+them written down beside the answer.
+
+**And the integrator found a flake in landed work by running the suite cold.**
+L4 `whats-new`'s `KeyboardOrder` passed on every warm run — three repeats of the
+wave's files, three full suites — and failed deterministically the first time
+the Storybook cache was cleared: it read the detail pane once after waiting on
+`aria-selected`, and the `hidden` attribute moves between the two Base UI tab
+panels a tick later. Agents are already told to run their own file from a
+cleared cache; the integrator was not, and a warm cache had been hiding this
+since wave 6. Clearing
+`apps/storybook/node_modules/.cache/storybook` and running `test:stories` once
+per wave is now part of integration — with the dev server down, per the trap in
+§4.
+
+### Wave 8 — family O (2026-09-06) — the last one
+
+Thirteen shells, thirteen agents, all at zero unmet. **Baseline 104 → 0.** Every
+one of the 116 registry items now carries the eight case names or an annotated
+skip, and every declared-state export carries a JSDoc description. The ratchet
+file is an empty list, which turns it from a debt ledger into a plain
+regression guard: any obligation that goes unmet from here is a new failure with
+nothing to hide behind.
+
+**One line of tooling changed what the wave could see.** The block brief had
+said since family O shipped that the mandatory `Responsive` story proves nothing
+mechanically — the viewport addon contributes only `initialGlobals`, all
+resizing happens in Storybook's manager, and the vitest runner has no manager —
+and its proposed fix was a second vitest project pinned to a mobile viewport,
+which would have doubled a 1,300-test suite. `page.viewport(375, 812)` from
+`vitest/browser`, called inside a play, does the same job in one line and does
+not leak into the next story. What it found: the mobile drawer every sidebar
+swaps to had never been suppressed under reduced motion, `modality-rail` is
+92px at every width so a rail-based shell has no narrow layout to swap into, and
+a claim recorded as *conditional* in wave 2 (E1's "Generate never scrolls away")
+turned out to hold in this composition after all. Seven waves of width-wrapper
+`Mobile` stories could not have reached any of it.
+
+**Three agents corrected the instruction they were given, and none of them acted
+alone.** The import path in the convention was wrong twice over —
+`@vitest/browser/context` is deprecated, and `vitest/browser` throws on
+evaluation outside Browser Mode, so a top-level import breaks the whole story
+file in a built Storybook. Three agents used a dynamic in-play import for that
+reason and said so; three used a static one, and one of those verified
+`storybook build` exits 0, which is true and a different claim, because the
+throw happens at evaluation time in the browser. Both halves were needed to see
+the whole thing.
+
+**The wave's own steering was wrong four times and the agents caught all four.**
+`pricing-table` is not a table and never touches the vendored `text-left` that
+was cited at it. §8's citation-jump entry says the jump has to find rows
+positionally; the paraphrase handed to O13 said it "cannot be built", and O13
+built a story that measures it. The `scrollable-region-focusable` instance count
+in one prompt was off by one, and the agent cited no number rather than pick
+between two contradicting sources. And a merge-base artifact produced two more
+apparent corrections that were true of what the agent had and false of the
+branch — **batch 2 was dispatched while the updated brief and a vendored fix were
+still uncommitted**, which is now written into the brief's step 0 as a rule:
+commit before dispatching.
+
+**Eleven docs modules said a control paints no focus treatment when it paints
+the user agent's outline.** Every family O docs module had one. Together with
+waves 6 and 7 that is eighteen corrections to written claims across three waves,
+and the distribution is worth reading: almost all of them are prose written from
+reading a class list, contradicted the first time someone rendered it. The two
+exceptions are the sharper kind — a documented tab order that was backwards in
+two shells, because the topbar is a DOM sibling after the sidebar and nobody had
+walked it.
+
+**What the program leaves open** is in §8: the vendored sidebar's RTL mirroring,
+the tooltip that eats an Escape, `hover-card.tsx`'s missing branch, the
+`matchesQuery` divergence, `model-picker`'s unnamed listbox, and the notebook
+chat pane that cannot take the standard scroll-container repair. Each is
+recorded with a measurement, and none of them is a case story's to fix.
