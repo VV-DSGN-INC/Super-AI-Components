@@ -335,7 +335,13 @@ function RecordsShell({
           >
             {count ?? records.length}
           </span>
-          <div className="ml-auto flex shrink-0 items-center gap-2">
+          {/* Logical, not physical. An auto margin sits on a *side*, so under
+              RTL `ml-auto` lands on the main-end edge and stops pushing: the
+              create action packs against the heading with the free space
+              beside it. `ms-auto` computes to the same `margin-left: auto` in
+              LTR — measured, not assumed (the `RTL` story carries both frames)
+              — and mirrors. CONTINUE.md §8, the logical-properties sweep. */}
+          <div className="ms-auto flex shrink-0 items-center gap-2">
             {headerActions}
             {createAction ??
               (onCreate ? (
@@ -373,7 +379,8 @@ function RecordsShell({
             <FiltersButton onClick={onOpenFilters}>{filtersLabel}</FiltersButton>
           </FilterBar>
 
-          <div data-slot="records-shell-sort" className="ml-auto flex items-center gap-2">
+          {/* `ms-auto` for the same reason as the header row above. */}
+          <div data-slot="records-shell-sort" className="ms-auto flex items-center gap-2">
             <Select value={sort} onValueChange={(next) => handleSort(String(next))}>
               {/* The trigger carries the visible-name job: a bare chevron would
                   leave "sorted by what?" answerable only by opening it. */}
@@ -382,7 +389,14 @@ function RecordsShell({
                     children, so the option's label has to be resolved here. */}
                 <SelectValue placeholder={sortLabel}>{currentSort?.label ?? sortLabel}</SelectValue>
               </SelectTrigger>
-              <SelectContent>
+              {/* Base UI puts `role="listbox"` on the `List` inside the popup,
+                  and an unnamed listbox is what axe's `aria-input-field-name`
+                  reads. The vendored `SelectContent` forwards `aria-label`
+                  down to that element for exactly this reason; the trigger's
+                  own name cannot be reused, because it is an `aria-label`
+                  attribute with no id to point at. Same fix as `trust-dialog`
+                  and `usage-dashboard`. */}
+              <SelectContent aria-label={sortLabel}>
                 {sortOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
