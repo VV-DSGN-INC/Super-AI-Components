@@ -415,7 +415,12 @@ function ExploreGallery({
             <ChoiceChip key={option.value} value={option.value}>
               {option.label}
               {option.count === undefined ? null : (
-                <span className="text-foreground/70 ml-1.5 text-xs tabular-nums">{option.count}</span>
+                // ms-1.5, not ml-1.5: byte-identical in LTR, and under
+                // dir="rtl" it puts the gap between the label and its count
+                // instead of stranding it against the chip's padding.
+                // CONTINUE.md §8 "Logical properties" sanctions the sweep;
+                // ExploreGallery.stories.tsx's RTL story pins the flip.
+                <span className="text-foreground/70 ms-1.5 text-xs tabular-nums">{option.count}</span>
               )}
             </ChoiceChip>
           ))}
