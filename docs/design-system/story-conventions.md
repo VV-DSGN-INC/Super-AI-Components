@@ -73,9 +73,9 @@ silence. The pilot files carry the pattern.
 - **No "every variant at once" story.** A grid of all eight of something
   markets optionality the system exists to remove.
 
-## Four mechanical facts about this repo
+## Five mechanical facts about this repo
 
-These decide the shape of the stories, and all four cost time to rediscover.
+These decide the shape of the stories, and all five cost time to rediscover.
 
 1. **Extra exports are legal.** `check-contract.mts` asserts *declared states
    ⊆ story exports*, never the reverse. Case stories cannot break the
@@ -196,6 +196,37 @@ These decide the shape of the stories, and all four cost time to rediscover.
    stops within M tabs" loop is environment-sensitive; asserting the cycle
    directly is not.** One infers the property from a count reached inside an
    allowance; the other states it.
+
+5. **A `box-shadow` string is not a focus ring.** `KeyboardOrder` must show a
+   visible treatment at every stop, and the obvious predicate —
+   `style.boxShadow !== "none" || style.outlineStyle !== "none"` — is wrong in
+   both directions on this registry's own primitives. Four agents hit it
+   independently across the D/I, E/P and F waves:
+
+   - A Tailwind `ring-*` utility composes shadow *layers that are always
+     present*, reading `rgba(0, 0, 0, 0) 0px 0px 0px 0px` when the ring is off.
+     That is not the string `"none"`, so the check passes on an element painting
+     nothing — measured on a plain vendored `Button` (five such layers) and on
+     `detail-view-shell`'s close button.
+   - `focus-visible:outline-none` leaves `outline-width` at its used value while
+     `outline-style` reads `none`, so a width-based check reports a treatment on
+     a row that has none — measured on A9 `entity-row`.
+   - The vendored `Button` carries `transition-all`, so the ring **fades in**: the
+     same element gives a transparent zero-size shadow on the frame focus lands
+     and a real one ~250ms later. An immediate read is a false negative —
+     measured on F1 `result-card`'s Retry.
+
+   Use `settledFocusRing` from `@/lib/focus-ring`, which inspects the layers for
+   non-zero alpha *and* non-zero geometry and waits for them to settle;
+   `ThreadList.stories.tsx` is the reference call site. It is additive: 63 story
+   files still carry the inline string check and were not rewritten, so a
+   "shows a ring" claim in an older file is weaker than it reads.
+
+   Two smaller traps in the same area. Base UI leaves `tabindex="0"` on a
+   natively-`disabled` button, so `[tabindex]:not([tabindex="-1"])` counts inert
+   controls — query for buttons that are not disabled instead. And a wrapper
+   cannot reach a portal, so an `RTL` story for a dialog needs `dir` on the
+   document rather than on a `<div>`.
 
 Because `preview.tsx` sets `a11y: { test: "error" }` as the default for every
 story, each case story you add is axe-gated from the moment it exists. That

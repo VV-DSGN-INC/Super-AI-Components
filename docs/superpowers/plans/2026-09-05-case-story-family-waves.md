@@ -47,7 +47,7 @@ story-coverage ratchet`. If the fast-forward refuses, stop and report.
 
 ### 2. Read, in this order
 
-1. [`docs/design-system/story-conventions.md`](../../design-system/story-conventions.md) — whole file. The eight, the skip grammar, the four mechanical facts, the play-function rule.
+1. [`docs/design-system/story-conventions.md`](../../design-system/story-conventions.md) — whole file. The eight, the skip grammar, the five mechanical facts, the play-function rule.
 2. [`docs/design-system/component-build-brief.md`](../../design-system/component-build-brief.md) §Story.
 3. The spec's §3.4 fix policy (link above): mechanical fixes land in-wave, behavioural fixes are recorded and never pinned.
 4. `CONTINUE.md` §8's "Added by the D/I case-story wave" and §9's "Wave 1" entry. Wave 1 found four traps that live in the primitives rather than in any one component — unnamed `PopoverContent`s, the missing `DirectionProvider`, the vendored `Button`'s press nudge, and `Tabs.Panel` as an unstyled extra stop. Read them before you conclude your component is the first to hit one.

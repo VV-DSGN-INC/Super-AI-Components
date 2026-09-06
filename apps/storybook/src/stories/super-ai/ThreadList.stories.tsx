@@ -2,6 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { settledFocusRing } from "@/lib/focus-ring";
+
 import { RecordList } from "@/registry/super-ai/record-list";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-ai/thread-list";
@@ -384,8 +386,14 @@ export const KeyboardOrder: Story = {
       const focused = document.activeElement as HTMLElement;
       await expect(focused).toBe(stops[i]);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
+      // `settledFocusRing`, not `boxShadow !== "none"`. Tailwind's ring
+      // compiles to composed shadow layers that are present-but-transparent
+      // when the ring is off, so the string check passes on an element
+      // painting nothing; and the Button base's `transition-all` fades the
+      // real ring in, so an immediate read is a false negative. The helper
+      // inspects the layers and waits for them to settle — see
+      // `@/lib/focus-ring` for the four measurements behind it.
+      await settledFocusRing(focused, waitFor);
       // Odd stops are the actions triggers, which are invisible until hover.
       // Focus has to reveal them or a keyboard user is aiming at nothing.
       // Waited rather than read once: the Button base carries `transition-all`,
