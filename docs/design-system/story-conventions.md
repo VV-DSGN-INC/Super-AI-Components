@@ -117,8 +117,16 @@ These decide the shape of the stories, and all five cost time to rediscover.
 
    - **There is one mechanism that does move the breakpoint, and the wrapper
      rule is not a substitute for it where a layout keys on a media query.**
-     `page.viewport(375, 812)` from `@vitest/browser/context`, called at the top
-     of a play function, resizes the test iframe itself. Probed 2026-09-06:
+     `page.viewport(375, 812)` from `vitest/browser`, called at the top
+     of a play function, resizes the test iframe itself. **Import it
+     dynamically, inside the play** — `const { page } = await
+     import("vitest/browser")`. The module throws on evaluation outside Browser
+     Mode ("can be imported only inside the Browser Mode", measured in node), so
+     a top-level import breaks the whole story file wherever it is evaluated
+     outside the vitest runner, the built static Storybook included. Three
+     wave-8 agents chose the dynamic form independently for that reason. It is
+     `vitest/browser`, not `@vitest/browser/context`, which vitest 4.1
+     deprecated. Probed 2026-09-06:
      `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false →
      true, and a `hidden md:block` element goes from `display: block` to
      `display: none`. It does **not** leak — a second story in the same file

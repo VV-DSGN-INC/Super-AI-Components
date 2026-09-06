@@ -1711,7 +1711,13 @@ that stayed open, plus what the wave learned about the primitives underneath.
   last of eight `<PopoverContent` call sites in the registry
   (`inline-generate-popup` never used the wrapper). With the dropdown holdout
   closed in wave 6 and the alert-dialog backdrop closed here, no registry
-  surface is known to animate under `prefers-reduced-motion: reduce`.
+  surface *reachable at desktop width* still animates under
+  `prefers-reduced-motion: reduce`. **Wave 8 found the qualifier the sentence
+  needed**: the vendored `sheet.tsx` drawer that every B1 sidebar swaps to below
+  768px was never suppressed — panel `0.2s`, backdrop `0.15s`, 40px of
+  translate — and nothing could reach it, because the branch needs a real
+  viewport media query and every `Mobile` story until wave 8 constrained a
+  wrapper instead. Fixed in both copies once `page.viewport` made it visible.
 
 - **Two findings narrowed rather than added.** N1 `feedback` narrowed K1's
   `button-group` border defect further: the `border-l-0` is invisible on *ghost*

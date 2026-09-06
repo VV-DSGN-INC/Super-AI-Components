@@ -210,7 +210,12 @@ function LibraryShellTile({
       selected={selected}
       // Select mode replaces the open action rather than layering a checkbox
       // over it — F2's rule that the two are never live at once, applied to
-      // the tile itself.
+      // the tile itself. `selectMode` is forwarded as well as branched on:
+      // A8 defaults to `"toggle"` and stamps `aria-pressed`, which is a claim
+      // about state a browse-mode tile does not hold. O7's case-story wave
+      // walked past every tile reporting `aria-pressed="false"` while pressing
+      // one opened a lightbox.
+      selectMode={selectMode ? "toggle" : "open"}
       onSelect={selectMode ? onToggle : onOpen}
     >
       {asset.thumbnail}

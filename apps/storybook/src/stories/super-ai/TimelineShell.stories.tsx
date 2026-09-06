@@ -798,7 +798,7 @@ export const Mobile: Story = {
   play: async ({ canvasElement }) => {
     // Resolvable in the vitest runner, which is what gates this file; it moves
     // the iframe itself and does not leak into the next story.
-    const { page } = await import("@vitest/browser/context");
+    const { page } = await import("vitest/browser");
     await page.viewport(375, 812);
 
     const shell = canvasElement.querySelector<HTMLElement>('[data-slot="timeline-shell"]')!;

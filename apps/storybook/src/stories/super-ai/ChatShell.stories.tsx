@@ -306,11 +306,12 @@ export const Paywalled: Story = {
  * steering; this is that fix measured from a consumer four levels above it
  * rather than from the component that reported it.
  *
- * **One surface in this shell still animates under reduce, and it cannot be
- * reached from this story.** B1's mobile drawer is a `Sheet`, and
- * `components/ui/sheet.tsx` carries no `motion-reduce:transition-none` on
+ * **One surface in this shell was still animating under reduce, and it could
+ * not be reached from this story.** B1's mobile drawer is a `Sheet`, and
+ * `components/ui/sheet.tsx` carried no `motion-reduce:transition-none` on
  * either half. It exists only below the 768px media query, so `Mobile` is
- * where it is measured.
+ * where it was measured — and where the guard now lives. Fixed centrally in
+ * both copies of the vendored file after this story reported it.
  */
 export const ReducedMotion: Story = {
   args: FULL_ARGS,
@@ -984,18 +985,18 @@ export const LongContent: Story = {
  * be that way in rather than assumed to be, and the play does not return with
  * a sheet mid-dismissal for axe to scan.
  *
- * **Recorded, not fixed — the drawer animates under reduced motion, and it is
- * the first registry surface found doing so since the sweep was declared
- * complete.** `components/ui/sheet.tsx` puts `transition duration-200` on the
- * panel and `transition-opacity duration-150` on the backdrop with no
- * `motion-reduce:transition-none` on either, and the `side=left` panel's
- * starting style is `translate-x-[-2.5rem]` — a 40px slide, which is motion by
- * the convention's own test rather than a colour crossfade. Both durations are
- * measured in the play. It went unfound because nothing could reach this
- * surface before: the drawer branch requires a real viewport media query, so
- * every width-wrapper story in twelve waves rendered the desktop rail instead.
- * The fix belongs in the vendored file, which every sheet consumer shares, so
- * it is not taken from here.
+ * **This story found the last registry surface still animating under reduced
+ * motion, and it is now fixed and guarded here.** `components/ui/sheet.tsx` put
+ * `transition duration-200` on the panel and `transition-opacity duration-150`
+ * on the backdrop with no `motion-reduce:transition-none` on either, and the
+ * `side=left` panel's starting style is `translate-x-[-2.5rem]` — a 40px slide,
+ * which is motion by the convention's own test rather than a colour crossfade.
+ * It went unfound because nothing could reach this surface before: the drawer
+ * branch requires a real viewport media query, so every width-wrapper story in
+ * seven waves rendered the desktop rail instead. The fix belongs in the
+ * vendored file, which every sheet consumer shares, so the integrator took it
+ * in both copies; the play below asserts `transition-property: none` on both
+ * halves, which is the value the fix changes.
  *
  * The resize does not leak: `LongContent` above and `Boundary` below both read
  * 1200px back, and `LongContent`'s own assertions depend on it.
@@ -1003,7 +1004,7 @@ export const LongContent: Story = {
 export const Mobile: Story = {
   args: FULL_ARGS,
   play: async ({ canvasElement }) => {
-    const { page } = await import("@vitest/browser/context");
+    const { page } = await import("vitest/browser");
     const body = within(document.body);
     const railAt = () => canvasElement.querySelector('[data-slot="app-sidebar"]');
 
@@ -1053,17 +1054,22 @@ export const Mobile: Story = {
       expect(el).not.toBeNull();
       return el!;
     });
-    // THE DEFECT, measured, and only reachable once the viewport has actually
-    // moved. The drawer fades and slides in under `prefers-reduced-motion:
-    // reduce`: `components/ui/sheet.tsx` transitions the panel and its backdrop
-    // with no `motion-reduce:transition-none` on either, and the side=left
-    // panel's starting style is a 40px translate — motion by the convention's
-    // own test, not a colour crossfade. Recorded as the durations rather than
-    // claimed correct; see this story's description.
+    // The fix this story found, guarded. The drawer used to fade and slide in
+    // under `prefers-reduced-motion: reduce` — `components/ui/sheet.tsx`
+    // transitioned the panel and its backdrop with no
+    // `motion-reduce:transition-none` on either, and the side=left panel's
+    // starting style is a 40px translate, so it was motion by the convention's
+    // own test rather than a colour crossfade. Reachable only once the viewport
+    // has actually moved, which is why seven waves missed it.
+    //
+    // Read as `transition-property`, not `transition-duration`: the fix sets
+    // the property list to `none` and leaves `0.2s`/`0.15s` in place, so a
+    // duration check would keep passing after a revert and prove nothing. This
+    // form was watched fail on a reverted class before it was kept.
     const backdrop = document.querySelector<HTMLElement>('[data-slot="sheet-overlay"]');
     await expect(
-      `panel ${getComputedStyle(drawer).transitionDuration} · backdrop ${backdrop ? getComputedStyle(backdrop).transitionDuration : "none"}`,
-    ).toBe("panel 0.2s · backdrop 0.15s");
+      `panel ${getComputedStyle(drawer).transitionProperty} · backdrop ${backdrop ? getComputedStyle(backdrop).transitionProperty : "missing"}`,
+    ).toBe("panel none · backdrop none");
 
     // Let it settle before asserting anything about what is on screen, and
     // before the play returns — axe scans a fading panel at its transitional

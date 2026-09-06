@@ -1,4 +1,3 @@
-import { page } from "@vitest/browser/context";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Compass, Library, MessagesSquare, Settings, Sparkles } from "lucide-react";
 import * as React from "react";
@@ -943,7 +942,7 @@ export const LongContent: Story = {
  * A real 375×812 viewport, not a 375px box — and for this shell the two give
  * different answers, which is the whole reason the mechanism exists.
  *
- * `page.viewport(375, 812)` from `@vitest/browser/context` resizes the test
+ * `page.viewport(375, 812)` from `vitest/browser` resizes the test
  * iframe, so `matchMedia` moves with it. The width wrapper every earlier wave
  * used constrains the box and leaves the breakpoint at the gate's 1200px, and
  * J3 `explore-gallery`'s masonry keys `sm:columns-2 lg:columns-3` off the
@@ -970,6 +969,13 @@ export const LongContent: Story = {
 export const Mobile: Story = {
   args: { ...FULL_ARGS, items: ITEMS.slice(0, 4) },
   play: async ({ canvasElement }) => {
+    // Dynamic, not a top-level import: `vitest/browser` throws on evaluation
+    // ("can be imported only inside the Browser Mode"), so a static import
+    // breaks this whole story file wherever it is evaluated outside the vitest
+    // browser runner — the built static Storybook included. Measured in node:
+    // `await import("vitest/browser")` rejects with that message. Keeping it
+    // inside the play limits the blast radius to this one story.
+    const { page } = await import("vitest/browser");
     await page.viewport(375, 812);
 
     const root = canvasElement.querySelector<HTMLElement>('[data-slot="explore-shell"]')!;

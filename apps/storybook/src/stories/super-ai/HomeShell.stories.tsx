@@ -6,7 +6,6 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 // wrapper cannot test this shell: B1's drawer swap keys on a viewport media
 // query, so 375px of wrapper renders the desktop rail inside a narrow box and
 // reports success. See story-conventions.md, mechanical fact 2, and `Mobile`.
-import { page } from "@vitest/browser/context";
 
 import { Button } from "@/components/ui/button";
 import { HomeShell, type HomeShellProps } from "@/registry/super-ai/home-shell";
@@ -744,6 +743,13 @@ export const LongContent: Story = {
 export const Mobile: Story = {
   args: FULL_ARGS,
   play: async ({ canvasElement }) => {
+    // Dynamic, not a top-level import: `vitest/browser` throws on evaluation
+    // ("can be imported only inside the Browser Mode"), so a static import
+    // breaks this whole story file wherever it is evaluated outside the vitest
+    // browser runner — the built static Storybook included. Measured in node:
+    // `await import("vitest/browser")` rejects with that message. Keeping it
+    // inside the play limits the blast radius to this one story.
+    const { page } = await import("vitest/browser");
     await page.viewport(375, 812);
     await waitFor(() => expect(window.innerWidth).toBe(375));
     // The breakpoint moved, not just the box — the claim a wrapper cannot make.

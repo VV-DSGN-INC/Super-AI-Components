@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { page } from "@vitest/browser/context";
 import { Compass, Images } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
@@ -522,16 +521,18 @@ export const ReducedMotion: Story = {
  * facet unmounts the chip that had focus and nothing restores it, so focus
  * falls to `<body>`. The docs module's first focus bullet already carries it.
  *
- * **One recorded item has gone stale in the component's favour, and this is
- * the story that walks past it.** Every tile stop here reports
- * `aria-pressed="false"` in browse mode, where it is an open action rather
- * than a toggle — §8's A8 entry, and the docs module's fourth pitfall, which
- * says the source fix is "for A8 to let a caller choose". That prop now
- * exists: `preview-tile` takes `selectMode="toggle" | "open"` and omits
- * `aria-pressed` for `"open"`. This shell still passes neither and therefore
- * still gets the `"toggle"` default. Not taken here — it changes what every
- * tile announces, and the docs module's pitfall would have to be rewritten in
- * the same commit — but it is a one-line call-site fix and it is in the report.
+ * **One recorded item had gone stale in the component's favour, and this is
+ * the story that walked past it.** Every tile stop here used to report
+ * `aria-pressed="false"` in browse mode, where the tile is an open action
+ * rather than a toggle — §8's A8 entry, and the docs module's fourth pitfall,
+ * which said the source fix was "for A8 to let a caller choose". The prop had
+ * already been added: `preview-tile` takes `selectMode="toggle" | "open"` and
+ * omits `aria-pressed` for `"open"`. This shell was still passing neither and
+ * getting the `"toggle"` default. The integrator forwarded it and rewrote the
+ * pitfall in the same commit, so the walk below now steps through plain
+ * buttons in browse mode. Left described rather than asserted: `aria-pressed`
+ * is not part of the keyboard order, and pinning its absence here would put
+ * A8's contract under O7's story name.
  */
 export const KeyboardOrder: Story = {
   args: WALKABLE,
@@ -905,6 +906,13 @@ export const LongContent: Story = {
 export const Mobile: Story = {
   args: FULL_ARGS,
   play: async ({ canvasElement }) => {
+    // Dynamic, not a top-level import: `vitest/browser` throws on evaluation
+    // ("can be imported only inside the Browser Mode"), so a static import
+    // breaks this whole story file wherever it is evaluated outside the vitest
+    // browser runner — the built static Storybook included. Measured in node:
+    // `await import("vitest/browser")` rejects with that message. Keeping it
+    // inside the play limits the blast radius to this one story.
+    const { page } = await import("vitest/browser");
     await page.viewport(375, 812);
     const shell = canvasElement.querySelector<HTMLElement>('[data-slot="library-shell"]')!;
     await waitFor(() => expect(getComputedStyle(shell).flexDirection).toBe("column"));

@@ -85,10 +85,49 @@ differ:
    wrapper the other twelve waves used is not enough here: B1 `app-sidebar`'s
    drawer swap keys on a viewport media query, so a 375px wrapper renders the
    desktop rail inside a narrow box and reports success. Call
-   `page.viewport(375, 812)` from `@vitest/browser/context` at the top of the
+   `page.viewport(375, 812)` from `vitest/browser` at the top of the
    play — probed 2026-09-06, it moves `window.innerWidth`, flips `matchMedia`,
-   and does not leak into the next story. See `story-conventions.md`,
+   and does not leak into the next story. Import it **dynamically**:
+   `const { page } = await import("vitest/browser")` — a top-level import
+   breaks the file outside Browser Mode. See `story-conventions.md`,
    mechanical fact 2.
+
+**What wave 8's first seven measured, so the last six need not repeat it:**
+
+- **Two family O shells cannot share a document.** Each `SidebarInset` renders a
+  `<main>`, so a `Boundary` rendering two shells fails
+  `landmark-no-duplicate-main` outright; O6 also measured
+  `landmark-no-duplicate-banner` plus `landmark-unique` twice. Put your shell
+  beside a *component* it gets confused with, or render it alone and make "a
+  shell is the page" the boundary rule — O1 asserts
+  `querySelectorAll("main").length === 1`. Do not suppress the rule per story
+  and do not `inert` one shell: that trades a duplicate landmark for focusable
+  content inside `aria-hidden`.
+- **The vendored sidebar does not mirror.** Under `dir="rtl"` the in-flow
+  `sidebar-gap` follows direction while the `fixed` container stays put
+  (`data-[side=left]:left-0`), so a 256px blank strip sits at the start edge and
+  the sidebar lies on top of the first 256px of content. Measured independently
+  by O1 and O2, and it reaches every B1 consumer. Record it; do not fix a
+  vendored file from a shell.
+- **`data-slot="app-sidebar"` does not exist below 768px.** The vendored
+  `Sidebar` spreads B1's props onto a `Sheet` root that renders no element; what
+  renders is `data-slot="sidebar"` with `data-mobile="true"`. Any selector on
+  the B1 slot silently stops matching inside a `Mobile` story.
+- **`sheet.tsx`'s drawer was fixed centrally in this wave** — it was the last
+  surface still animating under reduced motion, and nothing before
+  `page.viewport` could reach it. Do not add a branch. If you open the drawer,
+  assert `transition-property: none`, which is the value the fix changes;
+  duration stays `0.2s`, so a duration check would pass after a revert.
+- **`getByRole("region")` cannot see an unnamed `<section>`.** `aria-query` keys
+  on the presence of `aria-labelledby`, not on the name it computes to.
+- **B4 `modality-rail`'s stacked label is 63×0 CSS px, and the rail is 92px at
+  every width**, so a rail-based shell has no narrow layout to swap into. Three
+  agents measured it; cite it, do not re-measure it.
+- **`EmbeddedWithSidebarFooter` stays a sibling export, not one of the eight** —
+  it is a desktop-width geometric guard on `SIDEBAR_FILLS_SHELL`, and below
+  768px there is no rail to size. O2 reused O1's verbatim; O9 can too. O11 needs
+  the prop renamed (`railFooter`); O10 forwards no footer prop at all and needs
+  either a different anchor or a stated exemption.
 
 **And §8's opening section is your own backlog.** "Composition gaps found by
 family O" was written by the twelve builders who built these shells — each item

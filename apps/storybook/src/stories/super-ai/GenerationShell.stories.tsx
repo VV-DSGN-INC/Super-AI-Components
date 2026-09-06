@@ -756,7 +756,7 @@ export const LongContent: Story = {
 /**
  * A real 375×812 viewport, not a 375px box.
  *
- * `page.viewport()` from `@vitest/browser/context` resizes the test iframe
+ * `page.viewport()` from `vitest/browser` resizes the test iframe
  * itself, and for this shell that is the difference between a story and a
  * decoration. Measured in this play: `window.innerWidth` 1200 → 375,
  * `(min-width: 768px)` true → false. Under the width wrapper every other wave
@@ -791,12 +791,11 @@ export const LongContent: Story = {
 export const Mobile: Story = {
   args: FULL_ARGS,
   play: async ({ canvasElement }) => {
-    // `@vitest/browser/context` is the path `story-conventions.md` fact 2 names,
-    // and vitest 4.1 prints a deprecation notice for it on every run of this
-    // file ("use `vitest/browser` instead"). Left as documented so all thirteen
-    // family-O files match; renaming it is one edit to the convention plus
-    // thirteen call sites, and belongs to whoever makes that call.
-    const { page } = await import("@vitest/browser/context");
+    // `vitest/browser`, not `@vitest/browser/context`: vitest 4.1 deprecated
+    // the latter and prints a notice for it once per file per run. Two wave-8
+    // agents flagged it independently and the convention was corrected rather
+    // than kept for consistency's sake.
+    const { page } = await import("vitest/browser");
     await page.viewport(375, 812);
 
     const shell = shellRoot(canvasElement);

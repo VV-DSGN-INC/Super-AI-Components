@@ -71,7 +71,7 @@ source; an `Empty` story export; a `Responsive` story export. Two are weaker tha
    container-width decorator is not a substitute — B1's drawer swap keys on a viewport media query.
 
    **Superseded for the case-story `Mobile` export, and cheaply.** The second vitest project this
-   entry used to propose is not needed: `page.viewport(375, 812)` from `@vitest/browser/context`,
+   entry used to propose is not needed: `page.viewport(375, 812)` from `vitest/browser`,
    called at the top of a play function, resizes the test iframe itself. Probed 2026-09-06 —
    `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false → true, `hidden
    md:block` goes to `display: none` — and it does not leak into the next story, so it costs one
