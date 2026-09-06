@@ -199,7 +199,24 @@ function FeatureAnnouncement({
   if (level === "modal") {
     return (
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent {...rootProps} showCloseButton={false} className={cn("sm:max-w-md", className)}>
+        <DialogContent
+          {...rootProps}
+          showCloseButton={false}
+          // The reduced-motion variant has to be restated on both halves of a
+          // Base UI popup. `DialogContent` animates through
+          // `data-open:animate-in` / `data-closed:animate-out`, and Tailwind v4
+          // wraps the data-attribute test in `:where(…)` — so both sides carry
+          // the same single-class specificity and the tie falls to source
+          // order, which emits the plain `motion-reduce:` block first and hands
+          // the win to `animation: enter`. Measured here before the fix: the
+          // popup's `animation-name` read "enter" under emulated reduce.
+          // `shortcuts-sheet`'s finding, applied to this component's two
+          // popups. The backdrop animates too and takes no className.
+          className={cn(
+            "motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:max-w-md",
+            className,
+          )}
+        >
           <DialogHeader>
             <div className="flex items-start justify-between gap-2">
               <div className="flex flex-col items-start gap-2">
@@ -242,7 +259,11 @@ function FeatureAnnouncement({
           {...rootProps}
           aria-labelledby={titleId}
           align="start"
-          className={cn("w-80", className)}
+          // Same restated pair as the modal level above, for the same reason.
+          className={cn(
+            "w-80 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none",
+            className,
+          )}
         >
           <div className="flex items-start justify-between gap-2">
             <div className="flex flex-col items-start gap-1.5">
@@ -287,7 +308,12 @@ function FeatureAnnouncement({
       <div
         {...rootProps}
         className={cn(
-          "flex w-fit max-w-md items-center gap-2 rounded-full bg-card py-1 pr-1 pl-2.5 text-sm text-card-foreground ring-1 ring-foreground/10",
+          // `ps-`/`pe-` rather than `pl-`/`pr-`: byte-identical in LTR, and
+          // under `dir="rtl"` the physical pair put the 10px on the ✕ and the
+          // 4px on the stage badge — measured 10px/4px the wrong way round
+          // before the swap. Every participant in this row is a class, so the
+          // swap is safe (F5 `compare-viewer` is the counter-case).
+          "flex w-fit max-w-md items-center gap-2 rounded-full bg-card py-1 pe-1 ps-2.5 text-sm text-card-foreground ring-1 ring-foreground/10",
           className,
         )}
       >
