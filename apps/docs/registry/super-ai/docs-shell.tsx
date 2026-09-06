@@ -263,7 +263,7 @@ function DocsShellSectionBlock({ section }: { section: DocsShellSection }) {
         // K6 markers are superscript by design, so they need a word in front of
         // them: a bare run of numbers at the end of a section reads as nothing.
         <p data-slot="docs-shell-sources" className="text-foreground text-xs">
-          <span className="mr-1 font-medium">Sources</span>
+          <span className="me-1 font-medium">Sources</span>
           {section.citations.map((citation) => (
             <CitationRef
               key={citation.id}
@@ -362,10 +362,18 @@ function DocsShell({
 
       <SidebarInset className="min-w-0 flex-col overflow-hidden md:flex-row">
         {/* Plain wrapper, not an <aside>: B3 renders its own <nav>, and the
-            region marker must not add a competing landmark around it. */}
+            region marker must not add a competing landmark around it.
+
+            `md:border-e` rather than `md:border-r` — the rule belongs on the
+            edge this column shares with the content, which is its left under
+            RTL. Byte-identical in LTR, measured rather than assumed: the whole
+            LTR frame was read back with each spelling and every box matched
+            (`DocsShell.stories.tsx`'s `RTL` carries the numbers). Same swap on
+            the "Sources" label's `me-1` and the keycaps' `ms-auto`; those are
+            the only three physical classes this file ever had. */}
         <div
           data-region="doc-nav"
-          className="bg-background max-h-56 shrink-0 overflow-y-auto border-b md:max-h-none md:w-64 md:border-r md:border-b-0"
+          className="bg-background max-h-56 shrink-0 overflow-y-auto border-b md:max-h-none md:w-64 md:border-e md:border-b-0"
         >
           {/* The one hand-written affordance in this file. The vendored
               SidebarProvider really does bind ⌘B to the rail, and nothing in
@@ -375,7 +383,7 @@ function DocsShell({
           <div data-slot="docs-shell-nav-header" className="flex items-center gap-2 border-b px-2 py-2">
             <SidebarTrigger />
             <span className="truncate text-sm font-medium">{railLabel}</span>
-            <KbdGroup className="ml-auto">
+            <KbdGroup className="ms-auto">
               {railShortcut.map((key) => (
                 <Kbd key={key}>{key}</Kbd>
               ))}
