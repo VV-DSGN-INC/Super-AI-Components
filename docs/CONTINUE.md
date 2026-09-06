@@ -67,6 +67,20 @@ from `apps/docs` to lock the progress in — the script refuses to grow the
 file. These figures are derived by that test; recount with it rather than
 maintaining them here.
 
+**Wave 1 of the family waves — families D and I — landed 2026-09-05, together
+with the description-only debt.** The brief the agents were handed is
+[`superpowers/plans/2026-09-05-case-story-family-waves.md`](superpowers/plans/2026-09-05-case-story-family-waves.md),
+and `pnpm story-coverage:report [item …]` (from `apps/docs`) is the report-only
+view it gave them: the unmet obligations for one item, computed on the same code
+path as the ratchet, never touching the baseline. Baseline **817 → 625** (527
+case, 98 described): the 18 items whose only debt was undocumented state
+exports (76 descriptions across A/B/C/E/K/M/N) and the 11 D/I items (88 case
+obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
+fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
+entry has what was fixed and what was found. Remaining, all case-block debt:
+E 9 · F 7 · H 7 · J 7 · K 5 · L 4 · M 4 · N 8 · O 13 · P 2 = 66 items; recount
+with the test rather than trusting this line.
+
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
 **116 checked / 0 exempt** · Playwright **133 passed** · `registry.json`
@@ -552,8 +566,29 @@ pre-existing.
 3. **Inconsistent accessible-name convention** for model selection:
    `model-picker` uses `"Model: Veo 3.1 Fast"`, `hero-omnibox` a static
    `"Model"`. One should win.
-4. **RESOLVED — the spec gap is closed.** All five genuinely missing entries
-   were written on 2026-08-04 from `catalog.md` + `gaps.md` + D12: **H6
+4. **PARTLY RESOLVED — two entries are still missing, found 2026-09-05.** **E9
+   `tts-composer` and E10 `voice-clone-recorder` have no section in
+   `component-specs.md` at all**, and never have (`git log -S` finds none).
+   Their manifest rows still carry `specAnchor:
+   "component-specs.md#e9-tts-composer"` / `#e10-voice-clone-recorder`, because
+   `gen-manifest.mts` synthesises that string from the catalog row rather than
+   from a heading that exists — so both anchors are dead links, and **nothing
+   checks them**: `check:contract` asserts the manifest's shape and
+   `check-citations.mts` covers docs-module prose, neither resolves a
+   `specAnchor`. A sweep of all 116 shipped items finds exactly these two.
+   Their normative text today is the `catalog.md` row (E9/E10, both
+   `RESTORED`), `gaps.md` §2 R6 and R7, and the shipped docs module. **Hand a
+   wave agent those, not the anchor**, until the sections are written — and
+   writing them is a design act that needs a human, since it would bless
+   whatever shipped.
+
+   The paragraph below compounds it: it cites "the precedent E9/E10 set" for
+   how a restored entry should handle its `Evidence` line, and that precedent
+   is not written down anywhere either. The rule it describes is still right;
+   its citation is not.
+
+   The rest stands. All five *other* missing entries were written on 2026-08-04
+   from `catalog.md` + `gaps.md` + D12: **H6
    `waveform-editor`** (gaps R3), **H7 `stem-mixer`** (R4), **J7 `track-list`**
    (R5), **M7 `connection-manager`** (T5) and **N7 `env-status`** (R1). The
    sixth on the old list, `N8 permission-prompt`, had already been specced by
@@ -836,6 +871,7 @@ that is where the backlog lives.
   | `source-cards.tsx:100` | title button | `text-left` → `text-start` |
   | `explore-gallery.tsx:418` | facet count | `ml-1.5` → `ms-1.5` |
   | `artifact-grid.tsx:272` | count badge | `ml-1.5` → `ms-1.5` |
+  | `preview-tile.tsx:150` | badge slot | `right-2` → `end-2` (added 2026-09-05, flagged independently by two D/I agents) |
 
   **Changes that are *not* byte-identical stay open decisions, and must not be
   swept in with the above.** Two of them:
@@ -969,6 +1005,89 @@ that is where the backlog lives.
   `data-theme` (schema-forced) while the real mechanism is the `.dark` class —
   reconcile when a stage consumes axes. (The rest of this entry's items closed
   in `chore(ds-rules): close the final-review follow-ups backlog`.)
+
+### Added by the D/I case-story wave (2026-09-05)
+
+Same provenance rule: each was found by an agent writing a story who could not
+write it honestly without noticing. The sanctioned mechanical fixes landed
+in-wave (spec §3.4) and are listed under §9's wave 1 entry; these are the gaps
+that stayed open, plus what the wave learned about the primitives underneath.
+
+- **`PopoverContent` supplies no accessible name.** Base UI renders the popup
+  `role="dialog"`, so every registry popover without an explicit `aria-label`
+  is an `aria-dialog-name` violation the moment a story opens it — and the
+  declared-state stories open none of them, which is how `context-toolbar`'s
+  AI popover and `drawing-tools`' flyout shipped unnamed from wave 6 until this
+  wave's `ReducedMotion`/`Controlled` stories opened them. Both fixed in-wave
+  with the `modality-rail` idiom (`aria-label` on the content). Named today:
+  `modality-rail`, `feature-announcement`, `context-toolbar`, `drawing-tools`.
+  Every other popover in the registry is latently in this position until its
+  case stories open it — a candidate for a ds-rules rule (a `PopoverContent`
+  with neither `aria-label` nor `aria-labelledby`).
+- **No `DirectionProvider` is mounted anywhere, so Base UI composites never
+  learn about RTL.** `CompositeRoot` reads `useDirection()`, which falls back
+  to `"ltr"` without a provider, and `dir="rtl"` on a wrapper is invisible to
+  React context. Measured on `mode-tabs`: under `dir="rtl"`, ArrowRight
+  advances in DOM order, which paints to the left. `account-menu` records the
+  same root cause for popup side resolution. The fix is one provider at the app
+  shell (or the primitive reading `dir`) — a shell-level decision, recorded,
+  not made here.
+- **The vendored `Button` moves on press with no reduced-motion branch.**
+  `components/ui/button.tsx` carries `transition-all` and
+  `active:not-aria-[haspopup]:translate-y-px`, so every button in the registry
+  nudges a pixel while pressed under `prefers-reduced-motion: reduce`. Found
+  independently by the `quote-reply` and `media-prompt-bar` agents. It is the
+  `transition-all` blocker the token gate downgrades to a warning for vendored
+  files (`vendored-token-findings.md`) — a primitive-wide posture, not any one
+  component's, so no case story adds `motion-reduce:transition-none` for it.
+- **Base UI's `Tabs.Panel` is an extra keyboard stop with no visible focus.**
+  A tabbed panel puts two keyless stops in front of its sections, not one, and
+  the vendored `ui/tabs.tsx` styles `TabsContent` `outline-none` with no
+  `focus-visible` ring — the unpaired-`outline-none` shape the token gate exists
+  to catch and does not see in a vendored file. `tool-panel`'s `KeyboardOrder`
+  pins the order and filters that one slot out of its ring check so nothing is
+  pinned in either direction. Its docs keyboard list omits the stop.
+- **The carousel-arrow shape has a third instance: D2 `reference-strip`.** It
+  composes `Carousel` with no override, so the arrows sit at `-left-12` /
+  `-right-12`; measured 471px of footprint in a 375px column (96px of arrow
+  outside it). C3 and H5 are recorded above; D2 is the first still open on both
+  counts. Position is a design decision, so it stays recorded.
+- **Reorder controls are named and iconed by physical direction.** D2
+  `reference-strip`'s "Move X left" carries `ChevronLeft` and calls
+  `onMove(id, "left")`, meaning "toward index 0" — which renders on the *right*
+  under RTL. The array semantics stay correct; the label and icon mislead. H5
+  `frame-strip`'s `onReorder(id, "left" | "right")` has the same shape. An API
+  naming decision (`"start" | "end"`, or index deltas), not a class swap.
+- **A keyboard-focused menu row in I4 `ai-tools-menu` has no perceptible focus
+  treatment.** `focus:bg-transparent` on the `DropdownMenuItem` overrides the
+  primitive's `focus:bg-accent` — presumably to keep A9's muted description off
+  an accent surface — and leaves the focused row distinguishable only by title
+  colour (oklch 0.205 vs 0.145). F4 `action-stack` carries the identical
+  override on the identical row, so it is one decision for both and belongs
+  with the shared row the I4 docs module's last pitfall already asks for.
+- **Two more accessible-name collapses in the empty-string class.** D3
+  `context-chips` with `label=""` names its remove control bare "Remove" (its
+  docs module says the name cannot collapse — that sentence has a hole); I2
+  `property-inspector`'s `Reset <label>` default cannot see the section above
+  it, so a property under two groups produces duplicate names ("Reset Opacity"
+  twice, which `EmptyLabel` asserts), and its `selectionLabel` fallback
+  announces the raw `elementType` lookup key.
+- **`aria-activedescendant` on D6 `skill-menu` is empty until the first arrow
+  key.** cmdk 1.1.1 writes `selectedItemId` only inside `setState("value", …)`,
+  and its select-first fallback runs only when the store value is empty — never
+  true because `skill-menu` controls cmdk's `value`. A screen-reader user is
+  told the field controls a listbox and never which option is current, while
+  the preview is already rendering that option. The first Down repairs it.
+- **Tap targets under WCAG 2.2's 24×24 in two rails.** I5 `drawing-tools`'
+  flyout chevron measures 16×32 CSS px against a 32×32 tool button with no gap,
+  so the spacing exception cannot apply; A11 `reset-affordance`'s 20×20 row
+  target is multiplied across I2's column of rows. Axe's `target-size` is
+  experimental and off, so no gate sees either.
+- **Sweep-table addition, above.** A8 `preview-tile`'s badge slot is `absolute
+  top-2 right-2` — the byte-identical `end-2` swap, flagged independently by
+  the `quote-reply` and `tool-panel` agents. Its own `RTL` story still says the
+  swap would be "a system-wide decision"; that premise expired when the sweep
+  was decided, and the description should be corrected when the sweep runs.
 
 ## 9. Gaps found by the case-story pilot
 
@@ -1182,3 +1301,114 @@ The reduced-motion backlog moved from three branching components to seven —
 branches — and `shortcuts-sheet` is what produced the Base UI popup correction
 recorded above. `generation-queue`'s focus-loss finding is untouched and stays
 open. The remaining ~91 items are spec §3.2's family waves; the gate is §4.
+
+### Wave 1 — families D and I (2026-09-05)
+
+Eleven agents, one per item, each in its own worktree cut from `origin/main` and
+fast-forwarded to the integration branch as step 0 of the brief (the base-commit
+trap from §1, handled rather than re-hit). All eleven reached zero unmet
+obligations: 88 case obligations and 28 descriptions resolved, the baseline
+regenerated once at the end. Brief and integrator procedure:
+[`superpowers/plans/2026-09-05-case-story-family-waves.md`](superpowers/plans/2026-09-05-case-story-family-waves.md).
+
+**Skips versus writes.** 11 `case-skip` lines across six files (`quote-reply`
+3, `property-inspector` 2, `context-chips` 2, `skill-menu` 2,
+`media-prompt-bar` 1, `ai-tools-menu` 1) and five files with all eight written
+(`reference-strip`, `mode-tabs`, `context-toolbar`, `tool-panel`,
+`drawing-tools`). Every skip is one of three shapes: `Controlled` where no
+value/onChange pair exists (six items — `onSelect`/`onRemove`/`onAction`
+report an intent and carry no value), `ReducedMotion` where nothing moves or
+only a colour crossfades (four), and `EmptyLabel` where the only optional text
+slot is a defaulted label whose empty case would ship a `button-name` violation
+into the gate (two). `Controlled` was skipped *against* the steering on
+`property-inspector`, correctly: its `onSectionOpenChange` fires after the
+section has already moved, so it is half a controlled pair and a host cannot
+refuse; the reasoning is in the skip block.
+
+**Mechanical fixes landed in-wave (seven source files):**
+
+- Reduced-motion pairs restated on Base UI popups, each measured
+  (`animationName` "enter" → "none" under emulated reduce): `mode-tabs`
+  (tooltip), `context-toolbar` (tooltip, menu, popover), `ai-tools-menu`
+  (menu), `drawing-tools` (popover). Four more off §8's 33-item list.
+- Logical-property swaps, byte-identical in LTR: `context-chips`
+  (`pl-2`/`pr-1`/`pr-2`/`ml-0.5` → `ps`/`pe`/`ms`), `skill-menu` (`border-r` →
+  `border-e`), `tool-panel` (`left-2.5` → `start-2.5`, `pl-8` → `ps-8`,
+  `text-left` → `text-start`), `drawing-tools` (`text-left` → `text-start`).
+  `left-` → `start-` is not one of the four swaps §8's sweep entry enumerates;
+  it was taken because it meets that entry's own test, and because swapping
+  only the gutter would have left icon and gutter on opposite sides.
+- `aria-label` on two unnamed `PopoverContent`s (`context-toolbar`,
+  `drawing-tools`) — the one fix outside §3.4's literal list, accepted because
+  it is a one-attribute drift correction with an in-repo idiom
+  (`modality-rail`) and the alternative was leaving the popover closed so the
+  gate stayed quiet. §8 has the general finding.
+
+**Recorded, never pinned** — every play function in the wave stops short of
+the defect its description names:
+
+- Focus lost on removal or dismissal: `quote-reply` and `context-chips` (the
+  remove control is the only focusable a chip owns), `reference-strip` (the
+  last enabled Move disables itself under the cursor), plus the two
+  `media-prompt-bar` behaviours its docs module already carried.
+- No visible focus treatment: `media-prompt-bar`'s two textareas
+  (`border-none focus-visible:ring-0`, no container `focus-within`);
+  `skill-menu`'s search field (`InputGroup` keys its ring off
+  `has-[[data-slot=input-group-control]:focus-visible]`, but cmdk's input sets
+  `data-slot="command-input"`, so the selector never matches); `ai-tools-menu`'s
+  menu rows (§8).
+- `mode-tabs`: Tab lands on the first mode, not the active one (as
+  `modality-rail` records on the same primitive); five modes with icons measure
+  422px in a 375px column with no overflow handling, so the fifth is off-column
+  with nothing saying it exists.
+- `context-chips`: mention labels reorder under RTL (`@teammate` paints
+  `teammate@` — the `@` is a neutral with no Latin before it), fix is
+  `dir="ltr"` on the label; no `title` on the `max-w-40` truncated label.
+- `quote-reply`: `<cite>` interpolates a caller-supplied `anchor` with no
+  `<bdi>` isolation, so a mixed-script anchor reorders around the `·`.
+- `reference-strip`: inherits C3's three RTL findings (Embla `direction` never
+  set, physical `-ml-4`/`pl-4` gutter, previous/next on the wrong sides);
+  Embla's JS tween has no reduced-motion branch; the empty slot still carries
+  `aria-pressed` from `preview-tile`'s default `selectMode="toggle"`.
+- `property-inspector`: a long value scrolls inside the fixed `w-20`
+  `UnitInput` and loses its leading digits — 1920000 reads as a smaller number,
+  not a clipped one.
+- `drawing-tools`: long alternate labels spill (`toggleVariants`' base
+  `whitespace-nowrap` plus a fixed `h-8`, the B4 trap again).
+- `ai-tools-menu`: no `open`/`onOpenChange`, so a host cannot close the menu
+  when the selection changes behind it.
+
+**Spec and docs drift found by writing stories:**
+
+- `component-specs.md` D3 lists `resolved · resolving · unresolved`; the
+  component and manifest have no `resolving` state. Same class as wave 0's
+  "declared states name behaviour no component implements".
+- D6 `skill-menu`'s spec says search filters titles *and* descriptions;
+  `CommandItem` gets `value={skill.id}` with the description as its only
+  `keywords`, so a title-only skill is findable by nothing the user can see.
+  `Search`'s play asserts only the honoured half.
+- Three docs corrections made centrally in the integration commit:
+  `skill-menu.docs.tsx`'s second "do" told callers to override `cost-chip`'s
+  `text-muted-foreground`, which the chip stopped shipping in the A retrofit;
+  `drawing-tools.docs.tsx`'s keyboard note counted ten stops where roving
+  tabindex makes five; and a stale comment in `ai-tools-menu.tsx`'s `ToolCost`
+  described the same deleted override.
+- `choice-chips`' `Boundary` one-liner ("if a chip can be removed, it is a
+  filter chip") is one line short — context chips are removable too.
+
+**Idiom hardening.** `ai-tools-menu`'s `KeyboardOrder` passed 13 warm runs and
+failed the first run against a cleared Storybook cache: a key press read before
+it applied leaves focus on the *previous* stop, which is itself an expected
+stop, so the "settle until focus is on some expected stop" wait cannot see it.
+The tightened form waits for focus to *leave* the previous stop before reading.
+Recorded in `story-conventions.md` fact 4; `TaskTray` and `ShortcutsSheet`
+still use the arrival form.
+
+**Steering that did not bind** — for the next wave's prompts: `quote-reply`
+has no `border-l`/`pl-` quote bar (it is icon + `gap-2`), so the predicted swap
+did not exist; `property-inspector` is not controlled; `context-toolbar` needed
+no frame/group/camera variant; `tool-panel`'s tabs contrast concern does not
+apply (`variant="line"`, `text-foreground/60` at TOK-8's floor). One agent also
+reported a repo-root `pnpm lint` cache hit whose output named a sibling agent
+worktree's paths; `turbo.json` configures no shared cache dir, so the mechanism
+is unconfirmed — noted here rather than in §4 until it bites again.

@@ -67,7 +67,7 @@ export const SkillMenuDocs: ComponentDocs = {
       example: <ComposedRowsNotRebuilt />,
     },
     {
-      text: "When a skill carries a cost, render it through cost-chip with the same text-foreground override used elsewhere in the registry — cost-chip's own default text-muted-foreground-on-bg-muted styling doesn't clear the contrast minimum.",
+      text: "When a skill carries a cost, render it through cost-chip as it ships. Since the A-family retrofit the chip paints text-foreground on its muted surface and rebinds --muted-foreground for anything composed inside it, so it clears the contrast minimum on its own — restyling it per row is what reintroduces the 4.34:1 pairing.",
       example: <CostChipOverrideOnHighlight />,
     },
   ],

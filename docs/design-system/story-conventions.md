@@ -159,6 +159,18 @@ These decide the shape of the stories, and all four cost time to rediscover.
    `apps/storybook/src/stories/super-ai/` both carry it — read either before
    writing a `KeyboardOrder` inside a portal.
 
+   **Settle on departure, not on arrival.** The wait above — "until
+   `document.activeElement` is one of the expected stops" — has a hole the
+   D/I wave found on `ai-tools-menu`: when a key press has not applied yet,
+   focus is still on the *previous* stop, which is itself an expected stop, so
+   the wait returns immediately with a stale read and the lap appears to end
+   one row early. It passed 13 warm runs and failed the first run against a
+   cleared Storybook cache. The tightened form takes the previous stop and
+   waits for focus to *leave* it before reading, so every press is provably
+   one move; `AiToolsMenu.stories.tsx` carries it, and it is the form to reuse
+   inside any portal from now on. `TaskTray` and `ShortcutsSheet` still use the
+   arrival form and share the hole.
+
    The general lesson outlives the library: **a bounded "did we reach all N
    stops within M tabs" loop is environment-sensitive; asserting the cycle
    directly is not.** One infers the property from a count reached inside an

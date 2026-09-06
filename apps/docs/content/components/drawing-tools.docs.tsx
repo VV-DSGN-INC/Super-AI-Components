@@ -89,7 +89,7 @@ export const DrawingToolsDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "Each rail is one tab stop, not one per tool. The underlying toggle group is a composite: Tab reaches the active button, Left and Right move between the rest, and focus wraps at both ends.",
-      "A tool with `variants` adds a second tab stop. Its chevron is a plain sibling button rather than a member of the composite, so the arrow keys skip it and only Tab reaches it — a rail of six tools where four have alternates is ten stops, not six.",
+      "A tool with `variants` adds a tab stop. Its chevron is a plain sibling button rather than a member of the composite, so the arrow keys skip it and only Tab reaches it — a rail of six tools where four have alternates is five stops: the composite, plus one chevron each.",
       "Space and Enter commit a rail button. Escape and an outside click close a flyout, and choosing an alternate closes it too; nothing else is bound.",
       "The brush section is six tab stops, not three. Every `ParameterSlider` is a slider thumb plus a number field: arrow keys step the thumb by `step`, Home and End jump to `min` and `max`, and the field takes typed values.",
       'Every swatch is its own tab stop. The grid is a `role="group"` of plain buttons with no roving tabindex, so a 24-colour palette costs 24 Tab presses and the arrow keys do nothing inside it.',
