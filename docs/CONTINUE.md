@@ -79,6 +79,15 @@ obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
 fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
 entry has what was fixed and what was found.
 
+**Wave 7 — families M and N — landed 2026-09-06.** Baseline **219 → 104** (104
+case, **0 described**): twelve agents, twelve items, all at zero unmet, and the
+description-only debt reaches zero across the whole registry. Everything left is
+family O's 13 shells. The wave closed the dialog backdrop that wave 6 fixed one
+primitive short of — `components/ui/alert-dialog.tsx`, found independently by
+two agents — and it produced the first negative against the
+physical-to-logical swap rule that six waves had treated as free. §8's M/N
+subsection and §9's wave 7 entry have the detail.
+
 **Wave 6 — families K and L — landed 2026-09-06.** Baseline **305 → 219** (200
 case, 19 described). Nine agents, nine items, all at zero unmet. It closed the
 last unrestated dropdown popup in the registry, fixed the dialog backdrop that
@@ -109,9 +118,10 @@ now fixed with a shared helper.
 (439 case, 51 described). Four of the eleven agents reported normally; the
 other seven were killed by a session rate limit *between finishing their work
 and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
-carries the salvage procedure, because it will happen again. Remaining, all
-case-block debt after wave 6: M 4 · N 8 · O 13 = 25 items; recount with the test
-rather than trusting this line.
+carries the salvage procedure, because it will happen again. Remaining after
+wave 7: **family O's 13 shells and nothing else** — 104 case obligations, no
+description debt anywhere in the registry; recount with the test rather than
+trusting this line.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -1106,9 +1116,16 @@ that stayed open, plus what the wave learned about the primitives underneath.
   `components/ui/button.tsx` carries `transition-all` and
   `active:not-aria-[haspopup]:translate-y-px`, so every button in the registry
   nudges a pixel while pressed under `prefers-reduced-motion: reduce`. Found
-  independently by the `quote-reply` and `media-prompt-bar` agents. It is the
-  `transition-all` blocker the token gate downgrades to a warning for vendored
-  files (`vendored-token-findings.md`) — a primitive-wide posture, not any one
+  independently by the `quote-reply` and `media-prompt-bar` agents. **This entry
+  originally said the token gate downgrades it to a warning for vendored files;
+  M5 `paywall-message` checked and it is worse than that.** MOT-2, the
+  `transition-all` blocker, is a core rule scoped to
+  `apps/docs/registry/super-ai` and `apps/docs/registry/marketing` only, so
+  `components/ui` is outside it entirely — the finding is not demoted, it is
+  never made. The demotion mechanism is real but belongs to the *local* rules,
+  whose `CATALOG_SCOPES` do include `components/ui`; that is why
+  `check:tokens` reports vendored warnings for TOK-8 and none for MOT-2. The
+  triage is still in `vendored-token-findings.md` (`vendored-token-findings.md`) — a primitive-wide posture, not any one
   component's, so no case story adds `motion-reduce:transition-none` for it.
 - **Base UI's `Tabs.Panel` is an extra keyboard stop with no visible focus.**
   A tabbed panel puts two keyless stops in front of its sections, not one, and
@@ -1585,6 +1602,185 @@ that stayed open, plus what the wave learned about the primitives underneath.
   place. L4 `whats-new`'s vertical composite never consults direction, so the
   missing provider costs it nothing. And L2 `coach-mark`'s popover was already
   named through Base UI's own title, unlike the four that shipped unnamed.
+
+### Added by the M/N case-story wave (2026-09-06)
+
+- **The dialog backdrop fix landed one primitive short, and two agents found it
+  independently.** Wave 6 put the restated reduced-motion pair on
+  `DialogOverlay`'s own class string because no call site could reach it.
+  `components/ui/alert-dialog.tsx` is a separate file and did not get it, and
+  `AlertDialogContent` renders `<AlertDialogOverlay />` with no `className`
+  either — the identical unreachability, one file over. N8 `permission-prompt`
+  and N2 `trust-dialog` each measured the same values after fixing their own
+  panels: popup `animation-name: none`, backdrop `enter` at `0.1s` with
+  `opacity: 0`. Four consumers (`permission-prompt`, `thread-list`,
+  `trust-dialog`, `voice-clone-recorder`). Fixed centrally in both copies and
+  guarded in `TrustDialog.stories.tsx`'s `ReducedMotion`, which was verified to
+  fail on a reverted class before it was kept.
+
+- **A modal can put every control off-screen with no scrollbar and no way to
+  scroll.** N8 `permission-prompt` expanded its arguments to a 24-line file
+  body at 1200×900: the panel measured 1193px tall, top **−146**, footer at
+  982..1047, `scrollHeight === clientHeight`, document 900/900.
+  `AlertDialogContent` sets no `max-height` and no `overflow`, and a `fixed`
+  element cannot be scrolled into view, so Escape is the only exit — and Escape
+  reports nothing to the host. A phone's viewport reaches this far sooner. This
+  is the shared primitive again, not one component's layout.
+
+- **Two components need direction handled in JS, not in a class swap.** N4
+  `trace-timeline` positions its waterfall bars with an inline
+  `style={{ left }}`, so under RTL the time axis runs backwards: the first span
+  sits 0px from the *left* under both directions. N5 `run-inspector`'s `<pre>`
+  inherits `direction: rtl` and JSON reorders inside it — on one line, LTR puts
+  the opening quote at x27 and the trailing comma 159px to its right, RTL puts
+  them at x1165 and 159px to its *left*. The fix there is `dir="ltr"` on the
+  `<pre>`. Neither is on the sanctioned physical-to-logical list, and H2
+  `time-ruler` has the same shape as the first.
+
+- **A trailing full stop renders at the wrong end under RTL.** N3
+  `disclaimer-note` measured it reading `.AI can make mistakes. Check important
+  info` — `.` is a bidi neutral with nothing strong after it, so it takes the
+  paragraph level. Passing a `link` hides the defect, because the link's Latin
+  text makes the stop interior. A new shape: every earlier RTL finding in this
+  file was a physical utility or a positioning API.
+
+- **`scrollable-region-focusable` is now at four instances, and the fourth is a
+  red gate nobody can see.** N5 `run-inspector`'s JSON payload measured 2680px
+  of content in a 318px box with zero focusable descendants. It is not rendered
+  in a story, because rendering it would fail the a11y gate — after
+  `shortcuts-sheet`, the `data-views` kanban and the vendored table, all fixed
+  with the same `<section tabIndex={0} aria-label>` idiom.
+
+- **The vendored `text-left` collection is six files**, not one: `alert.tsx`,
+  `alert-dialog.tsx`, `field.tsx`, `sidebar.tsx`, `table.tsx`, `select.tsx`
+  (`grep -l` across `components/ui`). M6 `rate-limit-banner` measured `alert.tsx`
+  putting a heading and its body on *opposite edges* of a 32rem RTL frame, 256px
+  apart; N2 `trust-dialog` measured `alert-dialog.tsx`'s header doing the same
+  inside a mirrored dialog at 1200px. Byte-identical swaps in a shared file, so
+  still not taken from a consumer.
+
+- **One component cannot be localised at all.** M6 `rate-limit-banner` holds
+  eight fixed English strings, including the clock's `aria-label`, in a
+  module-level `COPY` constant that is neither exported nor reachable by prop.
+  Its auto-updating clock also has no pause, stop or hide (WCAG 2.2 SC 2.2.2),
+  and the docs do not mention it.
+
+- **A permission editor seeded once at mount emits the previous call's
+  arguments.** N8 `permission-prompt` swapped `to/subject/attachment` for
+  `to/subject/amount_usd` on a mounted prompt: carried fields showed the *old*
+  values, the new field rendered empty, and Approve-edited emitted three
+  arguments including one the current call does not have. A permission gate is
+  the natural singleton, so this is the shape a real host reaches.
+
+- **A long label can push a dialog's footer outside the dialog with no rule
+  seeing it.** N2 `trust-dialog`: `button-group`'s `w-fit` plus the trigger's
+  `whitespace-nowrap` gave a `scrollWidth` of 768 against a `clientWidth` of
+  384. The `entity-row` truncation that would have saved it is defeated by
+  `w-(--anchor-width)` sizing off the same over-wide trigger. Related: this
+  component's own `sm:max-w-md` never applies, because the vendored
+  `data-[size=default]:sm:max-w-sm` outranks it.
+
+- **The one-red-one-silent empty string reached its third and fourth
+  instances**, and N2 `trust-dialog` named the rule it actually trips: Base UI
+  renders its checkbox as `<span role="checkbox">`, so `trustLabel=""` fails
+  `aria-toggle-field-name`, not `label`. N3 `disclaimer-note`'s `children=""`
+  deletes the disclaimer in silence while `link={{label: ""}}` fails
+  `link-name`; N1 `feedback`'s `reasonPlaceholder=""` fails `label` because that
+  one prop is both the placeholder and the `aria-label` — the counter-case to
+  K1's pair, which survived by having a placeholder to fall back on.
+
+- **Two more docs focus bullets were wrong in the same direction.** N3
+  `disclaimer-note`'s said its one focusable element is "invisible when
+  focused"; the user agent supplies `outline: auto 1px`, recoloured by the
+  repo's global `outline-ring/50`, so it is *thin* against the registry's ring-2
+  and ring-3, not absent. M1 `settings-dialog`'s said the panel "sets
+  `outline-none` without adding a ring"; the `Tabs.Panel` has carried
+  `focus-visible:ring-2` since before this program, verified in the source at
+  the commit before the wave, and the differential measures it arriving. Both
+  corrected centrally.
+
+- **A written claim about the a11y gate was corrected.** L5 `shortcuts-sheet`'s
+  stated reason for not rendering a modal beside focusable neighbours does not
+  hold: N2 `trust-dialog` measured the canvas as `aria-hidden="true"` with
+  `data-base-ui-inert` and no real `inert` (`el.inert === false`), and axe
+  raises nothing because `aria-hidden-focus` carries a `focusable-modal-open`
+  check, verified present in `axe-core@4.12.1`. `Boundary` renders both surfaces
+  live.
+
+- **The reduced-motion popover sweep is complete.** N1 `feedback` carried the
+  last of eight `<PopoverContent` call sites in the registry
+  (`inline-generate-popup` never used the wrapper). With the dropdown holdout
+  closed in wave 6 and the alert-dialog backdrop closed here, no registry
+  surface is known to animate under `prefers-reduced-motion: reduce`.
+
+- **Two findings narrowed rather than added.** N1 `feedback` narrowed K1's
+  `button-group` border defect further: the `border-l-0` is invisible on *ghost*
+  children too, because `buttonVariants`' base is `border-transparent`, so the
+  severity depends on the call site's variants and not on the group. And N4
+  `trace-timeline` kept a `text-left` → `text-start` swap that changes no box in
+  its RTL frame, said so plainly, and pinned it by reading `textAlign` back
+  rather than claiming a visual repair.
+
+- **Two positives.** N4 `trace-timeline` is the counter-case to the four
+  host-unreachable-fold findings (E4, E1, J4, J2): `expandedId`,
+  `defaultExpandedId` and `onExpandedChange` are a complete trio, so a saved
+  fold can be restored *and* held against the user. And M1
+  `settings-dialog`'s nav rows paint a real focus ring — the wave-3
+  suppressed-treatment check came back negative, asserted rather than assumed.
+
+- **The sanctioned `text-left` → `text-start` swap is not always byte-identical,
+  and where the class *sits* decides it.** N6 `usage-dashboard` put the swap on a
+  `<tr>` whose alignment is consumed by its `<th>`s: Chrome's user-agent rule is
+  `th { text-align: -internal-center }`, which defers to an inherited value only
+  when that value is not the initial `start`, so `text-left` was being inherited
+  and `text-start` was not — the swap centred all four headings in LTR. Caught
+  by the agent's own RTL assertion before it shipped; the class now sits on each
+  `th`. Six waves have treated this swap as free. It is free on the element that
+  paints the text, and not on an ancestor of one the user agent has an opinion
+  about.
+
+- **A chart can be pinned left-to-right in three independent ways.** N6
+  `usage-dashboard`: the bars share a physical left baseline (684..1165 in LTR
+  against 684..695 in RTL), the category axis stays left while the table's
+  matching column moves right, and the trend glyph's diagonal encodes "later is
+  to the right". None of the three is a class swap. Its signed delta also comes
+  apart under RTL — `+` at 1164, `%` at 1153, `7` at 1146, reading `7 % +` —
+  while A2 `cost-chip`, composed one row below it, already solves exactly this
+  with `dir="ltr"`.
+
+- **Two vendored lists in this file were stale, and both were re-derived rather
+  than edited.** By `grep` across `registry/super-ai` after this wave, the
+  `SelectContent` popups still shipping without an `aria-label` are
+  **`model-picker` and `records-shell`** — `template-detail` was named in wave 5,
+  `trust-dialog` and `usage-dashboard` in this one, and `model-picker` was never
+  on the written list. The reduced-motion half of that list should not be kept at
+  all: five call sites carry no `motion-reduce` pair, and no registry call site
+  passes `alignItemWithTrigger={false}`, so `data-[align-trigger=true]:animate-none`
+  already suppresses every one of them. H1 `transport-controls` measured that in
+  wave 4; listing them as holdouts invites a fix that changes nothing.
+
+- **The first reduced-motion branch in this program supplied by a dependency.**
+  Recharts 3.8 defaults `isAnimationActive` to `"auto"`, which reads
+  `prefers-reduced-motion` itself, so N6's bars need no `motion-reduce:` class.
+  Worth knowing before someone adds one. No recharts default leaks either: the
+  bar fill resolves to `--chart-1`, with no `#8884d8` and no `strokeDasharray`.
+
+- **Two query shapes that cost an agent real time**, both now in N6's file
+  header: a component's own `data-slot` override *replaces* the vendored
+  `select-trigger` / `select-content` name, so querying the vendored name reads
+  as "the popup never opened"; and Base UI's select popup never unmounts — the
+  *positioner* takes `hidden` — so `waitFor(() => expect(popup).toBeNull())`
+  times out rather than passing.
+
+- **A cold-cache-only flake in landed work, found by running the full suite
+  cold.** L4 `whats-new`'s `KeyboardOrder` read the detail pane once after
+  waiting on `aria-selected`; the `hidden` attribute moves between the two Base
+  UI tab panels a tick later, so the read could still return the previous
+  entry's pane. Warm: passed on every run, including three repeats. Cold: failed
+  deterministically. Fixed by re-querying inside the `waitFor`. **The integrator
+  should clear `apps/storybook/node_modules/.cache/storybook` and run
+  `test:stories` once per wave** — a warm cache had been hiding this since wave
+  6.
 
 ## 9. Gaps found by the case-story pilot
 
@@ -2245,3 +2441,68 @@ catches this defect depends on an unrelated property of the field the defect
 lands on. That is the argument for case stories in one sentence, and it took
 six waves and a component with two nearly identical fields to say it this
 cleanly.
+
+### Wave 7 — families M and N (2026-09-06)
+
+Twelve agents, twelve items, all at zero unmet. Baseline **219 → 104**, and the
+description-only debt reaches **zero** — every declared-state export in the
+registry now carries a JSDoc description. What is left is family O's 13 shells
+and nothing else.
+
+**The wave's defining moment is that two agents disproved their own steering.**
+Both were told, in the prompt, that the dialog backdrop had been fixed centrally
+in wave 6 and that they should not add a branch for it. Both fixed their panels,
+measured the backdrop anyway, and found it still reading `animation-name: enter`
+under emulated reduce. The wave-6 fix went into `components/ui/dialog.tsx`;
+`components/ui/alert-dialog.tsx` is a separate file with the identical
+unreachable overlay, and it had been missed. N2 `trust-dialog` said so in as many
+words — "your steering was wrong about the backdrop, and this is the finding to
+carry" — which is the behaviour the brief asks for and the first time an agent
+has contradicted a *current-wave* instruction rather than an old written claim.
+Fixed centrally in both copies, and the regression guard in
+`TrustDialog.stories.tsx` was verified to fail on a reverted class before it was
+kept, because a guard that has never been seen red is not a guard.
+
+**The most useful single finding is a negative against a rule this program has
+leaned on for six waves.** `text-left` → `text-start` has been treated as a
+free, byte-identical swap in every wave since the first. N6 `usage-dashboard`
+measured it centring all four table headings in LTR: the class sat on a `<tr>`
+and the alignment was consumed by `<th>`s, and Chrome's user-agent
+`th { text-align: -internal-center }` defers to an inherited value only when
+that value is not the initial `start`. The swap is free on the element that
+paints the text and not on an ancestor the user agent has an opinion about. It
+was caught by the agent's own RTL assertion, before it shipped, which is the
+case for writing the assertion before making the change rather than after.
+
+**Two more docs focus bullets were wrong, both in the same direction** — a note
+claiming a control has no visible focus treatment when it has one. N3
+`disclaimer-note`'s element takes the user agent's own outline, recoloured by
+this repo's global `outline-ring/50`: thin against the registry's ring-2, not
+absent. M1 `settings-dialog`'s panel has carried `focus-visible:ring-2` since
+before this program began, verified in the source at the commit before the wave.
+That is seven docs corrections across waves 6 and 7, and the pattern in them is
+consistent: prose written from reading a class list, contradicted by rendering
+it.
+
+**Two lists in this file were stale and were re-derived rather than edited.**
+N6 flagged that the "unnamed `SelectContent`" list no longer matched the
+registry; a `grep` across `registry/super-ai` after the wave gives
+`model-picker` and `records-shell`, and N6's own correction was itself one item
+stale, because `trust-dialog` had been named in a sibling worktree it could not
+see. The reduced-motion half of that list should not be kept at all: no call
+site passes `alignItemWithTrigger={false}`, so the five call sites without the
+pair are already suppressed and listing them invites a fix that changes nothing.
+Both figures in this file are now derivations, with the command that produces
+them written down beside the answer.
+
+**And the integrator found a flake in landed work by running the suite cold.**
+L4 `whats-new`'s `KeyboardOrder` passed on every warm run — three repeats of the
+wave's files, three full suites — and failed deterministically the first time
+the Storybook cache was cleared: it read the detail pane once after waiting on
+`aria-selected`, and the `hidden` attribute moves between the two Base UI tab
+panels a tick later. Agents are already told to run their own file from a
+cleared cache; the integrator was not, and a warm cache had been hiding this
+since wave 6. Clearing
+`apps/storybook/node_modules/.cache/storybook` and running `test:stories` once
+per wave is now part of integration — with the dev server down, per the trap in
+§4.

@@ -13,20 +13,27 @@ eight case names, and a JSDoc description above every declared-state export.
 
 **Waves** (one agent per item, in parallel, integrated centrally):
 
-| wave | families | items |
-| --- | --- | --- |
-| 1 | D, I | 11 |
-| 2 | E, P | 11 |
-| 3 | F, L | 11 |
-| 4 | H, M | 11 |
-| 5 | J, K | 12 |
-| 6 | N | 8 |
-| 7 | O | 13 |
+This table is **what happened**, corrected after each wave rather than
+predicted once. The original plan split the families differently; the waves were
+re-cut as they ran, so the families here are not the ones the first version of
+this file listed.
 
-Plus 18 items whose only debt is descriptions (A 2 · B 7 · C 5 · E 1 · K 1 ·
-M 1 · N 1) — same procedure, steps 3b onward. `pnpm story-coverage:report`
-from `apps/docs` is the live list; recount with it rather than trusting the
-table.
+| wave | families | items | landed |
+| --- | --- | --- | --- |
+| 1 | D, I | 11 (+18 descriptions) | 2026-09-05 |
+| 2 | E, P | 11 | 2026-09-05 |
+| 3 | F | 7 | 2026-09-06 |
+| 4 | H | 7 | 2026-09-06 |
+| 5 | J | 7 | 2026-09-06 |
+| 6 | K, L | 9 | 2026-09-06 |
+| 7 | M, N | 12 | 2026-09-06 |
+| 8 | O | 13 | — |
+
+Wave 1 also carried the 18 items whose only debt was descriptions (A 2 · B 7 ·
+C 5 · E 1 · K 1 · M 1 · N 1); that debt is now zero registry-wide. Family O is
+all that remains — 13 shells, 104 case obligations, no descriptions.
+`pnpm story-coverage:report` from `apps/docs` is the live list; recount with it
+rather than trusting the table.
 
 ## Agent procedure
 
@@ -73,7 +80,12 @@ never restate the export name.
 painted surface, or the physical→logical class swap that is byte-identical in
 LTR — `pl-`→`ps-`, `ml-`→`ms-`, `border-l`→`border-s`, `text-left`→`text-start` —
 which `CONTINUE.md` §8 "Logical properties" sanctions; a swap that is not
-byte-identical is recorded, never swept). **Never:** `apps/docs/lib/catalog.manifest.ts`,
+byte-identical is recorded, never swept — and **byte-identical is a measurement,
+not an assumption**: N6 `usage-dashboard` measured `text-left` → `text-start` on
+a `<tr>` centring all four of its `<th>`s in LTR, because Chrome's user-agent
+`th { text-align: -internal-center }` defers to an inherited value only when
+that value is not the initial `start`. Read the LTR frame back before and after
+the swap, not just the RTL one). **Never:** `apps/docs/lib/catalog.manifest.ts`,
 `story-coverage.baseline.json`, the convention docs, the a11y exclusion list,
 any other component's files. If a story needs a change outside that list, record
 the gap in the story description and your report instead.

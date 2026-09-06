@@ -75,7 +75,7 @@ export const DisclaimerNoteDocs: ComponentDocs = {
       "The `inline` variant is still a `<div>`, despite the name. Putting it inside a `<p>` is invalid nesting that browsers repair by splitting the paragraph, which reorders the very reading order this component depends on — place it as a sibling of your prose, not inside it.",
     ],
     focus: [
-      "The link sets no `focus-visible` style of its own — it carries an underline and a hover colour and nothing else — so its focus ring is whatever your global styles provide. With no global ring, the one focusable element in this component is invisible when focused.",
+      "The link sets no `focus-visible` style of its own — it carries an underline and a hover colour and nothing else — so what it shows on focus is whatever your global styles provide, on top of the browser's own outline. It is not invisible, as this note said until 2026-09-06: measured here the user agent supplies `outline: auto 1px`, which this repo's global `outline-ring/50` recolours. But 1px is thin against the `ring-2` and `ring-3` the registry's own controls use, so it reads as a weaker stop rather than a missing one.",
     ],
   },
   pitfalls: [

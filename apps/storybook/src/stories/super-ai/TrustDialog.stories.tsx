@@ -218,19 +218,20 @@ function RtlDocument({ children }: { children: React.ReactNode }) {
  * below reads the computed `animationName` back rather than trusting the class,
  * which is the only form of this assertion that can fail.
  *
- * **The backdrop still fades, and no call site can fix it.** Wave 6 put the
- * restated pair on `DialogOverlay`'s own class string in both copies of
- * `components/ui/dialog.tsx` — but `components/ui/alert-dialog.tsx` is a
- * separate file and did not get it. `AlertDialogContent` renders
- * `<AlertDialogOverlay />` with no `className` threaded through, so there is no
- * prop to pass and no class to merge. Measured in this story under emulated
- * reduce: the popup reads `animation-name: none`, and the backdrop it sits on
- * reads `animation-name: enter`, `animation-duration: 0.1s`, `opacity: 0` —
- * still mid-fade at the moment of measurement. That is the same defect wave 6
- * recorded and closed, one primitive over, and it is shared by every alert
- * dialog in the registry: `permission-prompt`, `thread-list` and
- * `voice-clone-recorder` as well as this one. Recorded rather than asserted —
- * pinning the current value green would make the fix look like a regression.
+ * **The backdrop was fading too, and no call site could have fixed it.** Wave 6
+ * put the restated pair on `DialogOverlay`'s own class string in both copies of
+ * `components/ui/dialog.tsx`. `components/ui/alert-dialog.tsx` is a separate
+ * file and did not get it, and `AlertDialogContent` renders
+ * `<AlertDialogOverlay />` with no `className` threaded through — no prop to
+ * pass, no class to merge. Measured here under emulated reduce before the fix:
+ * the popup read `animation-name: none` while the backdrop it sits on read
+ * `enter`, `animation-duration: 0.1s`, `opacity: 0`, still mid-fade at the
+ * moment of measurement. N8 `permission-prompt` measured the same values
+ * independently in the same wave, after it had already fixed its own panel.
+ * Fixed centrally in both copies of the primitive; it is shared by every alert
+ * dialog in the registry — `permission-prompt`, `thread-list` and
+ * `voice-clone-recorder` as well as this one — so the assertion below is a
+ * regression guard for all four.
  *
  * **The account picker's popup cannot fail this assertion either way**, which
  * is worth saying rather than quietly leaving out. `components/ui/select.tsx`
@@ -259,9 +260,12 @@ export const ReducedMotion: Story = {
     // The claim, read back from the computed style rather than the class.
     await waitFor(() => expect(getComputedStyle(dialog).animationName).toBe("none"));
 
-    // The backdrop renders in this story so the defect above is visible, and
-    // its value is recorded in the description rather than asserted here.
-    await expect(document.querySelector('[data-slot="alert-dialog-overlay"]')).not.toBeNull();
+    // The backdrop, on the vendored primitive rather than on this component.
+    // Guarded here because no call site can reach the overlay, so a revert in
+    // `components/ui/alert-dialog.tsx` would be silent in all four consumers.
+    const overlay = document.querySelector('[data-slot="alert-dialog-overlay"]');
+    expect(overlay).not.toBeNull();
+    await waitFor(() => expect(getComputedStyle(overlay!).animationName).toBe("none"));
   },
 };
 

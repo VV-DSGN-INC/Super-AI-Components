@@ -122,7 +122,7 @@ export const SettingsDialogDocs: ComponentDocs = {
       "Opening the `dialog` variant moves focus into the popup, landing on the active section tab — the first tabbable thing inside. Escape or the close button returns focus to whatever opened it.",
       "Switching sections does not move focus; it stays on the tab, and the panel is the next stop.",
       'Typing in the search field can unmount the control that a moment ago had focus — filter a section down to zero matches and its rows are replaced by the "nothing matched" line, dropping focus to `<body>`. In practice focus is usually in the search box, but a keyboard user who tabs into the panel and then edits the query will feel it.',
-      "The panel is focusable and sets `outline-none` without adding a ring, so that tab stop is invisible when focused. Every other control here — the tabs, the search field, the destructive action — ships a visible `focus-visible` ring.",
+      "The panel itself is a tab stop after the tabs, which is what lets a keyboard user scroll a long section. It takes the same `focus-visible` ring as the tabs, the search field and the destructive action: nothing at rest, a 2px ring once focused.",
     ],
   },
   pitfalls: [

@@ -503,7 +503,12 @@ export const KeyboardOrder: Story = {
     // Enter commits. The pane really does change…
     await userEvent.keyboard("{Enter}");
     await waitFor(() => expect(tabs[1]).toHaveAttribute("aria-selected", "true"));
-    await expect(panelOf()).toHaveTextContent("Custom voices");
+    // `panelOf()` is re-queried inside the wait rather than read once after it:
+    // `aria-selected` flips a tick before the `hidden` attribute moves between
+    // the two panels, so a single read can still return the *previous* entry's
+    // pane. It passed on a warm cache and failed on a cold one, which is the
+    // only reason it was ever seen.
+    await waitFor(() => expect(panelOf()).toHaveTextContent("Custom voices"));
 
     // …and focus stays on the tab, which is correct for a tablist. Nothing
     // announces the change: there is no live region in the tree, so the only
