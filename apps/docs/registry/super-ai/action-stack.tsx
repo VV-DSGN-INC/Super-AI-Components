@@ -70,12 +70,13 @@ function ActionCost({ cost }: { cost: Cost }) {
   // No data-slot override: A2 spreads `...props` after its own attributes, so
   // passing one would erase `cost-chip` and hide that A2 is what renders this.
   //
-  // `text-foreground` is a call-site contrast fix, not a style preference. A2
-  // sets `text-muted-foreground` on its own `bg-muted`, which measures 4.34:1
-  // against a 4.5 minimum — a11y-baseline.md records it, and A2 is exempt from
-  // the gate only under its own story name, so composing it here would fail
-  // this component's stories. tailwind-merge swaps the foreground token and
-  // leaves the chip otherwise untouched. Remove this when A2's retrofit lands.
+  // Composed unmodified on purpose. A2 used to paint `text-muted-foreground`
+  // on its own `bg-muted` (4.34:1 against a 4.5 minimum) and every consumer
+  // carried a `text-foreground` override; the A-family retrofit moved that fix
+  // into the chip itself, which now ships `text-foreground` and rebinds
+  // `--muted-foreground` for anything composed inside it. Re-adding a
+  // call-site override here would be the drift the retrofit removed. The same
+  // stale note stood in `ai-tools-menu.tsx` and was corrected in wave 1.
   return <CostChip amount={formatCost(cost)} unit="" />;
 }
 

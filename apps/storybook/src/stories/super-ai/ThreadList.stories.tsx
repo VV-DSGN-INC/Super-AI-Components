@@ -228,16 +228,6 @@ export const Empty: Story = {
  *
  * Not written for this component, deliberately:
  *
- * // case-skip: ReducedMotion — nothing this component owns animates
- * `thread-list.tsx` contains no `animate-*`, no `transition-*` and no
- * keyframe. The dropdown and the confirmation do animate, but that motion
- * belongs to the vendored `components/ui` popups (`data-open:animate-in`,
- * `data-closed:animate-out`) and is shared by every consumer of them; this
- * component neither adds it nor branches on the media feature. A story here
- * would render identically to `InlineRename` and imply coverage of a branch
- * that does not exist. The vendored popups' own missing `motion-reduce:` is
- * upstream of this component and is the drift CONTINUE.md §8 already tracks.
- *
  * // case-skip: EmptyLabel — `title` is required and is the row's only name
  * `ThreadListItemProps.title` is `string`, not `string | undefined`, and
  * `ThreadListSection` requires `label` the same way. There is no optional text
@@ -261,6 +251,55 @@ export const Empty: Story = {
  * hard-coded menu side, would look correct in this repo's default direction
  * and break only here.
  */
+/**
+ * Two animating surfaces, both of them opened here, because this component
+ * turned out to own the branch after all.
+ *
+ * The skip line this story replaces argued that the motion belongs to the
+ * vendored popups and is therefore upstream — reasonable when it was written,
+ * and wrong. The suppression cannot live on the primitive and reach every
+ * consumer: `data-open:animate-in` and a bare `motion-reduce:animate-none`
+ * compile to one class of specificity, so source order decides, and the only
+ * form that wins is the pair restated at the call site. That makes it a
+ * per-consumer obligation, and ten components in this registry now carry the
+ * same string. This one did not, and no later wave was going to look: family B
+ * had no case-story debt at adoption, so nothing would have reopened the file.
+ *
+ * Both surfaces are read back rather than trusted. The menu is checked while
+ * `data-open` is still on it, and the confirmation after it replaces the menu —
+ * the closing halves are not asserted, because the popup is detached before
+ * `data-closed` is observable and `getComputedStyle` returns an empty
+ * declaration for a node out of the document.
+ */
+export const ReducedMotion: Story = {
+  render: () => (
+    <Column>
+      <ThreadList aria-label="Conversations">
+        <ThreadListSection label="Today">
+          {TODAY.map((t) => (
+            <ThreadListItem key={t.id} id={t.id} title={t.title} />
+          ))}
+        </ThreadListSection>
+      </ThreadList>
+    </Column>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body);
+
+    await userEvent.click(actionsTrigger(rowsOf(canvasElement)[0]));
+    const menu = await body.findByRole("menu");
+    await expect(menu).toHaveAttribute("data-open");
+    await expect(getComputedStyle(menu).animationName).toBe("none");
+
+    // The confirmation is the second surface, and it animates through the same
+    // pair on a different primitive.
+    await userEvent.click(await body.findByRole("menuitem", { name: "Delete" }));
+    const dialog = await body.findByRole("alertdialog");
+    await waitFor(() => expect(dialog).toHaveAttribute("data-open"));
+    await expect(getComputedStyle(dialog).animationName).toBe("none");
+  },
+};
+
 export const RTL: Story = {
   render: () => (
     <div dir="rtl">
