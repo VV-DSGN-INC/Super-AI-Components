@@ -143,7 +143,13 @@ export function hasVisibleFocusRing(el: Element): boolean {
  */
 export function focusTreatmentSignature(el: Element): string {
   const style = getComputedStyle(el);
-  return `${style.outlineStyle}/${style.outlineWidth}/${style.outlineColor}|${style.boxShadow}|${style.borderColor}`;
+  // `outline-width` is deliberately only read when an outline is actually
+  // drawn. It changes on focus — 3px to 1px on Base UI's controls — while
+  // `outline-style` stays `none` throughout, so including it unconditionally
+  // makes the signature report "changed" on a control that paints nothing new.
+  // J2 `filter-panel` measured that on all fourteen of its stops.
+  const outline = style.outlineStyle === "none" ? "none" : `${style.outlineStyle}/${style.outlineWidth}/${style.outlineColor}`;
+  return `${outline}|${style.boxShadow}|${style.borderColor}`;
 }
 
 /**

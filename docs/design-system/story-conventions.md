@@ -237,11 +237,26 @@ These decide the shape of the stories, and all five cost time to rediscover.
      this element paint a treatment", never "did focus cause it", so a span
      carrying `shadow-sm` passes while focused and passes equally when it is
      not. Three of that component's slider spans are in exactly that position.
-     Where you can focus an element directly, take
-     `focusTreatmentSignature(el)` before and after and assert it *changed* —
-     that is the claim worth making. `settledFocusRing` remains the right tool
-     inside a tab walk, where blurring to take a baseline would disturb the
-     sequence under test.
+     Take `focusTreatmentSignature(el)` before and after focus and assert it
+     *changed*.
+
+     **Use both checks, because they answer different questions and can
+     disagree.** `settledFocusRing` asks whether anything is painted; the
+     differential asks whether focus is what painted it. Each catches what the
+     other misses, measured both ways round:
+
+     - J2 `filter-panel`'s selected chip has a permanent ring the same colour
+       and width as its focus ring, so `settledFocusRing` passes and the
+       differential correctly reports no change.
+     - J3 `explore-gallery`'s composer textarea gains a *colour* on focus while
+       its geometry stays zero — `rgba(0, 0, 0, 0) 0px 0px 0px 0px` to
+       `oklab(0.708 0 0 / 0.5) 0px 0px 0px 0px` — so the differential reports a
+       change and `settledFocusRing` correctly reports no ring.
+
+     **The differential works inside a tab walk too**, which this rule used to
+     deny: read the *next* stop's signature while focus is still on the previous
+     one. No blur, so nothing disturbs the sequence. J5 `record-list` and J2
+     `filter-panel` found that independently and both carry it.
 
    Use `settledFocusRing` from `@/lib/focus-ring`, which inspects the layers for
    non-zero alpha *and* non-zero geometry, ignores an element that is not

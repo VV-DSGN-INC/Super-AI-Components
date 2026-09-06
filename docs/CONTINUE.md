@@ -788,9 +788,15 @@ needed it to work and could not make it work.
   with no override at all: measured 471px of footprint in a 375px column, 96px
   of arrow outside it. Corrected 2026-09-06 — this entry had been read as three
   open instances when it was one.
-- **Grid columns keyed off the viewport rather than the container**: J4
-  `artifact-grid` (O9) and C4 `recent-grid` (O1). Every shell that puts a grid
-  beside a sidebar has to shift each breakpoint up a step by hand.
+- **~~Grid columns keyed off the viewport rather than the container~~ — fixed by
+  D19, and this entry outlived it.** J4 `artifact-grid` (O9) and C4 `recent-grid`
+  (O1) both shipped viewport-keyed columns, so every shell that put a grid beside
+  a sidebar carried a hand-written override to shift each breakpoint up a step.
+  D19 (2026-08-18) made container queries the default for a component's own
+  layout, with J4 as the pilot and C4 converting after it; both files carry
+  `@container` wrappers with arbitrary-value thresholds today, and four
+  pre-existing stories already assert them. Closed 2026-09-06, by the J-wave
+  agent that was told to cite this bullet and checked it instead.
 
 **Missing opt-outs — a component that always renders its own chrome cannot be
 composed into a surface that already has that chrome:**
