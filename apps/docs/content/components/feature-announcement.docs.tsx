@@ -74,7 +74,7 @@ export const FeatureAnnouncementDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "Tab stops are per level, and the loud levels have fewer than they look. `modal` is the dismiss button plus the CTA — `showCloseButton` is off, so the ✕ this component renders is the only close control inside the dialog. `anchored` is one stop for the trigger, then the same two inside the popup.",
-      "`inline-card` and `dismissible-chip` are two stops each, CTA then dismiss in DOM order, and neither is modal. Escape does nothing on those levels because there is nothing to close.",
+      "`inline-card` and `dismissible-chip` are two stops each, and their order differs. The chip is CTA then dismiss; the card is the other way round, because `CardAction` sits inside `CardHeader` so the dismiss precedes the CTA in DOM order. Measured and asserted in the KeyboardOrder story; this note said CTA-first for both until 2026-09-06. Neither level is modal, so Escape does nothing on them — there is nothing to close.",
       "For `modal` and `anchored`, Escape and an outside click both close *and* dismiss: they route through the same handler as the ✕ and fire `onDismiss(id)`. All three exits are the same exit, because an announcement that came back after Escape would read as a bug.",
       "The `anchored` level's trigger is whatever you pass as `anchor`. Pass something unfocusable — a `div`, a `span` — and the popup has no keyboard opener at all; pass the feature's real button instead.",
     ],

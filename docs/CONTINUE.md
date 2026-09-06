@@ -1067,13 +1067,25 @@ that stayed open, plus what the wave learned about the primitives underneath.
   case stories open it — a candidate for a ds-rules rule (a `PopoverContent`
   with neither `aria-label` nor `aria-labelledby`).
 - **No `DirectionProvider` is mounted anywhere, so Base UI composites never
-  learn about RTL.** `CompositeRoot` reads `useDirection()`, which falls back
-  to `"ltr"` without a provider, and `dir="rtl"` on a wrapper is invisible to
-  React context. Measured on `mode-tabs`: under `dir="rtl"`, ArrowRight
-  advances in DOM order, which paints to the left. `account-menu` records the
-  same root cause for popup side resolution. The fix is one provider at the app
-  shell (or the primitive reading `dir`) — a shell-level decision, recorded,
-  not made here.
+  learn about RTL — but only the keyboard half, and this entry originally said
+  more than it should.** `CompositeRoot` reads `useDirection()`, which falls
+  back to `"ltr"` without a provider, and `dir="rtl"` on a wrapper is invisible
+  to React context. Measured on `mode-tabs`, and again on `selection-toolbar`,
+  `time-ruler`, `stem-mixer` and `transcript-editor`: under `dir="rtl"`,
+  ArrowRight advances in DOM order, which paints to the left.
+
+  **Positioning is a separate mechanism and does work.** K4
+  `selection-toolbar` measured the distinction: floating-ui's
+  `platform.isRTL` reads *computed style*, so `align` and `side` mirror
+  correctly whenever `dir` sits on the document — while the keyboard travel
+  above reads React context and does not. Two consequences. A wrapper
+  `<div dir="rtl">` silently fails the positioning half, which is why an RTL
+  story for anything portalled has to set `dir` on the document (the
+  `RtlDocument` idiom). And a component whose popup lands on the right side
+  under RTL is not evidence that its arrow keys do.
+
+  The fix for the keyboard half is one provider at the app shell, or the
+  primitive reading `dir` — a shell-level decision, recorded, not made here.
 - **The vendored `Button` moves on press with no reduced-motion branch.**
   `components/ui/button.tsx` carries `transition-all` and
   `active:not-aria-[haspopup]:translate-y-px`, so every button in the registry

@@ -252,6 +252,14 @@ These decide the shape of the stories, and all five cost time to rediscover.
        its geometry stays zero — `rgba(0, 0, 0, 0) 0px 0px 0px 0px` to
        `oklab(0.708 0 0 / 0.5) 0px 0px 0px 0px` — so the differential reports a
        change and `settledFocusRing` correctly reports no ring.
+     - K3 `diff-review`'s vendored `Button` rests at `box-shadow: none`, so the
+       differential flips on the transition's *first frame*, where all five ring
+       layers are still `rgba(0, 0, 0, 0) 0px 0px 0px 0px` and nothing is
+       painted yet. `settledFocusRing` is what proves the ring actually arrives
+       (`oklab(0.708 0 0 / 0.22) 0px 0px 0px 1.35px`). **So the differential is
+       never a substitute:** on anything carrying `transition-all` it can report
+       a change before there is anything to see, and all it rules out on its own
+       is a permanent shadow.
 
      **The differential works inside a tab walk too**, which this rule used to
      deny: read the *next* stop's signature while focus is still on the previous
