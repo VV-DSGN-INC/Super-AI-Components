@@ -159,7 +159,14 @@ function ApprovalCard({
           >
             <ChevronDown
               aria-hidden
-              className={cn("transition-transform", isExpanded && "rotate-180")}
+              // The chevron rotates 180° as the detail opens, which is travel
+              // rather than a colour crossfade — the second sanctioned idiom in
+              // story-conventions.md fact 3, the same one-class branch
+              // pricing-table uses beside its sliding switch thumb.
+              className={cn(
+                "transition-transform motion-reduce:transition-none",
+                isExpanded && "rotate-180",
+              )}
             />
             {isExpanded ? "Hide detail" : "Show detail"}
           </Button>
@@ -211,7 +218,7 @@ function ApprovalCard({
                   onClick={handlers[verb.id]}
                 >
                   {state === "submitting" && verb.id === "confirm" ? (
-                    <Loader2 aria-hidden className="animate-spin" />
+                    <Loader2 aria-hidden className="animate-spin motion-reduce:animate-none" />
                   ) : (
                     <Icon aria-hidden />
                   )}
