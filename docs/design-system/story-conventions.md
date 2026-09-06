@@ -272,6 +272,17 @@ These decide the shape of the stories, and all five cost time to rediscover.
    cannot reach a portal, so an `RTL` story for a dialog needs `dir` on the
    document rather than on a `<div>`.
 
+**A play function that leaves a popup mid-dismissal hands axe a moving
+target.** The scan runs once your play returns, so an element still fading out
+is measured at its transitional opacity — a destructive menu row caught that way
+fails `color-contrast` against a story that passes on its own. It surfaced three
+times in the H and J waves, always under full-suite load and never in isolation.
+End any play that dismisses a popup by waiting for it to be gone
+(`await waitFor(() => expect(body.queryByRole("menu")).toBeNull())`). That is
+also an assertion worth having: choosing a destructive item should dismiss the
+menu rather than stack a dialog on top of it. Suppressing the animation does not
+help, because the frames where the element is still mounted and dimmed remain.
+
 Because `preview.tsx` sets `a11y: { test: "error" }` as the default for every
 story, each case story you add is axe-gated from the moment it exists. That
 is most of the value: `Mobile` does not merely document 375px, it starts

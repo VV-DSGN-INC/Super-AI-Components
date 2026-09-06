@@ -307,6 +307,14 @@ export const ReducedMotion: Story = {
     const dialog = await body.findByRole("alertdialog");
     await waitFor(() => expect(dialog).toHaveAttribute("data-open"));
     await expect(getComputedStyle(dialog).animationName).toBe("none");
+
+    // Wait for the menu to finish leaving before the play returns. axe scans
+    // once it does, and a destructive row caught on its way out measures its
+    // own partial opacity as a contrast failure — the same race `DeleteConfirm`
+    // hit, in the story that opens the menu one step earlier. Suppressing the
+    // animation does not remove the frames in which the row is still mounted
+    // and dimmed.
+    await waitFor(() => expect(body.queryByRole("menu")).toBeNull());
   },
 };
 

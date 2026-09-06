@@ -79,6 +79,12 @@ obligations, 28 descriptions). Seven of the eleven carried a sanctioned source
 fix out of the wave — §8's D/I subsection has what stayed open, §9's wave 1
 entry has what was fixed and what was found.
 
+**Wave 5 — family J — landed 2026-09-06.** Baseline **362 → 305** (272 case,
+33 described). Seven agents, seven items, all at zero unmet. Its distinguishing
+feature is how much of it was an audit of earlier work: three claims recorded in
+this file turned out to be stale or overstated, each caught by an agent that had
+been told to cite them. §8's J subsection and §9's wave 5 entry have the detail.
+
 **Wave 4 — family H — landed 2026-09-06.** Baseline **427 → 362** (328 case,
 34 described). Seven agents, seven items, all at zero unmet. It found more that
 the gates cannot see than any wave before it: four components whose slider
@@ -97,8 +103,8 @@ now fixed with a shared helper.
 other seven were killed by a session rate limit *between finishing their work
 and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
 carries the salvage procedure, because it will happen again. Remaining, all
-case-block debt after wave 4: J 7 · K 5 · L 4 · M 4 · N 8 · O 13 = 41 items;
-recount with the test rather than trusting this line.
+case-block debt after wave 5: K 5 · L 4 · M 4 · N 8 · O 13 = 34 items; recount
+with the test rather than trusting this line.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
 `pnpm test:stories` **719** across 131 files · `check:contract`
@@ -1338,6 +1344,16 @@ that stayed open, plus what the wave learned about the primitives underneath.
   `has-[…:focus-visible]`. Not swept, because choosing which element carries the
   ring is a design call.
 
+- **The unnamed-listbox rule is configuration-dependent, and the entry below
+  overstated it.** H1 `transport-controls` failed axe outright on
+  `aria-input-field-name` with its select popup open; J6 `template-detail`
+  measured its own unnamed listbox open under the same gate and axe 4.12 raised
+  nothing, while a deliberately nameless button in the same story did fail
+  `button-name` — so the gate was running and the rule simply did not apply
+  there. Both are measurements, neither explains the other, and the fix is
+  right either way: an unnamed listbox is wrong whether or not a rule catches
+  it. Read the entry below as "fails axe in at least one shape", not always.
+
 - **A whole class of reduced-motion assertions cannot fail.**
   `components/ui/select.tsx` defaults `alignItemWithTrigger` to `true` and the
   content carries `data-[align-trigger=true]:animate-none`, so a default
@@ -1416,6 +1432,67 @@ that stayed open, plus what the wave learned about the primitives underneath.
   `<div>`, which has no `tabIndex` and can never be the event target in a
   browser; every element that *can* hold focus takes an early return. The docs
   module already carried the sentence — this is the measurement behind it.
+
+### Added by the J case-story wave (2026-09-06)
+
+- **The vendored carousel is broken under right-to-left, not merely
+  mis-positioned.** J6 `template-detail` measured it: the same eight previews in
+  the same 430px strip report `canScrollPrev` *and* `canScrollNext` both false
+  under `dir="rtl"`, so both arrows are natively disabled and **the four
+  previews past the fold cannot be reached at all**; the LTR control has next
+  enabled and steps one thumbnail. At 375px with four previews, RTL's "Next"
+  moves the track 17px the wrong way against LTR's clean 95px. The cause is
+  Embla never being told `direction` in `components/ui/carousel.tsx` — recorded
+  since wave 1 as a positioning nuisance, and this is the first measurement
+  showing it removes content.
+
+- **A file name rendered as a button never truncates.** J1 `asset-library`
+  measured the same name in all three of its variants at 832px: the link and
+  span forms clip 552px into 421px, the button form paints 8..584 in a cell
+  ending at 461 — **123px of file name across the next column** — and reports
+  `scrollWidth === clientWidth`, so nothing sees it as overflowing. A button's
+  `width: auto` is shrink-to-fit even at `display: flex`, so `truncate` never
+  engages, and the cell's `max-w-64` cannot save it because `table-layout: auto`
+  treats a cell max-width as advisory. At 375px in grid view it is real
+  horizontal page scroll.
+
+- **A fifth vendored primitive does not mirror, and this one is in every
+  table.** `components/ui/table.tsx` gives each `<th>` a physical `text-left`
+  while cells inherit `start`. Measured under RTL on J1's Name column: the
+  heading paints at 488..526 and its data at 695..824 — **title and data on
+  opposite edges, 207px apart**. F6 and J7 both saw the class; this is the first
+  measurement of what it costs.
+
+- **Facet counts announce with no separator, third and fourth instances.** J4
+  `artifact-grid`'s chips read `"Markdown3"` and J3 `explore-gallery`'s read
+  `"Images180"`, because the gap is a margin and a margin is invisible to name
+  computation. J4's own docs page warns about exactly this shape under a
+  different name (its "1,204views" pitfall) — corrected to say what it measures.
+  H4 `transcript-editor`'s `gap-x-1` word spacing is the same defect in prose.
+
+- **Viewport-keyed columns survive in a third component.** D19 fixed J4 and C4;
+  J3 `explore-gallery` was never on that list and still keys `sm:columns-2
+  lg:columns-3` off the viewport, so any 375px container on a desktop page gets
+  three ~114px columns.
+
+- **Two more host-unreachable states, making four.** J4 `artifact-grid` keeps
+  its per-session fold in an internal record with no prop and no callback, so a
+  saved fold cannot be restored. J2 `filter-panel`'s see-more lives in a
+  section's own `useState` and the section never remounts, so swapping
+  `sections` carries the old expansion in — milder than E4 `preset-grid`'s,
+  because it toggles, so it strands the host rather than the person.
+
+- **The empty-string class keeps producing new shapes.** J4: a session `label`
+  of `""` is *not* an axe failure and is worse for it, because `aria-labelledby`
+  pointing at an empty span leaves a region with no name, so the session stops
+  being a landmark. J1: `searchPlaceholder=""` deletes the field's only
+  accessible name and is a red gate. J7 and H7: `label=""` defeats its own
+  default parameter, leaving a table or group unnamed with no rule covering it.
+
+- **One positive worth recording, because the contract has failed four times
+  elsewhere.** J1 `asset-library`'s per-row controls are named `Select {name}`
+  and `Actions for {name}` — distinct, derived from the row's own data. That is
+  what the per-row naming contract looks like when it holds.
 
 ## 9. Gaps found by the case-story pilot
 
@@ -1988,3 +2065,46 @@ evidence the thing it asserts is true — the same sentence wave 2 wrote about
 stories nobody had run, reached from the other direction. Both full-suite runs
 after the real fix were green, and so were the two before it, which is exactly
 why the fix had to be confirmed with a probe rather than a passing run.
+
+### Wave 5 — family J (2026-09-06)
+
+Seven agents, seven items, all at zero unmet. Family J is libraries, grids and
+filter rails, so most of what it found is about tables, names and layout under
+pressure — §8 has those. What distinguishes the wave is that **three of the
+things it corrected were written in this file by earlier waves**, and each was
+caught by an agent that had been told to cite an entry and read it first.
+
+- J4 `artifact-grid` was told to cite §8's "grid columns keyed off the viewport"
+  bullet and not fix it. That bullet described a defect D19 had already removed
+  in August, with J4 itself as the pilot and C4 converting after; both files
+  carry container queries and four stories already assert the thresholds. It is
+  the second stale §8 entry a wave agent has caught, after the carousel one.
+- J2 `filter-panel` found a hole in `focusTreatmentSignature`, added one wave
+  earlier: it read `outline-width`, which flips 3px to 1px on focus on Base UI's
+  controls while `outline-style` stays `none`, so the signature reported a
+  change on all fourteen of that component's stops including one painting
+  nothing new.
+- J6 `template-detail` measured its own unnamed listbox open under the gate and
+  axe raised nothing, where H1 `transport-controls` had failed outright on the
+  same rule a wave earlier. §8's entry now says "fails axe in at least one
+  shape" and carries both measurements, neither of which explains the other.
+
+**And the wave settled how the two focus checks relate, which two waves had got
+wrong in opposite directions.** Wave 4 introduced the differential and this file
+said to prefer it. J3 `explore-gallery` then measured a composer textarea whose
+focus moves a shadow layer from transparent to coloured *while its geometry
+stays zero* — so the differential reports a change and `settledFocusRing`
+correctly reports no ring. J2's selected chip is the mirror image: a permanent
+ring identical in colour and width to its focus ring, where the absolute check
+passes and the differential correctly reports nothing. They answer different
+questions. `story-conventions.md` fact 5 now says to use both and carries both
+measurements; it also drops the claim that the differential cannot work inside a
+tab walk, which J5 `record-list` and J2 disproved independently by reading the
+*next* stop's signature while focus is still on the previous one.
+
+The pattern across three waves is worth naming, because it is the argument for
+the whole retrofit. **Every one of these corrections came from an agent
+measuring something it had been handed as settled.** The instructions said cite,
+not verify, and the citation was wrong four times out of four attempts to check.
+A note in a file is not evidence; the thing that made these findable was that
+writing a story forces you to render the claim.
