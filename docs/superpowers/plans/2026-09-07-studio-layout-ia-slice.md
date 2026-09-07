@@ -493,39 +493,39 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 
 Product specifics: home `https://web.descript.com/`; url-substring `descript.com`; Descript's own names are expected to be "Drive" or "Projects" for the project list, a project editor with a script column, a media or scenes panel, a properties panel and a bottom timeline, and an AI panel (Descript calls its agent "Underlord"). Confirm each in the browser; record the actual names in the product header.
 
-- [ ] **Step 1: P0, P1, P2**
+- [x] **Step 1: P0, P1, P2**
 
 Run P0 (tab), P1 (sign-in check at `https://web.descript.com/`), P2 (viewport). If P1 shows a sign-in wall, write `no session` in §1.1's Session cell for Descript, commit with message `docs(studio-slice): Descript blocked, no session`, and stop; Task 3 re-runs after Nick decides.
 
-- [ ] **Step 2: Home stop**
+- [x] **Step 2: Home stop**
 
 P3 `capture.sh descript.com descript-home-01` on arrival. P4, then P5 on the region elements. If the global nav is collapsed, expand it, `capture.sh descript.com descript-home-02`, restore it. Write down every top-level nav entry in order and the primary call to action.
 
-- [ ] **Step 3: Projects stop**
+- [x] **Step 3: Projects stop**
 
 Move to the all-projects or drive view by its nav entry. `capture.sh descript.com descript-projects-01` on arrival. P4, P5. If list and grid both exist, capture the other as `descript-projects-02` and switch back. Note sort and filter controls and how a project opens.
 
-- [ ] **Step 4: Editor stop**
+- [x] **Step 4: Editor stop**
 
 Open an existing project (never "New project"). `capture.sh descript.com descript-editor-01` on arrival. P4, P5 on every panel and on the bottom dock. Then P7 for every panel, capturing `descript-editor-02` onward for each state (default of each panel is in `01`; collapsed, resized, undocked, and each AI surface open get their own numbers). Restore everything.
 
-- [ ] **Step 5: Settings stop**
+- [x] **Step 5: Settings stop**
 
 Reach settings through the account or workspace control. `capture.sh descript.com descript-settings-01`. Record page, panel or dialog and the control used. Close it without changing anything.
 
-- [ ] **Step 6: Back**
+- [x] **Step 6: Back**
 
 From the editor, use the control that returns to home. `capture.sh descript.com descript-back-01` at the first frame. Record the control, what the frame kept, what it replaced.
 
-- [ ] **Step 7: P8 — write §2.1**
+- [x] **Step 7: P8 — write §2.1**
 
 Fill the block from P8 into §2.1. Fill §1.1's Session (`signed in`) and Read on (`2026-09-07`) cells for Descript. Status line: `**Status:** 1 of 6 products read (Descript).`
 
-- [ ] **Step 8: Sheet v1**
+- [x] **Step 8: Sheet v1**
 
 Every row in §1.3 that Descript could not fill with an observation, `none` or `n/a` at some stop is a row the pilot could not define; rewrite its Meaning so it can be filled. Every behaviour Descript showed that no row holds, and that is inside the five axes, becomes a new row marked `(forced by Descript)`. This is sheet v1.
 
-- [ ] **Step 9: P10 — verify and commit**
+- [x] **Step 9: P10 — verify and commit**
 
 Run the P10 checks (expect no `MISSING`, no `WIDTH ROW WITHOUT SELECTOR`), then commit with message `docs(studio-slice): read Descript, sheet v1`.
 
@@ -543,39 +543,39 @@ Run the P10 checks (expect no `MISSING`, no `WIDTH ROW WITHOUT SELECTOR`), then 
 
 Product specifics: home `https://elevenlabs.io/app/home`; the studio at `https://elevenlabs.io/app/studio` is one section of the ElevenLabs app; url-substring `elevenlabs.io`. Expected: a left sidebar listing products (Text to Speech, Studio, Voices, and others), Studio's project list at the studio URL, an editor with a script area and a right voice-settings panel, settings at `https://elevenlabs.io/app/settings`. Confirm each in the browser.
 
-- [ ] **Step 1: P0, P1, P2**
+- [x] **Step 1: P0, P1, P2**
 
 Run P0, P1 at `https://elevenlabs.io/app/home`, P2. On a sign-in wall: `no session` in §1.1, commit `docs(studio-slice): ElevenLabs blocked, no session`, stop.
 
-- [ ] **Step 2: Home stop**
+- [x] **Step 2: Home stop**
 
 `capture.sh elevenlabs.io elevenlabs-home-01`. P4, P5. Expand a collapsed nav for `-02` and restore. Record every top-level entry and the primary call to action.
 
-- [ ] **Step 3: Projects stop**
+- [x] **Step 3: Projects stop**
 
 Open Studio (the project list). `capture.sh elevenlabs.io elevenlabs-projects-01`. P4, P5. List vs grid as `-02` if both exist. Note sort, filter, how a project opens.
 
-- [ ] **Step 4: Editor stop**
+- [x] **Step 4: Editor stop**
 
 Open an existing Studio project. `capture.sh elevenlabs.io elevenlabs-editor-01`. P4, P5 on every panel. P7 per panel with `-02` onward. Open each AI surface (voice settings, generation controls) for its own capture. Restore everything. Do not press any generate or regenerate control.
 
-- [ ] **Step 5: Settings stop**
+- [x] **Step 5: Settings stop**
 
 `capture.sh elevenlabs.io elevenlabs-settings-01`. Record page, panel or dialog and the control used.
 
-- [ ] **Step 6: Back**
+- [x] **Step 6: Back**
 
 From the editor to home. `capture.sh elevenlabs.io elevenlabs-back-01`. Record control, kept, replaced.
 
-- [ ] **Step 7: P8 — write §2.2**
+- [x] **Step 7: P8 — write §2.2**
 
 Fill §2.2, §1.1's cells for ElevenLabs Studio. Status line: `2 of 6 products read (Descript, ElevenLabs Studio).`
 
-- [ ] **Step 8: P9 — ratchet**
+- [x] **Step 8: P9 — ratchet**
 
 New rows go into §1.3 as `(forced by ElevenLabs Studio)` and into §2.1, filled from Descript's captures; anything Descript's captures cannot answer is revisited in the browser now and logged in §1.4.
 
-- [ ] **Step 9: P10 — verify and commit**
+- [x] **Step 9: P10 — verify and commit**
 
 P10 checks, then commit `docs(studio-slice): read ElevenLabs Studio`.
 
@@ -593,39 +593,39 @@ P10 checks, then commit `docs(studio-slice): read ElevenLabs Studio`.
 
 Product specifics: home `https://suno.com/`; url-substring `suno.com`. Expected: a left sidebar (Home, Create, Library, Explore), the Create page as the editor (a prompt panel on the left and a song list on the right, with a bottom player), the library at `https://suno.com/me` as the project list, settings under the account menu. Suno has no project editor in the Descript sense; the editor stop is the Create workspace with an existing song opened, and the doc says so in the product header. Confirm in the browser. Do not press Create or any generate control.
 
-- [ ] **Step 1: P0, P1, P2**
+- [x] **Step 1: P0, P1, P2**
 
 P0, P1 at `https://suno.com/`, P2. On a sign-in wall: `no session` in §1.1, commit `docs(studio-slice): Suno blocked, no session`, stop; the alternate is Udio (`https://www.udio.com/`), run as a new Task 5 with `udio` as the product name in every id.
 
-- [ ] **Step 2: Home stop**
+- [x] **Step 2: Home stop**
 
 `capture.sh suno.com suno-home-01`. P4, P5. Nav expanded as `-02` if needed. Record entries and the call to action.
 
-- [ ] **Step 3: Projects stop**
+- [x] **Step 3: Projects stop**
 
 Open Library. `capture.sh suno.com suno-projects-01`. P4, P5. List vs grid as `-02`. Note sort, filter, how a song opens.
 
-- [ ] **Step 4: Editor stop**
+- [x] **Step 4: Editor stop**
 
 Open Create with an existing song selected. `capture.sh suno.com suno-editor-01`. P4, P5 on every panel and the player. P7 per panel with `-02` onward. Open each AI surface (custom mode, style, lyrics helpers) without submitting. Restore.
 
-- [ ] **Step 5: Settings stop**
+- [x] **Step 5: Settings stop**
 
 `capture.sh suno.com suno-settings-01`. Record page, panel or dialog and the control.
 
-- [ ] **Step 6: Back**
+- [x] **Step 6: Back**
 
 `capture.sh suno.com suno-back-01`. Record control, kept, replaced.
 
-- [ ] **Step 7: P8 — write §2.3**
+- [x] **Step 7: P8 — write §2.3**
 
 Fill §2.3 and §1.1's cells. Status line: `3 of 6 products read (…)`.
 
-- [ ] **Step 8: P9 — ratchet**
+- [x] **Step 8: P9 — ratchet**
 
 `(forced by Suno)` rows into §1.3, §2.1 and §2.2; revisits logged in §1.4.
 
-- [ ] **Step 9: P10 — verify and commit**
+- [x] **Step 9: P10 — verify and commit**
 
 P10 checks, commit `docs(studio-slice): read Suno`.
 
@@ -643,39 +643,39 @@ P10 checks, commit `docs(studio-slice): read Suno`.
 
 Product specifics: home `https://app.runwayml.com/`; url-substring `runwayml.com`. Expected: a left sidebar of tools, a dashboard home, "Assets" or "Sessions" as the project list, a generation session or the video editor as the editor, settings at `https://app.runwayml.com/settings`. Confirm in the browser. Do not press Generate.
 
-- [ ] **Step 1: P0, P1, P2**
+- [x] **Step 1: P0, P1, P2**
 
 P0, P1 at `https://app.runwayml.com/`, P2. On a sign-in wall: `no session` in §1.1, commit `docs(studio-slice): Runway blocked, no session`, stop; the alternate is CapCut (`https://www.capcut.com/`), run as a new Task 6 with `capcut` in every id.
 
-- [ ] **Step 2: Home stop**
+- [x] **Step 2: Home stop**
 
 `capture.sh runwayml.com runway-home-01`. P4, P5. Nav expanded as `-02` if needed. Record entries and the call to action.
 
-- [ ] **Step 3: Projects stop**
+- [x] **Step 3: Projects stop**
 
 Open the assets or sessions view. `capture.sh runwayml.com runway-projects-01`. P4, P5. List vs grid as `-02`. Note sort, filter, how an item opens.
 
-- [ ] **Step 4: Editor stop**
+- [x] **Step 4: Editor stop**
 
 Open an existing session or project. `capture.sh runwayml.com runway-editor-01`. P4, P5 on every panel and any timeline. P7 per panel with `-02` onward. Open each AI surface without generating. Restore.
 
-- [ ] **Step 5: Settings stop**
+- [x] **Step 5: Settings stop**
 
 `capture.sh runwayml.com runway-settings-01`. Record page, panel or dialog and the control.
 
-- [ ] **Step 6: Back**
+- [x] **Step 6: Back**
 
 `capture.sh runwayml.com runway-back-01`. Record control, kept, replaced.
 
-- [ ] **Step 7: P8 — write §2.4**
+- [x] **Step 7: P8 — write §2.4**
 
 Fill §2.4 and §1.1's cells. Status line: `4 of 6 products read (…)`.
 
-- [ ] **Step 8: P9 — ratchet**
+- [x] **Step 8: P9 — ratchet**
 
 `(forced by Runway)` rows into §1.3 and §2.1 to §2.3; revisits in §1.4.
 
-- [ ] **Step 9: P10 — verify and commit**
+- [x] **Step 9: P10 — verify and commit**
 
 P10 checks, commit `docs(studio-slice): read Runway`.
 
@@ -693,39 +693,39 @@ P10 checks, commit `docs(studio-slice): read Runway`.
 
 Product specifics: home `https://app.spline.design/home`; url-substring `spline.design`. Expected: a file browser home with a left sidebar (files, teams, community, library), the file list as the project list, the 3D editor as the editor (left scene hierarchy, top toolbar, right properties panel, a floating bottom toolbar), settings under the account or team menu. The editor is heavy; wait for the viewport to render before P4. Confirm in the browser.
 
-- [ ] **Step 1: P0, P1, P2**
+- [x] **Step 1: P0, P1, P2**
 
 P0, P1 at `https://app.spline.design/home`, P2. On a sign-in wall: `no session` in §1.1, commit `docs(studio-slice): Spline blocked, no session`, stop. Spline has no alternate: it was named by Nick, so report and wait.
 
-- [ ] **Step 2: Home stop**
+- [x] **Step 2: Home stop**
 
 `capture.sh spline.design spline-home-01`. P4, P5. Nav expanded as `-02` if needed. Record entries and the call to action.
 
-- [ ] **Step 3: Projects stop**
+- [x] **Step 3: Projects stop**
 
 Open the all-files view. `capture.sh spline.design spline-projects-01`. P4, P5. List vs grid as `-02`. Note sort, filter, how a file opens.
 
-- [ ] **Step 4: Editor stop**
+- [x] **Step 4: Editor stop**
 
 Open an existing file. Wait with `computer` `wait` `{ duration: 5 }` for the scene to load. `capture.sh spline.design spline-editor-01`. P4, P5 on every panel. P7 per panel with `-02` onward, including the floating toolbar and any AI surface. Do not run any generate or export control. Restore.
 
-- [ ] **Step 5: Settings stop**
+- [x] **Step 5: Settings stop**
 
 `capture.sh spline.design spline-settings-01`. Record page, panel or dialog and the control.
 
-- [ ] **Step 6: Back**
+- [x] **Step 6: Back**
 
 `capture.sh spline.design spline-back-01`. Record control, kept, replaced.
 
-- [ ] **Step 7: P8 — write §2.5**
+- [x] **Step 7: P8 — write §2.5**
 
 Fill §2.5 and §1.1's cells. Status line: `5 of 6 products read (…)`.
 
-- [ ] **Step 8: P9 — ratchet**
+- [x] **Step 8: P9 — ratchet**
 
 `(forced by Spline)` rows into §1.3 and §2.1 to §2.4; revisits in §1.4.
 
-- [ ] **Step 9: P10 — verify and commit**
+- [x] **Step 9: P10 — verify and commit**
 
 P10 checks, commit `docs(studio-slice): read Spline`.
 
@@ -743,43 +743,43 @@ P10 checks, commit `docs(studio-slice): read Spline`.
 
 Product specifics: home `https://app.meshy.ai/`; url-substring `meshy.ai`. Expected: a left sidebar of tools (text to 3D, image to 3D, and others), a workspace home, "My Assets" as the project list, a model detail or editor view as the editor (viewport centre, settings or texture panel right), settings under the account menu. Confirm in the browser. Do not press Generate.
 
-- [ ] **Step 1: P0, P1, P2**
+- [x] **Step 1: P0, P1, P2**
 
 P0, P1 at `https://app.meshy.ai/`, P2. On a sign-in wall: `no session` in §1.1, commit `docs(studio-slice): Meshy blocked, no session`, stop; the alternate is Tripo (`https://www.tripo3d.ai/app`), run as a new Task 8 with `tripo` in every id.
 
-- [ ] **Step 2: Home stop**
+- [x] **Step 2: Home stop**
 
 `capture.sh meshy.ai meshy-home-01`. P4, P5. Nav expanded as `-02` if needed. Record entries and the call to action.
 
-- [ ] **Step 3: Projects stop**
+- [x] **Step 3: Projects stop**
 
 Open the assets view. `capture.sh meshy.ai meshy-projects-01`. P4, P5. List vs grid as `-02`. Note sort, filter, how an asset opens.
 
-- [ ] **Step 4: Editor stop**
+- [x] **Step 4: Editor stop**
 
 Open an existing asset. `capture.sh meshy.ai meshy-editor-01`. P4, P5 on every panel. P7 per panel with `-02` onward, including each AI surface without generating. Restore.
 
-- [ ] **Step 5: Settings stop**
+- [x] **Step 5: Settings stop**
 
 `capture.sh meshy.ai meshy-settings-01`. Record page, panel or dialog and the control.
 
-- [ ] **Step 6: Back**
+- [x] **Step 6: Back**
 
 `capture.sh meshy.ai meshy-back-01`. Record control, kept, replaced.
 
-- [ ] **Step 7: P8 — write §2.6**
+- [x] **Step 7: P8 — write §2.6**
 
 Fill §2.6 and §1.1's cells. Status line: `6 of 6 products read.`
 
-- [ ] **Step 8: P9 — ratchet**
+- [x] **Step 8: P9 — ratchet**
 
 `(forced by Meshy)` rows into §1.3 and §2.1 to §2.5; revisits in §1.4. After this step the sheet is final.
 
-- [ ] **Step 9: Close the browser tab**
+- [x] **Step 9: Close the browser tab**
 
 `tabs_close_mcp` on the walk tab.
 
-- [ ] **Step 10: P10 — verify and commit**
+- [x] **Step 10: P10 — verify and commit**
 
 P10 checks, commit `docs(studio-slice): read Meshy, sheet final`.
 
@@ -794,11 +794,11 @@ P10 checks, commit `docs(studio-slice): read Meshy, sheet final`.
 - Consumes: the six filled §2 sections.
 - Produces: the numbered pattern table in §7 with fixed columns `| # | Pattern | Axis | Descript | ElevenLabs | Suno | Runway | Spline | Meshy | Count | Verdict |`; §3 to §6 each cite pattern numbers from §7. Task 10 cites `#n` from this table.
 
-- [ ] **Step 1: Build the pattern list**
+- [x] **Step 1: Build the pattern list**
 
 Read the six sheets row by row. For every row, write one pattern per distinct behaviour observed in at least one product, phrased as one checkable sentence on one axis (for example `the global sidebar collapses to an icon rail on entering the editor`, `the inspector is a right panel with tabs`, `settings open as a dialog over the current stop`). Do not merge two behaviours into one pattern; a pattern that needs "and" is two.
 
-- [ ] **Step 2: Write §7**
+- [x] **Step 2: Write §7**
 
 Replace `Written in synthesis.` under `## 7. The D1 re-run` with this table, one row per pattern. A product cell holds the capture ids that show the pattern, or `—` when the product does not show it. `Count` is the number of non-`—` cells. `Verdict` is `pass` at 3 or more, `stalled` at 2, `single` at 1.
 
@@ -812,7 +812,7 @@ products, and all six here are unrelated companies.
 | 1 | <sentence> | Frame | descript-home-01 | — | … | … | … | … | 3 | pass |
 ```
 
-- [ ] **Step 3: Verify the counts and verdicts mechanically**
+- [x] **Step 3: Verify the counts and verdicts mechanically**
 
 ```bash
 F=docs/design-system/studio-board-analysis.md
@@ -822,7 +822,7 @@ awk -F'|' '/^\| [0-9]+ \|/ { k=$11; gsub(/[ \t]/,"",k); v=$12; gsub(/^[ \t]+|[ \
 
 Expected: no output from either line. If a row prints, fix the row, not the check.
 
-- [ ] **Step 4: Write §3 to §6**
+- [x] **Step 4: Write §3 to §6**
 
 Replace each `Written in synthesis.`:
 
@@ -833,7 +833,7 @@ Replace each `Written in synthesis.`:
 
 Every claim in §3 to §6 cites `#n` from §7.
 
-- [ ] **Step 5: Verify the citations resolve**
+- [x] **Step 5: Verify the citations resolve**
 
 ```bash
 F=docs/design-system/studio-board-analysis.md
@@ -843,7 +843,7 @@ awk '/^## 3\./,/^## 7\./' "$F" | grep -o -E '#[0-9]+' | tr -d '#' | sort -un | a
 
 Expected: no `DANGLING` lines.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add docs/design-system/studio-board-analysis.md
@@ -863,7 +863,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Consumes: §7's numbered table and verdicts from Task 9; the "Seen, not counted" lines from each §2 section.
 - Produces: §8 candidate table with fixed columns `| Candidate | Class | Rests on | Existing coverage | Note |`; Task 11's D22 quotes its counts.
 
-- [ ] **Step 1: Classify every passing pattern**
+- [x] **Step 1: Classify every passing pattern**
 
 For each `pass` row in §7, apply the spec's §6.3 test and write one candidate row:
 
@@ -873,7 +873,7 @@ For each `pass` row in §7, apply the spec's §6.3 test and write one candidate 
 
 Several passing patterns may rest under one candidate (a resizable panel group is one component resting on the resize, min-max and remembered-state patterns). A candidate cites every `#n` it rests on.
 
-- [ ] **Step 2: Write §8**
+- [x] **Step 2: Write §8**
 
 Replace `Written in synthesis.` under `## 8. Candidates`:
 
@@ -890,11 +890,11 @@ grid these six were chosen from (Udio, CapCut, Tripo, Krea, Midjourney, Freepik)
 them.
 ```
 
-- [ ] **Step 3: Write §9 and §10**
+- [x] **Step 3: Write §9 and §10**
 
 §9: every "Seen, not counted" line from the six §2 sections, grouped by product, unchanged, with a one-line header saying these are outside the five axes and enter no count. §10: the three app types read (video, voice and music, 3D) and the three not read from the grid (image and design, and the two siblings per type not walked); a sentence that this slice closes no Move 3 category; a sentence that mobile layouts were not read; and the swaps and blocked stops from §1.4, restated.
 
-- [ ] **Step 4: Verify every candidate rests on pass rows only**
+- [x] **Step 4: Verify every candidate rests on pass rows only**
 
 ```bash
 F=docs/design-system/studio-board-analysis.md
@@ -903,7 +903,7 @@ awk '/^## 8\./,/^## 9\./' "$F" | awk -F'|' '/^\| [^|#-]/ && NR>0 { print $4 }' |
 
 Expected: no output.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add docs/design-system/studio-board-analysis.md
@@ -926,7 +926,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 **Interfaces:**
 - Consumes: §7 and §8 counts from Tasks 9 and 10.
 
-- [ ] **Step 1: Count what the doc found**
+- [x] **Step 1: Count what the doc found**
 
 ```bash
 F=docs/design-system/studio-board-analysis.md
@@ -937,7 +937,7 @@ for c in component shell "docs pattern"; do echo "$c: $(awk '/^## 8\./,/^## 9\./
 
 Write the eight numbers down; the next steps use them.
 
-- [ ] **Step 2: Insert D22 in decisions.md**
+- [x] **Step 2: Insert D22 in decisions.md**
 
 Use the Edit tool with this exact `old_string` (the end of D21 and the divider before §2):
 
@@ -992,7 +992,7 @@ settle them.
 ## 2. Components dropped from the approved spec
 ```
 
-- [ ] **Step 3: Add the catalog note**
+- [x] **Step 3: Add the catalog note**
 
 Edit tool on `docs/design-system/catalog.md`, exact `old_string`:
 
@@ -1011,7 +1011,7 @@ Edit tool on `docs/design-system/catalog.md`, exact `old_string`:
 > components.
 ```
 
-- [ ] **Step 4: Add the gaps note**
+- [x] **Step 4: Add the gaps note**
 
 Edit tool on `docs/design-system/gaps.md`, exact `old_string`:
 
@@ -1033,7 +1033,7 @@ above: ElevenLabs and Suno are voice and music products, but only their frames w
 components.
 ```
 
-- [ ] **Step 5: Replace the CONTINUE paragraph**
+- [x] **Step 5: Replace the CONTINUE paragraph**
 
 Edit tool on `docs/CONTINUE.md`, exact `old_string`:
 
@@ -1058,11 +1058,11 @@ the next brainstorm picks what ships. Spec:
 `superpowers/specs/2026-09-07-studio-layout-ia-slice-design.md`.
 ```
 
-- [ ] **Step 6: Finish the analysis doc's header**
+- [x] **Step 6: Finish the analysis doc's header**
 
 Edit tool on `docs/design-system/studio-board-analysis.md`: replace `**Decision:** D22 in [decisions.md](decisions.md), written when the read is complete.` with `**Decision:** D22 in [decisions.md](decisions.md).`, and confirm the status line reads `**Status:** 6 of 6 products read.`
 
-- [ ] **Step 7: Format the new doc and decisions.md with the repo's prettier**
+- [x] **Step 7: Format the new doc and decisions.md with the repo's prettier**
 
 Only these two. `catalog.md`, `gaps.md` and `CONTINUE.md` are **not** prettier-clean on `main` today (checked 2026-09-07), so `--write` on them would drag unrelated reflows into this PR; `format:check` is not in CI, so leaving them as they are costs nothing.
 
@@ -1082,7 +1082,7 @@ awk -F'|' '/^\| [0-9]+ +\|/ { n=0; for (i=5;i<=10;i++) { c=$i; gsub(/^[ \t]+|[ \
 
 Expected: no output. (Prettier pads the `#` column, so this variant allows extra spaces before the pipe.)
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add docs/design-system/studio-board-analysis.md docs/design-system/decisions.md docs/design-system/catalog.md docs/design-system/gaps.md docs/CONTINUE.md
