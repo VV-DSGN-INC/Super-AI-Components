@@ -319,7 +319,13 @@ export const RTL: Story = {
     //    RTL that is its left edge, 8px in from the row's own padding.
     const header = at('[data-slot="docs-shell-nav-header"]');
     const keycaps = at('[data-slot="kbd-group"]');
-    await expect(getComputedStyle(keycaps).marginRight).toBe("56.375px");
+    // `ms-auto` resolves to whatever space is left once the keycaps have taken
+    // their own width, and that width is the sum of glyph advances — 56.375px
+    // on macOS, 51px on Linux. What `ms-auto` claims is that the leftover goes
+    // on the inline-start side, which under RTL is margin-right, so assert that
+    // rather than one machine's leftover. The positional check below is the
+    // real proof and it is unchanged.
+    await expect(parseFloat(getComputedStyle(keycaps).marginRight)).toBeGreaterThan(0);
     await expect(
       keycaps.getBoundingClientRect().left - header.getBoundingClientRect().left,
     ).toBeLessThanOrEqual(10);
@@ -333,9 +339,14 @@ export const RTL: Story = {
     );
 
     // 5. And the measure survives direction — it is a max-width on the article,
-    //    not a physical offset, so the column stays centred at 68ch.
+    //    not a physical offset, so the column stays centred at 68ch. The pixel
+    //    value of 68ch depends on the "0" advance of the loaded font (685px on
+    //    macOS, 748px here), so per D21 assert that the article sits at its own
+    //    cap rather than at one machine's rendering of it.
     const article = at('[data-slot="docs-shell-article"]');
-    await expect(Math.round(article.getBoundingClientRect().width)).toBe(685);
+    const rtlCap = parseFloat(getComputedStyle(article).maxWidth);
+    await expect(Number.isFinite(rtlCap)).toBe(true);
+    await expect(Math.round(article.getBoundingClientRect().width)).toBe(Math.round(rtlCap));
   },
 };
 
@@ -820,7 +831,7 @@ export const EmptyLabel: Story = {
  * treated four different ways depending on which column it lands in.
  *
  * **The page title wraps and the measure holds.** The `h1` goes to two 32px
- * lines inside the same 685px article (68ch), `white-space: normal`, nothing
+ * lines inside the same 68ch article, `white-space: normal`, nothing
  * clipped, and the sections below simply move down. The lede does the same at
  * 26px lines. That is the right answer for prose, and the reason the measure is
  * on the article rather than on the scroll container.
@@ -908,7 +919,18 @@ export const LongContent: Story = {
     await expect(title.getBoundingClientRect().height).toBeGreaterThan(
       parseFloat(titleStyle.lineHeight) * 1.5,
     );
-    await expect(Math.round(at('[data-slot="docs-shell-article"]').getBoundingClientRect().width)).toBe(685);
+    // The measure is capped, and the cap is `max-w-[68ch]`. `ch` is the advance
+    // of the "0" glyph, so 68ch is a different pixel count in every font stack —
+    // 685px on macOS, 748px here. Per D21 that makes the number derived and the
+    // cap dictated, so assert that the article is actually sitting at its cap
+    // rather than at whatever the container allows.
+    const article = at('[data-slot="docs-shell-article"]');
+    const cap = parseFloat(getComputedStyle(article).maxWidth);
+    await expect(Number.isFinite(cap)).toBe(true);
+    await expect(Math.round(article.getBoundingClientRect().width)).toBe(Math.round(cap));
+    await expect(article.getBoundingClientRect().width).toBeLessThan(
+      article.parentElement!.getBoundingClientRect().width,
+    );
 
     // 2. The nav row truncates, and nothing carries the rest to a pointer.
     const navLabel = at('[data-slot="sidebar-nav-item"] span.truncate');

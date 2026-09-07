@@ -131,16 +131,16 @@ record as the first candidate if block scope is ever revisited.
 **gaps.md §6 — all eight restorations are actioned (+8 items).** Six are recovered errors rather
 than new scope, and the audio family was the worst of the consolidation:
 
-| # | Component | Family |
-| --- | --- | --- |
-| R1 | `env-status` | N (observability) |
-| R3 | `waveform-editor` | H (timeline) |
-| R4 | `stem-mixer` | H (timeline) |
-| R5 | `track-list` | J (library) |
-| R6 | `tts-composer` | new audio surface |
-| R7 | `voice-clone-recorder` | new audio surface |
-| T1 | `permission-prompt` | N (trust) |
-| T5 | `connection-manager` | M (account) |
+| #   | Component              | Family            |
+| --- | ---------------------- | ----------------- |
+| R1  | `env-status`           | N (observability) |
+| R3  | `waveform-editor`      | H (timeline)      |
+| R4  | `stem-mixer`           | H (timeline)      |
+| R5  | `track-list`           | J (library)       |
+| R6  | `tts-composer`         | new audio surface |
+| R7  | `voice-clone-recorder` | new audio surface |
+| T1  | `permission-prompt`    | N (trust)         |
+| T5  | `connection-manager`   | M (account)       |
 
 R2 `run-controls` is **not** restored — D9 made it moot. T1 is recorded in gaps.md as the single
 most important missing component in the catalog: every tool-calling agent needs it, and it is a
@@ -160,8 +160,8 @@ Primitives (A) and shell/composer families (B, C, D) are unaffected and safe to 
 Auditing A9–A12 before building them found **three of four rows wrong**, in three distinct ways:
 
 - **A9** — wrong membership. `sidebar-nav` uses A12 not A9, and `recommendation-card` never declared
-  it. The actual consumers are `feature-card-row` (*"Cards are A9 in a card layout"*) and
-  `workspace-switcher` (*"A9 rows with descriptions"*). Still six, a different six.
+  it. The actual consumers are `feature-card-row` (_"Cards are A9 in a card layout"_) and
+  `workspace-switcher` (_"A9 rows with descriptions"_). Still six, a different six.
 - **A10** — listed G5 `node-result`, which D9 cut. D9 never propagated to this table.
 - **A11** — had **no row at all**.
 - **A12** — five consumers claimed, one declared, plus an unlisted one (B3 `sidebar-nav`).
@@ -260,7 +260,7 @@ is a project-management pattern.
 
 **This decision is provisional, and the reason is method.** The slice read public documentation, not
 screens. It can establish that a pattern exists and what its options are; it cannot establish how it
-is drawn. Family P is therefore justified to *build* and is not on families A–O's evidentiary
+is drawn. Family P is therefore justified to _build_ and is not on families A–O's evidentiary
 footing until the screens are verified.
 
 **Clearing D1.** The three work-management entrants (Asana, Monday, ClickUp) are one category, not
@@ -313,7 +313,7 @@ dependency to add.
 
 First: a container query cannot match on the same element that establishes the container —
 `@container` and a `@md:grid-cols-2`-shaped size variant on one node compile without error but
-never fire, at any width, because the query only ever resolves against an *ancestor* query
+never fire, at any width, because the query only ever resolves against an _ancestor_ query
 container. `artifact-grid` wraps its grid in a plain `<div className="@container">` and keeps the
 breakpoint classes on the grid element itself, one level down. Any future adopter of this
 convention needs the same two-element shape — a container wrapper, a queried descendant — not one
@@ -356,30 +356,73 @@ not a flag. Field removed from manifest-types.ts and its honoring branches from
 check-contract.mts in the ds-rules retrofit
 (docs/superpowers/specs/2026-08-21-ds-rules-retrofit-design.md).
 
+### D21 · A story may pin a number its own classes dictate, never one the browser derives — 2026-09-07
+
+Two kinds of number appear in a case story and only one of them travels.
+
+**Dictated, and still pinnable.** A computed style a class sets (`minHeight`
+`"56px"`, `paddingLeft` `"10px"`), a width a class fixes (`modality-rail` at 92,
+an input at `w-28`), or a viewport the test itself moved (`window.innerWidth`
+after `page.viewport(375, 812)`). These are the component's own declarations
+read back, they are stable everywhere, and pinning them is the point.
+
+**Derived, and never pinnable.** Anything the browser computes from text — an
+intrinsic button width, a `scrollWidth` over ellipsised text, a content-sized
+box, anything in `ch` units — and anything a scrollbar participates in, which
+includes the `clientWidth` of a scrollable container and every relationship
+anchored to one.
+
+**Why.** The case-story program's gates were run on macOS and the gate runs on
+Linux. At the merge of PR #45 eleven story files failed on CI and none failed
+locally. Three machines produced three answers for the same three
+measurements, and the pinned value was a fourth environment's.
+
+**Two halves, and the second is the one that gets missed.** Converting an
+absolute pin to a relationship is necessary and not sufficient: several of the
+eleven failures were _already_ relational — `scrollWidth` equal to
+`clientWidth`, a verb `inside=true` — and failed because a 16px scrollbar moved
+the container underneath them. A relationship anchored to a derived quantity is
+exactly as unportable as an absolute one, so those get re-anchored to something
+the scrollbar does not move, not re-phrased.
+
+**Where a claim is only observable on one platform, assert it conditionally and
+record why.** `transport-controls` documents an eleven-character timecode
+overflowing a `w-28` field; on Linux it lands exactly at the field's width with
+nothing to scroll. The fixed width and the absent `title` are asserted
+everywhere; the caret-follows-clipping behaviour is asserted where there is
+something to scroll. Pinning today's spill would pin a defect, and asserting a
+scroll a tie makes impossible would pin a platform.
+
+Verified with `./scripts/linux-gate.sh`, which runs the suite in the image CI
+uses. A green run on a Mac has never said anything about CI.
+
+Recorded in `story-conventions.md`; wave 0 of
+`docs/superpowers/specs/2026-09-06-post-case-story-remediation-design.md`.
+
 ---
 
 ## 2. Components dropped from the approved spec
 
 Each appears in at most one product on the reference board.
 
-| Dropped | Reason |
-| ------- | ------ |
-| `rewrite-panel` | Single product; N alternatives side-by-side is a `generation-grid` of text results |
-| `outline-builder` | Single product |
-| `inline-suggestion` | Ghost-text completion is an editor concern, not a registry component |
-| `chunk-highlighter` | Single product |
-| `retrieval-inspector` | Covered by `run-inspector` (N5) in practice |
-| `memory-viewer` | Single product |
-| `agent-board` | Single product |
-| `eval-board` | Single product |
-| `model-compare` | `compare-viewer` (F5) covers the surface; the voting bar is app logic |
-| `response-diff` | `diff-review` (K3) covers it |
-| `review-queue` | `approval-card` (F7) plus a list; not a distinct component |
-| `voice-clone-recorder` | Single product |
-| `inpaint-canvas` | `drawing-tools` (I5) mask mode covers the input; the canvas is a host concern |
-| `timeline-editor` | Promoted to a block (D6) |
-| 10 Flow Kit node presets | Demo recipes on `ai-node` (D4) |
-| 6 modality picker/param components | `preset-grid` + `parameter-panel` (D5) |
+| Dropped                            | Reason                                                                             |
+| ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `rewrite-panel`                    | Single product; N alternatives side-by-side is a `generation-grid` of text results |
+| `outline-builder`                  | Single product                                                                     |
+| `inline-suggestion`                | Ghost-text completion is an editor concern, not a registry component               |
+| `chunk-highlighter`                | Single product                                                                     |
+| `retrieval-inspector`              | Covered by `run-inspector` (N5) in practice                                        |
+| `memory-viewer`                    | Single product                                                                     |
+| `agent-board`                      | Single product                                                                     |
+| `eval-board`                       | Single product                                                                     |
+| `model-compare`                    | `compare-viewer` (F5) covers the surface; the voting bar is app logic              |
+| `response-diff`                    | `diff-review` (K3) covers it                                                       |
+| `review-queue`                     | `approval-card` (F7) plus a list; not a distinct component                         |
+| `voice-clone-recorder`             | Single product                                                                     |
+| `inpaint-canvas`                   | `drawing-tools` (I5) mask mode covers the input; the canvas is a host concern      |
+| `timeline-editor`                  | Promoted to a block (D6)                                                           |
+| 10 Flow Kit node presets           | Demo recipes on `ai-node` (D4)                                                     |
+| 6 modality picker/param components | `preset-grid` + `parameter-panel` (D5)                                             |
 
 ---
 
@@ -449,21 +492,21 @@ NotebookLM's three simultaneously-empty panes make this concrete. The approved s
 
 Replaces §11 of the approved spec. Each wave ships components plus the block that proves them.
 
-| Wave | Scope | Rationale |
-| ---- | ----- | --------- |
-| **0** | *Shipped* — repo, CI, registry pipeline, 7 primitives, `shortcuts-sheet`, `thread-list` | — |
-| **1** | New primitives A8–A12, starting with `preview-tile` | Eleven components depend on A8; validate the API first |
-| **2** | B (app shell) + C (home) + `home-shell` | Fewest new dependencies; produces a demonstrable page fastest |
-| **3** | D (composer) + N1/N3 + `chat-shell` | Composes AI Elements; second-cheapest shell |
-| **4** | E + F + `generation-shell` + the cost contract placements | The lifecycle core; monetization states land here, not in Wave 12 |
-| **5** | ~~G + `useFlowRunner` + `flow-shell`~~ | **Cut (D9, 2026-07-31).** Wave numbers 6–12 kept unchanged |
-| **6** | I + H + `studio-shell` + `timeline-shell` | The heaviest shells; two blocks from one component set |
-| **7** | J + `library-shell` + `explore-shell` + `artifact-shell` | Three shells from one family |
-| **8** | K + `notebook-shell` + `docs-shell` | Documents and grounding |
-| **9** | L (first-run) applied across everything shipped so far | Empty states are retrofitted once, deliberately |
-| **10** | M + `settings-shell` | Plan management UI; the states already exist from Wave 4 |
-| **11** | N4–N6 (observability) + `records-shell` | Team-facing surfaces |
-| **12** | `auth-shell`, if kept | Pending the open question below |
+| Wave   | Scope                                                                                   | Rationale                                                         |
+| ------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| **0**  | _Shipped_ — repo, CI, registry pipeline, 7 primitives, `shortcuts-sheet`, `thread-list` | —                                                                 |
+| **1**  | New primitives A8–A12, starting with `preview-tile`                                     | Eleven components depend on A8; validate the API first            |
+| **2**  | B (app shell) + C (home) + `home-shell`                                                 | Fewest new dependencies; produces a demonstrable page fastest     |
+| **3**  | D (composer) + N1/N3 + `chat-shell`                                                     | Composes AI Elements; second-cheapest shell                       |
+| **4**  | E + F + `generation-shell` + the cost contract placements                               | The lifecycle core; monetization states land here, not in Wave 12 |
+| **5**  | ~~G + `useFlowRunner` + `flow-shell`~~                                                  | **Cut (D9, 2026-07-31).** Wave numbers 6–12 kept unchanged        |
+| **6**  | I + H + `studio-shell` + `timeline-shell`                                               | The heaviest shells; two blocks from one component set            |
+| **7**  | J + `library-shell` + `explore-shell` + `artifact-shell`                                | Three shells from one family                                      |
+| **8**  | K + `notebook-shell` + `docs-shell`                                                     | Documents and grounding                                           |
+| **9**  | L (first-run) applied across everything shipped so far                                  | Empty states are retrofitted once, deliberately                   |
+| **10** | M + `settings-shell`                                                                    | Plan management UI; the states already exist from Wave 4          |
+| **11** | N4–N6 (observability) + `records-shell`                                                 | Team-facing surfaces                                              |
+| **12** | `auth-shell`, if kept                                                                   | Pending the open question below                                   |
 
 **Departure from the approved spec:** it sequences Flow Kit first (waves 2–4). This proposal puts
 home and chat first because they need the fewest new primitives and yield a demonstrable, installable

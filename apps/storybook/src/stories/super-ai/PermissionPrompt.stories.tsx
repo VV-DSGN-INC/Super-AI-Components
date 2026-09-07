@@ -818,33 +818,40 @@ export const LongContent: Story = {
  * `className`, which is the same sanctioned test condition the convention
  * allows for the wrapper.
  *
- * **This measures the wide arrangement squeezed narrow, not the phone.** The
- * gate's chromium is 1200×900, so `sm:` still applies inside the 375px box:
- * the footer renders `flex-direction: row` with all four verbs side by side.
- * A real 375px viewport gets `flex-col-reverse` — the docs module's keyboard
- * note is about exactly that stack, where Allow once sits nearest the thumb
- * and the tab order still starts at Deny. So this story proves the stronger,
- * different claim (`story-conventions.md`, fact 2), and the phone's own
- * arrangement is not reachable from a story file.
+ * **This now measures the phone, not the wide arrangement squeezed narrow.**
+ * It used to do the latter: a 375px box inside the gate's 1200×900 chromium
+ * leaves `sm:` applying, so the footer stayed `flex-direction: row` with all
+ * four verbs side by side. `page.viewport(375, 812)` moves the real viewport,
+ * `sm:` stops applying, and the footer becomes the `flex-col-reverse` stack the
+ * docs module's keyboard note is actually about — Allow once nearest the thumb,
+ * tab order still starting at Deny. The claim that the phone's arrangement is
+ * unreachable from a story file was true when this was written and stopped
+ * being true when wave 8 found `page.viewport` (`story-conventions.md`, fact 2).
  *
  * What it pins: no page-level horizontal scroll, all four verbs still
  * rendered, and — the one that matters on a gate — **no verb clipped by the
  * dialog's edge**, since a verb you cannot see is a verb you cannot press.
  *
- * **How little room is left, recorded because the assertion above cannot say
- * it.** Measured at 375px: Deny 56px, Always allow 106px, Edit first 78px,
- * Allow once 94px, plus three 8px gaps and the footer's own 32px of padding
- * comes to **389px of content in a 375px dialog**. The buttons are
- * `shrink-0 whitespace-nowrap` and the footer is `-mx-4` with no `flex-wrap`,
- * so the row cannot compress; the panel has no `overflow-hidden`, so what
- * gives is the footer bar itself, which paints **14px past the dialog's right
- * edge** (footer 413..802 against a panel 413..788) with its rounded corner
- * and its top border hanging outside the card. Allow once's own right edge
- * lands at 786 against the panel's 788 — **two pixels of margin** on the most
- * consequential control. German alone ("Immer erlauben", "Zuerst bearbeiten")
- * spends that several times over. Not asserted, because pinning today's
- * spill would pin the defect; the repair is `flex-wrap` on the footer, or the
- * narrow stack applied on container width rather than viewport width.
+ * **The squeezed row is still a real defect, and it is now recorded rather
+ * than ridden.** In the old wrapper arrangement: Deny 56px, Always allow 106px,
+ * Edit first 78px, Allow once 94px, plus three 8px gaps and the footer's own
+ * 32px of padding came to **389px of content in a 375px dialog**. The buttons
+ * are `shrink-0 whitespace-nowrap` and the footer is `-mx-4` with no
+ * `flex-wrap`, so the row cannot compress. Allow once's right edge landed at
+ * 786 against the panel's 788 — **two pixels of margin** on the most
+ * consequential control.
+ *
+ * Those two pixels are gone on Linux. The macOS run that set the old
+ * expectation rendered the labels a little narrower than the CI runner does, so
+ * the "no verb clipped" assertion was passing on a 2px accident and went red the
+ * moment the gate loaded the same font CI loads. The docblock predicted it in
+ * as many words — "German alone spends that several times over" — and a font
+ * change spent it first.
+ *
+ * The defect is unchanged and still not asserted here, because pinning today's
+ * spill would pin it: the repair is `flex-wrap` on the footer, or the narrow
+ * stack applied on container width rather than viewport width. What changed is
+ * that this story no longer depends on the defect staying exactly 2px away.
  */
 export const Mobile: Story = {
   args: {
@@ -854,9 +861,32 @@ export const Mobile: Story = {
     className: "w-[375px]",
   },
   play: async () => {
+    // Dynamic, inside the play: `vitest/browser` throws on evaluation outside
+    // Browser Mode, so a top-level import takes the whole story file down in a
+    // built Storybook. See story-conventions.md fact 2.
+    const { page } = await import("vitest/browser");
+    await page.viewport(375, 812);
+
+    // The breakpoint really moved — the claim a width wrapper cannot make, and
+    // the difference between measuring a phone and measuring a narrow box.
+    await waitFor(() => expect(window.innerWidth).toBe(375));
+    await expect(window.matchMedia("(min-width: 640px)").matches).toBe(false);
+
     const panel = document.querySelector<HTMLElement>('[data-slot="permission-prompt"]')!;
     const panelRect = panel.getBoundingClientRect();
-    await expect(`panel=${Math.round(panelRect.width)}px`).toBe("panel=375px");
+    // The dialog now takes its width from the viewport rather than from a
+    // wrapper, so the number is whatever 375px leaves after the scrollbar the
+    // platform draws — 375 with macOS overlay scrollbars, 370 with classic
+    // ones. The claim is that it fills the phone without exceeding it.
+    await expect(panelRect.width).toBeLessThanOrEqual(375);
+    await expect(panelRect.width).toBeGreaterThan(340);
+    await expect(panelRect.right).toBeLessThanOrEqual(window.innerWidth + 1);
+
+    // `sm:flex-row` no longer applies, so the footer is the phone's stack.
+    const footer = document.querySelector<HTMLElement>(
+      '[data-slot="permission-prompt-allow-once"]',
+    )!.parentElement!;
+    await expect(getComputedStyle(footer).flexDirection).toBe("column-reverse");
 
     // No sideways scroll at 375px on the page. (The panel's own `scrollWidth`
     // is structurally larger than its `clientWidth` in every story, because

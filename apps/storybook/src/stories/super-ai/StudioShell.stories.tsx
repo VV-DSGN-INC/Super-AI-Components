@@ -143,7 +143,9 @@ const INSPECTOR: StudioShellProps["inspector"] = {
         id: "layout",
         label: "Layout",
         content: (
-          <PropertyRow label="X">{(id) => <Input id={id} defaultValue="120" inputMode="numeric" />}</PropertyRow>
+          <PropertyRow label="X">
+            {(id) => <Input id={id} defaultValue="120" inputMode="numeric" />}
+          </PropertyRow>
         ),
       },
     ],
@@ -153,7 +155,9 @@ const INSPECTOR: StudioShellProps["inspector"] = {
 const ARTBOARD = (
   <div className="bg-card text-card-foreground flex aspect-video w-full max-w-2xl flex-col justify-center gap-3 rounded-lg border p-10 shadow-sm">
     <p className="text-3xl font-semibold">Northwind, Series A</p>
-    <p className="text-muted-foreground text-sm">The calm position is uncontested. Here is what it is worth.</p>
+    <p className="text-muted-foreground text-sm">
+      The calm position is uncontested. Here is what it is worth.
+    </p>
   </div>
 );
 
@@ -930,7 +934,19 @@ export const LongContent: Story = {
     }
     // The preset tile is the tightest of the three: it shows an eighth of the
     // name the panel, the grid and the strip are all pointing at.
-    await expect(widths.join(" ")).toBe("53/444 88/444 124/444");
+    //
+    // All three render the same string, so they share one scrollWidth; what
+    // differs is how much each shows. scrollWidth is the text's own advance and
+    // moves with the font stack — 444 against the Google-hosted Geist, 428
+    // self-hosted, 411 on the Linux runner — so per D21 assert the shape of the
+    // claim rather than one build's rendering of it.
+    const shown = labels.map((el) => ({ visible: el.clientWidth, full: el.scrollWidth }));
+    await expect(new Set(shown.map((s) => s.full)).size).toBe(1);
+    const [preset, grid, strip] = shown;
+    await expect(preset.visible).toBeLessThan(grid.visible);
+    await expect(grid.visible).toBeLessThan(strip.visible);
+    // "an eighth of the name": the tightest tile shows a sliver of the whole.
+    await expect(preset.visible / preset.full).toBeLessThan(0.2);
 
     // 3. The rail label keeps the whole name for assistive tech. What it does
     //    not do is paint — see the description; not asserted, because a zero
