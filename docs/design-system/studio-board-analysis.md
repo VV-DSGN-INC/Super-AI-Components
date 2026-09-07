@@ -2,7 +2,7 @@
 
 **Scope:** one pattern axis — the frame, its panels, the information architecture and the navigation
 between home, project list, editor and settings — read across six products in three app types.
-**Read:** started 2026-09-07. **Status:** 3 of 6 products read (Spline and Tripo in full, Descript with its editor pending).
+**Read:** started 2026-09-07. **Status:** 4 of 6 products read (ElevenLabs Studio, Spline and Tripo in full; Descript without its editor). Suno, Runway and Meshy have no session — see §1.1.
 **Spec:** [`2026-09-07-studio-layout-ia-slice-design.md`](../superpowers/specs/2026-09-07-studio-layout-ia-slice-design.md).
 **Decision:** D22 in [decisions.md](decisions.md), written when the read is complete.
 
@@ -33,7 +33,7 @@ re-measured.
 | Product | Type | Role | Session | Read on |
 | --- | --- | --- | --- | --- |
 | Descript | video | pilot; on the primary board | signed in after Nick cleared the onboarding questionnaire | 2026-09-07 |
-| ElevenLabs Studio | voice | named by Nick | signed in | |
+| ElevenLabs Studio | voice | named by Nick | signed in, after Nick cleared the platform chooser | 2026-09-07 |
 | Suno | music | sibling of ElevenLabs | no session at the 2026-09-07 check (public landing page) | |
 | Runway | video | sibling of Descript | no session at the 2026-09-07 check (app loads as guest, editor and projects gated) | |
 | Spline | 3D | named by Nick; on the primary board | signed in after Nick's sign-in, later the same day | 2026-09-07 |
@@ -97,6 +97,10 @@ Swaps, blocked stops and revisits, one line each.
 - 2026-09-07 Tripo has no settings page: the avatar menu is the settings surface (Community Profile,
   API, an inline Notification toggle); its "nick · Free" row is display only. Recorded as-is.
 - 2026-09-07 Tripo ⌘K tested on the home stop after the walk: no palette.
+- 2026-09-07 ElevenLabs editor substituted: every project in Studio's list resolves to "You don't
+  have access to this project" (they belong to another workspace), so the **Text to Speech tool
+  workspace** was read as the editor stop and is labelled as such in §2.2. It is a tool workspace,
+  not a project editor, and the two are not interchangeable for the depth-to-editor row.
 - 2026-09-07 Descript editor not reached: Recents, Personal and General are all empty, and the one
   project open in Nick's own browser belongs to another account (`You need permission`). Creating a
   project is outside the walk. Revisit once a project exists.
@@ -155,7 +159,54 @@ account menu carries an Appearance entry (descript-home-03).
 
 ### 2.2 ElevenLabs Studio
 
-Not read yet.
+**Read** 2026-09-07 · **DPR** 2 · **viewport** 1440 × 900 · **stops** home `elevenlabs.io/app/home` ·
+projects `/app/studio` · editor **substituted**: `/app/speech-synthesis/text-to-speech`, a tool
+workspace, because every project the account lists belongs to another workspace (§1.4) · settings
+`/app/settings`, a full page.
+**Product's own names:** the app is a platform (ElevenCreative · ElevenAgents · ElevenAPI); projects =
+Studio's "Recent Projects", editor = a tool workspace, settings = "Settings".
+
+| Id | Stop | Shows |
+| --- | --- | --- |
+| elevenlabs-home-01 | home | on arrival: sidebar 256 with a pinned tool list, header with ⌘K search, Feedback, Docs, Ask, Assets, notifications, profile; content with Speech · Image · Video · Sound Effects · Music mode tabs |
+| elevenlabs-home-02 | home | ⌘K: a real command palette, 720 × 470, "Search for commands" with Quick actions (Create a voice, Generate speech, Transcribe audio) |
+| elevenlabs-projects-01 | projects | Studio on arrival: title, Upload and New blank project, a create-video omnibox with attach, then a horizontally scrolling row of task cards |
+| elevenlabs-projects-02 | projects | Recent Projects in grid view: search field, Created by / Video only filter chips, grid/list toggle, cards 366 × 256 |
+| elevenlabs-projects-03 | projects | the same list in list view: Title · Created · Created by · Role columns with a download and an overflow action per row |
+| elevenlabs-editor-01 | editor | the Text to Speech workspace: sidebar, header, a centred text area with eight prompt chips, and a 500-wide right panel on its Settings tab (Voice, Model, Speed, Stability, Similarity, Style, Language Override, Output Format) |
+| elevenlabs-editor-02 | editor | the sidebar collapsed to a 56-wide icon rail; the header and content take the width |
+| elevenlabs-editor-03 | editor | the right panel's History tab, empty: "Your generated speech will appear here" |
+| elevenlabs-settings-01 | settings | Settings as a full page inside the frame: Profile · Workspaces · Connected Apps, with e-mail, name, plan and sharing sections |
+| elevenlabs-back-01 | back | home again, reached from the sidebar's Home entry |
+
+| Field | Home | Projects | Editor (tool workspace) | Settings |
+| --- | --- | --- | --- | --- |
+| Frame · archetype | console (MDS): fixed sidebar, header spanning the rest, content below; S1 app home with mode tabs (elevenlabs-home-01) | console, same frame (elevenlabs-projects-01) | console plus a docked right settings panel; S6 generation workspace, the config on the right rather than the left (elevenlabs-editor-01) | console; settings is a page in the content column, not a dialog (elevenlabs-settings-01) |
+| Frame · regions | sidebar (logo, nav, pinned tools, more-tools, invite promo, developers, upgrade, platform-switcher) · header (search, feedback, docs, ask, assets, notifications, profile) · content (mode tabs, hero, cards) | sidebar · header · content (title, actions, omnibox, task-card row, project list) | sidebar · header · content (text area, prompt chips) · settings-panel (tabs: settings · history) | sidebar · header · content (page tabs, sections) |
+| Frame · fixed / flexible | sidebar fixed 256, `position: fixed`; header fixed 50 tall, starting at x 256; content flexes | same | same, plus a right panel that is fixed at a breakpoint width (`w-[420px] xl:w-[500px]`, measured 500) | same |
+| Frame · widths | sidebar 256 (nav 255, `#main-nav`); header 1184 × 50 at x 256 `header`; nav list 255 × 614 | same sidebar and header; project cards 366 × 256 | sidebar 256 → **56 collapsed**; right panel 500 at x 940 `section[class*="w-[420px]"]`, 850 tall; palette 720 × 470 at (360, 180) | sidebar 256; header at x 256 |
+| Panels · resizable | none | none | **none**: a computed-cursor scan found no resize handle anywhere; the right panel changes width only at the `xl` breakpoint | none |
+| Panels · collapsible | the sidebar collapses to a **56-wide icon rail** from a button at the header's left edge (elevenlabs-editor-02) | same | same | same |
+| Panels · dock / float | none | none | the settings panel is docked and does not undock | none |
+| Panels · tabbed | content mode tabs (Speech · Image · Video · Sound Effects · Music) | none | **right panel: Settings · History** (`[role=tab]`) | page tabs (Profile · Workspaces · Connected Apps) |
+| Panels · remembered | n/a | grid/list choice not re-tested after navigation | not tested | n/a |
+| IA · sections | Home · Voices · Studio · Flows · Templates · Assets; Pinned (Text to Speech · Sound Effects · Image & Video · Voice Isolator · Voice Changer · Music · Speech to Text · Dubbing · Audiobooks) · More tools; then Developers, Upgrade, and a platform switcher | same sidebar | same sidebar | Profile · Workspaces · Connected Apps |
+| IA · depth to editor | 1 click to a pinned tool; a project would be 2 (Studio, then a card) but none opens | 1 click from a card, not verified: every listed project returns "You don't have access" | — | n/a |
+| IA · surface kind | page; ⌘K = modal palette; the platform switcher is a menu (ElevenCreative · ElevenAgents · ElevenAPI) | page | page | **page**, not a dialog: the only product here that gives settings its own place in the frame |
+| Nav · global | sidebar 256, persistent on every stop including the tool workspace | same | **kept**, unlike Spline | same |
+| Nav · local | mode tabs | filter chips, grid/list toggle | right-panel tabs | page tabs |
+| Nav · contextual | none | none | the header shows the tool's name at its left; no breadcrumb | the header shows "Settings / Profile" |
+| Nav · palette | **⌘K, a real command palette** with Quick actions, not a file search (elevenlabs-home-02) | same | same | same |
+| Nav · home ↔ editor | — | — | **nothing is replaced.** The sidebar and header persist; only the content column and the right panel change (elevenlabs-home-01 vs elevenlabs-editor-01) | n/a |
+| AI · placement | the whole sidebar is a list of AI tools; the content's mode tabs pick a modality | a create-video omnibox with attach at the top of Studio, and a task-card row (faceless video, captions, dub, voiceover, video to music) | **the right panel is the AI configuration**: voice picker, model picker with an upsell to a newer model, four parameter sliders, language override, output format; the centre is the prompt, with eight starter chips | Connected Apps |
+| Captures | elevenlabs-home-01 · elevenlabs-home-02 | elevenlabs-projects-01 · elevenlabs-projects-02 · elevenlabs-projects-03 | elevenlabs-editor-01 · elevenlabs-editor-02 · elevenlabs-editor-03 | elevenlabs-settings-01 |
+
+**The way back:** the sidebar's Home entry, which never left (elevenlabs-back-01). Kept: everything
+but the content column. Replaced: the content column.
+**Seen, not counted:** a platform switcher pinned to the sidebar's foot, listing three products
+(ElevenCreative, ElevenAgents, ElevenAPI); an "Ask" button in the header beside Docs; a pinned-tools
+section whose entries each carry an unpin control; an "Introducing Image & Video generation" promo
+card inside the tool's settings panel; an upsell row inside the model picker ("Try Eleven v3").
 
 ### 2.3 Suno
 
