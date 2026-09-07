@@ -10,6 +10,15 @@
 
 **Spec:** [`docs/superpowers/specs/2026-09-06-post-case-story-remediation-design.md`](../specs/2026-09-06-post-case-story-remediation-design.md)
 
+> **STATUS: done, 2026-09-07.** All eleven gates green, including the consumer
+> install test, which had not run on `main` since the case-story program landed.
+> The Storybook suite passes **131/131 on macOS and on the Linux runner image** —
+> it had never passed on both. Four things this plan got wrong, corrected in
+> place below and in the spec: the Vite convergence goes to 7 and not 8; the
+> dependency alignment moved no measurement; self-hosting the font was the
+> single largest fix rather than a null; and the conversion was **9 assertions
+> in 7 files**, not 173 pins in 58.
+
 ## Global Constraints
 
 - Run every gate **from the repo root**. Root `pnpm lint` and `pnpm typecheck` are turbo tasks covering docs, storybook and ds-rules; the same-named script inside a workspace is a different command.
@@ -173,8 +182,19 @@ Expected: `tailwindcss@4.3.0` and `4.3.2`; `vite@7.3.6` and `vite@8.0.16`; `@vit
 
 In `apps/storybook/package.json`:
 
-- `devDependencies.@vitejs/plugin-react`: `^5.0.0` → `^6.0.2`, matching `apps/docs`.
-- `devDependencies.vite`: `^7.0.0` → `^8.0.0`. `@tailwindcss/vite@4.3.2` declares `vite: ^5.2.0 || ^6 || ^7 || ^8`, so 8 is in range.
+- ~~`devDependencies.@vitejs/plugin-react`: `^5.0.0` → `^6.0.2`~~ and
+  ~~`vite`: `^7.0.0` → `^8.0.0`~~. **Both are impossible and the peer graph says
+  so.** `@storybook/react-vite@9.1.20` declares `vite: ^5.0.0 || ^6.0.0 || ^7.0.0`
+  and `@vitejs/plugin-react@6` requires `vite: ^8.0.0`, so Storybook and Vite 8
+  cannot coexist. The convergence goes the other way: **pin both workspaces to
+  `vite ^7.3.6` and `@vitejs/plugin-react ^5.2.0`**, which moves `apps/docs`
+  down rather than storybook up, and add `vite ^7.3.6` to `packages/ds-rules`,
+  whose vitest otherwise pulls Vite 8 in on its own.
+- Pin the Tailwind trio **exactly**, not by caret: `tailwindcss`,
+  `@tailwindcss/vite` and `@tailwindcss/postcss` all to `4.3.2`.
+  `@tailwindcss/vite` pins `tailwindcss` to an exact version and has no 4.3.3,
+  so carets resolve the siblings apart and reinstall the second copy this task
+  exists to remove.
 - `devDependencies.tailwindcss`: `^4` → `^4.3.2`, so the direct dep and the one `@tailwindcss/vite` pulls resolve to a single copy.
 - Add `"@types/node": "^24.0.0"`. The workspace declares none today and inherits `20.19.42` through peer hoisting, against Node 24 in `.nvmrc` and CI.
 - Delete `devDependencies.tsx`. Its only apparent use, `apps/storybook/components.json:5`, is shadcn's JSX-flavor flag, not the package.
