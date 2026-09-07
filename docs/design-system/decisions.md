@@ -399,6 +399,26 @@ uses. A green run on a Mac has never said anything about CI.
 Recorded in `story-conventions.md`; wave 0 of
 `docs/superpowers/specs/2026-09-06-post-case-story-remediation-design.md`.
 
+### D22 · Registry components ship English strings — 2026-09-07
+
+29 registry components hardcode `aria-label` text and 6 hardcode placeholders.
+They stay hardcoded, and no component invents a labels prop.
+
+Giving all 29 a labels API is a public API change across already-published
+items, the registry has no deprecation mechanism, and nobody has asked for
+translation. The asymmetry decides it: being wrong in this direction costs a
+later additive prop, and being wrong in the other direction ships a prop shape
+to every consumer that cannot be walked back.
+
+The same reasoning holds for three components — B3 `sidebar-nav`, M4
+`pricing-table`, N11 `escalation-handoff` — whose consumer-supplied arrays are
+keyed by index because their item types carry no id. Adding one is the same
+class of public API change, so those keys are documented rather than fixed.
+
+**Revisit when** a consumer asks, or when a second language ships. At that point
+it needs its own spec, because the question is not whether to add a prop but
+whether labels belong per-component or in one provider.
+
 ---
 
 ## 2. Components dropped from the approved spec

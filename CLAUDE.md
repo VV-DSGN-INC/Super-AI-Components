@@ -101,7 +101,14 @@ Rules are typed records in `packages/ds-rules/src/`; the emitted `rules/*.json` 
 
 **Second documented limitation, and the important one:** the contrast rule catches only the _single-element_ shape. It cannot see the cross-component case — muted text in a child whose ancestor sets the muted background — and **every instance that has actually shipped broken was that shape.** `pnpm test:stories` is the real backstop.
 
-This checker is the most portable thing in the repo — the sibling `Minimal Design System` has no equivalent. If you improve it here, say so in the PR body so it can be carried across.
+This checker is the most portable thing in the repo, and the sibling
+`Minimal Design System` **now runs the same records architecture** (its PR #49):
+`rules/{schema,core,local,tokens}.ts`, all ten core bans plus COL-9, and its own
+detector. The two have not converged on a schema — Super-AI has the structural
+routing, vendored demotion and `DS_RULES_DIR` seam; MDS has a scale ratchet,
+`exemptPatterns` selector stripping and a token-gate-allow comment, and neither
+has the other's. So an improvement here is still worth carrying across: say so
+in the PR body, and say which schema it assumes.
 
 ## CI
 

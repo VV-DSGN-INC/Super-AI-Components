@@ -4,9 +4,16 @@
 This is the authoritative catalog: it supersedes §5 and §11 of the
 [design spec](../superpowers/specs/2026-06-10-super-ai-components-design.md), which are retained
 there as records. All other sections of that spec remain current.
-**Date:** 2026-07-28
+**Catalog today: 116 shipped, nothing planned, nothing building.** The dated notes below are the
+record of how it got there, not its current size — read them as history and take the count from
+`apps/docs/lib/catalog.manifest.ts`, which `check:contract` reconciles.
+
+**2026-07-28:** first derivation.
 **2026-07-31:** the node builder — family G, `useFlowRunner`, O5 `flow-shell` — was **cut from
-scope** (decision D9 in [decisions.md](decisions.md)). Active catalog: **99 items** (was 110).
+scope** (decision D9 in [decisions.md](decisions.md)), taking the then-active catalog to 99 items.
+**2026-08-11:** family P (data views) entered separately from the frozen A–O count (D18).
+**2026-09-06:** the case-story program closed; every shipped item carries its eight case names or an
+annotated skip.
 
 This directory documents a re-derivation of the component catalog from a reference board of real AI
 products, together with the concept model, per-component requirements, and the Figma artifacts that
@@ -14,7 +21,7 @@ visualise them.
 
 ## Why this exists
 
-The approved design spec defines a 109-item catalog organised by **modality kit** (writing, image,
+The approved design spec defined a 109-item catalog organised by **modality kit** (writing, image,
 audio, video). Analysis of the reference board showed that organisation hides duplication: the
 Writing, Image, Audio and Video kits are four descriptions of the same three components with
 different content poured in.
@@ -25,7 +32,7 @@ by — **app type** and **pattern type** — and applies one inclusion test thro
 > A component earns registry status only if it appears in **three or more unrelated products** on
 > the reference board. Anything appearing in one product is a demo, not a registry item.
 
-The result is the same order of magnitude (110 items) with a different composition: more primitives,
+The result was the same order of magnitude (110 items at the time of the recut) with a different composition: more primitives,
 far fewer near-duplicate leaves, and 14 layout archetypes instead of 4.
 
 ## Documents
@@ -34,8 +41,8 @@ far fewer near-duplicate leaves, and 14 layout archetypes instead of 4.
 | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [reference-board-analysis.md](reference-board-analysis.md) | What the reference board contains, section by section; the products observed; the anatomy extracted from each app type and pattern family                             |
 | [concept-model.md](concept-model.md)                       | The layer model (L0–L4), primitive fan-out, the asset lifecycle loop, and the six cross-cutting contracts                                                             |
-| [catalog.md](catalog.md)                                   | The full catalog — 99 active items after D9: name, purpose, key states/variants, shadcn base, per family                                                              |
-| [component-specs.md](component-specs.md)                   | Per-component design requirements for families A–N (86 active items: 12 primitives + 74 components; G retained as a cut record)                                       |
+| [catalog.md](catalog.md)                                   | The full catalog — **116 shipped items** across families A–P, plus 11 cut on the record (D9): name, purpose, key states/variants, shadcn base, per family             |
+| [component-specs.md](component-specs.md)                   | Per-component design requirements for families A–N; G retained as a cut record                                                                                        |
 | [block-specs.md](block-specs.md)                           | Per-block requirements for family O — the 14 layout archetypes                                                                                                        |
 | [figma-board-map.md](figma-board-map.md)                   | What lives where on the Figma boards, and how to navigate them                                                                                                        |
 | [decisions.md](decisions.md)                               | Decisions taken, decisions still open, and a revised sequencing proposal                                                                                              |

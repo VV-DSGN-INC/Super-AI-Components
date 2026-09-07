@@ -35,6 +35,11 @@ integrator runs the full gates and commits centrally.
 **Do run**, from `apps/docs`: `pnpm vitest run registry/super-ai/<name>.test.tsx`,
 `pnpm typecheck`, `pnpm check:tokens`.
 
+**User-facing strings a component owns are written in English, at the call
+site.** Do not invent a labels prop, a translation hook, or a message map — see
+D22. A string a consumer must change belongs in an existing content prop, not in
+a new internationalisation surface.
+
 ## Compose before you build
 
 Read the registry before writing anything. A component that reimplements a
