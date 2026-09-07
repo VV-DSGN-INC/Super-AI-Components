@@ -794,6 +794,42 @@ the `weeeha` GitHub account. Nothing in this round has shipped to production.
 
 ## 8. Composition gaps found by family O — the fan-out's most useful output
 
+> **Wave 3 of the post-case-story remediation closed five of these on 2026-09-07**
+> (branch `claude/wave-3-registry-sweeps`, gates green, not pushed):
+>
+> - **`hover-card.tsx` has a reduced-motion branch.** The bare
+>   `motion-reduce:animate-none` this file recommends is **inert** on a Base UI
+>   popup — `data-open:animate-in` is a data-attribute selector and wins on
+>   specificity, so `animation-name` reads back `enter`. The paired
+>   `motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none`
+>   is the form that works, and is what alert-dialog, dialog and tooltip already
+>   use. `citation-ref`'s `ReducedMotion` asserts it.
+> - **`model-picker`'s listbox is named**, from the same `label` prop that names
+>   the trigger. The name lands on Base UI's `List`, not the Popup that carries
+>   `data-slot="model-picker-content"` — an assertion querying the slot reads the
+>   wrong element and fails against a correct fix.
+> - **The `matchesQuery` divergence is gone.** `settings-dialog` exports the
+>   string-matching core; the shell deleted its copy. They still search different
+>   field sets, which is correct, but no longer with different rules.
+> - **Nine reduced-motion guards** where something actually moves, and
+>   `initials` promoted to a lib item. `asset-detail`'s prompt segments are keyed
+>   on their character offset.
+>
+> **Still open here:** the vendored sidebar's RTL mirroring, the tooltip that eats
+> an Escape, the notebook chat pane's scroll container (a dependency limit — see
+> below), roving tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar`,
+> and the logical-direction sweep across 32 files. The last two were deliberately
+> **not** attempted at the end of a long session: a roving tabIndex has RTL,
+> wrapping and disabled-item edge cases, and half-shipping a keyboard pattern into
+> a published registry is worse than leaving it recorded.
+>
+> Two duplicates are recorded as **deliberate, not debt**:
+> `usePrefersReducedMotion`'s four copies are all in `registry/marketing`, where
+> `gen-registry.mts` emits every item with `registryDependencies: []` and exactly
+> one file — a marketing component structurally cannot depend on another registry
+> item. `EMBEDDABLE_SHELL` and `SIDEBAR_FILLS_SHELL` are two string literals; a
+> cross-item dependency costs a consumer more than thirty characters of Tailwind.
+
 The block brief's rule — **when a composed component does not fit, report it, do
 not fork it** — held for all twelve builders. Nobody reimplemented a composed
 component; every mismatch came back as a labelled sibling or a documented
