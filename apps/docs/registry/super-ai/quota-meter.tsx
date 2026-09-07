@@ -100,7 +100,10 @@ function QuotaMeter({ resources, nearLimitAt = 0.8, compact = false, className, 
               <div
                 data-slot="quota-meter-bar"
                 style={{ width: `${percent}%` }}
-                className={cn("h-full rounded-full transition-[width]", BAR[state])}
+                className={cn(
+                  "h-full rounded-full transition-[width] motion-reduce:transition-none",
+                  BAR[state],
+                )}
               />
             </div>
 

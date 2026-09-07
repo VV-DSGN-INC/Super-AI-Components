@@ -114,7 +114,7 @@ function GenerationQueueItemRow({
     (state === "queued" ? (
       <Skeleton aria-hidden data-slot="generation-queue-icon-queued" className="size-4 rounded-full" />
     ) : state === "running" ? (
-      <Loader2 aria-hidden className="size-4 animate-spin" />
+      <Loader2 aria-hidden className="size-4 animate-spin motion-reduce:animate-none" />
     ) : (
       STATE_ICON[state]
     ));

@@ -6,7 +6,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const rainbowButtonVariants = cva(
-  "marketing-rainbow-button peer relative inline-flex cursor-pointer items-center justify-center gap-2 font-medium whitespace-nowrap transition-transform focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
+  "marketing-rainbow-button peer relative inline-flex cursor-pointer items-center justify-center gap-2 font-medium whitespace-nowrap transition-transform motion-reduce:transition-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {

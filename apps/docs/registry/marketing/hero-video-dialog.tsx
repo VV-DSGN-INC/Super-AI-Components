@@ -118,10 +118,10 @@ function HeroVideoDialog({
         <img
           src={thumbnailSrc}
           alt={thumbnailAlt}
-          className="block w-full transition-transform duration-300 group-hover:scale-[1.02]"
+          className="block w-full transition-transform duration-300 motion-reduce:transition-none group-hover:scale-[1.02]"
         />
         <span className="absolute inset-0 flex items-center justify-center">
-          <span className="bg-background/80 flex size-16 items-center justify-center rounded-full border backdrop-blur transition-transform duration-300 group-hover:scale-110">
+          <span className="bg-background/80 flex size-16 items-center justify-center rounded-full border backdrop-blur transition-transform duration-300 motion-reduce:transition-none group-hover:scale-110">
             <Play className="text-foreground ml-0.5 size-6" aria-hidden="true" />
           </span>
         </span>

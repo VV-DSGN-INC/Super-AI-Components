@@ -134,14 +134,19 @@ export const Compact: Story = {
  *
  * Not written for this component, deliberately:
  *
- * // case-skip: ReducedMotion — no animation, and the one transition cannot run in a story
+ * // case-skip: ReducedMotion — the branch exists, but a story cannot make it run
  * Nothing in the tree uses `animate-*`. The only motion is `transition-[width]`
  * on the bar, which fires when a consumer re-renders with a new `used` — a
  * story sets its width once from static args, so the transition never runs and
- * there is no reduced-motion branch to document. Guarding it would mean adding
- * `motion-reduce:transition-none`, which exists nowhere in this registry
- * against 45 `transition-*` usages; that is a repo-wide posture, not this
- * component's fix.
+ * there is nothing for an assertion to read.
+ *
+ * The bar now carries `motion-reduce:transition-none`. This skip used to say
+ * that class "exists nowhere in this registry ... that is a repo-wide posture,
+ * not this component's fix", and deferred it. The posture was settled by
+ * `story-conventions.md` fact 3 — add the class where something moves, not to
+ * look thorough — and a bar that slides to a new value is something moving. So
+ * the guard is present for the consumer who re-renders; what stays absent is a
+ * story able to exercise it.
  *
  * // case-skip: KeyboardOrder — the tree contains no focusable element at all
  * Rows are divs and spans; `role="progressbar"` is not focusable and nothing

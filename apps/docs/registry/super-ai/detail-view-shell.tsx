@@ -207,7 +207,7 @@ export function DetailViewShell({
           showCloseButton={false}
           aria-label={ariaLabel}
           className={cn(
-            "flex w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 transition-[max-width] duration-200 ease-out",
+            "flex w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 transition-[max-width] duration-200 ease-out motion-reduce:transition-none",
             /* The frame grows when a conversation arrives, and the Dialog zooms in
                on open. Both are motion. The `data-*` halves have to be restated
                because a bare `motion-reduce:animate-none` loses the source-order
