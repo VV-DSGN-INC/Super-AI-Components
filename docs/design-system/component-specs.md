@@ -12,6 +12,7 @@ Wireframes for every entry are on the working board, column 4 — see
 # A · Primitives (L2)
 
 ## A1 `kbd` — keycap chip
+
 **Base:** Kbd · **Variants:** single · combo · sequence
 
 - Platform-aware: callers pass semantic keys (`mod`), and the chip renders ⌘ on macOS, Ctrl
@@ -24,6 +25,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** Pro tools earn keyboard UI — a cheatsheet is table stakes. Descript, CapCut, Spline, Playground.
 
 ## A2 `cost-chip` — per-action spend
+
 **Base:** Badge, Tooltip · **States:** estimate · confirmed · insufficient · rate form
 
 - Unit-agnostic: credits, GPU-minutes, tokens. The unit is a prop, because AI pricing is quota
@@ -34,6 +36,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** Cost disclosure appears in exactly three forms: persistent ring (Freepik, Tripo), per-action chip (ElevenLabs), pre-action line (Playground).
 
 ## A3 `date-section` — the universal grouper
+
 **Variants:** with/without count · collapsible
 
 - Relative buckets first (Today / Yesterday / Last 7 days / Older); absolute dates only past the
@@ -45,6 +48,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** Threads (Manus, Claude), generations (Midjourney), artifacts, scenario lists (Make).
 
 ## A4 `choice-chips` — ring-selected chip group
+
 **Base:** Toggle-group · **Content:** numeric · text · preview-content
 
 - Single- and multi-select from one component. Role switches between radio and checkbox, and
@@ -55,6 +59,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** Visual parameters get visual pickers, never dropdowns: Midjourney styles, CapCut filters, Freepik presets.
 
 ## A5 `filter-bar` — category chips + add-filter + filters button
+
 **Base:** Button, Badge
 
 - Remove buttons are siblings of the chip label, not nested inside it — assistive tech needs two
@@ -66,6 +71,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** Filtering has a scale ladder: chips (CapCut, Claude Artifacts, Canva) → faceted rail (Midjourney Organize).
 
 ## A6 `field-row` — the inspector DNA
+
 **Base:** Label, Slider, Select, Switch · **Controls:** slider+unit · select · toggle · colour · xy-pair
 
 - Label · control · unit · reset are four slots on one grid, so every inspector in the system aligns
@@ -78,6 +84,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** CapCut, Canva, Spline and Tripo all ship this row. After `preview-tile`, the highest-reuse primitive.
 
 ## A7 `gen-settings-bar` — model · aspect · resolution · duration · batch
+
 **Base:** Select, Toggle-group · **Presentations:** inline · compact · node-docked
 
 - Segments are model-derived. An image model removes duration; a video model adds it. The bar is
@@ -88,6 +95,7 @@ Wireframes for every entry are on the working board, column 4 — see
 **Evidence:** CapCut, Freepik, ElevenLabs Flows, Playground and Tripo all ship a variant of exactly this.
 
 ## A8 `preview-tile` — the load-bearing primitive
+
 **Base:** Aspect-ratio, Skeleton · **Content:** image · video · colour · text · 3D ·
 **States:** default · selected · locked · loading · failed
 
@@ -103,6 +111,7 @@ grids (E4), `below` for title-under-thumbnail (C4), `none` for frame strips (H5)
 out of scope — see gaps.md §4 and D11.
 
 ## A9 `entity-row` — icon + title + description
+
 **Base:** Item · **Variants:** plain · selectable · with-badge · with-chevron · with-switch · disabled
 
 - Icon · title · description · trailing slot. The trailing slot takes a badge, chevron, switch or
@@ -115,6 +124,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** After the card, the most-repeated pattern on the board. Manus skills, Freepik AI tools, Zapier starters, Tripo settings, Lovable connectors.
 
 ## A10 `stat-readout` — compact key→value metadata
+
 **Presentations:** 2-col grid · inline rows
 
 - Two presentations of one component. Column count is a prop, not a fork.
@@ -125,6 +135,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Midjourney, Playground and Freepik all attach seed, sampler, guidance and model to the asset — the recipe-card pattern.
 
 ## A11 `reset-affordance` — the ↺ / ◇ beside every editable value
+
 **Base:** Button, Tooltip · **States:** modified · at-default · keyframed · group-level · modified-dot
 
 - Three states share one slot: modified (reset active), default (dimmed or absent), keyframed
@@ -136,6 +147,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** CapCut, Canva, Spline and Tripo. Without it, reset becomes a context menu nobody finds.
 
 ## A12 `section-header` — group title + action + count + collapse
+
 **Base:** Collapsible
 
 - Title · count · action · collapse are four optional slots on one baseline, so stacked sections read
@@ -151,6 +163,7 @@ out of scope — see gaps.md §4 and D11.
 # B · App shell & navigation
 
 ## B1 `app-sidebar`
+
 **Base:** shadcn Sidebar · **Widths:** expanded · icon-rail · mobile-drawer
 
 - Owns arrangement (switcher, nav, promo, footer), not sidebar mechanics.
@@ -160,6 +173,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Descript, Zapier, Spline, CapCut, Manus, Midjourney — six products, one arrangement.
 
 ## B2 `workspace-switcher`
+
 **Base:** Dropdown-menu, Avatar · **Flavours:** workspace list · multi-product with descriptions
 
 - Two flavours from one component: a checked list, or A9 rows with descriptions.
@@ -170,6 +184,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Descript, CapCut, Spline, Make, Lovable. First element in every sidebar on the board.
 
 ## B3 `sidebar-nav`
+
 **Base:** Sidebar, Badge · **Trailing slot:** count · tier badge · unread dot · running spinner · external-link
 
 - Section labels are A12 at its smallest size, not a bespoke caption style.
@@ -179,6 +194,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Lovable settings, Spline, Descript, Manus.
 
 ## B4 `modality-rail` `NEW`
+
 **Base:** Toggle-group, Tooltip
 
 - Eight to fourteen items, icon over label, with an overflow chevron rather than a scrollbar in a
@@ -191,6 +207,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** CapCut, Canva, Fotor, Simplified, Tripo, Spline. The defining element of the studio shell.
 
 ## B5 `promo-card`
+
 **Base:** Card · **Flavours:** upgrade · invite/refer · update-available · quota warning
 
 - Four flavours, one component. The art slot is optional in all of them.
@@ -200,6 +217,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Descript, Spline, Zapier, Claude, Manus.
 
 ## B6 `thread-list` `SHIPPED`
+
 **Base:** Sidebar, Dropdown-menu
 
 - Rename commits on blur as well as Enter. Losing a rename because you clicked away is the most
@@ -211,6 +229,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Manus, Claude, ChatGPT, Descript. Shipped in Wave 0.
 
 ## B7 `app-topbar` `NEW`
+
 **Base:** Breadcrumb, Button-group · **Configurations:** document context · editor context
 
 - One component, two configurations. Document context leads with breadcrumb + privacy; editor
@@ -222,6 +241,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** LTX Studio, CapCut, Canva, Spline, Freepik, Descript.
 
 ## B8 `account-menu` `NEW`
+
 **Base:** Dropdown-menu, Radio-group
 
 - Identity block on top, sign-out last, separated by rules. Conventional order; do not reinvent it.
@@ -235,6 +255,7 @@ out of scope — see gaps.md §4 and D11.
 # C · Home & launcher
 
 ## C1 `hero-omnibox` `NEW`
+
 **Base:** Textarea, Button · **States:** idle · focused · generating · locked
 
 - The whole card is the control. `locked` swaps the textarea for a paywall CTA in place — the
@@ -245,6 +266,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Descript, Zapier Copilot, CapCut, Manus, Claude — five of five App Home screens.
 
 ## C2 `suggestion-chips`
+
 **Composes:** `@ai-elements/suggestion`
 
 - Composes rather than reimplements — the cleanest example of the L1 boundary in the catalog.
@@ -254,6 +276,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Descript, CapCut, Manus, Claude, Zapier.
 
 ## C3 `feature-card-row` `NEW`
+
 **Base:** Card, Carousel
 
 - Cards are A9 in a card layout — the same four slots, stacked vertically.
@@ -263,6 +286,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Descript, Zapier, CapCut, Spline.
 
 ## C4 `recent-grid` `NEW`
+
 **Built on:** A8 · **Base:** Card
 
 - Thumbnail · title · edited-ago · duration badge. All optional except the title; card height fixed
@@ -273,6 +297,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Descript, Spline, CapCut, Canva, Midjourney.
 
 ## C5 `recommendation-card` `NEW`
+
 **Base:** Card, Dialog
 
 - Two levels: a one-line row in the feed, and a modal explaining inputs and steps before you commit.
@@ -287,6 +312,7 @@ out of scope — see gaps.md §4 and D11.
 # D · Composer & context
 
 ## D1 `media-prompt-bar`
+
 **Presentations:** floating · docked · node-embedded · **State:** locked
 
 - Three presentations of one component. Floating collapses the settings strip; node-embedded drops
@@ -297,6 +323,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Freepik, ElevenLabs Flows, CapCut, Playground, Runway.
 
 ## D2 `reference-strip` `NEW`
+
 **Roles:** reference · first frame · last frame · video ref · character
 
 - Slots are typed and role-labelled. The role IS the data — it changes what the model does.
@@ -306,6 +333,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Freepik, Runway, ElevenLabs, CapCut all place typed references ABOVE the prompt.
 
 ## D3 `context-chips`
+
 **Base:** Badge · **States:** resolved · resolving · unresolved
 
 - Chips are references, not text. Deleting a chip removes the context.
@@ -315,6 +343,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Claude, Manus, Cursor, Lovable. Shares machinery with D1 and G4.
 
 ## D4 `mode-tabs` `NEW`
+
 **Base:** Toggle-group · **Range:** 2–5 modes
 
 - Mode changes the interpretation of the prompt, not the model. Keeping E2 separate makes both
@@ -325,6 +354,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** CapCut Standard/Director, Claude Chat/Cowork, Manus Design/Build, Spellbook Ask/Draft/Review.
 
 ## D5 `quote-reply`
+
 **Sources:** text range · image region · table cell · timeline range
 
 - The quote carries a stable anchor, not just the text. If the source is edited, the quote must still
@@ -335,6 +365,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Claude, Notion AI, Spellbook, Descript.
 
 ## D6 `skill-menu` `NEW`
+
 **Base:** Command, Popover
 
 - Rows are A9; the hover preview is the differentiator. A skill you cannot see the output of is a
@@ -345,6 +376,7 @@ out of scope — see gaps.md §4 and D11.
 **Evidence:** Freepik skills menu, Manus plugins, Claude skills, Zapier actions.
 
 ## D7 `slot-summary` `NEW`
+
 **Base:** A9, Badge · **Sources:** stated · inferred · defaulted · retrieved
 
 **The Dialog contract's first consumer.** Everything here is that contract made visible; if the
@@ -367,8 +399,8 @@ contract changes, this component changes with it.
   before a side effect: "Cancel these 3 orders", not "Confirm". It is also where the confirmation
   ladder attaches — reversible actions may skip this surface entirely.
 
-**Not D3 `context-chips`.** Context chips are references the *user* attached. A slot summary is task
-state the *system* resolved. They look similar and mean opposite things about who is accountable for
+**Not D3 `context-chips`.** Context chips are references the _user_ attached. A slot summary is task
+state the _system_ resolved. They look similar and mean opposite things about who is accountable for
 the value being right.
 
 **Not A10 `stat-readout`.** A10 is read-only key/value metadata. Every row here needs a source mark,
@@ -385,6 +417,7 @@ settled.
 # E · Generation & parameters
 
 ## E1 `generation-panel`
+
 **Base:** Card, Collapsible
 
 - Vertical order is fixed across every tool: inputs → directions → presets → settings → cost +
@@ -395,6 +428,7 @@ settled.
 **Evidence:** Freepik apps, Tripo, Playground, getimg, Simplified.
 
 ## E2 `model-picker`
+
 **Base:** Select, Popover, Card · **Variants:** dropdown · expanded-cards · node-inline
 
 - Models are grouped by task signature (text→video, image→video), not alphabetically.
@@ -404,6 +438,7 @@ settled.
 **Evidence:** ElevenLabs Flows, Freepik, Tripo, Playground.
 
 ## E3 `parameter-panel`
+
 **Base:** Field, Slider, Tabs
 
 - Endpoints speak human — "More variable ↔ More literal", never "0.0 ↔ 1.0". The raw number stays
@@ -415,6 +450,7 @@ settled.
 **Evidence:** Playground, Freepik, Tripo, CapCut. Parameters teaching inline is a derived rule.
 
 ## E4 `preset-grid` `NEW`
+
 **Built on:** A8
 
 - Presets are data, not code. Style, palette, environment, avatar and filter grids are one component
@@ -425,6 +461,7 @@ settled.
 **Evidence:** Midjourney styles, CapCut filters, Freepik environments, Simplified filters, Fotor text effects.
 
 ## E5 `run-button`
+
 **Base:** Button, Progress · **States:** idle · estimating · running · done · failed · insufficient · locked
 
 - Progress is drawn inside the button. A separate bar makes people wonder whether the button is live.
@@ -434,6 +471,7 @@ settled.
 **Evidence:** Freepik "Generate 55", Tripo, Playground, ElevenLabs.
 
 ## E6 `generation-queue`
+
 **Base:** Skeleton, Progress
 
 - Slots are reserved at submit time, at final aspect ratio, so results fill in place.
@@ -443,6 +481,7 @@ settled.
 **Evidence:** Midjourney, Freepik, Playground, getimg.
 
 ## E7 `member-gate-row` `NEW`
+
 **Base:** Switch, Badge
 
 - Locked features stay visible with a tier badge. Hiding paid features hides the reason to pay.
@@ -452,6 +491,7 @@ settled.
 **Evidence:** Tripo members-only rows, Lovable tier badges, Spline Pro features, CapCut crown marks.
 
 ## E8 `generation-wizard` `NEW`
+
 **Base:** Dialog, Tabs
 
 - Every step is skippable and says so. A wizard that traps you is how a feature gets abandoned.
@@ -460,11 +500,62 @@ settled.
 
 **Evidence:** Descript AI speaker flow, Tripo model setup, Canva magic flows.
 
+## E9 `tts-composer` `RESTORED`
+
+**Base:** Textarea, A6 · **States:** per-segment regenerate · segment select · whole-script play
+
+- A script is a sequence of independently editable segments, not one textarea with a settings panel
+  beside it. Each segment owns its text, voice, emotion, speed and generation status.
+- **Per-segment regenerate is the primary loop**, and the reason this is a component at all. A take
+  three segments in is good and the fourth is wrong; a control that can only regenerate the whole
+  script forces you to discard the good takes to fix the bad one, and spends the credits again to do
+  it. A `Regenerate all` bolted onto a textarea is the failure mode, not a simpler version of this.
+- Every regenerate carries its own price, through A2 `cost-chip`. Per-segment cost is what makes the
+  granularity legible rather than merely available.
+- Play and regenerate are separate controls. Auditioning a segment must never spend anything.
+- Selection is never carried by colour alone — a selected segment needs a non-colour affordance, the
+  same rule A4 `choice-chips` follows.
+
+**Boundary:** script in, audio out. Waveform-level work belongs to H6 `waveform-editor`, and the two
+must not drift into each other.
+
+**Evidence:** Restored per [gaps.md](gaps.md) R6 and [decisions.md](decisions.md) D12 — a recovered
+consolidation error rather than a board sample. No per-product screenshots were collected, so this
+entry carries no product list. **A live divergence, recorded rather than silently resolved:** the
+shipped docs module names ElevenLabs Studio and Descript in its `evidence`, which is general product
+knowledge rather than board sampling. Every other RESTORED entry uses `evidence: []` for exactly
+that reason. Either the list is defensible and the convention should say so, or it should go; do not
+copy it into a new entry until that is settled.
+
+## E10 `voice-clone-recorder` `RESTORED`
+
+**Base:** Progress, Alert-dialog · **States:** prompt script · level metering · retake · consent capture
+
+- **Consent is a gate in the flow, not a checkbox in settings.** The callback that can start cloning
+  fires only from inside the consent step, never from an earlier happy path. A voice clone made
+  without the speaker's knowledge is not a UI defect; this component exists to make it structurally
+  hard to reach.
+- The level meter proves the microphone is picking up sound before a take is kept, and it must
+  announce itself as text as well as paint. A meter that only moves is unusable to a speaker who
+  cannot see it.
+- Retake is a first-class action on the recorded sample, not a restart of the flow. A guided
+  recording that discards progress on a bad take will not be finished.
+- Recording state is never signalled by colour alone.
+
+**Boundary:** capture and consent only. What the clone is then used for belongs to E9
+`tts-composer`; provider configuration belongs to M7 `connection-manager`.
+
+**Evidence:** Restored per [gaps.md](gaps.md) R7 and [decisions.md](decisions.md) D12 — flagged a
+stretch item in the approved spec, then dropped entirely, then restored. A recovered consolidation
+error rather than a board sample; no per-product screenshots were collected, so implementations use
+`evidence: []` rather than inventing a product list.
+
 ---
 
 # F · Results & assets
 
 ## F1 `result-card` `NEW`
+
 **Built on:** A8 · **Base:** Card · **States:** idle · streaming · done · failed · locked
 
 - Card geometry is identical in all states. Only the media slot and footer change, so grids never
@@ -477,6 +568,7 @@ settled.
 **Evidence:** Absorbs the spec's `video-gen-card`, queue slots and failed-card variants.
 
 ## F2 `generation-grid`
+
 **Built on:** F1 + A3
 
 - Density is a prop, not a fork: eight-up in a library, four-up in a generation panel.
@@ -486,6 +578,7 @@ settled.
 **Evidence:** Midjourney Organize, Freepik generations, Playground history, getimg.
 
 ## F3 `asset-detail` `NEW`
+
 **Base:** Dialog, A10
 
 - The highlighted span is the point: prompts are editable material, not a caption. Selecting a phrase
@@ -496,6 +589,7 @@ settled.
 **Evidence:** Provenance contract. Midjourney, Playground, Freepik.
 
 ## F4 `action-stack` `NEW`
+
 **Base:** Dropdown-menu, A9
 
 - Each row carries its own cost chip. Chaining is where credits vanish fastest.
@@ -505,6 +599,7 @@ settled.
 **Evidence:** Cross-tool handoff is the signature interaction: ElevenLabs, Freepik, Topaz, CapCut.
 
 ## F5 `compare-viewer`
+
 **Base:** Resizable · **Modes:** side · single · wipe
 
 - Panes are numbered as well as labelled. In wipe or single view the label disappears; the number
@@ -515,6 +610,7 @@ settled.
 **Evidence:** Topaz Video AI, Freepik upscale, Playground compare, Midjourney variants.
 
 ## F6 `render-queue`
+
 **Base:** Table, Progress
 
 - Rows carry their output spec (codec, resolution, fps). A queue showing only filenames cannot be
@@ -525,6 +621,7 @@ settled.
 **Evidence:** Topaz Video AI, CapCut export queue, Descript. Preview-before-commit economics.
 
 ## F7 `approval-card`
+
 **Base:** Card, Button-group · **Verbs:** Confirm · Edit · Regenerate · Skip
 
 - Four verbs, always in the same order. Confirm and Skip are terminal; Edit and Regenerate return you
@@ -542,6 +639,7 @@ settled.
 > retained as a record; working code parked unmerged on `wave-2-flow-foundation`.
 
 ## G1 `flow-canvas`
+
 **Extends:** `@ai-elements/canvas`
 
 - Pan, zoom, marquee and viewport persistence are inherited, never reimplemented.
@@ -552,6 +650,7 @@ settled.
 **Evidence:** OpenAI Agent Builder, Freepik Flows, ElevenLabs Flows, LTX Studio.
 
 ## G2 `ai-node`
+
 **Base:** Card · **States:** idle · running · done · failed · locked · collapsed
 
 - The body is a slot: G5 when done, G4 when idle, a skeleton while running. One node type, not ten
@@ -562,6 +661,7 @@ settled.
 **Evidence:** The single biggest saving in the recut — Flow Kit from 25 items to 9 + a hook.
 
 ## G3 `typed-handle` + `typed-edge`
+
 **States:** valid · invalid · dangling · selected · animated-while-running
 
 - Edge colour derives from the SOURCE handle in v1. Deriving from the target would change colour
@@ -573,6 +673,7 @@ settled.
 **Evidence:** Freepik Flows, ElevenLabs Flows, OpenAI Agent Builder.
 
 ## G4 `node-prompt`
+
 **Base:** Textarea
 
 - @-mentions resolve to upstream nodes, not files. Typing `@Image 1` wires a dependency, which is why
@@ -584,6 +685,7 @@ settled.
 **Evidence:** Freepik Flows, ElevenLabs Flows.
 
 ## G5 `node-result` `NEW`
+
 **Wraps:** F1
 
 - Same six states and slots as F1, minus the hover action row a canvas cannot support.
@@ -594,6 +696,7 @@ settled.
 **Evidence:** ElevenLabs Flows LLM nodes, Freepik nodes with an inline audio toggle.
 
 ## G6 `model-bar`
+
 **Base:** Button-group · **Is:** A7 + Run split-button
 
 - One engine, two presentations — not two components that look similar.
@@ -604,6 +707,7 @@ settled.
 **Evidence:** ElevenLabs Flows, Freepik Flows. Zero products put it in the header.
 
 ## G7 `node-palette`
+
 **Base:** Command, Popover
 
 - Groups are semantic (Core / Tools / Logic / Data), not alphabetical.
@@ -614,6 +718,7 @@ settled.
 **Evidence:** OpenAI Agent Builder popover, n8n-style docked library, Freepik tool dock.
 
 ## G8 `canvas-toolbar` `NEW`
+
 **Base:** Button-group
 
 - Tools and view controls are separate clusters in separate corners.
@@ -623,6 +728,7 @@ settled.
 **Evidence:** Freepik Flows, LTX Studio, OpenAI Agent Builder, Spline.
 
 ## G9 `node-inspector`
+
 **Base:** A6, Collapsible
 
 - Rows are A6, so this and I2 align to the same grid despite unrelated content.
@@ -632,6 +738,7 @@ settled.
 **Evidence:** OpenAI Agent Builder, n8n-style builders, Freepik.
 
 ## `useFlowRunner` — headless hook
+
 **No UI.** Topological execution, per-node status, cancellation. Executor-swappable.
 
 - v1 does naive full-graph topological runs; output caching is deferred.
@@ -643,6 +750,7 @@ settled.
 # H · Timeline & transport
 
 ## H1 `transport-controls`
+
 **Base:** Button-group · **Variants:** simple · frame-accurate
 
 - Two variants, one component. Frame-accurate adds timecode, frame step and in/out; button order is
@@ -653,6 +761,7 @@ settled.
 **Evidence:** CapCut, Descript, Topaz, Freepik.
 
 ## H2 `time-ruler` `NEW`
+
 **Base:** Slider (heavily extended)
 
 - Tick density is derived from zoom. Labels thin out rather than overlapping.
@@ -662,6 +771,7 @@ settled.
 **Evidence:** CapCut, Descript, Topaz. Extracted from the spec's monolithic `timeline-editor`.
 
 ## H3 `track-lane` `NEW`
+
 **Types:** filmstrip · waveform · text · adjustment
 
 - The lane header is a fixed-width gutter with mute, solo and lock. It never scrolls horizontally.
@@ -680,6 +790,7 @@ settled.
 **Evidence:** Descript is canonical; CapCut and Premiere have since shipped text-based editing.
 
 ## H5 `frame-strip` `NEW`
+
 **Built on:** A8
 
 - One component for video frames, slide pages and artboards. Selection, reorder and add are identical.
@@ -689,6 +800,7 @@ settled.
 **Evidence:** Descript, CapCut, Canva page strip, Simplified artboards, Freepik frame conditioning.
 
 ## H6 `waveform-editor` `RESTORED`
+
 **States:** region select · zoom to sample · scrub · region actions
 
 - A region is a sample range, not a clip reference. That is the whole reason this exists: H3
@@ -702,7 +814,7 @@ settled.
   representation and keyboard adjustment, or the component is mouse-only and unusable without sight
   of it.
 
-**Boundary:** audio *editing* only. Script-in / audio-out belongs to E9 `tts-composer`, and the two
+**Boundary:** audio _editing_ only. Script-in / audio-out belongs to E9 `tts-composer`, and the two
 must not drift into each other.
 
 **Evidence:** Restored per [gaps.md](gaps.md) R3 — a recovered consolidation error, not a board
@@ -711,6 +823,7 @@ collected for it, so this entry carries no product list and its implementation s
 `evidence: []` rather than inventing one.
 
 ## H7 `stem-mixer` `RESTORED`
+
 **Base:** Slider, Progress · **States:** exclusive vs additive solo · live meters · stem lineage
 
 - Exclusive versus additive solo is a prop, not a fork. Soloing one stem may silence the others or
@@ -731,6 +844,7 @@ sample. No per-product screenshots were collected, so implementations should use
 # I · Editor surfaces
 
 ## I1 `tool-panel`
+
 **Built on:** A12, A8
 
 - Almost entirely composition, which is why it is cheap to build and to vary.
@@ -740,6 +854,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** CapCut, Canva, Fotor, Simplified, Spline — remarkably invariant anatomy.
 
 ## I2 `property-inspector`
+
 **Built on:** A6, A11
 
 - Content is selection-driven: one variant per element type, plus an empty state.
@@ -749,6 +864,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** CapCut, Canva, Spline, Tripo. F2 in the board's own Requirements table.
 
 ## I3 `context-toolbar`
+
 **Base:** Toolbar
 
 - Six to eight actions maximum. Past that it competes with the inspector.
@@ -758,6 +874,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Canva, Fotor, Spline, Notion. Selection surfaces are a family.
 
 ## I4 `ai-tools-menu`
+
 **Built on:** A9
 
 - AI actions attach to objects, not only to chats. The selection is the prompt context.
@@ -767,6 +884,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Canva Magic, Fotor AI tools, Spline AI, CapCut AI effects.
 
 ## I5 `drawing-tools` `NEW`
+
 **Base:** Toggle-group, Popover
 
 - Rails are toggle-groups with flyouts, not nested menus. Switching tool is never more than one click
@@ -781,6 +899,7 @@ sample. No per-product screenshots were collected, so implementations should use
 # J · Library, filtering & discovery
 
 ## J1 `asset-library`
+
 **Base:** Table, Toggle-group
 
 - Folders and files share one table. A separate folder pane forces thinking about storage.
@@ -790,6 +909,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Make scenarios, Spline files, Canva projects, Claude Library.
 
 ## J2 `filter-panel`
+
 **Base:** Checkbox, Collapsible
 
 - Counts beside each facet are essential. A filter that will return nothing should say so first.
@@ -809,6 +929,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Midjourney Explore, Spline Community, Pixlr, Canva templates.
 
 ## J4 `artifact-grid` `NEW`
+
 **Base:** Card
 
 - Excerpt is the load-bearing field. Auto-generated titles are unreliable; first lines are not.
@@ -819,6 +940,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Claude Artifacts, Manus Library. A new archetype with no equivalent in the spec.
 
 ## J5 `record-list` `NEW`
+
 **Base:** Table, Switch
 
 - The enable toggle is the primary control and sits in the row. These records represent things that
@@ -829,6 +951,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Make scenarios, Zapier zaps, n8n workflows.
 
 ## J6 `template-detail` `NEW`
+
 **Base:** Dialog, Carousel
 
 - Options are configured before commit, so the template is customised on the way in.
@@ -838,6 +961,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Canva template modal, Spline templates, Freepik, Pixlr.
 
 ## J7 `track-list` `RESTORED`
+
 **Base:** Table · **Columns:** artwork · tags · inline waveform · BPM · key
 
 - BPM and key are the point, not decoration. J1 `asset-library` carries generic metadata and cannot
@@ -858,6 +982,7 @@ sample. No per-product screenshots were collected, so implementations should use
 # K · Documents & knowledge
 
 ## K1 `ai-doc-block`
+
 **Base:** Card, Textarea
 
 - A real document node, not an overlay. Must survive save, reload and export as ordinary content.
@@ -867,6 +992,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Notion AI, Manus reports, Spellbook drafting, Claude artifacts.
 
 ## K2 `inline-generate-popup`
+
 **Base:** Popover, Textarea
 
 - Anchored to the caret, so the insertion point is unambiguous.
@@ -886,6 +1012,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** AI edits arrive as track changes with rationale — a derived rule. Notion AI, Spellbook, Google Docs.
 
 ## K4 `selection-toolbar`
+
 **Built on:** I3
 
 - Improve is first and visually distinct; everything else is a plain verb.
@@ -895,6 +1022,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** Notion AI, Spellbook, Google Docs, Canva Docs. The most copied AI interaction in writing tools.
 
 ## K5 `source-panel` `NEW`
+
 **Built on:** A9, Progress
 
 - The pipeline is the status: parsing → chunking → embedding → ready. A generic spinner hides which
@@ -905,6 +1033,7 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** NotebookLM sources pane, Lovable knowledge, Claude projects. Absorbs `ingestion-dropzone` and `knowledge-base`.
 
 ## K6 `citation-ref` `NEW`
+
 **Base:** Hover-card
 
 - The hovercard shows the actual quoted chunk, not just the document name.
@@ -915,10 +1044,11 @@ sample. No per-product screenshots were collected, so implementations should use
 **Evidence:** NotebookLM citations, Spellbook clause references, Manus reports.
 
 ## K7 `answer-block` `NEW`
+
 **Base:** K6, A9 · **States:** streaming · cited · partially-cited · uncited-warning
 
 - **Citations attach to the claim, not to the answer.** A citation bar under a paragraph tells you
-  the paragraph came from somewhere; it does not tell you *which sentence*. K6 inline at the claim is
+  the paragraph came from somewhere; it does not tell you _which sentence_. K6 inline at the claim is
   the unit.
 - `partially-cited` is a real state and must look different from `cited`. An answer where two of five
   claims are sourced is not a cited answer.
@@ -929,9 +1059,10 @@ sample. No per-product screenshots were collected, so implementations should use
   the text it supports reads as a load failure.
 
 **Evidence:** Glean, NotebookLM, iManage "Ask iManage", Microsoft Copilot Studio. Satisfies the
-Dialog contract's *sourced slots* obligation for retrieved values.
+Dialog contract's _sourced slots_ obligation for retrieved values.
 
 ## K8 `source-cards` `NEW`
+
 **Base:** Card, A10 · **States:** ranked · used · retrieved-unused · permission-filtered · empty
 
 - **`used` vs `retrieved-unused` is the whole component.** Showing only cited sources hides the
@@ -952,6 +1083,7 @@ in its user-facing form (D16).
 # L · First-run & onboarding
 
 ## L1 `empty-state` `NEW`
+
 **Base:** Empty · **Sizes:** page · panel · in-grid
 
 - Three sizes, one component. The in-grid variant is a tile so the grid keeps its rhythm.
@@ -961,6 +1093,7 @@ in its user-facing form (D16).
 **Evidence:** Empty contract. NotebookLM ships three simultaneously-empty panes on first load.
 
 ## L2 `coach-mark` `NEW`
+
 **Base:** Popover
 
 - The scrim has a cut-out so the anchored element stays legible. Never dim what you point at.
@@ -970,6 +1103,7 @@ in its user-facing form (D16).
 **Evidence:** CapCut yellow tips, Lovable tooltips, Airtable Omni, Spline onboarding.
 
 ## L3 `feature-announcement`
+
 **Sizes:** modal · anchored popover · inline card · dismissible chip
 
 - Escalation should match the news.
@@ -979,6 +1113,7 @@ in its user-facing form (D16).
 **Evidence:** Airtable Omni, Spline Hana, Claude usage chip, Pixlr What's New.
 
 ## L4 `whats-new` `NEW`
+
 **Base:** Dialog
 
 - Entries carry a date and a CTA that lands you in the feature, not on a marketing page.
@@ -988,6 +1123,7 @@ in its user-facing form (D16).
 **Evidence:** Pixlr What's New, Spline Updates, CapCut. The escalation target when L3 has too much to say.
 
 ## L5 `shortcuts-sheet` `SHIPPED`
+
 **Base:** Dialog, A1
 
 - Sections mirror the app's own vocabulary. A flat alphabetical list is unusable at 60+ shortcuts.
@@ -997,6 +1133,7 @@ in its user-facing form (D16).
 **Evidence:** Shipped in Wave 0. Descript, CapCut, Spline, Figma. Tripo's "View Your Model" is the controls-primer variant.
 
 ## L6 `onboarding-wizard` `NEW`
+
 **Base:** Card, Progress
 
 - Every step is skippable and the dot progress shows how many remain.
@@ -1011,6 +1148,7 @@ in its user-facing form (D16).
 # M · Account, plan & monetization
 
 ## M1 `settings-dialog` `NEW`
+
 **Base:** Dialog, Sidebar, Switch · **Variants:** dialog · full-page
 
 - Rows are label + description + control. A toggle with no description is a setting nobody changes.
@@ -1021,6 +1159,7 @@ in its user-facing form (D16).
 **Evidence:** Playground settings dialog, Lovable full-page settings, Spline, Descript.
 
 ## M2 `credits-indicator`
+
 **Base:** Badge, Progress · **Forms:** ring · counter · low · empty · with top-up
 
 - Always visible and always clickable through to plan management.
@@ -1031,6 +1170,7 @@ in its user-facing form (D16).
 **Evidence:** Freepik 414 credits, Tripo 200, Simplified 1/5 used, Descript minutes.
 
 ## M3 `quota-meter`
+
 **Base:** Progress
 
 - Per-resource rows, because AI plans meter several things and one aggregate hides the one you'll hit.
@@ -1040,6 +1180,7 @@ in its user-facing form (D16).
 **Evidence:** Zapier plan tasks, Lovable credit usage, Claude usage, Descript minutes.
 
 ## M4 `pricing-table`
+
 **Base:** Card, Toggle-group
 
 - Feature lists grouped by product area with sub-headings, not one flat list of twenty ticks.
@@ -1049,6 +1190,7 @@ in its user-facing form (D16).
 **Evidence:** Spline upgrade modal, Tripo, Lovable, Descript.
 
 ## M5 `paywall-message` `NEW`
+
 **Base:** Card
 
 - The card carries the prompt and model it WOULD have used, so upgrading resumes the exact work.
@@ -1058,6 +1200,7 @@ in its user-facing form (D16).
 **Evidence:** Freepik agent. The clearest evidence that the paywall is a state, not a Wave 12 kit.
 
 ## M6 `rate-limit-banner`
+
 **Base:** Alert
 
 - Distinguish your quota from provider capacity. Blaming the user for a busy model loses trust.
@@ -1067,6 +1210,7 @@ in its user-facing form (D16).
 **Evidence:** Claude usage limits, Midjourney queue caps, Freepik concurrency.
 
 ## M7 `connection-manager` `RESTORED`
+
 **Base:** Card, Input · **States:** not-set · valid · invalid · unreachable
 
 - Four states, and `invalid` and `unreachable` are not the same failure. A rejected key is the
@@ -1079,8 +1223,8 @@ in its user-facing form (D16).
 - Local models add hardware requirements to the same row, stated **before** the download. A model
   that downloads and then cannot run is worse than one that was never offered.
 
-**Pairs with:** N7 `env-status`, which is the runtime view of the same providers — *"reachability vs
-spend"*. Configuration and liveness are two surfaces over one set of facts and must not be able to
+**Pairs with:** N7 `env-status`, which is the runtime view of the same providers — _"reachability vs
+spend"_. Configuration and liveness are two surfaces over one set of facts and must not be able to
 disagree.
 
 **Evidence:** Added per [gaps.md](gaps.md) T5 — a trust surface where absence is a defect rather
@@ -1092,6 +1236,7 @@ screenshots, so implementations should use `evidence: []`.
 # N · Feedback, trust & observability
 
 ## N1 `feedback`
+
 **Base:** Popover, Button-group
 
 - Positive feedback is one click; negative asks why. Asking for a reason on praise suppresses the
@@ -1102,6 +1247,7 @@ screenshots, so implementations should use `evidence: []`.
 **Evidence:** Manus star rating, Claude thumbs, Playground, Freepik.
 
 ## N2 `trust-dialog` `NEW`
+
 **Base:** Alert-dialog, Checkbox
 
 - The primary action stays disabled until the trust checkbox is ticked.
@@ -1119,6 +1265,7 @@ screenshots, so implementations should use `evidence: []`.
 **Evidence:** Manus, Claude, NotebookLM, Freepik. Now a regulatory expectation as much as a convention.
 
 ## N4 `trace-timeline`
+
 **Base:** Collapsible
 
 - Bars are positioned by start time, not stacked. A waterfall that hides concurrency is a list.
@@ -1128,6 +1275,7 @@ screenshots, so implementations should use `evidence: []`.
 **Evidence:** LangSmith-style tracing, Vercel AI observability, agent debuggers.
 
 ## N5 `run-inspector`
+
 **Base:** Tabs, A10
 
 - Raw input and output are copyable JSON. Pretty-printed but uncopyable cannot go in a bug report.
@@ -1137,6 +1285,7 @@ screenshots, so implementations should use `evidence: []`.
 **Evidence:** Tracing tools. Shares A10 with F3 — provenance and observability are the same need.
 
 ## N6 `usage-dashboard`
+
 **Base:** Chart, Card
 
 - Per-model breakdown is the actionable view; total spend only says there is a problem.
@@ -1146,13 +1295,14 @@ screenshots, so implementations should use `evidence: []`.
 **Evidence:** Provider consoles. The team-facing counterpart to M2 — same data, different audience.
 
 ## N7 `env-status` `RESTORED`
+
 **Base:** Badge, A9 · **States:** ok · degraded · key-invalid · not-running
 
 - Four states because there are four different remedies. `degraded` means wait, `key-invalid` means
   go and fix a credential, `not-running` means start something locally. Collapsing them into one red
   dot tells a user that something is wrong and nothing about what to do.
 - **Reachability is not spend.** The approved spec pairs this with M2 `credits-indicator` explicitly
-  — *"reachability vs spend"* — because a run can fail with a full balance when a key has expired,
+  — _"reachability vs spend"_ — because a run can fail with a full balance when a key has expired,
   and a balance widget will never say so. That gap is why D12 restored this.
 - It is the runtime view of M7 `connection-manager`'s configuration: same providers, two surfaces,
   and they must not be able to disagree about a provider's identity.
@@ -1163,10 +1313,11 @@ screenshots, so implementations should use `evidence: []`.
 sample. No per-product screenshots were collected, so implementations should use `evidence: []`.
 
 ## N8 `permission-prompt` `RESTORED`
+
 **Base:** Alert-dialog · **Verbs:** Allow once · Always allow · Deny · **Edit first**
 
 - **Four verbs, and edit-first carries equal weight with allow.** Every framework in the agent
-  population implements approve / reject / *edit* on a paused tool call. Deny throws the agent's work
+  population implements approve / reject / _edit_ on a paused tool call. Deny throws the agent's work
   away and restarts the loop; edit-first keeps it and puts the human in the loop productively. It is
   the difference between a gate and a collaboration.
 - The prompt states **what** and **why**: the action in plain language, the full arguments, and the
@@ -1182,6 +1333,7 @@ sample. No per-product screenshots were collected, so implementations should use
 Claude Code. Amended by D16 — see [agent-board-analysis.md](agent-board-analysis.md) §5.
 
 ## N9 `autonomy-selector` `NEW`
+
 **Base:** Radio-group, A9 · **Levels:** ask every time · auto-approve reads · full auto
 
 - **Three levels, plus per-tool override.** The level is the coarse dial; the override is what makes
@@ -1200,6 +1352,7 @@ Claude Code. Amended by D16 — see [agent-board-analysis.md](agent-board-analys
 Agents. Absorbs the revocable-scope surface from N8 (D16).
 
 ## N10 `safety-block` `NEW`
+
 **Base:** Alert · **Variants:** input-blocked · output-blocked
 
 - **It must read as visibly not the assistant talking.** The population's failure mode is a refusal
@@ -1220,6 +1373,7 @@ ChatGPT, Claude. ⚠ Counted from documentation — verify against the running p
 this spec as settled.
 
 ## N11 `escalation-handoff` `NEW`
+
 **Base:** Card, A10, A12 · **States:** triggered · packet preview · queued · accepted · unavailable
 
 - **The packet is the component; the button is not.** What the receiving human gets — transcript
@@ -1241,6 +1395,7 @@ customer data + issue summary), Intercom Fin, Voiceflow, Rasa `pattern_human_han
 result in the agent slice — five unrelated products.
 
 ## N12 `task-tray` `NEW`
+
 **Base:** Sheet, A9 · **States:** running · needs-input · done · failed · empty
 
 - **`needs-input` is the state that justifies the component.** A background task blocked on an N8

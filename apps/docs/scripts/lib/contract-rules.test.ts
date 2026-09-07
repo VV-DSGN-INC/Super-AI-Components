@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  anchorErrors,
   compareExemptionLists,
   findReservedStateNames,
   findSlotErasures,
@@ -90,7 +91,13 @@ describe("parseStorybookExclusions", () => {
   });
 
   it("strips a multi-line block comment without eating the entry after it", () => {
-    const src = [`/*`, `  a long`, `  explanation`, `*/`, `"**/stories/super-ai/PreviewTile.stories.tsx",`].join("\n");
+    const src = [
+      `/*`,
+      `  a long`,
+      `  explanation`,
+      `*/`,
+      `"**/stories/super-ai/PreviewTile.stories.tsx",`,
+    ].join("\n");
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
 
@@ -146,5 +153,39 @@ describe("findReservedStateNames", () => {
   it("catches multi-word states that normalise onto a reserved name", () => {
     // statePascal strips separators and lowercases the tail: "Meta".
     expect(findReservedStateNames("x", ["META"])).toHaveLength(1);
+  });
+});
+
+describe("anchorErrors", () => {
+  const item = (name: string, specAnchor: string) => ({ name, specAnchor });
+  const SPECS = [
+    "## A1 `kbd` — keycap chip",
+    "## E1 `generation-panel`",
+    "## E10 `voice-clone-recorder`",
+  ].join("\n\n");
+
+  it("reaches a heading that continues past the id and name", () => {
+    expect(anchorErrors([item("kbd", "s.md#a1-kbd")], () => SPECS)).toEqual([]);
+  });
+
+  it("reaches a heading that is exactly the id and name", () => {
+    expect(anchorErrors([item("generation-panel", "s.md#e1-generation-panel")], () => SPECS)).toEqual([]);
+  });
+
+  it("does not let a shorter id match a longer one", () => {
+    // #e1-… must not be satisfied by the E10 heading.
+    const errors = anchorErrors([item("x", "s.md#e1-voice-clone-recorder")], () => SPECS);
+    expect(errors).toHaveLength(1);
+  });
+
+  it("reports an anchor whose heading was never written", () => {
+    const errors = anchorErrors([item("tts-composer", "s.md#e9-tts-composer")], () => SPECS);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("e9-tts-composer");
+  });
+
+  it("reports an anchor whose file does not exist", () => {
+    const errors = anchorErrors([item("kbd", "missing.md#a1-kbd")], () => undefined);
+    expect(errors[0]).toContain("missing.md");
   });
 });

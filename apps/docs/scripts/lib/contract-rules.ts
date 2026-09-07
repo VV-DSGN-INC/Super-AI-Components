@@ -183,3 +183,67 @@ export function findReservedStateNames(name: string, states: string[]): string[]
   }
   return errors;
 }
+
+/**
+ * A heading's anchor slug, GitHub's algorithm restricted to what this repo's
+ * headings actually contain: lowercase, drop anything that is not a word
+ * character, space or hyphen, then collapse whitespace runs to one hyphen.
+ * The backticks around a component name and the em dash before its description
+ * both fall out under the strip.
+ */
+export function headingSlug(heading: string): string {
+  return heading
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-");
+}
+
+/**
+ * Every `specAnchor` must reach a heading that exists.
+ *
+ * `gen-manifest.mts:167` synthesises the anchor as `<id>-<name>` from the
+ * catalog row rather than from a heading, so an item whose spec section was
+ * never written still carries a confident-looking link. E9 `tts-composer` and
+ * E10 `voice-clone-recorder` have had dead anchors since they shipped and
+ * nothing could see it.
+ *
+ * Matching is by prefix, not equality, because the anchor is only the id and
+ * name while the heading usually continues into a description: `#a1-kbd` is
+ * meant to reach `## A1 \`kbd\` — keycap chip`. The trailing hyphen on the
+ * prefix test is what stops `#a1-kbd` matching a hypothetical `a1-kbdgroup`,
+ * and what keeps `#e1-generation-panel` clear of `e10-`.
+ */
+export function anchorErrors(
+  items: { name: string; specAnchor: string }[],
+  readDoc: (file: string) => string | undefined,
+): string[] {
+  const cache = new Map<string, Set<string> | undefined>();
+  const slugsFor = (file: string) => {
+    if (!cache.has(file)) {
+      const source = readDoc(file);
+      cache.set(
+        file,
+        source === undefined
+          ? undefined
+          : new Set([...source.matchAll(/^#{1,6}\s+(.+?)\s*$/gm)].map((m) => headingSlug(m[1]))),
+      );
+    }
+    return cache.get(file);
+  };
+
+  const errors: string[] = [];
+  for (const item of items) {
+    const [file, anchor] = item.specAnchor.split("#");
+    const slugs = slugsFor(file);
+    if (slugs === undefined) {
+      errors.push(`${item.name}: specAnchor names ${file}, which does not exist`);
+      continue;
+    }
+    const reached = [...slugs].some((slug) => slug === anchor || slug.startsWith(`${anchor}-`));
+    if (!reached) {
+      errors.push(`${item.name}: specAnchor #${anchor} reaches no heading in ${file}`);
+    }
+  }
+  return errors;
+}
