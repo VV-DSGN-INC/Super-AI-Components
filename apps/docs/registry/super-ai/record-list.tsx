@@ -286,6 +286,13 @@ function RecordList({
                           // `text-muted-foreground`: the row's hover background
                           // is `bg-muted/50`, and muted text on a muted surface
                           // measures 4.34:1 against a 4.5 minimum.
+                          //
+                          // `key={i}` on purpose. `fragments` is derived here
+                          // rather than passed in, its members are plain
+                          // strings with no identity, and two of them can be
+                          // equal — so keying on the text would risk duplicate
+                          // keys, which is worse than an index. The index is
+                          // load-bearing anyway: `i > 0` places the separator.
                           <span
                             key={i}
                             data-slot="record-list-meta"
