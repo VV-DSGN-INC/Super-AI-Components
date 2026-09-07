@@ -15,7 +15,6 @@
     "@base-ui/react": "^1.5.0",
     "@radix-ui/react-use-controllable-state": "^1.2.3",
     "@shadcn/react": "^0.1.0",
-    "@xyflow/react": "^12.11.1",
     "ai": "^7.0.6",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
