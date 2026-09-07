@@ -75,24 +75,59 @@ beside it.
 
 Pinning measurements before aligning these means pinning them twice.
 
-### 2.4 Everything else, with counts
+### 2.4 What the runner image actually proved
 
-| area              | measured                                                                                                                                                                                                                                                                                                                                                                                             |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Production drift  | all 133 items served, **69 differ** from `main`'s build                                                                                                                                                                                                                                                                                                                                              |
-| Docs truth        | `README.md` says a 99-item catalog and "wave 0 ships 7 primitives"; `docs/design-system/README.md` carries four different totals (99 / 109 / 110 / 86+14), none of them 116; `CONTINUE.md` §1 is dated 2026-08-15 and names PR #29 while its own body runs to 2026-09-06 and HEAD is PR #45; §5.7 and §5.8 contradict §1; `CLAUDE.md:102` still claims the sibling repo has no token-gate equivalent |
-| Hook bug          | `.claude/hooks/session-baselines.sh:26` — `grep -c` exits 1 on zero matches, so the `echo "?"` fallback also fires and every session start prints a stray `?` line                                                                                                                                                                                                                                   |
-| Ungated tooling   | `pnpm reconcile:deps` exits 1 today on 4 drifts, all documented intent or `files:`-bundled submodules, and runs in no gate; its `RELEVANT` regex never sees `npm:` deps such as recharts. `a11y:baseline` is referenced by no current doc. `gen-manifest.mts` is invoked by nothing                                                                                                                  |
-| Dead spec anchors | E9 `tts-composer` and E10 `voice-clone-recorder` carry `specAnchor` values pointing at headings that have never existed; nothing resolves an anchor                                                                                                                                                                                                                                                  |
-| Storybook lint    | `apps/storybook`'s lint script is `echo "no lint"`, so 221 story files, roughly 83,000 lines, are never linted                                                                                                                                                                                                                                                                                       |
-| Prettier          | **630 files** are not prettier-clean. The repo-wide format is hook-denied because `check-contract.mts:189` matches guidance fields with a single-line quoted-string regex that re-wrapping breaks                                                                                                                                                                                                    |
-| Duplication       | `EMBEDDABLE_SHELL` and `SIDEBAR_FILLS_SHELL` byte-identical in 5 shells each; `usePrefersReducedMotion` copied into 4 marketing files; `matchesQuery`, `formatTimecode`, `clamp` and `initials` each defined 3 times with differing signatures; 18 duplicated names across 36 files                                                                                                                  |
-| RTL               | 44 files use physical-direction utilities, against 35 already on logical ones                                                                                                                                                                                                                                                                                                                        |
-| Motion            | 25 files carry `animate-`/`transition-` with no reduced-motion branch, against 53 that have one. Only one is a keyframe animation: `generation-queue.tsx:117`                                                                                                                                                                                                                                        |
-| Keys              | 19 index-key sites, of which 5 key consumer-supplied arrays                                                                                                                                                                                                                                                                                                                                          |
-| Keyboard          | 3 components ship Tab-per-item with a TODO for the APG roving-tabIndex pattern: `choice-chips`, `preset-grid`, `gen-settings-bar`                                                                                                                                                                                                                                                                    |
-| Strings           | 29 files ship literal `aria-label` text, 6 ship literal placeholders                                                                                                                                                                                                                                                                                                                                 |
-| Dependencies      | `@xyflow/react` plus 14 vendored files exist only for the D9-cut node-builder family; `apps/storybook`'s `tsx` and `date-fns` are unreferenced; `@types/node@20` against Node 24 in `.nvmrc` and CI; `tools/ds-architecture` sits outside the workspace globs so its own tests cannot run                                                                                                            |
+`playwright@1.60.0` is what the lockfile resolves, so `mcr.microsoft.com/playwright:v1.60.0-noble`
+is the runner. It was run against a clean `git archive` of `24d4140`, twice.
+
+**Run 1, image as shipped.** 11 test files failed against GitHub's 10. Three sampled
+measurements, next to the value the story pins and the value GitHub produced:
+
+| measurement                | macOS (pinned) | GitHub amd64 | container arm64 |
+| -------------------------- | -------------- | ------------ | --------------- |
+| `retry` button width       | 73px           | 74px         | 68px            |
+| preset label `scrollWidth` | 444px          | 472px        | 411px           |
+| url token width            | 301px          | 321px        | 284px           |
+
+Three machines, three answers, and the pinned one is a fourth environment's.
+`fc-list` reports **zero Geist faces installed** on the runner, so the only
+source of the family is the `fonts.googleapis.com` import at test time.
+
+**Run 2, with 198 Geist faces installed system-wide and fontconfig rebuilt.**
+Identical: same 11 files, and 68 / 411 / 284 again, byte for byte.
+
+That negative result is the useful one, and it changes the plan. **Vendoring
+the font does not, on its own, make these assertions portable** — so wave 0 may
+not treat it as the fix, and any step that vendors a font has to prove its
+effect by re-measuring rather than assuming it. What the two runs together
+establish is narrower and firmer: a text-metric or scrollbar-derived pixel
+value is not portable across platforms by any means available here, which is
+the argument for D21 rather than a footnote to it.
+
+It also means the container is the only honest verification of this gate, and
+one caveat travels with it: this host runs arm64 under colima, while
+`ubuntu-latest` is amd64. The container reproduces the failure _class_ and one
+more file than GitHub does. It is a fast pre-push check, not a substitute for
+CI.
+
+### 2.5 Everything else, with counts
+
+| area              | measured                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Production drift  | all 133 items served, **69 differ** from `main`'s build                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Docs truth        | `README.md` says a 99-item catalog and "wave 0 ships 7 primitives"; `docs/design-system/README.md` carries four different totals (99 / 109 / 110 / 86+14), none of them 116; `CONTINUE.md` §1 is dated 2026-08-15 and names PR #29 while its own body runs to 2026-09-06 and HEAD is PR #45; §5.7 and §5.8 contradict §1; `CLAUDE.md:102` still claims the sibling repo has no token-gate equivalent                                                                                                                            |
+| Hook bug          | `.claude/hooks/session-baselines.sh:26` — `grep -c` exits 1 on zero matches, so the `echo "?"` fallback also fires and every session start prints a stray `?` line                                                                                                                                                                                                                                                                                                                                                              |
+| Ungated tooling   | `pnpm reconcile:deps` exits 1 today on 4 drifts, all documented intent or `files:`-bundled submodules, and runs in no gate; its `RELEVANT` regex never sees `npm:` deps such as recharts. `a11y:baseline` is referenced by no current doc. `gen-manifest.mts` is invoked by nothing                                                                                                                                                                                                                                             |
+| Dead spec anchors | E9 `tts-composer` and E10 `voice-clone-recorder` carry `specAnchor` values pointing at headings that have never existed; nothing resolves an anchor                                                                                                                                                                                                                                                                                                                                                                             |
+| Storybook lint    | `apps/storybook`'s lint script is `echo "no lint"`, so 221 story files, roughly 83,000 lines, are never linted                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| Prettier          | **630 files** are not prettier-clean. The hook denies a repo-wide format on the grounds that `check-contract.mts:189`'s guidance regexes do not survive re-wrapping. **Measured, and false:** formatting all 531 source files leaves `check:tokens`, `lint` and `typecheck` green, because `\s*` spans newlines and prettier never splits a string literal. The only breakage is that prettier reformats the two files `gen-wiring.mts` emits, so they stop byte-matching their generator. Prettier-ignoring those two fixes it |
+| Duplication       | `EMBEDDABLE_SHELL` and `SIDEBAR_FILLS_SHELL` byte-identical in 5 shells each; `usePrefersReducedMotion` copied into 4 marketing files; `matchesQuery`, `formatTimecode`, `clamp` and `initials` each defined 3 times with differing signatures; 18 duplicated names across 36 files                                                                                                                                                                                                                                             |
+| RTL               | 44 files use physical-direction utilities, against 35 already on logical ones                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Motion            | 25 files carry `animate-`/`transition-` with no reduced-motion branch, against 53 that have one. Only one is a keyframe animation: `generation-queue.tsx:117`                                                                                                                                                                                                                                                                                                                                                                   |
+| Keys              | 19 index-key sites, of which 5 key consumer-supplied arrays                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Keyboard          | 3 components ship Tab-per-item with a TODO for the APG roving-tabIndex pattern: `choice-chips`, `preset-grid`, `gen-settings-bar`                                                                                                                                                                                                                                                                                                                                                                                               |
+| Strings           | 29 files ship literal `aria-label` text, 6 ship literal placeholders                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| Dependencies      | `@xyflow/react` plus 14 vendored files exist only for the D9-cut node-builder family; `apps/storybook`'s `tsx` and `date-fns` are unreferenced; `@types/node@20` against Node 24 in `.nvmrc` and CI; `tools/ds-architecture` sits outside the workspace globs so its own tests cannot run                                                                                                                                                                                                                                       |
 
 Clean, and worth recording as clean: no `any`, no `@ts-ignore`, no skipped or
 `.only` tests, no raw colour literals in registry source, no render-time global
@@ -106,20 +141,36 @@ contracts want decision records; `decisions.md` ends at D20, and the
 2026-09-04 ladder review earmarked a D21 for its stage 08 — **confirm the number
 is free before writing, and take the next two if it is not.**
 
-### D21 · A case story asserts relationships, never absolute pixels
+### D21 · A case story may pin a number its own classes dictate, never one the browser derives
 
-The 173 absolute pins become the greater/less/`toBeCloseTo` idioms the suite
-already uses more than 500 times. A story may assert that a label is clipped,
-that one edge precedes another, that a value sits inside a tolerance. It may not
-assert that something is 73 pixels wide.
+Two kinds of number appear in these stories and only one of them travels.
 
-**Why:** an absolute pixel value encodes the authoring machine's fonts and
-scrollbars, and this repo authors on macOS and gates on Linux. The precision was
-never real. The cost is a small loss of specificity where a number was genuinely
-the point, which §4's wave 0 handles case by case rather than mechanically.
+**Dictated, and still pinnable.** A computed style that a Tailwind class sets —
+`minHeight` of `"56px"`, `paddingLeft` of `"10px"` — a width the class fixes, such
+as `modality-rail`'s 92, or a viewport the test itself moved, such as
+`window.innerWidth` after `page.viewport(375, 812)`. These are the component's own
+declarations read back. They are stable everywhere and pinning them is the point.
+
+**Derived, and never pinnable.** Anything the browser computes from text: an
+intrinsic button width, a `scrollWidth` over ellipsised text, the box of a
+content-sized token. Anything a scrollbar participates in: the `clientWidth` of a
+scrollable container, and every relationship that then depends on it.
+
+**Why:** §2.4 measured the same three values four ways across three machines,
+and installing the missing font changed nothing. The precision was never real.
+
+**The half that matters most is the second one.** Several of the eleven failures
+are _already_ relationship assertions — `scrollWidth` equal to `clientWidth`, a
+verb `inside=true`, `bpm visible: true` — and they fail because a 16px scrollbar
+moved the container underneath them. So converting absolute pins to relationships
+is necessary and **not sufficient**: a relationship anchored to a derived
+quantity is just as unportable. Where a scrollbar is the variable, the assertion
+has to be rewritten to measure something the scrollbar does not move, or the
+story has to stop asserting it.
 
 This is a change to `story-conventions.md`, which is what stops wave 3
-reintroducing the problem.
+reintroducing the problem, and it is why wave 0's conversion is done per site
+with a measurement rather than by pattern-matching on `toBe`.
 
 ### D22 · Registry components ship English strings; a labels API is deferred
 
@@ -147,28 +198,33 @@ Each wave states its exit gate. A wave is not done because its diff looks right.
 **Nothing else in this program can be verified until this is green**, because the
 consumer test sits behind the failing step.
 
-Four steps, in order, because each moves what the next measures:
+Five steps, in order, because each moves what the next measures:
 
-1. **Align the dependency graph.** One Tailwind version, one Vite major
+1. **Make the container run a one-command script.** Every measurement from here
+   is taken in `mcr.microsoft.com/playwright:v1.60.0-noble`, never on the host.
+   This is step one rather than step three because nothing after it can be
+   judged from a Mac.
+2. **Align the dependency graph.** One Tailwind version, one Vite major
    (`@vitejs/plugin-react` to `^6`), `@types/node` to 24 to match `.nvmrc` and
    CI. Drop `apps/storybook`'s unreferenced `tsx` and `date-fns`. Remove
    `@xyflow/react` and its 14 vendored files, which serve only the D9-cut family
    and are excluded from the a11y gate. Bring `tools/ds-architecture` inside the
-   workspace globs or record why it stays out.
-2. **Self-host the fonts.** Replace the `fonts.googleapis.com` import at
-   `apps/storybook/src/index.css:4` with a vendored Geist, so the gate stops
-   depending on the network and on runner font resolution.
-3. **Establish the Linux reference locally.** `playwright@1.60.0` is what the
-   lockfile resolves, so `mcr.microsoft.com/playwright:v1.60.0-noble` reproduces
-   the runner. Docker runs on the build machine. Every measurement in step 4 is
-   taken there, not on the host.
-4. **Convert the pins.** 58 files, fanned out roughly eight ways by family. Each
-   agent converts its files to D21's idiom and watches each rewritten assertion
-   fail against a deliberately broken value before keeping it — the repo's
-   existing record-don't-pin discipline, which is what makes a guard mean
-   something.
-
-Then write D21 into `story-conventions.md`.
+   workspace globs or record why it stays out. Re-run the container and record
+   the new failure set before touching a single story: Tailwind emits the CSS
+   these assertions measure, so this step can move them.
+3. **Self-host the fonts.** Replace the `fonts.googleapis.com` import at
+   `apps/storybook/src/index.css:4` with a vendored Geist. §2.4 shows this does
+   **not** fix the failures, so it is scoped as what it is: removing a network
+   dependency from a blocking gate. Re-measure after it; do not assume its effect.
+4. **Convert the assertions**, per D21, in the 58 files that carry a derived
+   pixel value — including the ones already written as relationships, which fail
+   for the scrollbar reason and need re-anchoring rather than re-phrasing. Fanned
+   out roughly eight ways by family. Each agent works against the container, and
+   watches each rewritten assertion fail on a deliberately broken value before
+   keeping it.
+5. **Write D21 into `story-conventions.md`** and add the container script to the
+   documented pre-push routine, so the next Mac-authored story is measured on
+   Linux before it lands.
 
 **Exit gate:** all eleven CI steps green on GitHub, and the same eleven green in
 the Linux container locally. The consumer install test running at all is the
@@ -205,12 +261,15 @@ must be ordered against wave 3.
 - **Turn on Storybook lint.** Replace `echo "no lint"` with a real eslint config.
   Expect findings across 221 files; this is why it follows wave 0, which is
   rewriting 58 of them.
-- **Prettier, last in the wave.** First make `check-contract.mts`'s guidance
-  matching parse-based rather than a single-line regex, then reformat the 630
-  files in one commit that changes nothing else, then remove the hook's denial.
+- **Prettier, last in the wave.** Prettier-ignore the two `gen-wiring.mts`
+  outputs, format the 630 files in one commit that changes nothing else, retire
+  the hook's denial, and add `format:check` to CI. The prerequisite this bullet
+  used to carry — rewriting the guidance matching — does not exist: §2.5 records
+  the measurement.
 
 **Exit gate:** `pnpm format:check` clean, `check:contract` green with the new
-rules, root `pnpm lint` covering storybook, all eleven CI steps green.
+rules, root `pnpm lint` covering storybook, and all **twelve** CI steps green
+once `format:check` joins them.
 
 ### Wave 3 — registry sweeps
 
