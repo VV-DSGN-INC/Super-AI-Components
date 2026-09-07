@@ -77,9 +77,10 @@ export const Collapsed: Story = {
  */
 export const Expanded: Story = {
   args: { ...BASE_ARGS, defaultOpen: true },
-  play: async ({ canvasElement }) => {
+  play: async () => {
     // The dialog renders in a portal, outside canvasElement, so this story
-    // asserts against the document rather than the story canvas.
+    // asserts against the document rather than the story canvas — which is why
+    // it takes no canvas argument at all.
     const dialog = await within(document.body).findByRole("dialog", { name: "Automate your weekly report" });
     await expect(within(dialog).getAllByRole("listitem")).toHaveLength(3);
   },
@@ -455,7 +456,11 @@ function RejectingParent() {
 export const EmptyLabel: Story = {
   args: {
     title: "Summarize this week's changes",
-    steps: ["Pick the folder to summarize", "Choose how far back to look", "Review the summary and turn it on"],
+    steps: [
+      "Pick the folder to summarize",
+      "Choose how far back to look",
+      "Review the summary and turn it on",
+    ],
     onTry: () => {},
     onSaveForLater: () => {},
     onDismiss: () => {},
@@ -483,7 +488,8 @@ export const LongContent: Story = {
   args: {
     ...BASE_ARGS,
     title: "Turn last week's numbers into a Monday morning summary and post it before the standup",
-    description: "Reads the sheet you updated on Friday, writes the summary, and posts it to the channel you pick.",
+    description:
+      "Reads the sheet you updated on Friday, writes the summary, and posts it to the channel you pick.",
     steps: [
       "Connect your Sheets and Slack accounts",
       "Review the summary format and confirm which channel it posts to before turning it on",
@@ -590,4 +596,3 @@ export const Boundary: Story = {
     </div>
   ),
 };
-

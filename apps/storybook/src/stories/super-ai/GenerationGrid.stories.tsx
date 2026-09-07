@@ -312,8 +312,6 @@ export const ReducedMotion: Story = {
     />
   ),
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
     // idle + streaming + queued all reach A8's skeleton; done and failed do not.
     const skeletons = Array.from(
       canvasElement.querySelectorAll<HTMLElement>('[data-slot="preview-tile-loading"]'),

@@ -330,7 +330,6 @@ export const KeyboardOrder: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const root = canvasElement.querySelector<HTMLElement>('[data-slot="record-list"]')!;
 
     // Distinct names, computed the way a screen reader would: a duplicate makes
     // `getByRole` throw rather than silently pass.

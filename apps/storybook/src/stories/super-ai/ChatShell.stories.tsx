@@ -1005,7 +1005,6 @@ export const Mobile: Story = {
   args: FULL_ARGS,
   play: async ({ canvasElement }) => {
     const { page } = await import("vitest/browser");
-    const body = within(document.body);
     const railAt = () => canvasElement.querySelector('[data-slot="app-sidebar"]');
 
     // Before: the desktop branch, at the width the gate renders everything at.

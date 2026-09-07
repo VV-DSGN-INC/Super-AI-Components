@@ -926,7 +926,6 @@ export const LongContent: Story = {
       canvasElement.querySelectorAll<HTMLElement>('[data-slot="preview-tile-label"]'),
     ).filter((el) => el.textContent === LONG_TITLE);
     await expect(labels).toHaveLength(3);
-    const widths = labels.map((el) => `${el.clientWidth}/${el.scrollWidth}`);
     for (const el of labels) {
       const style = getComputedStyle(el);
       await expect(`${style.whiteSpace}/${style.textOverflow}`).toBe("nowrap/ellipsis");
