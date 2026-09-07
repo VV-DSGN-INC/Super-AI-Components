@@ -2,7 +2,7 @@
 
 **Scope:** one pattern axis — the frame, its panels, the information architecture and the navigation
 between home, project list, editor and settings — read across six products in three app types.
-**Read:** started 2026-09-07. **Status:** 2 of 6 products read (Spline with its editor pending, Tripo).
+**Read:** started 2026-09-07. **Status:** 3 of 6 products read (Spline and Tripo in full, Descript with its editor pending).
 **Spec:** [`2026-09-07-studio-layout-ia-slice-design.md`](../superpowers/specs/2026-09-07-studio-layout-ia-slice-design.md).
 **Decision:** D22 in [decisions.md](decisions.md), written when the read is complete.
 
@@ -32,7 +32,7 @@ re-measured.
 
 | Product | Type | Role | Session | Read on |
 | --- | --- | --- | --- | --- |
-| Descript | video | pilot; on the primary board | no session at the 2026-09-07 check (sign-in wall at `web.descript.com/authenticate`) | |
+| Descript | video | pilot; on the primary board | signed in after Nick cleared the onboarding questionnaire | 2026-09-07 |
 | ElevenLabs Studio | voice | named by Nick | signed in | |
 | Suno | music | sibling of ElevenLabs | no session at the 2026-09-07 check (public landing page) | |
 | Runway | video | sibling of Descript | no session at the 2026-09-07 check (app loads as guest, editor and projects gated) | |
@@ -90,13 +90,19 @@ Swaps, blocked stops and revisits, one line each.
 - 2026-09-07 pilot order: Descript landed on an onboarding questionnaire and ElevenLabs on a
   platform chooser, both settings the walk may not answer, so **Spline was walked first** and wrote
   sheet v1. Descript still writes nothing new unless it forces a row (§1.3 marks those).
-- 2026-09-07 Spline editor not reached: the workspace has no files, and creating one is outside the
-  walk. Revisit once a file exists.
+- 2026-09-07 Spline editor reached on a second pass, after Nick created a starter file; the first
+  pass had found an empty workspace.
 - 2026-09-07 Meshy swapped for Tripo: Meshy had no session (redirects to its public community page);
   Tripo, its listed alternate, was signed in. Every id and column says Tripo.
 - 2026-09-07 Tripo has no settings page: the avatar menu is the settings surface (Community Profile,
   API, an inline Notification toggle); its "nick · Free" row is display only. Recorded as-is.
 - 2026-09-07 Tripo ⌘K tested on the home stop after the walk: no palette.
+- 2026-09-07 Descript editor not reached: Recents, Personal and General are all empty, and the one
+  project open in Nick's own browser belongs to another account (`You need permission`). Creating a
+  project is outside the walk. Revisit once a project exists.
+- 2026-09-07 the pilot moved again: Descript was blocked at a sign-in wall and then an onboarding
+  questionnaire when the slice started, so **Spline wrote sheet v1** and Descript was read third,
+  under it. No row was forced by Descript.
 
 ---
 
@@ -104,7 +110,48 @@ Swaps, blocked stops and revisits, one line each.
 
 ### 2.1 Descript
 
-Not read yet.
+**Read** 2026-09-07 · **DPR** 2 · **viewport** 1440 × 900 · **stops** home `web.descript.com/` ·
+projects `/projects?filter=recent-projects` and `/workspaces/<id>` · editor **not reached** (no
+project in either workspace, §1.4) · settings `/view/settings/account?active=general`, a routed
+dialog.
+**Product's own names:** the whole app is a "Drive"; projects = Recents / a workspace's project list,
+editor = the project editor (not reached), settings = "Settings" in the account menu.
+
+| Id | Stop | Shows |
+| --- | --- | --- |
+| descript-home-01 | home | on arrival: header bar, drive sidebar, "What can I help you with?" hero omnibox with attach, an Auto model chip, Get started, seven task chips and a prompt-templates link; Record and New project above it |
+| descript-home-02 | home | help menu: Help center · Feature requests · What's new · Contact support · Search actions… ⌘K · Keyboard shortcuts ⌥⌘K · licenses · Debug · version |
+| descript-home-03 | home | account menu: avatar, name, email, Appearance, Settings, Log out |
+| descript-projects-01 | projects | Recents, empty: All · Owned by me tabs, Filters, Grid view / List view toggle, Record and New project |
+| descript-projects-02 | projects | the Personal workspace, empty, in list view: table columns Name · Duration · Created · Last Viewed · Favorite, plus Folders and Recordings groups |
+| descript-settings-01 | settings | Settings as an 800 × 720 dialog over the drive, own URL, own 240-wide settings sidebar |
+
+| Field | Home | Projects | Editor | Settings |
+| --- | --- | --- | --- | --- |
+| Frame · archetype | console (MDS): full-width header bar over a left sidebar and content; S1 app home with a hero omnibox (descript-home-01) | console, same frame (descript-projects-01) | not reached | dialog over the console, with its own sidebar (descript-settings-01) |
+| Frame · regions | header (search, credits, minutes, upgrade, avatar, help) · sidebar (drive switcher, nav, workspaces, tools) · plan-banner · content (hero omnibox, task chips, feature cards, tour card) | header · sidebar · plan-banner · content (title, tabs, filters, view toggle, project list) | not reached | dialog: settings-nav · settings-content |
+| Frame · fixed / flexible | header fixed 48 tall; sidebar fixed 240; hero fixed 860 wide, centred; content flexes | same | not reached | dialog fixed 800 × 720 at (320, 90) |
+| Frame · widths | header 1440 × 48 `[role=banner]`; sidebar 240 `[data-testid=drive-sidebar]`; content 1094 `#maincontent` (inset from the 1190-wide scroll area); hero 860 wide at y 201 | same header and sidebar; content 1094 `#maincontent` | not reached | dialog 800 × 720 `[class*="AccountDialog-module--hdZvAA"]`; settings nav 240 `[class*="AccountDialog-module--DpInk1"]` |
+| Panels · resizable | none | none | not reached | none |
+| Panels · collapsible | a sidebar-toggle button sits at the header's far left (descript-home-01); not exercised | same | not reached | n/a |
+| Panels · dock / float | none | none | not reached | n/a |
+| Panels · tabbed | none | All · Owned by me | not reached | nav sections (General · Account · Drive) |
+| Panels · remembered | n/a | not testable: both lists are empty | not reached | n/a |
+| IA · sections | drive switcher; Home · Recents · Shared with me; Workspaces (Personal · General); Tools (Brand Studio · Media library · Rooms recordings · AI speakers · Layout packs · Learn Descript) | same sidebar | not reached | Settings · General · Account (Profile · AI models · Notifications · Connected apps · Descript MCP `New` · API tokens) · Drive (Preferences · Members · Plan · Usage · Invoices) |
+| IA · depth to editor | not measured: no project exists; New project or a task chip creates one in a single action | 1 click from a row, not verified | not reached | n/a |
+| IA · surface kind | page; help and account are menus | page | not reached | routed dialog: own URL, overlay, closes back to the drive |
+| Nav · global | left sidebar 240, plus a full-width header that carries global search | same | not reached | the dialog keeps the drive visible behind it |
+| Nav · local | none | All · Owned by me tabs, Filters, grid/list toggle | not reached | settings nav |
+| Nav · contextual | none | page title only, no breadcrumb | not reached | close (×) |
+| Nav · palette | **⌘K "Search actions…", with ⌥⌘K for a keyboard-shortcuts sheet** — both advertised in the help menu (descript-home-02) | same | not reached | n/a |
+| Nav · home ↔ editor | not reached | not reached | not reached | n/a |
+| AI · placement | the home's primary action: hero omnibox with attach, an Auto model chip and Get started, over seven task chips (clean up, avatar, rough cut, social clips, translate and dub, slides to video, animated video) plus a prompt-templates link; three feature cards below | none | not reached | AI models as a settings section; Descript MCP as a new one |
+| Captures | descript-home-01 · descript-home-02 · descript-home-03 | descript-projects-01 · descript-projects-02 | — | descript-settings-01 |
+
+**The way back:** not reached (no editor).
+**Seen, not counted:** a free-plan upgrade banner across the content column and a credits/minutes
+readout in the header (descript-home-01); a "Take a tour of Descript" card at the foot of home; the
+account menu carries an Appearance entry (descript-home-03).
 
 ### 2.2 ElevenLabs Studio
 
@@ -121,47 +168,56 @@ Not read yet.
 ### 2.5 Spline
 
 **Read** 2026-09-07 · **DPR** 2 · **viewport** 1440 × 900 · **stops** home `app.spline.design/home` ·
-projects `/files` · editor **not reached** (empty workspace, §1.4) · settings
-`/workspace-settings/<id>`, a routed dialog opened from the workspace switcher.
+projects `/files` · editor `/file/<id>` · settings `/workspace-settings/<id>`, a routed dialog opened
+from the workspace switcher.
 **Product's own names:** projects = "My files" (the sidebar's "Projects" are folders inside it),
-editor = the scene editor (not reached), settings = "Settings" in the workspace switcher menu.
+editor = the scene editor, settings = "Settings" in the workspace switcher menu.
 
 | Id | Stop | Shows |
 | --- | --- | --- |
 | spline-home-01 | home | on arrival: sidebar, page header with create actions, "Welcome back" hero omnibox with three suggestion chips |
 | spline-home-02 | home | ⌘K: a workspace file search modal ("Search files in this workspace"), not a command palette |
-| spline-home-03 | home | workspace switcher menu open: Settings · Invite · account email · workspace list · Create Workspace · Upgrade Plan · Theme › · Download Desktop App · Archive · Help & Feedback › · Logout |
-| spline-projects-01 | projects | on arrival, empty workspace: "How would you like to start?" with 3D Scene / Design / Generate / Import tiles and three template tiles; header carries My files · Shared with me tabs, + New Folder, grid/list toggle, All filter, Last modified sort, Create |
-| spline-settings-01 | settings | Workspace Settings as a 1100 × 760 dialog over the files page, own URL, two columns: settings nav 252 + content 846 |
+| spline-home-03 | home | workspace switcher menu: Settings · Invite · account email · workspace list · Create Workspace · Upgrade Plan · Theme › · Download Desktop App · Archive · Help & Feedback › · Logout |
+| spline-projects-01 | projects | My files, empty workspace: "How would you like to start?" with 3D Scene / Design / Generate / Import tiles and template tiles; header carries My files · Shared with me tabs, + New Folder, grid/list toggle, All filter, Last modified sort, Create |
+| spline-projects-02 | projects | My files with one file: a 257 × 212 card in the grid, "Edited 2 hours ago" |
+| spline-editor-01 | editor | the scene editor on arrival: left sidebar 320 on the Agent tab, canvas, right inspector 230, top bar with Preview · Edit · Code, create tools, Toggle Timeline, zoom, Share, Export |
+| spline-editor-02 | editor | left sidebar dragged to its maximum, 560 |
+| spline-editor-03 | editor | left sidebar collapsed by Hide Sidebar: gone entirely, canvas widens to 1178 |
+| spline-editor-04 | editor | left sidebar on the Objects tab: scene hierarchy (Scenes, Welcome to Spline, States & Events, Materials, Timeline Animation, Camera, Point Light, Ground) |
+| spline-editor-05 | editor | the main dropdown: Go to Dashboard · New 3D Scene · New Design · Duplicate File · Open/Import ⌘O · Move To… · Version History · Save File To Local · Undo/Redo · clipboard actions · Rename ^R · Toggle UI ⌘\ · Toggle Full Screen · Zoom |
+| spline-settings-01 | settings | Workspace Settings as a 1100 × 760 dialog over the files page, own URL, settings nav 252 + content 846 |
+| spline-back-01 | back | home again, reached by the editor's main dropdown → Go to Dashboard |
 
 | Field | Home | Projects | Editor | Settings |
 | --- | --- | --- | --- | --- |
-| Frame · archetype | console (MDS): left sidebar, content owns its header; S1 app home with hero omnibox (spline-home-01) | console, same frame (spline-projects-01) | not reached | dialog over the console: a page-sized modal with its own sidebar + content (spline-settings-01) |
-| Frame · regions | sidebar (workspace-switcher, search, inbox, nav, projects-folders, promo-cards) · page-header (title, create actions) · content (hero omnibox, chips) | sidebar · page-header (local tabs, new-folder, view-toggle, filter, sort, create) · content (empty state) | not reached | dialog: settings-nav · settings-content; the app frame stays underneath, dimmed |
-| Frame · fixed / flexible | sidebar fixed, header fixed height, content flexes | same | not reached | dialog fixed 1100 × 760, centred (170, 70) |
-| Frame · widths | sidebar 252 `aside`; sidebar scroll area 251 × 672 `#user-sidebar-scrollable-area` (64 above it for the switcher row, 164 below for the promo cards); header 64 tall `[class*="PageHeader-module"][class*="__header"]`; omnibox textarea 620 `textarea` | sidebar 252 `aside`; header 64 `[class*="PageHeader-module"][class*="__header"]` | not reached | dialog 1100 × 760 `[class*="UserModal-module"][class*="__modal"]`; settings nav 252 `[class*="SettingsSidebar-module"][class*="settingsSidebar"]`; content 846 `[class*="Page-module"][class*="__content"]` |
-| Panels · resizable | none: no handle on the sidebar | none | not reached | none |
-| Panels · collapsible | none found: no collapse control on the sidebar or in its buttons | none found | not reached | n/a |
-| Panels · dock / float | none | none | not reached | n/a |
-| Panels · tabbed | none | page-header local tabs (My files · Shared with me) | not reached | nav sections (My Account · Workspace · Settings), not tabs |
-| Panels · remembered | n/a | view toggle state not testable on an empty list | not reached | n/a |
-| IA · sections | Home · My files · Templates · Community · Academy; then Projects (folders, + New Project); top: workspace switcher · Search · Inbox; bottom: Connect with MCP (dismissible) · Upgrade your workspace | same sidebar | not reached | My Account (Account Settings · Community Profile · Refer a Friend) · Workspace (nick's Workspace · Members · Billing) · Settings (MCP) |
-| IA · depth to editor | not measured: no file exists; the header's 3D Scene / Design / Generate / Import and the omnibox each create a new scene in one action | one click from a file card, not verified | not reached | n/a |
-| IA · surface kind | page; ⌘K search = modal | page; community file (seen on the way) = page with an embedded viewer | not reached | routed dialog: own URL, overlay, Escape returns to `/files` |
-| Nav · global | left sidebar 252, persistent on every stop reached | same | not reached | the dialog keeps the sidebar visible but dimmed |
-| Nav · local | none | page-header tabs; community page has Explore · Feed · Notifications | not reached | settings nav |
-| Nav · contextual | none | none, no breadcrumb on the community file page either | not reached | close (×) and Escape |
-| Nav · palette | ⌘K = file search only; the omnibox accepts "/" for commands | ⌘K = file search | not reached | none |
-| Nav · home ↔ editor | not reached | not reached | not reached | n/a |
-| AI · placement | the home's primary action: hero omnibox (prompt, attach, what-to-generate, quality, thinking-effort, send) with suggestion chips; Generate as a header action; Connect with MCP promo in the sidebar | Generate as one of four start tiles in the empty state and as a header action | not reached | MCP as a settings section |
-| Captures | spline-home-01 · spline-home-02 · spline-home-03 | spline-projects-01 | — | spline-settings-01 |
+| Frame · archetype | console (MDS): left sidebar, content owns its header; S1 app home with hero omnibox (spline-home-01) | console, same frame (spline-projects-01) | S3 studio editor: left panel · canvas · right inspector under a full-width top bar; canvas-centric with docked panels rather than floating islands (spline-editor-01) | dialog over the console: a page-sized modal with its own sidebar + content (spline-settings-01) |
+| Frame · regions | sidebar (workspace-switcher, search, inbox, nav, projects-folders, promo-cards) · page-header (title, create actions) · content (hero omnibox, chips) | sidebar · page-header (local tabs, new-folder, view-toggle, filter, sort, create) · content (grid) | topbar (main-dropdown, file-name, mode-tabs, create-tools, timeline-toggle, presence, zoom, share, export, inspector-toggle) · left-panel (tabs: agent · objects · assets) · canvas · inspector · view-controls (floating, bottom-right) | dialog: settings-nav · settings-content; the app frame stays underneath, dimmed |
+| Frame · fixed / flexible | sidebar fixed, header fixed height, content flexes | same | top bar fixed 56 tall; both side panels user-sized; canvas flexes to what is left | dialog fixed 1100 × 760, centred (170, 70) |
+| Frame · widths | sidebar 252 `aside`; sidebar scroll area 251 × 672 `#user-sidebar-scrollable-area`; header 64 tall `[class*="PageHeader-module"][class*="__header"]`; omnibox textarea 620 `textarea` | sidebar 252 `aside`; header 64; file card 257 × 212 `[class*="Item-module"][class*="__container"]` | left panel 320 default `[class*="Sidebar-module"][class*="container"]` (first); inspector 230 at x 1210 (second); inspector scroll 229 `#inspectorScroll`; canvas 1178 wide at x 16 with the left panel collapsed; drag handles 10 wide at x 319 and 8 wide at x 1211, both `[class*="Sidebar-module"][class*="handle"]` | dialog 1100 × 760 `[class*="UserModal-module"][class*="__modal"]`; settings nav 252 `[class*="SettingsSidebar-module"][class*="settingsSidebar"]`; content 846 `[class*="Page-module"][class*="__content"]` |
+| Panels · resizable | none | none | **both side panels**, each with a col-resize handle. Left: default 320, min 320, max 560 (dragged past both ends and measured, spline-editor-02). Right: handle present at x 1211, same class | none |
+| Panels · collapsible | none found | none found | **both**, to nothing: Hide Sidebar sets the left panel to `display: none` and the canvas takes the space (spline-editor-03); Hide Inspector does the same on the right, and the top-bar button then reads Show Inspector | n/a |
+| Panels · dock / float | none | none | side panels are docked and do not undock; only the view controls float over the canvas, and they collapse | n/a |
+| Panels · tabbed | none | page-header local tabs (My files · Shared with me) | left panel: Agent · Objects · Assets (`[role=tab]`), plus Versions, New chat and Chat history buttons on the same row | nav sections (My Account · Workspace · Settings), not tabs |
+| Panels · remembered | n/a | view toggle state not tested | **width yes, tab no.** After a reload the left panel came back at the width the drag left it (322, not the 320 default); the selected tab reset from Objects to Agent | n/a |
+| IA · sections | Home · My files · Templates · Community · Academy; then Projects (folders, + New Project); top: workspace switcher · Search · Inbox; bottom: Connect with MCP (dismissible) · Upgrade your workspace | same sidebar | no product nav at all inside the editor: the sidebar is replaced by the file's own panels, and the app's sections are reachable only through the main dropdown | My Account (Account Settings · Community Profile · Refer a Friend) · Workspace (nick's Workspace · Members · Billing) · Settings (MCP) |
+| IA · depth to editor | 2 clicks: My files, then a file card | 1 click from a file card | — | n/a |
+| IA · surface kind | page; ⌘K search = modal | page | page, one URL per file; the main dropdown is a menu | routed dialog: own URL, overlay, Escape returns to `/files` |
+| Nav · global | left sidebar 252, persistent | same | **gone**: the editor drops the product sidebar entirely | the dialog keeps the sidebar visible but dimmed |
+| Nav · local | none | page-header tabs | mode tabs Preview · Edit · Code in the top bar; the left panel's own tabs | settings nav |
+| Nav · contextual | none | none | file name in the top bar; no breadcrumb; the way out is the main dropdown | close (×) and Escape |
+| Nav · palette | ⌘K = file search only; the omnibox accepts "/" for commands | ⌘K = file search | no palette, but the main dropdown lists shortcuts for most of its items (⌘O, ⌘⇧S, ⌘Z, ⌘A, ⌘\, ⌘⇧F) | none |
+| Nav · home ↔ editor | — | — | **the frame is fully replaced.** Home's sidebar, page header and hero go; the editor's top bar, two side panels and canvas take over. Nothing but the browser tab persists (spline-home-01 vs spline-editor-01) | n/a |
+| AI · placement | the home's primary action: hero omnibox (prompt, attach, what-to-generate, quality, thinking-effort, send) with suggestion chips; Generate as a header action; Connect with MCP promo in the sidebar | Generate as one of four start tiles in the empty state and as a header action | **the Agent tab is the left panel's default tab**: a chat panel with an empty state ("Let's build!"), five suggestion chips, an "Upgrade to use the AI agent" gate, the MCP promo, and a composer with attach, Medium/High quality, Refine 2x and Send (spline-editor-01) | MCP as a settings section |
+| Captures | spline-home-01 · spline-home-02 · spline-home-03 | spline-projects-01 · spline-projects-02 | spline-editor-01 · spline-editor-02 · spline-editor-03 · spline-editor-04 · spline-editor-05 | spline-settings-01 |
 
-**The way back:** not reached (no editor).
+**The way back:** the main dropdown's Go to Dashboard (spline-back-01). Kept: nothing but the browser
+tab. Replaced: the whole frame.
 **Seen, not counted:** the Community page is an explore gallery (S8: card grid, Explore · Feed ·
 Notifications tabs, search, Publish); a community file opens as a detail page inside the same frame
 (embedded live viewer, author, stats, Remix, share, more-by); the empty files page is an empty state
-with four creation modes plus template tiles; the sidebar carries an Inbox (notifications) button and
-the switcher an Invite action.
+with four creation modes plus template tiles; the sidebar carries an Inbox button and the switcher an
+Invite action; the editor's top bar carries a presence avatar, a zoom readout and a Performance
+toggle; a Toggle Timeline button implies a bottom dock that this file never showed.
 
 ### 2.6 Tripo (Meshy's alternate)
 
