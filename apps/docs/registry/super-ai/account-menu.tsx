@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 
 import { Kbd, KbdGroup } from "./kbd";
+import { initials } from "@/registry/super-ai/initials";
 
 /**
  * Account Menu — Avatar menu with nested appearance submenu
@@ -117,16 +118,6 @@ const DEFAULT_BACKGROUNDS: AccountMenuBackgroundOption[] = [
     swatchClassName: "bg-chart-5 data-checked:bg-chart-5 dark:data-checked:bg-chart-5",
   },
 ];
-
-function initials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
 
 function AccountMenuAvatar({ user, className }: { user: AccountMenuUser; className?: string }) {
   return (

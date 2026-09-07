@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { initials } from "@/registry/super-ai/initials";
 
 /**
  * Record List — project / scenario rows.
@@ -131,16 +132,6 @@ const RUN_STATE_ICON: Record<RecordRunState, React.ReactNode> = {
   running: <Loader2 aria-hidden className="size-3.5 animate-spin motion-reduce:animate-none" />,
   never: <CircleDashed aria-hidden className="size-3.5" />,
 };
-
-/** "Google Sheets" → "GS". Two letters is all a 24px mark can hold. */
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("");
-}
 
 /**
  * The cluster. Each entry is a hidden mark plus a readable name, never both

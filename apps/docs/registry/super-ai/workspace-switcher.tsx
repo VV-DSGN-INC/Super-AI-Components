@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { EntityRow } from "@/registry/super-ai/entity-row";
+import { initials } from "@/registry/super-ai/initials";
 
 /**
  * Workspace Switcher — Avatar/logo + name dropdown
@@ -40,16 +41,6 @@ interface WorkspaceSwitcherProps extends Omit<React.ComponentProps<"div">, "onSe
   /** Omit to hide creation entirely — it never appears as a "+" on the trigger. */
   onCreate?: () => void;
   createLabel?: string;
-}
-
-function initials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
 }
 
 function WorkspaceSwitcherAvatar({
