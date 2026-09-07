@@ -20,6 +20,17 @@
   is scoreable today. This directory is not a pnpm workspace; to run its own
   test suite: `cd tools/ds-architecture && npm install && npm test` (130
   tests; node_modules is gitignored).
+- **Staying outside the workspace is deliberate, re-confirmed 2026-09-07.**
+  Wave 0 of the post-case-story remediation considered adding `tools/*` to
+  `pnpm-workspace.yaml` so this suite would run on a plain `pnpm install`, and
+  rejected it. `scripts/lib/no-deps.test.ts` exists to prove every probe is
+  dependency-free, because a probe that imports a package works here and fails
+  in a target repo that never installed it. Joining the workspace would let
+  probes resolve hoisted packages and make exactly that failure invisible,
+  which is the one thing this checker cannot afford while it is meant to be
+  carried elsewhere. Its `vitest ^2.1.0` and `@types/node ^22` therefore
+  diverge from the repo's `^4.1.8` and `^24` **on purpose** — they are the
+  target's versions, not this repo's.
 - **Known config compromise:** the schema requires `axes[].attribute` to
   match `^data-…`, so `ds-architecture.config.json` declares `data-theme`;
   the repo's real mechanism is the `.dark` class (globals.css

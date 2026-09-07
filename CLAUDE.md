@@ -77,6 +77,8 @@ Everything routes through turbo from the repo root:
 | `pnpm build:registry`              | regenerate registry output              |
 | `pnpm build`                       | full build                              |
 | `pnpm format` / `format:check`     | prettier (note: not run in CI)          |
+| `pnpm check:ladder`                | ds-architecture conformance, not in CI  |
+| `./scripts/linux-gate.sh`          | **the Storybook gate in the CI image**  |
 
 Per-workspace: `cd apps/docs && pnpm new:component <name>` scaffolds the five files · `cd apps/docs && pnpm exec playwright test` is the smoke gate (rebuild first) · `cd apps/storybook && pnpm test:stories` is the axe a11y gate · `apps/docs/scripts/consumer-test.sh` installs everything into a fresh app.
 
