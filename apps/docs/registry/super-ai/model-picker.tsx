@@ -235,7 +235,7 @@ function ModelPicker({
           >
             <SelectValue placeholder={placeholder}>{current?.name ?? placeholder}</SelectValue>
           </SelectTrigger>
-          <SelectContent data-slot="model-picker-content">
+          <SelectContent data-slot="model-picker-content" aria-label={label}>
             {Array.from(groups.entries()).map(([group, groupModels]) => (
               <SelectGroup key={group} data-slot="model-picker-group">
                 <SelectLabel>{group}</SelectLabel>
