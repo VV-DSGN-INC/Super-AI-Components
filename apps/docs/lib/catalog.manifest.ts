@@ -120,6 +120,12 @@ export const MANIFEST: ManifestItem[] = [
     wave: 1,
     base: ["label", "slider", "select", "switch"],
     shadcn: [],
+    // A documented SLOT companion, not an import: field-row.tsx imports only
+    // react and cn, and the consumer puts a `reset-affordance` in the trailing
+    // slot. It stays declared because this is one of the five already-published
+    // entries frozen by registry-extras.test.ts's LEGACY snapshot — dropping it
+    // would change what `npx shadcn add field-row` installs for consumers who
+    // already ran it. reconcile-deps knows about this exception by name.
     consumes: ["reset-affordance"],
     npm: [],
     states: ["slider-unit", "select", "toggle", "colour", "xy-pair", "with-hint", "with-reset", "disabled"],
@@ -2242,7 +2248,7 @@ export const MANIFEST: ManifestItem[] = [
     status: "shipped",
     wave: 8,
     base: ["table", "toggle-group"],
-    shadcn: ["button", "table"],
+    shadcn: ["button"],
     consumes: ["use-view-mode"],
     npm: ["lucide-react"],
     states: ["kanban", "table", "feed", "calendar", "timeline", "group-tone"],
@@ -2273,7 +2279,7 @@ export const MANIFEST: ManifestItem[] = [
     status: "shipped",
     wave: 8,
     base: ["dialog", "sheet", "tabs"],
-    shadcn: ["button", "dialog"],
+    shadcn: ["dialog"],
     consumes: ["use-view-mode"],
     npm: [],
     states: ["popup", "overlay", "fullscreen", "two-column", "collapsed-tabs", "collapsed-stack"],
