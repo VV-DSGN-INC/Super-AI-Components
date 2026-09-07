@@ -19,6 +19,11 @@ Move 3 remains **open** for voice, extraction, vision, data and coding. Until th
 remaining U-items are candidates, not commitments, and the sampling-bias limitation in §1 still
 stands for them.
 
+**2026-09-07 (D22) — a pattern-axis slice, not a category slice.** Four creative-studio products
+(Descript, ElevenLabs Studio, Spline, Tripo) were read for layout, IA and navigation only —
+[studio-board-analysis.md](studio-board-analysis.md). It closes none of the five categories above:
+ElevenLabs is a voice product, but only its frame was read, not its components.
+
 ---
 
 ## 1. The root cause: sampling bias in the source

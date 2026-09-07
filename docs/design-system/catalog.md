@@ -17,6 +17,11 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 > agents ([agent-board-analysis.md](agent-board-analysis.md)), which added K7–K8 and N9–N12 and
 > produced the **Dialog** contract. K and N are correspondingly further along; J is untouched. Voice,
 > extraction, vision, data and coding remain unsampled, so this note still stands for them.
+>
+> **Studio slice (D22, 2026-09-07):** a second slice read four creative-studio products for layout,
+> IA and navigation only — [studio-board-analysis.md](studio-board-analysis.md). It produced
+> candidates, not rows, and closes no category: the five above are still unsampled for their
+> components.
 
 ---
 

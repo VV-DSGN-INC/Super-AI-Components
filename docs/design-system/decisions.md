@@ -399,6 +399,48 @@ uses. A green run on a Mac has never said anything about CI.
 Recorded in `story-conventions.md`; wave 0 of
 `docs/superpowers/specs/2026-09-06-post-case-story-remediation-design.md`.
 
+### D22 · The studio slice: layout, IA and navigation across four creative-studio products — 2026-09-07
+
+[`studio-board-analysis.md`](studio-board-analysis.md) reads Descript, ElevenLabs Studio, Spline and
+Tripo for one pattern axis — the frame, its panels, the information architecture and the navigation
+between home, project list, editor and settings — and re-runs D1 over what it finds. Spec:
+`docs/superpowers/specs/2026-09-07-studio-layout-ia-slice-design.md`.
+
+**Why a pattern axis and not a category.** Three holes sit outside the existing layout layer: nothing
+records how the O shells connect, panel mechanics have no primitive, and the docs site has no place
+for a pattern. Each is a claim about layout _across_ app types, so the population was cut across app
+types rather than within one.
+
+**Method, and why it is stronger than D14 and D18.** Screens, not documentation: every product was
+walked read-only in a signed-in browser at a fixed 1440 × 900 viewport, every capture is on disk and
+cited by id, and every width is a `getBoundingClientRect()` reading with its selector recorded. No
+row rests on documentation, so no row carries ⚠.
+
+**Six products were planned and four were read.** Suno, Runway and Meshy had no session; Meshy was
+swapped for its listed alternate Tripo. Four unrelated companies still clear D1's threshold, but two
+of the four editors were not seen as editors — Descript's was never reached and ElevenLabs' stop is a
+tool workspace — so every editor-axis row rests on at most three products, where the threshold is
+three. Editor findings are therefore unanimous-or-nothing, which is a weakness of this read.
+
+**What it found.** 25 patterns: 14 pass D1, 5 stalled at two, 6 single. Seven candidates — three
+component, one shell, three docs patterns — in §8 of the doc, each resting only on passing patterns.
+The strongest are that no product uses a breadcrumb anywhere (4 of 4), that ⌘K is reserved in three
+of four and means something different in each, and that every editor puts its AI configuration in a
+docked panel with the upsell inside that same panel.
+
+**The negative result is the important one.** Panel mechanics was one of the three holes this slice
+was commissioned to test, and it does not pass: resizable panels and remembered panel size rest on
+Spline alone, while three of four products ship fixed panels that the catalog's existing fixed-grid
+shells already match. **No resizable-panel primitive is justified by this population.**
+
+**What it changes.** The catalog's re-sampling note and gaps.md's Move 3 note each gain a paragraph.
+No catalog row, manifest row or registry file changes: candidates are inputs to the next brainstorm,
+not commitments.
+
+**What it leaves open.** Move 3's five categories are still unsampled for their components. The five
+stalled patterns are listed with the three unread products as the way to settle them — the most
+consequential being whether an editor keeps the product chrome or replaces it, currently 2 against 1.
+
 ---
 
 ## 2. Components dropped from the approved spec
