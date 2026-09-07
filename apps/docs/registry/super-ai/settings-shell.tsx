@@ -19,7 +19,7 @@ import { EmptyState } from "@/registry/super-ai/empty-state";
 import { MemberGateRow, type MemberGateRowProps } from "@/registry/super-ai/member-gate-row";
 import { PricingTable, type PricingTableProps } from "@/registry/super-ai/pricing-table";
 import { QuotaMeter, type QuotaMeterResource } from "@/registry/super-ai/quota-meter";
-import { SettingsDialog, type SettingsRowData } from "@/registry/super-ai/settings-dialog";
+import { matchesQuery, SettingsDialog, type SettingsRowData } from "@/registry/super-ai/settings-dialog";
 import { SidebarNav, type SidebarNavSection } from "@/registry/super-ai/sidebar-nav";
 
 /**
@@ -183,12 +183,6 @@ interface SettingsShellProps extends Omit<React.ComponentProps<"div">, "title"> 
   navEmpty?: React.ReactNode;
   codeEmptyLabel?: React.ReactNode;
   codeFallbackLabel?: React.ReactNode;
-}
-
-/** Case-insensitive substring match over the text a reader can actually see. */
-function matchesQuery(haystack: (string | undefined)[], query: string) {
-  if (!query) return true;
-  return haystack.some((text) => text?.toLowerCase().includes(query));
 }
 
 /**
