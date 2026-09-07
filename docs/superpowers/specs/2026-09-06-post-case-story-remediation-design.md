@@ -55,7 +55,7 @@ contains **242 `toBeGreaterThan`, 193 `toBeLessThanOrEqual`, 68 `toBeLessThan`,
 house style and the absolute pin is the deviation, so this is a conversion to an
 existing convention rather than the invention of a new one.
 
-### 2.3 The dependency graph moves the pixels
+### 2.3 The dependency graph — a hypothesis that did not survive
 
 This is why the dependency work has to precede the pin work rather than run
 beside it.
@@ -73,7 +73,14 @@ beside it.
   whatever the runner resolves, while the thing it is meant to mirror does not.
   No `@fontsource*` package exists in the lockfile today.
 
-Pinning measurements before aligning these means pinning them twice.
+The heading above was a hypothesis and wave 0 tested it. **The dependency
+alignment moved nothing**: collapsing two Tailwind copies, two Vite majors and
+two `@vitejs/plugin-react` majors onto one each left the container failure set
+and every sampled value byte-identical. The hygiene is worth having and the
+duplicate Tailwind was a real finding, but the sequencing argument this section
+made — that deps must precede the conversion or measurements get pinned twice —
+**does not hold and is withdrawn.** The font import, three bullets up, is what
+was actually moving them.
 
 ### 2.4 What the runner image actually proved
 
@@ -96,19 +103,41 @@ source of the family is the `fonts.googleapis.com` import at test time.
 **Run 2, with 198 Geist faces installed system-wide and fontconfig rebuilt.**
 Identical: same 11 files, and 68 / 411 / 284 again, byte for byte.
 
-That negative result is the useful one, and it changes the plan. **Vendoring
-the font does not, on its own, make these assertions portable** — so wave 0 may
-not treat it as the fix, and any step that vendors a font has to prove its
-effect by re-measuring rather than assuming it. What the two runs together
-establish is narrower and firmer: a text-metric or scrollbar-derived pixel
-value is not portable across platforms by any means available here, which is
-the argument for D21 rather than a footnote to it.
+**That run was an invalid experiment, and wave 0 proved it by doing the real
+thing.** fontconfig-registered woff2 is not what Chromium matches for a CSS
+`font-family`, so the page kept rendering in the fallback throughout run 2 —
+the font was installed and unused. Replacing the `fonts.googleapis.com` import
+with `@fontsource-variable` `@font-face` declarations takes the suite from
+**11 failing files to 5**, stable across two full serialized runs, and moves
+the sampled url-token width from 284 to 303 against a pinned 301. So the gate's
+dependence on the network was not cosmetic: it was most of the failure.
+
+What survives is narrower than §2.4 first claimed and still decides D21. Six
+assertions remain red with the correct font loaded, and the residue is
+rasterization and scrollbars, which no vendoring can remove: macOS CoreText and
+Linux FreeType do not agree to the pixel, and a classic scrollbar takes ~16px
+off a `clientWidth` that an overlay scrollbar does not. **A text-metric or
+scrollbar-derived pixel value is still not portable.** It is simply that far
+fewer assertions depended on one than the first measurement suggested.
+
+Two further findings from running it, both about trusting instruments:
+
+- **A wrong font import fails silently.** `@fontsource-variable` declares the
+  family as `"Geist Variable"`, not `"Geist"`; a stack naming only the latter
+  matches nothing and falls through to the system sans with no error. Verify a
+  font by checking that its faces load and measure differently, not by reading
+  the import.
+- **A partial run does not look like a failure.** Docker gives `/dev/shm` 64MB
+  by default, Chromium dies on it mid-suite, and vitest then reports only the
+  files it reached — `2 failed | 31 passed (131)` reads as an improvement on
+  `11 failed | 120 passed (131)`. `scripts/linux-gate.sh` now sets
+  `--shm-size=1g`, serializes files so it survives a shared Docker VM, and
+  exits 3 whenever fewer files ran than were discovered.
 
 It also means the container is the only honest verification of this gate, and
 one caveat travels with it: this host runs arm64 under colima, while
-`ubuntu-latest` is amd64. The container reproduces the failure _class_ and one
-more file than GitHub does. It is a fast pre-push check, not a substitute for
-CI.
+`ubuntu-latest` is amd64. It reproduces the failure _class_, not GitHub's exact
+numbers. It is a fast pre-push check, not a substitute for CI.
 
 ### 2.5 Everything else, with counts
 
@@ -213,9 +242,10 @@ Five steps, in order, because each moves what the next measures:
    the new failure set before touching a single story: Tailwind emits the CSS
    these assertions measure, so this step can move them.
 3. **Self-host the fonts.** Replace the `fonts.googleapis.com` import at
-   `apps/storybook/src/index.css:4` with a vendored Geist. §2.4 shows this does
-   **not** fix the failures, so it is scoped as what it is: removing a network
-   dependency from a blocking gate. Re-measure after it; do not assume its effect.
+   `apps/storybook/src/index.css:4` with a vendored Geist. §2.4 records what this
+   actually does: **11 failing files to 5**. It is the single largest fix in the
+   wave, and the earlier claim that it changes nothing came from an invalid
+   experiment. Verify the family loads rather than assuming the import resolved.
 4. **Convert the assertions**, per D21, in the 58 files that carry a derived
    pixel value — including the ones already written as relationships, which fail
    for the scrollbar reason and need re-anchoring rather than re-phrasing. Fanned
