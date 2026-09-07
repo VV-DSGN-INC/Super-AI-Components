@@ -28,6 +28,13 @@ rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freez
 at 114 while family P grows separately" asserts all three figures, which is
 what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)*
 
+**Studio layout and IA slice in progress (2026-09-07).** Six creative-studio
+products are being read for layout, IA and navigation patterns —
+[`design-system/studio-board-analysis.md`](design-system/studio-board-analysis.md),
+whose status line says which products are read. Spec:
+`superpowers/specs/2026-09-07-studio-layout-ia-slice-design.md`. It ends with
+candidates, not catalog items.
+
 **`contractExempt` has no members.** The 25 pre-Wave-1.5 legacy items that
 carried it were folded into the full contract by wave 0 of the story-guarantees
 program (`superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`,

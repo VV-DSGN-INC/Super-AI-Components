@@ -193,7 +193,7 @@ Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>"
 - Produces: `capture.sh <url-substring> <product>-<stop>-<nn>` → writes `<dir>/<product>/<name>.png` and prints `<path> 2880x1800`. Used by every walk task through P3.
 - Produces: the session table (which of the six products are signed in) that Tasks 3 to 8 depend on.
 
-- [ ] **Step 1: Create the research folder and the capture script**
+- [x] **Step 1: Create the research folder and the capture script**
 
 ```bash
 mkdir -p ~/ClaudeCode\ Projects/Super-AI-Components-research/studio-slice
@@ -221,7 +221,7 @@ EOF
 chmod +x ~/ClaudeCode\ Projects/Super-AI-Components-research/studio-slice/capture.sh
 ```
 
-- [ ] **Step 2: Write the folder README**
+- [x] **Step 2: Write the folder README**
 
 ```bash
 cat > ~/ClaudeCode\ Projects/Super-AI-Components-research/studio-slice/README.md <<'EOF'
@@ -239,7 +239,7 @@ public and tracks no product screenshots.
 EOF
 ```
 
-- [ ] **Step 3: Smoke-test the script on a neutral page**
+- [x] **Step 3: Smoke-test the script on a neutral page**
 
 Call `tabs_context_mcp` with `createIfEmpty: true`, then in one `browser_batch`: `navigate` to `https://example.com`, `resize_window` `{ width: 1440, height: 1043 }`, `javascript_tool` `"({inner:[innerWidth,innerHeight],dpr:devicePixelRatio})"`. Expected `inner: [1440, 900]`. Then:
 
@@ -253,7 +253,7 @@ Expected: a line ending in `2880x1800`. Then delete the smoke folder:
 rm -r ~/ClaudeCode\ Projects/Super-AI-Components-research/studio-slice/smoke
 ```
 
-- [ ] **Step 4: Check all six sessions**
+- [x] **Step 4: Check all six sessions**
 
 For each URL below, `navigate` to it and take a `computer` `screenshot` at `scale: 0.3`. Do not sign in, do not accept any banner (decline non-essential cookies if a banner blocks the view). Record signed in / sign-in wall / other.
 
@@ -266,11 +266,11 @@ For each URL below, `navigate` to it and take a `computer` `screenshot` at `scal
 | Spline | `https://app.spline.design/home` |
 | Meshy | `https://app.meshy.ai/` |
 
-- [ ] **Step 5: Report the session table**
+- [x] **Step 5: Report the session table**
 
 Report to Nick as a table: product, URL that resolved, signed in yes/no. For each product with no session, name its alternate from Global Constraints and ask whether to swap or sign in himself. Do not proceed past a product with no session; the walk tasks for signed-in products can start.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 Nothing in the repo changed in this task. No commit.
 
@@ -285,7 +285,7 @@ Nothing in the repo changed in this task. No commit.
 **Interfaces:**
 - Produces: the doc's §1 method (including the sheet definition in §1.3 that P8 fills and P9 grows), the six §2 stubs that Tasks 3 to 8 replace, and the §3 to §10 headings that Tasks 9 and 10 fill.
 
-- [ ] **Step 1: Write the skeleton**
+- [x] **Step 1: Write the skeleton**
 
 ```bash
 cat > docs/design-system/studio-board-analysis.md <<'EOF'
@@ -439,7 +439,7 @@ Written in synthesis.
 EOF
 ```
 
-- [ ] **Step 2: Add the CONTINUE.md line**
+- [x] **Step 2: Add the CONTINUE.md line**
 
 Use the Edit tool on `docs/CONTINUE.md` with this exact `old_string`:
 
@@ -460,7 +460,7 @@ candidates, not catalog items.
 **`contractExempt` has no members.**
 ```
 
-- [ ] **Step 3: Verify the skeleton parses as the plan expects**
+- [x] **Step 3: Verify the skeleton parses as the plan expects**
 
 ```bash
 grep -c "^### 2\.[1-6] " docs/design-system/studio-board-analysis.md
@@ -470,7 +470,7 @@ grep -n "Studio layout and IA slice in progress" docs/CONTINUE.md
 
 Expected: `6`, `6`, and one matching line in CONTINUE.md.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add docs/design-system/studio-board-analysis.md docs/CONTINUE.md
