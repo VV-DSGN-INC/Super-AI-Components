@@ -38,8 +38,10 @@ function SuggestionChips({ className, children, ...props }: SuggestionChipsProps
   );
 }
 
-export interface SuggestionChipProps
-  extends Omit<React.ComponentProps<typeof Suggestion>, "children" | "onClick" | "onSelect"> {
+export interface SuggestionChipProps extends Omit<
+  React.ComponentProps<typeof Suggestion>,
+  "children" | "onClick" | "onSelect"
+> {
   /**
    * Fired with the suggestion text when the chip is clicked. This fills the
    * composer — never wire it to submit a form or navigate. `Suggestion`
@@ -53,14 +55,7 @@ export interface SuggestionChipProps
   thumbnail?: React.ReactNode;
 }
 
-function SuggestionChip({
-  suggestion,
-  onSelect,
-  icon,
-  thumbnail,
-  className,
-  ...props
-}: SuggestionChipProps) {
+function SuggestionChip({ suggestion, onSelect, icon, thumbnail, className, ...props }: SuggestionChipProps) {
   const leading = thumbnail ?? icon;
 
   return (

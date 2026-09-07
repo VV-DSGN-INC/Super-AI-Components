@@ -87,13 +87,13 @@ export const UsageDashboardDocs: ComponentDocs = {
       "There is no `disabled` prop. The Select is the only control, and this component does not forward a disabled state to it, so freezing the dashboard means not rendering the selector at all.",
     ],
     screenReader: [
-      "The trigger's name comes from `aria-label`, not from what you can see: \"Period: Last 7 days\". The visible label is a substring of it, so voice control still reaches it — but pass a `period` id that is not in `periods` and the name degrades to a bare \"Period: \".",
-      "A summary card is three unlinked strings. `CardTitle` renders a `<div>`, not a heading, and nothing associates it with the figure or the delta, so \"Total spend\", \"1,240 credits\" and \"+12% vs previous period\" are read as siblings joined only by reading order.",
+      'The trigger\'s name comes from `aria-label`, not from what you can see: "Period: Last 7 days". The visible label is a substring of it, so voice control still reaches it — but pass a `period` id that is not in `periods` and the name degrades to a bare "Period: ".',
+      'A summary card is three unlinked strings. `CardTitle` renders a `<div>`, not a heading, and nothing associates it with the figure or the delta, so "Total spend", "1,240 credits" and "+12% vs previous period" are read as siblings joined only by reading order.',
       "The bar chart contributes nothing at all — `aria-hidden` with the Recharts accessibility layer switched off, so it is out of both the accessibility tree and the tab order. Everything it draws is in the table beside it.",
-      "The table is real: a visually hidden `<caption>`, four `<th scope=\"col\">`, and a `<th scope=\"row\">` per model, so a spend cell announces with the model that owns it. Spend is a `CostChip` whose coins glyph is `aria-hidden` and whose amount and unit read as one string.",
+      'The table is real: a visually hidden `<caption>`, four `<th scope="col">`, and a `<th scope="row">` per model, so a spend cell announces with the model that owns it. Spend is a `CostChip` whose coins glyph is `aria-hidden` and whose amount and unit read as one string.',
       "Delta icons are `aria-hidden`. The direction lives in the signed text and in `data-direction`, never in the colour — the `text-warning` tint on an increase is decoration on top of a sentence that already says it.",
       "Changing the period is announced as nothing beyond the Select's own new value. All three figures and every table row are replaced with no live region anywhere in this component, and switching to a period with no models swaps the table for a plain `<p>` just as silently. Put a live region on the area you drop it into if the change has to be heard.",
-      "`title` renders as a fixed `<h3>` and is the component's only heading; pass a falsy `title` and there is none. \"Per-model breakdown\" and the three summary labels are `<div>`s, so this contributes exactly one heading, at one level you cannot choose, to your page outline.",
+      '`title` renders as a fixed `<h3>` and is the component\'s only heading; pass a falsy `title` and there is none. "Per-model breakdown" and the three summary labels are `<div>`s, so this contributes exactly one heading, at one level you cannot choose, to your page outline.',
     ],
     focus: [
       "Opening the period list moves focus into the popup; closing it — by choosing, by Escape, or by clicking away — returns focus to the trigger. Nothing else moves focus: the cards and the table are rebuilt underneath a focus that never left.",

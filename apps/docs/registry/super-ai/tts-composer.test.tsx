@@ -4,8 +4,23 @@ import { describe, expect, it, vi } from "vitest";
 import { TtsComposer, type TtsComposerSegment } from "./tts-composer";
 
 const SEGMENTS: TtsComposerSegment[] = [
-  { id: "s1", text: "Welcome to the show.", voice: "Bella", emotion: "Warm", status: "ready", durationLabel: "0:03", regenerateCost: 2 },
-  { id: "s2", text: "Today we're talking about design systems.", voice: "Bella", emotion: "Excited", status: "ready", regenerateCost: 2 },
+  {
+    id: "s1",
+    text: "Welcome to the show.",
+    voice: "Bella",
+    emotion: "Warm",
+    status: "ready",
+    durationLabel: "0:03",
+    regenerateCost: 2,
+  },
+  {
+    id: "s2",
+    text: "Today we're talking about design systems.",
+    voice: "Bella",
+    emotion: "Excited",
+    status: "ready",
+    regenerateCost: 2,
+  },
 ];
 
 describe("TtsComposer", () => {
@@ -29,10 +44,7 @@ describe("TtsComposer", () => {
 
   it("renders the per-segment-regenerate state — priced, discernibly named, and announced while running", async () => {
     const onRegenerateSegment = vi.fn();
-    const segments: TtsComposerSegment[] = [
-      { ...SEGMENTS[0]!, status: "generating" },
-      SEGMENTS[1]!,
-    ];
+    const segments: TtsComposerSegment[] = [{ ...SEGMENTS[0]!, status: "generating" }, SEGMENTS[1]!];
     render(<TtsComposer segments={segments} onRegenerateSegment={onRegenerateSegment} costUnit="credits" />);
 
     // Each regenerate control names the segment it acts on, never a bare "Regenerate".
@@ -85,7 +97,9 @@ describe("TtsComposer", () => {
     const pauseButton = screen.getByRole("button", { name: "Pause script" });
     expect(pauseButton).toHaveAttribute("aria-pressed", "true");
     // Playback state is announced rather than shown only by the icon swap.
-    expect(screen.getByText("Playing script — Segment 2", { selector: '[role="status"]' })).toBeInTheDocument();
+    expect(
+      screen.getByText("Playing script — Segment 2", { selector: '[role="status"]' }),
+    ).toBeInTheDocument();
 
     await userEvent.click(pauseButton);
     expect(onPauseScript).toHaveBeenCalledOnce();

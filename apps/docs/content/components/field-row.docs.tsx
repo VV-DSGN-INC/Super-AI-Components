@@ -43,7 +43,10 @@ export const FieldRowDocs: ComponentDocs = {
       note: "The explanation line under the row. Its id arrives as the render prop's second argument; wire it with aria-describedby.",
     },
     { slot: "unit-input", note: "UnitInput's border box. It owns the focus ring, via focus-within." },
-    { slot: "unit-input-unit", note: "The unit suffix inside that box — %, s, ×, px. Decorative text, not a label." },
+    {
+      slot: "unit-input-unit",
+      note: "The unit suffix inside that box — %, s, ×, px. Decorative text, not a label.",
+    },
   ],
   usage:
     "Reach for it whenever a surface sets a named parameter: a generation panel, a properties inspector, a settings group. Give it a label and a function for children — you get back `(controlId, describedBy)`, and your job is to put `controlId` on the control so the visible label really names it, and `describedBy` on the same control when you passed a `hint`. For a numeric parameter use the `UnitInput` it ships so the unit reads as a suffix rather than as separate text. Add `reset` once a row is bound to a value a user can move away from. Stack rows directly — do not wrap each one in its own card — because the shared column grid only pays off when the rows are siblings.",
@@ -98,7 +101,7 @@ export const FieldRowDocs: ComponentDocs = {
   },
   pitfalls: [
     "The row hands out exactly one `controlId`, so a two-control row — an x/y pair, a slider plus its number field — can only associate the visible label with one of them. Give every extra control its own `aria-label`; the row has no group-label shape to express the relationship for you.",
-    "`<label for>` only reaches a labelable element, and some controls are not one even though they look like it. Base UI's Switch renders a span with role=\"switch\" beside a visually hidden proxy input, and it is the proxy that takes your `controlId` — it still works, because Base UI finds the label through that proxy and points the visible switch at it, but two nodes now answer to the label text, so query such a control by role and name rather than by label. A control with no proxy at all, like a Base UI slider thumb, gets nothing: name it yourself with `getAriaLabel`, which is what parameter-panel.tsx does.",
+    '`<label for>` only reaches a labelable element, and some controls are not one even though they look like it. Base UI\'s Switch renders a span with role="switch" beside a visually hidden proxy input, and it is the proxy that takes your `controlId` — it still works, because Base UI finds the label through that proxy and points the visible switch at it, but two nodes now answer to the label text, so query such a control by role and name rather than by label. A control with no proxy at all, like a Base UI slider thumb, gets nothing: name it yourself with `getAriaLabel`, which is what parameter-panel.tsx does.',
     "The row exposes the control's id and the hint's id, never the label's. A control that can only be named with `aria-labelledby` has nothing to point at, so the label text has to be repeated as a string — and a repeated string is one that can drift.",
     "There is no `disabled` prop on the row. The root is a div, so disabling is something you do to the control you passed in — which means the label does not dim with it. If a whole row should read as unavailable, dim the label yourself.",
     "`UnitInput` reports through two callbacks and they are not the same: `onValueChange` gives you a number and only fires when the field parses to one, while `onChange` gives you the raw event and fires every time. Clearing the field is a change with no value, so a consumer listening only to `onValueChange` never learns the field was emptied.",

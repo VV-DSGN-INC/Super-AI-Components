@@ -49,7 +49,9 @@ export default function RecommendationCardDemo() {
           onDismiss={() => setDismissedIds((ids) => [...ids, card.id])}
         />
       ))}
-      {visible.length === 0 ? <p className="text-muted-foreground text-xs">No recommendations right now.</p> : null}
+      {visible.length === 0 ? (
+        <p className="text-muted-foreground text-xs">No recommendations right now.</p>
+      ) : null}
     </div>
   );
 }

@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Image as ImageIcon, Settings, Sparkles } from "lucide-react";
 
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 
 const meta: Meta<typeof ResizablePanelGroup> = {
   title: "shadcn/ui/Resizable",
@@ -18,10 +14,7 @@ type Story = StoryObj<typeof ResizablePanelGroup>;
 
 export const Default: Story = {
   render: () => (
-    <ResizablePanelGroup
-      orientation="horizontal"
-      className="h-[420px] max-w-4xl rounded-lg border"
-    >
+    <ResizablePanelGroup orientation="horizontal" className="h-[420px] max-w-4xl rounded-lg border">
       <ResizablePanel defaultSize={28} minSize={18}>
         <div className="flex h-full flex-col gap-3 p-4">
           <div className="flex items-center gap-2 text-sm font-medium">
@@ -45,9 +38,7 @@ export const Default: Story = {
         <div className="flex h-full flex-col items-center justify-center gap-2 bg-muted/20 p-4">
           <ImageIcon className="size-8 text-muted-foreground" />
           <span className="text-sm font-medium">Preview canvas</span>
-          <span className="text-xs text-muted-foreground">
-            1024 × 1024 · Standard quality
-          </span>
+          <span className="text-xs text-muted-foreground">1024 × 1024 · Standard quality</span>
         </div>
       </ResizablePanel>
 
@@ -80,10 +71,7 @@ export const Default: Story = {
 
 export const Vertical: Story = {
   render: () => (
-    <ResizablePanelGroup
-      orientation="vertical"
-      className="h-[420px] max-w-md rounded-lg border"
-    >
+    <ResizablePanelGroup orientation="vertical" className="h-[420px] max-w-md rounded-lg border">
       <ResizablePanel defaultSize={65} minSize={30}>
         <div className="flex h-full flex-col items-center justify-center gap-2 bg-muted/20">
           <ImageIcon className="size-7 text-muted-foreground" />

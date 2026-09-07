@@ -1,9 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@/components/ai-elements/reasoning";
+import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-elements/reasoning";
 
 const meta: Meta<typeof Reasoning> = {
   title: "AI Elements/Reasoning",

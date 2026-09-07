@@ -200,15 +200,13 @@ export const RTL: Story = {
     const popup = await body.findByRole("dialog", { name: "Markers on the timeline" });
     await expect(getComputedStyle(popup).direction).toBe("rtl");
 
-    const trigger = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="feature-announcement-anchor"]',
-    )!;
+    const trigger = canvasElement.querySelector<HTMLElement>('[data-slot="feature-announcement-anchor"]')!;
     await waitFor(() => {
       const popupBox = popup.getBoundingClientRect();
       const triggerBox = trigger.getBoundingClientRect();
-      expect(
-        `start-aligned to the trigger's right: ${Math.abs(popupBox.right - triggerBox.right) < 2}`,
-      ).toBe("start-aligned to the trigger's right: true");
+      expect(`start-aligned to the trigger's right: ${Math.abs(popupBox.right - triggerBox.right) < 2}`).toBe(
+        "start-aligned to the trigger's right: true",
+      );
     });
   },
 };
@@ -368,10 +366,7 @@ export const KeyboardOrder: Story = {
           onCtaClick={() => {}}
           onDismiss={(id) => setDismissed((current) => [...current, id])}
         />
-        <FeatureAnnouncement
-          {...args}
-          onDismiss={(id) => setDismissed((current) => [...current, id])}
-        />
+        <FeatureAnnouncement {...args} onDismiss={(id) => setDismissed((current) => [...current, id])} />
       </div>
     );
   },
@@ -381,9 +376,7 @@ export const KeyboardOrder: Story = {
 
     // 1. The page's three stops, in DOM order. Query for buttons that are not
     //    disabled rather than `[tabindex]`, which counts inert controls.
-    const pageStops = Array.from(
-      canvasElement.querySelectorAll<HTMLButtonElement>("button:not([disabled])"),
-    );
+    const pageStops = Array.from(canvasElement.querySelectorAll<HTMLButtonElement>("button:not([disabled])"));
     await expect(pageStops.map((button) => button.dataset.slot)).toEqual([
       "feature-announcement-dismiss",
       "feature-announcement-cta",
@@ -608,12 +601,7 @@ export const EmptyLabel: Story = {
   render: (args) => (
     <div className="flex flex-col items-start gap-3">
       <FeatureAnnouncement {...args} onDismiss={() => {}} />
-      <FeatureAnnouncement
-        {...args}
-        id="empty-title-card"
-        level="inline-card"
-        onDismiss={() => {}}
-      />
+      <FeatureAnnouncement {...args} id="empty-title-card" level="inline-card" onDismiss={() => {}} />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -687,9 +675,7 @@ export const LongContent: Story = {
     await expect(`card title clipped=${cardTitle.scrollWidth > cardTitle.clientWidth}`).toBe(
       "card title clipped=false",
     );
-    await expect(`card overflows=${card.scrollWidth > card.clientWidth}`).toBe(
-      "card overflows=false",
-    );
+    await expect(`card overflows=${card.scrollWidth > card.clientWidth}`).toBe("card overflows=false");
 
     const chip = canvasElement.querySelector<HTMLElement>('[data-level="dismissible-chip"]')!;
     const chipTitle = chip.querySelector<HTMLElement>('[data-slot="feature-announcement-title"]')!;
@@ -701,9 +687,7 @@ export const LongContent: Story = {
     await expect(`chip capped=${Math.round(chip.getBoundingClientRect().width) === 448}`).toBe(
       "chip capped=true",
     );
-    await expect(`chip overflows=${chip.scrollWidth > chip.clientWidth}`).toBe(
-      "chip overflows=false",
-    );
+    await expect(`chip overflows=${chip.scrollWidth > chip.clientWidth}`).toBe("chip overflows=false");
     await expect(`chip title clipped=${chipTitle.scrollWidth > chipTitle.clientWidth}`).toBe(
       "chip title clipped=true",
     );
@@ -712,9 +696,9 @@ export const LongContent: Story = {
     ).toBe("chip description clipped=true");
 
     // How much is lost: under a third of the headline is on screen.
-    await expect(
-      `title shows under a third=${chipTitle.clientWidth < chipTitle.scrollWidth / 3}`,
-    ).toBe("title shows under a third=true");
+    await expect(`title shows under a third=${chipTitle.clientWidth < chipTitle.scrollWidth / 3}`).toBe(
+      "title shows under a third=true",
+    );
   },
 };
 
@@ -778,9 +762,7 @@ export const Mobile: Story = {
   play: async ({ canvasElement }) => {
     const card = canvasElement.querySelector<HTMLElement>('[data-level="inline-card"]')!;
     await expect(`card=${Math.round(card.getBoundingClientRect().width)}px`).toBe("card=375px");
-    await expect(`card overflows=${card.scrollWidth > card.clientWidth}`).toBe(
-      "card overflows=false",
-    );
+    await expect(`card overflows=${card.scrollWidth > card.clientWidth}`).toBe("card overflows=false");
 
     const shortChip = canvasElement.querySelector<HTMLElement>(
       '[data-announcement-id="export-limit-raised"]',

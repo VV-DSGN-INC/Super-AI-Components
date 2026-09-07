@@ -58,7 +58,9 @@ export default function PropertyInspectorDemo() {
   };
 
   const groupState = (type: ElementType, keys: string[]) =>
-    keys.some((key) => values[type][key] !== DEFAULTS[type][key]) ? ("modified" as const) : ("default" as const);
+    keys.some((key) => values[type][key] !== DEFAULTS[type][key])
+      ? ("modified" as const)
+      : ("default" as const);
 
   const section = (
     type: ElementType,
@@ -76,29 +78,47 @@ export default function PropertyInspectorDemo() {
 
   const sections: Record<string, PropertySection[]> = {
     text: [
-      section("text", "layout", "Layout", ["width", "height"], (
+      section(
+        "text",
+        "layout",
+        "Layout",
+        ["width", "height"],
         <>
           {row("text", "width", "Width", "px")}
           {row("text", "height", "Height", "px")}
-        </>
-      )),
-      section("text", "typography", "Typography", ["size", "lineHeight"], (
+        </>,
+      ),
+      section(
+        "text",
+        "typography",
+        "Typography",
+        ["size", "lineHeight"],
         <>
           {row("text", "size", "Size", "pt")}
           {row("text", "lineHeight", "Leading", "%", "Line height as a percentage of the type size.")}
-        </>
-      )),
+        </>,
+      ),
       section("text", "appearance", "Appearance", ["opacity"], <>{row("text", "opacity", "Opacity", "%")}</>),
     ],
     image: [
-      section("image", "layout", "Layout", ["width", "height"], (
+      section(
+        "image",
+        "layout",
+        "Layout",
+        ["width", "height"],
         <>
           {row("image", "width", "Width", "px")}
           {row("image", "height", "Height", "px")}
-        </>
-      )),
+        </>,
+      ),
       section("image", "adjustments", "Adjustments", ["blur"], <>{row("image", "blur", "Blur", "px")}</>),
-      section("image", "appearance", "Appearance", ["opacity"], <>{row("image", "opacity", "Opacity", "%")}</>),
+      section(
+        "image",
+        "appearance",
+        "Appearance",
+        ["opacity"],
+        <>{row("image", "opacity", "Opacity", "%")}</>,
+      ),
     ],
   };
 

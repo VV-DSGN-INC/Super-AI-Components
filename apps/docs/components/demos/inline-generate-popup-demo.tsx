@@ -2,7 +2,10 @@
 
 import * as React from "react";
 
-import { InlineGeneratePopup, type InlineGeneratePopupState } from "@/registry/super-ai/inline-generate-popup";
+import {
+  InlineGeneratePopup,
+  type InlineGeneratePopupState,
+} from "@/registry/super-ai/inline-generate-popup";
 
 const DRAFT =
   "Churn fell for three reasons: onboarding lost two steps, pricing collapsed to two plans, and first-response time halved.";

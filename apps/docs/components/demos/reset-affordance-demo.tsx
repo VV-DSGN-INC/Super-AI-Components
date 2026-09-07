@@ -21,9 +21,7 @@ export default function ResetAffordanceDemo() {
           />
         }
       >
-        {(id) => (
-          <UnitInput id={id} unit="%" value={opacity} onValueChange={setOpacity} />
-        )}
+        {(id) => <UnitInput id={id} unit="%" value={opacity} onValueChange={setOpacity} />}
       </FieldRow>
     </div>
   );

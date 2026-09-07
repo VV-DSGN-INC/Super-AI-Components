@@ -27,9 +27,7 @@ export const Default: Story = {
     <Card className="w-80">
       <CardHeader>
         <CardTitle>Aurora-XL 2.0</CardTitle>
-        <CardDescription>
-          Photoreal diffusion model with improved text rendering.
-        </CardDescription>
+        <CardDescription>Photoreal diffusion model with improved text rendering.</CardDescription>
         <CardAction>
           <Badge variant="secondary">New</Badge>
         </CardAction>
@@ -62,9 +60,7 @@ export const UsageStat: Story = {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <p className="text-muted-foreground">
-          Resets in 9 days &middot; 1,180 used this cycle
-        </p>
+        <p className="text-muted-foreground">Resets in 9 days &middot; 1,180 used this cycle</p>
       </CardContent>
     </Card>
   ),

@@ -47,7 +47,12 @@ describe("PresetGrid", () => {
   it("renders the palette state", async () => {
     const onValueChange = vi.fn();
     render(
-      <PresetGrid items={PALETTE_ITEMS} content="palette" aria-label="Colour presets" onValueChange={onValueChange} />,
+      <PresetGrid
+        items={PALETTE_ITEMS}
+        content="palette"
+        aria-label="Colour presets"
+        onValueChange={onValueChange}
+      />,
     );
 
     // A colour swatch alone can't carry the pick's meaning (E4) — the
@@ -63,7 +68,9 @@ describe("PresetGrid", () => {
   });
 
   it("renders the filter state", async () => {
-    render(<PresetGrid items={FILTER_ITEMS} content="filter" aria-label="Filter presets" defaultValue="vivid" />);
+    render(
+      <PresetGrid items={FILTER_ITEMS} content="filter" aria-label="Filter presets" defaultValue="vivid" />,
+    );
 
     expect(screen.getByRole("radio", { name: "Vivid" })).toHaveAttribute("aria-checked", "true");
     expect(screen.getByRole("radio", { name: "Mono" })).toHaveAttribute("aria-checked", "false");

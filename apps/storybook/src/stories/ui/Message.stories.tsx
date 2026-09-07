@@ -17,10 +17,8 @@ const meta: Meta<typeof Message> = {
 export default meta;
 type Story = StoryObj<typeof Message>;
 
-const bubble =
-  "rounded-2xl bg-muted px-3 py-2";
-const bubblePrimary =
-  "rounded-2xl bg-primary px-3 py-2 text-primary-foreground";
+const bubble = "rounded-2xl bg-muted px-3 py-2";
+const bubblePrimary = "rounded-2xl bg-primary px-3 py-2 text-primary-foreground";
 
 export const Default: Story = {
   render: () => (
@@ -28,8 +26,7 @@ export const Default: Story = {
       <Message align="end">
         <MessageContent>
           <div className={bubblePrimary}>
-            Generate a moody cyberpunk alley at night, neon reflections in the
-            puddles, 16:9.
+            Generate a moody cyberpunk alley at night, neon reflections in the puddles, 16:9.
           </div>
         </MessageContent>
         <MessageAvatar>
@@ -45,9 +42,8 @@ export const Default: Story = {
         </MessageAvatar>
         <MessageContent>
           <div className={bubble}>
-            On it. Rendering 4 variations with Flux Pro at 1024&times;576 — neon
-            magenta and cyan, wet asphalt, volumetric haze. This should take about
-            8 seconds.
+            On it. Rendering 4 variations with Flux Pro at 1024&times;576 — neon magenta and cyan, wet
+            asphalt, volumetric haze. This should take about 8 seconds.
           </div>
         </MessageContent>
       </Message>
@@ -67,9 +63,8 @@ export const WithHeaderAndFooter: Story = {
         <MessageContent>
           <MessageHeader>Nova &middot; Flux Pro</MessageHeader>
           <div className={bubble}>
-            Here are your 4 renders. I leaned into a high-contrast palette and
-            added a lone figure under the sign for scale. Want me to upscale the
-            top-left one to 4K?
+            Here are your 4 renders. I leaned into a high-contrast palette and added a lone figure under the
+            sign for scale. Want me to upscale the top-left one to 4K?
           </div>
           <MessageFooter className="gap-3">
             <button className="inline-flex items-center gap-1 hover:text-foreground">
@@ -108,8 +103,8 @@ export const Conversation: Story = {
         </MessageAvatar>
         <MessageContent>
           <div className={bubble}>
-            You have Runway Gen-3, Kling 1.6, and Sora Turbo on the Pro plan.
-            Kling is fastest; Sora handles complex camera moves best.
+            You have Runway Gen-3, Kling 1.6, and Sora Turbo on the Pro plan. Kling is fastest; Sora handles
+            complex camera moves best.
           </div>
         </MessageContent>
       </Message>
@@ -133,8 +128,7 @@ export const Conversation: Story = {
         </MessageAvatar>
         <MessageContent>
           <div className={bubble}>
-            Queued a 5s clip with Sora Turbo — 24fps, slow dolly-in toward the
-            sign. This will use 40 credits.
+            Queued a 5s clip with Sora Turbo — 24fps, slow dolly-in toward the sign. This will use 40 credits.
           </div>
           <MessageFooter>2:14 PM &middot; 40 credits</MessageFooter>
         </MessageContent>

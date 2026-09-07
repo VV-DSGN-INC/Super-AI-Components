@@ -264,7 +264,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Section header — labels a region it does not contain</p>
+        <p className="text-foreground text-xs font-medium">
+          Section header — labels a region it does not contain
+        </p>
         <div className="w-64">
           <SectionHeader
             title="Pinned"

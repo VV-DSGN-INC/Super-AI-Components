@@ -194,9 +194,9 @@ export const RTL: Story = {
 
     // The badge crosses to the left, the title (with its leading icon) stays
     // right. Compared as centres so padding cannot flip the reading.
-    await expect(`badge left of title=${centre(q("paywall-message-requirement")) < centre(q("paywall-message-title"))}`).toBe(
-      "badge left of title=true",
-    );
+    await expect(
+      `badge left of title=${centre(q("paywall-message-requirement")) < centre(q("paywall-message-title"))}`,
+    ).toBe("badge left of title=true");
 
     // The icon leads, which under RTL means it is the rightmost thing in the title.
     const icon = q("paywall-message-title").querySelector("svg") as unknown as HTMLElement;
@@ -207,9 +207,9 @@ export const RTL: Story = {
     // A2 pins the amount LTR inside an RTL card. Recorded because it is the
     // primitive's decision and a caller has no way to opt out of it.
     const amount = canvasElement.querySelector('[data-slot="cost-chip-amount"]') as HTMLElement;
-    await expect(`card dir=${getComputedStyle(q("paywall-message")).direction} amount dir=${getComputedStyle(amount).direction}`).toBe(
-      "card dir=rtl amount dir=ltr",
-    );
+    await expect(
+      `card dir=${getComputedStyle(q("paywall-message")).direction} amount dir=${getComputedStyle(amount).direction}`,
+    ).toBe("card dir=rtl amount dir=ltr");
 
     // And what that span actually says, because the docs module claims
     // otherwise — see the description.
@@ -435,7 +435,9 @@ export const Controlled: Story = {
     await userEvent.click(quota.getByRole("button", { name: "Top up" }));
     await expect(hostState()).toContain("top-up requests=1");
     await expect(hostState()).toContain("balance=120");
-    await expect(q(quotaCard, "paywall-message-shortfall")).toHaveTextContent("Need 900 credits, you have 120");
+    await expect(q(quotaCard, "paywall-message-shortfall")).toHaveTextContent(
+      "Need 900 credits, you have 120",
+    );
 
     // Upgrade hands back the resume payload rather than acting.
     await userEvent.click(quota.getByRole("button", { name: "Upgrade for more credits" }));
@@ -446,8 +448,12 @@ export const Controlled: Story = {
     // did re-render, which the counter is there to prove.
     const rendersBefore = Number(/renders=(\d+)/.exec(hostState())?.[1]);
     await userEvent.click(canvas.getByTestId("rerender"));
-    await waitFor(() => expect(Number(/renders=(\d+)/.exec(hostState())?.[1])).toBeGreaterThan(rendersBefore));
-    await expect(q(quotaCard, "paywall-message-shortfall")).toHaveTextContent("Need 900 credits, you have 120");
+    await waitFor(() =>
+      expect(Number(/renders=(\d+)/.exec(hostState())?.[1])).toBeGreaterThan(rendersBefore),
+    );
+    await expect(q(quotaCard, "paywall-message-shortfall")).toHaveTextContent(
+      "Need 900 credits, you have 120",
+    );
 
     // Only the host's balance moves. No prop of either card changes here.
     await userEvent.click(canvas.getByTestId("apply-top-up"));
@@ -552,14 +558,16 @@ export const EmptyLabel: Story = {
       "paywall-message-before",
       "paywall-message-after",
     ]) {
-      await expect(`${name} emptied=${slot(emptied, name) !== null} populated=${slot(populated, name) !== null}`).toBe(
-        `${name} emptied=false populated=true`,
-      );
+      await expect(
+        `${name} emptied=${slot(emptied, name) !== null} populated=${slot(populated, name) !== null}`,
+      ).toBe(`${name} emptied=false populated=true`);
     }
 
     // `??` keeps the empty string, so these two render and render blank.
     await expect(slot(emptied, "paywall-message-title")).toHaveTextContent("");
-    await expect(slot(populated, "paywall-message-title")).toHaveTextContent("This model is not on your plan");
+    await expect(slot(populated, "paywall-message-title")).toHaveTextContent(
+      "This model is not on your plan",
+    );
     await expect(slot(emptied, "paywall-message-description")).toHaveTextContent("");
     await expect(slot(populated, "paywall-message-description")).toHaveTextContent(
       "The run was not started, so nothing was charged.",
@@ -568,7 +576,9 @@ export const EmptyLabel: Story = {
     // And the group loses its accessible name with the title, because the title
     // is what `aria-labelledby` points at.
     await expect(slot(emptied, "paywall-message-card")).toHaveAccessibleName("");
-    await expect(slot(populated, "paywall-message-card")).toHaveAccessibleName("This model is not on your plan");
+    await expect(slot(populated, "paywall-message-card")).toHaveAccessibleName(
+      "This model is not on your plan",
+    );
 
     // What survives on the emptied card: the held work, and a named CTA. The
     // prompt is required and unguarded, which is the one thing this component
@@ -638,14 +648,16 @@ export const LongContent: Story = {
     const canvas = within(canvasElement);
     const shortTier = canvas.getByTestId("short-tier");
     const longTier = canvas.getByTestId("long-tier");
-    const slot = (root: HTMLElement, name: string) => root.querySelector(`[data-slot="${name}"]`) as HTMLElement;
-    const lines = (el: HTMLElement) => Math.round(el.scrollHeight / parseFloat(getComputedStyle(el).lineHeight));
+    const slot = (root: HTMLElement, name: string) =>
+      root.querySelector(`[data-slot="${name}"]`) as HTMLElement;
+    const lines = (el: HTMLElement) =>
+      Math.round(el.scrollHeight / parseFloat(getComputedStyle(el).lineHeight));
 
     // Wrapped, not clipped: more than one line and nothing overflowing.
     const prompt = slot(shortTier, "paywall-message-prompt");
-    await expect(`prompt lines>1=${lines(prompt) > 1} clipped=${prompt.scrollWidth > prompt.clientWidth}`).toBe(
-      "prompt lines>1=true clipped=false",
-    );
+    await expect(
+      `prompt lines>1=${lines(prompt) > 1} clipped=${prompt.scrollWidth > prompt.clientWidth}`,
+    ).toBe("prompt lines>1=true clipped=false");
 
     // The slug breaks on its own separators and stays inside the resume block.
     const model = slot(shortTier, "paywall-message-model");
@@ -670,7 +682,9 @@ export const LongContent: Story = {
 
     // The long plan name is paid for by the title, in the same card width.
     const cards = [slot(shortTier, "paywall-message-card"), slot(longTier, "paywall-message-card")];
-    await expect(`cards same width=${cards[0].clientWidth === cards[1].clientWidth}`).toBe("cards same width=true");
+    await expect(`cards same width=${cards[0].clientWidth === cards[1].clientWidth}`).toBe(
+      "cards same width=true",
+    );
     const titles = [slot(shortTier, "paywall-message-title"), slot(longTier, "paywall-message-title")];
     await expect(`long tier narrows title=${titles[1].clientWidth < titles[0].clientWidth}`).toBe(
       "long tier narrows title=true",
@@ -736,7 +750,9 @@ export const Mobile: Story = {
       await expect(`root overflows=${root.scrollWidth > root.clientWidth}`).toBe("root overflows=false");
     }
     for (const block of canvasElement.querySelectorAll('[data-slot="paywall-message-resume"]')) {
-      await expect(`resume overflows=${block.scrollWidth > block.clientWidth}`).toBe("resume overflows=false");
+      await expect(`resume overflows=${block.scrollWidth > block.clientWidth}`).toBe(
+        "resume overflows=false",
+      );
     }
 
     // Two buttons and a badge at 375px, and the actions row wraps rather than
@@ -745,9 +761,9 @@ export const Mobile: Story = {
     await expect(`actions wrap=${getComputedStyle(actions).flexWrap}`).toBe("actions wrap=wrap");
     for (const button of within(canvasElement).getAllByRole("button")) {
       const r = button.getBoundingClientRect();
-      await expect(`${button.textContent} fits=${Math.round(r.width) <= 375} tall enough=${r.height >= 24}`).toBe(
-        `${button.textContent} fits=true tall enough=true`,
-      );
+      await expect(
+        `${button.textContent} fits=${Math.round(r.width) <= 375} tall enough=${r.height >= 24}`,
+      ).toBe(`${button.textContent} fits=true tall enough=true`);
     }
   },
 };
@@ -809,11 +825,17 @@ export const Boundary: Story = {
         <p className="text-foreground text-xs font-medium">
           Rate limit banner — the same wall, but waiting is the fix
         </p>
-        <RateLimitBanner cause="your-limit" resource="Video generations · 20 of 20 used today" remainingSeconds={1847} />
+        <RateLimitBanner
+          cause="your-limit"
+          resource="Video generations · 20 of 20 used today"
+          remainingSeconds={1847}
+        />
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Promo card — the pitch, attached to nothing anyone asked</p>
+        <p className="text-foreground text-xs font-medium">
+          Promo card — the pitch, attached to nothing anyone asked
+        </p>
         <PromoCard
           flavour="upgrade"
           title="Upgrade to Pro"
@@ -830,12 +852,16 @@ export const Boundary: Story = {
 
     // The structural difference, asserted rather than described: only the
     // paywall holds a payload, and only the promo can be dismissed.
-    await expect(canvasElement.querySelector('[data-slot="paywall-message-prompt"]')).toHaveTextContent(PROMPT);
+    await expect(canvasElement.querySelector('[data-slot="paywall-message-prompt"]')).toHaveTextContent(
+      PROMPT,
+    );
     await expect(canvasElement.querySelector('[data-slot="rate-limit-banner"]')).toBeInTheDocument();
     await expect(canvas.getByRole("button", { name: /dismiss/i })).toBeInTheDocument();
 
     // And the countdown is M6's alone — nothing on the paywall implies waiting
     // will help, because it will not.
-    await expect(canvasElement.querySelector('[data-slot="paywall-message"]')?.textContent).not.toMatch(/resets in/i);
+    await expect(canvasElement.querySelector('[data-slot="paywall-message"]')?.textContent).not.toMatch(
+      /resets in/i,
+    );
   },
 };

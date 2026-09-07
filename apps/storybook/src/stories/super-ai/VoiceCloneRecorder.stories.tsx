@@ -662,14 +662,10 @@ export const EmptyLabel: Story = {
 
     // Named by their own text, with the glyph contributing nothing.
     await expect(canvas.getByRole("button", { name: "Retake" })).toHaveAccessibleName("Retake");
-    await expect(canvas.getByRole("button", { name: "Use this take" })).toHaveAccessibleName(
-      "Use this take",
-    );
+    await expect(canvas.getByRole("button", { name: "Use this take" })).toHaveAccessibleName("Use this take");
 
     // The review region is present and holds nothing to review.
-    const playback = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="voice-clone-recorder-playback"]',
-    )!;
+    const playback = canvasElement.querySelector<HTMLElement>('[data-slot="voice-clone-recorder-playback"]')!;
     await expect(`playback children=${playback.children.length} text="${playback.textContent}"`).toBe(
       'playback children=0 text=""',
     );
@@ -769,8 +765,9 @@ export const Mobile: Story = {
     };
 
     // "Recording" and the elapsed time stay together on one line.
-    const statusRow = root.querySelector<HTMLElement>('[data-slot="voice-clone-recorder-status"]')!
-      .parentElement!;
+    const statusRow = root.querySelector<HTMLElement>(
+      '[data-slot="voice-clone-recorder-status"]',
+    )!.parentElement!;
     await expect(oneLine(statusRow)).toBe("1 line, overflow=false");
 
     // …and so do the meter's label and its numeric readout.

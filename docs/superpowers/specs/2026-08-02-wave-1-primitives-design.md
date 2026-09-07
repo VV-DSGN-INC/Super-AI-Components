@@ -14,32 +14,32 @@ in `component-specs.md` rather than against `concept-model.md`'s summary table.
 
 ### A9 `entity-row` — claimed 6, confirmed 4, membership wrong
 
-| Claimed | Its own spec says | Verdict |
-| --- | --- | --- |
-| D6 `skill-menu` | *"Rows are A9"* | ✅ |
-| I4 `ai-tools-menu` | **"Built on: A9"** | ✅ |
-| F4 `action-stack` | **"Base: Dropdown-menu, A9"** | ✅ |
-| K5 `source-panel` | **"Built on: A9, Progress"** | ✅ |
-| C5 `recommendation-card` | no A9 mention | ❌ |
-| B3 `sidebar-nav` | mentions **A12**, not A9 | ❌ |
+| Claimed                  | Its own spec says             | Verdict |
+| ------------------------ | ----------------------------- | ------- |
+| D6 `skill-menu`          | _"Rows are A9"_               | ✅      |
+| I4 `ai-tools-menu`       | **"Built on: A9"**            | ✅      |
+| F4 `action-stack`        | **"Base: Dropdown-menu, A9"** | ✅      |
+| K5 `source-panel`        | **"Built on: A9, Progress"**  | ✅      |
+| C5 `recommendation-card` | no A9 mention                 | ❌      |
+| B3 `sidebar-nav`         | mentions **A12**, not A9      | ❌      |
 
 Two unlisted consumers turned up instead:
 
-- **C3 `feature-card-row`** — *"Cards are A9 in a card layout — the same four slots, stacked
-  vertically."* The table names C5 where the evidence points at C3.
-- **B2 `workspace-switcher`** — *"a checked list, or A9 rows with descriptions."*
+- **C3 `feature-card-row`** — _"Cards are A9 in a card layout — the same four slots, stacked
+  vertically."_ The table names C5 where the evidence points at C3.
+- **B2 `workspace-switcher`** — _"a checked list, or A9 rows with descriptions."_
 
 **Corrected fan-out: D6, I4, F4, K5, C3, B2.** Still six, but two of the six were wrong. A9 remains
 the highest fan-out primitive left.
 
 ### A10 `stat-readout` — claimed 4, one is a cut component
 
-| Claimed | Verdict |
-| --- | --- |
-| F3 `asset-detail` | ✅ **"Base: Dialog, A10"** |
-| N5 `run-inspector` | ✅ **"Base: Tabs, A10"** |
+| Claimed              | Verdict                      |
+| -------------------- | ---------------------------- |
+| F3 `asset-detail`    | ✅ **"Base: Dialog, A10"**   |
+| N5 `run-inspector`   | ✅ **"Base: Tabs, A10"**     |
 | N6 `usage-dashboard` | ❓ plausible, never declared |
-| G5 `node-result` | ❌ **cut by D9** |
+| G5 `node-result`     | ❌ **cut by D9**             |
 
 D9 removed family G but never propagated to this row — the same class of stale-fan-out error the A8
 audit found. **Corrected: 2 confirmed + 1 unstated.**
@@ -49,8 +49,8 @@ audit found. **Corrected: 2 confirmed + 1 unstated.**
 A11 is missing from `concept-model.md`'s primitive fan-out table entirely. Its real consumers,
 found by searching the specs:
 
-- **A6 `field-row`** — *"A11 `reset-affordance` is the optional trailing slot. It is what makes a row
-  feel bound to a value."*
+- **A6 `field-row`** — _"A11 `reset-affordance` is the optional trailing slot. It is what makes a row
+  feel bound to a value."_
 - **I2 `property-inspector`** — **"Built on: A6, A11"**
 - **A12 `section-header`** — carries the group-level reset (from A11's own spec).
 
@@ -63,13 +63,13 @@ catalog — which fixes the build order.
 
 ### A12 `section-header` — claimed 5, confirmed 1
 
-| Claimed | Verdict |
-| --- | --- |
-| I1 `tool-panel` | ✅ **"Built on: A12, A8"** |
-| C3, L4, J2, J1 | ❓ never declared |
-| **B3 `sidebar-nav`** | ➕ unlisted — *"Section labels are A12 at its smallest size"* |
+| Claimed              | Verdict                                                       |
+| -------------------- | ------------------------------------------------------------- |
+| I1 `tool-panel`      | ✅ **"Built on: A12, A8"**                                    |
+| C3, L4, J2, J1       | ❓ never declared                                             |
+| **B3 `sidebar-nav`** | ➕ unlisted — _"Section labels are A12 at its smallest size"_ |
 
-A12's spec asserts *"'View all' is a link, never a button… holds across all five consumers"* — a
+A12's spec asserts _"'View all' is a link, never a button… holds across all five consumers"_ — a
 claim about five components, only one of which declares it. The pattern is real and observed on the
 board; the specific list is unverified. **Built as specified, fan-out corrected to what's provable.**
 
@@ -98,17 +98,17 @@ variables only, named exports, co-located tests, no npm dependencies.
 ```tsx
 interface EntityRowProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   icon?: React.ReactNode;
-  title: React.ReactNode;        // the only required slot
+  title: React.ReactNode; // the only required slot
   description?: React.ReactNode;
-  trailing?: React.ReactNode;    // badge · chevron · switch · cost-chip
+  trailing?: React.ReactNode; // badge · chevron · switch · cost-chip
   selected?: boolean;
   disabled?: boolean;
   onSelect?: () => void;
 }
 ```
 
-The load-bearing rule from its spec: *"Description is optional but row height is not — a menu of
-mixed rows must not look ragged."* Row height is fixed whether or not `description` is present. That
+The load-bearing rule from its spec: _"Description is optional but row height is not — a menu of
+mixed rows must not look ragged."_ Row height is fixed whether or not `description` is present. That
 is the assertion the tests exist to protect.
 
 Interaction follows A8's resolved pattern: `onSelect` makes it a `<button>` with `aria-pressed`;
@@ -119,19 +119,19 @@ point of settling it once on A8.
 
 ```tsx
 interface SectionHeaderProps extends React.ComponentProps<"div"> {
-  title: React.ReactNode;        // required
+  title: React.ReactNode; // required
   count?: number;
-  action?: React.ReactNode;      // "View all" — rendered as a link, never a button
+  action?: React.ReactNode; // "View all" — rendered as a link, never a button
   collapsible?: boolean;
-  defaultOpen?: boolean;         // uncontrolled
-  open?: boolean;                // controlled
+  defaultOpen?: boolean; // uncontrolled
+  open?: boolean; // controlled
   onOpenChange?: (open: boolean) => void;
-  size?: "default" | "sm";       // sm = B3's section labels
+  size?: "default" | "sm"; // sm = B3's section labels
 }
 ```
 
-*"The collapsible variant owns its disclosure state; the panel below is a slot it knows nothing
-about."* So `SectionHeader` renders only the header and reports state; it never wraps content. This
+_"The collapsible variant owns its disclosure state; the panel below is a slot it knows nothing
+about."_ So `SectionHeader` renders only the header and reports state; it never wraps content. This
 keeps it usable above a grid, a list, or nothing at all.
 
 ### 3.3 A11 `reset-affordance`
@@ -139,23 +139,23 @@ keeps it usable above a grid, a list, or nothing at all.
 ```tsx
 interface ResetAffordanceProps extends React.ComponentProps<"button"> {
   state?: "modified" | "default" | "keyframed";
-  scope?: "row" | "group";       // group = larger, sits on a section header
-  collapsed?: boolean;           // degrades to a modified-dot
+  scope?: "row" | "group"; // group = larger, sits on a section header
+  collapsed?: boolean; // degrades to a modified-dot
   onReset?: () => void;
-  label?: string;                // accessible name; defaults to "Reset"
+  label?: string; // accessible name; defaults to "Reset"
 }
 ```
 
 Three states share one slot so the control never changes position: `modified` (active), `default`
-(dimmed), `keyframed` (diamond). `collapsed` renders the modified-dot, so *"a hidden section still
-signals changes."*
+(dimmed), `keyframed` (diamond). `collapsed` renders the modified-dot, so _"a hidden section still
+signals changes."_
 
 ### 3.4 A10 `stat-readout`
 
 ```tsx
 interface StatReadoutProps extends React.ComponentProps<"dl"> {
   items: { label: React.ReactNode; value?: React.ReactNode; copyable?: boolean }[];
-  columns?: 1 | 2;               // presentation is a prop, not a fork
+  columns?: 1 | 2; // presentation is a prop, not a fork
 }
 ```
 
@@ -174,8 +174,8 @@ prop changes meaning, and omitting it renders exactly what ships today.
 
 This is safe in a way it would not be in a normal library. shadcn registries **copy code into the
 consumer's app**, so a registry change cannot affect an app that already installed the component —
-only new installs see it. The design spec names this explicitly: *"upstream API changes affect new
-installs only, never running apps."*
+only new installs see it. The design spec names this explicitly: _"upstream API changes affect new
+installs only, never running apps."_
 
 `field-row` therefore gains `registryDependencies: [reset-affordance]` and its `extras` entry in
 `gen-registry.mts` — its first registry dependency.

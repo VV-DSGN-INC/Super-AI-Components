@@ -12,9 +12,12 @@ export default function RunButtonDemo() {
   const [progress, setProgress] = useState(0);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  useEffect(() => () => {
-    if (timer.current) clearInterval(timer.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (timer.current) clearInterval(timer.current);
+    },
+    [],
+  );
 
   const start = () => {
     setState("running");
@@ -46,7 +49,9 @@ export default function RunButtonDemo() {
       </div>
 
       <div className="space-y-2">
-        <p className="text-muted-foreground text-xs font-medium">Insufficient credits — at the point of spend</p>
+        <p className="text-muted-foreground text-xs font-medium">
+          Insufficient credits — at the point of spend
+        </p>
         <RunButton
           state="insufficient-credits"
           cost={6}

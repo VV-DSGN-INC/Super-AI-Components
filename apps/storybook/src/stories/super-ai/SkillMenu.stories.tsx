@@ -1,5 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Eraser, FileText, Languages, Maximize2, Mic, RefreshCw, Sparkles, Trash2, Wand2 } from "lucide-react";
+import {
+  Eraser,
+  FileText,
+  Languages,
+  Maximize2,
+  Mic,
+  RefreshCw,
+  Sparkles,
+  Trash2,
+  Wand2,
+} from "lucide-react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { AiToolsMenu, type AiToolGroup } from "@/registry/super-ai/ai-tools-menu";
@@ -40,7 +50,9 @@ const SKILLS: SkillMenuItem[] = [
     preview: (
       <div className="space-y-1 text-sm">
         <p className="font-medium">Preview</p>
-        <p className="text-muted-foreground">"El informe del tercer trimestre muestra un aumento del 12%..."</p>
+        <p className="text-muted-foreground">
+          "El informe del tercer trimestre muestra un aumento del 12%..."
+        </p>
       </div>
     ),
   },
@@ -50,14 +62,22 @@ const SKILLS: SkillMenuItem[] = [
     description: "Turn a script into narration with a natural-sounding voice",
     icon: <Mic aria-hidden />,
     cost: 4,
-    preview: <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm">Preview: waveform</div>,
+    preview: (
+      <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm">
+        Preview: waveform
+      </div>
+    ),
   },
   {
     id: "remove-bg",
     title: "Remove background",
     description: "Cut a subject out onto a transparent background",
     icon: <Wand2 aria-hidden />,
-    preview: <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm">Preview: cutout result</div>,
+    preview: (
+      <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm">
+        Preview: cutout result
+      </div>
+    ),
   },
 ];
 
@@ -402,8 +422,7 @@ export const LongContent: Story = {
     skills: [
       {
         id: "meeting-digest",
-        title:
-          "Summarize a long research thread and list every open decision that still needs an owner",
+        title: "Summarize a long research thread and list every open decision that still needs an owner",
         description:
           "Condenses a multi-hour transcript into decisions, owners, and the questions nobody answered",
         icon: <FileText aria-hidden />,
@@ -423,7 +442,11 @@ export const LongContent: Story = {
         description: "Turns a script into narration and lines the takes up against an existing edit",
         icon: <Mic aria-hidden />,
         cost: 4,
-        preview: <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm">Preview: waveform</div>,
+        preview: (
+          <div className="flex h-24 items-center justify-center rounded-md border border-dashed text-sm">
+            Preview: waveform
+          </div>
+        ),
       },
       ...SKILLS.slice(0, 2),
     ],
@@ -463,9 +486,7 @@ export const Mobile: Story = {
 
     const preview = canvasElement.querySelector<HTMLElement>('[data-slot="skill-menu-preview"]')!;
     const list = canvasElement.querySelector<HTMLElement>('[data-slot="command-list"]')!;
-    await expect(preview.getBoundingClientRect().width).toBeLessThan(
-      list.getBoundingClientRect().width,
-    );
+    await expect(preview.getBoundingClientRect().width).toBeLessThan(list.getBoundingClientRect().width);
   },
 };
 

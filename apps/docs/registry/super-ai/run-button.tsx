@@ -17,7 +17,14 @@ import { CostChip } from "@/registry/super-ai/cost-chip";
  * States: idle · estimating · running · done · failed · insufficient-credits · locked
  */
 
-type RunButtonState = "idle" | "estimating" | "running" | "done" | "failed" | "insufficient-credits" | "locked";
+type RunButtonState =
+  | "idle"
+  | "estimating"
+  | "running"
+  | "done"
+  | "failed"
+  | "insufficient-credits"
+  | "locked";
 
 interface RunButtonProps extends Omit<React.ComponentProps<"div">, "onError"> {
   /**
@@ -92,7 +99,9 @@ function RunButton({
 
   const shortfallMessage =
     insufficientMessage ??
-    (cost !== undefined && balance !== undefined ? `Need ${cost} ${unit}, you have ${balance}` : `Not enough ${unit}`);
+    (cost !== undefined && balance !== undefined
+      ? `Need ${cost} ${unit}, you have ${balance}`
+      : `Not enough ${unit}`);
 
   const showCostChip = cost !== undefined && (state === "idle" || state === "done" || state === "failed");
 
@@ -149,7 +158,10 @@ function RunButton({
               "one control" (spec: progress drawn inside the button, never a
               separate bar) without nesting a div inside a button.
             */}
-            <div data-slot="run-button-trigger-frame" className={cn("relative rounded-lg", isRunning && "bg-muted overflow-hidden")}>
+            <div
+              data-slot="run-button-trigger-frame"
+              className={cn("relative rounded-lg", isRunning && "bg-muted overflow-hidden")}
+            >
               {isRunning ? (
                 <ProgressPrimitive.Root
                   value={progress ?? null}
@@ -157,7 +169,10 @@ function RunButton({
                   aria-label={runningLabel}
                   className="absolute inset-0"
                 >
-                  <ProgressTrack data-slot="run-button-progress-track" className="h-full w-full rounded-[inherit] bg-transparent">
+                  <ProgressTrack
+                    data-slot="run-button-progress-track"
+                    className="h-full w-full rounded-[inherit] bg-transparent"
+                  >
                     {/*
                       The fill is the only thing in this component that moves,
                       so it is the only place a reduced-motion branch can live:
@@ -186,7 +201,13 @@ function RunButton({
                 <span data-slot="run-button-label" className="inline-flex items-center gap-1.5">
                   {state === "done" ? <Check aria-hidden /> : null}
                   {state === "failed" ? <AlertCircle aria-hidden /> : null}
-                  {state === "done" ? doneLabel : state === "failed" ? failedLabel : isRunning ? runningLabel : label}
+                  {state === "done"
+                    ? doneLabel
+                    : state === "failed"
+                      ? failedLabel
+                      : isRunning
+                        ? runningLabel
+                        : label}
                 </span>
               </Button>
             </div>

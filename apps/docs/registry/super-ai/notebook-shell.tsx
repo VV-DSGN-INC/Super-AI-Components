@@ -394,34 +394,23 @@ function NotebookShell({
         {/* Pane two. AI Elements' Conversation brings role="log" and
             stick-to-bottom pinning; `scrollClassName` is what makes the
             element it owns actually scroll. */}
-        <Conversation
-          data-region="chat"
-          aria-label={chatLabel}
-          tabIndex={0}
-          className="min-h-0 flex-1"
-        >
+        <Conversation data-region="chat" aria-label={chatLabel} tabIndex={0} className="min-h-0 flex-1">
           <ConversationContent
             scrollClassName={CHAT_SCROLL}
             className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6"
           >
-            {messages.length > 0 ? (
-              messages.map((message) => (
-                <NotebookShellTurn
-                  key={message.id}
-                  message={message}
-                  resolveCitation={resolveCitation}
-                />
-              ))
-            ) : (
-              (empty ?? (
-                <EmptyState
-                  size="page"
-                  title="Ask your sources"
-                  description="Every answer here is drawn from the documents on the left, and every claim links back to the passage it came from."
-                  icon={<MessagesSquare />}
-                />
-              ))
-            )}
+            {messages.length > 0
+              ? messages.map((message) => (
+                  <NotebookShellTurn key={message.id} message={message} resolveCitation={resolveCitation} />
+                ))
+              : (empty ?? (
+                  <EmptyState
+                    size="page"
+                    title="Ask your sources"
+                    description="Every answer here is drawn from the documents on the left, and every claim links back to the passage it came from."
+                    icon={<MessagesSquare />}
+                  />
+                ))}
           </ConversationContent>
         </Conversation>
 
@@ -494,9 +483,7 @@ function NotebookShell({
 
         <div data-slot="notebook-shell-outputs" className="flex flex-col gap-3">
           {outputs.length > 0
-            ? outputs.map(({ id, ...output }) => (
-                <ResultCard key={id} data-output-id={id} {...output} />
-              ))
+            ? outputs.map(({ id, ...output }) => <ResultCard key={id} data-output-id={id} {...output} />)
             : (outputsEmpty ?? (
                 <EmptyState
                   size="panel"

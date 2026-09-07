@@ -20,9 +20,7 @@ export default function AssetDetailDemo() {
   return (
     <div className="flex flex-col items-start gap-3">
       <Button onClick={() => setOpen(true)}>Open result</Button>
-      {remixing ? (
-        <p className="text-foreground text-xs">Remixing from: &ldquo;{remixing}&rdquo;</p>
-      ) : null}
+      {remixing ? <p className="text-foreground text-xs">Remixing from: &ldquo;{remixing}&rdquo;</p> : null}
 
       <AssetDetail
         open={open}

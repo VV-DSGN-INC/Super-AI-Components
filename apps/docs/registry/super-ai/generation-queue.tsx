@@ -231,7 +231,8 @@ function GenerationQueue({
   // meaningful to show — but a real batchProgress (e.g. summed per-slot
   // percentages) always wins, since it's a genuinely different number from
   // a simple resolved/total ratio.
-  const effectiveBatchProgress = batchProgress ?? (total > 0 ? Math.round((resolvedCount / total) * 100) : null);
+  const effectiveBatchProgress =
+    batchProgress ?? (total > 0 ? Math.round((resolvedCount / total) * 100) : null);
 
   const showCancelAll = cancellableIds.length > 0 && Boolean(onCancelAll);
   const showHeader = Boolean(heading) || effectiveBatchProgress != null || showCancelAll;

@@ -23,14 +23,73 @@ export const ALLOWED_TERMS = new Set([
  *  the cited vocabulary, not all of Tailwind — a new prefix arriving in docs
  *  prose lands in `name` and the triage promotes it here explicitly. */
 export const UTILITY_PREFIXES = new Set([
-  "bg", "text", "border", "ring", "outline", "fill", "stroke", "placeholder",
-  "decoration", "caret", "shadow", "rounded", "gap", "p", "px", "py", "pt",
-  "pb", "pl", "pr", "m", "mx", "my", "mt", "mb", "ml", "mr", "size", "h", "w",
-  "min", "max", "grid", "col", "flex", "items", "justify", "self", "font",
-  "leading", "tracking", "underline", "opacity", "inset", "truncate",
-  "divide", "space", "animate", "transition", "duration", "hover", "focus",
-  "active", "disabled", "group", "peer", "sr", "pointer", "select", "line",
-  "list", "overflow", "align", "tabular", "break", "left", "right",
+  "bg",
+  "text",
+  "border",
+  "ring",
+  "outline",
+  "fill",
+  "stroke",
+  "placeholder",
+  "decoration",
+  "caret",
+  "shadow",
+  "rounded",
+  "gap",
+  "p",
+  "px",
+  "py",
+  "pt",
+  "pb",
+  "pl",
+  "pr",
+  "m",
+  "mx",
+  "my",
+  "mt",
+  "mb",
+  "ml",
+  "mr",
+  "size",
+  "h",
+  "w",
+  "min",
+  "max",
+  "grid",
+  "col",
+  "flex",
+  "items",
+  "justify",
+  "self",
+  "font",
+  "leading",
+  "tracking",
+  "underline",
+  "opacity",
+  "inset",
+  "truncate",
+  "divide",
+  "space",
+  "animate",
+  "transition",
+  "duration",
+  "hover",
+  "focus",
+  "active",
+  "disabled",
+  "group",
+  "peer",
+  "sr",
+  "pointer",
+  "select",
+  "line",
+  "list",
+  "overflow",
+  "align",
+  "tabular",
+  "break",
+  "left",
+  "right",
 ]);
 
 export function classifySpan(span: string): "utility" | "name" | "allowed" | "ignored" {
@@ -55,14 +114,18 @@ const CLAIM_PATHS: [string, (d: Record<string, unknown>) => [string, string][]][
     "anatomy",
     (d) =>
       Array.isArray(d.anatomy)
-        ? d.anatomy.map((a: { note?: string }, i: number) => [`anatomy[${i}].note`, a?.note ?? ""] as [string, string])
+        ? d.anatomy.map(
+            (a: { note?: string }, i: number) => [`anatomy[${i}].note`, a?.note ?? ""] as [string, string],
+          )
         : [],
   ],
   [
     "dos",
     (d) =>
       Array.isArray(d.dos)
-        ? d.dos.map((x: { text?: string }, i: number) => [`dos[${i}].text`, x?.text ?? ""] as [string, string])
+        ? d.dos.map(
+            (x: { text?: string }, i: number) => [`dos[${i}].text`, x?.text ?? ""] as [string, string],
+          )
         : [],
   ],
   [
@@ -71,7 +134,9 @@ const CLAIM_PATHS: [string, (d: Record<string, unknown>) => [string, string][]][
       const acc = d.accessibility as { keyboard?: string[]; screenReader?: string[] } | undefined;
       return [
         ...(acc?.keyboard ?? []).map((s, i) => [`accessibility.keyboard[${i}]`, s] as [string, string]),
-        ...(acc?.screenReader ?? []).map((s, i) => [`accessibility.screenReader[${i}]`, s] as [string, string]),
+        ...(acc?.screenReader ?? []).map(
+          (s, i) => [`accessibility.screenReader[${i}]`, s] as [string, string],
+        ),
       ];
     },
   ],

@@ -6,11 +6,11 @@
 family-O fan-out. This spec takes the first five of its ~20 entries and closes them. Two of those
 five entries are corrected here: they name the wrong file as the cause.
 
-| | |
-| --- | --- |
-| Scope | Five gap groups: A8 frame naming, vendored `ui/tabs` contrast at our call sites, B1's clipped bottom slots, carousel arrows drawn outside their own box, viewport-keyed grid columns |
-| Touches | `preview-tile`, `feature-card-row`, `artifact-grid`, `recent-grid`, `frame-strip`, `parameter-panel` / `run-inspector` (TabsList sites), the five embeddable shells, `CONTINUE.md` §8, `vendored-token-findings.md` |
-| Explicitly out | The other ~15 §8 gaps, all new gates, every edit to a vendored file, the `--warning` token decision |
+|                |                                                                                                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scope          | Five gap groups: A8 frame naming, vendored `ui/tabs` contrast at our call sites, B1's clipped bottom slots, carousel arrows drawn outside their own box, viewport-keyed grid columns                                |
+| Touches        | `preview-tile`, `feature-card-row`, `artifact-grid`, `recent-grid`, `frame-strip`, `parameter-panel` / `run-inspector` (TabsList sites), the five embeddable shells, `CONTINUE.md` §8, `vendored-token-findings.md` |
+| Explicitly out | The other ~15 §8 gaps, all new gates, every edit to a vendored file, the `--warning` token decision                                                                                                                 |
 
 ---
 
@@ -18,7 +18,7 @@ five entries are corrected here: they name the wrong file as the cause.
 
 `CONTINUE.md` §8 orders its entries by **how many builders hit them**. That is the right ordering
 for "what is the component layer worst at", and the wrong one for "what is broken for someone
-right now". Two entries filed under *smaller, but real* are shipping defects today:
+right now". Two entries filed under _smaller, but real_ are shipping defects today:
 
 - **A8 `preview-tile`** produces a nameless button whenever an interactive tile uses
   `labelPlacement="below"` or `"none"`. C4 `recent-grid` does exactly this at two call sites, so
@@ -42,14 +42,14 @@ A fix is not done when the component gains a prop. It is done when the constant 
 because the prop was missing has been **deleted**, and the shell still renders correctly without
 it. The shell is the proof; the component change is only the claim.
 
-| Evidence of done | Where it lives today |
-| --- | --- |
-| `FEATURE_ROW_ARROW_GUTTER = "px-9"` deleted | `home-shell.tsx:81` |
-| `ARTIFACTS_IN_STREAM` deleted | `chat-shell.tsx:85` |
-| `GRID_BESIDE_SIDEBAR` deleted | `artifact-shell.tsx:78` |
-| The `footer`/`promo` clip warnings deleted | 5 shells' JSDoc + 5 docs pages |
-| C4's two interactive tiles carry accessible names | `recent-grid.tsx:98`, `:120` |
-| Both default-variant `TabsList` sites pass contrast | 2 of 4 TabsList consumers |
+| Evidence of done                                    | Where it lives today           |
+| --------------------------------------------------- | ------------------------------ |
+| `FEATURE_ROW_ARROW_GUTTER = "px-9"` deleted         | `home-shell.tsx:81`            |
+| `ARTIFACTS_IN_STREAM` deleted                       | `chat-shell.tsx:85`            |
+| `GRID_BESIDE_SIDEBAR` deleted                       | `artifact-shell.tsx:78`        |
+| The `footer`/`promo` clip warnings deleted          | 5 shells' JSDoc + 5 docs pages |
+| C4's two interactive tiles carry accessible names   | `recent-grid.tsx:98`, `:120`   |
+| Both default-variant `TabsList` sites pass contrast | 2 of 4 TabsList consumers      |
 
 This is the same measure `CONTINUE.md` §1 already applies to the A-family retrofit: "had
 `cost-chip` still carried its default, the compensation list would have grown rather than gone to
@@ -201,19 +201,19 @@ consumes another phase's new API.
 
 **Phase 1 — parallel, 5 agents, registry files only, never a shell**
 
-| Agent | File | Fix |
-| --- | --- | --- |
-| 1 | `preview-tile.tsx` | §4.1 props + story |
-| 2 | `feature-card-row.tsx` | §4.4 arrows |
-| 3 | `frame-strip.tsx` | §4.4 arrows |
-| 4 | `artifact-grid.tsx` | §4.5 container queries |
-| 5 | `parameter-panel.tsx`, `run-inspector.tsx` | §4.2 TabsList sites |
+| Agent | File                                       | Fix                    |
+| ----- | ------------------------------------------ | ---------------------- |
+| 1     | `preview-tile.tsx`                         | §4.1 props + story     |
+| 2     | `feature-card-row.tsx`                     | §4.4 arrows            |
+| 3     | `frame-strip.tsx`                          | §4.4 arrows            |
+| 4     | `artifact-grid.tsx`                        | §4.5 container queries |
+| 5     | `parameter-panel.tsx`, `run-inspector.tsx` | §4.2 TabsList sites    |
 
 **Phase 2 — one agent, the only consumer of phase 1's new API**
 
-| Agent | File | Fix |
-| --- | --- | --- |
-| 6 | `recent-grid.tsx` | adopt `frameLabel` + `selectMode="open"` at both call sites; §4.5 container queries |
+| Agent | File              | Fix                                                                                 |
+| ----- | ----------------- | ----------------------------------------------------------------------------------- |
+| 6     | `recent-grid.tsx` | adopt `frameLabel` + `selectMode="open"` at both call sites; §4.5 container queries |
 
 `frame-strip` was checked and is **not** a phase 2 file. It composes `preview-tile` with
 `labelPlacement="overlay"` and `selected={active}` (`frame-strip.tsx:141–148`), so its tiles are

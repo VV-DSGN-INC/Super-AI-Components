@@ -25,12 +25,27 @@ export const ModalityRailDocs: ComponentDocs = {
     "It's the defining chrome of a studio shell — CapCut, Canva, Fotor, Simplified, Tripo, and Spline all build their editor around this exact column. Because the column is a fixed 92px, it can't grow taller to fit more tools, so overflow and pinning aren't edge cases — they're the two problems the component exists to solve.",
   evidence: ["CapCut", "Canva", "Fotor", "Simplified", "Tripo", "Spline"],
   anatomy: [
-    { slot: "modality-rail", note: "Root column, fixed at 92px, split into a scrollable middle and a pinned footer." },
-    { slot: "modality-rail-scroll", note: "The middle group of tool buttons. Never grows scroll styling of its own." },
-    { slot: "modality-rail-item", note: "One icon-over-label button. `aria-pressed` carries the active state." },
+    {
+      slot: "modality-rail",
+      note: "Root column, fixed at 92px, split into a scrollable middle and a pinned footer.",
+    },
+    {
+      slot: "modality-rail-scroll",
+      note: "The middle group of tool buttons. Never grows scroll styling of its own.",
+    },
+    {
+      slot: "modality-rail-item",
+      note: "One icon-over-label button. `aria-pressed` carries the active state.",
+    },
     { slot: "modality-rail-badge", note: "The 'New' dot or crown/Pro mark riding on an item's icon." },
-    { slot: "modality-rail-overflow", note: "The chevron affordance that reveals items past `maxVisible`, not a scrollbar." },
-    { slot: "modality-rail-pinned", note: "Settings, plugins, help — a separate group below the middle, never inside it." },
+    {
+      slot: "modality-rail-overflow",
+      note: "The chevron affordance that reveals items past `maxVisible`, not a scrollbar.",
+    },
+    {
+      slot: "modality-rail-pinned",
+      note: "Settings, plugins, help — a separate group below the middle, never inside it.",
+    },
   ],
   usage:
     "Reach for it as the primary tool switcher in an editor shell, not a generic sidebar (that's sidebar-nav). Pass a flat `items` array for the scrollable middle and a separate `pinned` array for the handful of rows — settings, plugins, help — that must survive no matter how many tools the middle grows to. `maxVisible` controls how many items show before the rest collapse behind the overflow chevron; the component is controlled, so feed `activeId` back from `onSelect` the same way the switcher and sidebar-nav expect.",
@@ -67,11 +82,11 @@ export const ModalityRailDocs: ComponentDocs = {
       "Activating the already-active tool reports an empty selection, which is discarded. The rail can never land on no tool at all.",
     ],
     screenReader: [
-      "All three toggle groups render as `role=\"group\"` with `aria-orientation` explicitly suppressed — the attribute is not allowed on that role, so the value the primitive computes is an axe `aria-allowed-attr` failure whatever it says. None of the three groups carries a name of its own, so a screen reader meets three unlabelled groups: the tools announce fine, but the split between the scrolling middle and the pinned footer does not.",
-      "An item is a toggle button carrying `aria-pressed`, so the active tool is programmatic rather than a colour treatment. Its accessible name is the visible label plus, when `badge` is set, an sr-only \" Pro\" or \" New\" — the crown and the dot themselves live inside an `aria-hidden` span and contribute nothing.",
-      "The visible label is truncated to fit 92px, but the full string stays in the accessibility tree. A tool that renders as \"Backgro…\" is still announced in full.",
+      'All three toggle groups render as `role="group"` with `aria-orientation` explicitly suppressed — the attribute is not allowed on that role, so the value the primitive computes is an axe `aria-allowed-attr` failure whatever it says. None of the three groups carries a name of its own, so a screen reader meets three unlabelled groups: the tools announce fine, but the split between the scrolling middle and the pinned footer does not.',
+      'An item is a toggle button carrying `aria-pressed`, so the active tool is programmatic rather than a colour treatment. Its accessible name is the visible label plus, when `badge` is set, an sr-only " Pro" or " New" — the crown and the dot themselves live inside an `aria-hidden` span and contribute nothing.',
+      'The visible label is truncated to fit 92px, but the full string stays in the accessibility tree. A tool that renders as "Backgro…" is still announced in full.',
       "The tooltip repeats the label rather than supplying it. Every item already has a real text name, so nothing is lost on the many occasions the tooltip never opens.",
-      "The overflow popup is `role=\"dialog\"` named by `overflowLabel` — the same string the chevron announces, because the list has no heading to borrow a name from. Without it the popup would be an unnamed dialog, which fails outright.",
+      'The overflow popup is `role="dialog"` named by `overflowLabel` — the same string the chevron announces, because the list has no heading to borrow a name from. Without it the popup would be an unnamed dialog, which fails outright.',
       "Switching tools announces nothing beyond the pressed state of the button that was pressed. The canvas that just changed mode has to say so itself; the rail owns no live region.",
     ],
     focus: [

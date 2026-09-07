@@ -6,7 +6,11 @@ import { expect, userEvent, within } from "storybook/test";
 
 import { Switch } from "@/components/ui/switch";
 import { EntityRow } from "@/registry/super-ai/entity-row";
-import { MemberGateRow, type MemberGateRowProps, type MemberGateRowState } from "@/registry/super-ai/member-gate-row";
+import {
+  MemberGateRow,
+  type MemberGateRowProps,
+  type MemberGateRowState,
+} from "@/registry/super-ai/member-gate-row";
 import { PromoCard } from "@/registry/super-ai/promo-card";
 import { MemberGateRowDocs } from "@/content/components/member-gate-row.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
@@ -251,8 +255,11 @@ export const RTL: Story = {
     const row = canvasElement.querySelector('[data-slot="entity-row"]') as HTMLElement;
     const icon = row.querySelector('[data-slot="entity-row-icon"]') as HTMLElement;
     const trailing = row.querySelector('[data-slot="member-gate-row-trailing"]') as HTMLElement;
-    const centre = (el: HTMLElement) => el.getBoundingClientRect().left + el.getBoundingClientRect().width / 2;
-    await expect(`icon right of trailing=${centre(icon) > centre(trailing)}`).toBe("icon right of trailing=true");
+    const centre = (el: HTMLElement) =>
+      el.getBoundingClientRect().left + el.getBoundingClientRect().width / 2;
+    await expect(`icon right of trailing=${centre(icon) > centre(trailing)}`).toBe(
+      "icon right of trailing=true",
+    );
   },
 };
 
@@ -351,9 +358,9 @@ export const KeyboardOrder: Story = {
     for (const expected of [cta, dismiss]) {
       await userEvent.tab();
       await expect(document.activeElement).toBe(expected);
-      await expect(`${(expected as HTMLElement).textContent} visibly focused=${ringed(expected as HTMLElement)}`).toBe(
-        `${(expected as HTMLElement).textContent} visibly focused=true`,
-      );
+      await expect(
+        `${(expected as HTMLElement).textContent} visibly focused=${ringed(expected as HTMLElement)}`,
+      ).toBe(`${(expected as HTMLElement).textContent} visibly focused=true`);
     }
 
     // One more Tab leaves the component: the panel is revealed content, not a
@@ -547,14 +554,16 @@ export const EmptyLabel: Story = {
 
     // The tier-less row is visually indistinguishable from an ungated toggle:
     // one badge on the canvas, not two.
-    await expect(`badges=${canvasElement.querySelectorAll('[data-slot="member-gate-row-tier-badge"]').length}`).toBe(
-      "badges=1",
-    );
+    await expect(
+      `badges=${canvasElement.querySelectorAll('[data-slot="member-gate-row-tier-badge"]').length}`,
+    ).toBe("badges=1");
 
     // The lock sentence survives — it is the only signal the first row has —
     // but it loses the tier it would otherwise name.
     await expect(switches[0]).toHaveAccessibleDescription("Locked. Activating opens upgrade options.");
-    await expect(switches[1]).toHaveAccessibleDescription("Locked — requires Pro. Activating opens upgrade options.");
+    await expect(switches[1]).toHaveAccessibleDescription(
+      "Locked — requires Pro. Activating opens upgrade options.",
+    );
   },
 };
 
@@ -607,7 +616,9 @@ export const LongContent: Story = {
     const clipped = (el: Element) => el.scrollWidth > el.clientWidth;
     const title = canvasElement.querySelector('[data-slot="entity-row-title"]') as HTMLElement;
     const description = canvasElement.querySelector('[data-slot="entity-row-description"]') as HTMLElement;
-    const upsellTitle = canvasElement.querySelector('[data-slot="member-gate-row-upsell-title"]') as HTMLElement;
+    const upsellTitle = canvasElement.querySelector(
+      '[data-slot="member-gate-row-upsell-title"]',
+    ) as HTMLElement;
 
     await expect(`row title clipped=${clipped(title)}`).toBe("row title clipped=true");
     await expect(`row description clipped=${clipped(description)}`).toBe("row description clipped=true");
@@ -620,7 +631,9 @@ export const LongContent: Story = {
     // A longer tier badge is paid for by the title, in the same row width.
     const titles = canvasElement.querySelectorAll<HTMLElement>('[data-slot="entity-row-title"]');
     const rows = canvasElement.querySelectorAll<HTMLElement>('[data-slot="entity-row"]');
-    await expect(`rows same width=${rows[0].clientWidth === rows[1].clientWidth}`).toBe("rows same width=true");
+    await expect(`rows same width=${rows[0].clientWidth === rows[1].clientWidth}`).toBe(
+      "rows same width=true",
+    );
     await expect(`long tier narrows title=${titles[1].clientWidth < titles[0].clientWidth}`).toBe(
       "long tier narrows title=true",
     );
@@ -739,7 +752,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Entity row + switch — the same row, nothing gating it</p>
+        <p className="text-foreground text-xs font-medium">
+          Entity row + switch — the same row, nothing gating it
+        </p>
         <EntityRow
           icon={<Scan className="size-4" aria-hidden />}
           title="Background removal"
@@ -749,7 +764,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Promo card — the pitch, attached to no one feature</p>
+        <p className="text-foreground text-xs font-medium">
+          Promo card — the pitch, attached to no one feature
+        </p>
         <PromoCard
           flavour="upgrade"
           title="Upgrade to Pro"

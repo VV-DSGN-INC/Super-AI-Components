@@ -17,11 +17,7 @@ import {
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
-import {
-  DrawingTools,
-  type DrawingSwatch,
-  type DrawingToolOption,
-} from "@/registry/super-ai/drawing-tools";
+import { DrawingTools, type DrawingSwatch, type DrawingToolOption } from "@/registry/super-ai/drawing-tools";
 import { ModalityRail } from "@/registry/super-ai/modality-rail";
 import { PropertyInspector, PropertyRow, type PropertySection } from "@/registry/super-ai/property-inspector";
 import { UnitInput } from "@/registry/super-ai/field-row";
@@ -301,8 +297,7 @@ export const KeyboardOrder: Story = {
     const rail = canvasElement.querySelector<HTMLElement>('[data-slot="drawing-tools-tool-rail"]')!;
     const tabbableIn = (root: HTMLElement) =>
       Array.from(root.querySelectorAll<HTMLElement>('button:not([tabindex="-1"])'));
-    const tabbableTools = () =>
-      tabbableIn(rail).filter((el) => el.dataset.slot === "drawing-tools-tool");
+    const tabbableTools = () => tabbableIn(rail).filter((el) => el.dataset.slot === "drawing-tools-tool");
 
     // Four tools, one stop. This is the invariant that keeps a long rail from
     // costing a keyboard user one press per tool.
@@ -349,11 +344,7 @@ export const KeyboardOrder: Story = {
     // Three alternates, each reachable and each named by its own visible text
     // rather than by the parent tool's.
     const alternates = within(flyout).getAllByRole("button");
-    await expect(alternates.map((el) => el.textContent?.trim())).toEqual([
-      "Pencil",
-      "Pen",
-      "Highlighter",
-    ]);
+    await expect(alternates.map((el) => el.textContent?.trim())).toEqual(["Pencil", "Pen", "Highlighter"]);
 
     // …and the return. Escape dismisses, focus goes back to the chevron.
     await userEvent.keyboard("{Escape}");
@@ -439,10 +430,7 @@ export const Controlled: Story = {
     await userEvent.click(within(flyout).getByRole("button", { name: "Pen" }));
     await expect(canvas.getByTestId("requested")).toHaveTextContent("pen");
     await userEvent.click(canvas.getByRole("button", { name: "Apply" }));
-    await expect(await canvas.findByRole("button", { name: "Pen" })).toHaveAttribute(
-      "data-tool",
-      "pencil",
-    );
+    await expect(await canvas.findByRole("button", { name: "Pen" })).toHaveAttribute("data-tool", "pencil");
 
     await userEvent.click(eraser());
     await userEvent.click(canvas.getByRole("button", { name: "Apply" }));
@@ -556,7 +544,6 @@ export const EmptyLabel: Story = {
     // The icon-less tool is still a real, named control rather than a gap in
     // the rail.
     await expect(canvasElement.querySelector('[data-tool="text"]')).toHaveAccessibleName("Text");
-
   },
 };
 
@@ -720,9 +707,7 @@ export const Boundary: Story = {
   render: () => (
     <div className="flex w-full flex-col gap-6">
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">
-          Drawing tools — sets up the next stroke
-        </p>
+        <p className="text-foreground text-xs font-medium">Drawing tools — sets up the next stroke</p>
         <DrawingTools
           tools={TOOLS}
           activeToolId="pencil"
@@ -739,17 +724,11 @@ export const Boundary: Story = {
         <p className="text-foreground text-xs font-medium">
           Property inspector — edits what is already selected
         </p>
-        <PropertyInspector
-          elementType="image"
-          selectionLabel="Hero image"
-          sections={INSPECTOR_SECTIONS}
-        />
+        <PropertyInspector elementType="image" selectionLabel="Hero image" sections={INSPECTOR_SECTIONS} />
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">
-          Modality rail — picks which panel you are in
-        </p>
+        <p className="text-foreground text-xs font-medium">Modality rail — picks which panel you are in</p>
         <div className="flex h-44 items-stretch">
           <ModalityRail
             items={[
@@ -760,9 +739,7 @@ export const Boundary: Story = {
             ]}
             activeId="draw"
           />
-          <div className="text-muted-foreground flex flex-1 items-center justify-center text-xs">
-            Canvas
-          </div>
+          <div className="text-muted-foreground flex flex-1 items-center justify-center text-xs">Canvas</div>
         </div>
       </section>
     </div>

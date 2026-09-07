@@ -39,9 +39,7 @@ export const Default: Story = {
       <PopoverContent className="w-80" align="start">
         <PopoverHeader>
           <PopoverTitle>Image generation</PopoverTitle>
-          <PopoverDescription>
-            Tune how Nova renders your next prompt.
-          </PopoverDescription>
+          <PopoverDescription>Tune how Nova renders your next prompt.</PopoverDescription>
         </PopoverHeader>
 
         <div className="mt-1 flex flex-col gap-3">
@@ -70,9 +68,7 @@ export const Default: Story = {
                 <Zap className="size-3.5" />
                 Inference steps
               </Label>
-              <span className="text-xs tabular-nums text-muted-foreground">
-                32
-              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">32</span>
             </div>
             <Slider defaultValue={[32]} min={10} max={60} step={1} />
           </div>
@@ -83,9 +79,7 @@ export const Default: Story = {
                 <Layers className="size-3.5" />
                 Guidance scale
               </Label>
-              <span className="text-xs tabular-nums text-muted-foreground">
-                7.5
-              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">7.5</span>
             </div>
             <Slider defaultValue={[7.5]} min={1} max={15} step={0.5} />
           </div>
@@ -106,36 +100,22 @@ export const Controlled: Story = {
       return (
         <div className="flex flex-col items-center gap-3">
           <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger
-              render={
-                <Button>
-                  {open ? "Hide" : "Show"} credits
-                </Button>
-              }
-            />
+            <PopoverTrigger render={<Button>{open ? "Hide" : "Show"} credits</Button>} />
             <PopoverContent align="center">
               <PopoverHeader>
                 <PopoverTitle>Credit balance</PopoverTitle>
-                <PopoverDescription>
-                  Renews on the 1st of each month.
-                </PopoverDescription>
+                <PopoverDescription>Renews on the 1st of each month.</PopoverDescription>
               </PopoverHeader>
               <div className="mt-1 flex items-baseline gap-1.5">
-                <span className="text-2xl font-semibold tabular-nums">
-                  1,240
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  / 5,000 credits
-                </span>
+                <span className="text-2xl font-semibold tabular-nums">1,240</span>
+                <span className="text-xs text-muted-foreground">/ 5,000 credits</span>
               </div>
               <Button size="sm" variant="outline" className="mt-1 w-full">
                 Buy more credits
               </Button>
             </PopoverContent>
           </Popover>
-          <p className="text-xs text-muted-foreground">
-            State: {open ? "open" : "closed"}
-          </p>
+          <p className="text-xs text-muted-foreground">State: {open ? "open" : "closed"}</p>
         </div>
       );
     }

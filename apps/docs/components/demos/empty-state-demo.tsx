@@ -60,12 +60,7 @@ export default function EmptyStateDemo() {
     <div className="flex w-full flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2">
         {SIZES.map((s) => (
-          <Button
-            key={s}
-            size="sm"
-            variant={size === s ? "default" : "outline"}
-            onClick={() => setSize(s)}
-          >
+          <Button key={s} size="sm" variant={size === s ? "default" : "outline"} onClick={() => setSize(s)}>
             {s}
           </Button>
         ))}

@@ -259,8 +259,7 @@ function ArtifactShell({
         .map((session) => ({
           ...session,
           items: session.items.filter(
-            (item) =>
-              matchesQuery(item, needle) && (activeType === null || item.type === activeType),
+            (item) => matchesQuery(item, needle) && (activeType === null || item.type === activeType),
           ),
         }))
         .filter((session) => session.items.length > 0),
@@ -322,10 +321,7 @@ function ArtifactShell({
         {/* "header + filter" is one region in the spec: the facets are how the
             index is scoped, so they belong with its title rather than floating
             above the cards as a second toolbar. */}
-        <div
-          data-region="header"
-          className="bg-background flex shrink-0 flex-col gap-2 border-b px-3 py-2"
-        >
+        <div data-region="header" className="bg-background flex shrink-0 flex-col gap-2 border-b px-3 py-2">
           <div className="flex items-center gap-2">
             <SidebarTrigger />
             <h1 data-slot="artifact-shell-title" className="min-w-0 flex-1 truncate text-sm font-semibold">
@@ -336,11 +332,7 @@ function ArtifactShell({
 
           {/* A5. No data-slot override — the row keeps `filter-bar`, so the
               docs anatomy can point at the component that actually renders it. */}
-          <FilterBar
-            role="group"
-            aria-label={filterLabel}
-            className="gap-1.5"
-          >
+          <FilterBar role="group" aria-label={filterLabel} className="gap-1.5">
             {showFacets ? (
               <>
                 {/* aria-pressed comes from A5's own chip, so "which facet is
@@ -453,48 +445,46 @@ function ArtifactShell({
             </section>
           ) : null}
 
-          {total === 0 ? (
-            (empty ?? (
-              <EmptyState
-                size="page"
-                title="Nothing has been generated yet"
-                description="Documents, code and pages this workspace produces are collected here, newest first."
-                icon={<FileText />}
-              />
-            ))
-          ) : visibleGroups.length === 0 ? (
-            (noResults ?? (
-              <EmptyState
-                size="panel"
-                // Filtering is what usually empties this view, and a silent
-                // disappearance is indistinguishable from a broken filter.
-                role="status"
-                title="No artifacts match"
-                description="Try a different type, or search for a phrase from the artifact itself rather than its title."
-                icon={<Search />}
-              />
-            ))
-          ) : (
-            visibleGroups.map((group) => (
-              // A3. Its own data-slot is left alone; the group id rides on a
-              // data attribute instead.
-              <DateSection
-                key={group.id}
-                label={group.label}
-                data-group-id={group.id}
-                className="space-y-3"
-              >
-                <ArtifactGrid
-                  sessions={group.sessions}
-                  // J4's own facet row is off: the spec puts the filter in the
-                  // header, and two rows over one index is how a badge and its
-                  // facet start disagreeing.
-                  filterable={false}
-                  collapsibleSessions={collapsibleSessions}
+          {total === 0
+            ? (empty ?? (
+                <EmptyState
+                  size="page"
+                  title="Nothing has been generated yet"
+                  description="Documents, code and pages this workspace produces are collected here, newest first."
+                  icon={<FileText />}
                 />
-              </DateSection>
-            ))
-          )}
+              ))
+            : visibleGroups.length === 0
+              ? (noResults ?? (
+                  <EmptyState
+                    size="panel"
+                    // Filtering is what usually empties this view, and a silent
+                    // disappearance is indistinguishable from a broken filter.
+                    role="status"
+                    title="No artifacts match"
+                    description="Try a different type, or search for a phrase from the artifact itself rather than its title."
+                    icon={<Search />}
+                  />
+                ))
+              : visibleGroups.map((group) => (
+                  // A3. Its own data-slot is left alone; the group id rides on a
+                  // data attribute instead.
+                  <DateSection
+                    key={group.id}
+                    label={group.label}
+                    data-group-id={group.id}
+                    className="space-y-3"
+                  >
+                    <ArtifactGrid
+                      sessions={group.sessions}
+                      // J4's own facet row is off: the spec puts the filter in the
+                      // header, and two rows over one index is how a badge and its
+                      // facet start disagreeing.
+                      filterable={false}
+                      collapsibleSessions={collapsibleSessions}
+                    />
+                  </DateSection>
+                ))}
         </section>
       </SidebarInset>
     </SidebarProvider>

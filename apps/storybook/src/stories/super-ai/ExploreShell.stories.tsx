@@ -607,9 +607,7 @@ export const Controlled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const root = canvasElement.querySelector<HTMLElement>('[data-slot="explore-shell"]')!;
-    const textarea = root.querySelector<HTMLTextAreaElement>(
-      '[data-slot="media-prompt-bar-textarea"]',
-    )!;
+    const textarea = root.querySelector<HTMLTextAreaElement>('[data-slot="media-prompt-bar-textarea"]')!;
     // Pills are addressed by position: the facet count is a bare span set off
     // by a margin, so the name computes as "Images812" — see `EmptyLabel`.
     const pills = Array.from(root.querySelectorAll<HTMLElement>('[data-slot="choice-chip"]'));
@@ -649,20 +647,14 @@ export const Controlled: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Apply" }));
     await waitFor(() => expect(root.dataset.sort).toBe("top"));
     await expect(root.dataset.type).toBe("video");
-    await expect(textarea.value).toBe(
-      "neon city at dusk, wet asphalt reflections, anamorphic",
-    );
-    await waitFor(() =>
-      expect(document.querySelector('[data-slot="asset-detail"]')).not.toBeNull(),
-    );
+    await expect(textarea.value).toBe("neon city at dusk, wet asphalt reflections, anamorphic");
+    await waitFor(() => expect(document.querySelector('[data-slot="asset-detail"]')).not.toBeNull());
 
     // 5. Escape asks; it does not close. The dialog is still there afterwards
     //    and the host has been told what the user wanted.
     await userEvent.keyboard("{Escape}");
     await expect(canvas.getByTestId("open")).toHaveTextContent("null");
-    await waitFor(() =>
-      expect(document.querySelector('[data-slot="asset-detail"]')).not.toBeNull(),
-    );
+    await waitFor(() => expect(document.querySelector('[data-slot="asset-detail"]')).not.toBeNull());
   },
 };
 
@@ -897,8 +889,7 @@ export const LongContent: Story = {
     items: [
       {
         ...ITEMS[0],
-        title:
-          "Neon city at dusk with wet asphalt reflections, shot on an anamorphic lens and graded warm",
+        title: "Neon city at dusk with wet asphalt reflections, shot on an anamorphic lens and graded warm",
         author: "@a-very-long-community-handle-that-will-not-fit-inside-a-tile-meta-row-at-any-width",
       },
       ITEMS[1],
@@ -918,9 +909,7 @@ export const LongContent: Story = {
     // 2. The pill wraps instead, so the row grows down rather than out.
     const chip = root.querySelector<HTMLElement>('[data-slot="choice-chip"]')!;
     await expect(getComputedStyle(chip).whiteSpace).toBe("normal");
-    await expect(chip.getBoundingClientRect().height).toBeGreaterThan(
-      tab.getBoundingClientRect().height,
-    );
+    await expect(chip.getBoundingClientRect().height).toBeGreaterThan(tab.getBoundingClientRect().height);
 
     // 3. …and the shell's strip wraps around both, so nothing pushes the feed
     //    sideways. Two rows: the pills start below the tablist's bottom edge.

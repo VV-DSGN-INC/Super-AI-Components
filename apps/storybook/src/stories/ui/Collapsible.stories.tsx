@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import {
-  Collapsible,
-  CollapsibleTrigger,
-  CollapsibleContent,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import { ChevronsUpDownIcon } from "lucide-react";
 
@@ -22,11 +18,7 @@ export const Default: Story = {
     <Collapsible defaultOpen className="w-80">
       <div className="flex items-center justify-between gap-2">
         <h4 className="text-sm font-medium">Advanced render settings</h4>
-        <CollapsibleTrigger
-          render={
-            <Button variant="ghost" size="icon-sm" aria-label="Toggle" />
-          }
-        >
+        <CollapsibleTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Toggle" />}>
           <ChevronsUpDownIcon />
         </CollapsibleTrigger>
       </div>
@@ -42,18 +34,13 @@ export const Default: Story = {
 export const PromptDetails: Story = {
   render: () => (
     <Collapsible className="w-80 rounded-xl border p-3">
-      <CollapsibleTrigger
-        render={
-          <Button variant="ghost" className="w-full justify-between" />
-        }
-      >
+      <CollapsibleTrigger render={<Button variant="ghost" className="w-full justify-between" />}>
         Show full prompt
         <ChevronsUpDownIcon />
       </CollapsibleTrigger>
       <CollapsibleContent className="pt-2 text-sm text-muted-foreground">
-        cyberpunk alley at night, heavy rain, neon signs in Japanese,
-        reflections in puddles, cinematic lighting, 35mm, ultra detailed,
-        --ar 16:9 --seed 48213
+        cyberpunk alley at night, heavy rain, neon signs in Japanese, reflections in puddles, cinematic
+        lighting, 35mm, ultra detailed, --ar 16:9 --seed 48213
       </CollapsibleContent>
     </Collapsible>
   ),

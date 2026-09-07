@@ -244,7 +244,9 @@ export const LongContent: Story = {
   args: {
     size: "page",
     icon: <ImagePlus />,
-    title: <h2 className="text-lg font-medium tracking-tight">No renders match the filters you have applied</h2>,
+    title: (
+      <h2 className="text-lg font-medium tracking-tight">No renders match the filters you have applied</h2>
+    ),
     description:
       "Clear a filter or widen the date range, and any render that matches will appear here automatically.",
     action: <Button variant="outline">Clear filters</Button>,
@@ -324,7 +326,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Paywall message — it exists, your plan does not cover it</p>
+        <p className="text-foreground text-xs font-medium">
+          Paywall message — it exists, your plan does not cover it
+        </p>
         <PaywallMessage
           state="locked-model"
           prompt="Rooftop garden at golden hour, shallow depth of field"
@@ -338,12 +342,16 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Rate limit banner — available again in a known time</p>
+        <p className="text-foreground text-xs font-medium">
+          Rate limit banner — available again in a known time
+        </p>
         <RateLimitBanner cause="provider-capacity" remainingSeconds={180} onNotifyMe={() => {}} />
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Safety block — refused on policy, with a way forward</p>
+        <p className="text-foreground text-xs font-medium">
+          Safety block — refused on policy, with a way forward
+        </p>
         <SafetyBlock
           variant="input-blocked"
           policy="Likeness of a real person"

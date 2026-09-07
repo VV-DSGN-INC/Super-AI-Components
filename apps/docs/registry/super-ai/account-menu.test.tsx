@@ -61,12 +61,7 @@ describe("AccountMenu", () => {
   });
 
   it("renders the shortcut-hints state as real <kbd> elements", async () => {
-    render(
-      <AccountMenu
-        {...baseProps()}
-        items={[{ label: "Settings", shortcut: ["⌘", ","] }]}
-      />,
-    );
+    render(<AccountMenu {...baseProps()} items={[{ label: "Settings", shortcut: ["⌘", ","] }]} />);
     await openMenu();
 
     const settingsRow = await screen.findByRole("menuitem", { name: /settings/i });

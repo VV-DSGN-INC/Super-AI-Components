@@ -34,11 +34,7 @@ export function StarterFillsTheComposer() {
 
   return (
     <Frame>
-      <HeroOmnibox
-        value={prompt}
-        onValueChange={setPrompt}
-        label="What can I help you with? (example)"
-      />
+      <HeroOmnibox value={prompt} onValueChange={setPrompt} label="What can I help you with? (example)" />
       <SuggestionChips>
         {STARTERS.map((starter) => (
           <SuggestionChip key={starter} suggestion={starter} onSelect={setPrompt} />

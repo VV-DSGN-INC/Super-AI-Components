@@ -92,51 +92,53 @@ These decide the shape of the stories, and all six cost time to rediscover.
     things about that wrapper cost time in the D/I and E/P waves, so they are
     written down here rather than rediscovered:
 
-    - A `layout: "centered"` in the meta wraps every story, so
-      `canvasElement.firstElementChild` is the ~1200px centring div and **not**
-      your 375px frame. An overflow assertion against it measures the wrapper and
-      passes for the wrong reason. Give the frame a `data-testid` and measure
-      that.
-    - A wrapper constrains **width, not the breakpoint**. The gate's chromium is
-      1200×900, so `sm:` and `md:` variants still apply inside a 375px box:
-      `preset-grid` renders its four-column layout where a real phone gets three,
-      and `generation-wizard` renders its desktop two-column grid throughout.
-      Where that is true, say so in the description — the story proves the wide
-      layout squeezed narrow does not scroll sideways, which is a different (and
-      stronger) claim than the phone case.
-    - Some defects **only** exist at narrow width, which is the whole reason the
-      story is mandatory: `data-views`' kanban board had a keyboard-unreachable
-      scroll container that nothing overflowed at desktop size, so no other story
-      could have found it.
+               - A `layout: "centered"` in the meta wraps every story, so
+                 `canvasElement.firstElementChild` is the ~1200px centring div and **not**
+                 your 375px frame. An overflow assertion against it measures the wrapper and
+                 passes for the wrong reason. Give the frame a `data-testid` and measure
+                 that.
+               - A wrapper constrains **width, not the breakpoint**. The gate's chromium is
+                 1200×900, so `sm:` and `md:` variants still apply inside a 375px box:
+                 `preset-grid` renders its four-column layout where a real phone gets three,
+                 and `generation-wizard` renders its desktop two-column grid throughout.
+                 Where that is true, say so in the description — the story proves the wide
+                 layout squeezed narrow does not scroll sideways, which is a different (and
+                 stronger) claim than the phone case.
+               - Some defects **only** exist at narrow width, which is the whole reason the
+                 story is mandatory: `data-views`' kanban board had a keyboard-unreachable
+                 scroll container that nothing overflowed at desktop size, so no other story
+                 could have found it.
 
-    The original reason for the rule still stands:
-    `.storybook/main.ts` loads only `addon-docs`, `addon-a11y` and
-    `addon-vitest`, and the gate runs headless chromium at its own size. A
-    viewport parameter would render at desktop width in the run that gates.
-    Use `<div className="w-[375px] max-w-full">`.
+               The original reason for the rule still stands:
+               `.storybook/main.ts` loads only `addon-docs`, `addon-a11y` and
+               `addon-vitest`, and the gate runs headless chromium at its own size. A
+               viewport parameter would render at desktop width in the run that gates.
+               Use `<div className="w-[375px] max-w-full">`.
 
-    - **There is one mechanism that does move the breakpoint, and the wrapper
-      rule is not a substitute for it where a layout keys on a media query.**
-      `page.viewport(375, 812)` from `vitest/browser`, called at the top
-      of a play function, resizes the test iframe itself. **Import it
-      dynamically, inside the play** — `const { page } = await
-import("vitest/browser")`. The module throws on evaluation outside Browser
-      Mode ("can be imported only inside the Browser Mode", measured in node), so
-      a top-level import breaks the whole story file wherever it is evaluated
-      outside the vitest runner, the built static Storybook included. Three
-      wave-8 agents chose the dynamic form independently for that reason. It is
-      `vitest/browser`, not `@vitest/browser/context`, which vitest 4.1
-      deprecated. Probed 2026-09-06:
-      `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false →
-      true, and a `hidden md:block` element goes from `display: block` to
-      `display: none`. It does **not** leak — a second story in the same file
-      reads 1200 again — so no cleanup is needed. Use it where the component
-      under test swaps layout on a breakpoint rather than merely reflowing:
-      family O's shells do, because B1 `app-sidebar`'s drawer swap keys on a
-      viewport media query, and a width wrapper renders the desktop rail inside a
-      375px box while reporting success. Everywhere else the wrapper is still the
-      right tool, and it is what the shipped stories use — it constrains the box
-      without pretending to be a phone.
+               - **There is one mechanism that does move the breakpoint, and the wrapper
+                 rule is not a substitute for it where a layout keys on a media query.**
+                 `page.viewport(375, 812)` from `vitest/browser`, called at the top
+                 of a play function, resizes the test iframe itself. **Import it
+                 dynamically, inside the play** — `const { page } = await
+
+        import("vitest/browser")`. The module throws on evaluation outside Browser
+
+    Mode ("can be imported only inside the Browser Mode", measured in node), so
+    a top-level import breaks the whole story file wherever it is evaluated
+    outside the vitest runner, the built static Storybook included. Three
+    wave-8 agents chose the dynamic form independently for that reason. It is
+    `vitest/browser`, not `@vitest/browser/context`, which vitest 4.1
+    deprecated. Probed 2026-09-06:
+    `window.innerWidth`1200 → 375,`matchMedia("(max-width: 767px)")`false →
+    true, and a`hidden md:block`element goes from`display: block`to
+    `display: none`. It does **not** leak — a second story in the same file
+    reads 1200 again — so no cleanup is needed. Use it where the component
+    under test swaps layout on a breakpoint rather than merely reflowing:
+    family O's shells do, because B1 `app-sidebar`'s drawer swap keys on a
+    viewport media query, and a width wrapper renders the desktop rail inside a
+    375px box while reporting success. Everywhere else the wrapper is still the
+    right tool, and it is what the shipped stories use — it constrains the box
+    without pretending to be a phone.
 
 3.  **`ReducedMotion` documents a branch, or it documents its absence.**
     `vitest.config.ts` sets Playwright's `reducedMotion: "reduce"` for every
@@ -190,42 +192,43 @@ import("vitest/browser")`. The module throws on evaluation outside Browser
     unless asked for `sync`. So the read returns _either_ the guard _or_ the
     control it redirects to, depending on whether the frame has painted.
 
-    The failure this produces is silent. The guard is not one of the expected
-    stops, so a walk that reads immediately counts that iteration as a miss, and
-    the **next** tab steps over the control the redirect had just landed on. The
-    count saturates one short, every lap, and widening the loop budget only buys
-    more laps that skip the same stop. It cost a CI failure — `expected 6 to be
-7` — that had passed locally twice from a cleared cache, because whether the
+        The failure this produces is silent. The guard is not one of the expected
+        stops, so a walk that reads immediately counts that iteration as a miss, and
+        the **next** tab steps over the control the redirect had just landed on. The
+        count saturates one short, every lap, and widening the loop budget only buys
+        more laps that skip the same stop. It cost a CI failure — `expected 6 to be
+
+    7` — that had passed locally twice from a cleared cache, because whether the
     frame wins is environment-dependent.
 
-    **The idiom, and reuse it rather than re-deriving it.** Settle before
-    reading: `waitFor` until `document.activeElement` is one of the expected
-    stops. Seed the walk from where focus _actually_ landed, not from an assumed
-    first element — a portal focuses its own first tabbable descendant on open,
-    so a walk that records a stop only _after_ a tab can never count the one it
-    started on. Then walk exactly one lap, asserting each stop is new, and take
-    one closing tab asserting focus returned to the start. That makes the budget
-    provable rather than generous, because every settled tab moves by exactly one
-    control. `TaskTray.stories.tsx` and `ShortcutsSheet.stories.tsx` in
-    `apps/storybook/src/stories/super-ai/` both carry it — read either before
-    writing a `KeyboardOrder` inside a portal.
+        **The idiom, and reuse it rather than re-deriving it.** Settle before
+        reading: `waitFor` until `document.activeElement` is one of the expected
+        stops. Seed the walk from where focus _actually_ landed, not from an assumed
+        first element — a portal focuses its own first tabbable descendant on open,
+        so a walk that records a stop only _after_ a tab can never count the one it
+        started on. Then walk exactly one lap, asserting each stop is new, and take
+        one closing tab asserting focus returned to the start. That makes the budget
+        provable rather than generous, because every settled tab moves by exactly one
+        control. `TaskTray.stories.tsx` and `ShortcutsSheet.stories.tsx` in
+        `apps/storybook/src/stories/super-ai/` both carry it — read either before
+        writing a `KeyboardOrder` inside a portal.
 
-    **Settle on departure, not on arrival.** The wait above — "until
-    `document.activeElement` is one of the expected stops" — has a hole the
-    D/I wave found on `ai-tools-menu`: when a key press has not applied yet,
-    focus is still on the _previous_ stop, which is itself an expected stop, so
-    the wait returns immediately with a stale read and the lap appears to end
-    one row early. It passed 13 warm runs and failed the first run against a
-    cleared Storybook cache. The tightened form takes the previous stop and
-    waits for focus to _leave_ it before reading, so every press is provably
-    one move; `AiToolsMenu.stories.tsx` carries it, and it is the form to reuse
-    inside any portal from now on. `TaskTray` and `ShortcutsSheet` still use the
-    arrival form and share the hole.
+        **Settle on departure, not on arrival.** The wait above — "until
+        `document.activeElement` is one of the expected stops" — has a hole the
+        D/I wave found on `ai-tools-menu`: when a key press has not applied yet,
+        focus is still on the _previous_ stop, which is itself an expected stop, so
+        the wait returns immediately with a stale read and the lap appears to end
+        one row early. It passed 13 warm runs and failed the first run against a
+        cleared Storybook cache. The tightened form takes the previous stop and
+        waits for focus to _leave_ it before reading, so every press is provably
+        one move; `AiToolsMenu.stories.tsx` carries it, and it is the form to reuse
+        inside any portal from now on. `TaskTray` and `ShortcutsSheet` still use the
+        arrival form and share the hole.
 
-    The general lesson outlives the library: **a bounded "did we reach all N
-    stops within M tabs" loop is environment-sensitive; asserting the cycle
-    directly is not.** One infers the property from a count reached inside an
-    allowance; the other states it.
+        The general lesson outlives the library: **a bounded "did we reach all N
+        stops within M tabs" loop is environment-sensitive; asserting the cycle
+        directly is not.** One infers the property from a count reached inside an
+        allowance; the other states it.
 
 5.  **A `box-shadow` string is not a focus ring.** `KeyboardOrder` must show a
     visible treatment at every stop, and the obvious predicate —

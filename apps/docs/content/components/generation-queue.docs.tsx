@@ -25,15 +25,33 @@ export const GenerationQueueDocs: ComponentDocs = {
   evidence: ["Midjourney", "Freepik", "Playground", "getimg"],
   anatomy: [
     { slot: "generation-queue", note: "Root wrapper around the header and the list of slots." },
-    { slot: "generation-queue-header", note: "Heading, Cancel-all and the batch progress bar, shown when any is present." },
-    { slot: "generation-queue-batch-progress", note: "The aggregate progressbar — a different number from any one slot's own." },
-    { slot: "generation-queue-cancel-all", note: "Only rendered while at least one slot is still queued or running." },
+    {
+      slot: "generation-queue-header",
+      note: "Heading, Cancel-all and the batch progress bar, shown when any is present.",
+    },
+    {
+      slot: "generation-queue-batch-progress",
+      note: "The aggregate progressbar — a different number from any one slot's own.",
+    },
+    {
+      slot: "generation-queue-cancel-all",
+      note: "Only rendered while at least one slot is still queued or running.",
+    },
     { slot: "generation-queue-items", note: "The list of slots, in submission order." },
-    { slot: "generation-queue-item", note: "One slot: an entity row plus, while running, its own progressbar." },
-    { slot: "generation-queue-item-progress", note: "Per-slot progressbar — real progressbar semantics, not a styled div." },
+    {
+      slot: "generation-queue-item",
+      note: "One slot: an entity row plus, while running, its own progressbar.",
+    },
+    {
+      slot: "generation-queue-item-progress",
+      note: "Per-slot progressbar — real progressbar semantics, not a styled div.",
+    },
     { slot: "generation-queue-cancel", note: "Per-row Cancel, named after that row's own title." },
     { slot: "generation-queue-retry", note: "Per-row Retry, shown only while that slot is failed." },
-    { slot: "generation-queue-item-status", note: "Visually hidden role=status text announcing that row's transitions." },
+    {
+      slot: "generation-queue-item-status",
+      note: "Visually hidden role=status text announcing that row's transitions.",
+    },
   ],
   usage:
     "Reach for it the moment a generation request is submitted — create the row (in `queued`) before any result exists, so the slot is reserved and the list never reflows as work resolves. Move each item through `queued` → `running` → `done`/`failed`/`cancel` by updating its `state` (and `progress` while running); the component is fully controlled, so nothing about pacing or polling lives inside it. Supply `onCancelItem` and `onCancelAll` to expose cancellation, and `onRetryItem` to let a failed slot re-queue.",

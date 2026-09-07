@@ -450,11 +450,7 @@ function DrawingTools({
               </button>
             ) : null}
           </div>
-          <p
-            data-slot="drawing-tools-mask-status"
-            role="status"
-            className="text-muted-foreground text-xs"
-          >
+          <p data-slot="drawing-tools-mask-status" role="status" className="text-muted-foreground text-xs">
             {maskCoverage > 0
               ? `Mask covers ${maskCoverage}% of the canvas. ${maskTargetLabel} regenerates only that region.`
               : `Nothing masked yet. Brush a region — that region is the input ${maskTargetLabel} receives.`}

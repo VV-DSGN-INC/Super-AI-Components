@@ -70,8 +70,8 @@ export const SuggestionChipsDocs: ComponentDocs = {
     screenReader: [
       "A chip's accessible name is its `suggestion` text and nothing else — the leading icon or thumbnail is wrapped in an `aria-hidden` span on purpose. An icon-only chip with empty `suggestion` text therefore ships an unlabeled button, which is the one way to break this component.",
       "The row has no group semantics: it is a `<div>` with no role, no label and no list markup, so nothing announces how many suggestions there are or that these buttons belong together. If the set needs naming, wrap it yourself.",
-      "The overflow announces as a link, not as another chip, which is exactly the distinction a user needs — the chips write into the composer, the link leaves the surface. Its name is your `children`, falling back to \"N more\" from `count` and then to \"See more\".",
-      "The scroll viewport is `role=\"presentation\"` and focusable, so when the row overflows there is a tab stop with no role and no name between the surrounding content and the first chip.",
+      'The overflow announces as a link, not as another chip, which is exactly the distinction a user needs — the chips write into the composer, the link leaves the surface. Its name is your `children`, falling back to "N more" from `count` and then to "See more".',
+      'The scroll viewport is `role="presentation"` and focusable, so when the row overflows there is a tab stop with no role and no name between the surrounding content and the first chip.',
       "Nothing announces the result of picking a chip. The composer's text changes and the component has no live region, so put the announcement on the composer — otherwise the only feedback is silence.",
       "The row's scrollbar is rendered `hidden`, so there is no visual or programmatic indication that more suggestions exist beyond the edge. That is precisely why overflow has to resolve to the link rather than to more scrolling.",
     ],

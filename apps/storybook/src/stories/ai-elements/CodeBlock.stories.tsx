@@ -1,8 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  CodeBlock,
-  CodeBlockCopyButton,
-} from "@/components/ai-elements/code-block";
+import { CodeBlock, CodeBlockCopyButton } from "@/components/ai-elements/code-block";
 
 const meta: Meta<typeof CodeBlock> = {
   title: "AI Elements/Code Block",

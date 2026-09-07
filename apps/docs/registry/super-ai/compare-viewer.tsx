@@ -5,11 +5,7 @@ import * as React from "react";
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 
 /**
@@ -193,10 +189,7 @@ function CompareViewer({
           ))}
         </ResizablePanelGroup>
       ) : mode === "single" ? (
-        <div
-          data-slot="compare-viewer-panes"
-          className="relative min-h-64 overflow-hidden rounded-lg border"
-        >
+        <div data-slot="compare-viewer-panes" className="relative min-h-64 overflow-hidden rounded-lg border">
           <div data-slot="compare-viewer-pane" className="relative h-full">
             <div className="absolute top-2 left-2 z-10">
               <PaneNumber index={activeIndex} />

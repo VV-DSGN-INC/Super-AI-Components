@@ -15,8 +15,7 @@ const IMAGE_ACTIONS: AssetAction[] = [
   { id: "inpaint", title: "Inpaint" },
 ];
 
-const rows = (root: HTMLElement) =>
-  [...root.querySelectorAll("[data-action-id]")] as HTMLElement[];
+const rows = (root: HTMLElement) => [...root.querySelectorAll("[data-action-id]")] as HTMLElement[];
 
 describe("ActionStack", () => {
   it("renders the menu state", async () => {
@@ -73,9 +72,7 @@ describe("ActionStack", () => {
 
   it("changes its row set with the asset type", () => {
     // Data-driven, not a variant per media kind: same component, different array.
-    const { container, rerender } = render(
-      <ActionStack actions={VIDEO_ACTIONS} presentation="inline" />,
-    );
+    const { container, rerender } = render(<ActionStack actions={VIDEO_ACTIONS} presentation="inline" />);
     expect(rows(container).some((r) => r.textContent?.includes("Extend"))).toBe(true);
 
     rerender(<ActionStack actions={IMAGE_ACTIONS} presentation="inline" />);
@@ -127,9 +124,7 @@ describe("ActionStack", () => {
   });
 
   it("uses the caller's own element as the trigger rather than wrapping it", async () => {
-    render(
-      <ActionStack actions={IMAGE_ACTIONS} trigger={<button type="button">More actions</button>} />,
-    );
+    render(<ActionStack actions={IMAGE_ACTIONS} trigger={<button type="button">More actions</button>} />);
     expect(screen.queryByRole("button", { name: "Use this result" })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "More actions" }));
     expect(await screen.findByRole("menu")).toBeInTheDocument();

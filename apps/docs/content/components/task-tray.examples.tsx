@@ -68,8 +68,8 @@ export function CancelOnLiveWork() {
         onCancelTask={(id) => setTasks((current) => current.filter((task) => task.id !== id))}
       />
       <p className="text-muted-foreground text-sm">
-        Cancel is offered on the running and needs-input rows only. The finished row has nothing left
-        to stop, so it carries no controls at all.
+        Cancel is offered on the running and needs-input rows only. The finished row has nothing left to stop,
+        so it carries no controls at all.
       </p>
     </div>
   );
@@ -89,8 +89,8 @@ export function NotifyIsPerTask() {
         }
       />
       <p className="text-muted-foreground text-sm">
-        Every task starts with notification off, so opting one in is a decision about that run rather
-        than a preference that makes all of them shout.
+        Every task starts with notification off, so opting one in is a decision about that run rather than a
+        preference that makes all of them shout.
       </p>
     </div>
   );
@@ -142,9 +142,6 @@ export function NotificationFeed() {
   ];
 
   return (
-    <TaskTray
-      trigger={<Button variant="outline">Open tasks — nothing to act on</Button>}
-      tasks={finished}
-    />
+    <TaskTray trigger={<Button variant="outline">Open tasks — nothing to act on</Button>} tasks={finished} />
   );
 }

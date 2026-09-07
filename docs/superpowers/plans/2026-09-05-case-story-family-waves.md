@@ -18,16 +18,16 @@ predicted once. The original plan split the families differently; the waves were
 re-cut as they ran, so the families here are not the ones the first version of
 this file listed.
 
-| wave | families | items | landed |
-| --- | --- | --- | --- |
-| 1 | D, I | 11 (+18 descriptions) | 2026-09-05 |
-| 2 | E, P | 11 | 2026-09-05 |
-| 3 | F | 7 | 2026-09-06 |
-| 4 | H | 7 | 2026-09-06 |
-| 5 | J | 7 | 2026-09-06 |
-| 6 | K, L | 9 | 2026-09-06 |
-| 7 | M, N | 12 | 2026-09-06 |
-| 8 | O | 13 | — |
+| wave | families | items                 | landed     |
+| ---- | -------- | --------------------- | ---------- |
+| 1    | D, I     | 11 (+18 descriptions) | 2026-09-05 |
+| 2    | E, P     | 11                    | 2026-09-05 |
+| 3    | F        | 7                     | 2026-09-06 |
+| 4    | H        | 7                     | 2026-09-06 |
+| 5    | J        | 7                     | 2026-09-06 |
+| 6    | K, L     | 9                     | 2026-09-06 |
+| 7    | M, N     | 12                    | 2026-09-06 |
+| 8    | O        | 13                    | —          |
 
 Wave 1 also carried the 18 items whose only debt was descriptions (A 2 · B 7 ·
 C 5 · E 1 · K 1 · M 1 · N 1); that debt is now zero registry-wide. Family O is
@@ -76,8 +76,8 @@ Family O is the last wave and the only one made of **blocks**, and four things
 differ:
 
 1. **Read [`docs/design-system/block-build-brief.md`](../../design-system/block-build-brief.md)
-   in full**, before the exemplars. Its rule outranks convenience: *when a
-   composed component does not fit, report it, do not fork it.* A reimplemented
+   in full**, before the exemplars. Its rule outranks convenience: _when a
+   composed component does not fit, report it, do not fork it._ A reimplemented
    row passes every gate and is still wrong.
 2. **There is no step 3b for you.** A shell declares `regions`, not `states`
    (`states: []` in the manifest), so it has no declared-state exports and no
@@ -106,7 +106,7 @@ differ:
   `<main>`, so a `Boundary` rendering two shells fails
   `landmark-no-duplicate-main` outright; O6 also measured
   `landmark-no-duplicate-banner` plus `landmark-unique` twice. Put your shell
-  beside a *component* it gets confused with, or render it alone and make "a
+  beside a _component_ it gets confused with, or render it alone and make "a
   shell is the page" the boundary rule — O1 asserts
   `querySelectorAll("main").length === 1`. Do not suppress the rule per story
   and do not `inert` one shell: that trades a duplicate landmark for focusable

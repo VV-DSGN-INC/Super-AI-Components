@@ -21,25 +21,31 @@ export const QuotaMeterDocs: ComponentDocs = {
   whatItIs:
     "A stack of plan-usage meters, one row per metered resource, each showing what has been used against what the plan allows and when the allowance comes back. Every row is a labelled progressbar built on Progress, with three thresholds it derives itself from the numbers you pass: normal, near-limit, and over-limit.",
   whyItMatters:
-    "AI plans meter several things at once — messages, image generations, video minutes, tool calls — and they do not run out together. A single blended \"78% of your plan used\" reads fine right up until the one resource you actually need is the one at zero, so this component refuses to aggregate: the row that will stop you is visible as its own row. The other half is timing. The decision a user makes at 90% is different from the one they make at 100%, and different again if the counter resets tomorrow, which is why near-limit is a state of its own rather than a darker shade of normal, and why the reset countdown sits in the row instead of behind a tooltip.",
+    'AI plans meter several things at once — messages, image generations, video minutes, tool calls — and they do not run out together. A single blended "78% of your plan used" reads fine right up until the one resource you actually need is the one at zero, so this component refuses to aggregate: the row that will stop you is visible as its own row. The other half is timing. The decision a user makes at 90% is different from the one they make at 100%, and different again if the counter resets tomorrow, which is why near-limit is a state of its own rather than a darker shade of normal, and why the reset countdown sits in the row instead of behind a tooltip.',
   evidence: ["Zapier", "Lovable", "Claude", "Descript"],
   anatomy: [
     { slot: "quota-meter", note: "Root column holding one row per resource." },
     {
       slot: "quota-meter-row",
-      note: "One metered resource. Carries data-state=\"normal\" | \"near-limit\" | \"over-limit\", derived from used/limit — style against this rather than recomputing the threshold.",
+      note: 'One metered resource. Carries data-state="normal" | "near-limit" | "over-limit", derived from used/limit — style against this rather than recomputing the threshold.',
     },
-    { slot: "quota-meter-label", note: "The resource name, and the accessible name of that row's progressbar." },
+    {
+      slot: "quota-meter-label",
+      note: "The resource name, and the accessible name of that row's progressbar.",
+    },
     {
       slot: "quota-meter-value",
-      note: "The used / limit readout, with the optional unit appended. Forced dir=\"ltr\" so the numeric pair survives an RTL page.",
+      note: 'The used / limit readout, with the optional unit appended. Forced dir="ltr" so the numeric pair survives an RTL page.',
     },
     {
       slot: "quota-meter-track",
       note: "The progressbar itself — role, aria-valuenow/min/max, aria-valuetext, and aria-labelledby pointing at the row's own label.",
     },
     { slot: "quota-meter-bar", note: "The filled portion. Clamps to 100%; the numbers above it do not." },
-    { slot: "quota-meter-reset", note: "The reset line. Rendered only when resetsIn is supplied and compact is off." },
+    {
+      slot: "quota-meter-reset",
+      note: "The reset line. Rendered only when resetsIn is supplied and compact is off.",
+    },
   ],
   usage:
     "Reach for it wherever a user goes to find out what their plan has left — a settings or billing page, a plan card, or the bottom of a sidebar in its compact form. Pass one entry in `resources` per thing you meter, with the raw `used` and `limit` numbers; the component derives the threshold itself, so you never pass a state. Tune where the amber starts with `nearLimitAt` (a ratio, defaulting to 0.8) when a resource is expensive enough to warrant earlier warning. `resetsIn` is a preformatted node rather than a Date on purpose — the host owns the clock, because formatting a countdown at render time produces different text on the server and the client and desyncs hydration.",

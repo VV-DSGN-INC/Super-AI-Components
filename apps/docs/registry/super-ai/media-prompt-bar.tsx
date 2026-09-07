@@ -235,7 +235,10 @@ function MediaPromptBar({
             </div>
           ) : null}
 
-          <div data-slot="media-prompt-bar-toolbar" className="flex flex-wrap items-center justify-between gap-2">
+          <div
+            data-slot="media-prompt-bar-toolbar"
+            className="flex flex-wrap items-center justify-between gap-2"
+          >
             <div data-slot="media-prompt-bar-actions" className="flex flex-wrap items-center gap-1.5">
               <Button
                 type="button"

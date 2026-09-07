@@ -68,10 +68,7 @@ const generations: Generation[] = [
   },
 ];
 
-const statusVariant: Record<
-  Generation["status"],
-  "default" | "secondary" | "destructive" | "outline"
-> = {
+const statusVariant: Record<Generation["status"], "default" | "secondary" | "destructive" | "outline"> = {
   Ready: "default",
   Rendering: "secondary",
   Queued: "outline",
@@ -94,15 +91,9 @@ export const Default: Story = {
         <TableBody>
           {generations.map((row) => (
             <TableRow key={row.prompt}>
-              <TableCell className="max-w-[18rem] truncate font-medium">
-                {row.prompt}
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                {row.model}
-              </TableCell>
-              <TableCell className="text-right tabular-nums">
-                {row.cost} cr
-              </TableCell>
+              <TableCell className="max-w-[18rem] truncate font-medium">{row.prompt}</TableCell>
+              <TableCell className="text-muted-foreground">{row.model}</TableCell>
+              <TableCell className="text-right tabular-nums">{row.cost} cr</TableCell>
               <TableCell>
                 <Badge variant={statusVariant[row.status]}>{row.status}</Badge>
               </TableCell>

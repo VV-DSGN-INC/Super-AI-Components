@@ -19,21 +19,6 @@ cmd=$(node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{proce
 # mentions a forbidden phrase gets blocked. Verified as a real false positive.
 probe=$(printf '%s' "$cmd" | sed "s/'[^']*'/''/g; s/\"[^\"]*\"/\"\"/g")
 
-# `pnpm format` and `pnpm run format` are the same script. `format:check` is a
-# real and permitted script in this repo, hence the `[^:[:alnum:]]` guard.
-# The prettier arm covers `.`, `./`, and a trailing `. && something` — the
-# end-anchored version missed all three.
-#
-# Both the leading env-var-assignment group and the flag-token group between
-# `pnpm` and `format` are needed: `DEBUG=1 pnpm format` breaks the start-of-
-# command anchor, and `pnpm -w format` / `pnpm --filter docs format` break the
-# `pnpm format` adjacency requirement. Both were verified bypasses.
-if printf '%s' "$probe" | grep -Eq '(^|[;&|]|&&|\|\|)[[:space:]]*([[:alnum:]_]+=[^[:space:]]*[[:space:]]+)*pnpm([[:space:]]+run)?([[:space:]]+[^;&|[:space:]]+)*[[:space:]]+format([^:[:alnum:]]|$)' \
-   || printf '%s' "$probe" | grep -Eq 'prettier[[:space:]]+(--write|-w)[[:space:]]+\.\/?([[:space:]]|;|&|$)'; then
-  echo "Repo-wide format is denied. The tree is not prettier-clean at HEAD, so this rewrites ~300 unrelated files — and it breaks check:contract, whose guidance regexes (whatItIs:\\s*\"...\") do not survive re-wrapping. Format only what you touched: pnpm exec prettier --write <paths>" >&2
-  exit 2
-fi
-
 # `@latest` / `@2.1.0` is how this CLI is normally invoked, and the adjacency
 # requirement missed every versioned form. The flag-token group between `add`
 # and the URL is needed too: `add --yes https://...` / `add -o https://...`

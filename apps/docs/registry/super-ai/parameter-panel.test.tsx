@@ -65,7 +65,11 @@ describe("ParameterPanel", () => {
     render(
       <ParameterTabs
         groups={[
-          { value: "basic", label: "Basic", content: <ParameterSlider label="Steps" value={20} onValueChange={vi.fn()} /> },
+          {
+            value: "basic",
+            label: "Basic",
+            content: <ParameterSlider label="Steps" value={20} onValueChange={vi.fn()} />,
+          },
           {
             value: "advanced",
             label: "Advanced",
@@ -135,7 +139,9 @@ describe("ParameterPanel", () => {
       </ParameterPanel>,
     );
 
-    expect(document.querySelector('[data-slot="field-row-reset"] [data-slot="reset-affordance"]')).toBeInTheDocument();
+    expect(
+      document.querySelector('[data-slot="field-row-reset"] [data-slot="reset-affordance"]'),
+    ).toBeInTheDocument();
   });
 
   it("passes className through", () => {

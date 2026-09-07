@@ -256,7 +256,8 @@ function TransportControls({
     // Space/Enter on a focused button is already that button's own activation.
     if (tag === "button" && (event.key === " " || event.key === "Enter")) return;
 
-    const pressed = event.key === " " ? "Space" : event.key.length === 1 ? event.key.toUpperCase() : event.key;
+    const pressed =
+      event.key === " " ? "Space" : event.key.length === 1 ? event.key.toUpperCase() : event.key;
     const match = TRANSPORT_ORDER.find(
       (entry) => SHORTCUTS[entry.key] === pressed && (frameAccurate || !entry.frameAccurateOnly),
     );
@@ -369,7 +370,10 @@ function TransportControls({
       </div>
 
       {rangeReadout ? (
-        <span data-slot="transport-controls-range" className="text-muted-foreground font-mono text-xs tabular-nums">
+        <span
+          data-slot="transport-controls-range"
+          className="text-muted-foreground font-mono text-xs tabular-nums"
+        >
           {rangeReadout}
         </span>
       ) : null}

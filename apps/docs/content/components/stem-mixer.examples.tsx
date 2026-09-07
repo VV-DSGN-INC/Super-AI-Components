@@ -71,9 +71,9 @@ export function DimmingAsTheOnlySignal() {
         <span className="text-foreground rounded border px-1.5 py-0.5 text-xs">S</span>
       </div>
       <p className="text-foreground text-xs">
-        Wrong: bass is silent because drums is soloed, but the only clue is that the row went grey
-        and its badge lost its fill. Nothing states it, so a screen reader — or anyone reading in
-        bright sunlight — is told nothing at all.
+        Wrong: bass is silent because drums is soloed, but the only clue is that the row went grey and its
+        badge lost its fill. Nothing states it, so a screen reader — or anyone reading in bright sunlight — is
+        told nothing at all.
       </p>
     </div>
   );
@@ -89,8 +89,8 @@ export function MeterAsTheOnlySignal() {
         </div>
       </div>
       <p className="text-foreground text-xs">
-        Wrong: the lane is muted, and the only evidence is a meter sitting at zero. A quiet passage
-        looks exactly the same. Mute is a state, not a measurement — say it.
+        Wrong: the lane is muted, and the only evidence is a meter sitting at zero. A quiet passage looks
+        exactly the same. Mute is a state, not a measurement — say it.
       </p>
     </div>
   );

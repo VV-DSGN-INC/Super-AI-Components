@@ -1,7 +1,7 @@
 # Records board analysis — second reference population, slice 2
 
 **Scope:** Project-management and structured-records products — the category that governs how a
-user chooses *how they browse* a collection and *how a record opens*.
+user chooses _how they browse_ a collection and _how a record opens_.
 **Read:** 2026-08-11.
 **Status:** Actions the family P candidates only. Provisional — see §1.
 
@@ -13,11 +13,11 @@ The [primary board](reference-board-analysis.md) was read through the Figma MCP 
 section, off a curated board of product screenshots. The [agent slice](agent-board-analysis.md)
 was not, and said so. **This slice is not either, and the gap is wider.**
 
-| | Primary board | Agent slice | This slice |
-| --- | --- | --- | --- |
-| Source | Curated Figma board | Product docs + hands-on familiarity | Public product documentation only |
-| Screens seen | Every one | Some | **None** |
-| Claims verifiable by | Re-reading the board | Re-reading the cited docs | Re-reading the cited docs |
+|                      | Primary board        | Agent slice                         | This slice                        |
+| -------------------- | -------------------- | ----------------------------------- | --------------------------------- |
+| Source               | Curated Figma board  | Product docs + hands-on familiarity | Public product documentation only |
+| Screens seen         | Every one            | Some                                | **None**                          |
+| Claims verifiable by | Re-reading the board | Re-reading the cited docs           | Re-reading the cited docs         |
 
 Every claim below carries a source URL and was read, not recalled. But no screen was examined, so
 this slice can establish **that** a pattern exists and **what** its options are, and cannot
@@ -31,17 +31,17 @@ work, recorded in [`CONTINUE.md`](../CONTINUE.md) §3.1.
 ## 2. Products observed
 
 Seven products, none represented on the primary board or the agent slice. Chosen because records
-are the *subject* of the product rather than a by-product of it.
+are the _subject_ of the product rather than a by-product of it.
 
-| Product | Category |
-| --- | --- |
-| Linear | Issue tracking |
-| Notion | Structured documents / databases |
-| Asana | Work management |
-| Airtable | Relational records |
-| Monday | Work management |
-| ClickUp | Work management |
-| Height | Issue tracking |
+| Product  | Category                         |
+| -------- | -------------------------------- |
+| Linear   | Issue tracking                   |
+| Notion   | Structured documents / databases |
+| Asana    | Work management                  |
+| Airtable | Relational records               |
+| Monday   | Work management                  |
+| ClickUp  | Work management                  |
+| Height   | Issue tracking                   |
 
 Asana, Monday and ClickUp are not mutually unrelated in the sense D1 intends — they are three
 entrants in one category. **They are counted as one product for inclusion purposes.** That leaves
@@ -54,24 +54,24 @@ them.
 
 **Notion carries a per-view Layout setting and a separate per-view "Open pages in" setting.** The
 latter offers three options — side peek (opens at the right, the collection stays interactive),
-center peek (a focused modal over the collection), and full page. Its defaults are *derived from*
+center peek (a focused modal over the collection), and full page. Its defaults are _derived from_
 the layout (table, board, list and timeline default to side peek; gallery and calendar default to
 center peek) but the setting is independently changeable, and Notion states that each view holds
 its own settings rather than sharing them.
 
 Those three options map onto the record axis one-for-one:
 
-| Notion | Family P `DetailMode` |
-| --- | --- |
-| Side peek | `overlay` — Sheet, collection still live at left |
+| Notion      | Family P `DetailMode`                              |
+| ----------- | -------------------------------------------------- |
+| Side peek   | `overlay` — Sheet, collection still live at left   |
 | Center peek | `popup` — Dialog, centred over a dimmed collection |
-| Full page | `fullscreen` — fills the route, owns a URL |
+| Full page   | `fullscreen` — fills the route, owns a URL         |
 
 This is the single most important result in the slice, because axis independence was the claim most
 likely to fail. It did not fail; it was found already shipped, under different names, in the
 product with the most mature version of the pattern.
 
-**A correction the slice forces:** Notion's per-layout *defaults* are a real behaviour the family P
+**A correction the slice forces:** Notion's per-layout _defaults_ are a real behaviour the family P
 candidates do not have. `useDetailMode` keys by entity and has one fallback. Notion keys by view
 and derives the fallback from the layout. That is a genuine gap, and §5 records it rather than
 quietly adopting it.
@@ -82,25 +82,25 @@ quietly adopting it.
 
 **A user-selectable multi-view switch over one collection — 7 of 7 products.**
 
-| Product | Views offered | Source |
-| --- | --- | --- |
-| Linear | list · board; timeline on projects | [display-options](https://linear.app/docs/display-options), [board-layout](https://linear.app/docs/board-layout), [timeline](https://linear.app/docs/timeline) |
-| Notion | table · board · timeline · calendar · list · gallery · chart | [views-filters-and-sorts](https://www.notion.com/help/views-filters-and-sorts) |
-| Asana | list · board · calendar · timeline | [project-views](https://asana.com/features/project-management/project-views) |
-| Airtable | grid · kanban · calendar · timeline · gallery · gantt | [view types](https://support.airtable.com/hc/en-us/articles/360021502314-Getting-started-view-types) |
-| Monday | kanban · calendar · gantt · timeline · table | [board views](https://support.monday.com/hc/en-us/articles/360001267945-The-board-views) |
-| ClickUp | list · board · calendar · gantt · table | [intro to views](https://help.clickup.com/hc/en-us/articles/6329880717719-Intro-to-views) |
-| Height | spreadsheet · kanban · calendar · gantt | [visualizations](https://help.height.app/en/collections/3241734-visualizations) |
+| Product  | Views offered                                                | Source                                                                                                                                                         |
+| -------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Linear   | list · board; timeline on projects                           | [display-options](https://linear.app/docs/display-options), [board-layout](https://linear.app/docs/board-layout), [timeline](https://linear.app/docs/timeline) |
+| Notion   | table · board · timeline · calendar · list · gallery · chart | [views-filters-and-sorts](https://www.notion.com/help/views-filters-and-sorts)                                                                                 |
+| Asana    | list · board · calendar · timeline                           | [project-views](https://asana.com/features/project-management/project-views)                                                                                   |
+| Airtable | grid · kanban · calendar · timeline · gallery · gantt        | [view types](https://support.airtable.com/hc/en-us/articles/360021502314-Getting-started-view-types)                                                           |
+| Monday   | kanban · calendar · gantt · timeline · table                 | [board views](https://support.monday.com/hc/en-us/articles/360001267945-The-board-views)                                                                       |
+| ClickUp  | list · board · calendar · gantt · table                      | [intro to views](https://help.clickup.com/hc/en-us/articles/6329880717719-Intro-to-views)                                                                      |
+| Height   | spreadsheet · kanban · calendar · gantt                      | [visualizations](https://help.height.app/en/collections/3241734-visualizations)                                                                                |
 
 Five independent data points against a bar of three. **P1 `data-views` clears D1.**
 
 **A record-open mode configured separately from the collection view — 3 of 5 independent points.**
 
-| Product | Evidence | Source |
-| --- | --- | --- |
-| Notion | "Open pages in" — side peek · center peek · full page, set per view alongside but separately from Layout | [views-filters-and-sorts](https://www.notion.com/help/views-filters-and-sorts) |
-| ClickUp | Task layouts — modal vs sidebar, switched from the open task; the choice carries to the next task opened | [task-layouts](https://help.clickup.com/hc/en-us/articles/29665520762647-Task-layouts) |
-| Airtable | Record-detail configured per element (grid, kanban, timeline), independent of the element's own layout | [interface-element-grid](https://support.airtable.com/docs/interface-element-grid) |
+| Product  | Evidence                                                                                                 | Source                                                                                 |
+| -------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Notion   | "Open pages in" — side peek · center peek · full page, set per view alongside but separately from Layout | [views-filters-and-sorts](https://www.notion.com/help/views-filters-and-sorts)         |
+| ClickUp  | Task layouts — modal vs sidebar, switched from the open task; the choice carries to the next task opened | [task-layouts](https://help.clickup.com/hc/en-us/articles/29665520762647-Task-layouts) |
+| Airtable | Record-detail configured per element (grid, kanban, timeline), independent of the element's own layout   | [interface-element-grid](https://support.airtable.com/docs/interface-element-grid)     |
 
 **P2 `detail-view-shell` clears D1**, at exactly three. This is the narrowest pass in the slice and
 should be the first thing re-tested when the screens are verified.

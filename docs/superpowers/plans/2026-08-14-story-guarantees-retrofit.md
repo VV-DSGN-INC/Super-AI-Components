@@ -4,7 +4,7 @@
 
 **Goal:** Expand the case-story convention from seven names to eight plus two manifest-shape rules, then fold in all 25 `contractExempt` items (stories, docs modules, normalized states, flag dropped) so every shipped registry item meets the full contract and renders under axe.
 
-**Architecture:** One docs-only convention commit first, then two parallel-agent batches (the 11 story-less items, then the 14 `Default`-export legacy stories), each integrated centrally: agents write only their own story + docs files in isolated worktrees and *report* proposed manifest states; the integrator applies every `catalog.manifest.ts` edit, runs the full gate list, and commits.
+**Architecture:** One docs-only convention commit first, then two parallel-agent batches (the 11 story-less items, then the 14 `Default`-export legacy stories), each integrated centrally: agents write only their own story + docs files in isolated worktrees and _report_ proposed manifest states; the integrator applies every `catalog.manifest.ts` edit, runs the full gate list, and commits.
 
 **Tech Stack:** Storybook 9 CSF3 (`@storybook/react-vite`, `storybook/test`), Next.js docs app, tsx scripts, pnpm + turbo.
 
@@ -27,12 +27,14 @@
 ### Task 1: Convention expansion — the seven become eight
 
 **Files:**
+
 - Modify: `docs/design-system/story-conventions.md`
 - Modify: `docs/design-system/component-build-brief.md` (§Story, one phrase)
 - Modify: `docs/CONTINUE.md` (§3.2 addition, §9 tail note)
 - Modify: `apps/storybook/src/stories/super-ai/SuggestionChips.stories.tsx`, `GenerationQueue.stories.tsx`, `EmptyState.stories.tsx` (comment blocks + one play function)
 
 **Interfaces:**
+
 - Consumes: nothing — first task.
 - Produces: the eight-name convention and the `case-skip` grammar that every wave-0 agent prompt references; the extended `KeyboardOrder` play in `SuggestionChips.stories.tsx` as the ring-assertion exemplar.
 
@@ -150,29 +152,31 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 ### Task 2: Dispatch batch A — the 11 items with no story file
 
 **Files:** none in this tree — 11 subagents, each in an isolated worktree (`Agent` tool, `isolation: "worktree"`, ≤12 concurrent), each writing only:
+
 - Create: `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx`
 - Create: `apps/docs/content/components/<name>.docs.tsx` (+ optional `<name>.examples.tsx` sidecar)
 - Modify (mechanical fixes only): `apps/docs/registry/super-ai/<name>.tsx`
 
 **Interfaces:**
+
 - Consumes: Task 1's committed convention (verify each worktree's base includes the Task 1 commit before dispatch).
 - Produces: per-item report in the exact format below, consumed by Task 3.
 
 The 11, with their raw manifest states (free text — each agent proposes the normalized replacement):
 
-| id | name | raw states |
-| --- | --- | --- |
-| D7 | slot-summary | 8 raw states |
-| K6 | citation-ref | 3 |
-| K7 | answer-block | 4 |
-| K8 | source-cards | 5 |
-| M2 | credits-indicator | 5 |
-| M3 | quota-meter | 4 |
-| M4 | pricing-table | 3 |
-| N9 | autonomy-selector | 3 |
-| N10 | safety-block | 2 |
-| N11 | escalation-handoff | 8 |
-| N12 | task-tray | 4 |
+| id  | name               | raw states   |
+| --- | ------------------ | ------------ |
+| D7  | slot-summary       | 8 raw states |
+| K6  | citation-ref       | 3            |
+| K7  | answer-block       | 4            |
+| K8  | source-cards       | 5            |
+| M2  | credits-indicator  | 5            |
+| M3  | quota-meter        | 4            |
+| M4  | pricing-table      | 3            |
+| N9  | autonomy-selector  | 3            |
+| N10 | safety-block       | 2            |
+| N11 | escalation-handoff | 8            |
+| N12 | task-tray          | 4            |
 
 - [ ] **Step 1: baseline.** From the repo root run the full gate list (Global Constraints order). Expected: all green. A red baseline stops the wave — fix or escalate first.
 
@@ -235,10 +239,12 @@ judgment calls: <flagged, or none>
 ### Task 3: Integrate batch A
 
 **Files:**
+
 - Modify: `apps/docs/lib/catalog.manifest.ts` (integrator only: normalized `states` + remove `contractExempt` for the 11)
 - Land: each agent's committed files (verify worktree base carries Task 1's commit before landing)
 
 **Interfaces:**
+
 - Consumes: Task 2's reports (`states:` lines become manifest arrays; `defects: recorded:` lines go to CONTINUE.md §8 in Task 6).
 - Produces: 11 items fully in contract; `check:contract` exempt count 25 → 14.
 
@@ -298,6 +304,7 @@ Same steps as Task 3, for the 14. Differences:
 ### Task 6: Bookkeeping, PR, preview
 
 **Files:**
+
 - Modify: `docs/CONTINUE.md` (§1 status, §8 new recorded defects, §9 wave-0 outcome line)
 - Modify: `docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md` (Status: steps 1–2 implemented)
 
@@ -311,5 +318,5 @@ Same steps as Task 3, for the 14. Differences:
 ## Self-review notes (already applied)
 
 - Spec §2.3 said the manifest-shape rules go in "`component-build-brief.md` §Manifest"; no such section exists. They live in `story-conventions.md` (§Manifest-shape rules) with a §3.2 pointer in CONTINUE.md — recorded here as a deliberate deviation.
-- Spec §3.1 said wave 0 "declares states"; the audit showed all 25 already declare *raw* states. The work is normalization (agents propose, integrator applies), which §3.2's prep rule already prescribes.
+- Spec §3.1 said wave 0 "declares states"; the audit showed all 25 already declare _raw_ states. The work is normalization (agents propose, integrator applies), which §3.2's prep rule already prescribes.
 - The pilot files predate `Controlled` and the ring assertion, so Task 1 Step 7–8 brings them to the eight — otherwise the convention's own exemplars would violate it.

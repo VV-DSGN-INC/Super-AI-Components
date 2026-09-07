@@ -221,10 +221,7 @@ function GenerationWizard({
           {currentStep.content}
         </div>
 
-        <div
-          data-slot="generation-wizard-preview"
-          className="bg-muted flex flex-col gap-2 rounded-lg p-4"
-        >
+        <div data-slot="generation-wizard-preview" className="bg-muted flex flex-col gap-2 rounded-lg p-4">
           <p className="text-foreground text-xs font-medium tracking-wide uppercase">{previewLabel}</p>
           <div data-slot="generation-wizard-preview-content" className="flex flex-1 flex-col justify-center">
             {currentStep.preview}
@@ -244,16 +241,16 @@ function GenerationWizard({
         </Button>
         <ButtonGroup data-slot="generation-wizard-nav-forward">
           {!isLast ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleSkip}
-              data-slot="generation-wizard-skip"
-            >
+            <Button type="button" variant="outline" onClick={handleSkip} data-slot="generation-wizard-skip">
               {skipLabel}
             </Button>
           ) : null}
-          <Button type="button" variant="default" onClick={handlePrimary} data-slot="generation-wizard-primary">
+          <Button
+            type="button"
+            variant="default"
+            onClick={handlePrimary}
+            data-slot="generation-wizard-primary"
+          >
             {isLast ? finishLabel : nextLabel}
           </Button>
         </ButtonGroup>

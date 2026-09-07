@@ -4,7 +4,11 @@ import { expect, userEvent, within } from "storybook/test";
 
 import { ChoiceChip, ChoiceChips } from "@/registry/super-ai/choice-chips";
 import { ContextChip, ContextChips } from "@/registry/super-ai/context-chips";
-import { SuggestionChip, SuggestionChips, SuggestionChipsOverflow } from "@/registry/super-ai/suggestion-chips";
+import {
+  SuggestionChip,
+  SuggestionChips,
+  SuggestionChipsOverflow,
+} from "@/registry/super-ai/suggestion-chips";
 import { SuggestionChipsDocs } from "@/content/components/suggestion-chips.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 

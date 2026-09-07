@@ -26,16 +26,40 @@ export const TtsComposerDocs: ComponentDocs = {
   anatomy: [
     { slot: "tts-composer", note: "Root wrapper around the transport header and the segment list." },
     { slot: "tts-composer-header", note: "Whole-script Play/Pause and the total runtime." },
-    { slot: "tts-composer-playback-status", note: "Visually hidden role=status announcing which segment is currently playing." },
+    {
+      slot: "tts-composer-playback-status",
+      note: "Visually hidden role=status announcing which segment is currently playing.",
+    },
     { slot: "tts-composer-segments", note: "The list of segments, in script order." },
-    { slot: "tts-composer-segment", note: "One segment: an entity row, its editable script text, and — while selected — its settings." },
-    { slot: "tts-composer-segment-badge", note: "Visible generation-status text, paired with the status icon — never icon shape alone." },
-    { slot: "tts-composer-segment-select", note: "Toggles which segment's settings are expanded; named after that segment." },
-    { slot: "tts-composer-segment-text", note: "The segment's own editable script text — a real Textarea, not read-only." },
+    {
+      slot: "tts-composer-segment",
+      note: "One segment: an entity row, its editable script text, and — while selected — its settings.",
+    },
+    {
+      slot: "tts-composer-segment-badge",
+      note: "Visible generation-status text, paired with the status icon — never icon shape alone.",
+    },
+    {
+      slot: "tts-composer-segment-select",
+      note: "Toggles which segment's settings are expanded; named after that segment.",
+    },
+    {
+      slot: "tts-composer-segment-text",
+      note: "The segment's own editable script text — a real Textarea, not read-only.",
+    },
     { slot: "tts-composer-segment-play", note: "Per-segment preview playback, named after that segment." },
-    { slot: "tts-composer-segment-regenerate", note: "The only regenerate control this pattern offers — always per segment, always priced." },
-    { slot: "tts-composer-segment-status", note: "Visually hidden role=status announcing that segment's idle → generating → ready/failed transition." },
-    { slot: "tts-composer-segment-settings", note: "Voice / Emotion / Speed, built from field-row, shown only for the selected segment." },
+    {
+      slot: "tts-composer-segment-regenerate",
+      note: "The only regenerate control this pattern offers — always per segment, always priced.",
+    },
+    {
+      slot: "tts-composer-segment-status",
+      note: "Visually hidden role=status announcing that segment's idle → generating → ready/failed transition.",
+    },
+    {
+      slot: "tts-composer-segment-settings",
+      note: "Voice / Emotion / Speed, built from field-row, shown only for the selected segment.",
+    },
   ],
   usage:
     "Reach for it wherever a user assembles a multi-line voiceover, narration or dialogue script rather than a single short line — the moment a script has more than one beat, a per-segment regenerate loop pays for itself. The component is fully controlled: pass `segments`, and drive `selectedSegmentId`, `playingSegmentId` and `isPlayingScript` from your own state. Give each segment a `regenerateCost` so the price of redoing just that line is visible before the user commits to it, and supply `voiceOptions`/`emotionOptions` to make Voice and Emotion pickers rather than read-only text.",
@@ -51,7 +75,7 @@ export const TtsComposerDocs: ComponentDocs = {
   ],
   donts: [
     {
-      text: "Don't add a single \"regenerate all\" control anywhere in the composer — whole-script regeneration wastes credits and throws away every good take along with the bad one.",
+      text: 'Don\'t add a single "regenerate all" control anywhere in the composer — whole-script regeneration wastes credits and throws away every good take along with the bad one.',
       example: <RegenerateAllButtonBoltedOn />,
     },
     {
@@ -69,11 +93,11 @@ export const TtsComposerDocs: ComponentDocs = {
       "Nothing here has an arrow-key list, a Delete shortcut or an Escape. Every action is a `<button>` reached by Tab and fired with Enter or Space.",
     ],
     screenReader: [
-      "Every per-segment control is named after its segment: \"Select Segment 2\", \"Play Segment 2\", \"Regenerate Segment 2\", \"Segment 2 script text\", \"Voice for Segment 2\", \"Speed for Segment 2\". Change `segmentLabel` and all of them follow, which is the whole reason that prop exists.",
+      'Every per-segment control is named after its segment: "Select Segment 2", "Play Segment 2", "Regenerate Segment 2", "Segment 2 script text", "Voice for Segment 2", "Speed for Segment 2". Change `segmentLabel` and all of them follow, which is the whole reason that prop exists.',
       "Selection is `aria-pressed` on the Select button plus an icon swap from `Square` to `SquareCheck`; the border tint is supplementary and carries nothing on its own. Play carries `aria-pressed` too.",
-      "Segments are `<li>` in a `<ul>`, so position and count announce, and the expanded settings are a `role=\"group\"` named \"<label> settings\".",
-      "Each row owns a visually hidden `role=\"status\"` reading \"Segment 2: Generating…\", \": Ready, 0:04\" or \": Failed to generate\", so a status change announces without the icon. Regenerate a whole list at once and several of those regions change in the same tick, which queues rather than collapses.",
-      "A separate `role=\"status\" aria-live=\"polite\"` at the top announces \"Playing script — Segment 3\" as playback advances. It clears to an empty string when playback stops, and an empty string announces nothing — so starting the script is spoken and stopping it is not.",
+      'Segments are `<li>` in a `<ul>`, so position and count announce, and the expanded settings are a `role="group"` named "<label> settings".',
+      'Each row owns a visually hidden `role="status"` reading "Segment 2: Generating…", ": Ready, 0:04" or ": Failed to generate", so a status change announces without the icon. Regenerate a whole list at once and several of those regions change in the same tick, which queues rather than collapses.',
+      'A separate `role="status" aria-live="polite"` at the top announces "Playing script — Segment 3" as playback advances. It clears to an empty string when playback stops, and an empty string announces nothing — so starting the script is spoken and stopping it is not.',
       "Status is never icon-only: a visible `Badge` sits beside every status icon, and the failed badge is forced solid (`bg-destructive text-background`) because the vendored destructive badge's tinted variant measures 4.0:1 against a 4.5:1 minimum.",
       "The speed slider's name is duplicated onto the thumb through `getAriaLabel`, because `FieldRow`'s `<label for>` cannot reach a nested Base UI thumb, and its value is spoken as \"1.4×\" rather than a bare number.",
       "The row's title and its \"voice · emotion · speed\" description are plain text in an entity row, not part of any control's name. The current voice is readable in browse mode and is never announced when you focus a button on that row.",

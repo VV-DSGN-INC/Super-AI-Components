@@ -10,7 +10,7 @@
 > ladder; when prose and record disagree, the record wins and this file has
 > drifted.
 
-**Date:** 2026-08-11 · **Method:** 12 parallel research lenses, ~40 practitioner sources, ~110 catalogued indicators — each with a *mechanical* detection rule. Origin: the `pegbo-inc/design-system-rebuild` anti-slop spec; this is the project-agnostic edition. The runnable companion is the `unslop` skill (`.claude/skills/unslop/`).
+**Date:** 2026-08-11 · **Method:** 12 parallel research lenses, ~40 practitioner sources, ~110 catalogued indicators — each with a _mechanical_ detection rule. Origin: the `pegbo-inc/design-system-rebuild` anti-slop spec; this is the project-agnostic edition. The runnable companion is the `unslop` skill (`.claude/skills/unslop/`).
 
 **How to use in this repo:** the taxonomy (Part 2), audit (Part 4), and fix ladder are universal. The rules (Part 3) are written against "the project's declared system" — bind them to THIS repo's tokens, scales, and contracts, which always win over the generic phrasing.
 
@@ -37,155 +37,155 @@ Condensed from ~110 researched indicators. Each row: the tell, and the countable
 
 ### 2.1 Typography
 
-| Indicator | Mechanical check |
-|---|---|
-| Gradient-clipped headline/metric text | `bg-clip-text` + gradient count must be 0 |
-| Unchosen default font (Inter-and-nothing-else, no pairing decision) | rendered family set = 1 undeclared default → flag |
-| Serif-italic single accent word in a sans hero | italic child with different family inside h1/h2 → flag |
-| Full-sentence display type | heading ≥48px with >8 words → flag |
-| Blanket `tracking-tight` | identical negative tracking on every heading level; negative tracking <20px → flag |
-| Incoherent scale (14/15/16/17 co-existing, or 16→48 canyon) | >7 distinct sizes per screen; sizes within 10% serving different roles → flag |
-| Eyebrow-label rash (CAPS kicker over every section) | ≥3 uppercase micro-labels per page → flag |
-| Fake-premium serif (Playfair/DM Serif) in product UI | decorative serif on a screen with controls/tables → flag |
-| Font accretion across regenerations | >2 families or >3 weights per family → flag |
-| Ghost fonts (declared, never loaded) | declared primary family absent from `document.fonts` → flag |
+| Indicator                                                           | Mechanical check                                                                   |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Gradient-clipped headline/metric text                               | `bg-clip-text` + gradient count must be 0                                          |
+| Unchosen default font (Inter-and-nothing-else, no pairing decision) | rendered family set = 1 undeclared default → flag                                  |
+| Serif-italic single accent word in a sans hero                      | italic child with different family inside h1/h2 → flag                             |
+| Full-sentence display type                                          | heading ≥48px with >8 words → flag                                                 |
+| Blanket `tracking-tight`                                            | identical negative tracking on every heading level; negative tracking <20px → flag |
+| Incoherent scale (14/15/16/17 co-existing, or 16→48 canyon)         | >7 distinct sizes per screen; sizes within 10% serving different roles → flag      |
+| Eyebrow-label rash (CAPS kicker over every section)                 | ≥3 uppercase micro-labels per page → flag                                          |
+| Fake-premium serif (Playfair/DM Serif) in product UI                | decorative serif on a screen with controls/tables → flag                           |
+| Font accretion across regenerations                                 | >2 families or >3 weights per family → flag                                        |
+| Ghost fonts (declared, never loaded)                                | declared primary family absent from `document.fonts` → flag                        |
 
 ### 2.2 Color & effects
 
-| Indicator | Mechanical check |
-|---|---|
-| Indigo→violet gradient (buttons, heroes, text) | any gradient with both stops in hue 230–290 → fail |
-| Blurred gradient orbs / aurora / mesh blobs | empty absolute element + `blur() >40px` + radius 50% → fail |
-| Blanket glassmorphism | >2 `backdrop-filter` per view; blur >12px; glass over nothing → fail |
-| Neon glow / colored box-shadows | any shadow with saturation >10% → fail |
-| Unrequested dark-mode-default | dark-only ship; pure `#000`/`#fff` pairs; >1 saturated accent per viewport → fail |
-| Radial spotlight behind hero | saturated radial gradient behind text on dark → fail |
-| Animated gradient borders / pulsing glow | keyframes on background-position/box-shadow at rest → fail |
-| Shadow-on-everything | >3 distinct shadow values per view; nested shadowed ancestors → fail |
-| Noise/grain overlay | page-scope feTurbulence / tiled-noise layer → fail |
+| Indicator                                      | Mechanical check                                                                  |
+| ---------------------------------------------- | --------------------------------------------------------------------------------- |
+| Indigo→violet gradient (buttons, heroes, text) | any gradient with both stops in hue 230–290 → fail                                |
+| Blurred gradient orbs / aurora / mesh blobs    | empty absolute element + `blur() >40px` + radius 50% → fail                       |
+| Blanket glassmorphism                          | >2 `backdrop-filter` per view; blur >12px; glass over nothing → fail              |
+| Neon glow / colored box-shadows                | any shadow with saturation >10% → fail                                            |
+| Unrequested dark-mode-default                  | dark-only ship; pure `#000`/`#fff` pairs; >1 saturated accent per viewport → fail |
+| Radial spotlight behind hero                   | saturated radial gradient behind text on dark → fail                              |
+| Animated gradient borders / pulsing glow       | keyframes on background-position/box-shadow at rest → fail                        |
+| Shadow-on-everything                           | >3 distinct shadow values per view; nested shadowed ancestors → fail              |
+| Noise/grain overlay                            | page-scope feTurbulence / tiled-noise layer → fail                                |
 
 ### 2.3 Layout & composition
 
-| Indicator | Mechanical check |
-|---|---|
-| Canned page skeleton (hero→features→proof→pricing→FAQ) | section order matches template with zero deviation → flag |
-| Three-card reflex | >1 row of exactly-3 identical-anatomy cards → fail |
-| Cardocalypse (everything boxed) | >60% of content area inside bordered/filled containers → fail |
-| Nested cards | visible-container nesting depth >1 → fail |
-| One-recipe containers (same radius/pad/shadow everywhere) | single radius value shared by hero, card, and input → fail |
-| Everything centered | zero non-centered sections; badge centered above H1 → fail |
-| Monotonous spacing | intra-group gap not clearly < inter-group gap → fail |
-| Identical section anatomy | ≥3 consecutive sections with same structural signature → fail |
-| Bento reflex | cell area rank contradicts content importance; filler cells → fail |
-| Identical KPI-card strip | ≥3 pixel-identical stat cards, none dominant → fail |
+| Indicator                                                 | Mechanical check                                                   |
+| --------------------------------------------------------- | ------------------------------------------------------------------ |
+| Canned page skeleton (hero→features→proof→pricing→FAQ)    | section order matches template with zero deviation → flag          |
+| Three-card reflex                                         | >1 row of exactly-3 identical-anatomy cards → fail                 |
+| Cardocalypse (everything boxed)                           | >60% of content area inside bordered/filled containers → fail      |
+| Nested cards                                              | visible-container nesting depth >1 → fail                          |
+| One-recipe containers (same radius/pad/shadow everywhere) | single radius value shared by hero, card, and input → fail         |
+| Everything centered                                       | zero non-centered sections; badge centered above H1 → fail         |
+| Monotonous spacing                                        | intra-group gap not clearly < inter-group gap → fail               |
+| Identical section anatomy                                 | ≥3 consecutive sections with same structural signature → fail      |
+| Bento reflex                                              | cell area rank contradicts content importance; filler cells → fail |
+| Identical KPI-card strip                                  | ≥3 pixel-identical stat cards, none dominant → fail                |
 
 ### 2.4 Components & patterns
 
-| Indicator | Mechanical check |
-|---|---|
-| Unmodified shadcn defaults shipped as the finish | <3 of 5 base decisions differ from stock (neutral ramp, radius, font, accent, signature token) → flag |
-| Hero announcement pill ("✨ New", links nowhere) | pill above H1 matching /new\|introducing\|ai-powered/i with no dated target → fail |
-| Icon-in-tinted-circle feature grid | ≥3 siblings: tinted rounded icon chip + heading + copy → fail |
-| Stat-counter band ("10k+ users" on a day-old product) | big-number row with no data provenance → fail |
-| Fabricated social proof (testimonials, logo marquee) | placeholder avatars, unverifiable names, marquee animation → fail |
-| Three-tier pricing cliché | Free/Pro/Enterprise + promoted middle + check-list parity, no billing behind it → fail |
-| Colored left-border strips ("the em-dash of AI design") | 2–4px chromatic border-left without documented state mapping → fail |
-| Emoji as icon system | emoji codepoints in nav/buttons/headings/bullets → fail |
-| Sparkle-branded AI everything | >1 sparkle glyph per screen; any sparkle without text label → fail (NN/g: users don't read ✨ as "AI") |
+| Indicator                                               | Mechanical check                                                                                       |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Unmodified shadcn defaults shipped as the finish        | <3 of 5 base decisions differ from stock (neutral ramp, radius, font, accent, signature token) → flag  |
+| Hero announcement pill ("✨ New", links nowhere)        | pill above H1 matching /new\|introducing\|ai-powered/i with no dated target → fail                     |
+| Icon-in-tinted-circle feature grid                      | ≥3 siblings: tinted rounded icon chip + heading + copy → fail                                          |
+| Stat-counter band ("10k+ users" on a day-old product)   | big-number row with no data provenance → fail                                                          |
+| Fabricated social proof (testimonials, logo marquee)    | placeholder avatars, unverifiable names, marquee animation → fail                                      |
+| Three-tier pricing cliché                               | Free/Pro/Enterprise + promoted middle + check-list parity, no billing behind it → fail                 |
+| Colored left-border strips ("the em-dash of AI design") | 2–4px chromatic border-left without documented state mapping → fail                                    |
+| Emoji as icon system                                    | emoji codepoints in nav/buttons/headings/bullets → fail                                                |
+| Sparkle-branded AI everything                           | >1 sparkle glyph per screen; any sparkle without text label → fail (NN/g: users don't read ✨ as "AI") |
 
 ### 2.5 Copy
 
-| Indicator | Mechanical check |
-|---|---|
-| Power-verb headline (Elevate/Unlock/Supercharge Your X) | headline still works on 10 competitor products → fail |
-| Generic CTA ("Get Started", "Learn More") | CTA label contains no product noun → flag |
-| Emoji bullets / heading decor | >20% of bullets emoji-led; emoji in any button label → fail |
-| Manufactured contrast ("not just X — it's Y") | >1 match per page → fail |
-| Em-dash + triad cadence ("Fast. Simple. Secure.") | >1 em-dash per 100 words; ≥2 X.Y.Z. triads per page → flag |
-| Fabricated testimonials/logos/stats | any number/name/quote not traceable to input data → fail |
-| Redundant microcopy stack (label+placeholder+helper restating) | >2 text nodes per form control → fail |
-| Buzzword-and-hedge register | >2 of {streamline, seamless, effortless, enterprise-grade, …}; ! in microcopy → fail |
+| Indicator                                                      | Mechanical check                                                                     |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Power-verb headline (Elevate/Unlock/Supercharge Your X)        | headline still works on 10 competitor products → fail                                |
+| Generic CTA ("Get Started", "Learn More")                      | CTA label contains no product noun → flag                                            |
+| Emoji bullets / heading decor                                  | >20% of bullets emoji-led; emoji in any button label → fail                          |
+| Manufactured contrast ("not just X — it's Y")                  | >1 match per page → fail                                                             |
+| Em-dash + triad cadence ("Fast. Simple. Secure.")              | >1 em-dash per 100 words; ≥2 X.Y.Z. triads per page → flag                           |
+| Fabricated testimonials/logos/stats                            | any number/name/quote not traceable to input data → fail                             |
+| Redundant microcopy stack (label+placeholder+helper restating) | >2 text nodes per form control → fail                                                |
+| Buzzword-and-hedge register                                    | >2 of {streamline, seamless, effortless, enterprise-grade, …}; ! in microcopy → fail |
 
 ### 2.6 Icons & imagery
 
-| Indicator | Mechanical check |
-|---|---|
-| Mixed icon libraries / stroke weights / sizes | >1 icon package; >2 stroke widths; >3 sizes per screen → fail |
-| Oversized decorative icons | icon >48px outside empty states; icon taller than its heading → fail |
-| Plastic AI-generated hero illustration | raster image containing rendered text; glossy 3D blobs → fail |
-| Placeholder-grade inline SVG scenes / broken images | hand-assembled primitive-shape art; placeholder `src` patterns → fail |
-| Generic stock / isometric filler | people-at-laptops or isometric-dashboard imagery not from brand assets → flag |
+| Indicator                                           | Mechanical check                                                              |
+| --------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Mixed icon libraries / stroke weights / sizes       | >1 icon package; >2 stroke widths; >3 sizes per screen → fail                 |
+| Oversized decorative icons                          | icon >48px outside empty states; icon taller than its heading → fail          |
+| Plastic AI-generated hero illustration              | raster image containing rendered text; glossy 3D blobs → fail                 |
+| Placeholder-grade inline SVG scenes / broken images | hand-assembled primitive-shape art; placeholder `src` patterns → fail         |
+| Generic stock / isometric filler                    | people-at-laptops or isometric-dashboard imagery not from brand assets → flag |
 
 ### 2.7 Motion
 
-| Indicator | Mechanical check |
-|---|---|
-| Universal fade-up-on-scroll | same entry variant on >3 sections; >50% of sections animated → fail |
-| `transition: all 0.3s` monoculture | any `transition: all`; distinct-duration set of size 1 → fail |
-| Idle infinite loops (pulsing dots, bobbing badges) | `infinite` iteration outside real progress indicators → fail |
-| Hover-scale on everything | >2 classes with hover transforms; transforms on non-clickables → fail |
-| Bounce/elastic easing on chrome | overshooting curves on dialog/toast/card entrances → fail |
-| Typewriter headline + fake cursor | character-reveal or caret-blink outside terminal contexts → fail |
-| Marquee tickers | infinite translate loop on readable content → fail |
-| Scroll-jacking / decorative parallax | wheel preventDefault; >1 scroll-linked decorative section → fail |
-| Animating layout properties | transitions on width/height/padding/margin/top/left → fail |
-| No reduced-motion guard | >3 animations and zero `prefers-reduced-motion` matches → fail |
+| Indicator                                          | Mechanical check                                                      |
+| -------------------------------------------------- | --------------------------------------------------------------------- |
+| Universal fade-up-on-scroll                        | same entry variant on >3 sections; >50% of sections animated → fail   |
+| `transition: all 0.3s` monoculture                 | any `transition: all`; distinct-duration set of size 1 → fail         |
+| Idle infinite loops (pulsing dots, bobbing badges) | `infinite` iteration outside real progress indicators → fail          |
+| Hover-scale on everything                          | >2 classes with hover transforms; transforms on non-clickables → fail |
+| Bounce/elastic easing on chrome                    | overshooting curves on dialog/toast/card entrances → fail             |
+| Typewriter headline + fake cursor                  | character-reveal or caret-blink outside terminal contexts → fail      |
+| Marquee tickers                                    | infinite translate loop on readable content → fail                    |
+| Scroll-jacking / decorative parallax               | wheel preventDefault; >1 scroll-linked decorative section → fail      |
+| Animating layout properties                        | transitions on width/height/padding/margin/top/left → fail            |
+| No reduced-motion guard                            | >3 animations and zero `prefers-reduced-motion` matches → fail        |
 
 ### 2.8 Structure & accessibility
 
-| Indicator | Mechanical check |
-|---|---|
-| Gray-on-gray text | any node <4.5:1 against its effective background → fail |
-| Tiny "minimal" text | interactive/data text <12px; body <14px → fail |
-| Missing/suppressed focus states | `outline-none` without `:focus-visible` replacement → fail |
-| Div-soup interactivity | onClick on non-interactive tags; zero landmarks; unlisted repeats → fail |
-| Unlabeled icon buttons | any control with empty accessible name → fail |
-| Implausible demo data | all deltas positive; all numbers round; "John Doe"/lorem rendered → fail |
-| Truncation never exercised | 3×-length fixture causes overflow at 375/768/1440 → fail |
-| Broken heading outline | skipped levels; h1 count ≠ 1; styled-div headings → fail |
-| Happy-path-only screens | any data view lacking empty/loading/error branches → fail |
+| Indicator                       | Mechanical check                                                         |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| Gray-on-gray text               | any node <4.5:1 against its effective background → fail                  |
+| Tiny "minimal" text             | interactive/data text <12px; body <14px → fail                           |
+| Missing/suppressed focus states | `outline-none` without `:focus-visible` replacement → fail               |
+| Div-soup interactivity          | onClick on non-interactive tags; zero landmarks; unlisted repeats → fail |
+| Unlabeled icon buttons          | any control with empty accessible name → fail                            |
+| Implausible demo data           | all deltas positive; all numbers round; "John Doe"/lorem rendered → fail |
+| Truncation never exercised      | 3×-length fixture causes overflow at 375/768/1440 → fail                 |
+| Broken heading outline          | skipped levels; h1 count ≠ 1; styled-div headings → fail                 |
+| Happy-path-only screens         | any data view lacking empty/loading/error branches → fail                |
 
 ### 2.9 Data visualization (gap-fill lens)
 
-| Indicator | Mechanical check |
-|---|---|
-| Gradient-to-transparent area under every line | >1 fade-fill chart per screen; area mark on non-cumulative metric → fail |
-| Oversmoothed bezier curves on sparse data | non-linear interpolation under ~30 points; path exceeding data min/max → fail |
-| Untouched library defaults | literal `#8884d8`, `#82ca9d`, `strokeDasharray="3 3"`; any chart color not a token → fail |
-| Rainbow / all-indigo palettes | >5 hues per chart; red/green without semantics → fail |
-| Donut/gauge reflex | >5 slices; gauges for single values; >1 radial per screen → fail |
-| Axes without units / non-zero bars | no unit anywhere; bar axis excluding 0; raw `1234567` ticks → fail |
-| Single-series legends | legend on 1-series chart; legend duplicating title → fail |
-| Glow/3D/gradient marks | filters on paths; gradient bar fills; neon-on-dark → fail |
-| Chart-by-reflex | <4 points charted (should be a stat); pies >8 slices; >6 equal-weight lines → fail |
+| Indicator                                     | Mechanical check                                                                          |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Gradient-to-transparent area under every line | >1 fade-fill chart per screen; area mark on non-cumulative metric → fail                  |
+| Oversmoothed bezier curves on sparse data     | non-linear interpolation under ~30 points; path exceeding data min/max → fail             |
+| Untouched library defaults                    | literal `#8884d8`, `#82ca9d`, `strokeDasharray="3 3"`; any chart color not a token → fail |
+| Rainbow / all-indigo palettes                 | >5 hues per chart; red/green without semantics → fail                                     |
+| Donut/gauge reflex                            | >5 slices; gauges for single values; >1 radial per screen → fail                          |
+| Axes without units / non-zero bars            | no unit anywhere; bar axis excluding 0; raw `1234567` ticks → fail                        |
+| Single-series legends                         | legend on 1-series chart; legend duplicating title → fail                                 |
+| Glow/3D/gradient marks                        | filters on paths; gradient bar fills; neon-on-dark → fail                                 |
+| Chart-by-reflex                               | <4 points charted (should be a stat); pies >8 slices; >6 equal-weight lines → fail        |
 
 ### 2.10 Cross-screen coherence (gap-fill lens — the process-level slop)
 
-| Indicator | Mechanical check |
-|---|---|
-| Spacing drift on the same role | one role resolving to >1 padding/gap value across screens → fail |
-| Near-duplicate component accumulation | new component sharing a noun with an existing export → fail |
-| Fabricated token names | any `var(--…)` not present in `tokens.ts` manifest → fail |
-| Hardcoded literals beside a live token system | raw hex/rgb/px in component diffs → fail |
-| Regeneration non-determinism | distinct radius/shadow/size count grew after a change → fail |
-| Additive instead of editive iteration | restyle request produced new files/classes instead of edits → fail |
-| Per-screen design language | screen style profile contains entries absent from system inventory → fail |
-| Vendor import leakage | direct vendor/icon-package imports outside the adapter → fail |
-| States re-invented per screen | same role resolving a state with different recipes → fail |
+| Indicator                                     | Mechanical check                                                          |
+| --------------------------------------------- | ------------------------------------------------------------------------- |
+| Spacing drift on the same role                | one role resolving to >1 padding/gap value across screens → fail          |
+| Near-duplicate component accumulation         | new component sharing a noun with an existing export → fail               |
+| Fabricated token names                        | any `var(--…)` not present in `tokens.ts` manifest → fail                 |
+| Hardcoded literals beside a live token system | raw hex/rgb/px in component diffs → fail                                  |
+| Regeneration non-determinism                  | distinct radius/shadow/size count grew after a change → fail              |
+| Additive instead of editive iteration         | restyle request produced new files/classes instead of edits → fail        |
+| Per-screen design language                    | screen style profile contains entries absent from system inventory → fail |
+| Vendor import leakage                         | direct vendor/icon-package imports outside the adapter → fail             |
+| States re-invented per screen                 | same role resolving a state with different recipes → fail                 |
 
 ### 2.11 Responsive & touch (gap-fill lens — the checklist blind spot)
 
-| Indicator | Mechanical check |
-|---|---|
-| Desktop-frozen layout | horizontal scroll at 375px; fixed widths ≥400px unguarded → fail |
-| Grid-collapse-to-identical-stack | only responsive change anywhere is column count → flag |
-| Unscaled hero type | bare `text-6xl` with no smaller base; >3-line heading at 375px → fail |
-| `h-screen` viewport assumptions | `h-screen` over `dvh` with inputs/scrollables inside → fail |
-| Hover-only affordances | interactive elements gated by hover with no touch path → fail |
-| Sub-target taps | hit areas <24px (hard) / <44px in sticky bars; <8px between targets → fail |
-| Tables with no small-screen strategy | 4+ columns, no overflow container and no column strategy → fail |
-| Hamburger-everything | ≤4 links hidden behind hamburger; app shell with no mobile nav surface → flag |
-| Breakpoint monoculture | exactly one responsive prefix on a 3+-section screen → flag |
+| Indicator                            | Mechanical check                                                              |
+| ------------------------------------ | ----------------------------------------------------------------------------- |
+| Desktop-frozen layout                | horizontal scroll at 375px; fixed widths ≥400px unguarded → fail              |
+| Grid-collapse-to-identical-stack     | only responsive change anywhere is column count → flag                        |
+| Unscaled hero type                   | bare `text-6xl` with no smaller base; >3-line heading at 375px → fail         |
+| `h-screen` viewport assumptions      | `h-screen` over `dvh` with inputs/scrollables inside → fail                   |
+| Hover-only affordances               | interactive elements gated by hover with no touch path → fail                 |
+| Sub-target taps                      | hit areas <24px (hard) / <44px in sticky bars; <8px between targets → fail    |
+| Tables with no small-screen strategy | 4+ columns, no overflow container and no column strategy → fail               |
+| Hamburger-everything                 | ≤4 links hidden behind hamburger; app shell with no mobile nav surface → flag |
+| Breakpoint monoculture               | exactly one responsive prefix on a 3+-section screen → flag                   |
 
 ---
 
@@ -248,27 +248,27 @@ Rendered checks (Storybook or prototype, via browser tools):
 
 A failing check is never fixed by bare deletion. Slop is a **faked decision**: the gradient was faking emphasis, the card was faking grouping, the pulse was faking liveness, the stat band was faking proof. Identify the job, then do it with the system's device for that job:
 
-| Failing check | Fix — substitute the system's device |
-|---|---|
-| Gradient fill / gradient text | Flat token: fills → accent or `Surface/*` tint; gradient text → `text-primary` + a weight step, or one word in `text-accent`. Express the intended emphasis with size/weight/position. |
-| Glass / glow / orbs / grain | Delete the layer; separation comes from the ladder (spacing → hairline → tint → card). A surface that truly floats is `surface-popover` + `Overlays/*` shadow. |
-| Colored / new shadow value | Swap to the finish-axis token for the surface's role. Intent was focus → Focus Ring; intent was attention → position/size/contrast. |
-| Raw hex / rgb / px literal | Find the semantic token by its project's token manifest, use its utility. Nothing fits → stop and propose the token in a spec; never inline. |
-| Arbitrary `[Npx]` spacing/radius | Snap to the 4px grid / the project's radius scale. |
-| New font size, weight, or family | Snap to the nearest of the project's declared type styles. Emphasis wanted → weight step (500→600→700), not a new size. |
-| Icon import leak / emoji in chrome | Re-route through the project's icon entry point; emoji → the project's icon set, or nothing. |
-| `transition-all` / idle loops / scroll effects | Name the properties (`transition-colors`, `-opacity`, `-transform`) at 120–150ms / 200–250ms ease-out. Loops bind to a real changing state or die; entrance choreography renders static. |
-| Copy register / generic CTA | Rewrite as verb + object ("Create submission request"). Every adjective must be provable by the screenshot, every number by data — otherwise delete the claim, not just the word. |
-| Chart defaults | Colors → the project's chart palette; gradient area → plain 1.5–2px line; smoothing → linear/step; unit via tick formatter or title; single-series legend → direct label. |
-| Contrast failure | Move **up** the text ramp (tertiary → secondary → primary) or lighten the surface — never invent a one-off darker hex. |
-| Missing focus state | Apply the shared Focus Ring recipe; `outline-none` is only legal next to a `:focus-visible` replacement. |
-| Nested cards / cardocalypse | Dissolve inner boundaries down the ladder (card → tint → divider → spacing), keeping the content. Card only for discrete objects. |
-| Three-card reflex / equal stat strip | Rank the content: the answering item gets the dominant cell; the rest become a row, list, or table. |
-| Happy-path-only view | Add the three missing states: empty = one sentence + the creating action; loading = skeleton matching the final layout; error = human-readable cause + retry. |
-| 375px failures | Mobile-first bases (`text-3xl md:text-6xl`), `dvh` for shells, pad hit areas to 24/44px, hover-reveals become kebab menus, tables pick a strategy (hide secondary columns / card rows / contained scroll + cue). |
-| Fabricated token name | Grep the token manifest for the concept and use the real name; genuinely missing → surface it, don't guess. |
-| Duplicate component / V2 file | Delete the new one; extend the existing component via its variant props. |
-| Ratchet growth | Converge stray values onto existing scale steps. A genuinely new step enters via the token system + a recorded decision, never via a component. |
+| Failing check                                  | Fix — substitute the system's device                                                                                                                                                                             |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Gradient fill / gradient text                  | Flat token: fills → accent or `Surface/*` tint; gradient text → `text-primary` + a weight step, or one word in `text-accent`. Express the intended emphasis with size/weight/position.                           |
+| Glass / glow / orbs / grain                    | Delete the layer; separation comes from the ladder (spacing → hairline → tint → card). A surface that truly floats is `surface-popover` + `Overlays/*` shadow.                                                   |
+| Colored / new shadow value                     | Swap to the finish-axis token for the surface's role. Intent was focus → Focus Ring; intent was attention → position/size/contrast.                                                                              |
+| Raw hex / rgb / px literal                     | Find the semantic token by its project's token manifest, use its utility. Nothing fits → stop and propose the token in a spec; never inline.                                                                     |
+| Arbitrary `[Npx]` spacing/radius               | Snap to the 4px grid / the project's radius scale.                                                                                                                                                               |
+| New font size, weight, or family               | Snap to the nearest of the project's declared type styles. Emphasis wanted → weight step (500→600→700), not a new size.                                                                                          |
+| Icon import leak / emoji in chrome             | Re-route through the project's icon entry point; emoji → the project's icon set, or nothing.                                                                                                                     |
+| `transition-all` / idle loops / scroll effects | Name the properties (`transition-colors`, `-opacity`, `-transform`) at 120–150ms / 200–250ms ease-out. Loops bind to a real changing state or die; entrance choreography renders static.                         |
+| Copy register / generic CTA                    | Rewrite as verb + object ("Create submission request"). Every adjective must be provable by the screenshot, every number by data — otherwise delete the claim, not just the word.                                |
+| Chart defaults                                 | Colors → the project's chart palette; gradient area → plain 1.5–2px line; smoothing → linear/step; unit via tick formatter or title; single-series legend → direct label.                                        |
+| Contrast failure                               | Move **up** the text ramp (tertiary → secondary → primary) or lighten the surface — never invent a one-off darker hex.                                                                                           |
+| Missing focus state                            | Apply the shared Focus Ring recipe; `outline-none` is only legal next to a `:focus-visible` replacement.                                                                                                         |
+| Nested cards / cardocalypse                    | Dissolve inner boundaries down the ladder (card → tint → divider → spacing), keeping the content. Card only for discrete objects.                                                                                |
+| Three-card reflex / equal stat strip           | Rank the content: the answering item gets the dominant cell; the rest become a row, list, or table.                                                                                                              |
+| Happy-path-only view                           | Add the three missing states: empty = one sentence + the creating action; loading = skeleton matching the final layout; error = human-readable cause + retry.                                                    |
+| 375px failures                                 | Mobile-first bases (`text-3xl md:text-6xl`), `dvh` for shells, pad hit areas to 24/44px, hover-reveals become kebab menus, tables pick a strategy (hide secondary columns / card rows / contained scroll + cue). |
+| Fabricated token name                          | Grep the token manifest for the concept and use the real name; genuinely missing → surface it, don't guess.                                                                                                      |
+| Duplicate component / V2 file                  | Delete the new one; extend the existing component via its variant props.                                                                                                                                         |
+| Ratchet growth                                 | Converge stray values onto existing scale steps. A genuinely new step enters via the token system + a recorded decision, never via a component.                                                                  |
 
 ---
 

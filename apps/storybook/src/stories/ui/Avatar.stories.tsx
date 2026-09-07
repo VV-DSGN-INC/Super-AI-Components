@@ -21,10 +21,7 @@ type Story = StoryObj<typeof Avatar>;
 export const Default: Story = {
   render: () => (
     <Avatar>
-      <AvatarImage
-        src="https://i.pravatar.cc/80?img=12"
-        alt="Maya Chen"
-      />
+      <AvatarImage src="https://i.pravatar.cc/80?img=12" alt="Maya Chen" />
       <AvatarFallback>MC</AvatarFallback>
     </Avatar>
   ),

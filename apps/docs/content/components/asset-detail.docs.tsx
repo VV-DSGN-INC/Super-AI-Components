@@ -1,10 +1,5 @@
 import type { ComponentDocs } from "@/lib/component-docs";
-import {
-  NoProvenance,
-  PromptAsCaption,
-  ReproducibleParams,
-  SpansFeedRemix,
-} from "./asset-detail.examples";
+import { NoProvenance, PromptAsCaption, ReproducibleParams, SpansFeedRemix } from "./asset-detail.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#f3-asset-detail.
@@ -58,12 +53,12 @@ export const AssetDetailDocs: ComponentDocs = {
       "The parameter labels, the cost line and the media are text; only the copy buttons in the params grid are reachable. There is no keyboard route to the image itself.",
     ],
     screenReader: [
-      "The dialog is always named \"Result detail\", from an `sr-only` title with no prop behind it. Every asset's lightbox therefore announces identically — the name never says which result is open, and there is no way to override it from the call site.",
-      "Its description is fixed too: \"The generated result at full size, with the prompt and parameters that produced it.\" It describes the component, not this result.",
+      'The dialog is always named "Result detail", from an `sr-only` title with no prop behind it. Every asset\'s lightbox therefore announces identically — the name never says which result is open, and there is no way to override it from the call site.',
+      'Its description is fixed too: "The generated result at full size, with the prompt and parameters that produced it." It describes the component, not this result.',
       "Each selectable span's accessible name is its own text, so what a reader hears is exactly the substring `onSpanSelect` will hand back. The trade-off is that the prompt is announced as a run of alternating text and buttons rather than as one sentence.",
-      "The three verb icons are `aria-hidden`; the names are the visible words — \"Copy prompt\", \"Remix\", \"Edit\".",
-      "Every copyable parameter's copy button is labelled just \"Copy\". A10 hard-codes that name and hides its `⧉` glyph, so marking seed and sampler `copyable` produces two buttons a reader cannot tell apart; only the `<dl>` reading order ties one to its `<dt>`.",
-      "A parameter with no value renders A10's em-dash, which is announced as the character rather than as \"unknown\". The absence is deliberate but it is not spoken as deliberate.",
+      'The three verb icons are `aria-hidden`; the names are the visible words — "Copy prompt", "Remix", "Edit".',
+      'Every copyable parameter\'s copy button is labelled just "Copy". A10 hard-codes that name and hides its `⧉` glyph, so marking seed and sampler `copyable` produces two buttons a reader cannot tell apart; only the `<dl>` reading order ties one to its `<dt>`.',
+      'A parameter with no value renders A10\'s em-dash, which is announced as the character rather than as "unknown". The absence is deliberate but it is not spoken as deliberate.',
       "Nothing announces a copy. Neither this dialog nor A10 owns a live region, so pressing Copy prompt or a parameter's copy button is silent — put the confirmation somewhere yourself if it matters.",
       "`media` and `moreLikeThis` are opaque slots whose accessible names are entirely yours. An `<img>` with no `alt` in `media` leaves the largest thing in the dialog unannounced, and the fixed title will not cover for it.",
     ],

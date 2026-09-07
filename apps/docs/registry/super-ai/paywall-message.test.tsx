@@ -48,9 +48,7 @@ describe("PaywallMessage", () => {
 
   it("passes className through", () => {
     render(<PaywallMessage {...base} className="test-class" />);
-    expect(document.querySelector('[data-slot="paywall-message"]')!.className).toContain(
-      "test-class",
-    );
+    expect(document.querySelector('[data-slot="paywall-message"]')!.className).toContain("test-class");
   });
 
   // ---------------------------------------------------------------------------
@@ -112,11 +110,7 @@ describe("PaywallMessage", () => {
     render(<PaywallMessage {...base} after="In the meantime I can draft the shot list." />);
     const root = document.querySelector('[data-slot="paywall-message"]')!;
     const slots = Array.from(root.children).map((el) => el.getAttribute("data-slot"));
-    expect(slots).toEqual([
-      "paywall-message-before",
-      "paywall-message-card",
-      "paywall-message-after",
-    ]);
+    expect(slots).toEqual(["paywall-message-before", "paywall-message-card", "paywall-message-after"]);
   });
 
   // ---------------------------------------------------------------------------

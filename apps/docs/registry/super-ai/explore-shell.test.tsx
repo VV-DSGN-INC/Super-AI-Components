@@ -88,7 +88,9 @@ describe("ExploreShell", () => {
 
   it("composes B4 modality-rail and selects through its own control", async () => {
     const onRailSelect = vi.fn();
-    const { container } = render(<ExploreShell rail={RAIL} activeRailId="explore" onRailSelect={onRailSelect} />);
+    const { container } = render(
+      <ExploreShell rail={RAIL} activeRailId="explore" onRailSelect={onRailSelect} />,
+    );
     const rail = container.querySelector('[data-region="rail"]') as HTMLElement;
     expect(rail).toHaveAttribute("data-slot", "modality-rail");
     expect(rail.querySelectorAll('[data-slot="modality-rail-item"]')).toHaveLength(2);
@@ -216,9 +218,7 @@ describe("ExploreShell", () => {
   it("says what the feed contains when it offers no axes at all", () => {
     const { container } = render(<ExploreShell items={ITEMS} />);
     const region = container.querySelector('[data-region="sort-tabs"]')!;
-    expect(region.querySelector('[data-slot="explore-shell-scope"]')).toHaveTextContent(
-      "Showing everything",
-    );
+    expect(region.querySelector('[data-slot="explore-shell-scope"]')).toHaveTextContent("Showing everything");
   });
 
   // Base UI makes an open tab panel a tab stop, which is right when the panel

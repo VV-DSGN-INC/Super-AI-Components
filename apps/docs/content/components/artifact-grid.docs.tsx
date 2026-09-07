@@ -31,7 +31,7 @@ export const ArtifactGridDocs: ComponentDocs = {
   whatItIs:
     "A grid of the documents and artifacts an assistant produced, grouped under the session that produced them. Each card leads with an excerpt of the artifact's actual content, tagged with a type badge, and closes with a footer that pairs who can see it with how many have. The same type value that labels a card also builds the facet row above the grid.",
   whyItMatters:
-    "Claude Artifacts and the Manus Library are the reference implementations, and both make the same bet: people re-find an artifact by recognising what it said, not by reading what it was called. Titles here are usually model-generated and interchangeable — a library of nine cards all reading \"Untitled document\" is a library you have to open nine times. The first lines of the content are reliable, so those get the headline slot. Grouping by session preserves the other half of recall: you rarely remember the artifact, but you remember the conversation you were having when it appeared.",
+    'Claude Artifacts and the Manus Library are the reference implementations, and both make the same bet: people re-find an artifact by recognising what it said, not by reading what it was called. Titles here are usually model-generated and interchangeable — a library of nine cards all reading "Untitled document" is a library you have to open nine times. The first lines of the content are reliable, so those get the headline slot. Grouping by session preserves the other half of recall: you rarely remember the artifact, but you remember the conversation you were having when it appeared.',
   evidence: ["Claude Artifacts", "Manus Library"],
   anatomy: [
     { slot: "artifact-grid", note: "Root wrapper holding the facet row and every session group." },
@@ -45,7 +45,10 @@ export const ArtifactGridDocs: ComponentDocs = {
     },
     { slot: "artifact-grid-items", note: "The responsive card grid inside a session." },
     { slot: "artifact-grid-card", note: "One artifact. Carries data-artifact-id and data-artifact-type." },
-    { slot: "artifact-grid-type", note: "The type badge. Its text is derived from item.type, never passed separately." },
+    {
+      slot: "artifact-grid-type",
+      note: "The type badge. Its text is derived from item.type, never passed separately.",
+    },
     {
       slot: "artifact-grid-excerpt",
       note: "The load-bearing field: the largest text on the card and the accessible name of its link.",
@@ -60,11 +63,14 @@ export const ArtifactGridDocs: ComponentDocs = {
       slot: "artifact-grid-privacy",
       note: "Icon plus a visible word (Private / Shared / Public), with data-visibility for styling.",
     },
-    { slot: "artifact-grid-view-count", note: "Reach, rendered with its unit — \"1,204 views\", not a bare number." },
-    { slot: "artifact-grid-empty", note: "role=\"status\" message shown when a filter empties the view." },
+    {
+      slot: "artifact-grid-view-count",
+      note: 'Reach, rendered with its unit — "1,204 views", not a bare number.',
+    },
+    { slot: "artifact-grid-empty", note: 'role="status" message shown when a filter empties the view.' },
   ],
   usage:
-    "Reach for it for any \"your artifacts\", \"library\" or \"documents\" surface where the items are text the assistant wrote — docs, code, tables, charts-as-data. Pass `sessions`, each with a label and its items; only `id`, `type` and `excerpt` are required per item. The facet row appears on its own once more than one type is present, and `activeType` / `onActiveTypeChange` let you lift filtering into a URL or a shared filter bar. Set `collapsibleSessions` when a long archive needs folding down. This is not the component for thumbnail-first content — if the item is an image, a video or a 3D scene, use a grid built on preview-tile instead.",
+    'Reach for it for any "your artifacts", "library" or "documents" surface where the items are text the assistant wrote — docs, code, tables, charts-as-data. Pass `sessions`, each with a label and its items; only `id`, `type` and `excerpt` are required per item. The facet row appears on its own once more than one type is present, and `activeType` / `onActiveTypeChange` let you lift filtering into a URL or a shared filter bar. Set `collapsibleSessions` when a long archive needs folding down. This is not the component for thumbnail-first content — if the item is an image, a video or a 3D scene, use a grid built on preview-tile instead.',
   dos: [
     {
       text: "Let the excerpt carry the card — largest text, top of the reading order, and the accessible name of the link.",
@@ -75,7 +81,7 @@ export const ArtifactGridDocs: ComponentDocs = {
       example: <TypeDrivesBadgeAndFacet />,
     },
     {
-      text: "Keep privacy and view count together in the footer — \"who can see this, and how many have\" is one question.",
+      text: 'Keep privacy and view count together in the footer — "who can see this, and how many have" is one question.',
       example: <PrivacyAndReachTogether />,
     },
   ],
@@ -93,7 +99,7 @@ export const ArtifactGridDocs: ComponentDocs = {
     keyboard: [
       "Each card is exactly one tab stop — the excerpt's link or button — and zero when the item has neither `href` nor `onOpen`. Nothing else on the card is focusable, so a 24-artifact index is 24 Tab presses with no way to skip a session.",
       "`href` wins over `onOpen`: pass both and the handler is silently dropped, leaving a link where you expected a button.",
-      "The facet row declares `role=\"radiogroup\"` but ships one tab stop per chip and no arrow-key movement — the roving tabindex the ARIA radio pattern expects is an open TODO in `choice-chips`. Seven types is eight Tab presses (\"All\" included) before the first card, and Left/Right do nothing.",
+      'The facet row declares `role="radiogroup"` but ships one tab stop per chip and no arrow-key movement — the roving tabindex the ARIA radio pattern expects is an open TODO in `choice-chips`. Seven types is eight Tab presses ("All" included) before the first card, and Left/Right do nothing.',
       "With `collapsibleSessions`, each session header is one more tab stop, activated with Space or Enter. There is no expand-all and no key that collapses every session at once.",
       "Nothing in the grid responds to arrow keys, Home, End, or Delete. It is a list of independent links, not a grid widget.",
     ],
@@ -102,22 +108,22 @@ export const ArtifactGridDocs: ComponentDocs = {
       "The card link's accessible name is exactly the excerpt, by design: the stretched pseudo-element keeps the badge, the recency line, the privacy word and the view count out of it. The cost is that a links-list pass hears only excerpts — nothing tells the reader which artifact is Public, and privacy is reachable only by reading each card in browse mode.",
       "`line-clamp-4` clips the excerpt visually and not in the accessible tree, so a long first paragraph becomes a very long link name that is read in full.",
       "The type badge, the recency line and the footer are plain text with no roles. The privacy word and the view unit are real visible text — never `sr-only` suffixes — because adjacent text concatenates without a separator.",
-      "A facet chip's name fuses its count in with no separator at all — measured, it is \"Markdown3\" rather than \"Markdown 3\", because the gap you see is a margin and a margin is invisible to name computation. So `getByRole(\"radio\", { name: \"Document 1\" })` finds nothing while `\"Document1\"` finds the chip. It is this page's own fourth pitfall (the \"1,204views\" warning) happening to the component itself. The \"All\" chip has no count, so it announces as a bare word beside fused siblings.",
-      "The empty message carries `role=\"status\"`, but it is mounted at the same moment its text appears rather than sitting in the DOM beforehand — the opposite of the always-mounted pattern this registry uses elsewhere. Treat its announcement as unreliable and put a stable live region on the surface if the count matters.",
+      'A facet chip\'s name fuses its count in with no separator at all — measured, it is "Markdown3" rather than "Markdown 3", because the gap you see is a margin and a margin is invisible to name computation. So `getByRole("radio", { name: "Document 1" })` finds nothing while `"Document1"` finds the chip. It is this page\'s own fourth pitfall (the "1,204views" warning) happening to the component itself. The "All" chip has no count, so it announces as a bare word beside fused siblings.',
+      'The empty message carries `role="status"`, but it is mounted at the same moment its text appears rather than sitting in the DOM beforehand — the opposite of the always-mounted pattern this registry uses elsewhere. Treat its announcement as unreliable and put a stable live region on the surface if the count matters.',
       "Collapsing a session announces only through the trigger's `aria-expanded`; there is no `aria-controls` tying it to the cards it hides.",
     ],
     focus: [
-      "The focus ring traces the excerpt link, not the card, because the click target is a stretched pseudo-element while the focusable box is the text. On a short excerpt the ring is a small rectangle inside a large card, which reads as \"nothing is focused\" at a glance.",
+      'The focus ring traces the excerpt link, not the card, because the click target is a stretched pseudo-element while the focusable box is the text. On a short excerpt the ring is a small rectangle inside a large card, which reads as "nothing is focused" at a glance.',
       "Changing a facet or collapsing a session unmounts cards, but focus is on the chip or the trigger in both cases, so nothing is stranded.",
       "Filtering the grid to nothing replaces every card with the empty message and moves focus nowhere. The reader is left on the chip with no indication anything below changed.",
     ],
   },
   pitfalls: [
     "Rebuilding this on preview-tile (A8) to make it match the other grids. It is deliberately not an A8 consumer: A8 exists to fix a media frame around a thumbnail, and here the excerpt is the content, so the frame would be an empty box above the only field anyone reads. The test suite pins this — leave it text-first.",
-    "Adding a `typeLabel` prop so a caller can restyle one badge. The badge and the facet are two renders of one value; the moment they can drift, a card reads \"Spreadsheet\" while its facet says \"Table\" and the filter silently returns nothing.",
+    'Adding a `typeLabel` prop so a caller can restyle one badge. The badge and the facet are two renders of one value; the moment they can drift, a card reads "Spreadsheet" while its facet says "Table" and the filter silently returns nothing.',
     "Wrapping the whole card in an anchor to make it clickable. Everything inside then fuses into one accessible name — badge, title, excerpt, edited-ago, privacy word and view count read as a single run-on string. The card uses a stretched pseudo-element on the excerpt link instead, so the whole surface is clickable while the link's name stays exactly the excerpt.",
-    "Giving the privacy state an `sr-only` suffix next to a visible glyph. Screen readers concatenate adjacent text with no separator, so a visible \"1,204\" beside an sr-only \" views\" can announce as \"1,204views\". Both the privacy word and the view unit are real visible text here for that reason.",
+    'Giving the privacy state an `sr-only` suffix next to a visible glyph. Screen readers concatenate adjacent text with no separator, so a visible "1,204" beside an sr-only " views" can announce as "1,204views". Both the privacy word and the view unit are real visible text here for that reason.',
     "Sorting the grid by title. Titles are the least reliable field on the card; recency and session order are what people actually navigate by.",
-    "Leaving empty session groups on screen after a filter runs. Sessions with no surviving items are dropped, and a fully empty view announces itself through a role=\"status\" message rather than silently blanking.",
+    'Leaving empty session groups on screen after a filter runs. Sessions with no surviving items are dropped, and a fully empty view announces itself through a role="status" message rather than silently blanking.',
   ],
 };

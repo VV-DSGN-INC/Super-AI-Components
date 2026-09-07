@@ -14,13 +14,13 @@ transactional plan/payment management) — should the catalog carry two separate
 one?
 
 **Decision: one shell, two sections.** `settings-shell` (O12) already defines its regions as
-*grouped nav → deep-linkable sections*; Usage and Billing are two more entries in that nav, not a
+_grouped nav → deep-linkable sections_; Usage and Billing are two more entries in that nav, not a
 new layout archetype. The O-family is differentiated by **layout shape** (three-pane, canvas,
 single-column-with-nav), not by content topic, and Usage/Billing are both "nav item → content
 panel," identical in shape to every other settings section (Workspace, MCP, Appearance, etc. —
 see [block-specs.md §O12](../design-system/block-specs.md)).
 
-Precedent for *not* forking shells over topic: `reference-board-analysis.md` explicitly warns
+Precedent for _not_ forking shells over topic: `reference-board-analysis.md` explicitly warns
 against this pattern elsewhere — **"S3 and S4 are one shell with a variant, not two."** The same
 reasoning applies here.
 
@@ -29,22 +29,22 @@ reasoning applies here.
 The catalog already draws a usage/billing distinction — just along a different axis than "usage
 shell vs. billing shell." It splits by **audience**, not by shell:
 
-| Component | Family | Audience | Data |
-| --- | --- | --- | --- |
-| M2 `credits-indicator` | Account, plan & monetization | Individual | Persistent balance (ring/counter) |
-| M3 `quota-meter` | Account, plan & monetization | Individual | Per-resource plan usage + reset countdown |
-| M4 `pricing-table` | Account, plan & monetization | Individual | Plan tiers, upgrade path |
-| N6 `usage-dashboard` | Feedback, trust & observability | **Team** | Per-model spend breakdown, deltas, period select |
+| Component              | Family                          | Audience   | Data                                             |
+| ---------------------- | ------------------------------- | ---------- | ------------------------------------------------ |
+| M2 `credits-indicator` | Account, plan & monetization    | Individual | Persistent balance (ring/counter)                |
+| M3 `quota-meter`       | Account, plan & monetization    | Individual | Per-resource plan usage + reset countdown        |
+| M4 `pricing-table`     | Account, plan & monetization    | Individual | Plan tiers, upgrade path                         |
+| N6 `usage-dashboard`   | Feedback, trust & observability | **Team**   | Per-model spend breakdown, deltas, period select |
 
-N6's own spec calls this out directly: *"the team-facing counterpart to M2 — same data, different
-audience"* ([component-specs.md](../design-system/component-specs.md)). Its home in the build
+N6's own spec calls this out directly: _"the team-facing counterpart to M2 — same data, different
+audience"_ ([component-specs.md](../design-system/component-specs.md)). Its home in the build
 sequence is **Wave 11 — "N4–N6 (observability) + `records-shell`"**, not `settings-shell`
 ([decisions.md §5](../design-system/decisions.md)).
 
 So there are, in effect, already two places usage data surfaces — but the split is individual
 settings (`settings-shell`) vs. team observability (`records-shell`), not usage vs. billing. That
 existing structure is correct and this spec does not change it. What's undefined is what "Billing"
-looks like *within* `settings-shell` once you're past the upgrade prompt.
+looks like _within_ `settings-shell` once you're past the upgrade prompt.
 
 ### Gap found during this audit
 
@@ -64,6 +64,7 @@ Both live under `settings-shell`'s existing "setting sections" region, added to 
 alongside Workspace/Appearance/MCP/etc.
 
 ### 3.1 "Usage" section
+
 **Filled by:** M3 `quota-meter` (per-resource rows) + M2 `credits-indicator` (persistent balance,
 already visible in the topbar/sidebar per its own spec — this section is its detail/history view,
 not a second instance of the widget).
@@ -74,6 +75,7 @@ not a second instance of the widget).
 - No new component required. This section is existing M2/M3 content given a nav slot.
 
 ### 3.2 "Billing" section
+
 **Filled by:** M4 `pricing-table` (plan/upgrade) + **two components that do not yet exist**:
 
 - `payment-method-card` — saved card(s), add/replace/remove, default marker. Not designed here.

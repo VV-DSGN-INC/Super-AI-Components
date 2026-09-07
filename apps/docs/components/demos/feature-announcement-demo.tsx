@@ -40,7 +40,9 @@ export default function FeatureAnnouncementDemo() {
       </div>
 
       <div className="flex w-full flex-col items-start gap-2">
-        <p className="text-xs text-muted-foreground">Anchored — points at the control the feature lives on.</p>
+        <p className="text-xs text-muted-foreground">
+          Anchored — points at the control the feature lives on.
+        </p>
         <FeatureAnnouncement
           id="timeline-markers"
           level="anchored"

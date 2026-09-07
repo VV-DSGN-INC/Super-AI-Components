@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import {
-  ButtonGroup,
-  ButtonGroupText,
-  ButtonGroupSeparator,
-} from "@/components/ui/button-group";
+import { ButtonGroup, ButtonGroupText, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import {
   AlignLeftIcon,

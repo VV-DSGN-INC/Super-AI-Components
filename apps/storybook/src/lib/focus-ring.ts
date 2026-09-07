@@ -148,7 +148,10 @@ export function focusTreatmentSignature(el: Element): string {
   // `outline-style` stays `none` throughout, so including it unconditionally
   // makes the signature report "changed" on a control that paints nothing new.
   // J2 `filter-panel` measured that on all fourteen of its stops.
-  const outline = style.outlineStyle === "none" ? "none" : `${style.outlineStyle}/${style.outlineWidth}/${style.outlineColor}`;
+  const outline =
+    style.outlineStyle === "none"
+      ? "none"
+      : `${style.outlineStyle}/${style.outlineWidth}/${style.outlineColor}`;
   return `${outline}|${style.boxShadow}|${style.borderColor}`;
 }
 

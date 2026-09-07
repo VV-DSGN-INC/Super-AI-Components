@@ -43,10 +43,7 @@ export const PromptList: Story = {
   render: () => (
     <div className="flex w-80 flex-col gap-3">
       {Array.from({ length: 3 }).map((_, i) => (
-        <div
-          key={i}
-          className="flex items-center gap-3 rounded-lg border p-3"
-        >
+        <div key={i} className="flex items-center gap-3 rounded-lg border p-3">
           <Skeleton className="size-10 shrink-0 rounded-md" />
           <div className="flex flex-1 flex-col gap-2">
             <Skeleton className="h-4 w-2/3" />

@@ -367,9 +367,7 @@ export const ReducedMotion: Story = {
     await expect(indicators).toHaveLength(3);
     for (const indicator of indicators) {
       const bar = indicator.closest('[data-slot="progress"]')!;
-      await expect(bar.getAttribute("class")).toContain(
-        "[&_[data-slot=progress-indicator]]:animate-pulse",
-      );
+      await expect(bar.getAttribute("class")).toContain("[&_[data-slot=progress-indicator]]:animate-pulse");
       await expect(getComputedStyle(indicator).animationName).toBe("none");
     }
 
@@ -381,9 +379,9 @@ export const ReducedMotion: Story = {
     await expect(new Set(names).size).toBe(5);
 
     // …and each in-flight row still says where in the pipeline it is.
-    const steps = Array.from(
-      root.querySelectorAll('[data-slot="source-panel-item-progress"] > span'),
-    ).map((s) => s.textContent);
+    const steps = Array.from(root.querySelectorAll('[data-slot="source-panel-item-progress"] > span')).map(
+      (s) => s.textContent,
+    );
     await expect(steps).toEqual(["Step 1 of 3", "Step 2 of 3", "Step 3 of 3"]);
   },
 };
@@ -587,9 +585,7 @@ export const EmptyLabel: Story = {
     await expect(
       failures[0]!.querySelector('[data-slot="source-panel-retry"]')!.getAttribute("aria-label"),
     ).toBe("Retry ");
-    await expect(root.querySelector('[role="progressbar"]')!.getAttribute("aria-label")).toBe(
-      ": Parsing",
-    );
+    await expect(root.querySelector('[role="progressbar"]')!.getAttribute("aria-label")).toBe(": Parsing");
   },
 };
 

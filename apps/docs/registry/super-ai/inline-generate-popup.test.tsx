@@ -48,8 +48,12 @@ describe("InlineGeneratePopup", () => {
   // ── "The popover generates, it does not commit" ───────────────────────────
   it("hands the generated text to the host and never draws it", () => {
     const onCommit = vi.fn();
-    const { rerender } = render(<InlineGeneratePopup state="generating" defaultPrompt={PROMPT} onCommit={onCommit} />);
-    rerender(<InlineGeneratePopup state="idle" defaultPrompt={PROMPT} result={GENERATED} onCommit={onCommit} />);
+    const { rerender } = render(
+      <InlineGeneratePopup state="generating" defaultPrompt={PROMPT} onCommit={onCommit} />,
+    );
+    rerender(
+      <InlineGeneratePopup state="idle" defaultPrompt={PROMPT} result={GENERATED} onCommit={onCommit} />,
+    );
 
     expect(onCommit).toHaveBeenCalledWith(GENERATED);
     // The output belongs to a K1 ai-doc-block, so it is nowhere in this popup.
@@ -74,7 +78,9 @@ describe("InlineGeneratePopup", () => {
 
   it("commits nothing once the run has been cancelled", () => {
     const onCommit = vi.fn();
-    render(<InlineGeneratePopup state="cancelled" defaultPrompt={PROMPT} result={GENERATED} onCommit={onCommit} />);
+    render(
+      <InlineGeneratePopup state="cancelled" defaultPrompt={PROMPT} result={GENERATED} onCommit={onCommit} />,
+    );
     // Cancelled means no output was committed — a late result is discarded, not
     // quietly inserted after the user said stop.
     expect(onCommit).not.toHaveBeenCalled();

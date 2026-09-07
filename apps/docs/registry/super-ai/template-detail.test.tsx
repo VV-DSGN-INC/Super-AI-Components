@@ -235,7 +235,10 @@ describe("TemplateDetail", () => {
     await user.click(follow);
     expect(onFollowChange).toHaveBeenCalledWith("marta", false);
     // Controlled: the component does not move on its own.
-    expect(screen.getByRole("button", { name: "Following Marta Lin" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Following Marta Lin" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 
   // ---------------------------------------------------------------------------

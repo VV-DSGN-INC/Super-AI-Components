@@ -33,7 +33,10 @@ describe("FeatureAnnouncement", () => {
     renderAt("anchored", { anchorLabel: "What is new" });
     // The popover points at a control; the anchor is the trigger.
     expect(screen.getByRole("button", { name: "What is new" })).toBeInTheDocument();
-    expect(document.querySelector('[data-slot="feature-announcement"]')).toHaveAttribute("data-level", "anchored");
+    expect(document.querySelector('[data-slot="feature-announcement"]')).toHaveAttribute(
+      "data-level",
+      "anchored",
+    );
     expect(screen.getByText(NEWS.title)).toBeInTheDocument();
   });
 
@@ -76,13 +79,16 @@ describe("FeatureAnnouncement", () => {
   });
 
   // ── Dismissal ─────────────────────────────────────────────────────────────
-  it.each(FEATURE_ANNOUNCEMENT_LEVELS)("emits the announcement id when dismissed at level %s", async (level) => {
-    const { onDismiss } = renderAt(level);
-    await userEvent.click(screen.getByRole("button", { name: /dismiss announcement/i }));
-    // Dismissal persists per announcement id, so the event has to carry the id
-    // — a bare onDismiss() cannot tell the host which announcement to remember.
-    expect(onDismiss).toHaveBeenCalledWith(NEWS.id);
-  });
+  it.each(FEATURE_ANNOUNCEMENT_LEVELS)(
+    "emits the announcement id when dismissed at level %s",
+    async (level) => {
+      const { onDismiss } = renderAt(level);
+      await userEvent.click(screen.getByRole("button", { name: /dismiss announcement/i }));
+      // Dismissal persists per announcement id, so the event has to carry the id
+      // — a bare onDismiss() cannot tell the host which announcement to remember.
+      expect(onDismiss).toHaveBeenCalledWith(NEWS.id);
+    },
+  );
 
   it.each(FEATURE_ANNOUNCEMENT_LEVELS)("names what it dismisses at level %s", (level) => {
     renderAt(level);
@@ -123,7 +129,12 @@ describe("FeatureAnnouncement", () => {
 
   it("renders media at the louder levels and drops it in the chip", () => {
     const { unmount } = render(
-      <FeatureAnnouncement {...NEWS} level="inline-card" media={<div data-testid="shot" />} onDismiss={vi.fn()} />,
+      <FeatureAnnouncement
+        {...NEWS}
+        level="inline-card"
+        media={<div data-testid="shot" />}
+        onDismiss={vi.fn()}
+      />,
     );
     expect(document.querySelector('[data-slot="feature-announcement-media"]')).not.toBeNull();
     unmount();

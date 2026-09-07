@@ -65,10 +65,7 @@ function EntityRow({
           {title}
         </span>
         {description ? (
-          <span
-            data-slot="entity-row-description"
-            className="text-muted-foreground truncate text-xs"
-          >
+          <span data-slot="entity-row-description" className="text-muted-foreground truncate text-xs">
             {description}
           </span>
         ) : null}

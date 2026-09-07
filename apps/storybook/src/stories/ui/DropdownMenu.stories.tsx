@@ -18,13 +18,7 @@ import {
   DropdownMenuSubContent,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-  SparklesIcon,
-  DownloadIcon,
-  Share2Icon,
-  Trash2Icon,
-  SlidersHorizontalIcon,
-} from "lucide-react";
+import { SparklesIcon, DownloadIcon, Share2Icon, Trash2Icon, SlidersHorizontalIcon } from "lucide-react";
 
 const meta: Meta<typeof DropdownMenu> = {
   title: "shadcn/ui/Dropdown Menu",
@@ -41,9 +35,7 @@ export const Default: Story = {
     const [quality, setQuality] = React.useState("balanced");
     return (
       <DropdownMenu defaultOpen>
-        <DropdownMenuTrigger render={<Button variant="outline" />}>
-          Render actions
-        </DropdownMenuTrigger>
+        <DropdownMenuTrigger render={<Button variant="outline" />}>Render actions</DropdownMenuTrigger>
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>render-final-8k.png</DropdownMenuLabel>
           <DropdownMenuSeparator />

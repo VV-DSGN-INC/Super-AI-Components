@@ -89,7 +89,10 @@ function SearchablePanel(args: ToolPanelProps) {
     const q = query.trim().toLowerCase();
     if (!q) return args.sections;
     return args.sections
-      .map((section) => ({ ...section, items: section.items?.filter((i) => i.label.toLowerCase().includes(q)) }))
+      .map((section) => ({
+        ...section,
+        items: section.items?.filter((i) => i.label.toLowerCase().includes(q)),
+      }))
       .filter((section) => (section.items?.length ?? 0) > 0)
       .map((section) => ({ ...section, count: section.items?.length }));
   }, [args.sections, query]);
@@ -180,7 +183,9 @@ export const DockedPrompt: Story = {
     const dock = canvasElement.querySelector('[data-slot="tool-panel-prompt"]')!;
     const body = canvasElement.querySelector('[data-slot="tool-panel-sections"]')!;
 
-    await expect(canvas.getByRole("textbox", { name: "Describe an element to generate" })).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("textbox", { name: "Describe an element to generate" }),
+    ).toBeInTheDocument();
     // Pinned: a sibling of the scrolling body, so it cannot scroll away.
     await expect(body.contains(dock)).toBe(false);
   },
@@ -245,7 +250,8 @@ export const Tabs: Story = {
  * their own story files can say.
  * ---------------------------------------------------------------------- */
 
-const LONG_TITLE = "Shapes, arrows and connectors from the starter library, sorted by how often you reach for them";
+const LONG_TITLE =
+  "Shapes, arrows and connectors from the starter library, sorted by how often you reach for them";
 const LONG_LABEL = "Rounded rectangle, two-point corner radius, dashed one-pixel outline stroke, no shadow";
 
 /**

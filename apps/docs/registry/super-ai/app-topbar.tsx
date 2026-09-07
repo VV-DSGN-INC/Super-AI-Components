@@ -141,30 +141,16 @@ function AppTopbar({
               <Button variant="outline" size="icon-sm" aria-label="Zoom out" onClick={onZoomOut}>
                 <ZoomOut />
               </Button>
-              {zoomLabel ? (
-                <ButtonGroupText className="h-7 px-2 text-xs">{zoomLabel}</ButtonGroupText>
-              ) : null}
+              {zoomLabel ? <ButtonGroupText className="h-7 px-2 text-xs">{zoomLabel}</ButtonGroupText> : null}
               <Button variant="outline" size="icon-sm" aria-label="Zoom in" onClick={onZoomIn}>
                 <ZoomIn />
               </Button>
             </ButtonGroup>
             <ButtonGroup data-slot="app-topbar-history">
-              <Button
-                variant="outline"
-                size="icon-sm"
-                aria-label="Undo"
-                onClick={onUndo}
-                disabled={!canUndo}
-              >
+              <Button variant="outline" size="icon-sm" aria-label="Undo" onClick={onUndo} disabled={!canUndo}>
                 <Undo2 />
               </Button>
-              <Button
-                variant="outline"
-                size="icon-sm"
-                aria-label="Redo"
-                onClick={onRedo}
-                disabled={!canRedo}
-              >
+              <Button variant="outline" size="icon-sm" aria-label="Redo" onClick={onRedo} disabled={!canRedo}>
                 <Redo2 />
               </Button>
             </ButtonGroup>

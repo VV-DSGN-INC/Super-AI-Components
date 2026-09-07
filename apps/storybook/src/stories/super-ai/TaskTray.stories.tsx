@@ -68,7 +68,18 @@ const MIGRATION_FAILED: TrayTask = {
  * ---------------------------------------------------------------------- */
 
 export const Running: Story = {
-  args: { tasks: [RENDERING, { ...INDEXED, id: "transcribe", title: "Transcribe 3 interviews", status: "running", description: "Library · Uploads" }] },
+  args: {
+    tasks: [
+      RENDERING,
+      {
+        ...INDEXED,
+        id: "transcribe",
+        title: "Transcribe 3 interviews",
+        status: "running",
+        description: "Library · Uploads",
+      },
+    ],
+  },
 };
 
 /**
@@ -87,7 +98,12 @@ export const NeedsInput: Story = {
  * rows, and `done` is not live.
  */
 export const Done: Story = {
-  args: { tasks: [INDEXED, { ...INDEXED, id: "export-csv", title: "Export 4 tables to CSV", description: "Reports · Monthly" }] },
+  args: {
+    tasks: [
+      INDEXED,
+      { ...INDEXED, id: "export-csv", title: "Export 4 tables to CSV", description: "Reports · Monthly" },
+    ],
+  },
 };
 
 /**
@@ -279,9 +295,7 @@ export const KeyboardOrder: Story = {
 
     const assertVisiblyFocused = async (el: HTMLElement) => {
       const id = nameOf(el);
-      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(
-        `${id} focusVisible=true`,
-      );
+      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(`${id} focusVisible=true`);
       const style = getComputedStyle(el);
       await expect(`${id} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`).toBe(
         `${id} ring=true`,
@@ -301,9 +315,7 @@ export const KeyboardOrder: Story = {
       previous = focused;
       // One control per tab, never a repeat — the walk cannot reach seven by
       // circling six.
-      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
-        `${nameOf(focused)} repeat=false`,
-      );
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
     }
@@ -364,9 +376,7 @@ export const Controlled: Story = {
     // again proves the toggle still reads the prop rather than a latched
     // internal value, and still asks for `true` rather than flipping.
     await userEvent.click(await body.findByRole("button", { name: "Notify me when done" }));
-    await expect(canvas.getByTestId("notify-calls")).toHaveTextContent(
-      "render-240:true,render-240:true",
-    );
+    await expect(canvas.getByTestId("notify-calls")).toHaveTextContent("render-240:true,render-240:true");
     await expect(await body.findByRole("button", { name: "Notify me when done" })).toHaveAttribute(
       "aria-pressed",
       "false",
@@ -408,10 +418,7 @@ function RejectingParent() {
  */
 export const EmptyLabel: Story = {
   args: {
-    tasks: [
-      { id: "compress", title: "Compress export bundle", status: "running" },
-      RENDERING,
-    ],
+    tasks: [{ id: "compress", title: "Compress export bundle", status: "running" }, RENDERING],
   },
 };
 

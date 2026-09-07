@@ -6,8 +6,7 @@ import { describe, expect, it, vi } from "vitest";
 import { MAX_TOOLBAR_ACTIONS } from "./context-toolbar";
 import { SelectionToolbar, type SelectionIntent } from "./selection-toolbar";
 
-const SELECTION =
-  "The current process is not optimal and could probably be improved in a number of ways.";
+const SELECTION = "The current process is not optimal and could probably be improved in a number of ways.";
 
 function bar() {
   return screen.getByRole("toolbar");
@@ -180,10 +179,7 @@ describe("SelectionToolbar", () => {
 
     // A toolbar item stays focusable while disabled so keyboard travel does not
     // skip it; a second request is refused all the same.
-    expect(within(bar()).getByRole("button", { name: "Shorten" })).toHaveAttribute(
-      "aria-disabled",
-      "true",
-    );
+    expect(within(bar()).getByRole("button", { name: "Shorten" })).toHaveAttribute("aria-disabled", "true");
     await user.click(within(bar()).getByRole("button", { name: "Improve" }));
     await user.click(within(bar()).getByRole("button", { name: "Shorten" }));
     expect(onIntent).not.toHaveBeenCalled();
@@ -233,8 +229,6 @@ describe("SelectionToolbar", () => {
 
   it("passes className through", () => {
     render(<SelectionToolbar className="test-class" />);
-    expect(document.querySelector('[data-slot="selection-toolbar"]')!.className).toContain(
-      "test-class",
-    );
+    expect(document.querySelector('[data-slot="selection-toolbar"]')!.className).toContain("test-class");
   });
 });

@@ -24,17 +24,35 @@ export const TimeRulerDocs: ComponentDocs = {
       slot: "time-ruler",
       note: "The root. As wide as `duration × zoom`, and carries `data-zoom`, `data-tick-interval`, `data-label-interval` and `data-scrubbing`.",
     },
-    { slot: "time-ruler-ticks", note: "The decorative tick layer. Hidden from assistive tech — the sliders carry the values." },
+    {
+      slot: "time-ruler-ticks",
+      note: "The decorative tick layer. Hidden from assistive tech — the sliders carry the values.",
+    },
     { slot: "time-ruler-tick", note: "One tick. `data-major` marks the ones that carry a label." },
     { slot: "time-ruler-label", note: "A timecode. Only ever drawn on a major tick." },
-    { slot: "time-ruler-scrub", note: "The playhead's slider, covering the whole ruler so a press anywhere seeks." },
-    { slot: "time-ruler-scrub-thumb", note: "The grab handle. Named `Playhead`; its value is spoken as a timecode." },
-    { slot: "time-ruler-range", note: "The in/out layer. Present only when both points are set; passes presses through to the scrubber." },
+    {
+      slot: "time-ruler-scrub",
+      note: "The playhead's slider, covering the whole ruler so a press anywhere seeks.",
+    },
+    {
+      slot: "time-ruler-scrub-thumb",
+      note: "The grab handle. Named `Playhead`; its value is spoken as a timecode.",
+    },
+    {
+      slot: "time-ruler-range",
+      note: "The in/out layer. Present only when both points are set; passes presses through to the scrubber.",
+    },
     { slot: "time-ruler-range-band", note: "The shaded span between in and out." },
     { slot: "time-ruler-in-handle", note: "The in handle. A separate value from the playhead." },
     { slot: "time-ruler-out-handle", note: "The out handle." },
-    { slot: "time-ruler-playhead", note: "The line. Rendered by the ruler and also exported on its own, for drawing across a stack of lanes." },
-    { slot: "time-ruler-playhead-time", note: "The timecode bubble shown while scrubbing. A live region, so the seek is announced." },
+    {
+      slot: "time-ruler-playhead",
+      note: "The line. Rendered by the ruler and also exported on its own, for drawing across a stack of lanes.",
+    },
+    {
+      slot: "time-ruler-playhead-time",
+      note: "The timecode bubble shown while scrubbing. A live region, so the seek is announced.",
+    },
   ],
   usage:
     "Give it a `duration` in seconds and a `zoom` in pixels per second, and put it inside your own horizontally scrolling container — the scroller belongs to you because it is what keeps the ruler and the lanes moving together. Everything else is controlled: hold `playhead` in state and update it from `onPlayheadChange`, and hold `inPoint`/`outPoint` separately and update them from `onRangeChange`. Set `snap` to a frame duration, a beat or a whole second when the edit has a grid; leave it off and precision follows zoom instead. To run the playhead down the tracks, set `--time-ruler-playhead-height` to the height of the stack, or render the exported `TimeRulerPlayhead` in the container that holds the ruler and the lanes. When you lay out clips, call the exported `timeToPixels` and `timeRulerScale` rather than repeating the arithmetic — that is what stops the lanes and the ruler disagreeing.",
@@ -61,7 +79,7 @@ export const TimeRulerDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "One tab stop, or three. The playhead thumb is always there; the in and out handles exist only when both `inPoint` and `outPoint` are numbers. Pass one without the other and the whole range layer never renders.",
-      "Each handle is a visually hidden `<input type=\"range\">`, so it takes the native slider keys: Left/Right and Down/Up move by `step`, Shift with an arrow and Page Up/Page Down move by `largeStep` (ten steps), and Home/End jump to the ends.",
+      'Each handle is a visually hidden `<input type="range">`, so it takes the native slider keys: Left/Right and Down/Up move by `step`, Shift with an arrow and Page Up/Page Down move by `largeStep` (ten steps), and Home/End jump to the ends.',
       "`step` is your `snap` when you set one and `pixelsToTime(1, zoom)` — one pixel of ruler — when you don't. At the default `zoom` of 40 that is 0.025s per press, so arrowing across a ten-minute timeline is 24,000 keystrokes. Set `snap` on anything a person might traverse.",
       "Home and End on the range handles clamp against each other, not against the timeline — but they clamp to equality, not one step short. `minStepsBetweenValues` is 0, so End on the in handle reports `{in: out, out: out}` and Home on the out handle collapses the range the same way, in one keypress and with no keyboard route back to a non-zero range. Measured on the KeyboardOrder story. Neither reaches 0 or `duration`.",
       "Keys people expect and don't get: there is no Escape to abandon a drag part-way, no arrow-key movement between the three handles (Tab is the only way across), and no keyboard equivalent of pressing the ruler body to seek — that is pointer-only.",
@@ -69,11 +87,11 @@ export const TimeRulerDocs: ComponentDocs = {
     ],
     screenReader: [
       "The entire tick layer is `aria-hidden` — ticks, major ticks and every timecode label. Everything this component announces comes from the three slider handles, deliberately, because two hundred tick elements in the tree would bury them.",
-      "Each handle is named by `getAriaLabel` as a fixed string — \"Playhead\", \"In point\", \"Out point\" — and its value is read by `getAriaValueText` as a timecode from `formatTimecode(value, 2)`, or from your `formatTime` when you pass one. The raw seconds are never spoken.",
-      "Those names are not derived from anything you pass, and the root carries no name of its own, so two rulers on one page produce two sliders both called \"Playhead\" with nothing to tell them apart. Put an `aria-label` on each root yourself.",
-      "The timecode bubble is a `role=\"status\"` region that is mounted and unmounted with the scrub state, and `scrubbing` only turns true on a pointer drag (`details.reason === \"drag\"`) or when you drive it from outside. Seeking with the arrow keys never renders it — the handle's own value text is what carries the announcement.",
+      'Each handle is named by `getAriaLabel` as a fixed string — "Playhead", "In point", "Out point" — and its value is read by `getAriaValueText` as a timecode from `formatTimecode(value, 2)`, or from your `formatTime` when you pass one. The raw seconds are never spoken.',
+      'Those names are not derived from anything you pass, and the root carries no name of its own, so two rulers on one page produce two sliders both called "Playhead" with nothing to tell them apart. Put an `aria-label` on each root yourself.',
+      'The timecode bubble is a `role="status"` region that is mounted and unmounted with the scrub state, and `scrubbing` only turns true on a pointer drag (`details.reason === "drag"`) or when you drive it from outside. Seeking with the arrow keys never renders it — the handle\'s own value text is what carries the announcement.',
       "A zoom change is announced as nothing. Tick interval, label interval and the ruler's own width all change, and the only record is `data-zoom` / `data-tick-interval` / `data-label-interval` on the root, which assistive tech does not read.",
-      "`TimeRulerPlayhead` rendered on its own over a stack of lanes has no role and no name unless you pass `label`. Give it one and you get a second `role=\"status\"` alongside the ruler's own.",
+      '`TimeRulerPlayhead` rendered on its own over a stack of lanes has no role and no name unless you pass `label`. Give it one and you get a second `role="status"` alongside the ruler\'s own.',
     ],
     focus: [
       "The `after:-inset-2` hit area makes all three handles grabbable, but none of them paints a focus ring today. `focus-visible:ring-3` sits on the thumb `div`, while focus lands on the `input` Base UI renders inside it — which is clipped to nothing — so the thumb never matches `:focus-visible` and the only treatment is the user agent outline on an invisible element. Recorded in CONTINUE.md §8 rather than fixed, because moving the ring is a decision about which element carries it.",

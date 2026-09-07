@@ -211,7 +211,11 @@ function PresetGrid({
         />
       ))}
       {hiddenCount > 0 ? (
-        <PresetGridSeeMore hiddenCount={hiddenCount} label={seeMoreLabel} onSelect={() => setExpanded(true)} />
+        <PresetGridSeeMore
+          hiddenCount={hiddenCount}
+          label={seeMoreLabel}
+          onSelect={() => setExpanded(true)}
+        />
       ) : null}
     </div>
   );

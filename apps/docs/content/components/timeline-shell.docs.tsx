@@ -88,9 +88,9 @@ export const TimelineShellDocs: ComponentDocs = {
       "`variant` is a prop, not a control. There is no in-shell switch between the track stack and the transcript, so whatever keyboard path reaches that switch is yours to build above the shell.",
     ],
     screenReader: [
-      "The six `data-region` markers are attributes, not landmarks. The shell itself contributes exactly one — the render-queue `<section>`, named by its own `<h2>` — because the stage, the tracks, the transcript and the inspector are all `role=\"group\"` with an `aria-label`, deliberately keeping a six-region editor out of the landmark map.",
-      "The lanes undo that. Each `track-lane` names its clip scroller `role=\"region\"`, so a six-lane edit adds six landmarks inside the one group the shell was trying to keep quiet, and the role is hardcoded in H3 rather than passed in. Nothing in the shell can suppress it.",
-      "The stage is `role=\"group\"` named by `previewLabel` but carries no `tabIndex`, so it is reachable in a screen reader's browse mode and not by Tab.",
+      'The six `data-region` markers are attributes, not landmarks. The shell itself contributes exactly one — the render-queue `<section>`, named by its own `<h2>` — because the stage, the tracks, the transcript and the inspector are all `role="group"` with an `aria-label`, deliberately keeping a six-region editor out of the landmark map.',
+      'The lanes undo that. Each `track-lane` names its clip scroller `role="region"`, so a six-lane edit adds six landmarks inside the one group the shell was trying to keep quiet, and the role is hardcoded in H3 rather than passed in. Nothing in the shell can suppress it.',
+      'The stage is `role="group"` named by `previewLabel` but carries no `tabIndex`, so it is reachable in a screen reader\'s browse mode and not by Tab.',
       "Every region name is an English default — `previewLabel`, `renderQueueLabel`, `tracksLabel`, `transcriptLabel`, `inspectorLabel`. Nothing reads a locale, so a localized product passes all five.",
       "The full-height playhead the shell layers over the dock sits inside an `aria-hidden` wrapper and is given no `label`, so it never double-announces against the one the ruler draws inside its own box. The gutter spacer that aligns second zero is `aria-hidden` too.",
       "Changing `variant` is announced as nothing. The dock swaps wholesale with no live region anywhere in the shell, so say it where the switch lives.",

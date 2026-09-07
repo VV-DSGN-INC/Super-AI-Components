@@ -33,10 +33,9 @@ describe("GenerationWizard", () => {
 
     // The current step is marked aria-current="step"; upcoming steps are not
     // clickable (no button role) — a wizard, not a free-jump tab set.
-    expect(within(stepper).getByText("Choose model").closest("[data-slot='generation-wizard-step']")).toHaveAttribute(
-      "aria-current",
-      "step",
-    );
+    expect(
+      within(stepper).getByText("Choose model").closest("[data-slot='generation-wizard-step']"),
+    ).toHaveAttribute("aria-current", "step");
     expect(within(stepper).queryByRole("button", { name: /set style/i })).not.toBeInTheDocument();
     expect(within(stepper).queryByRole("button", { name: /review/i })).not.toBeInTheDocument();
 

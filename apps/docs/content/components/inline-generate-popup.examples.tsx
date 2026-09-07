@@ -87,8 +87,8 @@ export function InstructionTemplatePlaceholder() {
     <div className="bg-popover text-popover-foreground flex w-80 flex-col gap-2.5 rounded-lg p-2.5 text-sm shadow-md ring-1 ring-foreground/10">
       <p className="font-medium">Generate here</p>
       <p className="text-muted-foreground min-h-14 rounded-lg border px-2.5 py-2 text-sm">
-        Describe the topic, the tone, the audience, the length, and the section this paragraph
-        belongs to&hellip;
+        Describe the topic, the tone, the audience, the length, and the section this paragraph belongs
+        to&hellip;
       </p>
       <div className="flex justify-end text-xs">
         <span className="bg-primary text-primary-foreground rounded-lg px-2 py-1 font-medium">Generate</span>

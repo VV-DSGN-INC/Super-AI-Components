@@ -18,7 +18,7 @@ export const RecordsShellDocs: ComponentDocs = {
   whatItIs:
     "The page shell for a list of things that run: projects, scenarios, zaps, workflows. A product rail on the left, a header carrying the name of the list and the button that adds to it, a row of filters and a sort control, and then the rows themselves — folders first, then the records, each with its enable toggle and its last run in plain words. It is a block, not a component: it owns arrangement and nothing else. The rail is B1, the folders are J1 in folder mode, the rows are J5, the filters are A5, the empty cases are L1 and the rating is N1, and every one of them keeps its own props, state model and accessibility contract.",
   whyItMatters:
-    "Make, Zapier, n8n and Spline all land on the same page, and the reason is that these objects execute. A stored-asset browser can afford to be a wall of thumbnails; a list of live automations cannot, because the two questions you arrive with are \"is this on?\" and \"did the last run work?\". So the enable toggle is the primary control and it sits in the row — never behind an overflow menu, where switching an automation off becomes two clicks and a guess — and the run status sits in the subtitle beside the timestamp, because \"last run failed\" and \"two hours ago\" are one sentence. Everything else on the page is in service of finding the row you want: folders above, filters and sort across the top, a search that covers both lists.",
+    'Make, Zapier, n8n and Spline all land on the same page, and the reason is that these objects execute. A stored-asset browser can afford to be a wall of thumbnails; a list of live automations cannot, because the two questions you arrive with are "is this on?" and "did the last run work?". So the enable toggle is the primary control and it sits in the row — never behind an overflow menu, where switching an automation off becomes two clicks and a guess — and the run status sits in the subtitle beside the timestamp, because "last run failed" and "two hours ago" are one sentence. Everything else on the page is in service of finding the row you want: folders above, filters and sort across the top, a search that covers both lists.',
   evidence: ["Make scenarios", "Zapier zaps", "n8n workflows", "Spline projects"],
   anatomy: [
     {
@@ -39,7 +39,10 @@ export const RecordsShellDocs: ComponentDocs = {
     },
     { slot: "records-shell", note: "Root. Contains its own fixed descendants so the shell can be embedded." },
     { slot: "records-shell-count", note: "How many records the list currently holds." },
-    { slot: "records-shell-sort", note: "The sort control. `records-shell-sort-trigger` is the named button." },
+    {
+      slot: "records-shell-sort",
+      note: "The sort control. `records-shell-sort-trigger` is the named button.",
+    },
     { slot: "records-shell-feedback", note: "N1 with its caption, at the foot of the record region." },
   ],
   usage:
@@ -76,9 +79,9 @@ export const RecordsShellDocs: ComponentDocs = {
     screenReader: [
       "The `<h1>` in the header is the shell's only heading. J1's \"Folders\" title comes from A12 `section-header`, which renders a `<span>` — so heading navigation goes straight from the page title to the end of the page, past both lists.",
       "The record region is a named landmark: `aria-labelledby` points at the same `<h1>`, so it announces as a region called whatever you passed as `title`. That name is what lets the scroll container carry `tabIndex` without tripping axe's scrollable-region-focusable rule.",
-      "The record count beside the heading is a bare `<span>` of digits with nothing naming it. \"Scenarios, 24\" reads acceptably in order and reads as a stray number if you land on it alone.",
-      "The chip row is a `role=\"group\"` named \"Filter records\", which is a fixed string — it does not say how many filters are applied, and nothing announces that applying one changed the list.",
-      "The sort trigger's accessible name is `sortLabel` (\"Sort by\") while its visible text is the current option (\"Last run\"). The visible words are not part of the name, so a voice-control user asking for \"Last run\" does not reach it — say \"Sort by\" instead.",
+      'The record count beside the heading is a bare `<span>` of digits with nothing naming it. "Scenarios, 24" reads acceptably in order and reads as a stray number if you land on it alone.',
+      'The chip row is a `role="group"` named "Filter records", which is a fixed string — it does not say how many filters are applied, and nothing announces that applying one changed the list.',
+      'The sort trigger\'s accessible name is `sortLabel` ("Sort by") while its visible text is the current option ("Last run"). The visible words are not part of the name, so a voice-control user asking for "Last run" does not reach it — say "Sort by" instead.',
       "The shell adds no live region of its own. Toggling a record, changing the sort, typing in the search box and filtering the list all announce nothing beyond the control the user touched; J5's switch reports its own state and that is the whole of it.",
       "Everything else is inherited untouched: J5's app clusters and switch names, A5's `aria-pressed` chips, J1's sr-only search label and per-row action names, and N1's `aria-pressed` thumbs.",
     ],
@@ -94,7 +97,7 @@ export const RecordsShellDocs: ComponentDocs = {
     "J1 owns the search field and does no filtering. The shell surfaces it as the page search because it sits above both lists, but nothing narrows automatically: `onSearchChange` tells you what was typed and you hand back the `folders` and `records` that match. Wiring the field without wiring the filtering produces a search box that does nothing, which is worse than having none.",
     "J5 renders one `<table>` and exposes no per-row slot, so there is nowhere to hang a per-record affordance the component does not already have — no per-row feedback, no per-row status sibling of the kind chat-shell renders under a thread. That is why N1 rates the list rather than a record. If you need per-record feedback, the fix belongs in J5, not in a fork of it here.",
     "The record region is the scroll container, which is why it is a `section` with `tabIndex={0}` and a name taken from the header's heading. Moving the overflow onto an inner wrapper without moving those with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the list.",
-    "The sort control's trigger renders the raw `value` unless it is given children, so an unlabelled select shows `recent` instead of \"Last run\". The shell resolves the label from `sortOptions`; if you pass your own options make sure every `value` you might set also has an entry, or the trigger falls back to the word \"Sort by\".",
+    'The sort control\'s trigger renders the raw `value` unless it is given children, so an unlabelled select shows `recent` instead of "Last run". The shell resolves the label from `sortOptions`; if you pass your own options make sure every `value` you might set also has an entry, or the trigger falls back to the word "Sort by".',
     "`sort` is optional-controlled and `records`, `folders` and `filters` are not controlled at all — the shell holds no list state. It will happily render filter chips that are `active` over a record list that was never filtered, which looks correct and lies. Filter your data where it lives.",
   ],
 };

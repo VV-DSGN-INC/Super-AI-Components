@@ -248,7 +248,15 @@ interface PropertyRowProps extends Omit<React.ComponentProps<"div">, "children">
  * row scope permanently occupying its `reset` slot — the row-level half of the
  * spec's two reset scopes.
  */
-function PropertyRow({ label, hint, state = "default", onReset, resetLabel, children, ...props }: PropertyRowProps) {
+function PropertyRow({
+  label,
+  hint,
+  state = "default",
+  onReset,
+  resetLabel,
+  children,
+  ...props
+}: PropertyRowProps) {
   return (
     <FieldRow
       label={label}

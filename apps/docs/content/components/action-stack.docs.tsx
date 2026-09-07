@@ -1,10 +1,5 @@
 import type { ComponentDocs } from "@/lib/component-docs";
-import {
-  LockedRowsRemoved,
-  LockedRowsStayVisible,
-  NoPrices,
-  PriceOnEveryRow,
-} from "./action-stack.examples";
+import { LockedRowsRemoved, LockedRowsStayVisible, NoPrices, PriceOnEveryRow } from "./action-stack.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#f4-action-stack.
@@ -20,14 +15,20 @@ export const ActionStackDocs: ComponentDocs = {
   evidence: ["ElevenLabs", "Freepik", "Topaz", "CapCut"],
   anatomy: [
     { slot: "action-stack", note: "The root. Carries `data-presentation` for menu or inline." },
-    { slot: "action-stack-trigger", note: "Menu mode only. Renders your own element rather than wrapping it." },
+    {
+      slot: "action-stack-trigger",
+      note: "Menu mode only. Renders your own element rather than wrapping it.",
+    },
     { slot: "action-stack-menu", note: "The dropdown surface in menu mode." },
-    { slot: "entity-row", note: "One action, rendered as A9 `entity-row` — the stack stamps no slot of its own on rows. Carries `data-locked` when gated." },
+    {
+      slot: "entity-row",
+      note: "One action, rendered as A9 `entity-row` — the stack stamps no slot of its own on rows. Carries `data-locked` when gated.",
+    },
     { slot: "cost-chip", note: "A2 in the row's trailing slot, with text from the shared cost formatter." },
     { slot: "action-stack-locked", note: "The word Locked, so the padlock is never the only signal." },
   ],
   usage:
-    "Build the `actions` array from the asset's type — a video gets Extend and Upscale, an image gets Variations and Inpaint — rather than rendering a different component per media kind. Give every action that bills a `cost`; use `per` for rate-priced work (\"900 credits/min\") and it will render correctly. Mark tier-gated rows `locked` rather than filtering them out: they stay visible and keep their price, but cannot be chosen. Use `presentation=\"menu\"` with a `trigger` when the stack hangs off a result card, and `\"inline\"` when it is a panel in its own right.",
+    'Build the `actions` array from the asset\'s type — a video gets Extend and Upscale, an image gets Variations and Inpaint — rather than rendering a different component per media kind. Give every action that bills a `cost`; use `per` for rate-priced work ("900 credits/min") and it will render correctly. Mark tier-gated rows `locked` rather than filtering them out: they stay visible and keep their price, but cannot be chosen. Use `presentation="menu"` with a `trigger` when the stack hangs off a result card, and `"inline"` when it is a panel in its own right.',
   dos: [
     {
       text: "Put a cost on every row that bills — the whole point is that a four-step chain is four charges.",
@@ -52,14 +53,14 @@ export const ActionStackDocs: ComponentDocs = {
     keyboard: [
       "In menu mode the closed stack is one tab stop — the trigger. Enter, Space or Down opens it; Up and Down walk the rows, typing a letter jumps to one, Enter or Space runs it, and Escape closes.",
       "A locked or disabled row stays in the arrow-key walk. It is a menu item marked `aria-disabled` rather than one removed from the list, so a keyboard user still meets the row they cannot run — which is the whole reason locked rows are kept on screen.",
-      "In inline mode there is no arrow-key navigation: every actionable row is its own tab stop in a plain `role=\"group\"`. Eight actions is eight Tab presses, and no key skips the group.",
+      'In inline mode there is no arrow-key navigation: every actionable row is its own tab stop in a plain `role="group"`. Eight actions is eight Tab presses, and no key skips the group.',
       "A locked or inline-disabled row is not a tab stop at all — it renders as a `div` rather than a button, so the keyboard passes over it entirely. Only the pointer and browse mode reach it.",
       "There is no Escape handling in inline mode and no shortcut to reach the stack; the trigger is whatever element you pass.",
     ],
     screenReader: [
-      "Inline mode is a group named \"Actions for this result\" — a fixed string. Two stacks on one page announce as two identically named groups, so name the surface around them.",
-      "In inline mode every actionable row is a `<button>` carrying `aria-pressed=\"false\"`, because the composed `entity-row` always emits that attribute. A one-shot action like Upscale therefore announces as an unpressed toggle button, which is wrong about what pressing it does.",
-      "A row's name is the whole row read out: title, description, the formatted price and the word Locked, in that order. \"Upscale to 4K, adds detail without re-rendering, 400 credits\" is one long name, not a name plus a description.",
+      'Inline mode is a group named "Actions for this result" — a fixed string. Two stacks on one page announce as two identically named groups, so name the surface around them.',
+      'In inline mode every actionable row is a `<button>` carrying `aria-pressed="false"`, because the composed `entity-row` always emits that attribute. A one-shot action like Upscale therefore announces as an unpressed toggle button, which is wrong about what pressing it does.',
+      'A row\'s name is the whole row read out: title, description, the formatted price and the word Locked, in that order. "Upscale to 4K, adds detail without re-rendering, 400 credits" is one long name, not a name plus a description.',
       "The padlock is `aria-hidden` and the coin glyph in the cost chip is too, so the visible word Locked and the formatted amount are what actually carry those states.",
       "A locked inline row carries no `aria-disabled`: `locked` never reaches `entity-row`'s `disabled` prop, so the only signal that it cannot be run is the literal word Locked in the trailing slot.",
       "Nothing announces that an action started. `onAction` fires and the menu closes; if the work is asynchronous, the live region belongs on the surface you hand the result to.",

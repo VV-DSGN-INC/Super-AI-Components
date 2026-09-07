@@ -45,8 +45,7 @@ const GROUPS: ArtifactShellProps["groups"] = [
           },
           {
             id: "a2",
-            excerpt:
-              "const TONE = ['reassuring', 'plain', 'unhurried'] // extracted from 41 sampled pages",
+            excerpt: "const TONE = ['reassuring', 'plain', 'unhurried'] // extracted from 41 sampled pages",
             type: "code",
             editedAgo: "Edited 9 minutes ago",
             viewCount: 3,
@@ -204,8 +203,8 @@ export const WithDraft: Story = {
       label: "Generated from the brand audit",
       children: (
         <p>
-          Northwind should lead every page with the calm claim and let the speed claim arrive
-          second. Competitors have taken the fast lane and left the reassuring one open.
+          Northwind should lead every page with the calm claim and let the speed claim arrive second.
+          Competitors have taken the fast lane and left the reassuring one open.
         </p>
       ),
       onKeep: () => {},
@@ -279,15 +278,11 @@ export const ReducedMotion: Story = {
   },
   play: async ({ canvasElement }) => {
     // 1. The one animation this shell can produce, suppressed.
-    const spinner = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="ai-doc-block-streaming"] svg',
-    )!;
+    const spinner = canvasElement.querySelector<HTMLElement>('[data-slot="ai-doc-block-streaming"] svg')!;
     await expect(getComputedStyle(spinner).animationName).toBe("none");
 
     // 2. …and what survives it. The glyph is not the message.
-    const streaming = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="ai-doc-block-streaming"]',
-    )!;
+    const streaming = canvasElement.querySelector<HTMLElement>('[data-slot="ai-doc-block-streaming"]')!;
     await expect(streaming.textContent).toBe("Streaming");
 
     // 3. The defect this story found, now fixed and guarded. Collapsing the
@@ -320,9 +315,7 @@ export const ReducedMotion: Story = {
     // settles it rather than pinning a mid-flight number, but the fact that it
     // has to settle at all is the defect stated as behaviour.
     await waitFor(() => expect(Math.round(gap.getBoundingClientRect().width)).toBe(48));
-    await expect(`rail ${before}px → 48px, travel ${before - 48}px`).toBe(
-      "rail 256px → 48px, travel 208px",
-    );
+    await expect(`rail ${before}px → 48px, travel ${before - 48}px`).toBe("rail 256px → 48px, travel 208px");
   },
 };
 
@@ -383,9 +376,7 @@ export const RTL: Story = {
     // the LTR half with the same numbers the unswapped source produced.
     const field = canvasElement.querySelector<HTMLElement>('[data-slot="input"]')!;
     const icon = field.parentElement!.querySelector<HTMLElement>("svg")!;
-    const count = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="filter-chip"] span.tabular-nums',
-    )!;
+    const count = canvasElement.querySelector<HTMLElement>('[data-slot="filter-chip"] span.tabular-nums')!;
     const filters = canvasElement.querySelector<HTMLElement>('[data-slot="filters-button"]')!;
     const fieldStyle = getComputedStyle(field);
     const iconStyle = getComputedStyle(icon);
@@ -479,8 +470,7 @@ export const LongContent: Story = {
   args: {
     ...FULL_ARGS,
     title: "Everything Northwind has generated since the brand audit started in March",
-    searchPlaceholder:
-      "Search by a phrase from the artifact itself rather than by the title it was given",
+    searchPlaceholder: "Search by a phrase from the artifact itself rather than by the title it was given",
     draftLabel: "Just generated, and not filed under a bucket until you keep it",
     draft: {
       label: "Generated from the brand audit",
@@ -721,9 +711,7 @@ export const KeyboardOrder: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const bySlot = (slot: string) => canvasElement.querySelector<HTMLElement>(`[data-slot="${slot}"]`)!;
-    const chips = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>('[data-slot="filter-chip-toggle"]'),
-    );
+    const chips = Array.from(canvasElement.querySelectorAll<HTMLElement>('[data-slot="filter-chip-toggle"]'));
     const cards = Array.from(
       canvasElement.querySelectorAll<HTMLElement>('[data-slot="artifact-grid-excerpt"] button'),
     );
@@ -781,11 +769,9 @@ export const KeyboardOrder: Story = {
     // `outline: auto` and nothing else — a treatment, but not one this repo
     // chose. Both satisfy the convention; only one survives a reset.
     await expect(
-      [
-        `grid ${painted["grid region"]}`,
-        `facet ${painted["facet: All"]}`,
-        `card ${painted["card 1"]}`,
-      ].join(" · "),
+      [`grid ${painted["grid region"]}`, `facet ${painted["facet: All"]}`, `card ${painted["card 1"]}`].join(
+        " · ",
+      ),
     ).toBe("grid none/shadow · facet auto/no-shadow · card none/shadow");
 
     // A5's chips are N independent toggles, not a single-select control. The
@@ -868,19 +854,13 @@ export const Controlled: StoryObj<typeof PinnedIndex> = {
   args: { onActiveTypeChange: fn(), onQueryChange: fn() },
   render: (args) => <PinnedIndex {...args} />,
   play: async ({ args, canvasElement }) => {
-    const chips = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>('[data-slot="filter-chip-toggle"]'),
-    );
+    const chips = Array.from(canvasElement.querySelectorAll<HTMLElement>('[data-slot="filter-chip-toggle"]'));
     const field = canvasElement.querySelector<HTMLInputElement>('[data-slot="input"]')!;
-    const count = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="artifact-shell-result-count"]',
-    )!;
+    const count = canvasElement.querySelector<HTMLElement>('[data-slot="artifact-shell-result-count"]')!;
     const pressed = () => chips.map((c) => c.getAttribute("aria-pressed")).join(",");
 
     // All / Markdown / Code / HTML / React, with Markdown held pressed.
-    await expect(`${chips.length} chips: ${pressed()}`).toBe(
-      "5 chips: false,true,false,false,false",
-    );
+    await expect(`${chips.length} chips: ${pressed()}`).toBe("5 chips: false,true,false,false,false");
 
     // Pressing another facet reports the payload a consumer needs to apply the
     // change — the type string, which is the same value J4 stamps on its badge.
@@ -1326,9 +1306,7 @@ export const Boundary: Story = {
       Array.from(el.querySelectorAll("h1,h2,h3,h4,h5,h6"))
         .map((h) => h.tagName.toLowerCase())
         .join(",");
-    await expect(`O7 ${levels(o7) || "none"} → O9 ${levels(o9) || "none"}`).toBe(
-      "O7 h3 → O9 h1",
-    );
+    await expect(`O7 ${levels(o7) || "none"} → O9 ${levels(o9) || "none"}`).toBe("O7 h3 → O9 h1");
 
     // And J4's container query, from the consumer side: the same grid that
     // gave one column at 375px gives two in a half-width pane, with no

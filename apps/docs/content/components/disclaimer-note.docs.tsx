@@ -34,9 +34,15 @@ export const DisclaimerNoteDocs: ComponentDocs = {
   evidence: ["Manus", "Claude", "NotebookLM", "Freepik"],
   anatomy: [
     { slot: "disclaimer-note", note: "Root wrapper; carries the placement variant." },
-    { slot: "disclaimer-note-icon", note: "Small, decorative marker — never the only signal, always paired with text." },
+    {
+      slot: "disclaimer-note-icon",
+      note: "Small, decorative marker — never the only signal, always paired with text.",
+    },
     { slot: "disclaimer-note-text", note: "The disclaimer copy itself, in full-contrast foreground text." },
-    { slot: "disclaimer-note-link", note: "Optional 'learn more'-style link; always carries its own discernible label." },
+    {
+      slot: "disclaimer-note-link",
+      note: "Optional 'learn more'-style link; always carries its own discernible label.",
+    },
   ],
   usage:
     "Place it directly adjacent to the output it qualifies — under the composer that produces a response, as the last element inside a card of generated content, or inline beside a piece of AI-written text — never on a settings or about page where the user has to go looking for it. Pick the variant that matches where it physically sits: `under-composer` for a persistent row beneath an input, `in-card` for a footer separated from generated content by a rule, `inline` for a compact mention beside other metadata. Override the default copy with children when a product needs specific wording (e.g. naming the model), and only pass `link` when there's somewhere real to send the user — a support article or settings page, not a bare '#'.",
@@ -71,7 +77,7 @@ export const DisclaimerNoteDocs: ComponentDocs = {
       "The default copy reads as a complete sentence on its own, which is what keeps it intelligible when the icon never renders and when it is heard out of visual context.",
       "The `Info` glyph is `aria-hidden`, so the icon contributes nothing to the announced text and the words carry the whole message — the same reason it is never the only signal on screen.",
       "Nothing associates the note with the output it qualifies. There is no `id` and no `aria-describedby` wiring, so a screen-reader user landing on a generated card is not told the card carries a disclaimer. Give the note an `id` and point the output container's `aria-describedby` at it when the qualification has to travel with the content.",
-      "`link` needs discernible text of its own: someone pulling up a list of links hears only the label, never the sentence around it, so \"Learn about AI limits\" works and \"here\" does not.",
+      '`link` needs discernible text of its own: someone pulling up a list of links hears only the label, never the sentence around it, so "Learn about AI limits" works and "here" does not.',
       "The `inline` variant is still a `<div>`, despite the name. Putting it inside a `<p>` is invalid nesting that browsers repair by splitting the paragraph, which reorders the very reading order this component depends on — place it as a sibling of your prose, not inside it.",
     ],
     focus: [

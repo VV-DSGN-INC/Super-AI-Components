@@ -39,9 +39,7 @@ export const Default: Story = {
                   alt={r.title}
                   className="h-48 w-full object-cover"
                 />
-                <CardContent className="py-3 text-center font-medium">
-                  {r.title}
-                </CardContent>
+                <CardContent className="py-3 text-center font-medium">{r.title}</CardContent>
               </Card>
             </CarouselItem>
           ))}

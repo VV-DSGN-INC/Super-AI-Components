@@ -87,7 +87,7 @@ export const SourceCardsDocs: ComponentDocs = {
       'The Cited / "Retrieved, not used" badge is the only programmatic carrier of the used-versus-unused split. `data-used` and the 60% opacity are invisible to assistive tech, so if you restyle a card, that badge is the whole accessibility story — do not replace it with a tint.',
       'The relevance band announces as "Strong match", "Partial match" or "Weak match" and never as a number. A source with no `relevance` simply has no second badge, which reads as unranked rather than as low.',
       "The document and eye-off glyphs are `aria-hidden` (the lucide default), so neither adds to a name.",
-      "Nothing here announces a change. Re-running retrieval swaps the entire list, and the empty paragraph switches its wording between \"No sources matched\" and \"Sources will appear here once a search runs\", both silently — there is no live region. Announce the new result on the answer this panel sits under.",
+      'Nothing here announces a change. Re-running retrieval swaps the entire list, and the empty paragraph switches its wording between "No sources matched" and "Sources will appear here once a search runs", both silently — there is no live region. Announce the new result on the answer this panel sits under.',
     ],
     focus: [
       "Focus is never moved by this component, but the sort can move what is under it: `used` decides ordering, so marking a source cited while the panel is open reorders the list. Cards are keyed by `source.id`, so focus stays on the card it was on — that card just jumps up the page.",

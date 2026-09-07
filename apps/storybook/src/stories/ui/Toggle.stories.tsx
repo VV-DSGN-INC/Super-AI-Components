@@ -43,12 +43,7 @@ export const PinIcon: Story = {
     function PinToggle() {
       const [pinned, setPinned] = React.useState(false);
       return (
-        <Toggle
-          size="sm"
-          aria-label="Pin to canvas"
-          pressed={pinned}
-          onPressedChange={setPinned}
-        >
+        <Toggle size="sm" aria-label="Pin to canvas" pressed={pinned} onPressedChange={setPinned}>
           <Pin className={pinned ? "fill-current" : undefined} />
         </Toggle>
       );
@@ -64,20 +59,10 @@ export const Formatting: Story = {
       const [italic, setItalic] = React.useState(false);
       return (
         <div className="flex items-center gap-1.5">
-          <Toggle
-            variant="outline"
-            aria-label="Bold"
-            pressed={bold}
-            onPressedChange={setBold}
-          >
+          <Toggle variant="outline" aria-label="Bold" pressed={bold} onPressedChange={setBold}>
             <Bold />
           </Toggle>
-          <Toggle
-            variant="outline"
-            aria-label="Italic"
-            pressed={italic}
-            onPressedChange={setItalic}
-          >
+          <Toggle variant="outline" aria-label="Italic" pressed={italic} onPressedChange={setItalic}>
             <Italic />
           </Toggle>
         </div>

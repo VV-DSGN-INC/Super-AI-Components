@@ -74,7 +74,14 @@ describe("ExploreGallery", () => {
   it("renders the infinite-scroll state with a real Load more button and a live count", async () => {
     const onLoadMore = vi.fn();
     render(
-      <ExploreGallery items={ITEMS} sorts={SORTS} totalCount={240} hasMore onLoadMore={onLoadMore} dockedPrompt={false} />,
+      <ExploreGallery
+        items={ITEMS}
+        sorts={SORTS}
+        totalCount={240}
+        hasMore
+        onLoadMore={onLoadMore}
+        dockedPrompt={false}
+      />,
     );
 
     const status = screen.getByRole("status");

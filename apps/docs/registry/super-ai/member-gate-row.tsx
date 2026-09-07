@@ -115,7 +115,12 @@ function MemberGateRow({
   );
 
   return (
-    <div data-slot="member-gate-row" data-state={state} className={cn("flex flex-col gap-2", className)} {...props}>
+    <div
+      data-slot="member-gate-row"
+      data-state={state}
+      className={cn("flex flex-col gap-2", className)}
+      {...props}
+    >
       <EntityRow
         icon={icon}
         title={<span id={titleId}>{label}</span>}
@@ -144,7 +149,10 @@ function MemberGateRow({
             // under 4.5:1 against bg-muted-derived surfaces in this token set
             // (see the muted-on-muted note in component-build-brief.md). The
             // same fix `promo-card` uses for description text on a tinted card.
-            <p data-slot="member-gate-row-upsell-description" className="text-foreground/70 text-xs leading-snug">
+            <p
+              data-slot="member-gate-row-upsell-description"
+              className="text-foreground/70 text-xs leading-snug"
+            >
               {upsellDescription}
             </p>
           ) : null}

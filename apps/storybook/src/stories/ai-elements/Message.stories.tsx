@@ -21,9 +21,7 @@ export const Default: Story = {
   render: () => (
     <div className="flex w-[560px] flex-col gap-8">
       <Message from="user">
-        <MessageContent>
-          Can you turn the dashboard launch into a 20-second promo video?
-        </MessageContent>
+        <MessageContent>Can you turn the dashboard launch into a 20-second promo video?</MessageContent>
       </Message>
       <Message from="assistant">
         <MessageContent>

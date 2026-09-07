@@ -14,7 +14,7 @@ export const RecordListDocs: ComponentDocs = {
   whatItIs:
     "A table of records that run — scenarios, zaps, workflows, scheduled projects. Each row carries the apps it touches as a cluster of named marks, its draft and last-run state in the subtitle beneath the title, an on/off switch, and an overflow menu for everything else.",
   whyItMatters:
-    "Automation lists are not browsed, they are audited: the question is always which of these is on, and did the last one work. So the enable toggle is the primary control and lives in the row itself — Make, Zapier and n8n all put it there, because moving it to a detail page turns 'pause the broken one' into a four-click errand. The app cluster is the second half of that: people recognise a scenario by what it connects long before they read its name, which is why the cluster carries real app names rather than decorative logos. And last-run and draft belong in the subtitle rather than their own columns, because \"Last run failed\" and \"4 min ago\" are one sentence about one event; splitting them across columns makes the reader reassemble it.",
+    'Automation lists are not browsed, they are audited: the question is always which of these is on, and did the last one work. So the enable toggle is the primary control and lives in the row itself — Make, Zapier and n8n all put it there, because moving it to a detail page turns \'pause the broken one\' into a four-click errand. The app cluster is the second half of that: people recognise a scenario by what it connects long before they read its name, which is why the cluster carries real app names rather than decorative logos. And last-run and draft belong in the subtitle rather than their own columns, because "Last run failed" and "4 min ago" are one sentence about one event; splitting them across columns makes the reader reassemble it.',
   evidence: ["Make scenarios", "Zapier zaps", "n8n workflows"],
   anatomy: [
     { slot: "record-list", note: "The table wrapper." },
@@ -30,17 +30,29 @@ export const RecordListDocs: ComponentDocs = {
       slot: "record-list-subtitle",
       note: "Everything the title is not: run status, last run, draft, folder, operation count.",
     },
-    { slot: "record-list-run-status", note: "An icon shape and the state in words, so nothing rests on colour." },
+    {
+      slot: "record-list-run-status",
+      note: "An icon shape and the state in words, so nothing rests on colour.",
+    },
     { slot: "record-list-meta", note: "One span per subtitle fragment, separated by middots." },
-    { slot: "record-list-apps", note: "The cluster, a labelled list. Each mark is hidden; each app name is not." },
+    {
+      slot: "record-list-apps",
+      note: "The cluster, a labelled list. Each mark is hidden; each app name is not.",
+    },
     { slot: "record-list-app", note: "One app: a decorative mark plus a readable name." },
-    { slot: "record-list-app-overflow", note: "The `+N` mark. The names it covers stay in the accessible text." },
-    { slot: "record-list-apps-empty", note: "An em-dash and an announced \"No apps\" — deliberate, not blank." },
+    {
+      slot: "record-list-app-overflow",
+      note: "The `+N` mark. The names it covers stay in the accessible text.",
+    },
+    {
+      slot: "record-list-apps-empty",
+      note: 'An em-dash and an announced "No apps" — deliberate, not blank.',
+    },
     { slot: "record-list-toggle", note: "The primary control, named after its own record." },
     { slot: "record-list-overflow", note: "The actions cell. Empty when a record supplies no actions." },
   ],
   usage:
-    "Give every record an `apps` array with real names — the marks fall back to initials, so a name alone is enough to make the cluster useful. Put timing in `lastRun` and set `draft` rather than inventing a column for either; anything else you want under the title goes in `meta`. Set `runState` and the component supplies both the icon and the words; use `runLabel` when you can say something more specific (\"Last run failed — auth expired\"). Handle `onEnabledChange` and treat it as the main verb of the screen. Pass `href` when a record has a page of its own, `onOpen` when it opens in place; the row itself stays inert either way, which is what lets a switch and a menu live inside it.",
+    'Give every record an `apps` array with real names — the marks fall back to initials, so a name alone is enough to make the cluster useful. Put timing in `lastRun` and set `draft` rather than inventing a column for either; anything else you want under the title goes in `meta`. Set `runState` and the component supplies both the icon and the words; use `runLabel` when you can say something more specific ("Last run failed — auth expired"). Handle `onEnabledChange` and treat it as the main verb of the screen. Pass `href` when a record has a page of its own, `onOpen` when it opens in place; the row itself stays inert either way, which is what lets a switch and a menu live inside it.',
   dos: [
     {
       text: "Show what each record touches and when it last ran, from the list itself.",
@@ -70,12 +82,12 @@ export const RecordListDocs: ComponentDocs = {
       "No column is sortable and none is focusable — the header is four plain `<th>`s.",
     ],
     screenReader: [
-      "The table is named by an sr-only `<caption>` carrying `label` (default \"Records\") and has four column headers: Record, Apps, Enabled, and an sr-only \"Actions\". In a screen reader's table mode, \"Enabled\" is therefore announced alongside each switch.",
-      "The app cluster is a `<ul>` named \"Apps in <title>\". Each mark is `aria-hidden` and each name sits in sr-only text beside it, so the cluster announces as a list of app names rather than a row of unnamed images.",
+      'The table is named by an sr-only `<caption>` carrying `label` (default "Records") and has four column headers: Record, Apps, Enabled, and an sr-only "Actions". In a screen reader\'s table mode, "Enabled" is therefore announced alongside each switch.',
+      'The app cluster is a `<ul>` named "Apps in <title>". Each mark is `aria-hidden` and each name sits in sr-only text beside it, so the cluster announces as a list of app names rather than a row of unnamed images.',
       "The `+N` mark works the same way: it is `aria-hidden` and the names it covers stay in the sr-only text behind it, so `maxApps` costs a screen-reader user nothing.",
-      "A record with no apps announces \"No apps\" rather than silence — the em-dash is `aria-hidden` and the words sit behind it.",
-      "Run status is an `aria-hidden` icon plus the words from the state table, so \"Last run failed\" is read as text and the red triangle carries nothing on its own.",
-      "Each switch is named `Enable <title>` and never renames itself, so an already-on record announces as \"Enable Daily digest, switch, on\" — the verb is fixed and `aria-checked` carries the state. Two records with the same title produce two identically named switches and two identically named overflow triggers.",
+      'A record with no apps announces "No apps" rather than silence — the em-dash is `aria-hidden` and the words sit behind it.',
+      'Run status is an `aria-hidden` icon plus the words from the state table, so "Last run failed" is read as text and the red triangle carries nothing on its own.',
+      'Each switch is named `Enable <title>` and never renames itself, so an already-on record announces as "Enable Daily digest, switch, on" — the verb is fixed and `aria-checked` carries the state. Two records with the same title produce two identically named switches and two identically named overflow triggers.',
       "There is no live region. The switch announces its own state change, but only once your `onEnabledChange` handler feeds a new `enabled` back in — an optimistic UI that does not, or a request that fails quietly, leaves the announced state wrong with nothing to correct it.",
     ],
     focus: [

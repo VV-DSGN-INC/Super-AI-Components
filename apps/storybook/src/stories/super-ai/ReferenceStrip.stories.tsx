@@ -9,9 +9,18 @@ import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
 const FILLED_ITEMS = [
-  { id: "one", thumbnail: { src: "https://placehold.co/200x200?text=1", alt: "Concept sketch of a lighthouse" } },
-  { id: "two", thumbnail: { src: "https://placehold.co/200x200?text=2", alt: "Photo of a coastline at dusk" } },
-  { id: "three", thumbnail: { src: "https://placehold.co/200x200?text=3", alt: "Reference of a rope texture" } },
+  {
+    id: "one",
+    thumbnail: { src: "https://placehold.co/200x200?text=1", alt: "Concept sketch of a lighthouse" },
+  },
+  {
+    id: "two",
+    thumbnail: { src: "https://placehold.co/200x200?text=2", alt: "Photo of a coastline at dusk" },
+  },
+  {
+    id: "three",
+    thumbnail: { src: "https://placehold.co/200x200?text=3", alt: "Reference of a rope texture" },
+  },
 ];
 
 const ROLE_ITEMS = [
@@ -278,7 +287,9 @@ export const KeyboardOrder: Story = {
     await expect(canvas.getByRole("button", { name: "Next slide" })).toBeDisabled();
 
     // Two, three, two: the ends lose the move they cannot make.
-    const moves = Array.from(canvasElement.querySelectorAll<HTMLButtonElement>('[data-slot="reference-strip-move"]'));
+    const moves = Array.from(
+      canvasElement.querySelectorAll<HTMLButtonElement>('[data-slot="reference-strip-move"]'),
+    );
     await expect(moves).toHaveLength(6);
     await expect(moves[0]).toBeDisabled();
     await expect(moves[moves.length - 1]).toBeDisabled();
@@ -373,7 +384,9 @@ export const Controlled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const roles = () =>
-      Array.from(canvasElement.querySelectorAll('[data-slot="reference-strip-role"]')).map((el) => el.textContent);
+      Array.from(canvasElement.querySelectorAll('[data-slot="reference-strip-role"]')).map(
+        (el) => el.textContent,
+      );
 
     await expect(roles()).toEqual(["First frame", "Character", "Reference"]);
 
@@ -451,7 +464,9 @@ export const EmptyLabel: Story = {
     await expect(canvas.getByRole("button", { name: "Add" })).toBeInTheDocument();
 
     // Filled and unfilled slots agree about height, so the row stays even.
-    const slots = Array.from(canvasElement.querySelectorAll<HTMLElement>('[data-slot="reference-strip-item"]'));
+    const slots = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>('[data-slot="reference-strip-item"]'),
+    );
     const heights = new Set(slots.map((slot) => Math.round(slot.getBoundingClientRect().height)));
     await expect(heights.size).toBe(1);
   },
@@ -501,7 +516,9 @@ export const LongContent: Story = {
   ),
   play: async ({ canvasElement }) => {
     // The long label does not widen its slot.
-    const slots = Array.from(canvasElement.querySelectorAll<HTMLElement>('[data-slot="reference-strip-item"]'));
+    const slots = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>('[data-slot="reference-strip-item"]'),
+    );
     const widths = slots.map((slot) => Math.round(slot.getBoundingClientRect().width));
     await expect(widths[0]).toBe(widths[1]);
 
@@ -539,8 +556,14 @@ export const Mobile: Story = {
   args: {
     items: [
       ...FILLED_ITEMS,
-      { id: "four", thumbnail: { src: "https://placehold.co/200x200?text=4", alt: "Photo of a harbour at dawn" } },
-      { id: "five", thumbnail: { src: "https://placehold.co/200x200?text=5", alt: "Reference of a brass texture" } },
+      {
+        id: "four",
+        thumbnail: { src: "https://placehold.co/200x200?text=4", alt: "Photo of a harbour at dawn" },
+      },
+      {
+        id: "five",
+        thumbnail: { src: "https://placehold.co/200x200?text=5", alt: "Reference of a brass texture" },
+      },
     ],
     onMove: () => {},
   },
@@ -555,7 +578,9 @@ export const Mobile: Story = {
 
     // Five slots at this width overflow, and the row is a real scroller rather
     // than a squeeze: every slot keeps the same width it has at full size.
-    const slots = Array.from(canvasElement.querySelectorAll<HTMLElement>('[data-slot="reference-strip-item"]'));
+    const slots = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>('[data-slot="reference-strip-item"]'),
+    );
     await expect(slots).toHaveLength(5);
     const widths = new Set(slots.map((slot) => Math.round(slot.getBoundingClientRect().width)));
     await expect(widths.size).toBe(1);
@@ -588,7 +613,9 @@ export const Boundary: Story = {
   render: () => (
     <div className="flex w-[36rem] max-w-full flex-col gap-8">
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Reference strip — typed inputs to the next generation</p>
+        <p className="text-foreground text-xs font-medium">
+          Reference strip — typed inputs to the next generation
+        </p>
         <ReferenceStrip items={ROLE_ITEMS} onAdd={() => {}} onMove={() => {}} />
       </section>
 
@@ -612,7 +639,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Context chips — pointers to what is already in scope</p>
+        <p className="text-foreground text-xs font-medium">
+          Context chips — pointers to what is already in scope
+        </p>
         <ContextChips>
           <ContextChip kind="file" label="shot-list.pdf" onRemove={() => {}} />
           <ContextChip kind="selection" label="Lines 40–58" onRemove={() => {}} />

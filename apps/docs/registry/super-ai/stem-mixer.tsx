@@ -230,9 +230,7 @@ function StemMixer({
       .map((stem) => stem.id);
   };
 
-  const audibleCount = stems.filter(
-    (stem) => !stem.muted && (!anySoloed || Boolean(stem.soloed)),
-  ).length;
+  const audibleCount = stems.filter((stem) => !stem.muted && (!anySoloed || Boolean(stem.soloed))).length;
 
   const soloedNames = stems.filter((stem) => stem.soloed).map((stem) => stem.name);
   const summary = anySoloed
@@ -300,10 +298,7 @@ function StemMixer({
               className={cn("flex flex-col gap-2 rounded-lg border p-3", soloed && "border-ring")}
             >
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span
-                  data-slot="stem-mixer-lane-name"
-                  className="text-foreground text-sm font-medium"
-                >
+                <span data-slot="stem-mixer-lane-name" className="text-foreground text-sm font-medium">
                   {stem.name}
                 </span>
                 {/* Text, not a tint: "Muted" and "Silenced by solo" are

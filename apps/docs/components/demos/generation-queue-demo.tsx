@@ -6,7 +6,13 @@ import { GenerationQueue, type GenerationQueueItem } from "@/registry/super-ai/g
 
 const INITIAL_ITEMS: GenerationQueueItem[] = [
   { id: "1", title: "Rooftop garden, golden hour", description: "Image · 4:5", state: "done" },
-  { id: "2", title: "Neon alley, rain reflections", description: "Image · 16:9", state: "running", progress: 62 },
+  {
+    id: "2",
+    title: "Neon alley, rain reflections",
+    description: "Image · 16:9",
+    state: "running",
+    progress: 62,
+  },
   { id: "3", title: "Studio portrait, soft light", description: "Image · 1:1", state: "queued" },
   {
     id: "4",
@@ -25,7 +31,9 @@ export default function GenerationQueueDemo() {
   };
 
   const handleCancelAll = (ids: string[]) => {
-    setItems((current) => current.map((item) => (ids.includes(item.id) ? { ...item, state: "cancel" } : item)));
+    setItems((current) =>
+      current.map((item) => (ids.includes(item.id) ? { ...item, state: "cancel" } : item)),
+    );
   };
 
   const handleRetryItem = (id: string) => {

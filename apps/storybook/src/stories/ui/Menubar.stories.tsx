@@ -17,14 +17,7 @@ import {
   MenubarSubTrigger,
   MenubarSubContent,
 } from "@/components/ui/menubar";
-import {
-  Sparkles,
-  ImageIcon,
-  Download,
-  Upload,
-  Plus,
-  Settings,
-} from "lucide-react";
+import { Sparkles, ImageIcon, Download, Upload, Plus, Settings } from "lucide-react";
 
 const meta: Meta<typeof Menubar> = {
   title: "shadcn/ui/Menubar",
@@ -90,9 +83,7 @@ export const Default: Story = {
             <MenubarSeparator />
             <MenubarLabel>Active model</MenubarLabel>
             <MenubarRadioGroup value={model} onValueChange={setModel}>
-              <MenubarRadioItem value="aurora">
-                Aurora Diffusion XL
-              </MenubarRadioItem>
+              <MenubarRadioItem value="aurora">Aurora Diffusion XL</MenubarRadioItem>
               <MenubarRadioItem value="lumen">Lumen Realtime</MenubarRadioItem>
               <MenubarRadioItem value="flux">Flux Turbo</MenubarRadioItem>
             </MenubarRadioGroup>
@@ -103,16 +94,10 @@ export const Default: Story = {
           <MenubarTrigger>View</MenubarTrigger>
           <MenubarContent>
             <MenubarGroup>
-              <MenubarCheckboxItem
-                checked={autoSave}
-                onCheckedChange={setAutoSave}
-              >
+              <MenubarCheckboxItem checked={autoSave} onCheckedChange={setAutoSave}>
                 Auto-save renders
               </MenubarCheckboxItem>
-              <MenubarCheckboxItem
-                checked={showGrid}
-                onCheckedChange={setShowGrid}
-              >
+              <MenubarCheckboxItem checked={showGrid} onCheckedChange={setShowGrid}>
                 Show alignment grid
               </MenubarCheckboxItem>
             </MenubarGroup>

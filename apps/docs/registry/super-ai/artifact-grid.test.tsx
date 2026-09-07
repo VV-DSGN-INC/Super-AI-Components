@@ -21,7 +21,7 @@ const SESSIONS: ArtifactGridSession[] = [
       {
         id: "a2",
         type: "react",
-        excerpt: "export function PricingTable() { return <table aria-label=\"Plans\" /> }",
+        excerpt: 'export function PricingTable() { return <table aria-label="Plans" /> }',
         editedAgo: "Edited yesterday",
         viewCount: 1,
         visibility: "private",
@@ -54,12 +54,12 @@ describe("ArtifactGrid", () => {
     expect(badge).toHaveAttribute("data-artifact-type", "document");
     // Multi-word and acronym types are derived from the same value, never a
     // second display string the caller supplies.
-    expect(document.querySelector('[data-artifact-id="a2"] [data-slot="artifact-grid-type"]')).toHaveTextContent(
-      "React",
-    );
-    expect(document.querySelector('[data-artifact-id="a3"] [data-slot="artifact-grid-type"]')).toHaveTextContent(
-      "Data table",
-    );
+    expect(
+      document.querySelector('[data-artifact-id="a2"] [data-slot="artifact-grid-type"]'),
+    ).toHaveTextContent("React");
+    expect(
+      document.querySelector('[data-artifact-id="a3"] [data-slot="artifact-grid-type"]'),
+    ).toHaveTextContent("Data table");
   });
 
   it("renders the excerpt state as the card's load-bearing field, not a subtitle under the title", () => {
@@ -88,9 +88,9 @@ describe("ArtifactGrid", () => {
 
   it("renders the edited-ago state as recency text, and omits the line when absent", () => {
     render(<ArtifactGrid sessions={SESSIONS} />);
-    expect(document.querySelector('[data-artifact-id="a1"] [data-slot="artifact-grid-edited-ago"]')).toHaveTextContent(
-      "Edited 2 hours ago",
-    );
+    expect(
+      document.querySelector('[data-artifact-id="a1"] [data-slot="artifact-grid-edited-ago"]'),
+    ).toHaveTextContent("Edited 2 hours ago");
     expect(
       document.querySelector('[data-artifact-id="a3"] [data-slot="artifact-grid-edited-ago"]'),
     ).not.toBeInTheDocument();
@@ -98,12 +98,12 @@ describe("ArtifactGrid", () => {
 
   it("renders the view-count state as readable text with a unit, not a bare number", () => {
     render(<ArtifactGrid sessions={SESSIONS} />);
-    expect(document.querySelector('[data-artifact-id="a1"] [data-slot="artifact-grid-view-count"]')).toHaveTextContent(
-      "1,204 views",
-    );
-    expect(document.querySelector('[data-artifact-id="a2"] [data-slot="artifact-grid-view-count"]')).toHaveTextContent(
-      "1 view",
-    );
+    expect(
+      document.querySelector('[data-artifact-id="a1"] [data-slot="artifact-grid-view-count"]'),
+    ).toHaveTextContent("1,204 views");
+    expect(
+      document.querySelector('[data-artifact-id="a2"] [data-slot="artifact-grid-view-count"]'),
+    ).toHaveTextContent("1 view");
   });
 
   it("renders the privacy-icon state with a visible word, never an icon or a colour alone", () => {
@@ -111,12 +111,12 @@ describe("ArtifactGrid", () => {
     const privacy = document.querySelector('[data-artifact-id="a1"] [data-slot="artifact-grid-privacy"]')!;
     expect(privacy).toHaveAttribute("data-visibility", "public");
     expect(privacy).toHaveTextContent("Public");
-    expect(document.querySelector('[data-artifact-id="a2"] [data-slot="artifact-grid-privacy"]')).toHaveTextContent(
-      "Private",
-    );
-    expect(document.querySelector('[data-artifact-id="a3"] [data-slot="artifact-grid-privacy"]')).toHaveTextContent(
-      "Shared",
-    );
+    expect(
+      document.querySelector('[data-artifact-id="a2"] [data-slot="artifact-grid-privacy"]'),
+    ).toHaveTextContent("Private");
+    expect(
+      document.querySelector('[data-artifact-id="a3"] [data-slot="artifact-grid-privacy"]'),
+    ).toHaveTextContent("Shared");
     // The glyph is decorative; the word carries the meaning.
     expect(privacy.querySelector("svg")).toHaveAttribute("aria-hidden");
   });
@@ -136,7 +136,9 @@ describe("ArtifactGrid", () => {
     // section-header (A12) keeps its own slots — overriding them erases every
     // style and test keyed to them.
     expect(sections[0].querySelector('[data-slot="section-header"]')).toBeInTheDocument();
-    expect(sections[0].querySelector('[data-slot="section-header-title"]')).toHaveTextContent("Pricing page rewrite");
+    expect(sections[0].querySelector('[data-slot="section-header-title"]')).toHaveTextContent(
+      "Pricing page rewrite",
+    );
     expect(sections[0].querySelector('[data-slot="section-header-count"]')).toHaveTextContent("2");
     // The group is programmatically labelled by its session name.
     expect(screen.getByRole("region", { name: "Pricing page rewrite" })).toBe(sections[0]);
@@ -154,7 +156,10 @@ describe("ArtifactGrid", () => {
     await userEvent.click(within(facets).getByRole("radio", { name: /^React/ }));
     expect(onActiveTypeChange).toHaveBeenCalledWith("react");
     expect(document.querySelectorAll('[data-slot="artifact-grid-card"]')).toHaveLength(1);
-    expect(document.querySelector('[data-slot="artifact-grid-card"]')).toHaveAttribute("data-artifact-type", "react");
+    expect(document.querySelector('[data-slot="artifact-grid-card"]')).toHaveAttribute(
+      "data-artifact-type",
+      "react",
+    );
     // Sessions with nothing left to show disappear rather than sitting empty.
     expect(document.querySelectorAll('[data-slot="artifact-grid-session"]')).toHaveLength(1);
   });
@@ -181,7 +186,9 @@ describe("ArtifactGrid", () => {
     const onOpen = vi.fn();
     render(
       <ArtifactGrid
-        sessions={[{ id: "s", label: "Session", items: [{ id: "a", type: "document", excerpt: "Open me", onOpen }] }]}
+        sessions={[
+          { id: "s", label: "Session", items: [{ id: "a", type: "document", excerpt: "Open me", onOpen }] },
+        ]}
       />,
     );
     const trigger = screen.getByRole("button", { name: "Open me" });

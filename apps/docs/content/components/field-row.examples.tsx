@@ -17,7 +17,9 @@ import { ResetAffordance } from "@/registry/super-ai/reset-affordance";
 export function UnitAsSuffix() {
   return (
     <div className="w-80">
-      <FieldRow label="Speed">{(id) => <UnitInput id={id} unit="×" defaultValue={1.5} step={0.1} />}</FieldRow>
+      <FieldRow label="Speed">
+        {(id) => <UnitInput id={id} unit="×" defaultValue={1.5} step={0.1} />}
+      </FieldRow>
     </div>
   );
 }
@@ -41,7 +43,9 @@ export function UnitInLabelText() {
   // the moment it is copied, read aloud, or shown in a summary elsewhere.
   return (
     <div className="w-80">
-      <FieldRow label="Speed (x)">{(id) => <UnitInput id={id} unit="" defaultValue={1.5} step={0.1} />}</FieldRow>
+      <FieldRow label="Speed (x)">
+        {(id) => <UnitInput id={id} unit="" defaultValue={1.5} step={0.1} />}
+      </FieldRow>
     </div>
   );
 }

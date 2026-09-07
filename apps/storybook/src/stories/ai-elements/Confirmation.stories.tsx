@@ -25,13 +25,9 @@ type Story = StoryObj<typeof Confirmation>;
 export const AwaitingApproval: Story = {
   render: () => (
     <div className="w-[460px]">
-      <Confirmation
-        approval={{ id: "approve-render" }}
-        state={"approval-requested" as never}
-      >
+      <Confirmation approval={{ id: "approve-render" }} state={"approval-requested" as never}>
         <ConfirmationTitle>
-          The assistant wants to spend 12 render credits to generate the final
-          1080p marketing video. Approve?
+          The assistant wants to spend 12 render credits to generate the final 1080p marketing video. Approve?
         </ConfirmationTitle>
         <ConfirmationRequest>
           <ConfirmationActions>
@@ -47,13 +43,8 @@ export const AwaitingApproval: Story = {
 export const Approved: Story = {
   render: () => (
     <div className="w-[460px]">
-      <Confirmation
-        approval={{ id: "approve-render", approved: true }}
-        state={"output-available" as never}
-      >
-        <ConfirmationTitle>
-          Render approved — generating the final 1080p marketing video.
-        </ConfirmationTitle>
+      <Confirmation approval={{ id: "approve-render", approved: true }} state={"output-available" as never}>
+        <ConfirmationTitle>Render approved — generating the final 1080p marketing video.</ConfirmationTitle>
         <ConfirmationAccepted>
           <p className="text-muted-foreground text-sm">
             You spent 12 render credits. Estimated time: 40 seconds.
@@ -67,13 +58,8 @@ export const Approved: Story = {
 export const Rejected: Story = {
   render: () => (
     <div className="w-[460px]">
-      <Confirmation
-        approval={{ id: "approve-render", approved: false }}
-        state={"output-available" as never}
-      >
-        <ConfirmationTitle>
-          Render request was declined.
-        </ConfirmationTitle>
+      <Confirmation approval={{ id: "approve-render", approved: false }} state={"output-available" as never}>
+        <ConfirmationTitle>Render request was declined.</ConfirmationTitle>
         <ConfirmationRejected>
           <p className="text-muted-foreground text-sm">
             No credits were spent. Adjust the script and try again.

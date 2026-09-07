@@ -53,7 +53,9 @@ const INSPECTOR_SECTIONS: NonNullable<StudioShellProps["inspector"]>["sections"]
       id: "layout",
       label: "Layout",
       content: (
-        <PropertyRow label="X">{(id) => <Input id={id} defaultValue="120" inputMode="numeric" />}</PropertyRow>
+        <PropertyRow label="X">
+          {(id) => <Input id={id} defaultValue="120" inputMode="numeric" />}
+        </PropertyRow>
       ),
     },
   ],
@@ -183,7 +185,9 @@ export default function StudioShellDemo() {
     >
       <div className="bg-card text-card-foreground flex aspect-video w-full max-w-2xl flex-col justify-center gap-3 rounded-lg border p-10 shadow-sm">
         <p className="text-3xl font-semibold">Northwind, Series A</p>
-        <p className="text-muted-foreground text-sm">The calm position is uncontested. Here is what it is worth.</p>
+        <p className="text-muted-foreground text-sm">
+          The calm position is uncontested. Here is what it is worth.
+        </p>
       </div>
     </StudioShell>
   );

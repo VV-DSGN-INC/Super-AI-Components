@@ -112,14 +112,11 @@ export const LoadingPromise: Story = {
     <div className="flex flex-col items-center gap-3">
       <Button
         onClick={() =>
-          toast.promise(
-            new Promise((resolve) => setTimeout(resolve, 2200)),
-            {
-              loading: "Rendering 4 variations…",
-              success: "Done — 4 variations ready",
-              error: "Render failed, please retry",
-            }
-          )
+          toast.promise(new Promise((resolve) => setTimeout(resolve, 2200)), {
+            loading: "Rendering 4 variations…",
+            success: "Done — 4 variations ready",
+            error: "Render failed, please retry",
+          })
         }
       >
         <Sparkles className="size-4" />

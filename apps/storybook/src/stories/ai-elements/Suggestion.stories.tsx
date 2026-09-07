@@ -1,8 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Suggestion,
-  Suggestions,
-} from "@/components/ai-elements/suggestion";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 
 const meta: Meta<typeof Suggestion> = {
   title: "AI Elements/Suggestion",
@@ -26,11 +23,7 @@ export const Default: Story = {
     <div className="w-[560px]">
       <Suggestions>
         {suggestions.map((suggestion) => (
-          <Suggestion
-            key={suggestion}
-            onClick={() => undefined}
-            suggestion={suggestion}
-          />
+          <Suggestion key={suggestion} onClick={() => undefined} suggestion={suggestion} />
         ))}
       </Suggestions>
     </div>

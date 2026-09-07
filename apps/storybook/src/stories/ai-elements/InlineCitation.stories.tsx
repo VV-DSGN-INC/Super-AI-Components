@@ -25,16 +25,13 @@ const meta: Meta<typeof InlineCitation> = {
 export default meta;
 type Story = StoryObj<typeof InlineCitation>;
 
-const sources = [
-  "https://buffer.com/library/short-form-video",
-  "https://later.com/blog/video-retention",
-];
+const sources = ["https://buffer.com/library/short-form-video", "https://later.com/blog/video-retention"];
 
 export const Default: Story = {
   render: () => (
     <p className="max-w-prose text-sm leading-relaxed">
-      The first three seconds of a short-form video drive most of the retention,
-      so the hook should land before any branding.{" "}
+      The first three seconds of a short-form video drive most of the retention, so the hook should land
+      before any branding.{" "}
       <InlineCitation>
         <InlineCitationText>Hooks under 3 seconds retain best</InlineCitationText>
         <InlineCitationCard>
@@ -54,8 +51,8 @@ export const Default: Story = {
                     url={sources[0]}
                   />
                   <InlineCitationQuote>
-                    Videos that open with a visual hook in the first 3 seconds saw
-                    2.4x higher completion rates.
+                    Videos that open with a visual hook in the first 3 seconds saw 2.4x higher completion
+                    rates.
                   </InlineCitationQuote>
                 </InlineCitationCarouselItem>
                 <InlineCitationCarouselItem>

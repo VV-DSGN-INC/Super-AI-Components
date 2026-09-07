@@ -98,9 +98,7 @@ describe("RateLimitBanner", () => {
 
   it("renders the notify-me state as an opt-in whose taken state is text and aria-pressed, not colour", async () => {
     const onNotifyMe = vi.fn();
-    const view = render(
-      <RateLimitBanner cause="provider-capacity" onNotifyMe={onNotifyMe} />,
-    );
+    const view = render(<RateLimitBanner cause="provider-capacity" onNotifyMe={onNotifyMe} />);
 
     const button = screen.getByRole("button", { name: "Notify me when capacity returns" });
     expect(button.getAttribute("aria-pressed")).toBe("false");

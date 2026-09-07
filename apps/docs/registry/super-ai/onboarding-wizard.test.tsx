@@ -195,9 +195,7 @@ describe("OnboardingWizard", () => {
     // stranded on the last question with no way out.
     const onSkip = vi.fn();
     const onFinish = vi.fn();
-    render(
-      <OnboardingWizard steps={STEPS} step="tour" onSkip={onSkip} onFinish={onFinish} />,
-    );
+    render(<OnboardingWizard steps={STEPS} step="tour" onSkip={onSkip} onFinish={onFinish} />);
     fireEvent.click(screen.getByRole("button", { name: /skip/i }));
     expect(onSkip).toHaveBeenCalledWith("tour");
     expect(onFinish).toHaveBeenCalledTimes(1);
@@ -217,12 +215,8 @@ describe("OnboardingWizard", () => {
     // "The split-panel variant is the same component with a marketing pane
     // instead of a question" — so the panel step must carry the identical
     // progress, Skip and navigation chrome a question step does.
-    const { container: question } = render(
-      <OnboardingWizard steps={STEPS} step="role" onSkip={() => {}} />,
-    );
-    const { container: panel } = render(
-      <OnboardingWizard steps={STEPS} step="tour" onSkip={() => {}} />,
-    );
+    const { container: question } = render(<OnboardingWizard steps={STEPS} step="role" onSkip={() => {}} />);
+    const { container: panel } = render(<OnboardingWizard steps={STEPS} step="tour" onSkip={() => {}} />);
 
     // Every piece of flow chrome is present in both; only the step's own body
     // differs (choices + effect on a question, a pane on the split step).
@@ -234,7 +228,10 @@ describe("OnboardingWizard", () => {
       "onboarding-wizard-nav",
       "onboarding-wizard-primary",
     ]) {
-      expect(question.querySelector(`[data-slot="${slot}"]`), `question step lacks ${slot}`).toBeInTheDocument();
+      expect(
+        question.querySelector(`[data-slot="${slot}"]`),
+        `question step lacks ${slot}`,
+      ).toBeInTheDocument();
       expect(panel.querySelector(`[data-slot="${slot}"]`), `panel step lacks ${slot}`).toBeInTheDocument();
     }
     expect(panel.querySelector('[data-slot="onboarding-wizard-panel"]')).toBeInTheDocument();

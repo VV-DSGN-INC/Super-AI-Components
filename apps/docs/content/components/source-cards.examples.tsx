@@ -69,11 +69,7 @@ export function UntouchedPanelSaysSo() {
 
 export function WithheldDocumentsAreCounted() {
   return (
-    <SourceCards
-      className="w-full max-w-md"
-      sources={RETRIEVED.slice(0, 2)}
-      permissionFilteredCount={3}
-    />
+    <SourceCards className="w-full max-w-md" sources={RETRIEVED.slice(0, 2)} permissionFilteredCount={3} />
   );
 }
 

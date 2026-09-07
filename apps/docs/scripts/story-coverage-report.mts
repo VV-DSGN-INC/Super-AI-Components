@@ -39,7 +39,9 @@ for (const o of unmet) byItem.set(o.item, [...(byItem.get(o.item) ?? []), o]);
 for (const item of items) {
   const group = byItem.get(item.name) ?? [];
   if (group.length === 0 && wanted.length === 0) continue;
-  console.log(`${item.name} — ${group.length} unmet${existsSync(storyFor(item.name)) ? "" : " (no story file)"}`);
+  console.log(
+    `${item.name} — ${group.length} unmet${existsSync(storyFor(item.name)) ? "" : " (no story file)"}`,
+  );
   for (const o of group) console.log(`  ${`${o.kind}:${o.target}`.padEnd(28)} ${o.why}`);
 }
 const cases = unmet.filter((o) => o.kind === "case").length;

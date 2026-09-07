@@ -4,7 +4,12 @@ import { Images } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/lib/utils";
-import { AssetDetail, type AssetDetailParam, type AssetDetailProps, type PromptSpan } from "@/registry/super-ai/asset-detail";
+import {
+  AssetDetail,
+  type AssetDetailParam,
+  type AssetDetailProps,
+  type PromptSpan,
+} from "@/registry/super-ai/asset-detail";
 import { AssetLibrary } from "@/registry/super-ai/asset-library";
 import { EmptyState } from "@/registry/super-ai/empty-state";
 import { FilterChip } from "@/registry/super-ai/filter-bar";

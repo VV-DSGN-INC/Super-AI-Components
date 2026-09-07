@@ -52,8 +52,6 @@ describe("EntityRow", () => {
     render(<EntityRow icon={<span>ICON</span>} title="Title" description="Description" />);
     expect(screen.getByText("ICON")).toBeInTheDocument();
     expect(document.querySelector('[data-slot="entity-row-title"]')!.textContent).toBe("Title");
-    expect(document.querySelector('[data-slot="entity-row-description"]')!.textContent).toBe(
-      "Description",
-    );
+    expect(document.querySelector('[data-slot="entity-row-description"]')!.textContent).toBe("Description");
   });
 });

@@ -59,7 +59,7 @@ Two things that have gone wrong anyway:
   `main` rather than your integration branch, so it will not carry your manifest
   prep. Twelve agents once all reported "the five files were not scaffolded".
 - **Take your own port and browser tab.** A sibling worktree's dev server on the
-  same port will serve *its* build while your preview reports success.
+  same port will serve _its_ build while your preview reports success.
 
 ## 4. Integrate
 

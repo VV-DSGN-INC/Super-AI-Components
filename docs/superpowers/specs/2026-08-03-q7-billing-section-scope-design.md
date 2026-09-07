@@ -41,8 +41,8 @@ billing page the principle exists to argue against.
 
 ### 3.2 It collides with a stated non-goal
 
-[§12 Non-goals](2026-06-10-super-ai-components-design.md): *"No data fetching, auth, or **billing
-logic** — UI only, callbacks out."*
+[§12 Non-goals](2026-06-10-super-ai-components-design.md): _"No data fetching, auth, or **billing
+logic** — UI only, callbacks out."_
 
 `invoice-list` survives this as pure presentation. `payment-method-card` does not. Card capture in
 practice means mounting a provider iframe (Stripe Elements or equivalent), because PCI scope is the
@@ -54,7 +54,7 @@ has.
 
 This is the strongest reason. Every other M component encodes something specific to AI products:
 per-resource metering because AI plans meter several things at once; a paywall card carrying the
-prompt and model it *would* have used; a rate-limit banner distinguishing your quota from provider
+prompt and model it _would_ have used; a rate-limit banner distinguishing your quota from provider
 capacity. Those are load-bearing insights that a generic SaaS kit does not contain.
 
 An invoice row is date · amount · status · download. A saved-card row is brand · last four · expiry
@@ -64,13 +64,13 @@ AI-specific anatomy are outside that thesis regardless of how common they are.
 
 ### 3.4 It fails the catalog's own inclusion test
 
-The rule is *"appears in 3+ unrelated products"* and *"every component traces back to observed
-product anatomy, not speculation."* Neither component appears anywhere on the reference board —
+The rule is _"appears in 3+ unrelated products"_ and _"every component traces back to observed
+product anatomy, not speculation."_ Neither component appears anywhere on the reference board —
 searched `catalog.md`, `component-specs.md`, `decisions.md`, `gaps.md` for invoice / payment method
 / receipt: zero hits, which is what surfaced the gap in the first place.
 
-[gaps.md §1](../../design-system/gaps.md) is careful that absence-from-board means *unsampled*, not
-*unneeded* — the board samples creative tools. That caution is why the twenty U-items are held as
+[gaps.md §1](../../design-system/gaps.md) is careful that absence-from-board means _unsampled_, not
+_unneeded_ — the board samples creative tools. That caution is why the twenty U-items are held as
 candidates rather than commitments. But it cuts the other way here: the U-items are unsampled **AI**
 patterns, where the board's bias is the problem. Billing history is not unsampled AI anatomy; it is
 generic account management that the board correctly excluded.
@@ -86,16 +86,16 @@ build, a test suite and a doc page, and then gets deleted.
 
 Under `settings-shell`'s existing grouped nav, deep-linkable per O12:
 
-| Row | Built from | New? |
-| --- | --- | --- |
-| Current plan + upgrade | M4 `pricing-table` | no |
-| Add-ons | M4's add-on row (switch, not a tier) | no |
-| Payment method & invoices → | A9 `entity-row` in M1's row grid, `onManageBilling` callback | no |
+| Row                         | Built from                                                   | New? |
+| --------------------------- | ------------------------------------------------------------ | ---- |
+| Current plan + upgrade      | M4 `pricing-table`                                           | no   |
+| Add-ons                     | M4's add-on row (switch, not a tier)                         | no   |
+| Payment method & invoices → | A9 `entity-row` in M1's row grid, `onManageBilling` callback | no   |
 
 The third row is a settings row with a trailing chevron and a description naming where it goes
 ("Manage card, invoices and receipts in the billing portal"). It is a link, styled as every other
-row is styled, with the destination named — consistent with A12's *"'View all' is a link, never a
-button"* and with M1's *"a toggle with no description is a setting nobody changes."*
+row is styled, with the destination named — consistent with A12's _"'View all' is a link, never a
+button"_ and with M1's _"a toggle with no description is a setting nobody changes."_
 
 ## 5. Consequences
 

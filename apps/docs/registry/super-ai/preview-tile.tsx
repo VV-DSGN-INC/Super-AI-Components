@@ -161,11 +161,7 @@ function PreviewTile({
         ) : null}
       </Frame>
       {label && labelPlacement === "below" ? (
-        <span
-          id={labelId}
-          data-slot="preview-tile-label"
-          className="text-foreground truncate text-sm"
-        >
+        <span id={labelId} data-slot="preview-tile-label" className="text-foreground truncate text-sm">
           {label}
         </span>
       ) : null}

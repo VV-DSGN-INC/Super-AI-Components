@@ -8,7 +8,13 @@ const REGIONS = ["sources", "chat", "composer", "studio-outputs"];
 
 const SOURCES: NotebookShellProps["sources"] = [
   { id: "s1", name: "Q3-report.pdf", meta: "PDF · 2.4 MB", stage: "ready", chunkCount: 184 },
-  { id: "s2", name: "kickoff-call.txt", meta: "Transcript", stage: "failed", errorMessage: "Embedding timed out" },
+  {
+    id: "s2",
+    name: "kickoff-call.txt",
+    meta: "Transcript",
+    stage: "failed",
+    errorMessage: "Embedding timed out",
+  },
 ];
 
 const GROUNDED: NotebookShellProps["messages"] = [
@@ -16,7 +22,11 @@ const GROUNDED: NotebookShellProps["messages"] = [
     id: "m1",
     role: "assistant",
     claims: [
-      { id: "c1", text: "Revenue grew 12% quarter over quarter.", citations: [{ id: "x1", label: "1", sourceId: "s1" }] },
+      {
+        id: "c1",
+        text: "Revenue grew 12% quarter over quarter.",
+        citations: [{ id: "x1", label: "1", sourceId: "s1" }],
+      },
     ],
   },
 ];
@@ -125,7 +135,11 @@ describe("NotebookShell", () => {
             id: "m1",
             role: "assistant",
             claims: [
-              { id: "c1", text: "Headcount doubled.", citations: [{ id: "x1", label: "4", sourceId: "gone" }] },
+              {
+                id: "c1",
+                text: "Headcount doubled.",
+                citations: [{ id: "x1", label: "4", sourceId: "gone" }],
+              },
             ],
           },
         ]}

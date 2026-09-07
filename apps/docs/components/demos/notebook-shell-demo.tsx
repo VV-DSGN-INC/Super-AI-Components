@@ -41,12 +41,26 @@ const MESSAGES = [
       {
         id: "c1",
         text: "The commitment is a flat per-seat price held for the first twelve months.",
-        citations: [{ id: "x1", label: "1", sourceId: "q3-report", quote: "Per-seat pricing is fixed for the first four quarters of any new contract." }],
+        citations: [
+          {
+            id: "x1",
+            label: "1",
+            sourceId: "q3-report",
+            quote: "Per-seat pricing is fixed for the first four quarters of any new contract.",
+          },
+        ],
       },
       {
         id: "c2",
         text: "It was agreed verbally on the kickoff call before it reached the report.",
-        citations: [{ id: "x2", label: "2", sourceId: "kickoff-call", quote: "We'll hold the seat price for a year — put that in writing before Q4." }],
+        citations: [
+          {
+            id: "x2",
+            label: "2",
+            sourceId: "kickoff-call",
+            quote: "We'll hold the seat price for a year — put that in writing before Q4.",
+          },
+        ],
       },
     ],
     retrievedUnused: 1,

@@ -139,10 +139,7 @@ function WorkspaceSwitcher({
             `ReducedMotion` story reads `animation-name` back rather than
             trusting the class. */}
         <DropdownMenuContent className="w-72 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
-          <DropdownMenuRadioGroup
-            value={currentId}
-            onValueChange={(value) => onSelect(value as string)}
-          >
+          <DropdownMenuRadioGroup value={currentId} onValueChange={(value) => onSelect(value as string)}>
             {workspaces.map((workspace) =>
               hasDescriptions ? (
                 <DropdownMenuRadioItem

@@ -30,16 +30,16 @@ far fewer near-duplicate leaves, and 14 layout archetypes instead of 4.
 
 ## Documents
 
-| File | Contents |
-| ---- | -------- |
-| [reference-board-analysis.md](reference-board-analysis.md) | What the reference board contains, section by section; the products observed; the anatomy extracted from each app type and pattern family |
-| [concept-model.md](concept-model.md) | The layer model (L0–L4), primitive fan-out, the asset lifecycle loop, and the six cross-cutting contracts |
-| [catalog.md](catalog.md) | The full catalog — 99 active items after D9: name, purpose, key states/variants, shadcn base, per family |
-| [component-specs.md](component-specs.md) | Per-component design requirements for families A–N (86 active items: 12 primitives + 74 components; G retained as a cut record) |
-| [block-specs.md](block-specs.md) | Per-block requirements for family O — the 14 layout archetypes |
-| [figma-board-map.md](figma-board-map.md) | What lives where on the Figma boards, and how to navigate them |
-| [decisions.md](decisions.md) | Decisions taken, decisions still open, and a revised sequencing proposal |
-| [gaps.md](gaps.md) | **What the catalog is missing** — 7 recovered omissions, 5 trust/control components, and 20 unsampled AI types. Also the sampling-bias limitation of the whole method |
+| File                                                       | Contents                                                                                                                                                              |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [reference-board-analysis.md](reference-board-analysis.md) | What the reference board contains, section by section; the products observed; the anatomy extracted from each app type and pattern family                             |
+| [concept-model.md](concept-model.md)                       | The layer model (L0–L4), primitive fan-out, the asset lifecycle loop, and the six cross-cutting contracts                                                             |
+| [catalog.md](catalog.md)                                   | The full catalog — 99 active items after D9: name, purpose, key states/variants, shadcn base, per family                                                              |
+| [component-specs.md](component-specs.md)                   | Per-component design requirements for families A–N (86 active items: 12 primitives + 74 components; G retained as a cut record)                                       |
+| [block-specs.md](block-specs.md)                           | Per-block requirements for family O — the 14 layout archetypes                                                                                                        |
+| [figma-board-map.md](figma-board-map.md)                   | What lives where on the Figma boards, and how to navigate them                                                                                                        |
+| [decisions.md](decisions.md)                               | Decisions taken, decisions still open, and a revised sequencing proposal                                                                                              |
+| [gaps.md](gaps.md)                                         | **What the catalog is missing** — 7 recovered omissions, 5 trust/control components, and 20 unsampled AI types. Also the sampling-bias limitation of the whole method |
 
 ## Reading order
 

@@ -112,7 +112,8 @@ describe("statePascal", () => {
   });
 
   it("writes one valid story export per declared state for messy manifest text", () => {
-    const story = renderScaffold(MESSY_ITEM)["../storybook/src/stories/super-ai/WorkspaceSwitcher.stories.tsx"];
+    const story =
+      renderScaffold(MESSY_ITEM)["../storybook/src/stories/super-ai/WorkspaceSwitcher.stories.tsx"];
     for (const state of MESSY_ITEM.states) {
       const ident = statePascal(state);
       expect(ident).toMatch(/^[A-Za-z_$][A-Za-z0-9_$]*$/);

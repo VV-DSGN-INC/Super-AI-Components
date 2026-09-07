@@ -97,13 +97,13 @@ export const ConnectionManagerDocs: ComponentDocs = {
       "Download model is `disabled` whenever a requirement reports `met: false`. The reason is written above it as text, not attached to the button, so a keyboard user tabbing straight to the actions row skips past the explanation.",
     ],
     screenReader: [
-      "Each row's condition and remedy sit in a `role=\"status\"` region, so a test result is announced when `status` changes — both sentences, condition first. That live region is the mechanism that makes \"the words are the state\" true rather than aspirational.",
+      'Each row\'s condition and remedy sit in a `role="status"` region, so a test result is announced when `status` changes — both sentences, condition first. That live region is the mechanism that makes "the words are the state" true rather than aspirational.',
       "It is one live region per row. Five providers is five live regions, and a re-render that moves several statuses at once queues several announcements in a row.",
       "`testing` swaps both sentences inside that same region, so the start of a test is announced too. The spinner beside the button is `aria-hidden`, as is every status glyph on the rows — the state is carried entirely by the sentence.",
-      "The key field has a real `<label>` — \"{name} API key\" — wired with `htmlFor`, never a placeholder and never a tooltip. The hint under it (\"Saving stores the key. It does not check it\") is a sibling paragraph with no `aria-describedby`, so it is not announced with the field.",
-      "Every Test connection button is named \"Test connection\" and every Replace key button \"Replace key\", on every row. Nothing ties a button to its provider except reading order — with five providers that is five identical pairs, and `data-provider-id` is for your code, not for assistive tech.",
+      'The key field has a real `<label>` — "{name} API key" — wired with `htmlFor`, never a placeholder and never a tooltip. The hint under it ("Saving stores the key. It does not check it") is a sibling paragraph with no `aria-describedby`, so it is not announced with the field.',
+      'Every Test connection button is named "Test connection" and every Replace key button "Replace key", on every row. Nothing ties a button to its provider except reading order — with five providers that is five identical pairs, and `data-provider-id` is for your code, not for assistive tech.',
       "The provider name and the fingerprint/tested-at line are A9's title and description inside a non-interactive row, so they are read as text rather than as a label for the controls below them.",
-      "Requirements are a plain list, and an unmet one says \"— this machine does not meet it\" in words rather than by colour. The blocked-download sentence states why the button is disabled, but nothing associates it with the button.",
+      'Requirements are a plain list, and an unmet one says "— this machine does not meet it" in words rather than by colour. The blocked-download sentence states why the button is disabled, but nothing associates it with the button.',
       "The rows are `<li>`s in a `<ul>`, so a reader gets a list with an item count; the card's own title comes from `label`.",
     ],
     focus: [

@@ -29,16 +29,43 @@ export const OnboardingWizardDocs: ComponentDocs = {
       slot: "onboarding-wizard-progress",
       note: "A real progressbar. Position, total and how many remain live in its accessible name and aria-valuetext, not only in the dots.",
     },
-    { slot: "onboarding-wizard-progress-label", note: "The visible 'Setup progress: step N of M' text, which also names the progressbar." },
-    { slot: "onboarding-wizard-dots", note: "The dot rail. Decorative and aria-hidden — it is the picture of the progress, never the record of it." },
-    { slot: "onboarding-wizard-dot", note: "One dot per step, carrying data-state done / current / upcoming." },
-    { slot: "onboarding-wizard-remaining", note: "Visible '3 to go' / 'Last step' counter — the number the flow is actually judged on." },
-    { slot: "onboarding-wizard-content", note: "The question: choice cards, free-form content, and the effect line." },
+    {
+      slot: "onboarding-wizard-progress-label",
+      note: "The visible 'Setup progress: step N of M' text, which also names the progressbar.",
+    },
+    {
+      slot: "onboarding-wizard-dots",
+      note: "The dot rail. Decorative and aria-hidden — it is the picture of the progress, never the record of it.",
+    },
+    {
+      slot: "onboarding-wizard-dot",
+      note: "One dot per step, carrying data-state done / current / upcoming.",
+    },
+    {
+      slot: "onboarding-wizard-remaining",
+      note: "Visible '3 to go' / 'Last step' counter — the number the flow is actually judged on.",
+    },
+    {
+      slot: "onboarding-wizard-content",
+      note: "The question: choice cards, free-form content, and the effect line.",
+    },
     { slot: "onboarding-wizard-choices", note: "The radio group behind the choice cards." },
-    { slot: "onboarding-wizard-choice", note: "One choice card: a label wrapping a real radio, with data-state selected / unselected." },
-    { slot: "onboarding-wizard-effect", note: "What answering this question changes. The line that separates onboarding from a survey." },
-    { slot: "onboarding-wizard-panel", note: "The marketing pane. Present only on steps that declare one; always after the question in reading order." },
-    { slot: "onboarding-wizard-nav", note: "The footer: Back on one side, Skip and the primary on the other." },
+    {
+      slot: "onboarding-wizard-choice",
+      note: "One choice card: a label wrapping a real radio, with data-state selected / unselected.",
+    },
+    {
+      slot: "onboarding-wizard-effect",
+      note: "What answering this question changes. The line that separates onboarding from a survey.",
+    },
+    {
+      slot: "onboarding-wizard-panel",
+      note: "The marketing pane. Present only on steps that declare one; always after the question in reading order.",
+    },
+    {
+      slot: "onboarding-wizard-nav",
+      note: "The footer: Back on one side, Skip and the primary on the other.",
+    },
     { slot: "onboarding-wizard-back", note: "Secondary. Disabled on the first step." },
     { slot: "onboarding-wizard-skip", note: "Present on every step, the last one included." },
     { slot: "onboarding-wizard-primary", note: "Reads 'Next' mid-flow and a finish verb on the last step." },
@@ -102,6 +129,6 @@ export const OnboardingWizardDocs: ComponentDocs = {
     "Collecting answers and never applying them. `onAnswerChange` fires with the step id and value for a reason; if the only consumer is analytics, the flow is a survey wearing setup's clothes.",
     "Marking the dots as the progress and stopping there. The dot rail here is aria-hidden on purpose — the position, the total and the remaining count are on the progressbar and in visible text, and a build that moves the signal back into the dots has reintroduced a colour-only state.",
     "Reaching for `text-muted-foreground` inside the marketing pane. That pane's frame is `bg-muted`, and the pairing measures under the 4.5:1 minimum in this token set — use `text-foreground` or a pinned foreground step (`text-foreground/60` floor, TOK-8), as the demo pane's `/70` does.",
-    "Putting the marketing pane before the question in the DOM to get it on the left. Use `panelSide: \"start\"`, which moves it visually and leaves the question first for keyboard and screen-reader order.",
+    'Putting the marketing pane before the question in the DOM to get it on the left. Use `panelSide: "start"`, which moves it visually and leaves the question first for keyboard and screen-reader order.',
   ],
 };

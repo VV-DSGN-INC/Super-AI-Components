@@ -671,8 +671,7 @@ export const LongContent: Story = {
     items: [
       {
         ...ITEMS[0],
-        title:
-          "Neon city at dusk with wet asphalt reflections, shot on an anamorphic lens and graded warm",
+        title: "Neon city at dusk with wet asphalt reflections, shot on an anamorphic lens and graded warm",
         author: "@a-very-long-community-handle-that-will-not-fit-inside-a-tile-meta-row-at-any-width",
       },
       ITEMS[1],
@@ -721,12 +720,8 @@ export const LongContent: Story = {
     // 3. The type pill wraps instead, so the row grows down rather than out.
     const chip = root.querySelector<HTMLElement>('[data-slot="choice-chip"]')!;
     await expect(getComputedStyle(chip).whiteSpace).toBe("normal");
-    await expect(chip.getBoundingClientRect().height).toBeGreaterThan(
-      tab.getBoundingClientRect().height,
-    );
-    await expect(chip.getBoundingClientRect().width).toBeLessThanOrEqual(
-      root.getBoundingClientRect().width,
-    );
+    await expect(chip.getBoundingClientRect().height).toBeGreaterThan(tab.getBoundingClientRect().height);
+    await expect(chip.getBoundingClientRect().width).toBeLessThanOrEqual(root.getBoundingClientRect().width);
   },
 };
 

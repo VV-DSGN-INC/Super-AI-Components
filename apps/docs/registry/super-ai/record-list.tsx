@@ -240,7 +240,10 @@ function RecordList({
               <a
                 data-slot="record-list-title"
                 href={record.href}
-                className={cn(titleClassName, "focus-visible:ring-ring rounded-sm hover:underline focus-visible:ring-2 focus-visible:outline-none")}
+                className={cn(
+                  titleClassName,
+                  "focus-visible:ring-ring rounded-sm hover:underline focus-visible:ring-2 focus-visible:outline-none",
+                )}
               >
                 {record.title}
               </a>
@@ -249,7 +252,10 @@ function RecordList({
                 data-slot="record-list-title"
                 type="button"
                 onClick={() => onOpen(record.id)}
-                className={cn(titleClassName, "focus-visible:ring-ring rounded-sm text-start hover:underline focus-visible:ring-2 focus-visible:outline-none")}
+                className={cn(
+                  titleClassName,
+                  "focus-visible:ring-ring rounded-sm text-start hover:underline focus-visible:ring-2 focus-visible:outline-none",
+                )}
               >
                 {record.title}
               </button>
@@ -304,11 +310,7 @@ function RecordList({
                 </TableCell>
 
                 <TableCell data-slot="record-list-apps-cell">
-                  <AppCluster
-                    apps={record.apps ?? []}
-                    max={maxApps}
-                    recordTitle={record.title}
-                  />
+                  <AppCluster apps={record.apps ?? []} max={maxApps} recordTitle={record.title} />
                 </TableCell>
 
                 <TableCell>

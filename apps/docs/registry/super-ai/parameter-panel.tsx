@@ -279,7 +279,14 @@ interface ParameterTabsProps extends Omit<React.ComponentProps<"div">, "onChange
   onValueChange?: (value: string) => void;
 }
 
-function ParameterTabs({ groups, value, defaultValue, onValueChange, className, ...props }: ParameterTabsProps) {
+function ParameterTabs({
+  groups,
+  value,
+  defaultValue,
+  onValueChange,
+  className,
+  ...props
+}: ParameterTabsProps) {
   return (
     <Tabs
       data-slot="parameter-tabs"
@@ -297,10 +304,7 @@ function ParameterTabs({ groups, value, defaultValue, onValueChange, className, 
           rather than restyling the trigger slots: composed children carry
           their own muted classes and a slot-level override can't reach
           them. See docs/design-system/a11y-baseline.md. */}
-      <TabsList
-        data-slot="parameter-tabs-list"
-        className="[--muted-foreground:var(--accent-foreground)]"
-      >
+      <TabsList data-slot="parameter-tabs-list" className="[--muted-foreground:var(--accent-foreground)]">
         {groups.map((group) => (
           <TabsTrigger key={group.value} value={group.value}>
             {group.label}
@@ -308,7 +312,12 @@ function ParameterTabs({ groups, value, defaultValue, onValueChange, className, 
         ))}
       </TabsList>
       {groups.map((group) => (
-        <TabsContent key={group.value} value={group.value} data-slot="parameter-tabs-panel" className="space-y-4 pt-3">
+        <TabsContent
+          key={group.value}
+          value={group.value}
+          data-slot="parameter-tabs-panel"
+          className="space-y-4 pt-3"
+        >
           {group.content}
         </TabsContent>
       ))}

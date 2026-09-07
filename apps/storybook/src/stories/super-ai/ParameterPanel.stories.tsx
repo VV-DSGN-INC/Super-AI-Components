@@ -19,7 +19,13 @@ const meta: Meta<typeof ParameterPanel> = {
   title: "Super AI/Parameter Panel",
   component: ParameterPanel,
   parameters: { layout: "centered", docs: { page: componentDocsPage(ParameterPanelDocs) } },
-  decorators: [(Story) => <div className="w-80"><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div className="w-80">
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
@@ -295,8 +301,9 @@ export const RTL: Story = {
 
     // A quarter of the way along a mirrored track puts the thumb in the right
     // half of the control, because `insetInlineStart` measures from the right.
-    const control = canvasElement.querySelector<HTMLElement>('[data-slot="parameter-slider-thumb"]')!
-      .parentElement!;
+    const control = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="parameter-slider-thumb"]',
+    )!.parentElement!;
     const thumb = canvasElement.querySelector<HTMLElement>('[data-slot="parameter-slider-thumb"]')!;
     await expect(centre(thumb)).toBeGreaterThan(centre(control));
 
@@ -409,9 +416,7 @@ export const KeyboardOrder: Story = {
           {
             value: "advanced",
             label: "Advanced",
-            content: (
-              <ParameterSlider label="Seed" value={8} min={0} max={9999} onValueChange={() => {}} />
-            ),
+            content: <ParameterSlider label="Seed" value={8} min={0} max={9999} onValueChange={() => {}} />,
           },
         ]}
       />
@@ -423,7 +428,9 @@ export const KeyboardOrder: Story = {
 
     // Roving tabindex in both composites: one tabbable trigger, one tabbable
     // option, whatever the option count.
-    await expect(canvas.getAllByRole("tab").filter((t) => t.getAttribute("tabindex") !== "-1")).toHaveLength(1);
+    await expect(canvas.getAllByRole("tab").filter((t) => t.getAttribute("tabindex") !== "-1")).toHaveLength(
+      1,
+    );
     const options = canvas.getAllByRole("button", { name: /Draft|Standard|High/ });
     await expect(options.filter((o) => o.getAttribute("tabindex") !== "-1")).toHaveLength(1);
 
@@ -526,9 +533,7 @@ function PinnedPanel() {
             {
               value: "advanced",
               label: "Advanced",
-              content: (
-                <ParameterSlider label="Seed" value={8} min={0} max={9999} onValueChange={() => {}} />
-              ),
+              content: <ParameterSlider label="Seed" value={8} min={0} max={9999} onValueChange={() => {}} />,
             },
           ]}
         />
@@ -875,9 +880,7 @@ export const Boundary: Story = {
           Field row — one setting, no heading, no reset: still a row
         </p>
         <div className="w-72">
-          <FieldRow label="Upscale">
-            {(id) => <UnitInput id={id} unit="×" defaultValue={2} />}
-          </FieldRow>
+          <FieldRow label="Upscale">{(id) => <UnitInput id={id} unit="×" defaultValue={2} />}</FieldRow>
         </div>
       </section>
     </div>

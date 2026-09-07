@@ -1,14 +1,7 @@
 "use client";
 
 import { Toolbar } from "@base-ui/react/toolbar";
-import {
-  Loader2,
-  Maximize2,
-  MessageSquarePlus,
-  Minimize2,
-  SlidersHorizontal,
-  Sparkles,
-} from "lucide-react";
+import { Loader2, Maximize2, MessageSquarePlus, Minimize2, SlidersHorizontal, Sparkles } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -217,9 +210,7 @@ function SelectionToolbar({
   className,
   ...props
 }: SelectionToolbarProps) {
-  const [uncontrolledSurface, setUncontrolledSurface] = React.useState<SelectionSurface | null>(
-    null,
-  );
+  const [uncontrolledSurface, setUncontrolledSurface] = React.useState<SelectionSurface | null>(null);
   const [prompt, setPrompt] = React.useState("");
 
   const surface = open === undefined ? uncontrolledSurface : open;
@@ -445,25 +436,12 @@ function SelectionToolbar({
 
       {/* The bar does not move and the paragraph does not change, so the
           transition into "working" needs saying out loud. */}
-      <div
-        data-slot="selection-toolbar-status"
-        role="status"
-        aria-live="polite"
-        className="sr-only"
-      >
-        {pending
-          ? `${PENDING_MESSAGE[pending]}. The result will arrive as a change you can review.`
-          : ""}
+      <div data-slot="selection-toolbar-status" role="status" aria-live="polite" className="sr-only">
+        {pending ? `${PENDING_MESSAGE[pending]}. The result will arrive as a change you can review.` : ""}
       </div>
     </div>
   );
 }
 
 export { DEFAULT_TONES, SelectionToolbar };
-export type {
-  SelectionIntent,
-  SelectionSurface,
-  SelectionTone,
-  SelectionToolbarProps,
-  SelectionVerb,
-};
+export type { SelectionIntent, SelectionSurface, SelectionTone, SelectionToolbarProps, SelectionVerb };

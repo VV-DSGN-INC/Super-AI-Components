@@ -68,17 +68,17 @@ Parallel agents are the throughput mechanism, not an optimization — one agent 
 
 Everything routes through turbo from the repo root:
 
-| command                            | what it does                            |
-| ---------------------------------- | --------------------------------------- |
-| `pnpm dev`                         | all workspaces                          |
-| `pnpm lint` / `typecheck` / `test` | across the monorepo                     |
-| `pnpm check:tokens`                | **the token contract gate** (see below) |
-| `pnpm check:contract`              | manifest / story / docs contract        |
-| `pnpm build:registry`              | regenerate registry output              |
-| `pnpm build`                       | full build                              |
-| `pnpm format` / `format:check`     | prettier (note: not run in CI)          |
-| `pnpm check:ladder`                | ds-architecture conformance, not in CI  |
-| `./scripts/linux-gate.sh`          | **the Storybook gate in the CI image**  |
+| command                            | what it does                                |
+| ---------------------------------- | ------------------------------------------- |
+| `pnpm dev`                         | all workspaces                              |
+| `pnpm lint` / `typecheck` / `test` | across the monorepo                         |
+| `pnpm check:tokens`                | **the token contract gate** (see below)     |
+| `pnpm check:contract`              | manifest / story / docs contract            |
+| `pnpm build:registry`              | regenerate registry output                  |
+| `pnpm build`                       | full build                                  |
+| `pnpm format` / `format:check`     | prettier — **gated in CI since 2026-09-07** |
+| `pnpm check:ladder`                | ds-architecture conformance, not in CI      |
+| `./scripts/linux-gate.sh`          | **the Storybook gate in the CI image**      |
 
 Per-workspace: `cd apps/docs && pnpm new:component <name>` scaffolds the five files · `cd apps/docs && pnpm exec playwright test` is the smoke gate (rebuild first) · `cd apps/storybook && pnpm test:stories` is the axe a11y gate · `apps/docs/scripts/consumer-test.sh` installs everything into a fresh app.
 
@@ -107,11 +107,22 @@ This checker is the most portable thing in the repo — the sibling `Minimal Des
 
 `.github/workflows/ci.yml`, job `verify`, in this order:
 
-`install --frozen-lockfile` → `lint` → `typecheck` → `check:tokens` → `check:contract` → `test` → `build:registry` → `build` → **Playwright smoke** → **Storybook a11y + interaction** → **consumer install test**
+`install --frozen-lockfile` → `lint` → `format:check` → `typecheck` → `check:tokens` → `check:contract` → `test` → `build:registry` → `build` → **Playwright smoke** → **Storybook a11y + interaction** → **consumer install test**
 
-Eleven steps. The last three are the ones that actually exercise the product, and they are last — so any earlier failure hides them entirely. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
+Twelve steps. The last three are the ones that actually exercise the product, and they are last — so any earlier failure hides them entirely. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
 
-Note `format:check` is **not** in CI, so markdown and prose formatting are not gated.
+`format:check` joined the list on 2026-09-07, when the tree was made
+prettier-clean. The bash hook used to deny a repo-wide format on the grounds
+that `check-contract.mts`'s guidance regexes could not survive re-wrapping;
+measured, they can — `\s*` spans newlines and prettier never splits a string
+literal. The only real breakage was the two `gen-wiring.mts` outputs being
+reformatted out of byte-agreement with their generator, and they are now
+prettier-ignored.
+
+One quirk worth knowing: `docs/design-system/story-conventions.md` needs three
+`--write` passes to converge, because reformatting its widest table changes the
+column widths that decide the wrapping. If `format:check` fails immediately
+after a format, run the format again before assuming something else is wrong.
 
 ## Conventions
 

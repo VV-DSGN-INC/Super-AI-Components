@@ -52,11 +52,7 @@ describe("AiToolsMenu", () => {
     // Grouped by intent — three groups, each an addressable region.
     const rendered = groups(container);
     expect(rendered).toHaveLength(3);
-    expect(rendered.map((g) => g.getAttribute("aria-label"))).toEqual([
-      "Edit",
-      "Generate",
-      "Careful",
-    ]);
+    expect(rendered.map((g) => g.getAttribute("aria-label"))).toEqual(["Edit", "Generate", "Careful"]);
     // Every action still renders, as an A9 row rather than a bespoke one.
     expect(rows(container)).toHaveLength(7);
     expect(container.querySelectorAll('[data-slot="entity-row"]')).toHaveLength(7);

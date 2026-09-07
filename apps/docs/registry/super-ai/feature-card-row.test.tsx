@@ -21,9 +21,7 @@ describe("FeatureCardRow", () => {
     render(<FeatureCardRow items={items} />);
 
     expect(cardCount()).toBe(2);
-    expect(document.querySelector('[data-slot="entity-row-title"]')!.textContent).toBe(
-      "Write a script",
-    );
+    expect(document.querySelector('[data-slot="entity-row-title"]')!.textContent).toBe("Write a script");
     expect(document.querySelector('[data-slot="entity-row-description"]')!.textContent).toBe(
       "Generate a first draft from a one-line prompt.",
     );
@@ -68,8 +66,6 @@ describe("FeatureCardRow", () => {
 
   it("passes className through", () => {
     render(<FeatureCardRow items={[]} className="test-class" />);
-    expect(document.querySelector('[data-slot="feature-card-row"]')!.className).toContain(
-      "test-class",
-    );
+    expect(document.querySelector('[data-slot="feature-card-row"]')!.className).toContain("test-class");
   });
 });

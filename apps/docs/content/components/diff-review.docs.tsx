@@ -22,17 +22,38 @@ export const DiffReviewDocs: ComponentDocs = {
   anatomy: [
     { slot: "diff-review", note: "The frame. Holds the document, the change list and the bulk region." },
     { slot: "diff-review-header", note: "The label plus the live remaining-changes count." },
-    { slot: "diff-review-status", note: "Polite live region. Announces how many changes are still unresolved." },
+    {
+      slot: "diff-review-status",
+      note: "Polite live region. Announces how many changes are still unresolved.",
+    },
     { slot: "diff-review-document", note: "The prose. Contains no interactive element at all, by design." },
-    { slot: "diff-review-paragraph", note: "One paragraph, one element — a run of segments, never a stack of lines." },
-    { slot: "diff-review-segment", note: "One run. Carries `data-kind` of unchanged, inserted or deleted; the changed kinds render as real `ins` and `del` elements." },
+    {
+      slot: "diff-review-paragraph",
+      note: "One paragraph, one element — a run of segments, never a stack of lines.",
+    },
+    {
+      slot: "diff-review-segment",
+      note: "One run. Carries `data-kind` of unchanged, inserted or deleted; the changed kinds render as real `ins` and `del` elements.",
+    },
     { slot: "diff-review-changes", note: "The ordered review list, one item per change." },
     { slot: "diff-review-change", note: "One change. Carries `data-change-id` and `data-status`." },
-    { slot: "diff-review-change-summary", note: "What the change does, derived from its own segments so it cannot drift." },
-    { slot: "diff-review-rationale", note: "Why the change was made. Required, always rendered, full contrast." },
+    {
+      slot: "diff-review-change-summary",
+      note: "What the change does, derived from its own segments so it cannot drift.",
+    },
+    {
+      slot: "diff-review-rationale",
+      note: "Why the change was made. Required, always rendered, full contrast.",
+    },
     { slot: "diff-review-change-verbs", note: "Per-change accept and reject, each named for its change." },
-    { slot: "diff-review-resolution", note: "Replaces the verbs once a change is accepted or rejected, stated in words." },
-    { slot: "diff-review-bulk", note: "The separate whole-document region: accept-all and reject-all, below a separator and outside the change list." },
+    {
+      slot: "diff-review-resolution",
+      note: "Replaces the verbs once a change is accepted or rejected, stated in words.",
+    },
+    {
+      slot: "diff-review-bulk",
+      note: "The separate whole-document region: accept-all and reject-all, below a separator and outside the change list.",
+    },
   ],
   usage:
     "Give it `paragraphs` (ordered segment runs) and `changes` (one entry per `changeId`, each with a rationale). Both changed segment kinds require a `changeId`, and every id in the prose should have a matching entry in `changes` — that pairing is what guarantees nothing on screen is unexplained. Supply `onAccept`/`onReject` to get the per-change verbs, and `onAcceptAll`/`onRejectAll` to get the bulk region; omit them all and you have a read-only diff with its reasons, which is the right thing to render in an audit log. Statuses are yours to hold: set a change's `status` to accepted or rejected and the component applies it to the prose — an accepted insertion becomes ordinary text, a rejected one disappears — so the remaining marks are always the remaining work.",
@@ -65,14 +86,14 @@ export const DiffReviewDocs: ComponentDocs = {
       "The bulk buttons use the native `disabled` attribute once nothing is pending, so they drop out of the tab order entirely rather than staying as focusable dead ends.",
     ],
     screenReader: [
-      "Each per-change button is named for its change — announced as \"Accept : replace “utilise” with “use”\", with a space the accessible-name computation inserts between the visible word and the `sr-only` suffix, where `textContent` reads \"Accept:\" without it — through an `sr-only` suffix, and that description is derived from the segments rather than authored, so eight buttons cannot all announce as \"Accept\".",
-      "`<ins>` and `<del>` carry the right semantics but most screen readers do not announce them by default, which is why each changed run is wrapped in visually-hidden \"insertion start\"/\"insertion end\" text. That wording is the real signal; the underline and strike-through are the sighted half.",
-      "The remaining-changes count is `role=\"status\"` with `aria-live=\"polite\"`, so resolving a change announces \"3 of 8 changes awaiting review\" after whatever the reader is currently on. Don't also toast it.",
+      'Each per-change button is named for its change — announced as "Accept : replace “utilise” with “use”", with a space the accessible-name computation inserts between the visible word and the `sr-only` suffix, where `textContent` reads "Accept:" without it — through an `sr-only` suffix, and that description is derived from the segments rather than authored, so eight buttons cannot all announce as "Accept".',
+      '`<ins>` and `<del>` carry the right semantics but most screen readers do not announce them by default, which is why each changed run is wrapped in visually-hidden "insertion start"/"insertion end" text. That wording is the real signal; the underline and strike-through are the sighted half.',
+      'The remaining-changes count is `role="status"` with `aria-live="polite"`, so resolving a change announces "3 of 8 changes awaiting review" after whatever the reader is currently on. Don\'t also toast it.',
       "The change list is an `<ol>`, so it announces as a list with a count and each change is item N of M.",
       "The button's description repeats the **summary**, never the rationale. Someone tabbing straight down the verbs hears what each change does and never hears why — the rationale is text inside the list item, reachable only by reading it. If the reason has to reach a keyboard user who is tabbing, give the rationale an `id` and point the button's `aria-describedby` at it from your side.",
-      "A resolved change swaps its verbs for a plain \"Accepted\" or \"Rejected\" span with no live region of its own, so the resolution itself is announced only through the polite counter — which says how many are left, not which one just moved.",
-      "`describeChange` falls back to the literal word \"change\" when a `changeId` in `changes` matches no segment in the prose, so an id that only exists on one side produces exactly the anonymous \"Accept: change\" this component was built to avoid.",
-      "The bulk region is a `role=\"group\"` named \"Whole document\", which is what keeps accept-all from sounding like the last item in the change list.",
+      'A resolved change swaps its verbs for a plain "Accepted" or "Rejected" span with no live region of its own, so the resolution itself is announced only through the polite counter — which says how many are left, not which one just moved.',
+      '`describeChange` falls back to the literal word "change" when a `changeId` in `changes` matches no segment in the prose, so an id that only exists on one side produces exactly the anonymous "Accept: change" this component was built to avoid.',
+      'The bulk region is a `role="group"` named "Whole document", which is what keeps accept-all from sounding like the last item in the change list.',
     ],
     focus: [
       "Accepting or rejecting a change unmounts the button that was just activated — both verbs are replaced by a text span — so focus falls to `<body>` and the next Tab restarts from the top of the page. The polite count then arrives with no context. This is the component's sharpest edge: after calling `onAccept` or `onReject`, move focus to the next pending change's Accept button yourself.",

@@ -53,8 +53,7 @@ const SIZE_ROOT: Record<EmptyStateSize, string> = {
   // reads as "a slot with nothing in it", and never demands more height than a
   // real cell would. Left-aligned because a 1/6th-width column has no room to
   // centre anything legibly.
-  "in-grid":
-    "h-full min-h-32 items-start justify-center gap-3 rounded-lg border border-dashed p-4 text-left",
+  "in-grid": "h-full min-h-32 items-start justify-center gap-3 rounded-lg border border-dashed p-4 text-left",
 };
 
 const SIZE_TITLE: Record<EmptyStateSize, string> = {
@@ -135,12 +134,7 @@ function EmptyState({
   const compact = size === "in-grid";
 
   return (
-    <Empty
-      data-slot="empty-state"
-      data-size={size}
-      className={cn(SIZE_ROOT[size], className)}
-      {...props}
-    >
+    <Empty data-slot="empty-state" data-size={size} className={cn(SIZE_ROOT[size], className)} {...props}>
       <EmptyHeader
         data-slot="empty-state-header"
         className={cn(compact && "max-w-full items-start text-left")}
@@ -148,12 +142,7 @@ function EmptyState({
         {icon ? (
           // aria-hidden: an illustration that renders text would otherwise be
           // concatenated into the accessible name of everything around it.
-          <EmptyMedia
-            variant="icon"
-            data-slot="empty-state-media"
-            aria-hidden
-            className={SIZE_MEDIA[size]}
-          >
+          <EmptyMedia variant="icon" data-slot="empty-state-media" aria-hidden className={SIZE_MEDIA[size]}>
             {icon}
           </EmptyMedia>
         ) : null}
@@ -161,10 +150,7 @@ function EmptyState({
           {title}
         </EmptyTitle>
         {description ? (
-          <EmptyDescription
-            data-slot="empty-state-description"
-            className={SIZE_DESCRIPTION[size]}
-          >
+          <EmptyDescription data-slot="empty-state-description" className={SIZE_DESCRIPTION[size]}>
             {description}
           </EmptyDescription>
         ) : null}
@@ -173,10 +159,7 @@ function EmptyState({
       {examplePair ? (
         <div
           data-slot="empty-state-example-pair"
-          className={cn(
-            "flex w-full max-w-md flex-col items-center gap-2",
-            compact && "max-w-full",
-          )}
+          className={cn("flex w-full max-w-md flex-col items-center gap-2", compact && "max-w-full")}
         >
           <div className="flex w-full flex-col items-stretch justify-center gap-2 sm:flex-row sm:items-center sm:gap-3">
             <ExampleHalf data-example="before" example={examplePair.before} />
@@ -190,10 +173,7 @@ function EmptyState({
             <ExampleHalf data-example="after" example={examplePair.after} />
           </div>
           {examplePair.caption ? (
-            <p
-              data-slot="empty-state-example-caption"
-              className="text-muted-foreground text-xs text-balance"
-            >
+            <p data-slot="empty-state-example-caption" className="text-muted-foreground text-xs text-balance">
               {examplePair.caption}
             </p>
           ) : null}
@@ -220,10 +200,7 @@ function EmptyState({
  * One side of the pair. A `figure`/`figcaption` so the caption is the figure's
  * accessible name rather than a loose line of text next to it.
  */
-function ExampleHalf({
-  example,
-  ...props
-}: { example: EmptyStateExample } & React.ComponentProps<"figure">) {
+function ExampleHalf({ example, ...props }: { example: EmptyStateExample } & React.ComponentProps<"figure">) {
   return (
     <figure
       data-slot="empty-state-example"
@@ -234,16 +211,10 @@ function ExampleHalf({
       className="flex min-w-0 flex-1 flex-col items-center gap-1.5"
       {...props}
     >
-      <div
-        data-slot="empty-state-example-media"
-        className="bg-card w-full overflow-hidden rounded-md border"
-      >
+      <div data-slot="empty-state-example-media" className="bg-card w-full overflow-hidden rounded-md border">
         {example.content}
       </div>
-      <figcaption
-        data-slot="empty-state-example-label"
-        className="text-foreground text-xs font-medium"
-      >
+      <figcaption data-slot="empty-state-example-label" className="text-foreground text-xs font-medium">
         {example.label}
       </figcaption>
     </figure>
@@ -251,9 +222,4 @@ function ExampleHalf({
 }
 
 export { EmptyState };
-export type {
-  EmptyStateExample,
-  EmptyStateExamplePair,
-  EmptyStateProps,
-  EmptyStateSize,
-};
+export type { EmptyStateExample, EmptyStateExamplePair, EmptyStateProps, EmptyStateSize };

@@ -429,22 +429,24 @@ function SettingsShell({
             </p>
           </div>
 
-          {navSections.length > 0
-            ? // B3, not a hand-rolled list: the tier badge, the match count,
-              // `aria-current="page"` and the anchor/button split are all its.
-              <SidebarNav
-                aria-label={navLabel}
-                sections={navSections}
-                activeId={activeId}
-                onSelect={selectSection}
+          {navSections.length > 0 ? (
+            // B3, not a hand-rolled list: the tier badge, the match count,
+            // `aria-current="page"` and the anchor/button split are all its.
+            <SidebarNav
+              aria-label={navLabel}
+              sections={navSections}
+              activeId={activeId}
+              onSelect={selectSection}
+            />
+          ) : (
+            (navEmpty ?? (
+              <EmptyState
+                size="panel"
+                title="No settings yet"
+                description="Sections appear here as your product grows them."
               />
-            : (navEmpty ?? (
-                <EmptyState
-                  size="panel"
-                  title="No settings yet"
-                  description="Sections appear here as your product grows them."
-                />
-              ))}
+            ))
+          )}
 
           {usage.length > 0 ? (
             <div data-slot="settings-shell-usage" className="mt-auto flex flex-col gap-2 border-t pt-3">
@@ -477,9 +479,7 @@ function SettingsShell({
             ) : (
               <Alert data-slot="settings-shell-callout">
                 <SlidersHorizontal aria-hidden />
-                <AlertDescription>
-                  These settings apply to everyone in this workspace.
-                </AlertDescription>
+                <AlertDescription>These settings apply to everyone in this workspace.</AlertDescription>
               </Alert>
             )}
           </div>
@@ -569,10 +569,7 @@ function SettingsShell({
                 ) : null}
               </h3>
               {code ? (
-                <SettingsShellCopyButton
-                  label={code.copyLabel ?? `Copy ${code.label}`}
-                  value={code.value}
-                />
+                <SettingsShellCopyButton label={code.copyLabel ?? `Copy ${code.label}`} value={code.value} />
               ) : null}
             </div>
             {code ? (

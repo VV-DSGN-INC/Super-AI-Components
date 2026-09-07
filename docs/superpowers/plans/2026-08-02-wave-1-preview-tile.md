@@ -14,20 +14,20 @@
 
 ## File Structure
 
-| File | Responsibility |
-| --- | --- |
-| `apps/docs/registry/super-ai/preview-tile.tsx` | **Create.** The primitive. Single export `PreviewTile`. |
-| `apps/docs/registry/super-ai/preview-tile.test.tsx` | **Create.** Co-located behaviour tests. |
-| `apps/docs/lib/catalog.ts` | **Modify.** Add the catalog entry (drives registry, sidebar, docs route). |
-| `apps/docs/components/demos/preview-tile-demo.tsx` | **Create.** Docs-site demo. |
-| `apps/docs/app/components/[name]/page.tsx` | **Modify.** Register the demo in the `demos` map. |
-| `apps/storybook/src/components/super-ai/preview-tile.tsx` | **Create.** Storybook's copy (Storybook copies, it does not alias). |
-| `apps/storybook/src/components/super-ai/demos/preview-tile-demo.tsx` | **Create.** Storybook's demo copy. |
-| `apps/storybook/src/stories/super-ai/PreviewTile.stories.tsx` | **Create.** Story. |
-| `docs/design-system/concept-model.md` | **Modify.** Correct the A8 fan-out list. |
-| `docs/design-system/decisions.md` | **Modify.** Add D11, mark Q5 resolved. |
-| `docs/design-system/component-specs.md` | **Modify.** A8 real consumers; F1/C4 declare A8; J3/J4 notes. |
-| `docs/superpowers/specs/2026-08-02-preview-tile-design.md` | **Modify.** Correct §4.2 `locked` behaviour (see Task 5). |
+| File                                                                 | Responsibility                                                            |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `apps/docs/registry/super-ai/preview-tile.tsx`                       | **Create.** The primitive. Single export `PreviewTile`.                   |
+| `apps/docs/registry/super-ai/preview-tile.test.tsx`                  | **Create.** Co-located behaviour tests.                                   |
+| `apps/docs/lib/catalog.ts`                                           | **Modify.** Add the catalog entry (drives registry, sidebar, docs route). |
+| `apps/docs/components/demos/preview-tile-demo.tsx`                   | **Create.** Docs-site demo.                                               |
+| `apps/docs/app/components/[name]/page.tsx`                           | **Modify.** Register the demo in the `demos` map.                         |
+| `apps/storybook/src/components/super-ai/preview-tile.tsx`            | **Create.** Storybook's copy (Storybook copies, it does not alias).       |
+| `apps/storybook/src/components/super-ai/demos/preview-tile-demo.tsx` | **Create.** Storybook's demo copy.                                        |
+| `apps/storybook/src/stories/super-ai/PreviewTile.stories.tsx`        | **Create.** Story.                                                        |
+| `docs/design-system/concept-model.md`                                | **Modify.** Correct the A8 fan-out list.                                  |
+| `docs/design-system/decisions.md`                                    | **Modify.** Add D11, mark Q5 resolved.                                    |
+| `docs/design-system/component-specs.md`                              | **Modify.** A8 real consumers; F1/C4 declare A8; J3/J4 notes.             |
+| `docs/superpowers/specs/2026-08-02-preview-tile-design.md`           | **Modify.** Correct §4.2 `locked` behaviour (see Task 5).                 |
 
 `scripts/gen-registry.mts` needs **no** change: `preview-tile` has no `dependencies` or `registryDependencies`, so it needs no `extras` entry. Adding it to `CATALOG_ITEMS` is sufficient.
 
@@ -38,6 +38,7 @@
 This is the load-bearing contract. If it regresses, every grid in the catalog reflows.
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/preview-tile.tsx`
 - Test: `apps/docs/registry/super-ai/preview-tile.test.tsx`
 
@@ -50,8 +51,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PreviewTile } from "./preview-tile";
 
-const frameClassName = () =>
-  document.querySelector('[data-slot="preview-tile-frame"]')!.className;
+const frameClassName = () => document.querySelector('[data-slot="preview-tile-frame"]')!.className;
 
 describe("PreviewTile", () => {
   it("keeps identical frame classes across every state", () => {
@@ -145,6 +145,7 @@ git commit -m "feat(preview-tile): fixed-aspect frame invariant across states"
 ### Task 2: Selection is a ring and adds no layout box
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/preview-tile.tsx`
 - Test: `apps/docs/registry/super-ai/preview-tile.test.tsx`
 
@@ -222,6 +223,7 @@ git commit -m "feat(preview-tile): ring-not-border selection"
 ### Task 3: Label placement — overlay, below, none
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/preview-tile.tsx`
 - Test: `apps/docs/registry/super-ai/preview-tile.test.tsx`
 
@@ -274,29 +276,35 @@ interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect">
 Destructure `label`, `labelPlacement = "overlay"`, `badge`. Inside the frame, after `{children}`:
 
 ```tsx
-        {badge ? (
-          <span data-slot="preview-tile-badge" className="absolute top-2 right-2">
-            {badge}
-          </span>
-        ) : null}
-        {label && labelPlacement === "overlay" ? (
-          <span
-            data-slot="preview-tile-label"
-            className="bg-background/80 text-foreground absolute inset-x-0 bottom-0 truncate px-2 py-1 text-xs backdrop-blur-sm"
-          >
-            {label}
-          </span>
-        ) : null}
+{
+  badge ? (
+    <span data-slot="preview-tile-badge" className="absolute top-2 right-2">
+      {badge}
+    </span>
+  ) : null;
+}
+{
+  label && labelPlacement === "overlay" ? (
+    <span
+      data-slot="preview-tile-label"
+      className="bg-background/80 text-foreground absolute inset-x-0 bottom-0 truncate px-2 py-1 text-xs backdrop-blur-sm"
+    >
+      {label}
+    </span>
+  ) : null;
+}
 ```
 
 After the frame, still inside the outer div:
 
 ```tsx
-      {label && labelPlacement === "below" ? (
-        <span data-slot="preview-tile-label" className="text-foreground truncate text-sm">
-          {label}
-        </span>
-      ) : null}
+{
+  label && labelPlacement === "below" ? (
+    <span data-slot="preview-tile-label" className="text-foreground truncate text-sm">
+      {label}
+    </span>
+  ) : null;
+}
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -316,6 +324,7 @@ git commit -m "feat(preview-tile): label placement and badge slots"
 ### Task 4: Interaction and accessibility
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/preview-tile.tsx`
 - Test: `apps/docs/registry/super-ai/preview-tile.test.tsx`
 
@@ -363,8 +372,8 @@ Expected: FAIL — `Unable to find an accessible element with the role "button"`
 Add `onSelect?: () => void;` to the interface, destructure it, then make the frame element conditional. Replace the frame's opening tag with:
 
 ```tsx
-  const interactive = typeof onSelect === "function";
-  const Frame = interactive ? "button" : "div";
+const interactive = typeof onSelect === "function";
+const Frame = interactive ? "button" : "div";
 ```
 
 ```tsx
@@ -402,9 +411,10 @@ git commit -m "feat(preview-tile): button semantics only when selectable"
 
 ### Task 5: States — loading, locked, failed
 
-**Spec correction applied here.** Spec §4.2 says `locked` replaces content. F1 `result-card` requires the opposite: *"`locked` shows the shape of what would have been made, then the CTA — never an empty box with a padlock."* Replacing content would produce exactly that forbidden empty box. Therefore: `loading` and `failed` replace children; `locked` keeps children under a scrim and overlays `action`. The spec is corrected in Step 6.
+**Spec correction applied here.** Spec §4.2 says `locked` replaces content. F1 `result-card` requires the opposite: _"`locked` shows the shape of what would have been made, then the CTA — never an empty box with a padlock."_ Replacing content would produce exactly that forbidden empty box. Therefore: `loading` and `failed` replace children; `locked` keeps children under a scrim and overlays `action`. The spec is corrected in Step 6.
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/preview-tile.tsx`
 - Modify: `docs/superpowers/specs/2026-08-02-preview-tile-design.md`
 - Test: `apps/docs/registry/super-ai/preview-tile.test.tsx`
@@ -451,30 +461,32 @@ Expected: FAIL — `CHILD` still present in the `loading` case
 Add `action?: React.ReactNode;` to the interface and destructure it. Replace `{children}` inside the frame with:
 
 ```tsx
-        {state === "loading" ? (
-          <div data-slot="preview-tile-loading" className="bg-muted h-full w-full animate-pulse" />
-        ) : state === "failed" ? (
-          <div
-            data-slot="preview-tile-failed"
-            className="text-destructive absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs"
-          >
-            {action}
-          </div>
-        ) : (
-          <>
-            {children}
-            {state === "locked" ? (
-              // F1: locked shows the shape of what would have been made, then the
-              // CTA — never an empty box with a padlock. Children stay, scrim over.
-              <div
-                data-slot="preview-tile-locked"
-                className="bg-background/60 absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs backdrop-blur-[2px]"
-              >
-                {action}
-              </div>
-            ) : null}
-          </>
-        )}
+{
+  state === "loading" ? (
+    <div data-slot="preview-tile-loading" className="bg-muted h-full w-full animate-pulse" />
+  ) : state === "failed" ? (
+    <div
+      data-slot="preview-tile-failed"
+      className="text-destructive absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs"
+    >
+      {action}
+    </div>
+  ) : (
+    <>
+      {children}
+      {state === "locked" ? (
+        // F1: locked shows the shape of what would have been made, then the
+        // CTA — never an empty box with a padlock. Children stay, scrim over.
+        <div
+          data-slot="preview-tile-locked"
+          className="bg-background/60 absolute inset-0 flex flex-col items-center justify-center gap-2 p-3 text-center text-xs backdrop-blur-[2px]"
+        >
+          {action}
+        </div>
+      ) : null}
+    </>
+  );
+}
 ```
 
 - [ ] **Step 4: Run test to verify it passes**
@@ -515,6 +527,7 @@ git commit -m "feat(preview-tile): loading, locked and failed states"
 ### Task 6: Catalog entry and registry build
 
 **Files:**
+
 - Modify: `apps/docs/lib/catalog.ts`
 
 - [ ] **Step 1: Add the catalog entry**
@@ -552,6 +565,7 @@ git commit -m "feat(preview-tile): catalog entry and registry item"
 ### Task 7: Demo and docs page
 
 **Files:**
+
 - Create: `apps/docs/components/demos/preview-tile-demo.tsx`
 - Modify: `apps/docs/app/components/[name]/page.tsx`
 
@@ -626,6 +640,7 @@ git commit -m "feat(preview-tile): docs demo and page wiring"
 Storybook keeps its own copies under `apps/storybook/src/components/super-ai/` — it aliases `@` to its own `src`, not to `apps/docs`. Both copies must be added.
 
 **Files:**
+
 - Create: `apps/storybook/src/components/super-ai/preview-tile.tsx`
 - Create: `apps/storybook/src/components/super-ai/demos/preview-tile-demo.tsx`
 - Create: `apps/storybook/src/stories/super-ai/PreviewTile.stories.tsx`
@@ -689,6 +704,7 @@ git commit -m "feat(preview-tile): storybook story"
 The audit in the spec disproves the documented fan-out. Fix the source docs so the next component isn't built against the same error.
 
 **Files:**
+
 - Modify: `docs/design-system/concept-model.md`
 - Modify: `docs/design-system/decisions.md`
 - Modify: `docs/design-system/component-specs.md`

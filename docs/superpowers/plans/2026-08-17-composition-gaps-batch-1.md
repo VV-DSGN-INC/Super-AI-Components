@@ -17,7 +17,7 @@
 - **Never name a story export `Default`.** House rule; use a meaningful state name.
 - **Never assert layout or `:focus-visible` in jsdom.** Vitest runs in jsdom and has no layout; containment, overflow and focus-ring assertions belong in Storybook play functions, which run under Playwright.
 - **Gates run from the repo root**, never from `apps/docs`: root `lint` and `typecheck` cover the storybook workspace too.
-- **Rebuild before Playwright.** `playwright.config.ts` runs `pnpm start`, and `next start` serves the *prebuilt* output; editing source without rebuilding tests a stale app.
+- **Rebuild before Playwright.** `playwright.config.ts` runs `pnpm start`, and `next start` serves the _prebuilt_ output; editing source without rebuilding tests a stale app.
 - **Registry sources must not contain a bare `#1234`-style issue reference** — `check:tokens` false-positives it as a hex colour. Write `GH-1234`.
 - **`apps/docs/lib/catalog.manifest.ts` is not touched by this plan.** No component is added, removed or renamed.
 - Package manager is **pnpm**. Never npm.
@@ -30,7 +30,7 @@ This is precisely the situation `CONTINUE.md` records for K6 `citation-ref` and 
 
 Tailwind v4 ships container queries in core, so nothing needs installing — the question is convention, not capability.
 
-**This plan assumes adoption**, on the grounds that the defect is *by definition* a container-vs-viewport confusion and no viewport-keyed value can fix it. If that assumption holds, Task 4 must also add a short entry to `docs/design-system/decisions.md` recording container queries as an accepted convention, with these two grids as the pilots. If it does not hold, drop Tasks 4 and 6's column work from this batch and leave `ARTIFACTS_IN_STREAM` and `GRID_BESIDE_SIDEBAR` in place; every other task stands unchanged.
+**This plan assumes adoption**, on the grounds that the defect is _by definition_ a container-vs-viewport confusion and no viewport-keyed value can fix it. If that assumption holds, Task 4 must also add a short entry to `docs/design-system/decisions.md` recording container queries as an accepted convention, with these two grids as the pilots. If it does not hold, drop Tasks 4 and 6's column work from this batch and leave `ARTIFACTS_IN_STREAM` and `GRID_BESIDE_SIDEBAR` in place; every other task stands unchanged.
 
 **Commands used throughout:**
 
@@ -47,89 +47,89 @@ pnpm check:tokens && pnpm check:contract
 
 **Phase 1 — parallel, 5 agents, registry files only. No agent opens a shell.**
 
-| Task | Files | Responsibility |
-| --- | --- | --- |
-| 1 | `registry/super-ai/preview-tile.tsx`, its test, its story, its docs page | Frame naming + `selectMode` |
-| 2 | `registry/super-ai/feature-card-row.tsx`, its story | Arrows inside the box |
-| 3 | `registry/super-ai/frame-strip.tsx`, its story | Arrows inside the box |
-| 4 | `registry/super-ai/artifact-grid.tsx`, its story | Container-keyed columns |
-| 5 | `registry/super-ai/parameter-panel.tsx`, `run-inspector.tsx` | TabsList contrast at our call sites |
+| Task | Files                                                                    | Responsibility                      |
+| ---- | ------------------------------------------------------------------------ | ----------------------------------- |
+| 1    | `registry/super-ai/preview-tile.tsx`, its test, its story, its docs page | Frame naming + `selectMode`         |
+| 2    | `registry/super-ai/feature-card-row.tsx`, its story                      | Arrows inside the box               |
+| 3    | `registry/super-ai/frame-strip.tsx`, its story                           | Arrows inside the box               |
+| 4    | `registry/super-ai/artifact-grid.tsx`, its story                         | Container-keyed columns             |
+| 5    | `registry/super-ai/parameter-panel.tsx`, `run-inspector.tsx`             | TabsList contrast at our call sites |
 
 **Phase 2 — one agent, the only consumer of Task 1's new API.**
 
-| Task | Files | Responsibility |
-| --- | --- | --- |
-| 6 | `registry/super-ai/recent-grid.tsx`, its test, its story | Adopt naming props; container-keyed columns |
+| Task | Files                                                    | Responsibility                              |
+| ---- | -------------------------------------------------------- | ------------------------------------------- |
+| 6    | `registry/super-ai/recent-grid.tsx`, its test, its story | Adopt naming props; container-keyed columns |
 
 **Phase 3 — sequential, integrator, one pass. This is where the evidence is produced.**
 
-| Task | Files | Responsibility |
-| --- | --- | --- |
-| 7 | 5 shells | `SIDEBAR_FILLS_SHELL` companion class |
-| 8 | 5 shells | Delete the three compensation constants |
-| 9 | 5 shells + 5 docs pages | Delete the clip warnings |
-| 10 | `e2e/smoke.spec.ts` or shell stories | Real-browser proof for B1 and the arrows |
-| 11 | `docs/CONTINUE.md`, `docs/design-system/vendored-token-findings.md` | Correct the two misattributions; record the tabs residue |
+| Task | Files                                                               | Responsibility                                           |
+| ---- | ------------------------------------------------------------------- | -------------------------------------------------------- |
+| 7    | 5 shells                                                            | `SIDEBAR_FILLS_SHELL` companion class                    |
+| 8    | 5 shells                                                            | Delete the three compensation constants                  |
+| 9    | 5 shells + 5 docs pages                                             | Delete the clip warnings                                 |
+| 10   | `e2e/smoke.spec.ts` or shell stories                                | Real-browser proof for B1 and the arrows                 |
+| 11   | `docs/CONTINUE.md`, `docs/design-system/vendored-token-findings.md` | Correct the two misattributions; record the tabs residue |
 
 ---
 
 ## Task 1: preview-tile — frame naming and `selectMode`
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/preview-tile.tsx:17-26` (props), `:41-54` (frame), `:120-124` (below label)
 - Test: `apps/docs/registry/super-ai/preview-tile.test.tsx`
 - Story: `apps/storybook/src/stories/super-ai/PreviewTile.stories.tsx`
 - Modify: `apps/docs/content/components/preview-tile.docs.tsx`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: `PreviewTileProps` gains `frameLabel?: string` and `selectMode?: "toggle" | "open"`. Task 6 passes both. The `below` label span gains a generated `id` and the frame an `aria-labelledby` pointing at it — Task 6 relies on this to name its grid tiles with **no prop at all**.
 
-Today `interactive = typeof onSelect === "function"` makes the frame a `<button>` and unconditionally sets `aria-pressed={selected}` (`preview-tile.tsx:41-54`). The button's only accessible name is the *overlay* label, which renders inside it. With `labelPlacement="below"` the label is a sibling (`:120-124`) and names nothing; with `"none"` there is no label at all. Both ship nameless buttons, and `recent-grid` ships both.
+Today `interactive = typeof onSelect === "function"` makes the frame a `<button>` and unconditionally sets `aria-pressed={selected}` (`preview-tile.tsx:41-54`). The button's only accessible name is the _overlay_ label, which renders inside it. With `labelPlacement="below"` the label is a sibling (`:120-124`) and names nothing; with `"none"` there is no label at all. Both ship nameless buttons, and `recent-grid` ships both.
 
 - [ ] **Step 1: Write the failing tests**
 
 Add to `apps/docs/registry/super-ai/preview-tile.test.tsx`:
 
 ```tsx
-  it("names the frame from a below-placed label without a prop", () => {
-    render(
-      <PreviewTile label="Q3 Launch Trailer" labelPlacement="below" onSelect={() => {}}>
-        <div />
-      </PreviewTile>,
-    );
-    expect(screen.getByRole("button", { name: "Q3 Launch Trailer" })).toBeInTheDocument();
-  });
+it("names the frame from a below-placed label without a prop", () => {
+  render(
+    <PreviewTile label="Q3 Launch Trailer" labelPlacement="below" onSelect={() => {}}>
+      <div />
+    </PreviewTile>,
+  );
+  expect(screen.getByRole("button", { name: "Q3 Launch Trailer" })).toBeInTheDocument();
+});
 
-  it("names the frame from frameLabel when no label element exists", () => {
-    render(
-      <PreviewTile labelPlacement="none" frameLabel="Q3 Launch Trailer" onSelect={() => {}}>
-        <div />
-      </PreviewTile>,
-    );
-    expect(screen.getByRole("button", { name: "Q3 Launch Trailer" })).toBeInTheDocument();
-  });
+it("names the frame from frameLabel when no label element exists", () => {
+  render(
+    <PreviewTile labelPlacement="none" frameLabel="Q3 Launch Trailer" onSelect={() => {}}>
+      <div />
+    </PreviewTile>,
+  );
+  expect(screen.getByRole("button", { name: "Q3 Launch Trailer" })).toBeInTheDocument();
+});
 
-  it("keeps aria-pressed by default and drops it for an open action", () => {
-    const { rerender } = render(<PreviewTile label="A" onSelect={() => {}} selected />);
-    expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
-    rerender(<PreviewTile label="A" onSelect={() => {}} selected selectMode="open" />);
-    expect(screen.getByRole("button")).not.toHaveAttribute("aria-pressed");
-  });
+it("keeps aria-pressed by default and drops it for an open action", () => {
+  const { rerender } = render(<PreviewTile label="A" onSelect={() => {}} selected />);
+  expect(screen.getByRole("button")).toHaveAttribute("aria-pressed", "true");
+  rerender(<PreviewTile label="A" onSelect={() => {}} selected selectMode="open" />);
+  expect(screen.getByRole("button")).not.toHaveAttribute("aria-pressed");
+});
 
-  it("gives two tiles on one page distinct label ids", () => {
-    render(
-      <>
-        <PreviewTile label="One" labelPlacement="below" onSelect={() => {}} />
-        <PreviewTile label="Two" labelPlacement="below" onSelect={() => {}} />
-      </>,
-    );
-    const ids = Array.from(document.querySelectorAll('[data-slot="preview-tile-label"]')).map(
-      (el) => el.id,
-    );
-    expect(new Set(ids).size).toBe(2);
-    expect(ids.every(Boolean)).toBe(true);
-  });
+it("gives two tiles on one page distinct label ids", () => {
+  render(
+    <>
+      <PreviewTile label="One" labelPlacement="below" onSelect={() => {}} />
+      <PreviewTile label="Two" labelPlacement="below" onSelect={() => {}} />
+    </>,
+  );
+  const ids = Array.from(document.querySelectorAll('[data-slot="preview-tile-label"]')).map((el) => el.id);
+  expect(new Set(ids).size).toBe(2);
+  expect(ids.every(Boolean)).toBe(true);
+});
 ```
 
 - [ ] **Step 2: Run the tests to verify they fail**
@@ -167,15 +167,15 @@ In `preview-tile.tsx`, extend the interface (after `labelPlacement`, before `bad
 Destructure the new props (`frameLabel`, `selectMode = "toggle"`) alongside the others, then replace the body's opening lines:
 
 ```tsx
-  const interactive = typeof onSelect === "function";
-  const Frame = interactive ? "button" : "div";
+const interactive = typeof onSelect === "function";
+const Frame = interactive ? "button" : "div";
 
-  // The `below` label is a sibling of the frame, so it cannot name the button
-  // by containment the way the overlay label does. Pointing at it beats a
-  // `frameLabel` string: the name is the visible label by construction and
-  // cannot drift from it.
-  const labelId = React.useId();
-  const namedByLabel = interactive && Boolean(label) && labelPlacement === "below";
+// The `below` label is a sibling of the frame, so it cannot name the button
+// by containment the way the overlay label does. Pointing at it beats a
+// `frameLabel` string: the name is the visible label by construction and
+// cannot drift from it.
+const labelId = React.useId();
+const namedByLabel = interactive && Boolean(label) && labelPlacement === "below";
 ```
 
 and the frame's spread attributes:
@@ -197,15 +197,13 @@ and the frame's spread attributes:
 Replace the `below` label block at the end of the component:
 
 ```tsx
-      {label && labelPlacement === "below" ? (
-        <span
-          id={labelId}
-          data-slot="preview-tile-label"
-          className="text-foreground truncate text-sm"
-        >
-          {label}
-        </span>
-      ) : null}
+{
+  label && labelPlacement === "below" ? (
+    <span id={labelId} data-slot="preview-tile-label" className="text-foreground truncate text-sm">
+      {label}
+    </span>
+  ) : null;
+}
 ```
 
 The overlay label is left alone: it is inside the frame and already names it.
@@ -353,10 +351,12 @@ ever failed on the pair recent-grid ships."
 ## Task 2: feature-card-row — arrows inside their own box
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/feature-card-row.tsx:98-99`
 - Story: `apps/storybook/src/stories/super-ai/FeatureCardRow.stories.tsx`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: nothing other tasks depend on. Task 8 deletes `FEATURE_ROW_ARROW_GUTTER` from `home-shell` on the strength of this.
 
@@ -451,10 +451,12 @@ is the mechanism and the overflow is the defect."
 ## Task 3: frame-strip — arrows inside their own box
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/frame-strip.tsx:404-405`
 - Story: `apps/storybook/src/stories/super-ai/FrameStrip.stories.tsx`
 
 **Interfaces:**
+
 - Consumes: nothing. `frame-strip` composes `preview-tile` with `labelPlacement="overlay"` and `selected={active}` (`frame-strip.tsx:141-148`), so its tiles are genuine toggles whose overlay label already names them. **It needs nothing from Task 1** — that is why it sits in phase 1.
 - Produces: nothing other tasks depend on.
 
@@ -533,10 +535,12 @@ independently by O3. Overridden at the call site."
 ## Task 4: artifact-grid — columns keyed to the container
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/artifact-grid.tsx:331-334`
 - Story: `apps/storybook/src/stories/super-ai/ArtifactGrid.stories.tsx`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: the `[data-slot="artifact-grid-items"]` element becomes a container-query context. Task 8 deletes `ARTIFACTS_IN_STREAM` (`chat-shell`) and `GRID_BESIDE_SIDEBAR` (`artifact-shell`) on the strength of this.
 
@@ -652,10 +656,12 @@ standalone consumer sees no change."
 ## Task 5: TabsList contrast at our two default-variant call sites
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/parameter-panel.tsx:294`
 - Modify: `apps/docs/registry/super-ai/run-inspector.tsx:301`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: nothing other tasks depend on. Task 11 records the residue in `vendored-token-findings.md`.
 
@@ -741,11 +747,13 @@ need nothing."
 ## Task 6: recent-grid — adopt the naming props and container columns
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/recent-grid.tsx:98-106` (grid item), `:120` (list item), `:164-168` (grid columns)
 - Test: `apps/docs/registry/super-ai/recent-grid.test.tsx`
 - Story: `apps/storybook/src/stories/super-ai/RecentGrid.stories.tsx`
 
 **Interfaces:**
+
 - Consumes: from Task 1 — `frameLabel?: string`, `selectMode?: "toggle" | "open"`, and the automatic `aria-labelledby` on `labelPlacement="below"`. **Task 1 must be merged before this task starts.**
 - Produces: nothing other tasks depend on.
 
@@ -766,26 +774,22 @@ const OPENABLE: RecentGridItem[] = ITEMS.map((item) => ({ ...item, onOpen: () =>
 Then add these cases inside the existing `describe("RecentGrid", ...)` block:
 
 ```tsx
-  it("names its grid tiles from the visible title", () => {
-    render(<RecentGrid items={OPENABLE} layout="grid" />);
-    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).toBeInTheDocument();
-  });
+it("names its grid tiles from the visible title", () => {
+  render(<RecentGrid items={OPENABLE} layout="grid" />);
+  expect(screen.getByRole("button", { name: "Q3 Launch Video" })).toBeInTheDocument();
+});
 
-  it("names its list thumbnails from the visible title", () => {
-    render(<RecentGrid items={OPENABLE} layout="list" />);
-    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).toBeInTheDocument();
-  });
+it("names its list thumbnails from the visible title", () => {
+  render(<RecentGrid items={OPENABLE} layout="list" />);
+  expect(screen.getByRole("button", { name: "Q3 Launch Video" })).toBeInTheDocument();
+});
 
-  it("opens rather than toggles, in both layouts", () => {
-    const { rerender } = render(<RecentGrid items={OPENABLE} layout="grid" />);
-    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute(
-      "aria-pressed",
-    );
-    rerender(<RecentGrid items={OPENABLE} layout="list" />);
-    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute(
-      "aria-pressed",
-    );
-  });
+it("opens rather than toggles, in both layouts", () => {
+  const { rerender } = render(<RecentGrid items={OPENABLE} layout="grid" />);
+  expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute("aria-pressed");
+  rerender(<RecentGrid items={OPENABLE} layout="list" />);
+  expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute("aria-pressed");
+});
 ```
 
 Note the title is `"Q3 Launch Video"`, matching the existing fixture — not the `"Q3 Launch Trailer"` used in the story files.
@@ -800,7 +804,8 @@ Expected: FAIL. The name queries find no such button; the `aria-pressed` asserti
 `RecentGridItemGrid`, replacing the `PreviewTile` call:
 
 ```tsx
-      {/* Composes preview-tile (A8) for the media frame, badge and title
+{
+  /* Composes preview-tile (A8) for the media frame, badge and title
           label — "below" placement is exactly what A8's spec reserves for
           C4's title-under-thumbnail layout, so the tile owns aspect ratio,
           loading/failed states and the selection ring; this component only
@@ -808,17 +813,18 @@ Expected: FAIL. The name queries find no such button; the `aria-pressed` asserti
 
           No frameLabel here: a below-placed label names its own frame, so the
           button's name is the visible title by construction. selectMode="open"
-          because onOpen navigates — this tile holds no pressed state. */}
-      <PreviewTile
-        aspect="video"
-        label={title}
-        labelPlacement="below"
-        selectMode="open"
-        onSelect={onOpen}
-        badge={<RecentGridDurationBadge durationLabel={durationLabel} />}
-      >
-        {thumbnail}
-      </PreviewTile>
+          because onOpen navigates — this tile holds no pressed state. */
+}
+<PreviewTile
+  aspect="video"
+  label={title}
+  labelPlacement="below"
+  selectMode="open"
+  onSelect={onOpen}
+  badge={<RecentGridDurationBadge durationLabel={durationLabel} />}
+>
+  {thumbnail}
+</PreviewTile>;
 ```
 
 - [ ] **Step 4: Fix the list item**
@@ -826,20 +832,22 @@ Expected: FAIL. The name queries find no such button; the `aria-pressed` asserti
 `RecentGridItemList`, replacing the `PreviewTile` call. The title here is a sibling `<p>` outside the tile, so there is no label element for the frame to point at and `frameLabel` is required:
 
 ```tsx
-      {/* labelPlacement="none": the title sits beside the thumbnail in this
+{
+  /* labelPlacement="none": the title sits beside the thumbnail in this
           layout, not under it, so it is rendered below as a sibling. That
           leaves the frame with nothing to name itself from — hence frameLabel.
-          selectMode="open" for the same reason as the grid layout. */}
-      <PreviewTile
-        aspect="video"
-        labelPlacement="none"
-        frameLabel={title}
-        selectMode="open"
-        onSelect={onOpen}
-        className="w-28 shrink-0"
-      >
-        {thumbnail}
-      </PreviewTile>
+          selectMode="open" for the same reason as the grid layout. */
+}
+<PreviewTile
+  aspect="video"
+  labelPlacement="none"
+  frameLabel={title}
+  selectMode="open"
+  onSelect={onOpen}
+  className="w-28 shrink-0"
+>
+  {thumbnail}
+</PreviewTile>;
 ```
 
 - [ ] **Step 5: Run the tests to verify they pass**
@@ -930,9 +938,11 @@ toggle. Columns key off the container, so the shells' overrides can come out."
 ## Task 7: the sidebar fills its shell
 
 **Files:**
+
 - Modify: all five of `apps/docs/registry/super-ai/{chat,artifact,home,docs,records}-shell.tsx`, at each file's `EMBEDDABLE_SHELL` declaration and its application site
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: `sidebarPromo` / `sidebarFooter` / `railFooter` become visible in an embedded shell. Tasks 9 and 10 depend on this.
 
@@ -975,7 +985,7 @@ At each shell's root `cn(...)` call, add `SIDEBAR_FILLS_SHELL` immediately after
 pnpm --filter docs dev
 ```
 
-Open a shell docs page, take **your own port** if another worktree is running (`CONTINUE.md` §1: a sibling worktree's dev server on port 3000 will serve *its* build while your preview reports success). Pass a `sidebarFooter` and confirm it is visible inside a shell that is shorter than the window.
+Open a shell docs page, take **your own port** if another worktree is running (`CONTINUE.md` §1: a sibling worktree's dev server on port 3000 will serve _its_ build while your preview reports success). Pass a `sidebarFooter` and confirm it is visible inside a shell that is shorter than the window.
 
 - [ ] **Step 4: Run the gates**
 
@@ -1005,11 +1015,13 @@ five shells closes all four reports."
 ## Task 8: delete the three compensation constants
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/home-shell.tsx:81` and its application site
 - Modify: `apps/docs/registry/super-ai/chat-shell.tsx:85` and its application site
 - Modify: `apps/docs/registry/super-ai/artifact-shell.tsx:78-83` and its application site
 
 **Interfaces:**
+
 - Consumes: Task 2 (`feature-card-row` arrows) and Task 4 (`artifact-grid` container columns). **Both must be merged before this task starts.**
 - Produces: three of the six rows of the spec's evidence table.
 
@@ -1058,10 +1070,12 @@ mean the fix did not land."
 ## Task 9: delete the clip warnings
 
 **Files:**
+
 - Modify: 5 shells' `sidebarPromo` / `sidebarFooter` / `railFooter` JSDoc
 - Modify: `apps/docs/content/components/{chat,artifact,home,docs,records}-shell.docs.tsx` — each has the warning in both a `donts` entry and a `pitfalls` entry
 
 **Interfaces:**
+
 - Consumes: Task 7. **Must be merged before this task starts.**
 - Produces: the fourth row of the evidence table.
 
@@ -1122,9 +1136,11 @@ contain:layout and the sidebar still pins itself to the browser's left edge."
 ## Task 10: real-browser proof for the two layout fixes
 
 **Files:**
+
 - Create or modify: `apps/storybook/src/stories/super-ai/HomeShell.stories.tsx` (or the shell story file that already renders a sidebar)
 
 **Interfaces:**
+
 - Consumes: Tasks 7, 8, 9.
 - Produces: spec success criterion 4.
 
@@ -1200,10 +1216,12 @@ Verified to fail with SIDEBAR_FILLS_SHELL removed before being committed."
 ## Task 11: correct the record
 
 **Files:**
+
 - Modify: `docs/CONTINUE.md` §8 (the B1 entry and the vendored `ui/tabs.tsx` entry)
 - Modify: `docs/design-system/vendored-token-findings.md`
 
 **Interfaces:**
+
 - Consumes: every prior task.
 - Produces: spec success criteria 5 and the tabs residue record.
 
@@ -1231,7 +1249,7 @@ Replace the B1 bullet in `CONTINUE.md` §8 with a resolved entry:
 - **~~Vendored `ui/tabs.tsx` ... sitting outside its scan scope~~ — corrected and
   handled 2026-08-17.** It is not outside the scan scope: `check-tokens.mjs`
   globs `components/ui` and `findCvaViolations` detects the base/variant
-  pairing correctly. It is *found and downgraded to a warning* because the file
+  pairing correctly. It is _found and downgraded to a warning_ because the file
   is vendored. Our two default-variant call sites now rebind
   `--muted-foreground`; the vendored default remains unsafe for consumers who
   compose a stock `TabsList`, recorded in `vendored-token-findings.md`.

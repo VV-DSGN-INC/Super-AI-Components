@@ -65,12 +65,7 @@ describe("HomeShell", () => {
       page.querySelectorAll("[data-region], [data-slot='home-shell-inspiration']"),
     ).map((node) => node.getAttribute("data-region") ?? node.getAttribute("data-slot"));
 
-    expect(order).toEqual([
-      "hero-omnibox",
-      "feature-cards",
-      "recents-grid",
-      "home-shell-inspiration",
-    ]);
+    expect(order).toEqual(["hero-omnibox", "feature-cards", "recents-grid", "home-shell-inspiration"]);
 
     const hero = container.querySelector('[data-region="hero-omnibox"]')!;
     expect(hero.querySelector('[data-slot="hero-omnibox"]')).not.toBeNull();
@@ -84,11 +79,7 @@ describe("HomeShell", () => {
     const onSubmit = vi.fn();
     const onSelectSuggestion = vi.fn();
     render(
-      <HomeShell
-        suggestions={SUGGESTIONS}
-        onSelectSuggestion={onSelectSuggestion}
-        omnibox={{ onSubmit }}
-      />,
+      <HomeShell suggestions={SUGGESTIONS} onSelectSuggestion={onSelectSuggestion} omnibox={{ onSubmit }} />,
     );
 
     await userEvent.click(screen.getByRole("button", { name: "Draft a launch announcement" }));
@@ -111,9 +102,7 @@ describe("HomeShell", () => {
 
   // "Overflow resolves to a real link, never a chip that gets clipped."
   it("resolves starter overflow through C2's link, not another chip", () => {
-    render(
-      <HomeShell suggestions={SUGGESTIONS} suggestionsOverflow={{ href: "/prompts", count: 12 }} />,
-    );
+    render(<HomeShell suggestions={SUGGESTIONS} suggestionsOverflow={{ href: "/prompts", count: 12 }} />);
     const overflow = screen.getByRole("link", { name: "12 more" });
     expect(overflow).toHaveAttribute("href", "/prompts");
     expect(overflow.getAttribute("data-slot")).toBe("suggestion-chips-overflow");
@@ -208,7 +197,9 @@ describe("HomeShell", () => {
     const { container } = render(<HomeShell />);
     const page = container.querySelector('[data-slot="home-shell-page"]')!;
     const belowHero = Array.from(
-      page.querySelectorAll("[data-region='feature-cards'], [data-region='recents-grid'], [data-slot='home-shell-inspiration']"),
+      page.querySelectorAll(
+        "[data-region='feature-cards'], [data-region='recents-grid'], [data-slot='home-shell-inspiration']",
+      ),
     ).flatMap((band) => Array.from(band.querySelectorAll("button, a")));
     expect(belowHero).toHaveLength(0);
   });

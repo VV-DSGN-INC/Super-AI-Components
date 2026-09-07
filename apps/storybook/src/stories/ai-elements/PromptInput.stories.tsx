@@ -61,20 +61,13 @@ export const Default: Story = {
               <PromptInputButton>
                 <MicIcon className="size-4" />
               </PromptInputButton>
-              <PromptInputSelect
-                onValueChange={(value) => setModel(value as string)}
-                value={model}
-              >
+              <PromptInputSelect onValueChange={(value) => setModel(value as string)} value={model}>
                 <PromptInputSelectTrigger>
                   <PromptInputSelectValue />
                 </PromptInputSelectTrigger>
                 <PromptInputSelectContent>
-                  <PromptInputSelectItem value="gpt-4o">
-                    GPT-4o
-                  </PromptInputSelectItem>
-                  <PromptInputSelectItem value="claude-opus-4">
-                    Claude Opus 4
-                  </PromptInputSelectItem>
+                  <PromptInputSelectItem value="gpt-4o">GPT-4o</PromptInputSelectItem>
+                  <PromptInputSelectItem value="claude-opus-4">Claude Opus 4</PromptInputSelectItem>
                 </PromptInputSelectContent>
               </PromptInputSelect>
             </PromptInputTools>

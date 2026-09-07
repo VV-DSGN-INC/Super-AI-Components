@@ -24,11 +24,11 @@ export const ChoiceChipsDocs: ComponentDocs = {
   anatomy: [
     {
       slot: "choice-chips",
-      note: "The group. Renders role=\"radiogroup\" and owns the selected value — give it an aria-label or aria-labelledby, because the chips alone rarely say what they are choosing between.",
+      note: 'The group. Renders role="radiogroup" and owns the selected value — give it an aria-label or aria-labelledby, because the chips alone rarely say what they are choosing between.',
     },
     {
       slot: "choice-chip",
-      note: "One option. A native button with role=\"radio\" and aria-checked, plus data-state=\"on\"/\"off\" for styling and for tests that want to assert selection without reading ARIA.",
+      note: 'One option. A native button with role="radio" and aria-checked, plus data-state="on"/"off" for styling and for tests that want to assert selection without reading ARIA.',
     },
   ],
   usage:
@@ -43,7 +43,7 @@ export const ChoiceChipsDocs: ComponentDocs = {
       example: <SetsTheNextRun />,
     },
     {
-      text: "Give \"no filter\" its own chip rather than trying to express it as an absent value.",
+      text: 'Give "no filter" its own chip rather than trying to express it as an absent value.',
       example: <SentinelAllChip />,
     },
   ],
@@ -61,13 +61,13 @@ export const ChoiceChipsDocs: ComponentDocs = {
     keyboard: [
       "One tab stop per chip. v1 ships Tab-per-chip rather than the roving tabindex the ARIA radiogroup pattern specifies — there is a TODO in the source saying so — which means a ten-option group is ten stops between whatever precedes and follows it.",
       "Arrow keys do nothing. Neither do Home and End. Tab and Shift+Tab are the only way to move within the group, which is the one behavioural difference from a real radiogroup that a keyboard user will notice immediately.",
-      "Space and Enter select the focused chip, because each chip is a native `<button>` with `role=\"radio\"` on it. Selection follows activation only — moving focus never changes the value, unlike a standard radio group where arrowing selects as it goes.",
+      'Space and Enter select the focused chip, because each chip is a native `<button>` with `role="radio"` on it. Selection follows activation only — moving focus never changes the value, unlike a standard radio group where arrowing selects as it goes.',
       "`disabled` reaches the underlying button and removes the chip from the tab order, but changes nothing visually: the chip carries no disabled styling of its own, so a skipped option looks exactly like an available one.",
     ],
     screenReader: [
-      "The group is `role=\"radiogroup\"` and each chip `role=\"radio\"` with `aria-checked`, so the selection is in the accessibility tree rather than implied by the ring. That is the whole reason this is a component and not a styled div.",
-      "The group has no accessible name unless you give it one. Nothing here sets `aria-label` or `aria-labelledby`, and props spread onto the group's div, so pass one — a row reading \"1, 2, 4, 8\" announces four unlabelled radios and the question they answer is nowhere in the tree.",
-      "Each chip's name is its children. `value` is never announced, so a chip labelled \"16:9\" whose value is `landscape` announces \"16:9\" — write the label for the reader and keep the value for your code.",
+      'The group is `role="radiogroup"` and each chip `role="radio"` with `aria-checked`, so the selection is in the accessibility tree rather than implied by the ring. That is the whole reason this is a component and not a styled div.',
+      'The group has no accessible name unless you give it one. Nothing here sets `aria-label` or `aria-labelledby`, and props spread onto the group\'s div, so pass one — a row reading "1, 2, 4, 8" announces four unlabelled radios and the question they answer is nowhere in the tree.',
+      'Each chip\'s name is its children. `value` is never announced, so a chip labelled "16:9" whose value is `landscape` announces "16:9" — write the label for the reader and keep the value for your code.',
       "Nothing announces the effect of a pick. There is no live region here, so if choosing a chip changes a price, a preview or a result count elsewhere, that surface has to say so itself.",
       "A `ChoiceChip` rendered outside a `ChoiceChips` throws rather than degrading, so a mis-composed group is a render crash rather than a silent semantic failure.",
     ],
@@ -77,7 +77,7 @@ export const ChoiceChipsDocs: ComponentDocs = {
     ],
   },
   pitfalls: [
-    "`value={undefined}` does not mean \"nothing is selected\" — the component reads it as \"this group is uncontrolled\" and falls back to its own internal state. A controlled group that needs an unselected position needs a sentinel chip to point at, which is what the All chip in artifact-grid is for.",
+    '`value={undefined}` does not mean "nothing is selected" — the component reads it as "this group is uncontrolled" and falls back to its own internal state. A controlled group that needs an unselected position needs a sentinel chip to point at, which is what the All chip in artifact-grid is for.',
     "Selection and keyboard focus are drawn with the same ring, so a focused-but-unselected chip looks like a selected one. `aria-checked` keeps assistive tech correct; sighted keyboard users are the ones this can mislead, which matters most in groups of three or four visually similar chips.",
     "v1 traverses with Tab, one stop per chip, rather than the roving tabindex the ARIA radiogroup pattern specifies — arrow keys do not move the selection. A ten-chip row is ten tab stops between whatever precedes and follows it, so keep rows short and put them near the control they configure.",
     "`disabled` reaches the underlying button and does stop the click, but the chip carries no disabled styling of its own, so a disabled option is visually identical to an available one. Until that ships, pass your own disabled classes, or leave the option out and say why elsewhere.",

@@ -20,11 +20,7 @@ export const Default: Story = {
 
     return (
       <div className="flex items-center gap-3">
-        <Switch
-          id="enhance-prompt"
-          checked={checked}
-          onCheckedChange={setChecked}
-        />
+        <Switch id="enhance-prompt" checked={checked} onCheckedChange={setChecked} />
         <Label htmlFor="enhance-prompt">Enhance prompt</Label>
       </div>
     );
@@ -51,39 +47,23 @@ export const SettingsPanel: Story = {
               Auto-expand short prompts with descriptive detail.
             </p>
           </div>
-          <Switch
-            id="enhance"
-            checked={settings.enhance}
-            onCheckedChange={toggle("enhance")}
-          />
+          <Switch id="enhance" checked={settings.enhance} onCheckedChange={toggle("enhance")} />
         </div>
 
         <div className="flex items-center justify-between gap-4">
           <div className="space-y-0.5">
             <Label htmlFor="nsfw">NSFW filter</Label>
-            <p className="text-xs text-muted-foreground">
-              Block unsafe outputs before they are shown.
-            </p>
+            <p className="text-xs text-muted-foreground">Block unsafe outputs before they are shown.</p>
           </div>
-          <Switch
-            id="nsfw"
-            checked={settings.nsfw}
-            onCheckedChange={toggle("nsfw")}
-          />
+          <Switch id="nsfw" checked={settings.nsfw} onCheckedChange={toggle("nsfw")} />
         </div>
 
         <div className="flex items-center justify-between gap-4">
           <div className="space-y-0.5">
             <Label htmlFor="upscale">Auto-upscale</Label>
-            <p className="text-xs text-muted-foreground">
-              Render every result at 4K (uses more credits).
-            </p>
+            <p className="text-xs text-muted-foreground">Render every result at 4K (uses more credits).</p>
           </div>
-          <Switch
-            id="upscale"
-            checked={settings.upscale}
-            onCheckedChange={toggle("upscale")}
-          />
+          <Switch id="upscale" checked={settings.upscale} onCheckedChange={toggle("upscale")} />
         </div>
       </div>
     );

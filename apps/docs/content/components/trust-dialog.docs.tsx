@@ -77,10 +77,10 @@ export const TrustDialogDocs: ComponentDocs = {
       "The preview is `max-h-40 overflow-auto` with no `tabIndex` and nothing focusable inside it. Any preview taller than 10rem — which is most real manifests, commands and file lists — cannot be scrolled from the keyboard at all, so the content the gate exists to make people read is mouse-only. Keep previews short, or wrap yours in a focusable, named scroll container before passing it in.",
     ],
     screenReader: [
-      "Base UI gives the popup `role=\"alertdialog\"` labelled by the title, and described by the description only when you pass one — the preview and the warning are body content, not `aria-describedby` targets. Omit `description` and the dialog announces its title and then falls to the body.",
-      "The warning is `role=\"note\"`, overriding the vendored Alert's `role=\"alert\"`, so opening the dialog announces once rather than twice over itself.",
+      'Base UI gives the popup `role="alertdialog"` labelled by the title, and described by the description only when you pass one — the preview and the warning are body content, not `aria-describedby` targets. Omit `description` and the dialog announces its title and then falls to the body.',
+      'The warning is `role="note"`, overriding the vendored Alert\'s `role="alert"`, so opening the dialog announces once rather than twice over itself.',
       "The checkbox is named by the `<label>` that wraps it, so its accessible name is the whole `trustLabel` sentence and the entire bordered row is a click target for it.",
-      "The account trigger is named `\"<accountLabel>: <account name>\"` — \"Run in: Production\" — so the destination is spoken as part of the control rather than only drawn inside it.",
+      'The account trigger is named `"<accountLabel>: <account name>"` — "Run in: Production" — so the destination is spoken as part of the control rather than only drawn inside it.',
       "Continue becoming enabled is announced as nothing. Ticking the box announces the checkbox's own state and no more; the button silently joins the tab order, with no live region to say the gate has opened.",
       "Pass `accounts` without `selectedAccountId` and the picker falls back to the first account: the trigger announces it as chosen and `onContinue` receives its id. Nothing distinguishes that default from a real choice, which on a safety gate is worth deciding deliberately.",
     ],

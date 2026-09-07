@@ -9,14 +9,18 @@ const textSections: PropertySection[] = [
     id: "layout",
     label: "Layout",
     content: (
-      <PropertyRow label="Width">{(id) => <UnitInput id={id} unit="px" defaultValue={320} readOnly />}</PropertyRow>
+      <PropertyRow label="Width">
+        {(id) => <UnitInput id={id} unit="px" defaultValue={320} readOnly />}
+      </PropertyRow>
     ),
   },
   {
     id: "typography",
     label: "Typography",
     content: (
-      <PropertyRow label="Size">{(id) => <UnitInput id={id} unit="pt" defaultValue={18} readOnly />}</PropertyRow>
+      <PropertyRow label="Size">
+        {(id) => <UnitInput id={id} unit="pt" defaultValue={18} readOnly />}
+      </PropertyRow>
     ),
   },
 ];
@@ -26,14 +30,18 @@ const imageSections: PropertySection[] = [
     id: "layout",
     label: "Layout",
     content: (
-      <PropertyRow label="Width">{(id) => <UnitInput id={id} unit="px" defaultValue={640} readOnly />}</PropertyRow>
+      <PropertyRow label="Width">
+        {(id) => <UnitInput id={id} unit="px" defaultValue={640} readOnly />}
+      </PropertyRow>
     ),
   },
   {
     id: "adjustments",
     label: "Adjustments",
     content: (
-      <PropertyRow label="Blur">{(id) => <UnitInput id={id} unit="px" defaultValue={0} readOnly />}</PropertyRow>
+      <PropertyRow label="Blur">
+        {(id) => <UnitInput id={id} unit="px" defaultValue={0} readOnly />}
+      </PropertyRow>
     ),
   },
 ];
@@ -42,7 +50,9 @@ const sections = { text: textSections, image: imageSections };
 
 describe("PropertyInspector", () => {
   it("renders the per-element-type state: the element type picks the variant, no fork at the call site", () => {
-    const { rerender } = render(<PropertyInspector elementType="text" selectionLabel="Heading" sections={sections} />);
+    const { rerender } = render(
+      <PropertyInspector elementType="text" selectionLabel="Heading" sections={sections} />,
+    );
 
     // Text: Layout + Typography.
     expect(screen.getByRole("button", { name: "Typography" })).toBeInTheDocument();
@@ -146,7 +156,9 @@ describe("PropertyInspector", () => {
               id: "layout",
               label: "Layout",
               content: (
-                <PropertyRow label="Width">{(id) => <UnitInput id={id} unit="px" defaultValue={320} readOnly />}</PropertyRow>
+                <PropertyRow label="Width">
+                  {(id) => <UnitInput id={id} unit="px" defaultValue={320} readOnly />}
+                </PropertyRow>
               ),
             },
           ],
@@ -171,7 +183,9 @@ describe("PropertyInspector", () => {
               label: "Layout",
               state: "modified",
               onReset: vi.fn(),
-              content: <PropertyRow label="Width">{(id) => <UnitInput id={id} unit="px" readOnly />}</PropertyRow>,
+              content: (
+                <PropertyRow label="Width">{(id) => <UnitInput id={id} unit="px" readOnly />}</PropertyRow>
+              ),
             },
           ],
         }}
@@ -182,14 +196,19 @@ describe("PropertyInspector", () => {
 
     const section = document.querySelector('[data-slot="property-inspector-section"]')!;
     expect(within(section as HTMLElement).getByText("Layout modified")).toBeInTheDocument();
-    expect(section.querySelector('[data-slot="reset-affordance-dot"]')).toHaveAttribute("data-state", "modified");
+    expect(section.querySelector('[data-slot="reset-affordance-dot"]')).toHaveAttribute(
+      "data-state",
+      "modified",
+    );
   });
 
   it("renders the empty state as a useful default view, not a shrug", () => {
     render(
       <PropertyInspector
         emptyContent={
-          <PropertyRow label="Canvas">{(id) => <UnitInput id={id} unit="px" defaultValue={1920} readOnly />}</PropertyRow>
+          <PropertyRow label="Canvas">
+            {(id) => <UnitInput id={id} unit="px" defaultValue={1920} readOnly />}
+          </PropertyRow>
         }
       />,
     );
@@ -212,7 +231,9 @@ describe("PropertyInspector", () => {
             {
               id: "layout",
               label: "Layout",
-              content: <PropertyRow label="Width">{(id) => <UnitInput id={id} unit="px" readOnly />}</PropertyRow>,
+              content: (
+                <PropertyRow label="Width">{(id) => <UnitInput id={id} unit="px" readOnly />}</PropertyRow>
+              ),
             },
           ],
         }}

@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
-import {
-  Progress,
-  ProgressLabel,
-  ProgressValue,
-} from "@/components/ui/progress";
+import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
 
 const meta: Meta<typeof Progress> = {
   title: "shadcn/ui/Progress",

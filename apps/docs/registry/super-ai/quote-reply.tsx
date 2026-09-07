@@ -78,7 +78,11 @@ function QuoteReply({
       )}
       {...props}
     >
-      <Icon aria-hidden data-slot="quote-reply-icon" className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+      <Icon
+        aria-hidden
+        data-slot="quote-reply-icon"
+        className="text-muted-foreground mt-0.5 size-4 shrink-0"
+      />
       <blockquote data-slot="quote-reply-excerpt" className="min-w-0 flex-1">
         {source === "image-region" && thumbnail ? (
           <PreviewTile aspect="square" label={excerpt} labelPlacement="below" className="w-20">

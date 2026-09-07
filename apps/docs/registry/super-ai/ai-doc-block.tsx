@@ -175,16 +175,8 @@ function AiDocBlock({
     // The root is unconditional across every state. Re-prompting swaps what is
     // inside it and nothing else, so the block never unmounts and never moves
     // relative to the paragraphs around it.
-    <Card
-      data-slot="ai-doc-block"
-      data-state={state}
-      className={cn("gap-3", className)}
-      {...props}
-    >
-      <CardHeader
-        data-slot="ai-doc-block-header"
-        className="flex flex-row items-center gap-2 text-xs"
-      >
+    <Card data-slot="ai-doc-block" data-state={state} className={cn("gap-3", className)} {...props}>
+      <CardHeader data-slot="ai-doc-block-header" className="flex flex-row items-center gap-2 text-xs">
         <Sparkles aria-hidden className="size-3.5 shrink-0" />
         <span data-slot="ai-doc-block-label" className="text-foreground font-medium">
           {label}
@@ -192,10 +184,7 @@ function AiDocBlock({
         {/* Shape *and* words. The spinner alone would make "still arriving" a
             purely visual fact; the word survives a screenshot in greyscale. */}
         {streaming ? (
-          <span
-            data-slot="ai-doc-block-streaming"
-            className="text-foreground flex items-center gap-1.5"
-          >
+          <span data-slot="ai-doc-block-streaming" className="text-foreground flex items-center gap-1.5">
             {/* `motion-reduce:animate-none` because the word beside it carries
                 the whole message: with the spin suppressed, "Streaming" still
                 says the text is arriving, so nothing is lost by holding the

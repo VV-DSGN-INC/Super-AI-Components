@@ -40,9 +40,21 @@ const SECTIONS: SettingsShellProps["sections"] = [
       description: "These follow your account into every workspace you belong to.",
     },
     rows: [
-      toggle("autosave", "Autosave drafts", "Keep a copy of every prompt while you type, recoverable for 30 days."),
-      toggle("sounds", "Completion sounds", "Play a chime when a long generation finishes in a background tab."),
-      toggle("telemetry", "Share usage data", "Send anonymised feature usage so the team can prioritise work."),
+      toggle(
+        "autosave",
+        "Autosave drafts",
+        "Keep a copy of every prompt while you type, recoverable for 30 days.",
+      ),
+      toggle(
+        "sounds",
+        "Completion sounds",
+        "Play a chime when a long generation finishes in a background tab.",
+      ),
+      toggle(
+        "telemetry",
+        "Share usage data",
+        "Send anonymised feature usage so the team can prioritise work.",
+      ),
       {
         id: "delete",
         label: "Delete account",
@@ -60,7 +72,11 @@ const SECTIONS: SettingsShellProps["sections"] = [
       description: "Members inherit the workspace plan. Seats are billed the day they are added.",
     },
     rows: [
-      toggle("invite-links", "Invite links", "Let anyone with the link join without an admin approving them."),
+      toggle(
+        "invite-links",
+        "Invite links",
+        "Let anyone with the link join without an admin approving them.",
+      ),
     ],
   },
   {
@@ -75,7 +91,11 @@ const SECTIONS: SettingsShellProps["sections"] = [
     },
     rows: [
       toggle("mcp-autoconnect", "Auto-connect servers", "Reconnect known MCP servers when a session starts."),
-      toggle("mcp-approvals", "Ask before every tool call", "Pause the first time a server calls a new tool."),
+      toggle(
+        "mcp-approvals",
+        "Ask before every tool call",
+        "Pause the first time a server calls a new tool.",
+      ),
     ],
     gatedLabel: "Included with Pro",
     gated: [
@@ -780,9 +800,7 @@ export const EmptyLabel: Story = {
     contentLabel: "",
     rootLabel: "",
     sections: SECTIONS?.map((section) =>
-      section.id === "mcp"
-        ? { ...section, code: { ...section.code!, label: "", copyLabel: "" } }
-        : section,
+      section.id === "mcp" ? { ...section, code: { ...section.code!, label: "", copyLabel: "" } } : section,
     ),
   },
   play: async ({ canvasElement }) => {
@@ -1001,4 +1019,3 @@ export const Boundary: Story = {
     await expect(shellCanvas.getAllByRole("searchbox")).toHaveLength(1);
   },
 };
-

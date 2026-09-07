@@ -20,10 +20,7 @@ describe("ApprovalCard", () => {
         onSkip={() => {}}
       />,
     );
-    expect(container.querySelector('[data-slot="approval-card"]')).toHaveAttribute(
-      "data-state",
-      "pending",
-    );
+    expect(container.querySelector('[data-slot="approval-card"]')).toHaveAttribute("data-state", "pending");
     expect(screen.getByRole("button", { name: /confirm/i })).toBeEnabled();
     expect(screen.getByRole("status")).toHaveTextContent("Awaiting your decision");
   });
@@ -51,9 +48,7 @@ describe("ApprovalCard", () => {
       <ApprovalCard title="Publish the Q3 summary" state="resolved" resolution="confirmed" />,
     );
     // Scoped to the visible slot: the sr-only status says the same words.
-    expect(container.querySelector('[data-slot="approval-card-resolution"]')).toHaveTextContent(
-      "Confirmed",
-    );
+    expect(container.querySelector('[data-slot="approval-card-resolution"]')).toHaveTextContent("Confirmed");
     // The verbs are gone: a resolved decision is not re-decidable in place.
     expect(screen.queryByRole("button", { name: /confirm/i })).not.toBeInTheDocument();
   });
@@ -107,10 +102,7 @@ describe("ApprovalCard", () => {
 
   it("keeps detail truncated until explicitly expanded", async () => {
     render(
-      <ApprovalCard
-        title="X"
-        detail={<p>The full body of the draft, all six hundred words of it.</p>}
-      />,
+      <ApprovalCard title="X" detail={<p>The full body of the draft, all six hundred words of it.</p>} />,
     );
     // Not merely clipped — absent, so a screen reader cannot read what a
     // sighted user has not been shown either.
@@ -121,10 +113,7 @@ describe("ApprovalCard", () => {
     await userEvent.click(toggle);
 
     expect(screen.getByText(/six hundred words/)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /hide detail/i })).toHaveAttribute(
-      "aria-expanded",
-      "true",
-    );
+    expect(screen.getByRole("button", { name: /hide detail/i })).toHaveAttribute("aria-expanded", "true");
   });
 
   it("lets a caller control expansion", async () => {
@@ -166,9 +155,7 @@ describe("ApprovalCard", () => {
       ["regenerated", "Sent back to regenerate"],
       ["skipped", "Skipped"],
     ] as const) {
-      const { unmount } = render(
-        <ApprovalCard title="X" state="resolved" resolution={resolution} />,
-      );
+      const { unmount } = render(<ApprovalCard title="X" state="resolved" resolution={resolution} />);
       expect(screen.getByRole("status")).toHaveTextContent(text);
       unmount();
     }
@@ -198,9 +185,7 @@ describe("ApprovalCard undo window", () => {
     act(() => void vi.advanceTimersByTime(1));
     expect(screen.queryByRole("button", { name: /undo/i })).not.toBeInTheDocument();
     // The decision itself is still stated once the window closes.
-    expect(
-      document.querySelector('[data-slot="approval-card-resolution"]'),
-    ).toHaveTextContent("Confirmed");
+    expect(document.querySelector('[data-slot="approval-card-resolution"]')).toHaveTextContent("Confirmed");
   });
 
   it("gives a second decision its own full window", () => {

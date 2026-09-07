@@ -2,11 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import {
-  FilterPanel,
-  type FilterPanelSection,
-  type FilterSelection,
-} from "@/registry/super-ai/filter-panel";
+import { FilterPanel, type FilterPanelSection, type FilterSelection } from "@/registry/super-ai/filter-panel";
 
 const SECTIONS: FilterPanelSection[] = [
   {

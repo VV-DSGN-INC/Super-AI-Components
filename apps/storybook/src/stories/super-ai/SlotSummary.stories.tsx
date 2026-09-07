@@ -23,8 +23,20 @@ type Story = StoryObj<typeof SlotSummary>;
  * across states.
  */
 const FRAME: Slot[] = [
-  { id: "recipient", label: "Recipient", value: "design-team (14 people)", source: "retrieved", required: true },
-  { id: "message", label: "Message", value: "Standup moves to 10:00 from Monday", source: "stated", required: true },
+  {
+    id: "recipient",
+    label: "Recipient",
+    value: "design-team (14 people)",
+    source: "retrieved",
+    required: true,
+  },
+  {
+    id: "message",
+    label: "Message",
+    value: "Standup moves to 10:00 from Monday",
+    source: "stated",
+    required: true,
+  },
   { id: "send-at", label: "Send at", value: "Tomorrow, 9:00 AM", source: "inferred" },
   { id: "channel", label: "Channel", value: "Email", source: "defaulted" },
 ];
@@ -73,7 +85,13 @@ export const MissingRequired: Story = {
   args: {
     slots: [
       { id: "recipient", label: "Recipient", source: "retrieved", required: true },
-      { id: "message", label: "Message", value: "Standup moves to 10:00 from Monday", source: "stated", required: true },
+      {
+        id: "message",
+        label: "Message",
+        value: "Standup moves to 10:00 from Monday",
+        source: "stated",
+        required: true,
+      },
       { id: "send-at", label: "Send at", source: "inferred" },
       { id: "channel", label: "Channel", value: "Email", source: "defaulted" },
     ],
@@ -309,8 +327,15 @@ export const Boundary: Story = {
   render: () => (
     <div className="flex w-full max-w-xl flex-col gap-6">
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Slot summary — what the system resolved, before it acts</p>
-        <SlotSummary slots={FRAME} onCorrect={() => {}} confirmLabel="Send to 14 people" onConfirm={() => {}} />
+        <p className="text-foreground text-xs font-medium">
+          Slot summary — what the system resolved, before it acts
+        </p>
+        <SlotSummary
+          slots={FRAME}
+          onCorrect={() => {}}
+          confirmLabel="Send to 14 people"
+          onConfirm={() => {}}
+        />
       </section>
 
       <section className="flex flex-col gap-2">

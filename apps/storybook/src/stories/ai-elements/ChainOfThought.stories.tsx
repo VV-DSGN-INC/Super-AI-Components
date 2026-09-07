@@ -7,12 +7,7 @@ import {
   ChainOfThoughtSearchResults,
   ChainOfThoughtStep,
 } from "@/components/ai-elements/chain-of-thought";
-import {
-  GlobeIcon,
-  PencilIcon,
-  SearchIcon,
-  SparklesIcon,
-} from "lucide-react";
+import { GlobeIcon, PencilIcon, SearchIcon, SparklesIcon } from "lucide-react";
 
 const meta: Meta<typeof ChainOfThought> = {
   title: "AI Elements/Chain of Thought",

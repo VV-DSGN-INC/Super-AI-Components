@@ -48,8 +48,7 @@ export default function TimeRulerDemo() {
             Snap {snapOn ? "on" : "off"}
           </Button>
           <span className="text-foreground text-xs tabular-nums">
-            {formatTimecode(playhead, 2)} · in {formatTimecode(range.in)} · out{" "}
-            {formatTimecode(range.out)}
+            {formatTimecode(playhead, 2)} · in {formatTimecode(range.in)} · out {formatTimecode(range.out)}
           </span>
         </div>
       </div>

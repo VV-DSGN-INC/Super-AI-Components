@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 
-import { ReferenceStrip, type ReferenceStripItem, type ReferenceRole } from "@/registry/super-ai/reference-strip";
+import {
+  ReferenceStrip,
+  type ReferenceStripItem,
+  type ReferenceRole,
+} from "@/registry/super-ai/reference-strip";
 
 interface DemoItem {
   id: string;
@@ -11,9 +15,18 @@ interface DemoItem {
 }
 
 const FILLED_ITEMS: DemoItem[] = [
-  { id: "one", thumbnail: { src: "https://placehold.co/200x200?text=1", alt: "Concept sketch of a lighthouse" } },
-  { id: "two", thumbnail: { src: "https://placehold.co/200x200?text=2", alt: "Photo of a coastline at dusk" } },
-  { id: "three", thumbnail: { src: "https://placehold.co/200x200?text=3", alt: "Reference of a rope texture" } },
+  {
+    id: "one",
+    thumbnail: { src: "https://placehold.co/200x200?text=1", alt: "Concept sketch of a lighthouse" },
+  },
+  {
+    id: "two",
+    thumbnail: { src: "https://placehold.co/200x200?text=2", alt: "Photo of a coastline at dusk" },
+  },
+  {
+    id: "three",
+    thumbnail: { src: "https://placehold.co/200x200?text=3", alt: "Reference of a rope texture" },
+  },
 ];
 
 const ROLE_ITEMS: DemoItem[] = [

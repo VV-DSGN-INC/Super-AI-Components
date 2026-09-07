@@ -1,10 +1,5 @@
 import type { ComponentDocs } from "@/lib/component-docs";
-import {
-  CarefulWorkBelowTheRule,
-  NoPrices,
-  OneFlatList,
-  SelectionNamed,
-} from "./ai-tools-menu.examples";
+import { CarefulWorkBelowTheRule, NoPrices, OneFlatList, SelectionNamed } from "./ai-tools-menu.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#i4-ai-tools-menu.
@@ -52,7 +47,7 @@ export const AiToolsMenuDocs: ComponentDocs = {
     },
   ],
   usage:
-    "Build `groups` from the selected object's type — an image gets Remove background and Magic expand, a text frame gets a different array — and pass the object itself as `selection` so the surface can name it. Group by intent and give each group a label; mark the group holding expensive or irreversible work `destructive` and it moves below every other group with a rule above it, whatever order you declared it in. Give every action that bills a `cost`; `per` renders the rate form (\"900 credits/min\"). Mark tier-gated actions `locked` rather than filtering them out: they stay visible with their price but cannot be chosen. Use `presentation=\"menu\"` with a `trigger` when it hangs off a context toolbar, and `\"inline\"` when it is a panel in its own right.",
+    'Build `groups` from the selected object\'s type — an image gets Remove background and Magic expand, a text frame gets a different array — and pass the object itself as `selection` so the surface can name it. Group by intent and give each group a label; mark the group holding expensive or irreversible work `destructive` and it moves below every other group with a rule above it, whatever order you declared it in. Give every action that bills a `cost`; `per` renders the rate form ("900 credits/min"). Mark tier-gated actions `locked` rather than filtering them out: they stay visible with their price but cannot be chosen. Use `presentation="menu"` with a `trigger` when it hangs off a context toolbar, and `"inline"` when it is a panel in its own right.',
   dos: [
     {
       text: "Name the object the actions will run against — the selection is the prompt context, not background information.",
@@ -78,14 +73,14 @@ export const AiToolsMenuDocs: ComponentDocs = {
       "In menu mode the closed surface is one tab stop — the trigger. Enter, Space or Down opens it; Up and Down walk every row in every group, typing a letter jumps to one, Enter or Space runs it, Escape closes.",
       "The arrow walk crosses group boundaries without stopping. The rule and the group label are not focusable, so nothing on the keyboard marks the moment you cross from the safe group into the destructive one — position is a sighted signal here.",
       "A locked or disabled row stays in the walk, marked `aria-disabled` rather than removed, so the row you cannot run is still discoverable from the keyboard.",
-      "In inline mode there is no arrow navigation at all: each actionable row is its own tab stop inside nested `role=\"group\"` wrappers. Four groups of three actions is twelve Tab presses with no way to skip a group.",
+      'In inline mode there is no arrow navigation at all: each actionable row is its own tab stop inside nested `role="group"` wrappers. Four groups of three actions is twelve Tab presses with no way to skip a group.',
       "A locked or inline-disabled row is not a tab stop in inline mode — it renders as a `div`, not a button — so the keyboard passes straight over the gated capability the component exists to advertise.",
     ],
     screenReader: [
-      "The surface is named from the selection: \"AI tools for Hero image\". In menu mode that means clearing Base UI's default `aria-labelledby`, which is what stops three menus on one canvas announcing the same trigger word.",
-      "The visible selection header is `aria-hidden` on purpose — its words already reach assistive tech through that name, so it is not read twice. The consequence is that with no `selection` prop the surface announces the bare \"AI tools\" and nothing states what is selected.",
-      "Group labels are `aria-hidden` too; each group carries the same words as its `aria-label`. A group given `actions` but no `label` is an unnamed group, which announces as an unlabelled boundary rather than as \"Careful work\".",
-      "In inline mode every actionable row is a `<button>` with `aria-pressed=\"false\"` from the composed `entity-row`, so Remove background announces as an unpressed toggle rather than as a one-shot action.",
+      'The surface is named from the selection: "AI tools for Hero image". In menu mode that means clearing Base UI\'s default `aria-labelledby`, which is what stops three menus on one canvas announcing the same trigger word.',
+      'The visible selection header is `aria-hidden` on purpose — its words already reach assistive tech through that name, so it is not read twice. The consequence is that with no `selection` prop the surface announces the bare "AI tools" and nothing states what is selected.',
+      'Group labels are `aria-hidden` too; each group carries the same words as its `aria-label`. A group given `actions` but no `label` is an unnamed group, which announces as an unlabelled boundary rather than as "Careful work".',
+      'In inline mode every actionable row is a `<button>` with `aria-pressed="false"` from the composed `entity-row`, so Remove background announces as an unpressed toggle rather than as a one-shot action.',
       "A row's name is its whole content read as one string — title, description, price, and the word Locked. The padlock and the coin glyph are both `aria-hidden`.",
       "`data-destructive` is a styling hook and reaches no assistive technology. A destructive row announces exactly like a safe one; the word in the group label is the only thing that says otherwise.",
       "Nothing announces that an action started, finished or spent anything. Put the live region on the canvas or the queue that receives the result.",

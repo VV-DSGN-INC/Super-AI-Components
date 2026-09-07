@@ -129,18 +129,14 @@ describe("RenderQueue", () => {
     expect(
       within(rowFor("Opening titles")).queryByRole("button", { name: /^Cancel/ }),
     ).not.toBeInTheDocument();
-    expect(
-      within(rowFor("Credits roll")).queryByRole("button", { name: /^Cancel/ }),
-    ).not.toBeInTheDocument();
+    expect(within(rowFor("Credits roll")).queryByRole("button", { name: /^Cancel/ })).not.toBeInTheDocument();
   });
 
   it("routes each action to its own job id", async () => {
     const onRetry = vi.fn();
     const onCancel = vi.fn();
     const onDownload = vi.fn();
-    render(
-      <RenderQueue jobs={JOBS} onRetry={onRetry} onCancel={onCancel} onDownload={onDownload} />,
-    );
+    render(<RenderQueue jobs={JOBS} onRetry={onRetry} onCancel={onCancel} onDownload={onDownload} />);
     await userEvent.click(screen.getByRole("button", { name: "Retry Credits roll" }));
     await userEvent.click(screen.getByRole("button", { name: "Cancel Main cut" }));
     await userEvent.click(screen.getByRole("button", { name: "Download Opening titles" }));

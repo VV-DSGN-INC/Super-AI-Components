@@ -4,10 +4,7 @@ import { expect, screen, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
-import {
-  WorkspaceSwitcher,
-  type WorkspaceSwitcherWorkspace,
-} from "@/registry/super-ai/workspace-switcher";
+import { WorkspaceSwitcher, type WorkspaceSwitcherWorkspace } from "@/registry/super-ai/workspace-switcher";
 import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -117,7 +114,9 @@ const TEAM_WORKSPACES: WorkspaceSwitcherWorkspace[] = [
 
 /** Opens the menu and returns its popup. Staging for the stories below. */
 async function openMenu(canvasElement: HTMLElement) {
-  await userEvent.click(canvasElement.querySelector<HTMLElement>("[data-slot='workspace-switcher-trigger']")!);
+  await userEvent.click(
+    canvasElement.querySelector<HTMLElement>("[data-slot='workspace-switcher-trigger']")!,
+  );
   return screen.findByRole("menu");
 }
 
@@ -173,9 +172,7 @@ export const RTL: Story = {
     // avatar leads on the right, ahead of the name.
     const avatar = row.querySelector<HTMLElement>("[data-slot='workspace-switcher-avatar']")!;
     const name = within(row).getByText("Design team");
-    await expect(avatar.getBoundingClientRect().left).toBeGreaterThan(
-      name.getBoundingClientRect().left,
-    );
+    await expect(avatar.getBoundingClientRect().left).toBeGreaterThan(name.getBoundingClientRect().left);
 
     // The half of the indicator defect that survives fixing it: whichever end
     // the check takes, it sits in the row's reserved gutter and never over the
@@ -183,9 +180,7 @@ export const RTL: Story = {
     // day `dropdown-menu.tsx` goes logical; asserting non-overlap holds either
     // way, and still catches a half-fix that moves the padding without the
     // indicator. Measured today at 8px clear.
-    const indicator = row.querySelector<HTMLElement>(
-      "[data-slot='dropdown-menu-radio-item-indicator']",
-    )!;
+    const indicator = row.querySelector<HTMLElement>("[data-slot='dropdown-menu-radio-item-indicator']")!;
     const check = indicator.getBoundingClientRect();
     const initials = avatar.getBoundingClientRect();
     await expect(check.right <= initials.left || check.left >= initials.right).toBe(true);
@@ -279,18 +274,14 @@ export const KeyboardOrder: Story = {
     onCreate: () => {},
   },
   play: async ({ canvasElement }) => {
-    const trigger = canvasElement.querySelector<HTMLElement>(
-      "[data-slot='workspace-switcher-trigger']",
-    )!;
+    const trigger = canvasElement.querySelector<HTMLElement>("[data-slot='workspace-switcher-trigger']")!;
 
     await userEvent.tab();
     await expect(document.activeElement).toBe(trigger);
     await userEvent.keyboard("{Enter}");
 
     const menu = await screen.findByRole("menu");
-    const stops = Array.from(
-      menu.querySelectorAll<HTMLElement>("[role='menuitemradio'], [role='menuitem']"),
-    );
+    const stops = Array.from(menu.querySelectorAll<HTMLElement>("[role='menuitemradio'], [role='menuitem']"));
     // Three workspaces, then creation. A fifth means something new landed in
     // the menu; a fourth in a different position means creation stopped being
     // last, which is the one ordering rule the spec states outright.
@@ -350,9 +341,7 @@ export const KeyboardOrder: Story = {
 
     const assertVisiblyFocused = async (el: HTMLElement) => {
       const id = nameOf(el);
-      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(
-        `${id} focusVisible=true`,
-      );
+      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(`${id} focusVisible=true`);
       // The row paints: an opaque fill of its own, rather than showing the
       // popup through. `bg-accent` is the treatment; a transparent computed
       // background means the focused row is indistinguishable from its
@@ -375,9 +364,7 @@ export const KeyboardOrder: Story = {
     for (let i = 1; i < stops.length; i += 1) {
       await userEvent.keyboard("{ArrowDown}");
       const focused = await settledStop(previous);
-      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
-        `${nameOf(focused)} repeat=false`,
-      );
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
       previous = focused;
@@ -459,9 +446,10 @@ export const Controlled: Story = {
     await expect(triggerName).toHaveTextContent("Design team");
 
     const reopened = await openMenu(canvasElement);
-    await expect(
-      await within(reopened).findByRole("menuitemradio", { name: /Design team/ }),
-    ).toHaveAttribute("aria-checked", "true");
+    await expect(await within(reopened).findByRole("menuitemradio", { name: /Design team/ })).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
     await expect(within(reopened).getByRole("menuitemradio", { name: /Personal/ })).toHaveAttribute(
       "aria-checked",
       "false",
@@ -476,11 +464,7 @@ function RejectingHost() {
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-4">
-      <WorkspaceSwitcher
-        workspaces={TEAM_WORKSPACES}
-        currentId={applied}
-        onSelect={setRequested}
-      />
+      <WorkspaceSwitcher workspaces={TEAM_WORKSPACES} currentId={applied} onSelect={setRequested} />
 
       <dl className="text-foreground grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-xs">
         <dt>currentId prop</dt>
@@ -546,9 +530,7 @@ export const EmptyLabel: Story = {
 
     // No plan anywhere, so no badge on the trigger — and the name is still
     // the trigger's accessible name.
-    await expect(
-      canvasElement.querySelector("[data-slot='workspace-switcher-plan-badge']"),
-    ).toBeNull();
+    await expect(canvasElement.querySelector("[data-slot='workspace-switcher-plan-badge']")).toBeNull();
 
     // One description switched all three rows into entity-row rendering.
     const rows = within(menu).getAllByRole("menuitemradio");
@@ -641,9 +623,7 @@ export const Mobile: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const trigger = canvasElement.querySelector<HTMLElement>(
-      "[data-slot='workspace-switcher-trigger']",
-    )!;
+    const trigger = canvasElement.querySelector<HTMLElement>("[data-slot='workspace-switcher-trigger']")!;
     await expect(trigger.getBoundingClientRect().width).toBeLessThanOrEqual(375);
 
     const menu = await openMenu(canvasElement);
@@ -699,9 +679,7 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">
-          Account menu — changes something about you
-        </p>
+        <p className="text-foreground text-xs font-medium">Account menu — changes something about you</p>
         <AccountMenu
           user={{ name: "Ada Lovelace", email: "ada@example.com" }}
           items={[{ label: "Settings", shortcut: ["⌘", ","] }]}

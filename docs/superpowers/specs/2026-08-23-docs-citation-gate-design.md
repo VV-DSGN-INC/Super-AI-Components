@@ -1,7 +1,7 @@
 # Docs citations: prose may not cite what the component graph cannot reach
 
 **Date:** 2026-08-23 · **Status:** designed, plan at `docs/superpowers/plans/2026-08-23-docs-citation-gate.md`
-**Extends** `check:contract` (which asserts docs *structure* — "at least one pitfall" — and, per CONTINUE §9's own admission, "never that the export says anything").
+**Extends** `check:contract` (which asserts docs _structure_ — "at least one pitfall" — and, per CONTINUE §9's own admission, "never that the export says anything").
 **Origin:** second transfer from the `ds-open-problems` bundle (the sibling repo's meta-prose gate), adapted to this repo's typed docs modules.
 
 ## Why
@@ -34,7 +34,7 @@ component's reachable source does not carry.**
   manifest's `consumes` and `shadcn` fields — reconciled from real imports —
   are the reach set, one level deep.
 - **Slots can be dynamic.** `approval-card` builds `data-slot` from a verb
-  array (`` data-slot={`approval-card-${verb}`} ``); a literal grep reads
+  array (``data-slot={`approval-card-${verb}`}``); a literal grep reads
   four true claims as lies. Template-literal prefixes count as reachable.
 - **Not every kebab word is checkable.** `scrollable-region-focusable` is an
   axe rule id (9 citations); `focus-visible` is a Tailwind variant. The
@@ -59,7 +59,7 @@ component's reachable source does not carry.**
 4. **`anatomy[].slot` is checked structurally** — every declared slot must be
    reachable as a literal or dynamic-prefix `data-slot`. This is the most
    load-bearing claim a docs module makes.
-5. **aria-*/role claims are deferred, recorded.** Radix injects them at
+5. **aria-\*/role claims are deferred, recorded.** Radix injects them at
    runtime; source text cannot prove them and pretending otherwise would
    manufacture false rot. Proving announced behaviour is story work (the
    sibling repo's keyboard-contract analogue), not citation work.
@@ -95,7 +95,7 @@ prose (dated artifacts and normative sources have their own contract).
   states — bucket 2, the reach model widened to both vocabularies (decision 3
   amended: prose names also resolve against any manifest item name and the
   item's own `states`; anatomy slots deliberately do not). Zero citations
-  needed *other* items' states.
+  needed _other_ items' states.
 - **58** were the O-family's parallel convention: shells mark regions with
   `data-region="…"` and anatomy claims the full attribute string — bucket 2,
   the resolver now reads regions.
@@ -108,7 +108,7 @@ prose (dated artifacts and normative sources have their own contract).
   `action-stack` claimed a `action-stack-item` slot that never shipped (the
   row is A9 `entity-row`); `settings-dialog` claimed
   `settings-dialog-row-label` where `-row-text` ships; `generation-shell`
-  filed the (real) `data-result-id` attribute in the anatomy *slot* field,
+  filed the (real) `data-result-id` attribute in the anatomy _slot_ field,
   re-anchored to the `result-card` entry.
 
 End state: 116 docs modules, 272 checkable citations, all reachable; both

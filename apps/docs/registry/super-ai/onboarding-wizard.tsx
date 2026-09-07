@@ -4,14 +4,7 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { ButtonGroup } from "@/components/ui/button-group";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
@@ -139,9 +132,7 @@ function OnboardingWizard({
   const currentIndex = Math.max(0, ids.indexOf(currentId ?? ids[0]));
   const currentStep = steps[currentIndex];
 
-  const [internalAnswers, setInternalAnswers] = React.useState<Record<string, string>>(
-    defaultAnswers ?? {},
-  );
+  const [internalAnswers, setInternalAnswers] = React.useState<Record<string, string>>(defaultAnswers ?? {});
   const answersControlled = answersProp !== undefined;
   const answers = answersControlled ? answersProp : internalAnswers;
 
@@ -221,11 +212,7 @@ function OnboardingWizard({
   ) : null;
 
   return (
-    <Card
-      data-slot="onboarding-wizard"
-      className={cn("w-full max-w-3xl", className)}
-      {...props}
-    >
+    <Card data-slot="onboarding-wizard" className={cn("w-full max-w-3xl", className)} {...props}>
       <CardHeader className="gap-3">
         {/*
           A real progressbar, not a row of coloured dots. The dots are the
@@ -255,11 +242,7 @@ function OnboardingWizard({
           >
             {`${label}: step ${position} of ${total}`}
           </ProgressLabel>
-          <span
-            data-slot="onboarding-wizard-dots"
-            aria-hidden
-            className="flex flex-1 items-center gap-1.5"
-          >
+          <span data-slot="onboarding-wizard-dots" aria-hidden className="flex flex-1 items-center gap-1.5">
             {steps.map((s, index) => (
               <span
                 key={s.id}
@@ -376,12 +359,7 @@ function OnboardingWizard({
         </Button>
         <ButtonGroup data-slot="onboarding-wizard-nav-forward">
           {/* Skip is on every step, including the last. */}
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={handleSkip}
-            data-slot="onboarding-wizard-skip"
-          >
+          <Button type="button" variant="ghost" onClick={handleSkip} data-slot="onboarding-wizard-skip">
             {skipLabel}
           </Button>
           <Button

@@ -1,6 +1,14 @@
 "use client";
 
-import { AlertTriangle, CheckCircle2, FileSearch, Library, RotateCcw, Scissors, Waypoints } from "lucide-react";
+import {
+  AlertTriangle,
+  CheckCircle2,
+  FileSearch,
+  Library,
+  RotateCcw,
+  Scissors,
+  Waypoints,
+} from "lucide-react";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -264,11 +272,7 @@ function SourcePanel({
   const showHeader = Boolean(heading) || Boolean(action);
 
   return (
-    <div
-      data-slot="source-panel"
-      className={cn("flex w-full max-w-md flex-col gap-3", className)}
-      {...props}
-    >
+    <div data-slot="source-panel" className={cn("flex w-full max-w-md flex-col gap-3", className)} {...props}>
       {showHeader ? (
         <div data-slot="source-panel-header" className="flex items-center justify-between gap-2">
           {heading ? (

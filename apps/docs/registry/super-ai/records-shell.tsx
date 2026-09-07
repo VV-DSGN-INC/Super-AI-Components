@@ -4,13 +4,7 @@ import { ListChecks, Plus } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/registry/super-ai/app-sidebar";
@@ -261,9 +255,7 @@ function RecordsShell({
 
   // Optional-controlled, the same split J1 uses for `view`: a shell that forced
   // every consumer to hold a sort key would be unusable in a static demo.
-  const [internalSort, setInternalSort] = React.useState(
-    defaultSort ?? sortOptions[0]?.value ?? "",
-  );
+  const [internalSort, setInternalSort] = React.useState(defaultSort ?? sortOptions[0]?.value ?? "");
   const sort = sortProp ?? internalSort;
   const handleSort = (next: string) => {
     if (sortProp === undefined) setInternalSort(next);
@@ -329,10 +321,7 @@ function RecordsShell({
           <h1 id={headingId} className="min-w-0 truncate text-base font-semibold">
             {title}
           </h1>
-          <span
-            data-slot="records-shell-count"
-            className="text-foreground/70 shrink-0 text-sm tabular-nums"
-          >
+          <span data-slot="records-shell-count" className="text-foreground/70 shrink-0 text-sm tabular-nums">
             {count ?? records.length}
           </span>
           {/* Logical, not physical. An auto margin sits on a *side*, so under
@@ -492,9 +481,4 @@ function RecordsShell({
 }
 
 export { RecordsShell };
-export type {
-  RecordsShellFilter,
-  RecordsShellFolder,
-  RecordsShellProps,
-  RecordsShellSortOption,
-};
+export type { RecordsShellFilter, RecordsShellFolder, RecordsShellProps, RecordsShellSortOption };

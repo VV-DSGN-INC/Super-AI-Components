@@ -35,8 +35,20 @@ function Swatch({ tone }: { tone: "primary" | "secondary" | "muted" }) {
 
 const VARIED: ExploreGalleryItem[] = [
   { id: "1", title: "Neon city", aspectRatio: "3 / 4", author: "@lumen", media: <Swatch tone="primary" /> },
-  { id: "2", title: "Paper forest", aspectRatio: "16 / 9", author: "@fold", media: <Swatch tone="secondary" /> },
-  { id: "3", title: "Chrome jellyfish", aspectRatio: "1 / 1", author: "@drift", media: <Swatch tone="muted" /> },
+  {
+    id: "2",
+    title: "Paper forest",
+    aspectRatio: "16 / 9",
+    author: "@fold",
+    media: <Swatch tone="secondary" />,
+  },
+  {
+    id: "3",
+    title: "Chrome jellyfish",
+    aspectRatio: "1 / 1",
+    author: "@drift",
+    media: <Swatch tone="muted" />,
+  },
   { id: "4", title: "Greenhouse", aspectRatio: "4 / 5", author: "@slab", media: <Swatch tone="secondary" /> },
 ];
 

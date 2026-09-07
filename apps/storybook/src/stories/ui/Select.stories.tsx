@@ -34,13 +34,8 @@ export const Default: Story = {
       const [model, setModel] = React.useState("nova-3-sonnet");
       return (
         <div className="flex w-64 flex-col gap-2">
-          <span className="text-xs font-medium text-muted-foreground">
-            Chat model
-          </span>
-          <Select
-            value={model}
-            onValueChange={(value) => setModel(value ?? "")}
-          >
+          <span className="text-xs font-medium text-muted-foreground">Chat model</span>
+          <Select value={model} onValueChange={(value) => setModel(value ?? "")}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select a model" />
             </SelectTrigger>
@@ -102,10 +97,7 @@ export const SmallTrigger: Story = {
       return (
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Quality</span>
-          <Select
-            value={quality}
-            onValueChange={(value) => setQuality(value ?? "")}
-          >
+          <Select value={quality} onValueChange={(value) => setQuality(value ?? "")}>
             <SelectTrigger size="sm">
               <SelectValue />
             </SelectTrigger>

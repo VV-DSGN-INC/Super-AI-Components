@@ -56,8 +56,7 @@ describe("slotTargets", () => {
     expect(t.regions.has("topbar")).toBe(true);
   });
   it("collects ternary literals and slot props", () => {
-    const src =
-      'x data-slot={thumbnail ? "chip-thumbnail" : "chip-icon"} y <Track slot="mixer-volume" />';
+    const src = 'x data-slot={thumbnail ? "chip-thumbnail" : "chip-icon"} y <Track slot="mixer-volume" />';
     const t = slotTargets(src);
     expect(t.literals.has("chip-thumbnail")).toBe(true);
     expect(t.literals.has("chip-icon")).toBe(true);

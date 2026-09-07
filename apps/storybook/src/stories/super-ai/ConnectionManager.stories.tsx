@@ -276,9 +276,7 @@ export const ReducedMotion: Story = {
     await expect(getComputedStyle(spinner).animationName).toBe("none");
 
     // The state survives the suppression, in words, in both places it is said.
-    const condition = testing.querySelector<HTMLElement>(
-      '[data-slot="connection-manager-condition"]',
-    )!;
+    const condition = testing.querySelector<HTMLElement>('[data-slot="connection-manager-condition"]')!;
     await expect(condition).toHaveTextContent("Testing this connection…");
     await expect(within(testing).getByRole("button", { name: "Testing…" })).toBeDisabled();
 
@@ -494,8 +492,7 @@ export const Controlled: Story = {
   ),
   play: async ({ canvasElement }) => {
     const TYPED = "example-connection-key-0000";
-    const scope = (testId: string) =>
-      canvasElement.querySelector<HTMLElement>(`[data-testid="${testId}"]`)!;
+    const scope = (testId: string) => canvasElement.querySelector<HTMLElement>(`[data-testid="${testId}"]`)!;
     const conditionIn = (host: HTMLElement, providerId: string) =>
       host.querySelector<HTMLElement>(
         `[data-provider-id="${providerId}"] [data-slot="connection-manager-condition"]`,
@@ -512,9 +509,9 @@ export const Controlled: Story = {
     await userEvent.paste(TYPED);
     await userEvent.click(within(refusing).getByRole("button", { name: "Save key" }));
     await expect(conditionIn(refusing, "mistral").textContent).toBe(refusingBefore);
-    await expect(
-      refusing.querySelector<HTMLElement>('[data-provider-id="mistral"]')!.dataset.status,
-    ).toBe("not-set");
+    await expect(refusing.querySelector<HTMLElement>('[data-provider-id="mistral"]')!.dataset.status).toBe(
+      "not-set",
+    );
 
     // 2. The callback carries the payload, and an applying host lands on
     //    saved-but-untested rather than on `valid`.
@@ -532,9 +529,9 @@ export const Controlled: Story = {
     );
     const openai = applying.querySelector<HTMLElement>('[data-provider-id="openai"]')!;
     await expect(openai.dataset.status).toBe("not-set");
-    await expect(
-      openai.querySelector<HTMLElement>('[data-slot="entity-row-description"]')!.textContent,
-    ).toBe("sk-live ···· 0000");
+    await expect(openai.querySelector<HTMLElement>('[data-slot="entity-row-description"]')!.textContent).toBe(
+      "sk-live ···· 0000",
+    );
 
     // 3. What the field exposes afterwards: nothing.
     const everyInput = Array.from(canvasElement.querySelectorAll("input"));
@@ -550,9 +547,7 @@ export const Controlled: Story = {
     //    uncommitted draft.
     await userEvent.click(refusingInput);
     await userEvent.paste("half-typed");
-    await userEvent.click(
-      canvasElement.querySelector<HTMLElement>('[data-testid="host-rerender"]')!,
-    );
+    await userEvent.click(canvasElement.querySelector<HTMLElement>('[data-testid="host-rerender"]')!);
     await expect(conditionIn(applying, "openai").textContent).toBe(
       "Saved, but never tested. Nothing has checked this key yet.",
     );
@@ -623,18 +618,12 @@ export const EmptyLabel: Story = {
     await expect(root.querySelector('[data-slot="card-description"]')).toBeNull();
 
     // Every row still says what it is and what to do, whatever was emptied.
-    const rows = Array.from(
-      root.querySelectorAll<HTMLElement>('[data-slot="connection-manager-provider"]'),
-    );
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('[data-slot="connection-manager-provider"]'));
     await expect(rows).toHaveLength(3);
     for (const provider of rows) {
       const id = provider.dataset.providerId;
-      const condition = provider.querySelector<HTMLElement>(
-        '[data-slot="connection-manager-condition"]',
-      )!;
-      const remedy = provider.querySelector<HTMLElement>(
-        '[data-slot="connection-manager-remedy"]',
-      )!;
+      const condition = provider.querySelector<HTMLElement>('[data-slot="connection-manager-condition"]')!;
+      const remedy = provider.querySelector<HTMLElement>('[data-slot="connection-manager-remedy"]')!;
       await expect(
         `${id}: ${condition.textContent!.length > 0 ? "condition" : "blank"} + ${
           remedy.textContent!.length > 0 ? "remedy" : "blank"
@@ -733,21 +722,15 @@ export const LongContent: Story = {
       el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1;
 
     // The advice not to rotate a working key, in full and unclipped.
-    const remedy = row("replicate").querySelector<HTMLElement>(
-      '[data-slot="connection-manager-remedy"]',
-    )!;
+    const remedy = row("replicate").querySelector<HTMLElement>('[data-slot="connection-manager-remedy"]')!;
     await expect(remedy.textContent).toBe(UNREACHABLE_REMEDY);
     await expect(`remedy unclipped: ${unclipped(remedy)}`).toBe("remedy unclipped: true");
     await expect(getComputedStyle(remedy).whiteSpace).toBe("normal");
 
     // The call-site override on A9's description survives, and wraps.
-    const description = row("replicate").querySelector<HTMLElement>(
-      '[data-slot="entity-row-description"]',
-    )!;
+    const description = row("replicate").querySelector<HTMLElement>('[data-slot="entity-row-description"]')!;
     await expect(getComputedStyle(description).whiteSpace).toBe("normal");
-    await expect(`description unclipped: ${unclipped(description)}`).toBe(
-      "description unclipped: true",
-    );
+    await expect(`description unclipped: ${unclipped(description)}`).toBe("description unclipped: true");
     // Line boxes, counted rather than inferred from a height: a Range over the
     // text node returns one rect per rendered line, so two rects is the wrap
     // itself and not a computed line-height that could read `normal`.
@@ -763,24 +746,16 @@ export const LongContent: Story = {
     await expect(`name length: ${LONG_NAME.length >= 80}`).toBe("name length: true");
     await expect(getComputedStyle(title).textOverflow).toBe("ellipsis");
     await expect(getComputedStyle(title).whiteSpace).toBe("nowrap");
-    await expect(`title truncated: ${title.scrollWidth > title.clientWidth}`).toBe(
-      "title truncated: true",
-    );
+    await expect(`title truncated: ${title.scrollWidth > title.clientWidth}`).toBe("title truncated: true");
 
     // A long requirement wraps rather than pushing the card sideways, and the
     // blocked sentence still lands under it.
     const requirement = row("llama").querySelector<HTMLElement>(
       '[data-slot="connection-manager-requirement"]',
     )!;
-    await expect(`requirement unclipped: ${unclipped(requirement)}`).toBe(
-      "requirement unclipped: true",
-    );
-    await expect(
-      row("llama").querySelector('[data-slot="connection-manager-blocked"]'),
-    ).not.toBeNull();
-    await expect(`card overflows: ${root.scrollWidth > root.clientWidth}`).toBe(
-      "card overflows: false",
-    );
+    await expect(`requirement unclipped: ${unclipped(requirement)}`).toBe("requirement unclipped: true");
+    await expect(row("llama").querySelector('[data-slot="connection-manager-blocked"]')).not.toBeNull();
+    await expect(`card overflows: ${root.scrollWidth > root.clientWidth}`).toBe("card overflows: false");
   },
 };
 
@@ -841,15 +816,11 @@ export const Mobile: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const frame = canvasElement.querySelector<HTMLElement>(
-      '[data-testid="connection-manager-frame"]',
-    )!;
+    const frame = canvasElement.querySelector<HTMLElement>('[data-testid="connection-manager-frame"]')!;
     const root = frame.querySelector<HTMLElement>('[data-slot="connection-manager"]')!;
     const fits = (el: HTMLElement) => el.scrollWidth <= el.clientWidth + 1;
 
-    await expect(`frame overflows: ${frame.scrollWidth > frame.clientWidth}`).toBe(
-      "frame overflows: false",
-    );
+    await expect(`frame overflows: ${frame.scrollWidth > frame.clientWidth}`).toBe("frame overflows: false");
     await expect(`card within frame: ${root.getBoundingClientRect().width <= 375}`).toBe(
       "card within frame: true",
     );
@@ -871,25 +842,20 @@ export const Mobile: Story = {
     )) {
       await expect(`actions fit: ${fits(actions)}`).toBe("actions fit: true");
     }
-    const requirements = root.querySelector<HTMLElement>(
-      '[data-slot="connection-manager-requirements"]',
-    )!;
+    const requirements = root.querySelector<HTMLElement>('[data-slot="connection-manager-requirements"]')!;
     await expect(`requirements fit: ${fits(requirements)}`).toBe("requirements fit: true");
 
     // Replacing a key puts a third control in that same non-wrapping row.
     await userEvent.click(
-      within(root.querySelector<HTMLElement>('[data-provider-id="anthropic"]')!).getByRole(
-        "button",
-        { name: "Replace key" },
-      ),
+      within(root.querySelector<HTMLElement>('[data-provider-id="anthropic"]')!).getByRole("button", {
+        name: "Replace key",
+      }),
     );
     const replaceField = root.querySelector<HTMLElement>(
       '[data-provider-id="anthropic"] [data-slot="connection-manager-key-field"]',
     )!;
     await expect(within(replaceField).getByRole("button", { name: "Cancel" })).toBeVisible();
-    await expect(`three-control row fits: ${fits(replaceField)}`).toBe(
-      "three-control row fits: true",
-    );
+    await expect(`three-control row fits: ${fits(replaceField)}`).toBe("three-control row fits: true");
     await expect(`frame still steady: ${frame.scrollWidth > frame.clientWidth}`).toBe(
       "frame still steady: false",
     );
@@ -971,8 +937,7 @@ export const Boundary: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const scope = (testId: string) =>
-      canvasElement.querySelector<HTMLElement>(`[data-testid="${testId}"]`)!;
+    const scope = (testId: string) => canvasElement.querySelector<HTMLElement>(`[data-testid="${testId}"]`)!;
     const titlesIn = (host: HTMLElement) =>
       Array.from(host.querySelectorAll<HTMLElement>('[data-slot="entity-row-title"]')).map(
         (el) => el.textContent,
@@ -986,12 +951,8 @@ export const Boundary: Story = {
     await expect(titlesIn(runtime)).toEqual(expected);
 
     // Only the configuration surface can change anything.
-    await expect(
-      within(configuration).getAllByRole("button", { name: "Test connection" }),
-    ).toHaveLength(3);
-    await expect(
-      within(configuration).getAllByRole("button", { name: "Replace key" }),
-    ).toHaveLength(2);
+    await expect(within(configuration).getAllByRole("button", { name: "Test connection" })).toHaveLength(3);
+    await expect(within(configuration).getAllByRole("button", { name: "Replace key" })).toHaveLength(2);
     await expect(runtime.querySelectorAll("input")).toHaveLength(0);
     await expect(within(runtime).queryAllByRole("button")).toHaveLength(0);
 

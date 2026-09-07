@@ -1,14 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import {
-  Image,
-  Library,
-  MessageSquare,
-  Plus,
-  Search,
-  Settings,
-  Sparkles,
-} from "lucide-react";
+import { Image, Library, MessageSquare, Plus, Search, Settings, Sparkles } from "lucide-react";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
@@ -59,9 +51,7 @@ export const Default: Story = {
                 <Sparkles className="size-4" />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-semibold leading-none">
-                  Nova Studio
-                </span>
+                <span className="text-sm font-semibold leading-none">Nova Studio</span>
                 <span className="text-xs text-muted-foreground">Pro plan</span>
               </div>
             </div>
@@ -75,16 +65,11 @@ export const Default: Story = {
                 <SidebarMenu>
                   {nav.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        isActive={item.active}
-                        tooltip={item.title}
-                      >
+                      <SidebarMenuButton isActive={item.active} tooltip={item.title}>
                         <item.icon />
                         <span>{item.title}</span>
                       </SidebarMenuButton>
-                      {item.badge ? (
-                        <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>
-                      ) : null}
+                      {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
                     </SidebarMenuItem>
                   ))}
                 </SidebarMenu>
@@ -126,16 +111,13 @@ export const Default: Story = {
           <header className="flex h-12 items-center gap-2 border-b px-4">
             <SidebarTrigger />
             <span className="text-sm font-medium">Chat</span>
-            <span className="ml-auto text-xs text-muted-foreground">
-              1,240 credits
-            </span>
+            <span className="ml-auto text-xs text-muted-foreground">1,240 credits</span>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-6">
             <div className="rounded-lg border bg-card p-4 text-sm text-card-foreground">
               <p className="font-medium">Nova</p>
               <p className="mt-1 text-muted-foreground">
-                Hi! Describe an image and I&apos;ll generate a few options for
-                you.
+                Hi! Describe an image and I&apos;ll generate a few options for you.
               </p>
             </div>
             <div className="rounded-lg border bg-card p-4 text-sm text-card-foreground">
@@ -175,10 +157,7 @@ export const Collapsible: Story = {
                     <SidebarMenu>
                       {nav.map((item) => (
                         <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton
-                            isActive={item.active}
-                            tooltip={item.title}
-                          >
+                          <SidebarMenuButton isActive={item.active} tooltip={item.title}>
                             <item.icon />
                             <span>{item.title}</span>
                           </SidebarMenuButton>
@@ -192,13 +171,10 @@ export const Collapsible: Story = {
             <SidebarInset>
               <header className="flex h-12 items-center gap-2 border-b px-4">
                 <SidebarTrigger />
-                <span className="text-sm font-medium">
-                  Toggle the icon-collapsible sidebar
-                </span>
+                <span className="text-sm font-medium">Toggle the icon-collapsible sidebar</span>
               </header>
               <div className="p-6 text-sm text-muted-foreground">
-                Use the trigger (or Cmd/Ctrl + B) to collapse the sidebar to
-                icons.
+                Use the trigger (or Cmd/Ctrl + B) to collapse the sidebar to icons.
               </div>
             </SidebarInset>
           </SidebarProvider>

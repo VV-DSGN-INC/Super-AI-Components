@@ -22,18 +22,48 @@ export const FilterPanelDocs: ComponentDocs = {
     "Filtering has a scale ladder. A handful of choices is a row of chips — CapCut, Claude Artifacts and Canva all stop there. Past roughly six facets a row of chips stops being readable and the surface escalates to a rail, which is what Midjourney Organize ships as its reference implementation. The counts are what make the rail worth the width: without them a user picks a facet, waits, and finds out it was empty. With them the panel has already answered the question. Saved searches are the rung above that — the thing that separates a power archive from a library, because a filter combination worth rebuilding by hand is one you should never have to rebuild by hand.",
   evidence: ["Midjourney Organize", "CapCut", "Claude Artifacts", "Canva"],
   anatomy: [
-    { slot: "filter-panel", note: "Root rail. Owns the selection, the open sections, and nothing about layout width." },
-    { slot: "filter-panel-header", note: "Title plus the A11 clear-all affordance, which stays mounted and goes inert when there is nothing to clear." },
-    { slot: "filter-panel-view-options", note: "Sort, layout, density — presentation, kept above and apart from the facets." },
-    { slot: "filter-panel-saved-searches", note: "The power archive. Its own named region with its own heading, never a checkbox group." },
-    { slot: "filter-panel-saved-search", note: "One saved search. A button, because picking it replaces the filter set." },
+    {
+      slot: "filter-panel",
+      note: "Root rail. Owns the selection, the open sections, and nothing about layout width.",
+    },
+    {
+      slot: "filter-panel-header",
+      note: "Title plus the A11 clear-all affordance, which stays mounted and goes inert when there is nothing to clear.",
+    },
+    {
+      slot: "filter-panel-view-options",
+      note: "Sort, layout, density — presentation, kept above and apart from the facets.",
+    },
+    {
+      slot: "filter-panel-saved-searches",
+      note: "The power archive. Its own named region with its own heading, never a checkbox group.",
+    },
+    {
+      slot: "filter-panel-saved-search",
+      note: "One saved search. A button, because picking it replaces the filter set.",
+    },
     { slot: "filter-panel-sections", note: "The facet stack." },
-    { slot: "filter-panel-section", note: "One facet group: a named checkbox group headed by A12 section-header." },
-    { slot: "filter-panel-section-selected", note: "'N selected' in the header, so a collapsed group never hides live filters." },
+    {
+      slot: "filter-panel-section",
+      note: "One facet group: a named checkbox group headed by A12 section-header.",
+    },
+    {
+      slot: "filter-panel-section-selected",
+      note: "'N selected' in the header, so a collapsed group never hides live filters.",
+    },
     { slot: "filter-panel-facets", note: "The checkbox list for one group." },
-    { slot: "filter-panel-facet", note: "One facet row: checkbox, label, count. Carries data-empty when the count is zero." },
-    { slot: "filter-panel-facet-count", note: "The count. Part of the checkbox's accessible name, not decoration beside it." },
-    { slot: "filter-panel-see-more", note: "Overflow control inside one group. Its name names the group and the number still hidden." },
+    {
+      slot: "filter-panel-facet",
+      note: "One facet row: checkbox, label, count. Carries data-empty when the count is zero.",
+    },
+    {
+      slot: "filter-panel-facet-count",
+      note: "The count. Part of the checkbox's accessible name, not decoration beside it.",
+    },
+    {
+      slot: "filter-panel-see-more",
+      note: "Overflow control inside one group. Its name names the group and the number still hidden.",
+    },
   ],
   usage:
     "Reach for the rail when a library has more filters than a row of chips can carry — roughly six facets is the crossover point, below which `filter-bar` is the right answer. Pass `sections` as data, one entry per facet group, and give every facet a real count; the panel treats a count of zero as a dead end and disables that row. Selection is reported as `{ sectionId: value[] }` through `onSelectedChange`, and the panel is happy either uncontrolled (`defaultSelected`) or fully controlled. Collapse state is remembered for the life of the mount; if you want it to survive a reload, take `openSections` / `onOpenSectionsChange` and store it yourself.",

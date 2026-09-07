@@ -29,6 +29,7 @@
 ### Task 1: Scaffold `packages/ds-rules` with the harvested schema
 
 **Files:**
+
 - Create: `packages/ds-rules/package.json`
 - Create: `packages/ds-rules/tsconfig.json`
 - Create: `packages/ds-rules/vitest.config.ts`
@@ -36,6 +37,7 @@
 - Create: `packages/ds-rules/src/schema.test.ts`
 
 **Interfaces:**
+
 - Consumes: archive file `ds-architecture/starter-kit/02-rules/schema.ts`.
 - Produces: `ruleSchema` (zod), `detectSchema`, `RULE_ID_PATTERN`, `CATALOGUE_VERSION`, `type Rule` — exactly the harvested exports. Later tasks import `type Rule` and `ruleSchema` from `./schema`.
 
@@ -54,9 +56,9 @@ In `packages/ds-rules/src/schema.ts`, change the `RULE_ID_PATTERN` line:
 
 ```ts
 // Old:
-export const RULE_ID_PATTERN = /^(COL|TYP|LAY|CMP|ICO|MOT|CPY|CHT|STA|SYS)-\d+$/
+export const RULE_ID_PATTERN = /^(COL|TYP|LAY|CMP|ICO|MOT|CPY|CHT|STA|SYS)-\d+$/;
 // New (TOK added for this repo's token-contract rules; the only edit to the harvested file):
-export const RULE_ID_PATTERN = /^(COL|TYP|LAY|CMP|ICO|MOT|CPY|CHT|STA|SYS|TOK)-\d+$/
+export const RULE_ID_PATTERN = /^(COL|TYP|LAY|CMP|ICO|MOT|CPY|CHT|STA|SYS|TOK)-\d+$/;
 ```
 
 - [ ] **Step 3: Write the package manifest and configs**
@@ -189,6 +191,7 @@ git commit -m "feat(ds-rules): scaffold rules package with harvested schema (+TO
 ### Task 2: Local rule records TOK-1/2/3/6/7, emission, drift gate, fixtures
 
 **Files:**
+
 - Create: `packages/ds-rules/src/local.ts`
 - Create: `packages/ds-rules/src/emit.test.ts`
 - Create: `packages/ds-rules/rules/local.json` (emitted, committed)
@@ -196,6 +199,7 @@ git commit -m "feat(ds-rules): scaffold rules package with harvested schema (+TO
 - Create: `packages/ds-rules/src/records.test.ts`
 
 **Interfaces:**
+
 - Consumes: `ruleSchema`, `type Rule`, `CATALOGUE_VERSION` from Task 1.
 - Produces: `LOCAL_RULES: Rule[]`, `CATALOG_SCOPES: string[]`, `VENDORED_SCOPES: string[]` from `./local`; emitted `rules/local.json` with shape `{ version, rules }` (the shape `loadRules` in Task 4 reads). TOK-4/5 are **not** in this task — they need the structural functions (Task 3).
 
@@ -380,34 +384,52 @@ Expected: FAIL — fixture-existence test (no fixtures yet) and emit test (`loca
 Each bad fixture breaks exactly its own rule; each good fixture is the same shape done correctly. Create these six files verbatim:
 
 `__fixtures__/TOK-1/bad/case.tsx`
+
 ```tsx
 export const Swatch = () => <div style={{ background: "#1a2b3c" }} />;
 ```
+
 `__fixtures__/TOK-1/good/case.tsx`
+
 ```tsx
-export const Swatch = () => <div className="bg-muted" />; {/* see GH-1234 */}
+export const Swatch = () => <div className="bg-muted" />;
+{
+  /* see GH-1234 */
+}
 ```
+
 `__fixtures__/TOK-2/bad/case.tsx`
+
 ```tsx
 export const Swatch = () => <div style={{ background: "oklch(0.7 0.1 200)" }} />;
 ```
+
 `__fixtures__/TOK-2/good/case.tsx`
+
 ```tsx
 export const Swatch = () => <div className="bg-accent" />;
 ```
+
 `__fixtures__/TOK-3/bad/case.tsx`
+
 ```tsx
 export const Chip = () => <span className="bg-zinc-400 text-blue-600">hi</span>;
 ```
+
 `__fixtures__/TOK-3/good/case.tsx`
+
 ```tsx
 export const Chip = () => <span className="bg-secondary text-secondary-foreground">hi</span>;
 ```
+
 `__fixtures__/TOK-7/bad/case.tsx`
+
 ```tsx
 export const Veil = () => <div style={{ background: "rgba(0, 0, 0, 0.4)" }} />;
 ```
+
 `__fixtures__/TOK-7/good/case.tsx`
+
 ```tsx
 export const Veil = () => <div className="bg-background/40" />;
 ```
@@ -437,6 +459,7 @@ git commit -m "feat(ds-rules): local TOK records, emission drift gate, per-rule 
 ### Task 3: Move `token-rules.mjs` (and its test) into the package; repoint importers
 
 **Files:**
+
 - Move: `apps/docs/scripts/lib/token-rules.mjs` → `packages/ds-rules/src/token-rules.mjs`
 - Move: `apps/docs/scripts/lib/token-rules.test.ts` → `packages/ds-rules/src/token-rules.test.ts`
 - Modify: `apps/docs/scripts/check-contract.mts` (import line ~31)
@@ -445,6 +468,7 @@ git commit -m "feat(ds-rules): local TOK records, emission drift gate, per-rule 
 - Modify: `apps/docs/package.json` (add workspace dep)
 
 **Interfaces:**
+
 - Consumes: nothing new.
 - Produces: `ds-rules/token-rules` package export exposing `MUTED_FG`, `MUTED_BG_RE`, `CONTRAST_EXEMPT_FILES`, `isExempt(file)`, `findSingleStringViolations(file, source): string[]`, `extractCvaCalls(source)`, `findCvaViolations(file, source): string[]` — unchanged signatures; only the module's address changes.
 
@@ -490,6 +514,7 @@ git commit -m "refactor(ds-rules): move token-rules predicates into the package;
 ### Task 4: `rulecheck.mjs` — the detector CLI, with TOK-4/5 structural routing
 
 **Files:**
+
 - Create: `packages/ds-rules/rulecheck.mjs`
 - Modify: `packages/ds-rules/src/local.ts` (append TOK-4, TOK-5)
 - Modify: `packages/ds-rules/src/records.test.ts` (STRUCTURAL + vendored-mirror assertions)
@@ -497,6 +522,7 @@ git commit -m "refactor(ds-rules): move token-rules predicates into the package;
 - Create: `packages/ds-rules/src/rulecheck.test.ts`
 
 **Interfaces:**
+
 - Consumes: `rules/*.json` (Task 2 shape), `findSingleStringViolations` / `findCvaViolations` (Task 3).
 - Produces: CLI `node packages/ds-rules/rulecheck.mjs [--files <repo-relative>…] [--severity blocker|review|warning] [--json]`. Report shape `{ violations: [{id, severity, method, confidence, file, line, snippet, fix}], unchecked: [{id, reason, how?}], summary: {blocker, review, warning, filesScanned} }`. Exit 0 = no blockers, 1 = ≥1 post-demotion blocker, 2 = the script itself failed. Also exports `loadRules`, `walk`, `scan`, `VENDORED_SCOPES` for tests. Env `DS_RULES_DIR` overrides the rules directory (test seam for the exit-2 control test).
 
@@ -538,14 +564,19 @@ Run `pnpm --filter ds-rules rules:emit` after editing (the drift gate fails unti
 - [ ] **Step 2: Create the TOK-4/5 fixtures**
 
 `__fixtures__/TOK-4/bad/case.tsx`
+
 ```tsx
 export const Meta = () => <p className="bg-muted text-muted-foreground">3 items</p>;
 ```
+
 `__fixtures__/TOK-4/good/case.tsx`
+
 ```tsx
 export const Meta = () => <p className="bg-card text-muted-foreground">3 items</p>;
 ```
+
 `__fixtures__/TOK-5/bad/case.tsx`
+
 ```tsx
 import { cva } from "class-variance-authority";
 
@@ -553,7 +584,9 @@ export const listVariants = cva("text-muted-foreground", {
   variants: { tone: { plain: "bg-muted" } },
 });
 ```
+
 `__fixtures__/TOK-5/good/case.tsx`
+
 ```tsx
 import { cva } from "class-variance-authority";
 
@@ -611,7 +644,8 @@ export const STRUCTURAL = {
 export const VENDORED_SCOPES = ["apps/docs/components/ui"];
 
 export function loadRules(dir = process.env.DS_RULES_DIR ?? path.join(PKG_ROOT, "rules")) {
-  if (!existsSync(dir)) throw new Error(`rules dir not found (${dir}) — run: pnpm --filter ds-rules rules:emit`);
+  if (!existsSync(dir))
+    throw new Error(`rules dir not found (${dir}) — run: pnpm --filter ds-rules rules:emit`);
   return readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
     .sort()
@@ -649,7 +683,10 @@ function structuralFindings(rule, targets, root) {
         confidence: "high",
         file,
         line: Number(head.slice(head.lastIndexOf(":") + 1)) || 1,
-        snippet: message.slice(sep + 3).trim().slice(0, 120),
+        snippet: message
+          .slice(sep + 3)
+          .trim()
+          .slice(0, 120),
         fix: rule.fix,
       });
     }
@@ -760,7 +797,9 @@ function main(argv) {
   } else {
     for (const v of report.violations) {
       const tag = v.severity === "warning" ? "WARN " : "";
-      process.stdout.write(`${tag}${v.file}:${v.line}  ${v.id} [${v.severity}]  ${v.snippet}\n    fix: ${v.fix}\n`);
+      process.stdout.write(
+        `${tag}${v.file}:${v.line}  ${v.id} [${v.severity}]  ${v.snippet}\n    fix: ${v.fix}\n`,
+      );
     }
     for (const u of report.unchecked) {
       if (u.how) process.stdout.write(`unchecked ${u.id} (${u.reason}): ${u.how}\n`);
@@ -833,7 +872,10 @@ describe("every rule against its fixtures", () => {
   const rules = loadRules().filter((r) => r.detect.method !== "rendered" && r.detect.method !== "judgment");
 
   for (const rule of rules) {
-    const at = (kind: string) => ({ ...rule, detect: { ...rule.detect, scope: [`${FIXTURES}/${rule.id}/${kind}`] } });
+    const at = (kind: string) => ({
+      ...rule,
+      detect: { ...rule.detect, scope: [`${FIXTURES}/${rule.id}/${kind}`] },
+    });
 
     it(`${rule.id} fires on its known-bad fixture`, () => {
       const files = [`${FIXTURES}/${rule.id}/bad/case.tsx`];
@@ -917,6 +959,7 @@ git commit -m "feat(ds-rules): rulecheck CLI with structural TOK-4/5 routing, ve
 ### Task 5: Adopt the harvested core rules, reconciled and triaged
 
 **Files:**
+
 - Create: `packages/ds-rules/src/core.ts` (harvested + edits below)
 - Modify: `packages/ds-rules/src/emit.test.ts` (add core.json emission)
 - Modify: `packages/ds-rules/src/records.test.ts` (`all()` gains CORE_RULES)
@@ -924,6 +967,7 @@ git commit -m "feat(ds-rules): rulecheck CLI with structural TOK-4/5 routing, ve
 - Create: `packages/ds-rules/__fixtures__/<id>/{bad,good}/case.tsx` for each adopted rule
 
 **Interfaces:**
+
 - Consumes: archive `ds-architecture/starter-kit/02-rules/core.ts`; `type Rule` from Task 1.
 - Produces: `CORE_RULES: Rule[]` from `./core`; `rules/core.json`.
 
@@ -957,12 +1001,14 @@ The harvested file holds ten records: COL-1, COL-6, ICO-2, MOT-1, MOT-2, CPY-1, 
 - [ ] **Step 2: Wire core into emission and record tests**
 
 In `emit.test.ts`: `import { CORE_RULES } from "./core";` and change `EMISSIONS` to
+
 ```ts
 const EMISSIONS: Array<[string, unknown[]]> = [
   ["core.json", CORE_RULES],
   ["local.json", LOCAL_RULES],
 ];
 ```
+
 In `records.test.ts`: `import { CORE_RULES } from "./core";` and `const all = () => [...CORE_RULES, ...LOCAL_RULES];`
 
 - [ ] **Step 3: Run to see the fixture test fail, then create ten fixture pairs**
@@ -973,18 +1019,18 @@ pnpm --filter ds-rules test
 
 Expected: FAIL on missing fixtures for the ten core ids. Create each pair; one-line contents:
 
-| id | `bad/case.tsx` content | `good/case.tsx` content |
-|---|---|---|
-| COL-1 | `export const X = () => <div className="bg-gradient-to-r from-primary to-accent" />;` | `export const X = () => <div className="bg-accent" />;` |
-| COL-6 | `export const X = () => <div className="bg-indigo-500" />;` | `export const X = () => <div className="bg-[var(--chart-4)]" />;` |
-| ICO-2 | `export const X = () => <button>✨ Generate</button>;` | `import { Sparkles } from "lucide-react";\nexport const X = () => <button><Sparkles className="size-4" /> Generate</button>;` |
-| MOT-1 | `export const X = () => <div className="animate-bounce" />;` | `export const X = ({ loading }: { loading: boolean }) => <div className={loading ? "animate-spin" : ""} />;` |
-| MOT-2 | `export const X = () => <div className="transition-all" />;` | `export const X = () => <div className="transition-colors" />;` |
-| CPY-1 | `export const X = () => <button>Get Started</button>;` | `export const X = () => <button>Create workspace</button>;` |
-| CPY-2 | `export const X = () => <p>Seamless, effortless workflows</p>;` | `export const X = () => <p>Runs the export in the background</p>;` |
-| CHT-1 | `export const X = () => <line stroke="#8884d8" />;` | `export const X = () => <line stroke="var(--chart-1)" />;` |
-| CHT-3 | `export const X = () => <g strokeDasharray="3 3" />;` | `export const X = () => <g />;` |
-| STA-3 | `export const X = () => <button className="outline-none">go</button>;` | `export const X = () => <button className="outline-none focus-visible:ring-2">go</button>;` |
+| id    | `bad/case.tsx` content                                                                | `good/case.tsx` content                                                                                                       |
+| ----- | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| COL-1 | `export const X = () => <div className="bg-gradient-to-r from-primary to-accent" />;` | `export const X = () => <div className="bg-accent" />;`                                                                       |
+| COL-6 | `export const X = () => <div className="bg-indigo-500" />;`                           | `export const X = () => <div className="bg-[var(--chart-4)]" />;`                                                             |
+| ICO-2 | `export const X = () => <button>✨ Generate</button>;`                                | `import { Sparkles } from "lucide-react";\nexport const X = () => <button><Sparkles className="size-4" /> Generate</button>;` |
+| MOT-1 | `export const X = () => <div className="animate-bounce" />;`                          | `export const X = ({ loading }: { loading: boolean }) => <div className={loading ? "animate-spin" : ""} />;`                  |
+| MOT-2 | `export const X = () => <div className="transition-all" />;`                          | `export const X = () => <div className="transition-colors" />;`                                                               |
+| CPY-1 | `export const X = () => <button>Get Started</button>;`                                | `export const X = () => <button>Create workspace</button>;`                                                                   |
+| CPY-2 | `export const X = () => <p>Seamless, effortless workflows</p>;`                       | `export const X = () => <p>Runs the export in the background</p>;`                                                            |
+| CHT-1 | `export const X = () => <line stroke="#8884d8" />;`                                   | `export const X = () => <line stroke="var(--chart-1)" />;`                                                                    |
+| CHT-3 | `export const X = () => <g strokeDasharray="3 3" />;`                                 | `export const X = () => <g />;`                                                                                               |
+| STA-3 | `export const X = () => <button className="outline-none">go</button>;`                | `export const X = () => <button className="outline-none focus-visible:ring-2">go</button>;`                                   |
 
 - [ ] **Step 4: Emit and run to green**
 
@@ -993,6 +1039,7 @@ pnpm --filter ds-rules rules:emit && pnpm --filter ds-rules test
 ```
 
 Expected: fixture tests pass. If the **tree-clean gate** (Task 4's test) now fails, a core rule fired on the live registry. This is the audit moment the manual promises — for each finding, exactly one of:
+
 - a real violation → fix the component (then `pnpm build:registry`, commit the fix separately with the finding id in the message);
 - a legitimate usage the rule cannot distinguish → per spec §9, downgrade that rule's `severity` to `"warning"` **with the reason appended to its `why`**, re-emit, and note it in the PR body. (Likely candidate: CPY-1/CPY-2 on `registry/marketing` demo copy.)
 
@@ -1010,10 +1057,12 @@ git commit -m "feat(ds-rules): adopt harvested core rules (scopes repointed, ICO
 ### Task 6: The no-deps gate, the provenance README, and PR 1
 
 **Files:**
+
 - Create: `packages/ds-rules/src/no-deps.test.ts`
 - Create: `packages/ds-rules/README.md`
 
 **Interfaces:**
+
 - Consumes: archive `ds-architecture/scripts/lib/no-deps.test.ts` (the four-form specifier discipline).
 - Produces: nothing consumed later; this is the portability gate.
 
@@ -1100,13 +1149,13 @@ never gate; findings under `apps/docs/components/ui/` demote to warnings
 
 ## Provenance and drift
 
-| piece | origin | local changes |
-|---|---|---|
-| `src/schema.ts` | ds-architecture starter kit (pegbo-inc/design-system-rebuild) | `TOK` added to RULE_ID_PATTERN |
-| `src/core.ts` | same, harvested | scopes repointed; ICO-2 fix → lucide-react |
-| `src/local.ts` | this repo (check-tokens.mjs, token-rules.mjs, a11y-baseline.md, anti-slop.md) | — |
-| `rulecheck.mjs` | same starter kit | five divergences, numbered in its header |
-| `src/token-rules.mjs` | this repo, moved verbatim | — |
+| piece                 | origin                                                                        | local changes                              |
+| --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
+| `src/schema.ts`       | ds-architecture starter kit (pegbo-inc/design-system-rebuild)                 | `TOK` added to RULE_ID_PATTERN             |
+| `src/core.ts`         | same, harvested                                                               | scopes repointed; ICO-2 fix → lucide-react |
+| `src/local.ts`        | this repo (check-tokens.mjs, token-rules.mjs, a11y-baseline.md, anti-slop.md) | —                                          |
+| `rulecheck.mjs`       | same starter kit                                                              | five divergences, numbered in its header   |
+| `src/token-rules.mjs` | this repo, moved verbatim                                                     | —                                          |
 
 `rules/*.json` is generated (`pnpm --filter ds-rules rules:emit`); the emit
 test is the drift gate. Every grep/heuristic rule carries a known-bad AND a
@@ -1132,9 +1181,11 @@ gh pr create --repo VV-DSGN-INC/Super-AI-Components --title "feat: ds-rules pack
 ### Task 7: The temporary parity test
 
 **Files:**
+
 - Create: `packages/ds-rules/src/parity.test.ts`
 
 **Interfaces:**
+
 - Consumes: `apps/docs/scripts/check-tokens.mjs` (spawned), `rulecheck.mjs` CLI (spawned).
 - Produces: proof for the swap commit. **This file is deleted in Task 8, in the same commit that deletes the old gate.**
 
@@ -1184,8 +1235,14 @@ describe("old gate vs rulecheck on the live tree", () => {
   it("TOK-family findings are identical", () => {
     const a = oldFindings();
     const b = newFindings();
-    expect([...b].filter((x) => !a.has(x)), "new-only findings").toEqual([]);
-    expect([...a].filter((x) => !b.has(x)), "old-only findings").toEqual([]);
+    expect(
+      [...b].filter((x) => !a.has(x)),
+      "new-only findings",
+    ).toEqual([]);
+    expect(
+      [...a].filter((x) => !b.has(x)),
+      "old-only findings",
+    ).toEqual([]);
   });
 });
 ```
@@ -1208,6 +1265,7 @@ git commit -m "test(ds-rules): temporary live-tree parity between check-tokens.m
 ### Task 8: The swap — delegate, repoint the hook, delete the old gate
 
 **Files:**
+
 - Modify: `apps/docs/package.json` (one script line)
 - Modify: `.claude/hooks/check-tokens-on-edit.sh` (the invocation block)
 - Delete: `apps/docs/scripts/check-tokens.mjs`
@@ -1216,6 +1274,7 @@ git commit -m "test(ds-rules): temporary live-tree parity between check-tokens.m
 - Modify: any `CONTINUE.md` / docs lines naming `check-tokens.mjs` (find with grep)
 
 **Interfaces:**
+
 - Consumes: everything PR 1 built.
 - Produces: root `pnpm check:tokens` now runs rulecheck; the CI step name and position are untouched.
 
@@ -1299,12 +1358,14 @@ gh pr create --repo VV-DSGN-INC/Super-AI-Components --title "feat: check:tokens 
 ### Task 9: a11y exclusion baseline (shrink-only)
 
 **Files:**
+
 - Create: `apps/docs/scripts/lib/a11y-ratchet.ts`
 - Create: `apps/docs/scripts/lib/a11y-ratchet.test.ts`
 - Create: `apps/storybook/a11y-exclusions.baseline.json`
 - Create: `apps/docs/scripts/a11y-baseline.mts` + package script `a11y:baseline`
 
 **Interfaces:**
+
 - Consumes: `apps/storybook/vitest.config.ts` source text (same file G3 already reads).
 - Produces: `parseRawExclusions(source: string): string[]` — every quoted entry of the `exclude: [...]` array (globs and filenames alike; the `...configDefaults.exclude` spread is unquoted and self-excludes).
 
@@ -1418,10 +1479,12 @@ git commit -m "feat(a11y): shrink-only exclusion baseline — the prose rule bec
 ### Task 10: cssVars liveness gate
 
 **Files:**
+
 - Create: `apps/docs/scripts/lib/cssvars-liveness.test.ts`
 - Possibly create: `apps/docs/cssvars-liveness.baseline.json` (only if the first run finds pre-existing gaps)
 
 **Interfaces:**
+
 - Consumes: `MANIFEST` (import it exactly as `check-contract.mts` line ~1–30 does — copy that import line), registry sources, `apps/docs/app/globals.css` + `apps/docs/app/marketing.css`.
 - Produces: the gate. Resolution rule: a var a component **writes** must be declared by stock CSS ∪ own `cssVars` ∪ transitive `consumes`' `cssVars` ∪ its own inline declarations; a declared `cssVars` key must be referenced by the item's own sources.
 
@@ -1443,9 +1506,7 @@ const STOCK_CSS = ["app/globals.css", "app/marketing.css"];
 const BASELINE = "cssvars-liveness.baseline.json";
 
 const stockVars = new Set<string>(
-  STOCK_CSS.flatMap((f) =>
-    [...readFileSync(f, "utf8").matchAll(/(--[a-zA-Z0-9-]+)\s*:/g)].map((m) => m[1]),
-  ),
+  STOCK_CSS.flatMap((f) => [...readFileSync(f, "utf8").matchAll(/(--[a-zA-Z0-9-]+)\s*:/g)].map((m) => m[1])),
 );
 
 const fileFor = (name: string) => `registry/super-ai/${name}.tsx`;
@@ -1531,6 +1592,7 @@ pnpm --filter docs test -- cssvars-liveness
 ```
 
 Triage every failure (the survey predicts candidates around `--time-ruler-playhead-height`, `--marketing-marquee-gap`, `--color-spend`, `--accent-foreground` chains — most should resolve via inline declarations or stock CSS; genuine finds are manifest `cssVars` gaps):
+
 - Real gap → add the missing `cssVars` entry to the manifest item (or fix the component), run `pnpm build:registry`, commit that fix on its own with the item name in the message.
 - Deliberate deferral → create `apps/docs/cssvars-liveness.baseline.json` with exactly those strings and a matching note in the PR body.
 
@@ -1545,6 +1607,7 @@ git commit -m "feat(liveness): cssVars gate — declared↔read, both directions
 ### Task 11: Delete `contractExempt` (decision D20)
 
 **Files:**
+
 - Modify: `apps/docs/lib/manifest-types.ts` (remove the field, lines ~90–94)
 - Modify: `apps/docs/scripts/check-contract.mts` (lines ~10–12 comment, ~36 counter, ~113 docs-skip, ~118–121 skip block, ~368 summary)
 - Modify: `docs/design-system/decisions.md` (append D20)
@@ -1598,6 +1661,7 @@ gh pr create --repo VV-DSGN-INC/Super-AI-Components --title "feat: mechanical ra
 ### Task 12: Hook `--files` optimization and the written promotion criterion
 
 **Files:**
+
 - Modify: `.claude/hooks/check-tokens-on-edit.sh`
 
 - [ ] **Step 1: Make the hook scan only the edited file, and write the criterion**
@@ -1642,6 +1706,7 @@ git commit -m "feat(hook): single-file rulecheck with written promotion criterio
 ### Task 13: Slim unslop and anti-slop.md to consume the detector
 
 **Files:**
+
 - Modify: `.claude/skills/unslop/SKILL.md`
 - Modify: `docs/design-system/anti-slop.md`
 
@@ -1693,6 +1758,7 @@ gh pr create --repo VV-DSGN-INC/Super-AI-Components --title "feat: hook + audit 
 ### Task 14: Vendor the checker runtime
 
 **Files:**
+
 - Create: `tools/ds-architecture/**` (from the archive: `scripts/`, `src/`, `stages/`, `LADDER.md`, `package.json`, `tsconfig.json`, `vitest.config.ts`)
 - Create: `tools/ds-architecture/VENDOR.md`
 - Modify: root `.gitignore` (add `tools/ds-architecture/node_modules/`)
@@ -1763,6 +1829,7 @@ git commit -m "chore(tools): vendor ds-architecture conformance checker runtime 
 ### Task 15: Stage-00 config, `check:ladder`, first score
 
 **Files:**
+
 - Create: `ds-architecture.config.json` (repo root)
 - Modify: root `package.json` (add `check:ladder` script — plain script, NOT a turbo task, NOT a CI step)
 - Possibly create: `AGENTS.md` (thin pointer — only if the probe requires that filename; see Step 2)
@@ -1801,7 +1868,9 @@ pnpm check:ladder; echo "exit=$?"
 ```
 
 Read the output claim by claim. Handle the two likely findings:
+
 - If a claim requires an `AGENTS.md` instructions file by that exact name (the stage-00 fixtures use it), create a root `AGENTS.md` that is a pointer, not a copy:
+
   ```markdown
   # Agent instructions
 
@@ -1809,6 +1878,7 @@ Read the output claim by claim. Handle the two likely findings:
   the contracts it links under docs/design-system/. Definition of done:
   `pnpm lint && pnpm typecheck && pnpm check:tokens && pnpm check:contract && pnpm test`.
   ```
+
 - Any other unmet claim: fix the config value it names (the probe's `fix:` line says how). The goal state is all six 00.x claims `met`, `highestContiguous=00`, exit 0.
 
 - [ ] **Step 3: Gates, commit, push, PR 5**

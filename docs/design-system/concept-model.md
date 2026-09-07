@@ -12,13 +12,13 @@ Visualised on the working board as sections **CM1–CM4**.
 Each layer may depend downward only. This is what keeps 84 components from collapsing into 84
 mutually-entangled files.
 
-| Layer | Contents | Rule |
-| ----- | -------- | ---- |
-| **L4** Blocks · 14 | The layout archetypes (shells) | May compose anything |
-| **L3** Components · 84 | Families B–N | **Never depend on each other** |
-| **L2** Primitives · 12 | Family A | Shared DNA |
-| **L1** AI Elements | conversation, message, prompt-input, reasoning, tool, sources, canvas/node/edge, suggestion, model-selector | Cross-registry dependencies. Composed, never copied |
-| **L0** shadcn/ui | button, card, dialog, popover, select, slider, switch, table, tabs, sidebar, command, resizable, collapsible, empty, item, kbd, chart | `registryDependencies` |
+| Layer                  | Contents                                                                                                                              | Rule                                                |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **L4** Blocks · 14     | The layout archetypes (shells)                                                                                                        | May compose anything                                |
+| **L3** Components · 84 | Families B–N                                                                                                                          | **Never depend on each other**                      |
+| **L2** Primitives · 12 | Family A                                                                                                                              | Shared DNA                                          |
+| **L1** AI Elements     | conversation, message, prompt-input, reasoning, tool, sources, canvas/node/edge, suggestion, model-selector                           | Cross-registry dependencies. Composed, never copied |
+| **L0** shadcn/ui       | button, card, dialog, popover, select, slider, switch, table, tabs, sidebar, command, resizable, collapsible, empty, item, kbd, chart | `registryDependencies`                              |
 
 ### The promotion rule
 
@@ -40,17 +40,17 @@ never a running app. This is what makes composing against a fast-moving upstream
 Which L3 components consume each L2 primitive. Row length is the argument for that primitive
 existing.
 
-| Primitive | Consumers |
-| --------- | --------- |
-| **A8 preview-tile** | E4 preset-grid · H5 frame-strip · I1 tool-panel · F1 result-card · C4 recent-grid (· F2 generation-grid, transitively through F1) |
-| **A9 entity-row** | D6 skill-menu · I4 ai-tools-menu · F4 action-stack · K5 source-panel · C3 feature-card-row · B2 workspace-switcher |
-| **A6 field-row** | E3 parameter-panel · I2 property-inspector · G9 node-inspector · M1 settings-dialog · E1 generation-panel |
-| **A2 cost-chip** | E5 run-button · F4 action-stack · M5 paywall-message · M2 credits-indicator · G6 model-bar |
-| **A7 gen-settings-bar** | G6 model-bar · D1 media-prompt-bar · E1 generation-panel |
-| **A10 stat-readout** | F3 asset-detail · N5 run-inspector · N6 usage-dashboard *(unstated)* |
-| **A11 reset-affordance** | A6 field-row · I2 property-inspector · A12 section-header *(group scope)* |
-| **A12 section-header** | I1 tool-panel · B3 sidebar-nav · C3 feature-card-row · L4 whats-new · J2 filter-panel · J1 asset-library *(only I1 and B3 declared)* |
-| **A3 date-section** | B6 thread-list · F2 generation-grid · J4 artifact-grid · J5 record-list |
+| Primitive                | Consumers                                                                                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **A8 preview-tile**      | E4 preset-grid · H5 frame-strip · I1 tool-panel · F1 result-card · C4 recent-grid (· F2 generation-grid, transitively through F1)    |
+| **A9 entity-row**        | D6 skill-menu · I4 ai-tools-menu · F4 action-stack · K5 source-panel · C3 feature-card-row · B2 workspace-switcher                   |
+| **A6 field-row**         | E3 parameter-panel · I2 property-inspector · G9 node-inspector · M1 settings-dialog · E1 generation-panel                            |
+| **A2 cost-chip**         | E5 run-button · F4 action-stack · M5 paywall-message · M2 credits-indicator · G6 model-bar                                           |
+| **A7 gen-settings-bar**  | G6 model-bar · D1 media-prompt-bar · E1 generation-panel                                                                             |
+| **A10 stat-readout**     | F3 asset-detail · N5 run-inspector · N6 usage-dashboard _(unstated)_                                                                 |
+| **A11 reset-affordance** | A6 field-row · I2 property-inspector · A12 section-header _(group scope)_                                                            |
+| **A12 section-header**   | I1 tool-panel · B3 sidebar-nav · C3 feature-card-row · L4 whats-new · J2 filter-panel · J1 asset-library _(only I1 and B3 declared)_ |
+| **A3 date-section**      | B6 thread-list · F2 generation-grid · J4 artifact-grid · J5 record-list                                                              |
 
 **`preview-tile` is the load-bearing one** — five direct consumers plus one transitive, across four
 families. It remains the highest fan-out primitive in the catalog and is still the first thing to
@@ -79,13 +79,13 @@ COMPOSE (D) ──▶ GENERATE (E) ──▶ RESULT (F) ──▶ LIBRARY (J)
         (D2 reference-strip · D3 context-chips)
 ```
 
-| Stage | Family | Components |
-| ----- | ------ | ---------- |
-| COMPOSE | D | media-prompt-bar · reference-strip · context-chips · mode-tabs |
-| GENERATE | E | generation-panel · model-picker · parameter-panel · run-button |
-| RESULT | F | result-card · generation-grid · asset-detail · action-stack |
-| LIBRARY | J | asset-library · filter-panel · artifact-grid · explore-gallery |
-| EDIT | H · I | context-toolbar · property-inspector · track-lane · transcript-editor |
+| Stage    | Family | Components                                                            |
+| -------- | ------ | --------------------------------------------------------------------- |
+| COMPOSE  | D      | media-prompt-bar · reference-strip · context-chips · mode-tabs        |
+| GENERATE | E      | generation-panel · model-picker · parameter-panel · run-button        |
+| RESULT   | F      | result-card · generation-grid · asset-detail · action-stack           |
+| LIBRARY  | J      | asset-library · filter-panel · artifact-grid · explore-gallery        |
+| EDIT     | H · I  | context-toolbar · property-inspector · track-lane · transcript-editor |
 
 ### G — Canvas is the same loop, spatialised
 
@@ -102,15 +102,15 @@ Contracts are the second axis of the system. A component is not "done" until it 
 contract that crosses its family. This is what makes 95 components feel like one library rather than
 95 libraries.
 
-| Contract | Definition | Binds families |
-| -------- | ---------- | -------------- |
-| **Token** | shadcn CSS variables only; no raw hex or arbitrary Tailwind colour values. Kit-scoped semantic tokens (the Flow Kit's `--flow-*` type and execution colours) defined once centrally with light and dark values. Enforced by `check:tokens`. | All (A–O) |
-| **State** | `idle · queued · streaming · done · failed · locked` on every generation-aware component, with shared visuals: shimmer while streaming, inline failure card, CTA-replaced lock. | C D E F G K |
-| **Cost** | Three forms of one number: chip (per action, A2), line (pre-commit, E5), ring (app level, M2). | B D E F G M |
-| **Provenance** `NEW` | Prompt, model, seed, params and cost travel with every asset. Any surface showing an asset can render them via A10 stat-readout. | F G J K |
-| **Empty** `NEW` | Every panel, list, grid and pane ships an empty state. | B C D F G I J K L N O |
-| **Approval** | Artifact approval surfaces expose Confirm · Edit · Regenerate · Skip callbacks. | F K N |
-| **Dialog** `NEW` | Any multi-turn surface models a **frame** (slots, each carrying a source and a confidence) and a **stack** (paused work). Every slot declares how it was filled, is correctable in place without restarting the flow, and states what invalidates it. | B D F K N O |
+| Contract             | Definition                                                                                                                                                                                                                                            | Binds families        |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| **Token**            | shadcn CSS variables only; no raw hex or arbitrary Tailwind colour values. Kit-scoped semantic tokens (the Flow Kit's `--flow-*` type and execution colours) defined once centrally with light and dark values. Enforced by `check:tokens`.           | All (A–O)             |
+| **State**            | `idle · queued · streaming · done · failed · locked` on every generation-aware component, with shared visuals: shimmer while streaming, inline failure card, CTA-replaced lock.                                                                       | C D E F G K           |
+| **Cost**             | Three forms of one number: chip (per action, A2), line (pre-commit, E5), ring (app level, M2).                                                                                                                                                        | B D E F G M           |
+| **Provenance** `NEW` | Prompt, model, seed, params and cost travel with every asset. Any surface showing an asset can render them via A10 stat-readout.                                                                                                                      | F G J K               |
+| **Empty** `NEW`      | Every panel, list, grid and pane ships an empty state.                                                                                                                                                                                                | B C D F G I J K L N O |
+| **Approval**         | Artifact approval surfaces expose Confirm · Edit · Regenerate · Skip callbacks.                                                                                                                                                                       | F K N                 |
+| **Dialog** `NEW`     | Any multi-turn surface models a **frame** (slots, each carrying a source and a confidence) and a **stack** (paused work). Every slot declares how it was filled, is correctable in place without restarting the flow, and states what invalidates it. | B D F K N O           |
 
 ### Where the Dialog contract came from
 
@@ -122,12 +122,12 @@ without owning pixels — which is the definition of a contract in this system.
 
 The four obligations:
 
-| Obligation | What it means | Why |
-| --- | --- | --- |
-| **Sourced slots** | Every collected value records whether it was user-stated, inferred, defaulted or retrieved | Inferred and defaulted values must be visibly distinguishable from stated ones, or the user audits nothing |
-| **Correction without restart** | Changing an earlier value recomputes dependents rather than resetting the flow | The single strongest test of state design. `pattern_correction` exists because every framework hit this |
-| **Stack visibility** | Paused work is visible and resumable | `pattern_continue_interrupted` has no observed UI anywhere. That is a gap, not a non-requirement |
-| **Declared expiry** | A surface states what invalidates its collected state | Sessions that remember too long fail the same way as sessions that forget |
+| Obligation                     | What it means                                                                              | Why                                                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
+| **Sourced slots**              | Every collected value records whether it was user-stated, inferred, defaulted or retrieved | Inferred and defaulted values must be visibly distinguishable from stated ones, or the user audits nothing |
+| **Correction without restart** | Changing an earlier value recomputes dependents rather than resetting the flow             | The single strongest test of state design. `pattern_correction` exists because every framework hit this    |
+| **Stack visibility**           | Paused work is visible and resumable                                                       | `pattern_continue_interrupted` has no observed UI anywhere. That is a gap, not a non-requirement           |
+| **Declared expiry**            | A surface states what invalidates its collected state                                      | Sessions that remember too long fail the same way as sessions that forget                                  |
 
 The contract deliberately owns **no component**. `repair-prompt` and `interrupted-flow-resume` both
 failed the inclusion test as components (2 and 1 products) precisely because the population expresses
@@ -146,11 +146,11 @@ recipe-card pattern, and it is what makes a result reproducible.
 
 The paywall is a state, not a page. It appears four ways:
 
-| Placement | Component | Context |
-| --------- | --------- | ------- |
-| In-stream | M5 paywall-message | Inside a chat or result stream, carrying the prompt and model it would have used |
-| Locked row | E7 member-gate-row | A settings row that stays visible with a tier badge |
-| At the point of spend | E5 run-button | "Need 4 credits, you have 2" beside Generate |
-| Ambient | B5 promo-card | Sidebar card — the only placement not tied to an action, and the only dismissible one |
+| Placement             | Component          | Context                                                                               |
+| --------------------- | ------------------ | ------------------------------------------------------------------------------------- |
+| In-stream             | M5 paywall-message | Inside a chat or result stream, carrying the prompt and model it would have used      |
+| Locked row            | E7 member-gate-row | A settings row that stays visible with a tier badge                                   |
+| At the point of spend | E5 run-button      | "Need 4 credits, you have 2" beside Generate                                          |
+| Ambient               | B5 promo-card      | Sidebar card — the only placement not tied to an action, and the only dismissible one |
 
 This is why monetization cannot be deferred to a late wave. See [decisions.md](decisions.md).

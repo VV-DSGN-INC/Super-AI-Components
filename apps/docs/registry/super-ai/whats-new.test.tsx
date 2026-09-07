@@ -118,10 +118,7 @@ describe("WhatsNew", () => {
   it("renders the entry-cta state", async () => {
     const user = userEvent.setup();
     const onAction = vi.fn();
-    const withCta: WhatsNewEntry[] = [
-      { ...entries[0], cta: { label: "Open layers", onAction } },
-      entries[1],
-    ];
+    const withCta: WhatsNewEntry[] = [{ ...entries[0], cta: { label: "Open layers", onAction } }, entries[1]];
     render(<WhatsNew entries={withCta} defaultOpen />);
 
     // The CTA is an action that lands you in the feature, not a link out: it

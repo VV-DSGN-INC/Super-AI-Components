@@ -49,14 +49,7 @@ interface ContextChipProps extends Omit<React.ComponentProps<"span">, "children"
   onRemove?: () => void;
 }
 
-function ContextChip({
-  kind,
-  label,
-  unresolved = false,
-  onRemove,
-  className,
-  ...props
-}: ContextChipProps) {
+function ContextChip({ kind, label, unresolved = false, onRemove, className, ...props }: ContextChipProps) {
   const Icon = unresolved ? TriangleAlert : KIND_ICON[kind];
   return (
     <span

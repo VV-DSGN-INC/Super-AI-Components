@@ -43,7 +43,7 @@ what happens when a fact has two homes.
 
 **Goals**
 
-- Convert the rules that *can* be mechanised into gates and hooks, so following
+- Convert the rules that _can_ be mechanised into gates and hooks, so following
   them costs nothing and breaking them is difficult.
 - Give a fan-out a real agent definition rather than a re-pasted prompt, so
   §3.4's "do not re-paste the house rules" is structurally true.
@@ -64,11 +64,11 @@ what happens when a fact has two homes.
 
 ## 3. Architecture — three layers
 
-| Layer | Enforces | Cannot |
-| --- | --- | --- |
-| **Gates** (`apps/docs/scripts/*`, `ci.yml`) | What is mechanically checkable in committed code | Prevent the action; only notice it afterwards |
-| **Hooks** (`.claude/settings.json`) | What must never happen, at the moment of attempt | Judge quality |
-| **Skills + agents** (`.claude/skills`, `.claude/agents`) | The sequence, and what each participant may write | Bind, unless backed by the two above |
+| Layer                                                    | Enforces                                          | Cannot                                        |
+| -------------------------------------------------------- | ------------------------------------------------- | --------------------------------------------- |
+| **Gates** (`apps/docs/scripts/*`, `ci.yml`)              | What is mechanically checkable in committed code  | Prevent the action; only notice it afterwards |
+| **Hooks** (`.claude/settings.json`)                      | What must never happen, at the moment of attempt  | Judge quality                                 |
+| **Skills + agents** (`.claude/skills`, `.claude/agents`) | The sequence, and what each participant may write | Bind, unless backed by the two above          |
 
 **Placement rule.** If a gate can catch it, it is a gate. If a gate cannot catch
 it but a tool call can be denied, it is a hook. Only what survives both becomes
@@ -138,7 +138,7 @@ three steps later:
 CONTINUE.md becomes `apps/docs/scripts/reconcile-deps.mts`, printing a diff
 between real imports and what the manifest declares. Encodes the
 `@base-ui/react` rule: normally omitted from `npm` because it arrives as a peer
-of any vendored `ui/` primitive, *except* for a component importing no `ui/`
+of any vendored `ui/` primitive, _except_ for a component importing no `ui/`
 primitive at all (`time-ruler`).
 
 ## 5. Rules — hooks
@@ -149,13 +149,13 @@ Note that git-write denial is **not** here. Hooks apply session-wide and cannot
 reliably distinguish a subagent from the integrator, and the integrator must
 commit. That denial lives in the agent definition (§4.1), where it is precise.
 
-| Event | Matcher | Action |
-| --- | --- | --- |
-| `PreToolUse` | Bash, bare `pnpm format` / `prettier --write .` | Deny. Rewrites ~300 unrelated files and breaks `check:contract`, whose guidance regexes (`whatItIs:\s*"..."`) do not survive re-wrapping. Message points at `pnpm exec prettier --write <paths>` |
-| `PreToolUse` | Bash, `npx shadcn add <http…>` | Deny. Resolves the item's own `registryDependencies` against the default **Radix** registry, offers to overwrite this repo's Base UI primitives, and writes no component files |
-| `PreToolUse` | Write/Edit on `apps/docs/lib/catalog.manifest.ts` | Confirm, not deny — the integrator legitimately writes it |
-| `PostToolUse` | Write/Edit on `apps/docs/registry/super-ai/*.tsx` | Run `check:tokens` scoped to that file; surface failures at edit time rather than CI time |
-| `SessionStart` | — | Print live gate baselines, current exempt count, and the worktree base-commit reminder |
+| Event          | Matcher                                           | Action                                                                                                                                                                                           |
+| -------------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `PreToolUse`   | Bash, bare `pnpm format` / `prettier --write .`   | Deny. Rewrites ~300 unrelated files and breaks `check:contract`, whose guidance regexes (`whatItIs:\s*"..."`) do not survive re-wrapping. Message points at `pnpm exec prettier --write <paths>` |
+| `PreToolUse`   | Bash, `npx shadcn add <http…>`                    | Deny. Resolves the item's own `registryDependencies` against the default **Radix** registry, offers to overwrite this repo's Base UI primitives, and writes no component files                   |
+| `PreToolUse`   | Write/Edit on `apps/docs/lib/catalog.manifest.ts` | Confirm, not deny — the integrator legitimately writes it                                                                                                                                        |
+| `PostToolUse`  | Write/Edit on `apps/docs/registry/super-ai/*.tsx` | Run `check:tokens` scoped to that file; surface failures at edit time rather than CI time                                                                                                        |
+| `SessionStart` | —                                                 | Print live gate baselines, current exempt count, and the worktree base-commit reminder                                                                                                           |
 
 The `SessionStart` hook does more than it appears to. Every number in
 CONTINUE.md §1 is a hand-maintained snapshot, and §6's are already stale against
@@ -237,7 +237,7 @@ such. It catches the bug where the accessible name is actually computed.
 ### G6 — `vitest.setup.ts` ScrollArea shim
 
 Base UI's `ScrollArea` (under C2 `suggestion-chips`) schedules a timer calling
-`getAnimations()`, which jsdom lacks. It throws *after* the triggering test
+`getAnimations()`, which jsdom lacks. It throws _after_ the triggering test
 resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
 its own test file; it belongs in the shared setup next to the ResizeObserver
 stub, and will bite anything composing a `ScrollArea`.
@@ -259,7 +259,7 @@ These are the atoms `component-build-brief.md` instructs every builder to
 compose. The least-verified layer is the most-composed layer, so the debt is not
 25 units — it is 25 multiplied by composer count.
 
-`check-contract.mts:108` skips the docs-file *existence* check for exempt items,
+`check-contract.mts:108` skips the docs-file _existence_ check for exempt items,
 so all 25 ship with no guidance module at all.
 
 The job is also high-volume, templated, and mechanically verifiable, which makes

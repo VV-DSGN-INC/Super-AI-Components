@@ -60,18 +60,10 @@ export const WithPrefixText: Story = {
 export const PromptComposer: Story = {
   render: () => (
     <InputGroup className="w-96">
-      <InputGroupTextarea
-        rows={3}
-        placeholder="cyberpunk alley at night, heavy rain, neon reflections..."
-      />
+      <InputGroupTextarea rows={3} placeholder="cyberpunk alley at night, heavy rain, neon reflections..." />
       <InputGroupAddon align="block-end">
         <InputGroupText>Aurora-XL &middot; 4 credits</InputGroupText>
-        <InputGroupButton
-          variant="default"
-          size="icon-sm"
-          className="ml-auto"
-          aria-label="Send"
-        >
+        <InputGroupButton variant="default" size="icon-sm" className="ml-auto" aria-label="Send">
           <SendIcon />
         </InputGroupButton>
       </InputGroupAddon>

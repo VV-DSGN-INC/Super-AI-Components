@@ -312,9 +312,7 @@ export const KeyboardOrder: Story = {
     // trigger for form submission, carrying `tabindex="-1" aria-hidden="true"`,
     // and a looser selector counts it as a seventh stop that no one can reach.
     const stops = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        'button, a[href], input, select, textarea, [tabindex]',
-      ),
+      canvasElement.querySelectorAll<HTMLElement>("button, a[href], input, select, textarea, [tabindex]"),
     ).filter((el) => el.getAttribute("tabindex") !== "-1" && el.getAttribute("aria-hidden") !== "true");
 
     const nameOf = (el: Element | null) =>
@@ -564,18 +562,8 @@ function ControlledShell() {
 export const EmptyLabel: Story = {
   render: () => (
     <div className="flex flex-col items-start gap-6">
-      <ModelPicker
-        presentation="dropdown"
-        label=""
-        models={BARE_MODELS}
-        onSelect={() => {}}
-      />
-      <ModelPicker
-        presentation="expanded-cards"
-        label=""
-        models={BARE_MODELS}
-        onSelect={() => {}}
-      />
+      <ModelPicker presentation="dropdown" label="" models={BARE_MODELS} onSelect={() => {}} />
+      <ModelPicker presentation="expanded-cards" label="" models={BARE_MODELS} onSelect={() => {}} />
       <ModelPicker presentation="node-inline" label="" models={BARE_MODELS} onSelect={() => {}} />
     </div>
   ),
@@ -656,9 +644,7 @@ export const LongContent: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const cards = within(
-      canvasElement.querySelector<HTMLElement>('[data-presentation="expanded-cards"]')!,
-    );
+    const cards = within(canvasElement.querySelector<HTMLElement>('[data-presentation="expanded-cards"]')!);
 
     const row = cards.getByRole("button", { name: /stable-video-diffusion/ });
     const title = row.querySelector<HTMLElement>('[data-slot="entity-row-title"]')!;
@@ -682,9 +668,7 @@ export const LongContent: Story = {
     )!;
     const label = trigger.querySelector<HTMLElement>("span.truncate")!;
     await expect(label.scrollWidth).toBeGreaterThan(label.clientWidth);
-    await expect(trigger.getBoundingClientRect().width).toBeLessThan(
-      row.getBoundingClientRect().width,
-    );
+    await expect(trigger.getBoundingClientRect().width).toBeLessThan(row.getBoundingClientRect().width);
   },
 };
 

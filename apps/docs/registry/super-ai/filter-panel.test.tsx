@@ -114,7 +114,11 @@ describe("FilterPanel", () => {
     const user = userEvent.setup();
     const onOpenSectionsChange = vi.fn();
     render(
-      <FilterPanel sections={SECTIONS} openSections={["model"]} onOpenSectionsChange={onOpenSectionsChange} />,
+      <FilterPanel
+        sections={SECTIONS}
+        openSections={["model"]}
+        onOpenSectionsChange={onOpenSectionsChange}
+      />,
     );
 
     // Controlled: only "model" is open, regardless of what the panel would

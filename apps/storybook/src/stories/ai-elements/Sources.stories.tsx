@@ -1,10 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Source,
-  Sources,
-  SourcesContent,
-  SourcesTrigger,
-} from "@/components/ai-elements/sources";
+import { Source, Sources, SourcesContent, SourcesTrigger } from "@/components/ai-elements/sources";
 
 const meta: Meta<typeof Sources> = {
   title: "AI Elements/Sources",

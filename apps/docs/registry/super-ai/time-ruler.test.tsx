@@ -78,10 +78,7 @@ describe("TimeRuler", () => {
   it("renders the scrubbing state", () => {
     const { container } = render(<TimeRuler duration={60} zoom={20} playhead={7.5} scrubbing />);
 
-    expect(container.querySelector('[data-slot="time-ruler"]')).toHaveAttribute(
-      "data-scrubbing",
-      "true",
-    );
+    expect(container.querySelector('[data-slot="time-ruler"]')).toHaveAttribute("data-scrubbing", "true");
     // The readout is text and it is announced — the state is never carried by
     // the moving line alone.
     const bubble = screen.getByRole("status");

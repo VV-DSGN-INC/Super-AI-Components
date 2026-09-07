@@ -4,13 +4,7 @@ import { Copy, Pencil, Shuffle } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatCost, type Cost } from "@/registry/super-ai/cost";
 import { StatReadout } from "@/registry/super-ai/stat-readout";
 

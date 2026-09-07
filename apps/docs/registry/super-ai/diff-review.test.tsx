@@ -161,7 +161,10 @@ describe("DiffReview", () => {
     const { container } = render(
       <DiffReview
         paragraphs={paragraphs}
-        changes={[{ ...changes[0], status: "accepted" }, { ...changes[1], status: "rejected" }]}
+        changes={[
+          { ...changes[0], status: "accepted" },
+          { ...changes[1], status: "rejected" },
+        ]}
       />,
     );
 

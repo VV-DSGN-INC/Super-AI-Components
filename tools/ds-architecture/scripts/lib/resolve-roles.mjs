@@ -1,5 +1,5 @@
-import { lstatSync, readdirSync } from "node:fs"
-import path from "node:path"
+import { lstatSync, readdirSync } from "node:fs";
+import path from "node:path";
 
 /** A glob subset: `**` (zero or more path segments), `*` (within one segment),
  *  literals. Enough for scope roles, and small enough to have no dependency.
@@ -11,19 +11,19 @@ import path from "node:path"
  *  "./" is stripped before tokenising, so "./src/**" and "src/**" behave
  *  identically — a config author writing either should get the same answer. */
 function globToRegExp(glob) {
-  const normalized = glob.startsWith("./") ? glob.slice(2) : glob
-  const segments = normalized.split("/")
-  let body = ""
+  const normalized = glob.startsWith("./") ? glob.slice(2) : glob;
+  const segments = normalized.split("/");
+  let body = "";
   segments.forEach((segment, i) => {
-    const last = i === segments.length - 1
+    const last = i === segments.length - 1;
     if (segment === "**") {
-      body += last ? "(?:[^/]+(?:/[^/]+)*)?" : "(?:[^/]+/)*"
-      return
+      body += last ? "(?:[^/]+(?:/[^/]+)*)?" : "(?:[^/]+/)*";
+      return;
     }
-    const literal = segment.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^/]*")
-    body += literal + (last ? "" : "/")
-  })
-  return new RegExp(`^${body}$`)
+    const literal = segment.replace(/[.+^${}()|[\]\\]/g, "\\$&").replace(/\*/g, "[^/]*");
+    body += literal + (last ? "" : "/");
+  });
+  return new RegExp(`^${body}$`);
 }
 
 /** Walks the tree under root, recording every path found. A symlink is
@@ -34,46 +34,46 @@ function globToRegExp(glob) {
  *  target's contents into the walk). The lstat call is itself guarded: a
  *  broken symlink or a file removed in a race should be skipped, not fatal. */
 function walk(root) {
-  const out = []
+  const out = [];
   const visit = (dir) => {
-    let entries
+    let entries;
     try {
-      entries = readdirSync(dir)
+      entries = readdirSync(dir);
     } catch {
-      return
+      return;
     }
     for (const entry of entries) {
-      if (entry === "node_modules" || entry === ".git") continue
-      const full = path.join(dir, entry)
-      let info
+      if (entry === "node_modules" || entry === ".git") continue;
+      const full = path.join(dir, entry);
+      let info;
       try {
-        info = lstatSync(full)
+        info = lstatSync(full);
       } catch {
-        continue
+        continue;
       }
-      if (info.isDirectory()) visit(full)
-      else out.push(full)
+      if (info.isDirectory()) visit(full);
+      else out.push(full);
     }
-  }
-  visit(root)
-  return out
+  };
+  visit(root);
+  return out;
 }
 
 export function resolveRole(targetRoot, globs) {
-  const root = path.resolve(targetRoot)
-  const patterns = globs.map(globToRegExp)
-  const seen = new Set()
+  const root = path.resolve(targetRoot);
+  const patterns = globs.map(globToRegExp);
+  const seen = new Set();
   for (const file of walk(root)) {
-    const rel = path.relative(root, file)
-    if (rel.startsWith("..")) continue
-    if (patterns.some((re) => re.test(rel))) seen.add(file)
+    const rel = path.relative(root, file);
+    if (rel.startsWith("..")) continue;
+    if (patterns.some((re) => re.test(rel))) seen.add(file);
   }
-  return [...seen].sort()
+  return [...seen].sort();
 }
 
 export function unresolvedRoles(targetRoot, scopeRoles) {
   return Object.entries(scopeRoles)
     .filter(([, globs]) => resolveRole(targetRoot, globs).length === 0)
     .map(([role]) => role)
-    .sort()
+    .sort();
 }

@@ -380,12 +380,7 @@ export const LongContent: Story = {
 export const Mobile: Story = {
   render: () => (
     <div className="w-[375px] max-w-full">
-      <AutonomySelector
-        defaultLevel="auto-reads"
-        grants={GRANTS}
-        onRevoke={fn()}
-        denials={DENIALS}
-      />
+      <AutonomySelector defaultLevel="auto-reads" grants={GRANTS} onRevoke={fn()} denials={DENIALS} />
     </div>
   ),
 };

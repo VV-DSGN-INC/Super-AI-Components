@@ -22,11 +22,11 @@ reimplemented thread row would have passed every gate.
 
 Five files, same shape as a component, with three differences:
 
-| File | Difference for a block |
-| --- | --- |
-| `registry/super-ai/<name>.test.tsx` | the scaffold is **state-driven**, so `states: []` gets **no** `expect.fail` stubs. Nothing starts red. Write the region test first, by hand |
-| `components/demos/<name>-demo.tsx` | the shell is `h-full`; give the demo a bounded height (`className="h-[42rem]"`). Full-bleed rendering is automatic from `layer` — do nothing for it |
-| `../storybook/.../<Pascal>.stories.tsx` | `layout: "fullscreen"` and an `h-svh` decorator — a block is a page, not a centred box. Mandatory `Empty` and `Responsive` exports |
+| File                                    | Difference for a block                                                                                                                              |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `registry/super-ai/<name>.test.tsx`     | the scaffold is **state-driven**, so `states: []` gets **no** `expect.fail` stubs. Nothing starts red. Write the region test first, by hand         |
+| `components/demos/<name>-demo.tsx`      | the shell is `h-full`; give the demo a bounded height (`className="h-[42rem]"`). Full-bleed rendering is automatic from `layer` — do nothing for it |
+| `../storybook/.../<Pascal>.stories.tsx` | `layout: "fullscreen"` and an `h-svh` decorator — a block is a page, not a centred box. Mandatory `Empty` and `Responsive` exports                  |
 
 `lib/catalog.manifest.ts` stays the integrator's. Your row already carries `layer: "block"`,
 `regions`, `consumes` and `states: []`.
@@ -58,7 +58,7 @@ source; an `Empty` story export; a `Responsive` story export. Two are weaker tha
    });
    ```
 3. **`Empty` — earns its mandate.** F4, O1 and O3 each say independently that the empty state is the
-   view most users actually see. Writing O2's surfaced that the shell needed *three* independent
+   view most users actually see. Writing O2's surfaced that the shell needed _three_ independent
    empty affordances — sidebar, stream, artifact region — which nobody would have derived from the
    spec. O13 has three panes empty at once on first load.
 4. **`Responsive` — proves nothing mechanically. Write it anyway; do not trust it.** The viewport
@@ -74,7 +74,7 @@ source; an `Empty` story export; a `Responsive` story export. Two are weaker tha
    entry used to propose is not needed: `page.viewport(375, 812)` from `vitest/browser`,
    called at the top of a play function, resizes the test iframe itself. Probed 2026-09-06 —
    `window.innerWidth` 1200 → 375, `matchMedia("(max-width: 767px)")` false → true, `hidden
-   md:block` goes to `display: none` — and it does not leak into the next story, so it costs one
+md:block` goes to `display: none` — and it does not leak into the next story, so it costs one
    line and no cleanup. `Responsive` still proves nothing; `Mobile` now can. See
    `story-conventions.md`, mechanical fact 2.
 
@@ -121,7 +121,7 @@ a merge disaster. If it goes red for you, something else is wrong: report it.
 ## Your guidance is on your honour
 
 `check-contract.mts:155` `continue`s out of the block branch **before** the docs-guidance content
-assertions at `:180-193`. Blocks are checked for the *existence* of
+assertions at `:180-193`. Blocks are checked for the _existence_ of
 `content/components/<name>.docs.tsx` and nothing about what is in it — a stub module with empty
 `whyItMatters`, `dos`, `donts` and `pitfalls` ships green.
 
@@ -136,7 +136,7 @@ but was not. `chat-shell.docs.tsx` has seven, all real. That is the bar.
   when a shell owns the viewport, wrong in a docs preview or Storybook canvas, where it pins itself
   to the browser's left edge. Put `[contain:layout]` on the shell root (`EMBEDDABLE_SHELL`): per CSS
   Containment that makes it the containing block for its own fixed descendants — but containment only
-  redirects where the fixed box is *anchored*, and `h-svh` still sizes it from the viewport, so
+  redirects where the fixed box is _anchored_, and `h-svh` still sizes it from the viewport, so
   anything B1 bottom-anchors (its `promo` and `footer` slots) would still clip whenever the shell is
   shorter than the window. Fixed, not just contained: also target `[data-slot=app-sidebar]` with
   `h-full` (`SIDEBAR_FILLS_SHELL`) so the sidebar takes its height from the shell instead of the
@@ -144,13 +144,13 @@ but was not. `chat-shell.docs.tsx` has seven, all real. That is the bar.
   and its docstrings for why each half exists. `promo` and `footer` are safe to fill in any shell,
   viewport-tall or not.
 - **`npx shadcn add <third-party registry URL>` is unsafe here.** From `apps/docs` it resolves the
-  item's own `registryDependencies` (`button`, `button-group`, `tooltip`) against the *default*
+  item's own `registryDependencies` (`button`, `button-group`, `tooltip`) against the _default_
   registry and offers to overwrite this repo's Base UI primitives with Radix ones; non-interactively
   it hangs on the prompt, installs npm deps and **writes no component files**. Vendor by hand from
   the registry JSON.
 - **AI Elements is Radix-flavoured; this registry is Base UI.** `message.tsx` needed two
   `asChild` → `render=` edits to typecheck. The patch is local — a consumer installing your block
-  gets upstream's *unpatched* file, and nothing in the registry expresses "…but adapted". Disclose it
+  gets upstream's _unpatched_ file, and nothing in the registry expresses "…but adapted". Disclose it
   as a pitfall. **Open architectural question:** either the repo forks AI Elements into its own
   registry items, or every Base UI consumer re-applies those edits.
 - **AI Elements' `Conversation` does not scroll** without `scrollClassName="h-full overflow-y-auto"`

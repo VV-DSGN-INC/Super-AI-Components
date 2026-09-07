@@ -163,10 +163,7 @@ function ApprovalCard({
               // rather than a colour crossfade — the second sanctioned idiom in
               // story-conventions.md fact 3, the same one-class branch
               // pricing-table uses beside its sliding switch thumb.
-              className={cn(
-                "transition-transform motion-reduce:transition-none",
-                isExpanded && "rotate-180",
-              )}
+              className={cn("transition-transform motion-reduce:transition-none", isExpanded && "rotate-180")}
             />
             {isExpanded ? "Hide detail" : "Show detail"}
           </Button>
@@ -187,9 +184,7 @@ function ApprovalCard({
         {state === "resolved" ? (
           <div data-slot="approval-card-resolution" className="flex items-center gap-2 text-sm">
             <Check aria-hidden className="size-4" />
-            <span className="text-foreground">
-              {resolution ? RESOLUTION_TEXT[resolution] : "Resolved"}
-            </span>
+            <span className="text-foreground">{resolution ? RESOLUTION_TEXT[resolution] : "Resolved"}</span>
             {showUndo ? (
               <Button
                 data-slot="approval-card-undo"

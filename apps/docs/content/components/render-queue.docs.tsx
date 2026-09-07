@@ -14,17 +14,26 @@ export const RenderQueueDocs: ComponentDocs = {
   whatItIs:
     "A table of staged render jobs, each row carrying the output spec it will produce — format, codec, resolution, frame rate — alongside its stage, live progress, price, and the one action that applies to it: cancel while in flight, retry when failed, download when done.",
   whyItMatters:
-    "Rendering is the point where a project turns into a bill, and the size of that bill is set by settings a person chose several screens ago. A queue that lists filenames and a spinner cannot be checked before it charges you: there is no way to notice that the export you queued is 4K when you meant 1080p until the money is spent. So the spec is a column, not a tooltip. The same reasoning separates preview from export as a visible stage — a 15-second preview costs almost nothing and an export costs real money, and collapsing the two into one list of \"jobs\" hides the only distinction that matters. Failed rows keep their spec for the same reason: a failure that discards your settings turns a retry into a rebuild.",
+    'Rendering is the point where a project turns into a bill, and the size of that bill is set by settings a person chose several screens ago. A queue that lists filenames and a spinner cannot be checked before it charges you: there is no way to notice that the export you queued is 4K when you meant 1080p until the money is spent. So the spec is a column, not a tooltip. The same reasoning separates preview from export as a visible stage — a 15-second preview costs almost nothing and an export costs real money, and collapsing the two into one list of "jobs" hides the only distinction that matters. Failed rows keep their spec for the same reason: a failure that discards your settings turns a retry into a rebuild.',
   evidence: ["Topaz Video AI", "CapCut export queue", "Descript"],
   anatomy: [
     { slot: "render-queue", note: "The table wrapper." },
-    { slot: "render-queue-row", note: "One job. Carries `data-state` for queued, streaming, done or failed." },
+    {
+      slot: "render-queue-row",
+      note: "One job. Carries `data-state` for queued, streaming, done or failed.",
+    },
     { slot: "render-queue-stage", note: "Preview or Export — different economics, so a visible label." },
-    { slot: "render-queue-spec", note: "Format, codec, resolution and fps. Present in every state, failures included." },
+    {
+      slot: "render-queue-spec",
+      note: "Format, codec, resolution and fps. Present in every state, failures included.",
+    },
     { slot: "render-queue-status", note: "An icon and the state in words, so nothing rests on colour." },
     { slot: "render-queue-progress", note: "Per-row progressbar while rendering." },
     { slot: "render-queue-error", note: "Why a failed row failed." },
-    { slot: "render-queue-cost", note: "The price, from the shared formatter. An em-dash when there is none." },
+    {
+      slot: "render-queue-cost",
+      note: "The price, from the shared formatter. An em-dash when there is none.",
+    },
     { slot: "render-queue-retry", note: "Failed rows only, in place." },
     { slot: "render-queue-cancel", note: "Queued and streaming rows only." },
     { slot: "render-queue-download", note: "Done rows only." },
@@ -60,11 +69,11 @@ export const RenderQueueDocs: ComponentDocs = {
     ],
     screenReader: [
       "The table has no `<caption>` and no `aria-label`, so it announces as an unnamed table. J5 `record-list` names its own through an sr-only caption; this one does not, so two queues on one page are indistinguishable in a screen reader's table list.",
-      "The columns are Job, Stage, Output, Status, Cost and an sr-only \"Actions\", so in table mode a spec cell is announced as \"Output, MP4 · H.264 · 3840×2160 · 24 fps\" — the separator and the `×` come through as whatever the AT makes of them.",
+      'The columns are Job, Stage, Output, Status, Cost and an sr-only "Actions", so in table mode a spec cell is announced as "Output, MP4 · H.264 · 3840×2160 · 24 fps" — the separator and the `×` come through as whatever the AT makes of them.',
       "Status is an `aria-hidden` icon plus the state in words, and the stage is a text badge, so neither rests on colour.",
-      "The progress bar is a real `progressbar` named \"<job> progress\" by an sr-only label, with a value when you pass `progress` and indeterminate when you do not. A progressbar is not a live region, so its value is silent until the user navigates to it — the right default when there are ten of them.",
+      'The progress bar is a real `progressbar` named "<job> progress" by an sr-only label, with a value when you pass `progress` and indeterminate when you do not. A progressbar is not a live region, so its value is silent until the user navigates to it — the right default when there are ten of them.',
       "There is no live region anywhere in the component. A job moving from Rendering to Done or Failed announces nothing, and the row's only button changes from Cancel to Download in silence.",
-      "A job with no cost renders a bare em-dash as real text, so it is announced as whatever the AT calls that character rather than hidden behind an sr-only \"No cost\" — which is how J5 handles its empty apps cell. An empty `spec` object announces as a blank cell for the same reason.",
+      'A job with no cost renders a bare em-dash as real text, so it is announced as whatever the AT calls that character rather than hidden behind an sr-only "No cost" — which is how J5 handles its empty apps cell. An empty `spec` object announces as a blank cell for the same reason.',
       "`jobs={[]}` renders the header row and nothing else. There is no empty state and no announcement that the queue is empty.",
     ],
     focus: [

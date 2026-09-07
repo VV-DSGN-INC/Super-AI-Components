@@ -174,7 +174,11 @@ function GenerationPanelDropzone({
   };
 
   return (
-    <div data-slot="generation-panel-dropzone" data-drag-over={dragOver || undefined} className="flex flex-col gap-2">
+    <div
+      data-slot="generation-panel-dropzone"
+      data-drag-over={dragOver || undefined}
+      className="flex flex-col gap-2"
+    >
       {/* The visible trigger is a real button — Enter/Space opens the file
           picker without touching the mouse. Drag-and-drop on the wrapping
           div is additive, never a replacement for it. */}
@@ -185,7 +189,10 @@ function GenerationPanelDropzone({
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        className={cn("rounded-lg border border-dashed p-4 transition-colors", dragOver && "border-ring bg-muted/50")}
+        className={cn(
+          "rounded-lg border border-dashed p-4 transition-colors",
+          dragOver && "border-ring bg-muted/50",
+        )}
       >
         <input
           ref={inputRef}
@@ -276,7 +283,11 @@ function GenerationPanel({
   const showFooter = cost !== undefined || Boolean(generate);
 
   return (
-    <Card data-slot="generation-panel" className={cn("flex h-full flex-col gap-0 py-0", className)} {...props}>
+    <Card
+      data-slot="generation-panel"
+      className={cn("flex h-full flex-col gap-0 py-0", className)}
+      {...props}
+    >
       <CardContent className="flex flex-1 flex-col gap-0 overflow-y-auto px-(--card-spacing) py-1">
         {showDropzone ? (
           <GenerationPanelSection
@@ -340,7 +351,10 @@ function GenerationPanel({
         // F1: the price belongs at the point of spend. Cost and Generate
         // are structurally one row — there is no prop combination that can
         // put them in different sections of this component.
-        <CardFooter data-slot="generation-panel-generate" className="flex shrink-0 items-center justify-between gap-2">
+        <CardFooter
+          data-slot="generation-panel-generate"
+          className="flex shrink-0 items-center justify-between gap-2"
+        >
           {cost !== undefined ? (
             <div data-slot="generation-panel-cost">
               <CostChip amount={cost} unit={costUnit} />

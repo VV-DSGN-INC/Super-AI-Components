@@ -50,7 +50,9 @@ describe("ModalityRail", () => {
     // The badge's name is baked into the button's accessible name via visible
     // (or sr-only) content — not solely dependent on a hover-only tooltip.
     expect(proButton).toHaveAccessibleName(/upscale.*pro/i);
-    expect(proButton.querySelector('[data-slot="modality-rail-badge"][data-badge="pro"]')).toBeInTheDocument();
+    expect(
+      proButton.querySelector('[data-slot="modality-rail-badge"][data-badge="pro"]'),
+    ).toBeInTheDocument();
   });
 
   it("renders the bottom-pinned state as a group structurally separate from the scrollable middle", () => {
@@ -62,7 +64,9 @@ describe("ModalityRail", () => {
     expect(scrollRegion).toBeInTheDocument();
     expect(pinnedGroup).toBeInTheDocument();
     // Pinned items never end up inside the scrollable middle, and vice versa.
-    expect(within(scrollRegion as HTMLElement).queryByRole("button", { name: /settings/i })).not.toBeInTheDocument();
+    expect(
+      within(scrollRegion as HTMLElement).queryByRole("button", { name: /settings/i }),
+    ).not.toBeInTheDocument();
     expect(within(pinnedGroup as HTMLElement).getByRole("button", { name: /settings/i })).toBeInTheDocument();
     expect(scrollRegion?.contains(pinnedGroup)).toBe(false);
   });

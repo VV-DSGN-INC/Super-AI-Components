@@ -19,8 +19,20 @@ import { SlotSummary } from "@/registry/super-ai/slot-summary";
 
 /** The frame an assistant resolves before scheduling an outbound message. */
 const BASE_SLOTS: Slot[] = [
-  { id: "recipient", label: "Recipient", value: "design-team (14 people)", source: "retrieved", required: true },
-  { id: "message", label: "Message", value: "Standup moves to 10:00 from Monday", source: "stated", required: true },
+  {
+    id: "recipient",
+    label: "Recipient",
+    value: "design-team (14 people)",
+    source: "retrieved",
+    required: true,
+  },
+  {
+    id: "message",
+    label: "Message",
+    value: "Standup moves to 10:00 from Monday",
+    source: "stated",
+    required: true,
+  },
   { id: "send-at", label: "Send at", value: "Tomorrow, 9:00 AM", source: "inferred", confidence: "low" },
   { id: "channel", label: "Channel", value: "Email", source: "defaulted" },
 ];
@@ -55,7 +67,13 @@ export function MissingRequiredBlocksConfirm() {
   // ask. Confirm stays blocked and the count says how many are outstanding.
   const slots: Slot[] = [
     { id: "recipient", label: "Recipient", source: "retrieved", required: true },
-    { id: "message", label: "Message", value: "Standup moves to 10:00 from Monday", source: "stated", required: true },
+    {
+      id: "message",
+      label: "Message",
+      value: "Standup moves to 10:00 from Monday",
+      source: "stated",
+      required: true,
+    },
     { id: "channel", label: "Channel", value: "Email", source: "defaulted" },
   ];
 
@@ -75,13 +93,25 @@ export function SilentlyDropsUnfilledSlot() {
   // out of `slots` entirely. The summary now looks complete, Confirm is live,
   // and the one thing the user needed to catch is the one thing not on screen.
   const slots: Slot[] = [
-    { id: "message", label: "Message", value: "Standup moves to 10:00 from Monday", source: "stated", required: true },
+    {
+      id: "message",
+      label: "Message",
+      value: "Standup moves to 10:00 from Monday",
+      source: "stated",
+      required: true,
+    },
     { id: "send-at", label: "Send at", value: "Tomorrow, 9:00 AM", source: "inferred" },
     { id: "channel", label: "Channel", value: "Email", source: "defaulted" },
   ];
 
   return (
-    <SlotSummary slots={slots} onCorrect={() => {}} confirmLabel="Send" onConfirm={() => {}} onCancel={() => {}} />
+    <SlotSummary
+      slots={slots}
+      onCorrect={() => {}}
+      confirmLabel="Send"
+      onConfirm={() => {}}
+      onCancel={() => {}}
+    />
   );
 }
 
@@ -90,7 +120,5 @@ export function ConfirmSaysOk() {
   // effect that reaches 14 inboxes, and it says nothing about what it will do.
   // `confirmLabel` defaults to "Confirm" precisely so that leaving it unset is
   // visible as a decision not yet made.
-  return (
-    <SlotSummary slots={BASE_SLOTS} onCorrect={() => {}} onConfirm={() => {}} onCancel={() => {}} />
-  );
+  return <SlotSummary slots={BASE_SLOTS} onCorrect={() => {}} onConfirm={() => {}} onCancel={() => {}} />;
 }

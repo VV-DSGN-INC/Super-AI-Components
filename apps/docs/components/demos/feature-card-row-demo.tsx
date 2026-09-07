@@ -23,7 +23,7 @@ const START_FROM_SCRATCH: FeatureCardRowItem[] = [
     id: "auto-edit",
     icon: <Scissors className="size-4" aria-hidden />,
     title: "Remove filler words",
-    description: "Cut silences and \"um\"s from a raw recording automatically.",
+    description: 'Cut silences and "um"s from a raw recording automatically.',
     onSelect: () => {},
   },
   {
@@ -52,7 +52,10 @@ const POPULAR_FEATURES: FeatureCardRowItem[] = [
   },
   {
     id: "captions",
-    thumbnail: { src: "https://placehold.co/320x180?text=Captions", alt: "Preview of auto-generated captions" },
+    thumbnail: {
+      src: "https://placehold.co/320x180?text=Captions",
+      alt: "Preview of auto-generated captions",
+    },
     title: "Auto-generate captions",
     description: "Burned-in or downloadable, in over 30 languages.",
     onSelect: () => {},

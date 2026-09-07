@@ -1,7 +1,17 @@
 "use client";
 
 import { Slider as SliderPrimitive } from "@base-ui/react/slider";
-import { CheckCircle2, Circle, Loader2, Pause, Play, RefreshCw, Square, SquareCheck, TriangleAlert } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  Loader2,
+  Pause,
+  Play,
+  RefreshCw,
+  Square,
+  SquareCheck,
+  TriangleAlert,
+} from "lucide-react";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -104,7 +114,10 @@ interface TtsComposerProps extends Omit<React.ComponentProps<"div">, "onSelect">
   emptyMessage?: string;
 }
 
-const STATUS_META: Record<TtsComposerSegmentStatus, { label: string; badgeLabel: string; badgeVariant: "outline" | "secondary" | "destructive" }> = {
+const STATUS_META: Record<
+  TtsComposerSegmentStatus,
+  { label: string; badgeLabel: string; badgeVariant: "outline" | "secondary" | "destructive" }
+> = {
   idle: { label: "Not generated", badgeLabel: "Not generated", badgeVariant: "outline" },
   generating: { label: "Generating…", badgeLabel: "Generating…", badgeVariant: "outline" },
   ready: { label: "Ready", badgeLabel: "Ready", badgeVariant: "secondary" },
@@ -233,11 +246,12 @@ function TtsComposerSegmentRow({
               `animate-spin` on the same state, and it needs its own
               `motion-reduce:animate-none` because it is a separate class
               string. */}
-          <RefreshCw aria-hidden className={cn(status === "generating" && "animate-spin motion-reduce:animate-none")} />
+          <RefreshCw
+            aria-hidden
+            className={cn(status === "generating" && "animate-spin motion-reduce:animate-none")}
+          />
         </Button>
-        {regenerateCost != null ? (
-          <CostChip amount={regenerateCost} unit={costUnit} />
-        ) : null}
+        {regenerateCost != null ? <CostChip amount={regenerateCost} unit={costUnit} /> : null}
       </div>
     </div>
   );
@@ -261,7 +275,12 @@ function TtsComposerSegmentRow({
           isPlaying && "ring-primary ring-1",
         )}
       >
-        <EntityRow icon={<StatusIcon status={status} />} title={label} description={meta} trailing={trailing} />
+        <EntityRow
+          icon={<StatusIcon status={status} />}
+          title={label}
+          description={meta}
+          trailing={trailing}
+        />
 
         <div className="px-3 pb-3">
           <Textarea
@@ -366,7 +385,10 @@ function TtsComposerSegmentRow({
                         data-slot="tts-composer-speed-track"
                         className="bg-muted relative h-1 w-full grow overflow-hidden rounded-full select-none"
                       >
-                        <SliderPrimitive.Indicator data-slot="tts-composer-speed-range" className="bg-primary h-full select-none" />
+                        <SliderPrimitive.Indicator
+                          data-slot="tts-composer-speed-range"
+                          className="bg-primary h-full select-none"
+                        />
                       </SliderPrimitive.Track>
                       <SliderPrimitive.Thumb
                         data-slot="tts-composer-speed-thumb"
@@ -431,7 +453,8 @@ function TtsComposer({
   className,
   ...props
 }: TtsComposerProps) {
-  const playingIndex = playingSegmentId != null ? segments.findIndex((segment) => segment.id === playingSegmentId) : -1;
+  const playingIndex =
+    playingSegmentId != null ? segments.findIndex((segment) => segment.id === playingSegmentId) : -1;
   const playbackStatusText = isPlayingScript
     ? playingIndex >= 0
       ? `Playing script — ${segmentLabel(segments[playingIndex]!, playingIndex)}`

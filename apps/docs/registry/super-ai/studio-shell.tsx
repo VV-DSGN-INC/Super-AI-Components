@@ -352,9 +352,7 @@ function StudioShell({
             />
             {/* Pinned outside I1's scroll region — the brush stays put however
                 far the sections scroll. */}
-            {drawing ? (
-              <DrawingTools {...drawing} className={cn("shrink-0", drawing.className)} />
-            ) : null}
+            {drawing ? <DrawingTools {...drawing} className={cn("shrink-0", drawing.className)} /> : null}
           </div>
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
@@ -395,22 +393,18 @@ function StudioShell({
                   CANVAS_SURFACE,
                 )}
               >
-                {children ??
-                  canvasEmpty ?? (
-                    <EmptyState
-                      size="page"
-                      icon={<MousePointerSquareDashed />}
-                      title="Nothing on the canvas yet"
-                      description="Add something from the panel on the left, or start from a preset."
-                    />
-                  )}
+                {children ?? canvasEmpty ?? (
+                  <EmptyState
+                    size="page"
+                    icon={<MousePointerSquareDashed />}
+                    title="Nothing on the canvas yet"
+                    description="Add something from the panel on the left, or start from a preset."
+                  />
+                )}
               </div>
             </div>
 
-            <div
-              data-region="page-strip"
-              className="bg-background shrink-0 border-t px-3 py-2"
-            >
+            <div data-region="page-strip" className="bg-background shrink-0 border-t px-3 py-2">
               {hasStrip ? (
                 <FrameStrip
                   items={frames}

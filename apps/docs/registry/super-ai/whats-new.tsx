@@ -57,8 +57,7 @@ interface WhatsNewEntry {
   cta?: WhatsNewEntryCta;
 }
 
-interface WhatsNewProps
-  extends Omit<React.ComponentProps<"div">, "onSelect" | "title" | "defaultValue"> {
+interface WhatsNewProps extends Omit<React.ComponentProps<"div">, "onSelect" | "title" | "defaultValue"> {
   entries: WhatsNewEntry[];
   /** Dialog heading. */
   title?: string;
@@ -106,9 +105,7 @@ function WhatsNew({
   const open = openProp ?? internalOpen;
 
   const firstId = entries[0]?.id;
-  const [internalId, setInternalId] = React.useState<string | undefined>(
-    defaultSelectedId ?? firstId,
-  );
+  const [internalId, setInternalId] = React.useState<string | undefined>(defaultSelectedId ?? firstId);
   const selectedId = selectedIdProp ?? internalId ?? firstId;
 
   const unreadCount = entries.reduce((n, entry) => (entry.unread ? n + 1 : n), 0);
@@ -236,10 +233,7 @@ function WhatsNew({
                     </span>
                     <span
                       data-slot="whats-new-entry-date"
-                      className={cn(
-                        "text-xs",
-                        selected ? "text-accent-foreground" : "text-muted-foreground",
-                      )}
+                      className={cn("text-xs", selected ? "text-accent-foreground" : "text-muted-foreground")}
                     >
                       {entry.dateTime ? <time dateTime={entry.dateTime}>{entry.date}</time> : entry.date}
                     </span>
