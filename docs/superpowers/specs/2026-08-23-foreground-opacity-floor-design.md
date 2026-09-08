@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-23 · **Status:** designed, plan at `docs/superpowers/plans/2026-08-23-foreground-opacity-floor.md`
 **Extends** `docs/superpowers/specs/2026-08-21-ds-rules-retrofit-design.md` (adds one rule to the catalogue it created).
-**Origin:** knowledge transfer from `~/Downloads/ds-open-problems-2026-08-23.zip` (the sibling design-system-rebuild's opacity-ratchet work), audited against this tree on 2026-08-23.
+**Origin:** knowledge transfer from `~/Downloads/ds-open-problems-2026-08-23.zip` (the sibling upstream-design-system's opacity-ratchet work), audited against this tree on 2026-08-23.
 
 ## Why
 

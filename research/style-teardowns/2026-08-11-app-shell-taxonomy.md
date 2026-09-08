@@ -2,7 +2,7 @@
 
 **Date:** 2026-08-11 · Companion to [2026-08-11-product-style-token-research.md](2026-08-11-product-style-token-research.md) (same live-extraction session). Visual page: **https://style-teardown.vercel.app/shells** · source: [research/style-teardowns/2026-08-11-shell-taxonomy.html](2026-08-11-shell-taxonomy.html)
 
-**What this is.** A classification of how the studied products structure the frame around their content — the app shell — so Pegbo can name, compare and test shell directions the same way we test color/finish directions.
+**What this is.** A classification of how the studied products structure the frame around their content — the app shell — so we can name, compare and test shell directions the same way we test color/finish directions.
 
 ## The two axes (independent)
 
@@ -21,7 +21,7 @@ Independence proof: Asana = classic cockpit chrome **+** layered rounded content
 6. **Portal** — no sidebar; global header + horizontal tabs, centered max-width column. Scales badly past ~7 sections. _Vercel, GitHub, Basecamp._
 7. **Focus column** — sidebar + one centered reading column, composer anchored at bottom; the default AI-product shell. _ChatGPT, Claude.ai, Manus._
 8. **Master–detail coplanar** — three panes split by 1px borders; the mail-client shell. _Gmail, Superhuman, Evernote notes._
-9. **Canvas-centric** — infinite canvas, chrome as floating islands. _Figma, Miro._ (Not a Pegbo fit.)
+9. **Canvas-centric** — infinite canvas, chrome as floating islands. _Figma, Miro._ (Not a fit for us.)
 
 ## Matrix (layout × depth)
 
@@ -85,4 +85,4 @@ Theme axis = color; finish axis = Axis 2 (`elevated` ≈ layered, `flat-dense` �
 }
 ```
 
-Pegbo candidates: **Console** (current prototype) · **Framed page** (Linear/Twenty test — wrapper-only change) · **rail + drawer** if workspaces multiply · **Focus column** for the AI tier. Portal and Canvas don't fit a data-heavy contractor tool.
+Our candidates: **Console** (current prototype) · **Framed page** (Linear/Twenty test — wrapper-only change) · **rail + drawer** if workspaces multiply · **Focus column** for the AI tier. Portal and Canvas don't fit a data-heavy contractor tool.

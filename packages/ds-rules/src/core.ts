@@ -1,7 +1,7 @@
 import type { Rule } from "./schema"
 
-/** Harvested from ds-architecture starter-kit 02-rules/core.ts (pegbo-inc/
- *  design-system-rebuild via the 2026-08-21 archive). Scopes repointed to
+/** Harvested from ds-architecture starter-kit 02-rules/core.ts (
+ *  upstream-design-system via the 2026-08-21 archive). Scopes repointed to
  *  this repo's registry; ICO-2's fix repointed to lucide-react. Everything
  *  else is verbatim — improve upstream, not here. Plus three dated triage
  *  edits from the first live-tree run (2026-08-22): COL-1 + STA-3 file

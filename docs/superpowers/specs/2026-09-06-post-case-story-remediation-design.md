@@ -266,7 +266,7 @@ Production serves 133 items and 69 of them differ from `main`. Every source fix
 the case-story program produced is undeployed.
 
 **This needs the `weeeha` GitHub account and cannot be done for you.** The only
-account in `gh auth` is `nickvpegbo`, which has `push: false` on this repo.
+account in `gh auth` is a work account, which has `push: false` on this repo.
 Deploys are manual from `apps/docs` and nothing ships on merge.
 
 **Exit gate:** a fetched registry item matches the local build byte for byte, and
