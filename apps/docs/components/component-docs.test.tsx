@@ -80,4 +80,47 @@ describe("ComponentDocsView", () => {
       "Not yet documented",
     );
   });
+
+  it("renders backticked guidance prose as code, not literal backticks", () => {
+    render(
+      <ComponentDocsView
+        docs={{
+          ...DOCS,
+          donts: [{ text: "Don't pass a button in `action` while the frame is interactive." }],
+        }}
+      />,
+    );
+    const donts = document.querySelector('[data-slot="docs-dont"]')!;
+    expect(donts.querySelector("code")!.textContent).toBe("action");
+    expect(donts.textContent).not.toContain("`");
+  });
+
+  it("renders backticked anatomy notes as code", () => {
+    render(
+      <ComponentDocsView
+        docs={{ ...DOCS, anatomy: [{ slot: "root", note: "Named through `aria-labelledby`." }] }}
+      />,
+    );
+    const anatomy = document.querySelector('[data-slot="docs-anatomy"]')!;
+    // The slot name is already a <code>, so match on the set rather than the
+    // first hit — querySelector("code") returns "root" and says nothing about
+    // the note.
+    const codes = Array.from(anatomy.querySelectorAll("code")).map((c) => c.textContent);
+    expect(codes).toContain("aria-labelledby");
+    expect(anatomy.textContent).not.toContain("`");
+  });
+
+  it("renders backticked pitfalls as code", () => {
+    render(<ComponentDocsView docs={{ ...DOCS, pitfalls: ["`onSelect` still fires when locked."] }} />);
+    const pitfalls = document.querySelector('[data-slot="docs-pitfalls"]')!;
+    expect(pitfalls.querySelector("code")!.textContent).toBe("onSelect");
+    expect(pitfalls.textContent).not.toContain("`");
+  });
+
+  it("leaves an unbalanced backtick alone rather than eating the prose", () => {
+    render(<ComponentDocsView docs={{ ...DOCS, pitfalls: ["A stray ` stays put."] }} />);
+    const pitfalls = document.querySelector('[data-slot="docs-pitfalls"]')!;
+    expect(pitfalls.querySelector("code")).toBeNull();
+    expect(pitfalls.textContent).toContain("A stray ` stays put.");
+  });
 });

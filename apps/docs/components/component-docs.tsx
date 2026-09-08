@@ -11,6 +11,41 @@ function Section({ title, slot, children }: { title: string; slot: string; child
   );
 }
 
+/**
+ * Guidance prose names props and slots constantly, so it is authored in
+ * markdown-flavoured text. This renderer used to print it verbatim, which put
+ * literal backtick characters on the page: 74 of them across the do/don't
+ * blocks and 121 more in anatomy notes.
+ *
+ * Splitting on balanced pairs is the whole feature. `String.split` with a
+ * capturing group puts the captures at the odd indices, so the parity test is
+ * the parse. An unbalanced backtick simply stays in an even part and renders
+ * as itself, which is the right failure: prose survives, it just is not
+ * marked up. Anything more would be a markdown parser, and guidance prose has
+ * never needed one.
+ *
+ * `text-foreground` is load-bearing, not decoration. Every call site wraps
+ * this in `text-muted-foreground` prose, and a chip that paints `bg-muted`
+ * while inheriting muted text is this repo's recurring 4.34:1 failure — the
+ * cross-component shape `check:tokens` cannot see. A surface that paints its
+ * own background states its own foreground.
+ */
+function InlineProse({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/`([^`]+)`/g).map((part, i) =>
+        i % 2 === 1 ? (
+          <code key={i} className="bg-muted text-foreground rounded px-1 py-0.5 font-mono text-[0.9em]">
+            {part}
+          </code>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 function Guidance({ items, tone }: { items: ComponentDocs["dos"]; tone: "do" | "dont" }) {
   return (
     <div
@@ -24,7 +59,9 @@ function Guidance({ items, tone }: { items: ComponentDocs["dos"]; tone: "do" | "
       <ul className="space-y-3">
         {items.map((item) => (
           <li key={item.text} className="space-y-2">
-            <p className="text-muted-foreground text-sm">{item.text}</p>
+            <p className="text-muted-foreground text-sm">
+              <InlineProse text={item.text} />
+            </p>
             {item.example ? <div className="rounded-md border p-3">{item.example}</div> : null}
           </li>
         ))}
@@ -91,7 +128,9 @@ export function ComponentDocsView({ docs }: { docs: ComponentDocs }) {
                 </span>
                 <span>
                   <code className="text-xs">{slot.slot}</code>
-                  <span className="text-muted-foreground ml-2">{slot.note}</span>
+                  <span className="text-muted-foreground ml-2">
+                    <InlineProse text={slot.note} />
+                  </span>
                 </span>
               </li>
             ))}
@@ -134,7 +173,9 @@ export function ComponentDocsView({ docs }: { docs: ComponentDocs }) {
         <Section title="Watch out for" slot="docs-pitfalls">
           <ul className="text-muted-foreground list-disc space-y-1 pl-5 text-sm">
             {docs.pitfalls.map((p) => (
-              <li key={p}>{p}</li>
+              <li key={p}>
+                <InlineProse text={p} />
+              </li>
             ))}
           </ul>
         </Section>
