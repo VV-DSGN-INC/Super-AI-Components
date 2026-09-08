@@ -48,9 +48,7 @@ export const Default: Story = {
                   <QueueItem key={todo.id}>
                     <div className="flex items-start gap-2">
                       <QueueItemIndicator completed={completed} />
-                      <QueueItemContent completed={completed}>
-                        {todo.title}
-                      </QueueItemContent>
+                      <QueueItemContent completed={completed}>{todo.title}</QueueItemContent>
                     </div>
                   </QueueItem>
                 );

@@ -6,10 +6,7 @@ import { MediaPromptBar } from "./media-prompt-bar";
 describe("MediaPromptBar", () => {
   it("renders the floating state — collapses the settings strip even if one is passed", () => {
     render(
-      <MediaPromptBar
-        presentation="floating"
-        settings={<div data-testid="settings-strip">settings</div>}
-      />,
+      <MediaPromptBar presentation="floating" settings={<div data-testid="settings-strip">settings</div>} />,
     );
 
     const root = document.querySelector('[data-slot="media-prompt-bar"]')!;
@@ -20,10 +17,7 @@ describe("MediaPromptBar", () => {
 
   it("renders the docked state — hosts the settings strip (A7) in place", () => {
     render(
-      <MediaPromptBar
-        presentation="docked"
-        settings={<div data-testid="settings-strip">settings</div>}
-      />,
+      <MediaPromptBar presentation="docked" settings={<div data-testid="settings-strip">settings</div>} />,
     );
 
     const root = document.querySelector('[data-slot="media-prompt-bar"]')!;

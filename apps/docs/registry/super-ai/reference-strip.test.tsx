@@ -49,9 +49,17 @@ describe("ReferenceStrip", () => {
     const onMove = vi.fn();
     const onAdd = vi.fn();
     const items: ReferenceStripItem[] = [
-      { id: "first", role: "first-frame", thumbnail: { src: "/refs/first.png", alt: "First frame of the shot" } },
+      {
+        id: "first",
+        role: "first-frame",
+        thumbnail: { src: "/refs/first.png", alt: "First frame of the shot" },
+      },
       { id: "last", role: "last-frame" }, // empty typed slot — stays visible rather than collapsing
-      { id: "char", role: "character", thumbnail: { src: "/refs/char.png", alt: "Reference of the main character" } },
+      {
+        id: "char",
+        role: "character",
+        thumbnail: { src: "/refs/char.png", alt: "Reference of the main character" },
+      },
     ];
     render(<ReferenceStrip items={items} onMove={onMove} onAdd={onAdd} />);
 

@@ -1,11 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
 const meta: Meta<typeof Accordion> = {
   title: "shadcn/ui/Accordion",
@@ -23,9 +18,9 @@ export const Default: Story = {
         <AccordionTrigger>Which models can I run?</AccordionTrigger>
         <AccordionContent>
           <p>
-            Aurora Studio ships with Aurora-XL for photoreal renders, Sketch-v3
-            for fast concepts, and Lumen-Turbo for live previews. You can switch
-            models per-thread without losing your prompt history.
+            Aurora Studio ships with Aurora-XL for photoreal renders, Sketch-v3 for fast concepts, and
+            Lumen-Turbo for live previews. You can switch models per-thread without losing your prompt
+            history.
           </p>
         </AccordionContent>
       </AccordionItem>
@@ -33,9 +28,8 @@ export const Default: Story = {
         <AccordionTrigger>How are credits charged?</AccordionTrigger>
         <AccordionContent>
           <p>
-            A standard 1024&times;1024 render costs 4 credits. Upscales add 2
-            credits and video frames are billed at 1 credit each. Your plan
-            refreshes 5,000 credits on the 1st of every month.
+            A standard 1024&times;1024 render costs 4 credits. Upscales add 2 credits and video frames are
+            billed at 1 credit each. Your plan refreshes 5,000 credits on the 1st of every month.
           </p>
         </AccordionContent>
       </AccordionItem>
@@ -43,9 +37,8 @@ export const Default: Story = {
         <AccordionTrigger>What export formats are supported?</AccordionTrigger>
         <AccordionContent>
           <p>
-            Export to PNG, WebP, and layered PSD. Pro workspaces unlock 8K TIFF
-            and transparent-background cutouts. See the{" "}
-            <a href="#">export guide</a> for batch options.
+            Export to PNG, WebP, and layered PSD. Pro workspaces unlock 8K TIFF and transparent-background
+            cutouts. See the <a href="#">export guide</a> for batch options.
           </p>
         </AccordionContent>
       </AccordionItem>
@@ -60,8 +53,7 @@ export const MultipleOpen: Story = {
         <AccordionTrigger>Reduce generation latency</AccordionTrigger>
         <AccordionContent>
           <p>
-            Enable Turbo sampling and drop steps to 20. Most prompts finish in
-            under 3 seconds on Lumen-Turbo.
+            Enable Turbo sampling and drop steps to 20. Most prompts finish in under 3 seconds on Lumen-Turbo.
           </p>
         </AccordionContent>
       </AccordionItem>
@@ -69,8 +61,8 @@ export const MultipleOpen: Story = {
         <AccordionTrigger>Content safety filters</AccordionTrigger>
         <AccordionContent>
           <p>
-            The default safety layer blocks unsafe outputs. Workspace admins can
-            tune sensitivity in Settings &rarr; Moderation.
+            The default safety layer blocks unsafe outputs. Workspace admins can tune sensitivity in Settings
+            &rarr; Moderation.
           </p>
         </AccordionContent>
       </AccordionItem>

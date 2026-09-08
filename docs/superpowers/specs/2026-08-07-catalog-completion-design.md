@@ -52,13 +52,13 @@ primitives roughly a hundred more times.
 
 **Amended 2026-08-07, after the first draft.** This was originally written as "Phase 0, before any
 block is built", with Phase 1 sequenced after it. That over-constrained the graph: the retrofit
-exists to stop *thirteen shells* from composing broken primitives, and the shells are Phase 2.
+exists to stop _thirteen shells_ from composing broken primitives, and the shells are Phase 2.
 Nothing in Phase 1 — the O2 pathfinder, C2, or family N's six — needs it to have happened first.
 Writing Phase 1 between the retrofit and the shells quietly turned a Phase-2 prerequisite into a
 Phase-1 blocker.
 
 **The retrofit therefore runs concurrently with Phase 1, and must complete before Phase 2 begins.**
-The risk it mitigates is *scale* — a hundred call-site workarounds written by twelve parallel
+The risk it mitigates is _scale_ — a hundred call-site workarounds written by twelve parallel
 agents. A single pathfinder agent building one block can simply be told about the three known
 failures explicitly, which is cheap for one build and unmanageable for twelve.
 
@@ -88,11 +88,11 @@ dependency.** `apps/docs` vendors the single file locally only so the workbench 
 demo and stories — the same way it vendors shadcn `ui/` primitives. Consumers get AI Elements'
 component from AI Elements.
 
-This is the only option that delivers what C2's spec claims it is: *"composes rather than
-reimplements — the cleanest example of the L1 boundary in the catalog."* It also makes the README's
+This is the only option that delivers what C2's spec claims it is: _"composes rather than
+reimplements — the cleanest example of the L1 boundary in the catalog."_ It also makes the README's
 "the missing half of AI Elements" positioning true in the install graph rather than only in the copy.
 
-### 1.4 · A block is installable *and* a showcase page
+### 1.4 · A block is installable _and_ a showcase page
 
 Nothing in family O has ever been built, so this was undecided.
 [`block-specs.md`](../../design-system/block-specs.md) says a block "is a composition of L0–L3
@@ -127,12 +127,12 @@ without a shared written contract; every batch that had one first — `component
 
 Verified against `apps/docs/lib/catalog.manifest.ts`, not from documentation.
 
-| | |
-| --- | --- |
-| Shipped | 94 |
-| Planned | 20 — C 1 · N 6 · O 13 |
-| Cut | 11 — family G's 10 (D9) plus O5 `flow-shell` |
-| `contractExempt` | 25, totalling 105 declared states |
+|                  |                                              |
+| ---------------- | -------------------------------------------- |
+| Shipped          | 94                                           |
+| Planned          | 20 — C 1 · N 6 · O 13                        |
+| Cut              | 11 — family G's 10 (D9) plus O5 `flow-shell` |
+| `contractExempt` | 25, totalling 105 declared states            |
 
 Gate baselines to hold or beat: `pnpm test` **1044** · `pnpm build` **113 pages** ·
 `pnpm test:stories` **318** · `registry.json` **110 items**.
@@ -187,18 +187,18 @@ A9 `entity-row` (6) · A10 `stat-readout` (3) · A11 `reset-affordance` (5) · A
 
 The stories are the mechanism. The deliverable is **three contrast fixes at source**:
 
-| Primitive | Failure | Current call-site workaround |
-| --- | --- | --- |
-| A2 `cost-chip` | `text-muted-foreground` on its own `bg-muted`, 4.34:1 | `action-stack.tsx` passes `className="text-foreground"` |
+| Primitive         | Failure                                                     | Current call-site workaround                                                   |
+| ----------------- | ----------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| A2 `cost-chip`    | `text-muted-foreground` on its own `bg-muted`, 4.34:1       | `action-stack.tsx` passes `className="text-foreground"`                        |
 | A8 `preview-tile` | `failed` branch is `text-destructive` on `bg-muted`, ~4.0:1 | `result-card` overrides the message; `tool-panel` declines to render the state |
-| A9 `entity-row` | confirmed contrast failure | — |
+| A9 `entity-row`   | confirmed contrast failure                                  | —                                                                              |
 
 Both A2 and A8 are excluded from the a11y gate **under their own story names only**, which is why
 every composing component fails its own stories instead.
 
 **The workaround removal must land in the same commit as each fix.** Otherwise the primitive is
 "fixed" while consumers still carry compensating overrides that now double-apply. Phase 0's
-definition of done is fix *plus* cleanup, verified by `pnpm test:stories`.
+definition of done is fix _plus_ cleanup, verified by `pnpm test:stories`.
 
 This is the largest regression risk in the whole plan and it is not recorded anywhere in
 `CONTINUE.md`.
@@ -216,7 +216,7 @@ describes using "the same technique" in prose, meaning it wanted the abstraction
 re-implemented rather than import it. Promote to `registry/super-ai/`, three consumers.
 
 **The four-verb approval row — also a lift.** F7 `approval-card`, I4 and K1 all need the same fixed
-verb row. Neither I4 nor K1 could compose F7, because F7's root *is* a Card carrying its own
+verb row. Neither I4 nor K1 could compose F7, because F7's root _is_ a Card carrying its own
 title/summary/undo model; nesting it inverts the relationship and doubles the frame. Extracting the
 verb row alone resolves all three.
 
@@ -224,11 +224,11 @@ verb row alone resolves all three.
 implementations of the same math". Reading the source shows it is worse than that: they are
 **incompatible coordinate models**.
 
-| Component | Model |
-| --- | --- |
-| `track-lane.tsx:352-357` | absolute pixels, no zoom — `clip.start * pixelsPerSecond`, container `width: duration * pixelsPerSecond` |
+| Component                     | Model                                                                                                                |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `track-lane.tsx:352-357`      | absolute pixels, no zoom — `clip.start * pixelsPerSecond`, container `width: duration * pixelsPerSecond`             |
 | `waveform-editor.tsx:250-251` | viewport-relative percentage **with** zoom — `((regionStart - viewStart) / visible) * 100`, driven by zoom exponents |
-| `time-ruler.tsx` | a third model, exporting its own `TimeRulerScale` type |
+| `time-ruler.tsx`              | a third model, exporting its own `TimeRulerScale` type                                                               |
 
 No shared helper can be lifted out of these, because `waveform-editor`'s zoom/viewport model has no
 expression in `track-lane`'s absolute one. H2's spec requires the playhead to span every track,
@@ -273,7 +273,7 @@ a numbered decision.
 
 One build, done carefully, whose output is a **contract** as much as a component.
 
-**The block contract.** The component contract is *states → one story per state*. Blocks have
+**The block contract.** The component contract is _states → one story per state_. Blocks have
 `states: []` and always will: every block spec leads with `Regions:`, not states. Four requirements
 replace it, each traceable to something already written.
 
@@ -306,7 +306,7 @@ this — a chip has no breakpoints; a five-region editor does.
 - `specAnchor` branches on `layer`. All fourteen O rows currently point at
   `component-specs.md#<id>-<name>`, which contains **zero** `## O` headings — the specs are in
   `block-specs.md`, which has all fourteen. `scripts/gen-manifest.mts:151` generates the wrong
-  anchor unconditionally, and `lib/catalog.manifest.test.ts:63` *asserts* the wrong pattern
+  anchor unconditionally, and `lib/catalog.manifest.test.ts:63` _asserts_ the wrong pattern
   (`/^component-specs\.md#/`), so fixing the data breaks a currently-green test. All three change
   together.
 - A route at `app/blocks/[name]/page.tsx` renders the showcase, alongside the existing
@@ -382,7 +382,7 @@ actioned alongside O4.
 - **The `/roadmap` page (T14)** — specced but never built, which is why "114 of 114" is currently
   invisible to a visitor.
 - **The `cost` retrofit loose ends** — E5 `run-button` and E7 `member-gate-row` still do not call
-  `useCost`, so the rule that `insufficient` is *derived* and never accepted as a prop is
+  `useCost`, so the rule that `insufficient` is _derived_ and never accepted as a prop is
   unenforced at both cost placements. A2 still exposes only `amount`/`unit` against a spec
   declaring four states, and A7 still has no cost slot. E5 and E6 spell the running state
   `running` where the contract says `streaming`; both names must not survive.
@@ -419,15 +419,15 @@ Briefs point at that section rather than restating it, per the rule that one cop
 
 ## 9. Risks
 
-| # | Risk | Mitigation |
-| --- | --- | --- |
-| 1 | **A-family fixes break their own consumers** — workarounds double-apply once the primitive is fixed | Fix and cleanup in the same commit; `test:stories` verifies. §3.1 |
-| 2 | **Shell agents reimplement instead of compose** | Required non-empty `consumes`, reconciled against real imports. §4.1 |
-| 3 | **Timeline coordinate model is a genuine unknown** | Scoped to a decision, not a migration, so it cannot block Phase 0. §3.2 |
-| 4 | **A block may exceed one agent's context** | Pathfinder answers it before twelve agents hit it; Phase 2 batches if needed |
-| 5 | **Phase 0 ships nothing visible** and will be tempting to skip | Named explicitly here; exit criteria in §3.5 are objective, and it is Phase 2's entry condition (§5) |
-| 7 | **Phase 0 slips past the start of Phase 2** now that it runs concurrently rather than first | The only hard gate in the plan; §5 states it as an entry condition rather than a convention |
-| 6 | J/K/N rework if v2's re-sampling invalidates them | Accepted on the record in §1.1 |
+| #   | Risk                                                                                                | Mitigation                                                                                           |
+| --- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 1   | **A-family fixes break their own consumers** — workarounds double-apply once the primitive is fixed | Fix and cleanup in the same commit; `test:stories` verifies. §3.1                                    |
+| 2   | **Shell agents reimplement instead of compose**                                                     | Required non-empty `consumes`, reconciled against real imports. §4.1                                 |
+| 3   | **Timeline coordinate model is a genuine unknown**                                                  | Scoped to a decision, not a migration, so it cannot block Phase 0. §3.2                              |
+| 4   | **A block may exceed one agent's context**                                                          | Pathfinder answers it before twelve agents hit it; Phase 2 batches if needed                         |
+| 5   | **Phase 0 ships nothing visible** and will be tempting to skip                                      | Named explicitly here; exit criteria in §3.5 are objective, and it is Phase 2's entry condition (§5) |
+| 7   | **Phase 0 slips past the start of Phase 2** now that it runs concurrently rather than first         | The only hard gate in the plan; §5 states it as an entry condition rather than a convention          |
+| 6   | J/K/N rework if v2's re-sampling invalidates them                                                   | Accepted on the record in §1.1                                                                       |
 
 ---
 

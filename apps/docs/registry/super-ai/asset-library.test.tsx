@@ -63,9 +63,7 @@ describe("AssetLibrary", () => {
   });
 
   it("renders the empty state", () => {
-    const { container } = render(
-      <AssetLibrary items={[]} filters={<span>Images</span>} />,
-    );
+    const { container } = render(<AssetLibrary items={[]} filters={<span>Images</span>} />);
 
     expect(container.querySelector('[data-slot="asset-library-empty"]')).toBeInTheDocument();
     expect(container.querySelector('[data-slot="empty-state"]')).toBeInTheDocument();
@@ -142,9 +140,7 @@ describe("AssetLibrary", () => {
 
   it("leaves the row a plain tr and makes the name the interactive target", () => {
     const onOpen = vi.fn();
-    const { container } = render(
-      <AssetLibrary items={FILES} onOpen={onOpen} rowActions={actions} />,
-    );
+    const { container } = render(<AssetLibrary items={FILES} onOpen={onOpen} rowActions={actions} />);
 
     const row = rows(container)[0];
     // No nested interactives: the row is not a button and carries no role.
@@ -191,9 +187,7 @@ describe("AssetLibrary", () => {
 
   it("owns the search field but does not filter the list", async () => {
     const onSearchChange = vi.fn();
-    const { container } = render(
-      <AssetLibrary items={FILES} search="" onSearchChange={onSearchChange} />,
-    );
+    const { container } = render(<AssetLibrary items={FILES} search="" onSearchChange={onSearchChange} />);
 
     await userEvent.type(screen.getByLabelText("Search assets"), "b");
     expect(onSearchChange).toHaveBeenCalledWith("b");
@@ -204,12 +198,7 @@ describe("AssetLibrary", () => {
   it("selects and clears every item from the bulk bar", async () => {
     const onSelectionChange = vi.fn();
     const { rerender } = render(
-      <AssetLibrary
-        items={FILES}
-        selectionMode
-        selectedIds={[]}
-        onSelectionChange={onSelectionChange}
-      />,
+      <AssetLibrary items={FILES} selectionMode selectedIds={[]} onSelectionChange={onSelectionChange} />,
     );
 
     await userEvent.click(screen.getByRole("checkbox", { name: "Select all" }));

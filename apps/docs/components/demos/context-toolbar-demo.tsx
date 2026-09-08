@@ -56,9 +56,7 @@ export default function ContextToolbarDemo() {
           the bar above this rectangle and flips it below when there is no room
           — the component never covers it. */}
       <p className="max-w-md rounded-md border border-dashed p-3 text-sm">
-        <span className="bg-primary/20 rounded-sm px-0.5">
-          The quick brown fox jumps over the lazy dog.
-        </span>{" "}
+        <span className="bg-primary/20 rounded-sm px-0.5">The quick brown fox jumps over the lazy dog.</span>{" "}
         Select a phrase in a real editor and this bar follows it.
       </p>
 

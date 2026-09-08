@@ -20,7 +20,10 @@ export const AnswerBlockDocs: ComponentDocs = {
     "Every enterprise assistant that answers from documents has to answer a second question alongside the first: how much of this should you believe. Glean, NotebookLM, Ask iManage and Microsoft Copilot Studio all attach provenance at the sentence rather than the reply, because a citation bar under a paragraph tells you the paragraph came from somewhere without telling you which sentence. The part worth copying is the coverage verdict: an answer where two of five claims are sourced looks, at a glance, exactly like an answer where all five are, and the only thing standing between a user and that misreading is a component that refuses to render them the same way.",
   evidence: ["Glean", "NotebookLM", "iManage", "Microsoft Copilot Studio"],
   anatomy: [
-    { slot: "answer-block", note: "Root. Carries data-coverage (cited/partially-cited/uncited) and data-streaming." },
+    {
+      slot: "answer-block",
+      note: "Root. Carries data-coverage (cited/partially-cited/uncited) and data-streaming.",
+    },
     {
       slot: "answer-block-claim",
       note: "One claim paragraph, with its markers inline at the end. Carries data-settled — absent on the in-flight claim while streaming.",
@@ -149,11 +152,11 @@ export const AnswerBlockDocs: ComponentDocs = {
       "There is no arrow-key movement between markers, no shortcut to the next citation, and no key that jumps from a claim to its sources.",
     ],
     screenReader: [
-      "A resolved marker's accessible name is its `label` and nothing else, so it announces as \"1, button\" — with no word saying it is a citation. Only the `unresolved` state gets a written name, \"Citation 1 — source unavailable\".",
-      "That unresolved name is built from `typeof label === \"string\"`, and a numeric `label` is not a string. Passing `label={1}` rather than `label=\"1\"` degrades every broken marker in the answer to the identical \"Citation  — source unavailable\".",
+      'A resolved marker\'s accessible name is its `label` and nothing else, so it announces as "1, button" — with no word saying it is a citation. Only the `unresolved` state gets a written name, "Citation 1 — source unavailable".',
+      'That unresolved name is built from `typeof label === "string"`, and a numeric `label` is not a string. Passing `label={1}` rather than `label="1"` degrades every broken marker in the answer to the identical "Citation  — source unavailable".',
       "The hovercard is portalled with no `aria-describedby`, no role and no other relationship back to the marker. Focus opens it visually, but the source name and the quoted chunk are never announced with the marker — a screen-reader user hears the number and nothing behind it.",
       "The coverage warning is an ordinary paragraph, not an alert and not a live region. An answer that finishes streaming with nothing sourced announces nothing; the sentence is only found by reading on.",
-      "`data-coverage` on the root reaches styling and tests, never assistive technology. \"Partially cited\" is carried entirely by that warning sentence.",
+      '`data-coverage` on the root reaches styling and tests, never assistive technology. "Partially cited" is carried entirely by that warning sentence.',
       "The retrieved-but-unused count is likewise plain text with no live region — the single most informative line on the surface arrives silently.",
       "The warning triangle is the one icon here without `aria-hidden`, so unlike every other glyph in this registry it is not explicitly removed from the accessible tree.",
     ],

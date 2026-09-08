@@ -33,12 +33,18 @@ export const LibraryShellDocs: ComponentDocs = {
       slot: 'data-region="dense-grid"',
       note: "F2 generation-grid at the density the rail selected, one A3 date-section per group, L1 in the first cell when there is nothing.",
     },
-    { slot: "library-shell", note: "Root. A column below md, a row above it; both panes scroll independently." },
+    {
+      slot: "library-shell",
+      note: "Root. A column below md, a row above it; both panes scroll independently.",
+    },
     {
       slot: "preview-tile",
       note: "A8, one per asset, carrying data-asset-id. Its own frame button is what opens F3 or toggles selection.",
     },
-    { slot: "asset-detail", note: "F3, mounted at shell level rather than inside a region — a lightbox over the archive, not a fourth pane in it." },
+    {
+      slot: "asset-detail",
+      note: "F3, mounted at shell level rather than inside a region — a lightbox over the archive, not a fourth pane in it.",
+    },
   ],
   usage:
     "Reach for it when the primary object of your product is the pile of things a user has already made. Everything is a prop: `facets` fills the rail, `groups` (or `assets`) fills the grid, `search` and `onSearchChange` drive the header's field, and `openAssetId` opens the lightbox. Filtering is yours — the shell renders the rail and the chips, and hands you back the selection through `onSelectedFacetsChange`; the assets you pass are the assets it shows, so server-side and client-side filtering look identical from here. Give every facet an honest count, including zero: J2 disables a zero-count facet and says \"no matches\" out loud, which is worth more than hiding it. Leave `density` alone unless you are persisting the reader's choice — the default is deliberately the densest one — and pass `groups` rather than `assets` whenever your archive has any notion of when things were made, because a date-bucketed archive is navigable and a flat one is not.",
@@ -64,21 +70,21 @@ export const LibraryShellDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "Both scrolling panes take a tab stop of their own: `data-region=\"facet-rail\"` and `data-region=\"dense-grid\"` each carry `tabIndex={0}` and an `aria-label`, which is what satisfies axe's `scrollable-region-focusable` rule. They are stops that do nothing but let the arrow keys scroll, so expect a dead Tab before the first control in each pane.",
+      'Both scrolling panes take a tab stop of their own: `data-region="facet-rail"` and `data-region="dense-grid"` each carry `tabIndex={0}` and an `aria-label`, which is what satisfies axe\'s `scrollable-region-focusable` rule. They are stops that do nothing but let the arrow keys scroll, so expect a dead Tab before the first control in each pane.',
       "Every applied facet is two tab stops in the header, not one. The mirrored `filter-chip` is given both `onClick` and `onRemove`, and both call the same `deselectFacet` — so the toggle and the X are adjacent controls with identical effects. Six applied facets is twelve stops between the search field and the grid.",
       "A tile is a single button. Enter and Space open the asset in browse mode and toggle selection in select mode; the two are never live at once, so there is no checkbox layered over the tile and no second control to reach.",
-      "The grid has no roving tabindex and no arrow-key navigation — `role=\"list\"` is for announcement only. Moving between tiles means one Tab per asset, however many the current density is showing.",
+      'The grid has no roving tabindex and no arrow-key navigation — `role="list"` is for announcement only. Moving between tiles means one Tab per asset, however many the current density is showing.',
       "The lightbox is a dialog: Escape closes it and focus is held inside while it is open. Nothing else in the shell handles a key.",
       "The bulk-actions bar only exists once something is selected, so entering select mode changes the number of stops above the grid partway through a tab sequence.",
     ],
     screenReader: [
-      "Three named regions: the rail is an `<aside aria-label=\"Filters\">`, the grid a `<section aria-label=\"Assets\">`, and the header a plain div carrying J1's own structure. The rail's landmark name is fixed — `filtersTitle` renames the heading inside J2, not the landmark around it.",
-      "Facet counts are folded into each checkbox's accessible name by J2, so a facet announces as its label and its count together, and a zero-count facet is disabled and carries an sr-only \"no matches\". It is the one thing here a screen-reader user gets more reliably than someone skimming the rail.",
-      "The mirrored chips escape the accessible-name trap that usually bites A5: `FilterFacet.label` is typed `string`, so `filter-chip` always builds a real \"Remove {label} filter\" name and the header never degrades into a row of identical \"Remove filter\" buttons.",
-      "Every tile uses `labelPlacement=\"overlay\"`, which puts `asset.name` inside the frame button — the only reason the tiles have names at all. A `below` label is a sibling of the button and would leave it nameless whenever the thumbnail is decorative, and A8 spreads extra props onto its wrapper rather than the frame, so an `aria-label` at the call site cannot rescue it either.",
+      'Three named regions: the rail is an `<aside aria-label="Filters">`, the grid a `<section aria-label="Assets">`, and the header a plain div carrying J1\'s own structure. The rail\'s landmark name is fixed — `filtersTitle` renames the heading inside J2, not the landmark around it.',
+      'Facet counts are folded into each checkbox\'s accessible name by J2, so a facet announces as its label and its count together, and a zero-count facet is disabled and carries an sr-only "no matches". It is the one thing here a screen-reader user gets more reliably than someone skimming the rail.',
+      'The mirrored chips escape the accessible-name trap that usually bites A5: `FilterFacet.label` is typed `string`, so `filter-chip` always builds a real "Remove {label} filter" name and the header never degrades into a row of identical "Remove filter" buttons.',
+      'Every tile uses `labelPlacement="overlay"`, which puts `asset.name` inside the frame button — the only reason the tiles have names at all. A `below` label is a sibling of the button and would leave it nameless whenever the thumbnail is decorative, and A8 spreads extra props onto its wrapper rather than the frame, so an `aria-label` at the call site cannot rescue it either.',
       "A tile's button always reports `aria-pressed`, because A8 stamps it whenever `onSelect` is set. Right in select mode; in browse mode every tile announces as an unpressed toggle when it is really an open action.",
       "The lightbox announces the same name for every asset. F3's `DialogTitle` is a hard-coded, sr-only \"Result detail\", so opening the tenth tile sounds exactly like opening the first and the asset's own name is never spoken on open.",
-      "Removing the last facet, changing density and a filter emptying the grid all happen with no live region anywhere in the shell. \"No matches\" is visible text; nothing announces arriving at it.",
+      'Removing the last facet, changing density and a filter emptying the grid all happen with no live region anywhere in the shell. "No matches" is visible text; nothing announces arriving at it.',
     ],
     focus: [
       "Removing a facet chip unmounts the button that had focus and nothing restores it, so focus falls to `<body>` and the next Tab restarts from the top of the page. That is A5's documented behaviour and the shell does not intercept it — and it fires from either half of the chip, since both are wired to the same removal.",
@@ -90,8 +96,8 @@ export const LibraryShellDocs: ComponentDocs = {
   pitfalls: [
     "J1 asset-library has no header-only mode, and this shell needs exactly its header: title, actions, search field and the chip row. J1 is therefore handed no items, and three of its own affordances are suppressed by a documented call-site variant — the section-header count (which would read 0 above a grid of hundreds), the list/grid view toggle (there is no J1 body here for it to switch) and the leftover empty div. If you restyle the header region, keep that constant, and delete it the day J1 grows an exported header or a `body={false}` prop.",
     "The archive's counts live in the rail, not in the header. That is the spec's position — facet counts are what make a rail usable at scale — but it means there is no single \"1,284 assets\" figure anywhere in the shell. If your product needs one, put it in `headerActions`; do not try to restore J1's own count, which counts J1's body and is always zero here.",
-    "A8 preview-tile renders a `below` label as a sibling of its frame button, so a tile whose thumbnail is decorative would have a button with no accessible name at all. Every tile here uses `labelPlacement=\"overlay\"` for that reason. A8 also spreads its extra props onto its wrapper div rather than the frame, so you cannot fix a missing name with an `aria-label` at the call site — the label prop is the only route.",
-    "A8's interactive frame stamps `aria-pressed` only when told to. It defaults to `selectMode=\"toggle\"`, which is right for a selectable cell and wrong for a tile that opens something — `aria-pressed=\"false\"` is a claim about state the tile does not hold. This shell forwards `selectMode` alongside the handler it already branched on, so browse-mode tiles announce as plain buttons. If you build your own grid on A8, forward it too; the default is what every caller got before the prop existed.",
+    'A8 preview-tile renders a `below` label as a sibling of its frame button, so a tile whose thumbnail is decorative would have a button with no accessible name at all. Every tile here uses `labelPlacement="overlay"` for that reason. A8 also spreads its extra props onto its wrapper div rather than the frame, so you cannot fix a missing name with an `aria-label` at the call site — the label prop is the only route.',
+    'A8\'s interactive frame stamps `aria-pressed` only when told to. It defaults to `selectMode="toggle"`, which is right for a selectable cell and wrong for a tile that opens something — `aria-pressed="false"` is a claim about state the tile does not hold. This shell forwards `selectMode` alongside the handler it already branched on, so browse-mode tiles announce as plain buttons. If you build your own grid on A8, forward it too; the default is what every caller got before the prop existed.',
     "Both panes scroll, so both carry `tabIndex={0}` and a name. Moving the overflow onto an inner wrapper without moving those two with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the archive.",
     "Facet selection, search text, bulk selection and the open asset are all controlled or controllable. Rendering the shell with a `selectedFacets` that never changes produces a screenshot, not an archive — the rail's checkboxes will tick and untick and the grid will never move.",
     "The rail does not disappear below `md`; it becomes a short scrolling band above the header. That is deliberate — a region that vanishes at a breakpoint cannot teach that it exists — but it costs vertical space on a phone. If you want a drawer instead, wrap the shell rather than unmounting the region, and keep the `data-region` marker rendered.",

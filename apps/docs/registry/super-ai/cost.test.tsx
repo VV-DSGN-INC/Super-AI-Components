@@ -134,9 +134,9 @@ describe("formatCost", () => {
 
 describe("formatShortfall", () => {
   it("phrases the gap once, for every surface", () => {
-    expect(
-      formatShortfall({ cost: { amount: 4 }, balance: 2, insufficient: true, shortfall: 2 }),
-    ).toBe("Need 4 credits, you have 2");
+    expect(formatShortfall({ cost: { amount: 4 }, balance: 2, insufficient: true, shortfall: 2 })).toBe(
+      "Need 4 credits, you have 2",
+    );
   });
 
   it("is undefined when the cost is affordable", () => {

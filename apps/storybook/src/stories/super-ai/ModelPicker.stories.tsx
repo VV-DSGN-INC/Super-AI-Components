@@ -312,9 +312,7 @@ export const KeyboardOrder: Story = {
     // trigger for form submission, carrying `tabindex="-1" aria-hidden="true"`,
     // and a looser selector counts it as a seventh stop that no one can reach.
     const stops = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>(
-        'button, a[href], input, select, textarea, [tabindex]',
-      ),
+      canvasElement.querySelectorAll<HTMLElement>("button, a[href], input, select, textarea, [tabindex]"),
     ).filter((el) => el.getAttribute("tabindex") !== "-1" && el.getAttribute("aria-hidden") !== "true");
 
     const nameOf = (el: Element | null) =>
@@ -359,6 +357,22 @@ export const KeyboardOrder: Story = {
     });
     const options = Array.from(listbox.querySelectorAll<HTMLElement>('[role="option"]'));
     await expect(options).toHaveLength(4);
+
+    // The listbox carries an accessible name, taken from the same `label` prop
+    // that names the trigger — so a consumer who relabels the control relabels
+    // both halves of it. This was the last unnamed SelectContent in the
+    // registry (CONTINUE.md §8).
+    //
+    // The assertion is what protects the name, not the gate: axe's behaviour
+    // here is configuration-dependent and a prior measurement had it raise
+    // nothing on an open unnamed listbox. Verified by stripping the attribute
+    // and watching exactly this expectation fail.
+    // The name lands on the List, not the Popup: Base UI puts `role="listbox"`
+    // there, and select.tsx routes `aria-label` to it for exactly that reason.
+    // `model-picker-content` is the Popup wrapper, which has no name and needs
+    // none — so query by role rather than by slot.
+    const namedListbox = listbox.querySelector<HTMLElement>('[role="listbox"]') ?? listbox;
+    await expect(namedListbox).toHaveAccessibleName("Model");
 
     const settledOption = async (previous?: HTMLElement) => {
       await waitFor(() => {
@@ -564,18 +578,8 @@ function ControlledShell() {
 export const EmptyLabel: Story = {
   render: () => (
     <div className="flex flex-col items-start gap-6">
-      <ModelPicker
-        presentation="dropdown"
-        label=""
-        models={BARE_MODELS}
-        onSelect={() => {}}
-      />
-      <ModelPicker
-        presentation="expanded-cards"
-        label=""
-        models={BARE_MODELS}
-        onSelect={() => {}}
-      />
+      <ModelPicker presentation="dropdown" label="" models={BARE_MODELS} onSelect={() => {}} />
+      <ModelPicker presentation="expanded-cards" label="" models={BARE_MODELS} onSelect={() => {}} />
       <ModelPicker presentation="node-inline" label="" models={BARE_MODELS} onSelect={() => {}} />
     </div>
   ),
@@ -656,9 +660,7 @@ export const LongContent: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const cards = within(
-      canvasElement.querySelector<HTMLElement>('[data-presentation="expanded-cards"]')!,
-    );
+    const cards = within(canvasElement.querySelector<HTMLElement>('[data-presentation="expanded-cards"]')!);
 
     const row = cards.getByRole("button", { name: /stable-video-diffusion/ });
     const title = row.querySelector<HTMLElement>('[data-slot="entity-row-title"]')!;
@@ -682,9 +684,7 @@ export const LongContent: Story = {
     )!;
     const label = trigger.querySelector<HTMLElement>("span.truncate")!;
     await expect(label.scrollWidth).toBeGreaterThan(label.clientWidth);
-    await expect(trigger.getBoundingClientRect().width).toBeLessThan(
-      row.getBoundingClientRect().width,
-    );
+    await expect(trigger.getBoundingClientRect().width).toBeLessThan(row.getBoundingClientRect().width);
   },
 };
 

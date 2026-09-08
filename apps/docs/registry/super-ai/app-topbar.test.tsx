@@ -8,10 +8,7 @@ describe("AppTopbar", () => {
       <AppTopbar
         context="document"
         title="Q3 Roadmap"
-        breadcrumb={[
-          { label: "Projects", href: "/projects" },
-          { label: "Q3 Roadmap" },
-        ]}
+        breadcrumb={[{ label: "Projects", href: "/projects" }, { label: "Q3 Roadmap" }]}
         privacy={{ label: "Private" }}
       />,
     );

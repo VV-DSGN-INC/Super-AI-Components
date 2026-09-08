@@ -84,10 +84,7 @@ describe("CoachMark", () => {
     );
 
     await screen.findByRole("dialog", { name: "Below" });
-    expect(document.querySelector('[data-slot="coach-mark-arrow"]')).toHaveAttribute(
-      "data-side",
-      "bottom",
-    );
+    expect(document.querySelector('[data-slot="coach-mark-arrow"]')).toHaveAttribute("data-side", "bottom");
     unmount();
 
     render(
@@ -99,10 +96,7 @@ describe("CoachMark", () => {
     await screen.findByRole("dialog", { name: "Above" });
     // The arrow follows the popup to whichever side it landed on, so the
     // pointer never detaches from the anchor when the popover flips.
-    expect(document.querySelector('[data-slot="coach-mark-arrow"]')).toHaveAttribute(
-      "data-side",
-      "top",
-    );
+    expect(document.querySelector('[data-slot="coach-mark-arrow"]')).toHaveAttribute("data-side", "top");
     expect(content()).toHaveAttribute("data-side", "top");
   });
 
@@ -157,9 +151,7 @@ describe("CoachMark", () => {
     expect(onBack).toHaveBeenCalledTimes(1);
 
     // Still step 2 of 4 — nothing moved, because nothing here owns the index.
-    expect(document.querySelector('[data-slot="coach-mark-step"]')).toHaveTextContent(
-      "Step 2 of 4",
-    );
+    expect(document.querySelector('[data-slot="coach-mark-step"]')).toHaveTextContent("Step 2 of 4");
   });
 
   it("labels the last step's primary action as the end of the tour", async () => {
@@ -191,9 +183,7 @@ describe("CoachMark", () => {
       </CoachMark>,
     );
 
-    expect(document.querySelector('[data-slot="coach-mark-step"]')).toHaveTextContent(
-      "Step 3 of 3",
-    );
+    expect(document.querySelector('[data-slot="coach-mark-step"]')).toHaveTextContent("Step 3 of 3");
     expect(root()).toHaveAttribute("data-step", "3");
   });
 
@@ -246,13 +236,7 @@ describe("CoachMark", () => {
 
   it("accepts a custom step label", () => {
     render(
-      <CoachMark
-        title="Localised"
-        step={2}
-        total={3}
-        onSkip={() => {}}
-        stepLabel={(s, t) => `${s} / ${t}`}
-      >
+      <CoachMark title="Localised" step={2} total={3} onSkip={() => {}} stepLabel={(s, t) => `${s} / ${t}`}>
         <Anchor />
       </CoachMark>,
     );

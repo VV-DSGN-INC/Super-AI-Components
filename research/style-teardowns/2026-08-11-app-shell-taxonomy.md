@@ -13,28 +13,28 @@ Independence proof: Asana = classic cockpit chrome **+** layered rounded content
 
 ## Layout archetypes
 
-1. **Cockpit** — global top bar (search center) + sidebar beneath; page is subordinate; search global-first. *Monday, Asana.*
-2. **Console** — sidebar only; content full-bleed, owns its header row. *OpenAI, Claude Console, Pipedrive, Evernote, ElevenLabs.*
-3. **Framed page** — tinted canvas; content floats as one sheet (radius + ring); sidebar sits on the canvas. "Page on background." *Linear, Twenty, Manus-lite.*
-4. **Framed split** — several sheets side by side, each lifted. *Intercom inbox; Twenty record view.*
-5. **Rail + drawer** *(modifier, composes with any of the above)* — slim icon rail (~48–72px) + inner contextual sidebar. *Intercom, Asana, Monday; Slack/Discord.*
-6. **Portal** — no sidebar; global header + horizontal tabs, centered max-width column. Scales badly past ~7 sections. *Vercel, GitHub, Basecamp.*
-7. **Focus column** — sidebar + one centered reading column, composer anchored at bottom; the default AI-product shell. *ChatGPT, Claude.ai, Manus.*
-8. **Master–detail coplanar** — three panes split by 1px borders; the mail-client shell. *Gmail, Superhuman, Evernote notes.*
-9. **Canvas-centric** — infinite canvas, chrome as floating islands. *Figma, Miro.* (Not a Pegbo fit.)
+1. **Cockpit** — global top bar (search center) + sidebar beneath; page is subordinate; search global-first. _Monday, Asana._
+2. **Console** — sidebar only; content full-bleed, owns its header row. _OpenAI, Claude Console, Pipedrive, Evernote, ElevenLabs._
+3. **Framed page** — tinted canvas; content floats as one sheet (radius + ring); sidebar sits on the canvas. "Page on background." _Linear, Twenty, Manus-lite._
+4. **Framed split** — several sheets side by side, each lifted. _Intercom inbox; Twenty record view._
+5. **Rail + drawer** _(modifier, composes with any of the above)_ — slim icon rail (~48–72px) + inner contextual sidebar. _Intercom, Asana, Monday; Slack/Discord._
+6. **Portal** — no sidebar; global header + horizontal tabs, centered max-width column. Scales badly past ~7 sections. _Vercel, GitHub, Basecamp._
+7. **Focus column** — sidebar + one centered reading column, composer anchored at bottom; the default AI-product shell. _ChatGPT, Claude.ai, Manus._
+8. **Master–detail coplanar** — three panes split by 1px borders; the mail-client shell. _Gmail, Superhuman, Evernote notes._
+9. **Canvas-centric** — infinite canvas, chrome as floating islands. _Figma, Miro._ (Not a Pegbo fit.)
 
 ## Matrix (layout × depth)
 
-| | Coplanar | Layered |
-|---|---|---|
-| Cockpit | Monday | **Asana** |
-| Console | OpenAI · Claude · Pipedrive · Evernote · ElevenLabs | — |
-| Framed page | — | Linear · Twenty · Manus |
-| Split | Gmail · Evernote notes | Intercom |
-| Portal | GitHub · Vercel | — |
-| Focus column | ChatGPT · Claude.ai · Manus | — |
+|              | Coplanar                                            | Layered                 |
+| ------------ | --------------------------------------------------- | ----------------------- |
+| Cockpit      | Monday                                              | **Asana**               |
+| Console      | OpenAI · Claude · Pipedrive · Evernote · ElevenLabs | —                       |
+| Framed page  | —                                                   | Linear · Twenty · Manus |
+| Split        | Gmail · Evernote notes                              | Intercom                |
+| Portal       | GitHub · Vercel                                     | —                       |
+| Focus column | ChatGPT · Claude.ai · Manus                         | —                       |
 
-Consoles are almost always coplanar (full-bleed content *is* the canvas); framed layouts are layered by definition. The free choices live in the cockpit and split rows.
+Consoles are almost always coplanar (full-bleed content _is_ the canvas); framed layouts are layered by definition. The free choices live in the cockpit and split rows.
 
 ## Secondary parameters (orthogonal; most of the personality)
 
@@ -45,30 +45,30 @@ Consoles are almost always coplanar (full-bleed content *is* the canvas); framed
 
 ## Per-product classification
 
-| Product | Layout | Depth | Rail | Sidebar | Header | Record opens as |
-|---|---|---|---|---|---|---|
-| OpenAI | Console | Coplanar | — | white+border | content | full page |
-| Claude Console | Console | Coplanar | — | same-bg+border | content | full page |
-| Pipedrive | Console | Coplanar | — | dark navy | content | full page |
-| Evernote | Console / master–detail | Coplanar | — | tinted | content | split editor |
-| Monday | Cockpit | Coplanar | yes | light | **global** | side peek |
-| Asana | Cockpit | **Layered** | yes | dark chrome | **global** | side peek |
-| Linear | Framed page | Layered | — | tinted on-canvas | content | centered sheet |
-| Twenty | Framed page | Layered | slim | transparent | content | side peek (setting) |
-| Intercom | Framed split | Layered | yes | dark rail | content | sheet overlay |
-| ElevenLabs | Console | Coplanar | — | tinted #fafafa | content | full page |
-| Manus | Focus column | Coplanar-soft | — | tinted | content | right rail |
+| Product        | Layout                  | Depth         | Rail | Sidebar          | Header     | Record opens as     |
+| -------------- | ----------------------- | ------------- | ---- | ---------------- | ---------- | ------------------- |
+| OpenAI         | Console                 | Coplanar      | —    | white+border     | content    | full page           |
+| Claude Console | Console                 | Coplanar      | —    | same-bg+border   | content    | full page           |
+| Pipedrive      | Console                 | Coplanar      | —    | dark navy        | content    | full page           |
+| Evernote       | Console / master–detail | Coplanar      | —    | tinted           | content    | split editor        |
+| Monday         | Cockpit                 | Coplanar      | yes  | light            | **global** | side peek           |
+| Asana          | Cockpit                 | **Layered**   | yes  | dark chrome      | **global** | side peek           |
+| Linear         | Framed page             | Layered       | —    | tinted on-canvas | content    | centered sheet      |
+| Twenty         | Framed page             | Layered       | slim | transparent      | content    | side peek (setting) |
+| Intercom       | Framed split            | Layered       | yes  | dark rail        | content    | sheet overlay       |
+| ElevenLabs     | Console                 | Coplanar      | —    | tinted #fafafa   | content    | full page           |
+| Manus          | Focus column            | Coplanar-soft | —    | tinted           | content    | right rail          |
 
 (Asana classified from screenshots; all others DOM-measured.)
 
 ## Measured sheet recipes (framed archetype)
 
-| Product | Canvas | Sheet | Radius | Lift |
-|---|---|---|---|---|
-| Linear | `#efeff0`/`#f9f9fa` | `#fff` | 12px | ring `lch(80.94)` + `0 3 6 -2 /2%` + `0 1 1 /4%` |
-| Twenty | `#f1f1f1` | `#fff` | **16px** | ring `#ebebeb` + `-4 0 4 /0.8%` |
-| Intercom | `#eff0eb` | `#fff` | 12–16px | ring `#e9eae6` + `0 1 4 /15%` |
-| Intercom dark | `#080808` | `#1c2026` | 12–16px | ring `#373c43` + `0 1 4 /55%` |
+| Product       | Canvas              | Sheet     | Radius   | Lift                                             |
+| ------------- | ------------------- | --------- | -------- | ------------------------------------------------ |
+| Linear        | `#efeff0`/`#f9f9fa` | `#fff`    | 12px     | ring `lch(80.94)` + `0 3 6 -2 /2%` + `0 1 1 /4%` |
+| Twenty        | `#f1f1f1`           | `#fff`    | **16px** | ring `#ebebeb` + `-4 0 4 /0.8%`                  |
+| Intercom      | `#eff0eb`           | `#fff`    | 12–16px  | ring `#e9eae6` + `0 1 4 /15%`                    |
+| Intercom dark | `#080808`           | `#1c2026` | 12–16px  | ring `#373c43` + `0 1 4 /55%`                    |
 
 Common recipe: canvas one tint-step below page color · sheet = card color · radius 12–16 · ring = border token · shadow ≤15% alpha. Linear sidebar: 244px.
 
@@ -81,8 +81,7 @@ Theme axis = color; finish axis = Axis 2 (`elevated` ≈ layered, `flat-dense` �
   --shell-canvas: /* --surface-page, one tint step down */;
   --shell-sheet: var(--surface-card);
   --shell-sheet-radius: 13px; /* our radius scale */
-  --shell-sheet-lift: 0 0 0 1px var(--border),
-    0 3px 6px -2px rgb(0 0 0 / .02), 0 1px 1px rgb(0 0 0 / .04);
+  --shell-sheet-lift: 0 0 0 1px var(--border), 0 3px 6px -2px rgb(0 0 0 / 0.02), 0 1px 1px rgb(0 0 0 / 0.04);
 }
 ```
 

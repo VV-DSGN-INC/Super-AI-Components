@@ -34,10 +34,8 @@ export function ReturnsAReviewableDiff() {
           <span className="decoration-foreground/60 line-through">
             It is our belief that the onboarding process is not optimal
           </span>{" "}
-          <span className="bg-primary/20 rounded-sm px-0.5 underline">
-            Onboarding needs work
-          </span>{" "}
-          and could probably be improved.
+          <span className="bg-primary/20 rounded-sm px-0.5 underline">Onboarding needs work</span> and could
+          probably be improved.
         </p>
         <p className="text-muted-foreground mt-2 text-xs">
           Removed hedging; kept the claim. Accept or reject per change.
@@ -58,9 +56,7 @@ export function SilentReplacement() {
       <div className="rounded-md border p-3 text-sm">
         <p className="text-foreground mb-2 text-xs font-medium">Rewritten</p>
         <p className="leading-relaxed">Onboarding needs work and could be improved.</p>
-        <p className="text-muted-foreground mt-2 text-xs">
-          No original, no rationale, no way back.
-        </p>
+        <p className="text-muted-foreground mt-2 text-xs">No original, no rationale, no way back.</p>
       </div>
     </div>
   );

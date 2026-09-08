@@ -103,7 +103,9 @@ describe("GenerationShell", () => {
     const canvas = container.querySelector('[data-region="result-canvas"]')!;
     const grid = canvas.querySelector('[data-slot="generation-grid"]')!;
     expect(grid).not.toBeNull();
-    expect(grid.querySelector('[data-slot="generation-grid-empty"] [data-slot="empty-state"]')).not.toBeNull();
+    expect(
+      grid.querySelector('[data-slot="generation-grid-empty"] [data-slot="empty-state"]'),
+    ).not.toBeNull();
   });
 
   it("renders results as F1 cards inside F2, and drops the empty state", () => {

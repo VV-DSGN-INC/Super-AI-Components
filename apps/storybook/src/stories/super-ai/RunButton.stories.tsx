@@ -362,7 +362,9 @@ export const KeyboardOrder: Story = {
     const idleTrigger = idle.querySelector('[data-slot="run-button-trigger"]') as HTMLElement;
 
     const nameOf = (el: Element | null) =>
-      el === null ? "nothing" : (el.getAttribute("data-testid") ?? el.getAttribute("data-slot") ?? el.tagName);
+      el === null
+        ? "nothing"
+        : (el.getAttribute("data-testid") ?? el.getAttribute("data-slot") ?? el.tagName);
 
     // Unfocused, nothing draws a ring — so the assertions below are about a
     // treatment that arrives with focus, not one that is always painted.
@@ -549,14 +551,18 @@ export const EmptyLabel: Story = {
     // A failure with no reason: nothing announced, nothing described.
     const failed = canvas.getByTestId("bare-failed");
     await expect(failed.querySelector('[role="alert"]')).toBeNull();
-    await expect(failed.querySelector('[data-slot="run-button-trigger"]')).not.toHaveAttribute("aria-describedby");
+    await expect(failed.querySelector('[data-slot="run-button-trigger"]')).not.toHaveAttribute(
+      "aria-describedby",
+    );
     await expect(within(failed).getByRole("button")).toHaveAccessibleName("Try again");
 
     // A shortfall with no arithmetic: `cost` alone does not rescue it.
     await expect(canvas.getByTestId("bare-short")).toHaveTextContent("Not enough credits");
 
     // A gate with no reason, and a price with no chip.
-    await expect(canvas.getByTestId("bare-locked").querySelector('[data-slot="run-button-locked-reason"]')).toBeNull();
+    await expect(
+      canvas.getByTestId("bare-locked").querySelector('[data-slot="run-button-locked-reason"]'),
+    ).toBeNull();
     await expect(canvas.getByTestId("bare-idle").querySelector('[data-slot="cost-chip"]')).toBeNull();
 
     // Every control is still named — which is why none of the above trips a gate.
@@ -623,7 +629,9 @@ export const LongContent: Story = {
     await expect(getComputedStyle(controls).flexWrap).toBe("nowrap");
 
     // The failure reason takes the opposite answer: it wraps to a second line.
-    const error = canvas.getByTestId("long-error").querySelector('[data-slot="run-button-error"]') as HTMLElement;
+    const error = canvas
+      .getByTestId("long-error")
+      .querySelector('[data-slot="run-button-error"]') as HTMLElement;
     await expect(getComputedStyle(error).whiteSpace).toBe("normal");
     await expect(error.getBoundingClientRect().height).toBeGreaterThan(
       Number.parseFloat(getComputedStyle(error).lineHeight),
@@ -651,7 +659,13 @@ export const Mobile: Story = {
     <div className="w-[375px] max-w-full" data-testid="viewport">
       <div className="flex flex-col items-start gap-4">
         <RunButton state="running" progress={45} onCancel={() => {}} data-testid="m-running" />
-        <RunButton state="insufficient-credits" cost={6} balance={2} onBuyCredits={() => {}} data-testid="m-short" />
+        <RunButton
+          state="insufficient-credits"
+          cost={6}
+          balance={2}
+          onBuyCredits={() => {}}
+          data-testid="m-short"
+        />
         <RunButton
           state="failed"
           cost={4}
@@ -675,7 +689,9 @@ export const Mobile: Story = {
     }
 
     // The reason wraps rather than pushing the column wider.
-    const error = canvas.getByTestId("m-failed").querySelector('[data-slot="run-button-error"]') as HTMLElement;
+    const error = canvas
+      .getByTestId("m-failed")
+      .querySelector('[data-slot="run-button-error"]') as HTMLElement;
     await expect(error.getBoundingClientRect().height).toBeGreaterThan(
       Number.parseFloat(getComputedStyle(error).lineHeight),
     );
@@ -715,7 +731,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">E7 member gate row — in a feature list, before the spend</p>
+        <p className="text-foreground text-xs font-medium">
+          E7 member gate row — in a feature list, before the spend
+        </p>
         <MemberGateRow
           label="4K export"
           description="Render at full resolution"
@@ -726,7 +744,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">M5 paywall message — after the attempt, holding the work</p>
+        <p className="text-foreground text-xs font-medium">
+          M5 paywall message — after the attempt, holding the work
+        </p>
         <CostProvider balance={2} onTopUp={() => {}}>
           <PaywallMessage
             state="quota-exhausted"

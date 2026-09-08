@@ -26,18 +26,36 @@ export const FrameStripDocs: ComponentDocs = {
   anatomy: [
     { slot: "frame-strip", note: "Root — the scrollable region (Carousel), labelled for the content kind." },
     { slot: "frame-strip-item", note: "One cell. Its height is the same whether or not the item is active." },
-    { slot: "frame-strip-frame", note: "The tile: a preview-tile, wrapped in a button in the select variant and inert in the in/out variant." },
-    { slot: "preview-tile", note: "A8, composed rather than reimplemented — it owns the aspect, the label overlay, the badge corner and the selection ring." },
-    { slot: "frame-strip-mark", note: "In/out variant only: the \"In\" or \"Out\" badge in the tile's badge corner." },
-    { slot: "frame-strip-in", note: "Toggle that marks this item as the in point. Its accessible name names the frame." },
+    {
+      slot: "frame-strip-frame",
+      note: "The tile: a preview-tile, wrapped in a button in the select variant and inert in the in/out variant.",
+    },
+    {
+      slot: "preview-tile",
+      note: "A8, composed rather than reimplemented — it owns the aspect, the label overlay, the badge corner and the selection ring.",
+    },
+    {
+      slot: "frame-strip-mark",
+      note: 'In/out variant only: the "In" or "Out" badge in the tile\'s badge corner.',
+    },
+    {
+      slot: "frame-strip-in",
+      note: "Toggle that marks this item as the in point. Its accessible name names the frame.",
+    },
     { slot: "frame-strip-out", note: "Toggle that marks this item as the out point." },
-    { slot: "frame-strip-move", note: "Reorder controls; revealed on hover or focus, disabled at each end of the strip." },
+    {
+      slot: "frame-strip-move",
+      note: "Reorder controls; revealed on hover or focus, disabled at each end of the strip.",
+    },
     { slot: "frame-strip-add", note: "Trailing add tile, in the same cell geometry as a frame." },
-    { slot: "frame-strip-previous", note: "Visible scroll-left affordance; also what keeps the strip keyboard-reachable." },
+    {
+      slot: "frame-strip-previous",
+      note: "Visible scroll-left affordance; also what keeps the strip keyboard-reachable.",
+    },
     { slot: "frame-strip-next", note: "Visible scroll-right affordance." },
   ],
   usage:
-    "Reach for it whenever a timeline, deck or canvas needs a row of navigable thumbnails. Set `kind` to video, slides or artboards — it changes the tile aspect and the wording of the add tile, nothing else. Pass `items` with a `label` on every entry (a timecode, a page number, an artboard name): the label is the tile's accessible name, and the thumbnail is decorative. Add `onReorder` to turn on the move controls and `onAdd` to append the add tile. Switch to `variant=\"in-out\"` when the question is a range rather than a position — that variant marks two items, feeds them to reference-strip as first and last frame, and keeps the in point ahead of the out point for you.",
+    'Reach for it whenever a timeline, deck or canvas needs a row of navigable thumbnails. Set `kind` to video, slides or artboards — it changes the tile aspect and the wording of the add tile, nothing else. Pass `items` with a `label` on every entry (a timecode, a page number, an artboard name): the label is the tile\'s accessible name, and the thumbnail is decorative. Add `onReorder` to turn on the move controls and `onAdd` to append the add tile. Switch to `variant="in-out"` when the question is a range rather than a position — that variant marks two items, feeds them to reference-strip as first and last frame, and keeps the in point ahead of the out point for you.',
   dos: [
     {
       text: "Use one strip for frames, pages and artboards, changing only `kind` — selection, reorder and add should behave identically across all three.",

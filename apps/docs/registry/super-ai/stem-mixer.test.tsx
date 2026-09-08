@@ -62,14 +62,9 @@ describe("StemMixer", () => {
   it("renders the additive-solo state", async () => {
     const onSoloChange = vi.fn();
     const stems = STEMS.map((stem) => ({ ...stem, soloed: stem.id === "drums" }));
-    const { container } = render(
-      <StemMixer stems={stems} soloMode="additive" onSoloChange={onSoloChange} />,
-    );
+    const { container } = render(<StemMixer stems={stems} soloMode="additive" onSoloChange={onSoloChange} />);
 
-    expect(container.querySelector('[data-slot="stem-mixer"]')).toHaveAttribute(
-      "data-solo-mode",
-      "additive",
-    );
+    expect(container.querySelector('[data-slot="stem-mixer"]')).toHaveAttribute("data-solo-mode", "additive");
     expect(container.querySelector('[data-slot="stem-mixer-solo-mode"]')).toHaveTextContent(
       "Solo is additive",
     );
@@ -85,18 +80,9 @@ describe("StemMixer", () => {
 
     // A meter per lane, each named for its stem rather than being one of three
     // anonymous progressbars.
-    expect(screen.getByRole("progressbar", { name: "Drums level" })).toHaveAttribute(
-      "aria-valuenow",
-      "72",
-    );
-    expect(screen.getByRole("progressbar", { name: "Bass level" })).toHaveAttribute(
-      "aria-valuenow",
-      "41",
-    );
-    expect(screen.getByRole("progressbar", { name: "Vocals level" })).toHaveAttribute(
-      "aria-valuenow",
-      "0",
-    );
+    expect(screen.getByRole("progressbar", { name: "Drums level" })).toHaveAttribute("aria-valuenow", "72");
+    expect(screen.getByRole("progressbar", { name: "Bass level" })).toHaveAttribute("aria-valuenow", "41");
+    expect(screen.getByRole("progressbar", { name: "Vocals level" })).toHaveAttribute("aria-valuenow", "0");
   });
 
   it("renders the stem-lineage state", () => {
@@ -118,10 +104,7 @@ describe("StemMixer", () => {
 
     const drums = within(lane(container, "drums")).getByText(/Separated from/);
     expect(drums).toHaveTextContent("Separated from Midnight Drive (master).wav · Demucs v4");
-    expect(drums.closest('[data-slot="stem-mixer-lineage"]')).toHaveAttribute(
-      "data-origin",
-      "separated",
-    );
+    expect(drums.closest('[data-slot="stem-mixer-lineage"]')).toHaveAttribute("data-origin", "separated");
 
     // Origin is spelled out, so separated and generated are never told apart by
     // icon shape alone.
@@ -194,10 +177,7 @@ describe("StemMixer", () => {
   it("is fully controlled — pressing solo changes nothing until the caller says so", async () => {
     render(<StemMixer stems={STEMS} soloMode="exclusive" />);
     await userEvent.click(screen.getByRole("button", { name: "Solo Drums" }));
-    expect(screen.getByRole("button", { name: "Solo Drums" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
+    expect(screen.getByRole("button", { name: "Solo Drums" })).toHaveAttribute("aria-pressed", "false");
     expect(laneState("Drums")).toBe("Audible");
   });
 
@@ -208,11 +188,7 @@ describe("StemMixer", () => {
   it("says in words why a lane is silent, and marks it programmatically", () => {
     const { container } = render(
       <StemMixer
-        stems={[
-          { ...STEMS[0], soloed: true },
-          { ...STEMS[1] },
-          { ...STEMS[2], muted: true, soloed: true },
-        ]}
+        stems={[{ ...STEMS[0], soloed: true }, { ...STEMS[1] }, { ...STEMS[2], muted: true, soloed: true }]}
       />,
     );
 
@@ -246,18 +222,10 @@ describe("StemMixer", () => {
 
   it("gives mute and solo real toggle semantics, named for their stem", async () => {
     const onMuteChange = vi.fn();
-    render(
-      <StemMixer stems={[{ ...STEMS[0], muted: true }, STEMS[1]]} onMuteChange={onMuteChange} />,
-    );
+    render(<StemMixer stems={[{ ...STEMS[0], muted: true }, STEMS[1]]} onMuteChange={onMuteChange} />);
 
-    expect(screen.getByRole("button", { name: "Mute Drums" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(screen.getByRole("button", { name: "Mute Bass" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
+    expect(screen.getByRole("button", { name: "Mute Drums" })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: "Mute Bass" })).toHaveAttribute("aria-pressed", "false");
 
     await userEvent.click(screen.getByRole("button", { name: "Mute Drums" }));
     expect(onMuteChange).toHaveBeenCalledWith("drums", false);
@@ -282,10 +250,7 @@ describe("StemMixer", () => {
       "aria-valuetext",
       "30% left",
     );
-    expect(rangeInput(lane(container, "bass"), "stem-mixer-pan")).toHaveAttribute(
-      "aria-valuetext",
-      "Centre",
-    );
+    expect(rangeInput(lane(container, "bass"), "stem-mixer-pan")).toHaveAttribute("aria-valuetext", "Centre");
     expect(rangeInput(lane(container, "vocals"), "stem-mixer-pan")).toHaveAttribute(
       "aria-valuetext",
       "20% right",

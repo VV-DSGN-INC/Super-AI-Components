@@ -216,10 +216,7 @@ function ChatShellRunningJob({ label }: { label: string }) {
           pair is only needed on a Base UI popup, where the data-attribute
           variant would win the source-order tie. Suppressing the spin leaves
           the label as the only signal, which is what the label is for. */}
-      <LoaderCircle
-        aria-hidden
-        className="size-3 shrink-0 animate-spin motion-reduce:animate-none"
-      />
+      <LoaderCircle aria-hidden className="size-3 shrink-0 animate-spin motion-reduce:animate-none" />
       {label}
     </p>
   );
@@ -426,11 +423,7 @@ function ChatShell({
               <h2 id={artifactsLabelId} className="text-sm font-medium">
                 {artifactsLabel}
               </h2>
-              <ArtifactGrid
-                sessions={artifacts}
-                filterable={false}
-                emptyLabel={artifactsEmptyLabel}
-              />
+              <ArtifactGrid sessions={artifacts} filterable={false} emptyLabel={artifactsEmptyLabel} />
             </section>
           </ConversationContent>
         </Conversation>

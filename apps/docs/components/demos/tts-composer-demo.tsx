@@ -46,7 +46,9 @@ export default function TtsComposerDemo() {
   const [isPlayingScript, setIsPlayingScript] = React.useState(false);
 
   const patchSegment = (id: string, patch: Partial<TtsComposerSegment>) => {
-    setSegments((current) => current.map((segment) => (segment.id === id ? { ...segment, ...patch } : segment)));
+    setSegments((current) =>
+      current.map((segment) => (segment.id === id ? { ...segment, ...patch } : segment)),
+    );
   };
 
   const handleRegenerateSegment = (id: string) => {

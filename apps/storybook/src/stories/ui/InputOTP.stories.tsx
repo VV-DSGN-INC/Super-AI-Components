@@ -1,12 +1,7 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-  InputOTPSeparator,
-} from "@/components/ui/input-otp";
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
 
 const meta: Meta<typeof InputOTP> = {
   title: "shadcn/ui/Input OTP",
@@ -32,9 +27,7 @@ export const Default: Story = {
             <InputOTPSlot index={5} />
           </InputOTPGroup>
         </InputOTP>
-        <p className="text-sm text-muted-foreground">
-          Enter the code we sent to verify your workspace.
-        </p>
+        <p className="text-sm text-muted-foreground">Enter the code we sent to verify your workspace.</p>
       </div>
     );
   },

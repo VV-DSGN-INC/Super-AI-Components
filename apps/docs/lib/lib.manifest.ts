@@ -28,6 +28,16 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     npm: [],
     target: "lib/use-view-mode.tsx",
   },
+  {
+    name: "initials",
+    title: "Initials",
+    description:
+      "Two-letter initials from a name, for the avatar marks A10, B2 and K4 all paint when no image is supplied.",
+    status: "shipped",
+    shadcn: [],
+    npm: [],
+    target: "lib/initials.tsx",
+  },
 ];
 
 export const LIB_NAMES = LIB_MANIFEST.map((i) => i.name);

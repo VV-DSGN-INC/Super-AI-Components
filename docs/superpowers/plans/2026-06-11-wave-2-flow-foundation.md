@@ -158,7 +158,9 @@ export const handleTypeKeys = () => [...registry.keys()];
 export function handleId(nodeId: string, dataType: string, dir: "in" | "out") {
   return `${nodeId}:${dataType}:${dir}`;
 }
-export function parseHandleId(id: string | null | undefined): { nodeId: string; dataType: string; dir: "in" | "out" } | null {
+export function parseHandleId(
+  id: string | null | undefined,
+): { nodeId: string; dataType: string; dir: "in" | "out" } | null {
   if (!id) return null;
   // End-anchored parse: node ids may contain ":" (user-controlled); dir/dataType never do.
   const parts = id.split(":");

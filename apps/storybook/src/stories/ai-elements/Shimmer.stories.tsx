@@ -11,9 +11,7 @@ export default meta;
 type Story = StoryObj<typeof Shimmer>;
 
 export const Default: Story = {
-  render: () => (
-    <Shimmer className="text-lg">Generating your marketing video…</Shimmer>
-  ),
+  render: () => <Shimmer className="text-lg">Generating your marketing video…</Shimmer>,
 };
 
 export const Heading: Story = {

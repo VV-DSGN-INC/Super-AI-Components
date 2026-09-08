@@ -17,12 +17,12 @@ is not a method to repeat (see the note at the end).
 **Every active shell's wireframe matches its spec.** One genuine disagreement, and it went against
 this document:
 
-| Shell | Disagreement | Ruling |
-| --- | --- | --- |
+| Shell                 | Disagreement                                                 | Ruling                                                                                                                                                                                         |
+| --------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **O3** `studio-shell` | Wireframe draws a `topbar`; the spec's `Regions:` omitted it | **Wireframe right.** `Filled by:` already named B7, which has to render somewhere, and the prose said "Five regions" while listing five that excluded it. Spec corrected to six regions above. |
 
 One further correction was made to this document, independent of the board: **O14** listed
-`provider buttons` in `Regions:` while its own `Filled by:` said A9 provider *rows*. A9 is
+`provider buttons` in `Regions:` while its own `Filled by:` said A9 provider _rows_. A9 is
 `entity-row`, so `provider rows` is correct; normalised above.
 
 ### Where the board is stale
@@ -35,15 +35,15 @@ The board predates D9/D12/D16 in two respects:
 2. **13 shipped components appear under `gaps.md`'s provisional IDs rather than their final catalog
    IDs.** They are on the board and specced there; only the numbering is stale:
 
-   | Board ID | Catalog ID | Component |
-   | --- | --- | --- |
-   | R1 | N7 | `env-status` |
-   | R3 · R4 | H6 · H7 | `waveform-editor` · `stem-mixer` |
-   | R5 | J7 | `track-list` |
-   | R6 · R7 | E9 · E10 | `tts-composer` · `voice-clone-recorder` |
+   | Board ID          | Catalog ID          | Component                                                                |
+   | ----------------- | ------------------- | ------------------------------------------------------------------------ |
+   | R1                | N7                  | `env-status`                                                             |
+   | R3 · R4           | H6 · H7             | `waveform-editor` · `stem-mixer`                                         |
+   | R5                | J7                  | `track-list`                                                             |
+   | R6 · R7           | E9 · E10            | `tts-composer` · `voice-clone-recorder`                                  |
    | T1 · T2 · T3 · T4 | N8 · N9 · N12 · N10 | `permission-prompt` · `autonomy-selector` · `task-tray` · `safety-block` |
-   | T5 | M7 | `connection-manager` |
-   | U12 · U14 | K7 · K8 | `answer-block` · `source-cards` |
+   | T5                | M7                  | `connection-manager`                                                     |
+   | U12 · U14         | K7 · K8             | `answer-block` · `source-cards`                                          |
 
 3. **Two shipped components are genuinely absent:** D7 `slot-summary` and N11 `escalation-handoff`.
 
@@ -99,9 +99,10 @@ I2 `property-inspector` · I5 `drawing-tools` · H5 `frame-strip` · E4 `preset-
 - Six regions, fixed positions. Rail, topbar and inspector are the invariants; the middle
   three — tool panel, canvas, page strip — vary by what is being edited.
 
-  *(Corrected 2026-08-08. This line read "Five regions" and the `Regions:` list omitted the
+  _(Corrected 2026-08-08. This line read "Five regions" and the `Regions:` list omitted the
   topbar, while `Filled by:` named B7 — which has to render somewhere. The FigJam wireframe
-  drew the topbar and was right; the spec was internally inconsistent.)*
+  drew the topbar and was right; the spec was internally inconsistent.)_
+
 - The rail selects which tool panel is shown. It never changes the canvas — that separation is what
   keeps the shell legible.
 - The inspector is selection-driven and must ship an empty state, because "nothing selected" is the

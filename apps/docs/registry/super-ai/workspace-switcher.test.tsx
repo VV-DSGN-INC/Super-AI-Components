@@ -36,19 +36,30 @@ describe("WorkspaceSwitcher", () => {
   });
 
   it("puts creation last, below a separator", async () => {
-    render(<WorkspaceSwitcher workspaces={WORKSPACES} currentId="acme" onSelect={vi.fn()} onCreate={vi.fn()} />);
+    render(
+      <WorkspaceSwitcher workspaces={WORKSPACES} currentId="acme" onSelect={vi.fn()} onCreate={vi.fn()} />,
+    );
     await userEvent.click(screen.getByRole("button", { name: /Acme/ }));
     const items = await screen.findAllByRole("menuitem");
     expect(items[items.length - 1]).toHaveTextContent(/create/i);
   });
 
   it("does not render a create affordance on the trigger", () => {
-    render(<WorkspaceSwitcher workspaces={WORKSPACES} currentId="acme" onSelect={vi.fn()} onCreate={vi.fn()} />);
+    render(
+      <WorkspaceSwitcher workspaces={WORKSPACES} currentId="acme" onSelect={vi.fn()} onCreate={vi.fn()} />,
+    );
     expect(screen.getByRole("button", { name: /Acme/ })).not.toHaveTextContent(/create|\+/i);
   });
 
   it("passes className through", () => {
-    render(<WorkspaceSwitcher workspaces={WORKSPACES} currentId="acme" onSelect={vi.fn()} className="test-class" />);
+    render(
+      <WorkspaceSwitcher
+        workspaces={WORKSPACES}
+        currentId="acme"
+        onSelect={vi.fn()}
+        className="test-class"
+      />,
+    );
     expect(document.querySelector('[data-slot="workspace-switcher"]')!.className).toContain("test-class");
   });
 });

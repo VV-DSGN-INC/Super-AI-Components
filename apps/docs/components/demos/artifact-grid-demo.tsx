@@ -28,7 +28,7 @@ const SESSIONS: ArtifactGridSession[] = [
         id: "a2",
         type: "react",
         excerpt:
-          "export function PricingTable({ plans }: PricingTableProps) { return <table aria-label=\"Plan comparison\">…</table> }",
+          'export function PricingTable({ plans }: PricingTableProps) { return <table aria-label="Plan comparison">…</table> }',
         editedAgo: "Edited yesterday",
         viewCount: 38,
         visibility: "shared",

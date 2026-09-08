@@ -41,7 +41,13 @@ const RECORDS: RecordsShellProps["records"] = [
   {
     id: "churn-watch",
     title: "Churn-risk watchlist",
-    apps: [{ name: "Stripe" }, { name: "Linear" }, { name: "Intercom" }, { name: "Notion" }, { name: "Slack" }],
+    apps: [
+      { name: "Stripe" },
+      { name: "Linear" },
+      { name: "Intercom" },
+      { name: "Notion" },
+      { name: "Slack" },
+    ],
     runState: "running",
     lastRun: "Started 30 seconds ago",
     meta: ["Revenue ops"],
@@ -350,9 +356,7 @@ export const RTL: Story = {
     const trigger = at('[data-slot="sidebar-trigger"]');
     const heading = header.querySelector<HTMLElement>("h1")!;
     await expect(headerBox.right - trigger.getBoundingClientRect().right).toBeLessThanOrEqual(12);
-    await expect(heading.getBoundingClientRect().right).toBeLessThan(
-      trigger.getBoundingClientRect().right,
-    );
+    await expect(heading.getBoundingClientRect().right).toBeLessThan(trigger.getBoundingClientRect().right);
 
     // J1's search chrome is already logical, and this is the positive case:
     // the glyph moves to the start edge and the field's 32px of inline-start
@@ -362,8 +366,9 @@ export const RTL: Story = {
     const field = search.querySelector<HTMLInputElement>("input")!;
     await expect(getComputedStyle(field).paddingRight).toBe("32px");
     await expect(getComputedStyle(field).paddingLeft).toBe("10px");
-    await expect(search.getBoundingClientRect().right - glyph.getBoundingClientRect().right)
-      .toBeLessThanOrEqual(14);
+    await expect(
+      search.getBoundingClientRect().right - glyph.getBoundingClientRect().right,
+    ).toBeLessThanOrEqual(14);
   },
 };
 
@@ -432,9 +437,7 @@ export const ReducedMotion: Story = {
     await expect(getComputedStyle(popover).animationName).toBe("none");
 
     // 3. J5's row overflow menu.
-    await userEvent.click(
-      canvas.getByRole("button", { name: "More actions for Daily briefing digest" }),
-    );
+    await userEvent.click(canvas.getByRole("button", { name: "More actions for Daily briefing digest" }));
     const menu = await waitFor(() => {
       const el = document.querySelector<HTMLElement>('[data-slot="dropdown-menu-content"]');
       if (!el) throw new Error("row overflow menu did not open");
@@ -556,9 +559,7 @@ export const KeyboardOrder: Story = {
     // The header create button is not in the list above because it sits after
     // the trigger and before the chips; asserting it here keeps the seam
     // complete without widening the walk.
-    await expect(
-      within(canvasElement).getByRole("button", { name: "New scenario" }),
-    ).toBeInTheDocument();
+    await expect(within(canvasElement).getByRole("button", { name: "New scenario" })).toBeInTheDocument();
   },
 };
 
@@ -635,9 +636,7 @@ export const Controlled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const body = within(document.body);
-    const trigger = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="records-shell-sort-trigger"]',
-    )!;
+    const trigger = canvasElement.querySelector<HTMLElement>('[data-slot="records-shell-sort-trigger"]')!;
 
     // The label is resolved, not the raw value.
     await expect(trigger).toHaveTextContent("Last run");
@@ -891,9 +890,7 @@ export const LongContent: Story = {
     // Nothing here made the page scroll sideways.
     const region = at('[data-region="record-rows"]');
     await expect(region.scrollWidth).toBeLessThanOrEqual(region.clientWidth + 1);
-    for (const container of canvasElement.querySelectorAll<HTMLElement>(
-      '[data-slot="table-container"]',
-    )) {
+    for (const container of canvasElement.querySelectorAll<HTMLElement>('[data-slot="table-container"]')) {
       await expect(container.scrollWidth).toBeLessThanOrEqual(container.clientWidth + 1);
     }
   },
@@ -940,9 +937,7 @@ export const Mobile: Story = {
     // The breakpoint really moved — the claim a width wrapper cannot make.
     await waitFor(() => expect(window.innerWidth).toBe(375));
     await expect(window.matchMedia("(max-width: 767px)").matches).toBe(true);
-    await waitFor(() =>
-      expect(canvasElement.querySelector('[data-slot="app-sidebar"]')).toBeNull(),
-    );
+    await waitFor(() => expect(canvasElement.querySelector('[data-slot="app-sidebar"]')).toBeNull());
 
     // Every region is still mounted — that is the block contract — and none of
     // them scrolls sideways.
@@ -1054,9 +1049,7 @@ export const Boundary: Story = {
     // 4. No grid, no thumbnails, no bulk selection. J1's view switch is
     //    suppressed with `display: none`, which is what takes it out of the tab
     //    order and the accessibility tree rather than merely hiding it.
-    const viewToggle = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="asset-library-view-toggle"]',
-    )!;
+    const viewToggle = canvasElement.querySelector<HTMLElement>('[data-slot="asset-library-view-toggle"]')!;
     await expect(getComputedStyle(viewToggle).display).toBe("none");
     await expect(canvasElement.querySelector('[data-slot="asset-library-grid"]')).toBeNull();
     await expect(canvas.queryAllByRole("checkbox")).toHaveLength(0);

@@ -65,9 +65,7 @@ describe("RecordList", () => {
     const toggle = within(rowFor("Daily digest")).getByRole("switch", { name: "Enable Daily digest" });
     expect(toggle).toBeInTheDocument();
     expect(toggle).toBeChecked();
-    expect(
-      within(rowFor("Lead sync")).getByRole("switch", { name: "Enable Lead sync" }),
-    ).not.toBeChecked();
+    expect(within(rowFor("Lead sync")).getByRole("switch", { name: "Enable Lead sync" })).not.toBeChecked();
   });
 
   it("renders the run-status state", () => {
@@ -84,9 +82,7 @@ describe("RecordList", () => {
         records={[{ ...RECORDS[0], actions: [{ id: "duplicate", label: "Duplicate", onSelect }] }]}
       />,
     );
-    await userEvent.click(
-      screen.getByRole("button", { name: "More actions for Daily digest" }),
-    );
+    await userEvent.click(screen.getByRole("button", { name: "More actions for Daily digest" }));
     await userEvent.click(await screen.findByRole("menuitem", { name: "Duplicate" }));
     expect(onSelect).toHaveBeenCalledWith("1");
   });
@@ -145,10 +141,7 @@ describe("RecordList", () => {
 
     rerender(<RecordList records={[{ ...RECORDS[0], href: "/scenarios/1" }]} onOpen={() => {}} />);
     // href wins over onOpen: a real link is navigable, middle-clickable, copyable.
-    expect(screen.getByRole("link", { name: "Daily digest" })).toHaveAttribute(
-      "href",
-      "/scenarios/1",
-    );
+    expect(screen.getByRole("link", { name: "Daily digest" })).toHaveAttribute("href", "/scenarios/1");
 
     rerender(<RecordList records={[RECORDS[0]]} />);
     expect(screen.queryByRole("button", { name: "Daily digest" })).not.toBeInTheDocument();

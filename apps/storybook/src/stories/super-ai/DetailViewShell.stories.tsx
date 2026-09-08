@@ -195,7 +195,11 @@ function PinnedShell(args: DetailViewShellProps) {
 
   return (
     <div className="flex flex-col gap-2">
-      <DetailViewShell {...args} open onOpenChange={(next) => setRequests((prev) => [...prev, `open:${next}`])} />
+      <DetailViewShell
+        {...args}
+        open
+        onOpenChange={(next) => setRequests((prev) => [...prev, `open:${next}`])}
+      />
       <p data-testid="requests" className="text-foreground text-xs">
         {requests.join(" · ") || "no requests yet"}
       </p>
@@ -399,8 +403,11 @@ export const KeyboardOrder: Story = {
     const ringLog: string[] = [];
     const ringCheck = (el: HTMLElement) => {
       const style = getComputedStyle(el);
-      const shown = el.matches(":focus-visible") && (style.boxShadow !== "none" || style.outlineStyle !== "none");
-      ringLog.push(`${nameOf(el)} fv=${el.matches(":focus-visible")} outline=${style.outlineStyle}/${style.outlineWidth} shadow=${style.boxShadow.slice(0, 30)}`);
+      const shown =
+        el.matches(":focus-visible") && (style.boxShadow !== "none" || style.outlineStyle !== "none");
+      ringLog.push(
+        `${nameOf(el)} fv=${el.matches(":focus-visible")} outline=${style.outlineStyle}/${style.outlineWidth} shadow=${style.boxShadow.slice(0, 30)}`,
+      );
       if (!shown) unringed.push(nameOf(el));
     };
 
@@ -531,7 +538,9 @@ export const LongContent: Story = {
   args: {
     ...base,
     mode: "fullscreen",
-    header: <RecordHeader title="Draft the migration plan for the arrangements tier before the registry freeze" />,
+    header: (
+      <RecordHeader title="Draft the migration plan for the arrangements tier before the registry freeze" />
+    ),
     attributes: (
       <DetailFields
         fields={[

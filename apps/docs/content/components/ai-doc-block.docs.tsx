@@ -22,14 +22,32 @@ export const AiDocBlockDocs: ComponentDocs = {
     "This is the shape Notion AI, Manus reports, Spellbook drafting and Claude artifacts all converged on, and the reason is the same in each: generated text has to survive save, reload and export as ordinary content. A block that is really an overlay looks identical in a screenshot and disappears the moment the document is serialised. Keeping the passage in the document also keeps the approval contract honest — F7 `approval-card`'s four verbs applied to prose, so the muscle memory built on approvals elsewhere in the product transfers to the middle of a paragraph.",
   evidence: ["Notion AI", "Manus", "Spellbook", "Claude artifacts"],
   anatomy: [
-    { slot: "ai-doc-block", note: "The document node itself. Same element in every state — it never unmounts and never moves." },
-    { slot: "ai-doc-block-header", note: "Attribution row: the generated-by label, plus the streaming indicator when text is arriving." },
-    { slot: "ai-doc-block-label", note: "Says in words that the passage was generated. Not a colour, not a border." },
-    { slot: "ai-doc-block-streaming", note: "Spinner and the word \"Streaming\", shown only while text is arriving." },
-    { slot: "ai-doc-block-content", note: "The prose. Your markup, unwrapped — this is the part a document model saves and exports." },
+    {
+      slot: "ai-doc-block",
+      note: "The document node itself. Same element in every state — it never unmounts and never moves.",
+    },
+    {
+      slot: "ai-doc-block-header",
+      note: "Attribution row: the generated-by label, plus the streaming indicator when text is arriving.",
+    },
+    {
+      slot: "ai-doc-block-label",
+      note: "Says in words that the passage was generated. Not a colour, not a border.",
+    },
+    {
+      slot: "ai-doc-block-streaming",
+      note: 'Spinner and the word "Streaming", shown only while text is arriving.',
+    },
+    {
+      slot: "ai-doc-block-content",
+      note: "The prose. Your markup, unwrapped — this is the part a document model saves and exports.",
+    },
     { slot: "ai-doc-block-editor", note: "The textarea that replaces the prose in the editable state." },
     { slot: "ai-doc-block-verbs", note: "Keep · Edit · Regenerate · Discard, in that order, always." },
-    { slot: "ai-doc-block-reprompt", note: "The re-prompt affordance: a labelled instruction field with its own Regenerate and Cancel." },
+    {
+      slot: "ai-doc-block-reprompt",
+      note: "The re-prompt affordance: a labelled instruction field with its own Regenerate and Cancel.",
+    },
     { slot: "ai-doc-block-prompt", note: "The instruction field inside that affordance." },
     { slot: "ai-doc-block-status", note: "Persistent live region that announces each state change." },
   ],
@@ -60,19 +78,19 @@ export const AiDocBlockDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "The verb row is one tab stop per supplied handler — nought to four. Nothing here is a roving-tabindex group: `ButtonGroup` is a plain `role=\"group\"`, so four verbs is four Tab presses and the arrows do nothing.",
+      'The verb row is one tab stop per supplied handler — nought to four. Nothing here is a roving-tabindex group: `ButtonGroup` is a plain `role="group"`, so four verbs is four Tab presses and the arrows do nothing.',
       "In the `streaming` state every verb carries `disabled`, so the block has no tab stops of its own at all. A keyboard user tabs from the paragraph above straight to the one below.",
       "In `editable` the block is the edit textarea plus whichever verbs you supplied. Tab moves out of the textarea rather than indenting, and no key commits or cancels — Escape is unhandled, so leaving the state is a mouse trip to a verb.",
       "In `re-promptable` the verbs are replaced by the instruction field, a Regenerate button, and a Cancel button only if you passed `onRePromptCancel`. Enter inside the textarea inserts a newline; there is no submit shortcut, and with no `onRePromptCancel` there is no keyboard way out of the state at all.",
-      "Space and Enter activate every button; all of them are real `<button type=\"button\">`, so none of them submit a surrounding form by accident.",
+      'Space and Enter activate every button; all of them are real `<button type="button">`, so none of them submit a surrounding form by accident.',
     ],
     screenReader: [
-      "There is one persistent `role=\"status\"` line, present in the DOM in every state, whose text changes with `state` — \"Generating this block…\", \"This block is open for editing.\", and so on. That is what makes a state change audible rather than merely visible.",
+      'There is one persistent `role="status"` line, present in the DOM in every state, whose text changes with `state` — "Generating this block…", "This block is open for editing.", and so on. That is what makes a state change audible rather than merely visible.',
       "The block itself is a plain `div`. It is not a region, the attribution line is not a heading, and nothing marks where the generated passage starts or ends: in browse mode the label reads as one more run of text before the prose. With several blocks in a document there is no landmark or heading to move between them.",
-      "The attribution comes from `label` as real text, and the sparkle beside it is `aria-hidden`. Streaming is announced the same way — the spinner is hidden and the word \"Streaming\" carries it — plus `aria-busy` on the content slot.",
-      "The edit field is named by `editLabel`, which defaults to the generic \"Edit generated text\". Two open editors in one document announce identically; pass a per-block name.",
+      'The attribution comes from `label` as real text, and the sparkle beside it is `aria-hidden`. Streaming is announced the same way — the spinner is hidden and the word "Streaming" carries it — plus `aria-busy` on the content slot.',
+      'The edit field is named by `editLabel`, which defaults to the generic "Edit generated text". Two open editors in one document announce identically; pass a per-block name.',
       "The instruction field has a real `<label>`, so its name survives typing — the placeholder is an example, not the name.",
-      "The verbs are named by their visible words only; their icons are `aria-hidden`. Those names are the same on every block, so \"Discard, button\" says nothing about which passage it discards.",
+      'The verbs are named by their visible words only; their icons are `aria-hidden`. Those names are the same on every block, so "Discard, button" says nothing about which passage it discards.',
     ],
     focus: [
       "Pressing Regenerate unmounts the entire verb row, including the button that had focus, and nothing moves focus into the instruction field that replaces it. Focus falls to `<body>` and the next Tab restarts from the top of the page — move it into the prompt field yourself in `onRegenerate`.",

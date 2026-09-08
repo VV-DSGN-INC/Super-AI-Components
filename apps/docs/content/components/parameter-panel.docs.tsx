@@ -1,5 +1,10 @@
 import type { ComponentDocs } from "@/lib/component-docs";
-import { BadRawEndpoints, BadTooltipOnly, GoodEndpoints, GoodInlineEducation } from "./parameter-panel.examples";
+import {
+  BadRawEndpoints,
+  BadTooltipOnly,
+  GoodEndpoints,
+  GoodInlineEducation,
+} from "./parameter-panel.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#e3-parameter-panel.
@@ -20,11 +25,20 @@ export const ParameterPanelDocs: ComponentDocs = {
   evidence: ["Playground", "Freepik", "Tripo", "CapCut"],
   anatomy: [
     { slot: "parameter-panel", note: "Root wrapper around the optional header and the row stack." },
-    { slot: "parameter-panel-header", note: "Title plus the group-scope reset; only renders when either is given." },
+    {
+      slot: "parameter-panel-header",
+      note: "Title plus the group-scope reset; only renders when either is given.",
+    },
     { slot: "parameter-panel-title", note: "The panel's own heading, e.g. 'Sampling'." },
     { slot: "parameter-panel-rows", note: "The vertical stack of field rows." },
-    { slot: "parameter-slider", note: "A `field-row` composing a slider, its live number field, and optional endpoint labels." },
-    { slot: "parameter-slider-endpoints", note: "The plain-language low/high labels under the track — never the raw min/max." },
+    {
+      slot: "parameter-slider",
+      note: "A `field-row` composing a slider, its live number field, and optional endpoint labels.",
+    },
+    {
+      slot: "parameter-slider-endpoints",
+      note: "The plain-language low/high labels under the track — never the raw min/max.",
+    },
     { slot: "parameter-segmented", note: "A `field-row` composing a single-select segmented control." },
     { slot: "parameter-tabs", note: "Groups of rows behind named tabs, e.g. Basic / Advanced." },
   ],
@@ -32,7 +46,7 @@ export const ParameterPanelDocs: ComponentDocs = {
     "Reach for it for any generation surface with more than one or two tunable settings — a lone toggle can stay a plain `field-row`, but once a panel has a slider with real endpoints, or enough settings to split into basic/advanced, this is the component. Give a slider row `endpoints` in the user's language, not its numbers — the number itself still shows, live, in the field next to the track. Reach for `tabbed` once a panel outgrows a single screenful; reach for the panel-level `onResetAll` once more than one row in a group can drift from its default.",
   dos: [
     {
-      text: "Describe a slider's ends in the language of the effect — \"More creative ↔ More literal\" — and keep the raw number visible in its own field alongside the track.",
+      text: 'Describe a slider\'s ends in the language of the effect — "More creative ↔ More literal" — and keep the raw number visible in its own field alongside the track.',
       example: <GoodEndpoints />,
     },
     {

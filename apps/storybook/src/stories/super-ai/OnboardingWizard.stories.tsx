@@ -4,10 +4,7 @@ import { Clapperboard, Megaphone, Mic, Users } from "lucide-react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
-import {
-  GenerationWizard,
-  type GenerationWizardStep,
-} from "@/registry/super-ai/generation-wizard";
+import { GenerationWizard, type GenerationWizardStep } from "@/registry/super-ai/generation-wizard";
 import { OnboardingWizard, type OnboardingWizardStep } from "@/registry/super-ai/onboarding-wizard";
 import { OnboardingWizardDocs } from "@/content/components/onboarding-wizard.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
@@ -178,7 +175,9 @@ export const SplitPanel: Story = {
     const canvas = within(canvasElement);
     const panel = canvasElement.querySelector('[data-slot="onboarding-wizard-panel"]');
     await expect(panel).toHaveTextContent("One brand kit, every template");
-    await expect(canvas.getByRole("progressbar", { name: "Setup progress: step 3 of 3" })).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("progressbar", { name: "Setup progress: step 3 of 3" }),
+    ).toBeInTheDocument();
     await expect(canvas.getByRole("button", { name: "Skip" })).toBeInTheDocument();
 
     // The question precedes the pane in the DOM on the side it is drawn on.
@@ -254,31 +253,19 @@ export const RTL: Story = {
       canvasElement.querySelectorAll<HTMLElement>('[data-slot="onboarding-wizard-dot"]'),
     );
     await expect(dots).toHaveLength(3);
-    await expect(dots[0].getBoundingClientRect().left).toBeGreaterThan(
-      dots[2].getBoundingClientRect().left,
-    );
+    await expect(dots[0].getBoundingClientRect().left).toBeGreaterThan(dots[2].getBoundingClientRect().left);
 
     // The progress row flips with it — label at the inline start (the right),
     // the "N to go" counter at the inline end.
-    const label = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="onboarding-wizard-progress-label"]',
-    )!;
-    const remaining = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="onboarding-wizard-remaining"]',
-    )!;
-    await expect(label.getBoundingClientRect().left).toBeGreaterThan(
-      remaining.getBoundingClientRect().left,
-    );
+    const label = canvasElement.querySelector<HTMLElement>('[data-slot="onboarding-wizard-progress-label"]')!;
+    const remaining = canvasElement.querySelector<HTMLElement>('[data-slot="onboarding-wizard-remaining"]')!;
+    await expect(label.getBoundingClientRect().left).toBeGreaterThan(remaining.getBoundingClientRect().left);
 
     // …and so does the footer: Back trails the forward pair rather than
     // leading it.
     const back = canvas.getByRole("button", { name: "Back" });
-    const forward = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="onboarding-wizard-nav-forward"]',
-    )!;
-    await expect(back.getBoundingClientRect().left).toBeGreaterThan(
-      forward.getBoundingClientRect().left,
-    );
+    const forward = canvasElement.querySelector<HTMLElement>('[data-slot="onboarding-wizard-nav-forward"]')!;
+    await expect(back.getBoundingClientRect().left).toBeGreaterThan(forward.getBoundingClientRect().left);
 
     // The swapped class, pinned two ways. Chrome reports the computed keyword
     // rather than the used value, so `text-align` reads "start" here where the
@@ -306,9 +293,7 @@ export const RTL: Story = {
     // The radio leads the card at the inline start, which is the right edge.
     const radio = choice.querySelector<HTMLElement>('[role="radio"]')!;
     const card = choice.getBoundingClientRect();
-    await expect(radio.getBoundingClientRect().left).toBeGreaterThan(
-      card.left + card.width / 2,
-    );
+    await expect(radio.getBoundingClientRect().left).toBeGreaterThan(card.left + card.width / 2);
   },
 };
 
@@ -428,9 +413,7 @@ export const KeyboardOrder: Story = {
     // Buttons that can actually be reached. Back is enabled on this step, so
     // three — and the query is by `disabled`, not by tabindex, because Base UI
     // leaves tabindex="0" on a disabled button.
-    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("button")).filter(
-      (b) => !b.disabled,
-    );
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("button")).filter((b) => !b.disabled);
     await expect(buttons).toHaveLength(3);
 
     // 2. One lap: the group (entered at its tabbable radio), then Back, Skip
@@ -585,7 +568,10 @@ export const Controlled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const checked = () =>
-      canvas.getAllByRole("radio").map((r) => r.getAttribute("aria-checked")).join(",");
+      canvas
+        .getAllByRole("radio")
+        .map((r) => r.getAttribute("aria-checked"))
+        .join(",");
 
     await expect(checked()).toBe("false,false,false,false");
 
@@ -604,10 +590,7 @@ export const Controlled: Story = {
     // 4. Applying the request is the only thing that checks it.
     await userEvent.click(canvas.getByRole("button", { name: "Apply requested answer" }));
     await waitFor(() =>
-      expect(canvas.getByRole("radio", { name: /Film and story/ })).toHaveAttribute(
-        "aria-checked",
-        "true",
-      ),
+      expect(canvas.getByRole("radio", { name: /Film and story/ })).toHaveAttribute("aria-checked", "true"),
     );
 
     // 5. The keyboard route requests an answer exactly as a click does — and
@@ -625,9 +608,7 @@ export const Controlled: Story = {
     await expect(canvas.getByTestId("requested-step")).toHaveTextContent("volume");
 
     await userEvent.click(canvas.getByRole("button", { name: "Apply requested step" }));
-    await waitFor(() =>
-      expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "2"),
-    );
+    await waitFor(() => expect(canvas.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "2"));
   },
 };
 
@@ -691,9 +672,7 @@ export const EmptyLabel: Story = {
     // effect line, and nothing else.
     await expect(canvasElement.querySelector('[data-slot="card-description"]')).toBeNull();
     await expect(canvasElement.querySelector('[data-slot="onboarding-wizard-panel"]')).toBeNull();
-    const content = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="onboarding-wizard-content"]',
-    )!;
+    const content = canvasElement.querySelector<HTMLElement>('[data-slot="onboarding-wizard-content"]')!;
     await expect(content.children).toHaveLength(2);
 
     // A card stripped to its label is still named, and the card — not the
@@ -820,9 +799,7 @@ export const LongContent: Story = {
 
     // The progress row absorbs a long flow label without wrapping or
     // overflowing, and that label is the progressbar's name.
-    const progress = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="onboarding-wizard-progress"]',
-    )!;
+    const progress = canvasElement.querySelector<HTMLElement>('[data-slot="onboarding-wizard-progress"]')!;
     await expect(getComputedStyle(progress).flexWrap).toBe("nowrap");
     await expect(progress.scrollWidth).toBe(progress.clientWidth);
     within(canvasElement).getByRole("progressbar", {

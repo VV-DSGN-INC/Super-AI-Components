@@ -13,7 +13,7 @@ were sampled and D1 re-run against the combined population — see
 [agent-board-analysis.md](agent-board-analysis.md). Result: **T2, T3 and T4 pass and ship** (as N9,
 N12 and N10), `escalation-handoff` enters as N11, and U12/U14 pass and ship as K7/K8. The catalog
 stands at **113**. The slice also produced the **Dialog** contract, because the two conversation-repair
-candidates *failed* — see §8.
+candidates _failed_ — see §8.
 
 Move 3 remains **open** for voice, extraction, vision, data and coding. Until those are sampled, the
 remaining U-items are candidates, not commitments, and the sampling-bias limitation in §1 still
@@ -40,15 +40,15 @@ This is a methodological limitation of the whole catalog, not a list of oversigh
 These are **not** gaps in the reference board. They are errors in my own consolidation: each was in
 the approved spec and was dropped without justification. They should be restored.
 
-| # | Component | What it does | Why it was wrongly dropped |
-|---|-----------|--------------|----------------------------|
-| R1 | `env-status` | Per-provider reachability: ok · degraded · key-invalid · not-running | The approved spec pairs it explicitly with `credits-indicator` ("reachability vs spend"). A flow can fail with credits available because a key expired. |
-| R2 | `run-controls` | Graph-level execution toolbar: run all, stop, step, current-node indicator | Folded into G6 `model-bar` and G8 `canvas-toolbar`, neither of which covers graph-level intent. Run-this-node and run-whole-graph are different actions. **Moot since D9 (2026-07-31): the node builder was cut — do not restore.** |
-| R3 | `waveform-editor` | Region selection, sample-level zoom, scrub, region actions | Collapsed into H3 `track-lane`, which selects whole clips. Region selection has no equivalent there, and H2's ruler tops out at frames rather than samples. |
-| R4 | `stem-mixer` | Track lanes with mute/solo/volume/pan and live meters | Exclusive-vs-additive solo is a real behavioural decision H3 does not model. Stem lineage back to the source must stay visible. |
-| R5 | `track-list` | Music library: artwork, tags, inline waveform, BPM, key | Folded into J1 `asset-library`, whose generic metadata cannot express BPM and key — the facets that actually matter for music. |
-| R6 | `tts-composer` | Script editor with per-segment voice, emotion and speed | A structured document, not a textarea with settings. Per-segment regenerate is the primary loop; whole-script regeneration wastes credits and discards good takes. |
-| R7 | `voice-clone-recorder` | Guided sample recording with level metering and consent | Flagged as a stretch item in the approved spec, then dropped entirely. Consent capture belongs in the flow, not in settings. |
+| #   | Component              | What it does                                                               | Why it was wrongly dropped                                                                                                                                                                                                          |
+| --- | ---------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | `env-status`           | Per-provider reachability: ok · degraded · key-invalid · not-running       | The approved spec pairs it explicitly with `credits-indicator` ("reachability vs spend"). A flow can fail with credits available because a key expired.                                                                             |
+| R2  | `run-controls`         | Graph-level execution toolbar: run all, stop, step, current-node indicator | Folded into G6 `model-bar` and G8 `canvas-toolbar`, neither of which covers graph-level intent. Run-this-node and run-whole-graph are different actions. **Moot since D9 (2026-07-31): the node builder was cut — do not restore.** |
+| R3  | `waveform-editor`      | Region selection, sample-level zoom, scrub, region actions                 | Collapsed into H3 `track-lane`, which selects whole clips. Region selection has no equivalent there, and H2's ruler tops out at frames rather than samples.                                                                         |
+| R4  | `stem-mixer`           | Track lanes with mute/solo/volume/pan and live meters                      | Exclusive-vs-additive solo is a real behavioural decision H3 does not model. Stem lineage back to the source must stay visible.                                                                                                     |
+| R5  | `track-list`           | Music library: artwork, tags, inline waveform, BPM, key                    | Folded into J1 `asset-library`, whose generic metadata cannot express BPM and key — the facets that actually matter for music.                                                                                                      |
+| R6  | `tts-composer`         | Script editor with per-segment voice, emotion and speed                    | A structured document, not a textarea with settings. Per-segment regenerate is the primary loop; whole-script regeneration wastes credits and discards good takes.                                                                  |
+| R7  | `voice-clone-recorder` | Guided sample recording with level metering and consent                    | Flagged as a stretch item in the approved spec, then dropped entirely. Consent capture belongs in the flow, not in settings.                                                                                                        |
 
 **The audio family (R3–R6) was the worst of it.** Audio editing genuinely differs from video, and
 the board's own Requirements table E named three of these. I overrode it without saying so.
@@ -61,13 +61,13 @@ Cross-cutting families with no representation in the catalog. Confidence is high
 needed; they are absent from the board because it samples creative tools rather than agents with
 side effects.
 
-| # | Component | What it does |
-|---|-----------|--------------|
-| T1 | `permission-prompt` | "The agent wants to send an email to anna@…" — allow once / always allow / deny / edit-first, with a visible revocable scope |
-| T2 | `autonomy-selector` | Ask every time · auto-approve reads · full auto; per-session and per-tool, effective mid-run |
-| T3 | `task-tray` | Background tasks that outlive the view that started them, with opt-in completion notification |
-| T4 | `safety-block` | Content blocked with the policy named and the triggering fragment quoted; input-blocked vs output-blocked; sensitive-content blur |
-| T5 | `connection-manager` | BYO keys with four distinct states, test-connection, local model download and hardware requirements |
+| #   | Component            | What it does                                                                                                                      |
+| --- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| T1  | `permission-prompt`  | "The agent wants to send an email to anna@…" — allow once / always allow / deny / edit-first, with a visible revocable scope      |
+| T2  | `autonomy-selector`  | Ask every time · auto-approve reads · full auto; per-session and per-tool, effective mid-run                                      |
+| T3  | `task-tray`          | Background tasks that outlive the view that started them, with opt-in completion notification                                     |
+| T4  | `safety-block`       | Content blocked with the policy named and the triggering fragment quoted; input-blocked vs output-blocked; sensitive-content blur |
+| T5  | `connection-manager` | BYO keys with four distinct states, test-connection, local model download and hardware requirements                               |
 
 **T1 is the most important missing component in the entire catalog.** Every tool-calling and
 computer-use agent needs it, and it is a safety surface rather than a convenience one. T5 is the
@@ -83,11 +83,11 @@ cleared T2 (→ **N9** `autonomy-selector`), T3 (→ **N12** `task-tray`, now at
 - **The reasoning in this section held up well.** T4's input-blocked / output-blocked split and T1's
   edit-first verb were both called from first principles here and both are confirmed unanimously by
   the population. T3's "structurally required despite one observation" was right too.
-- **One correction:** the *visible revocable scope* listed under T1 belongs to T2, not T1. A per-call
+- **One correction:** the _visible revocable scope_ listed under T1 belongs to T2, not T1. A per-call
   prompt cannot own a grant-review surface; the autonomy control can.
 - **T4's real design rule was missed here:** the population's failure mode is that refusals arrive in
-  the assistant's own voice, so users cannot tell a policy fired. A block must read as visibly *not
-  the assistant talking*. That is why it is a component and not a message.
+  the assistant's own voice, so users cannot tell a policy fired. A block must read as visibly _not
+  the assistant talking_. That is why it is a component and not a message.
 
 ---
 
@@ -101,68 +101,68 @@ anatomy, not speculation" rule exists to prevent.
 
 ### Realtime voice — 3
 
-| # | Component | Note |
-|---|-----------|------|
-| U1 | `voice-session` | Four states (listening/thinking/speaking/idle), barge-in, latency and connection quality with a text fallback |
-| U2 | `live-transcript` | In-flight text visually distinct from settled text; tappable low-confidence spans |
-| U3 | `voice-picker` | Every card auditions the *same* sentence; exclusive playback; accent/age/use-case facets |
+| #   | Component         | Note                                                                                                          |
+| --- | ----------------- | ------------------------------------------------------------------------------------------------------------- |
+| U1  | `voice-session`   | Four states (listening/thinking/speaking/idle), barge-in, latency and connection quality with a text fallback |
+| U2  | `live-transcript` | In-flight text visually distinct from settled text; tappable low-confidence spans                             |
+| U3  | `voice-picker`    | Every card auditions the _same_ sentence; exclusive playback; accent/age/use-case facets                      |
 
 U3 was in the board's own Requirements table E ("voice card + voices grid") and I collapsed it into
 `preset-grid` — A8 `preview-tile` cannot express an audio preview.
 
 ### Extraction & classification — 3
 
-| # | Component | Note |
-|---|-----------|------|
-| U4 | `field-extraction` | Every field links to its source *region*; extraction provenance is spatial |
-| U5 | `confidence-badge` | Would be the 13th primitive — three bands, not raw percentages; needed by extraction, transcription, vision and retrieval alike |
-| U6 | `correction-queue` | Triage by confidence, keyboard-first; the volume counterpart to F7 `approval-card` |
+| #   | Component          | Note                                                                                                                            |
+| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| U4  | `field-extraction` | Every field links to its source _region_; extraction provenance is spatial                                                      |
+| U5  | `confidence-badge` | Would be the 13th primitive — three bands, not raw percentages; needed by extraction, transcription, vision and retrieval alike |
+| U6  | `correction-queue` | Triage by confidence, keyboard-first; the volume counterpart to F7 `approval-card`                                              |
 
 **Commercially the biggest gap.** Document AI is a larger market than image generation, and its core
 interaction — a field, a confidence score, a click to correct — appears nowhere in the catalog.
 
 ### Vision — 2
 
-| # | Component | Note |
-|---|-----------|------|
-| U7 | `annotation-overlay` | Boxes as strokes with labels outside them; confidence threshold slider; boxes/masks/points modes |
-| U8 | `label-review` | Five verbs — accept · reclass · adjust · delete · **add**. Without "add", review produces silently biased data |
+| #   | Component            | Note                                                                                                           |
+| --- | -------------------- | -------------------------------------------------------------------------------------------------------------- |
+| U7  | `annotation-overlay` | Boxes as strokes with labels outside them; confidence threshold slider; boxes/masks/points modes               |
+| U8  | `label-review`       | Five verbs — accept · reclass · adjust · delete · **add**. Without "add", review produces silently biased data |
 
 **Technically the biggest gap** — needs a canvas overlay primitive that nothing in G or I provides.
 
 ### Data & analytics — 3
 
-| # | Component | Note |
-|---|-----------|------|
-| U9 | `query-preview` | The generated SQL is always visible and editable, with the model's assumptions stated |
-| U10 | `result-table` | Row count, timing and cache state as trust signals; cell-level drill-down |
-| U11 | `chart-suggestion` | One suggestion with alternatives beside it, and a rationale naming the data shape |
+| #   | Component          | Note                                                                                  |
+| --- | ------------------ | ------------------------------------------------------------------------------------- |
+| U9  | `query-preview`    | The generated SQL is always visible and editable, with the model's assumptions stated |
+| U10 | `result-table`     | Row count, timing and cache state as trust signals; cell-level drill-down             |
+| U11 | `chart-suggestion` | One suggestion with alternatives beside it, and a rationale naming the data shape     |
 
 ### Search & grounded answers — 3
 
-| # | Component | Note |
-|---|-----------|------|
-| U12 | `answer-block` | Inline citations at the claim; retrieved-but-uncited sources shown as uncited |
+| #   | Component      | Note                                                                                          |
+| --- | -------------- | --------------------------------------------------------------------------------------------- |
+| U12 | `answer-block` | Inline citations at the claim; retrieved-but-uncited sources shown as uncited                 |
 | U13 | `search-steps` | Makes a multi-second wait legible and the answer auditable; collapses once the answer arrives |
-| U14 | `source-cards` | Relevance scores shown — the user-facing form of the spec's dropped `retrieval-inspector` |
+| U14 | `source-cards` | Relevance scores shown — the user-facing form of the spec's dropped `retrieval-inspector`     |
 
 ### Coding agents — 4
 
-| # | Component | Note |
-|---|-----------|------|
-| U15 | `code-diff` | Line-level with syntax highlighting; per-hunk apply/skip. K3 `diff-review` is word-level for prose |
-| U16 | `change-tree` | Unchanged files hidden; per-file review state; distinct rename marker |
-| U17 | `log-stream` | Failures parsed into an actionable card above the raw stream; pinnable scroll |
-| U18 | `preview-pane` | Runtime errors routed back to the agent with file and line; viewport toggles |
+| #   | Component      | Note                                                                                               |
+| --- | -------------- | -------------------------------------------------------------------------------------------------- |
+| U15 | `code-diff`    | Line-level with syntax highlighting; per-hunk apply/skip. K3 `diff-review` is word-level for prose |
+| U16 | `change-tree`  | Unchanged files hidden; per-file review state; distinct rename marker                              |
+| U17 | `log-stream`   | Failures parsed into an actionable card above the raw stream; pinnable scroll                      |
+| U18 | `preview-pane` | Runtime errors routed back to the agent with file and line; viewport toggles                       |
 
-The board contains Lovable but only its *settings* screens, which is why coding agents came through
+The board contains Lovable but only its _settings_ screens, which is why coding agents came through
 as a settings shell rather than as a component family.
 
 ### Predictive & scoring — 2
 
-| # | Component | Note |
-|---|-----------|------|
-| U19 | `forecast-chart` | The confidence band is mandatory; the actual/predicted boundary is drawn explicitly |
+| #   | Component              | Note                                                                                   |
+| --- | ---------------------- | -------------------------------------------------------------------------------------- |
+| U19 | `forecast-chart`       | The confidence band is mandatory; the actual/predicted boundary is drawn explicitly    |
 | U20 | `prediction-explainer` | Signed contributions ordered by magnitude, plus a counterfactual — the actionable part |
 
 ---
@@ -211,13 +211,13 @@ The current mismatch is the thing worth deciding — see [decisions.md](decision
 
 Two things, and the second matters more than the six components.
 
-**1. The 3+ test works as a filter on *categories*, not just on components.** T3 `task-tray` sat at
+**1. The 3+ test works as a filter on _categories_, not just on components.** T3 `task-tray` sat at
 one observation on the creative board and cleared at four on the agent board without changing at all.
 The component was never rare; the population was wrong. That is precisely the failure §1 named, now
 demonstrated rather than argued.
 
 **2. A failed candidate can be the most valuable result.** `repair-prompt` (2 products) and
-`interrupted-flow-resume` (1 product) both failed — and the *reason* they failed is the finding: the
+`interrupted-flow-resume` (1 product) both failed — and the _reason_ they failed is the finding: the
 agent population models conversation repair as **behaviour**, not chrome. Rasa ships it as named
 default patterns, Google as confirmation policy, CX agents as handoff routing. Nobody ships it as a
 component, because there is nothing to draw.
@@ -226,7 +226,7 @@ So it became the **Dialog** contract (D15) — the seventh, binding B D F K N O.
 contract the reference population produced that the approved spec had no concept of; Empty was the
 first, and Empty changed more surfaces than any single component in the catalog.
 
-**Method note for the remaining slices:** when a candidate fails the 3+ test, record *why* before
+**Method note for the remaining slices:** when a candidate fails the 3+ test, record _why_ before
 discarding it. "Absent because unsampled" (→ go sample), "absent because genuinely rare" (→ discard),
 and "absent because it is behaviour, not UI" (→ it is a contract) are three different results, and
 only the middle one is a drop. The original inclusion test conflated all three.

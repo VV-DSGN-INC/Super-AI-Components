@@ -164,7 +164,10 @@ function RecommendationCard({
               {title}
             </p>
             {description ? (
-              <p data-slot="recommendation-card-description" className="text-muted-foreground text-xs leading-snug">
+              <p
+                data-slot="recommendation-card-description"
+                className="text-muted-foreground text-xs leading-snug"
+              >
                 {description}
               </p>
             ) : null}

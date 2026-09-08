@@ -62,7 +62,9 @@ describe("ComponentDocsView", () => {
   });
 
   it("drops the focus arm when nothing moves focus", () => {
-    render(<ComponentDocsView docs={{ ...DOCS, accessibility: { ...DOCS.accessibility, focus: undefined } }} />);
+    render(
+      <ComponentDocsView docs={{ ...DOCS, accessibility: { ...DOCS.accessibility, focus: undefined } }} />,
+    );
     expect(document.querySelector('[data-slot="docs-a11y-focus"]')).toBeNull();
     expect(document.querySelector('[data-slot="docs-a11y-keyboard"]')).not.toBeNull();
   });

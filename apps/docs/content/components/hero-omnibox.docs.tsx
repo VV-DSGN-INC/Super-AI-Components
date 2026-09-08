@@ -33,17 +33,41 @@ export const HeroOmniboxDocs: ComponentDocs = {
     "Five of five reference App Home screens open with exactly this shape — Descript, Zapier Copilot, CapCut, Manus, and Claude all lead with a centred composer rather than a dashboard or a list. It is the first interactive surface a new session sees, so its states carry weight beyond their own bounds: `locked` is the moment a paid feature gets explained, and `generating` is the first proof the product is actually doing something.",
   evidence: ["Descript", "Zapier Copilot", "CapCut", "Manus", "Claude"],
   anatomy: [
-    { slot: "hero-omnibox", note: "Root card. Click anywhere on it that isn't a nested control to focus the field." },
-    { slot: "hero-omnibox-modes", note: "Optional mode tabs — composes ModeTabs (D4), rendered inside the card, above the field." },
-    { slot: "hero-omnibox-field", note: "Wraps the textarea and its toolbar. Absent entirely when `locked`." },
+    {
+      slot: "hero-omnibox",
+      note: "Root card. Click anywhere on it that isn't a nested control to focus the field.",
+    },
+    {
+      slot: "hero-omnibox-modes",
+      note: "Optional mode tabs — composes ModeTabs (D4), rendered inside the card, above the field.",
+    },
+    {
+      slot: "hero-omnibox-field",
+      note: "Wraps the textarea and its toolbar. Absent entirely when `locked`.",
+    },
     { slot: "hero-omnibox-textarea", note: "The prompt input. Carries the accessible name, visible or not." },
-    { slot: "hero-omnibox-toolbar", note: "The row beneath the textarea: attach, model, cost on the left; submit on the right." },
+    {
+      slot: "hero-omnibox-toolbar",
+      note: "The row beneath the textarea: attach, model, cost on the left; submit on the right.",
+    },
     { slot: "hero-omnibox-attach", note: "Icon-only attach button, inside the field." },
     { slot: "hero-omnibox-model", note: "Optional model select, inside the field." },
-    { slot: "hero-omnibox-cost", note: "Optional cost chip (M2) — credits at the point of spend, not in a billing page." },
-    { slot: "hero-omnibox-submit", note: "Icon-only send button. Replaced by hero-omnibox-stop while generating." },
-    { slot: "hero-omnibox-stop", note: "Replaces submit during `generating` — a distinct control, not a disabled submit." },
-    { slot: "hero-omnibox-paywall", note: "Replaces hero-omnibox-field entirely when `locked` — the gate, in place." },
+    {
+      slot: "hero-omnibox-cost",
+      note: "Optional cost chip (M2) — credits at the point of spend, not in a billing page.",
+    },
+    {
+      slot: "hero-omnibox-submit",
+      note: "Icon-only send button. Replaced by hero-omnibox-stop while generating.",
+    },
+    {
+      slot: "hero-omnibox-stop",
+      note: "Replaces submit during `generating` — a distinct control, not a disabled submit.",
+    },
+    {
+      slot: "hero-omnibox-paywall",
+      note: "Replaces hero-omnibox-field entirely when `locked` — the gate, in place.",
+    },
     { slot: "hero-omnibox-unlock", note: "The paywall's CTA button." },
     { slot: "hero-omnibox-status", note: "Visually hidden live region that announces the generating state." },
   ],

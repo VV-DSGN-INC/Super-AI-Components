@@ -29,9 +29,7 @@ export const Default: Story = {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Rename thread</DialogTitle>
-          <DialogDescription>
-            Give this generation thread a memorable name.
-          </DialogDescription>
+          <DialogDescription>Give this generation thread a memorable name.</DialogDescription>
         </DialogHeader>
         <Input defaultValue="Neon city concepts" />
         <DialogFooter>
@@ -50,9 +48,7 @@ export const ShareRender: Story = {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Share &ldquo;render-final-8k.png&rdquo;</DialogTitle>
-          <DialogDescription>
-            Anyone with the link can view this render and its prompt.
-          </DialogDescription>
+          <DialogDescription>Anyone with the link can view this render and its prompt.</DialogDescription>
         </DialogHeader>
         <div className="flex gap-2">
           <Input readOnly value="https://aurora.studio/r/48213-neon" />

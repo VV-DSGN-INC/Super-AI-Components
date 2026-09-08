@@ -97,7 +97,8 @@ export function TitleFirstExcerptDemoted() {
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground line-clamp-2 text-xs">
-          Three tiers, and the middle one is the default. Everything above it exists to make it look reasonable.
+          Three tiers, and the middle one is the default. Everything above it exists to make it look
+          reasonable.
         </p>
       </CardContent>
     </Card>

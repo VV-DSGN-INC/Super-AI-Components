@@ -81,29 +81,29 @@ cd apps/storybook && rm -rf node_modules/.cache/storybook && pnpm test:stories
 
 **Modified — machinery (Tasks 1–4):**
 
-| File | Responsibility after this plan |
-| --- | --- |
-| `apps/docs/lib/manifest-types.ts` | Adds `external?: string[]` and `regions?: string[]` to `ManifestItem` |
-| `apps/docs/scripts/lib/registry-extras.ts` | Includes `external` verbatim in `registryDependencies` |
-| `apps/docs/scripts/check-contract.mts` | Counts `external` in the dependency assertion; adds the block branch |
-| `apps/docs/scripts/gen-manifest.mts` | Branches `specAnchor` on `layer === "block"` |
-| `apps/docs/lib/catalog.manifest.test.ts` | Asserts the anchor per layer instead of one pattern |
-| `apps/docs/scripts/gen-registry.mts` | Adds `registry:block` to the type union |
-| `apps/docs/lib/catalog.manifest.ts` | 14 O rows get correct anchors; O2 gets `regions`/`consumes`; C2 gets `external` |
+| File                                       | Responsibility after this plan                                                  |
+| ------------------------------------------ | ------------------------------------------------------------------------------- |
+| `apps/docs/lib/manifest-types.ts`          | Adds `external?: string[]` and `regions?: string[]` to `ManifestItem`           |
+| `apps/docs/scripts/lib/registry-extras.ts` | Includes `external` verbatim in `registryDependencies`                          |
+| `apps/docs/scripts/check-contract.mts`     | Counts `external` in the dependency assertion; adds the block branch            |
+| `apps/docs/scripts/gen-manifest.mts`       | Branches `specAnchor` on `layer === "block"`                                    |
+| `apps/docs/lib/catalog.manifest.test.ts`   | Asserts the anchor per layer instead of one pattern                             |
+| `apps/docs/scripts/gen-registry.mts`       | Adds `registry:block` to the type union                                         |
+| `apps/docs/lib/catalog.manifest.ts`        | 14 O rows get correct anchors; O2 gets `regions`/`consumes`; C2 gets `external` |
 
 **Modified — docs site (Task 4):**
 
-| File | Responsibility after this plan |
-| --- | --- |
-| `apps/docs/lib/catalog.ts` | `group` widens to include `"Blocks"` |
+| File                                       | Responsibility after this plan                           |
+| ------------------------------------------ | -------------------------------------------------------- |
+| `apps/docs/lib/catalog.ts`                 | `group` widens to include `"Blocks"`                     |
 | `apps/docs/app/components/[name]/page.tsx` | Renders blocks full-bleed rather than in a centred frame |
-| `apps/docs/components/preview-tabs.tsx` | Gains a `fullBleed?: boolean` prop |
+| `apps/docs/components/preview-tabs.tsx`    | Gains a `fullBleed?: boolean` prop                       |
 
 **Created — machinery:**
 
-| File | Responsibility |
-| --- | --- |
-| `apps/docs/lib/catalog.test.ts` | Regression guard for the `"Blocks"` grouping |
+| File                                      | Responsibility                                              |
+| ----------------------------------------- | ----------------------------------------------------------- |
+| `apps/docs/lib/catalog.test.ts`           | Regression guard for the `"Blocks"` grouping                |
 | `docs/design-system/block-build-brief.md` | The house contract for blocks; handed to each Phase 2 agent |
 
 **No new route.** A shipped block already renders at `/components/<name>` — see Task 4's note.
@@ -131,12 +131,14 @@ Adds the two fields the rest of the plan depends on. `external` is what makes C2
 dependency expressible; `regions` is what replaces `states` for blocks.
 
 **Files:**
+
 - Modify: `apps/docs/lib/manifest-types.ts:17-54`
 - Modify: `apps/docs/scripts/lib/registry-extras.ts:14-16`
 - Modify: `apps/docs/scripts/check-contract.mts:93`
 - Test: `apps/docs/scripts/lib/registry-extras.test.ts`
 
 **Interfaces:**
+
 - Consumes: nothing — this is the first task.
 - Produces: `ManifestItem.external?: string[]` (absolute registry URLs, spread into
   `registryDependencies` after `shadcn` and before `consumes`) and
@@ -214,7 +216,7 @@ In `apps/docs/lib/manifest-types.ts`, inside `interface ManifestItem`, after the
 In `apps/docs/scripts/lib/registry-extras.ts`, replace line 14:
 
 ```ts
-    const registryDependencies = [...item.shadcn, ...(item.external ?? []), ...item.consumes.map(self)];
+const registryDependencies = [...item.shadcn, ...(item.external ?? []), ...item.consumes.map(self)];
 ```
 
 - [ ] **Step 5: Run the test and confirm it passes**
@@ -230,15 +232,15 @@ Expected: PASS.
 In `apps/docs/scripts/check-contract.mts`, replace line 93:
 
 ```ts
-  const expectedDeps = item.shadcn.length + (item.external?.length ?? 0) + item.consumes.length;
+const expectedDeps = item.shadcn.length + (item.external?.length ?? 0) + item.consumes.length;
 ```
 
 And the error message immediately below it, so a failure names which bucket is off:
 
 ```ts
-    errors.push(
-      `${item.name}: gen-registry would emit ${actualDeps} registryDependencies, expected ${expectedDeps} (shadcn: ${item.shadcn.length}, external: ${item.external?.length ?? 0}, consumes: ${item.consumes.length})`,
-    );
+errors.push(
+  `${item.name}: gen-registry would emit ${actualDeps} registryDependencies, expected ${expectedDeps} (shadcn: ${item.shadcn.length}, external: ${item.external?.length ?? 0}, consumes: ${item.consumes.length})`,
+);
 ```
 
 - [ ] **Step 7: Run the gates**
@@ -267,11 +269,13 @@ block specs are all in `block-specs.md`. The generator produces the wrong anchor
 a test asserts the wrong pattern, so the data, the generator and the test must change together.
 
 **Files:**
+
 - Modify: `apps/docs/scripts/gen-manifest.mts:151`
 - Modify: `apps/docs/lib/catalog.manifest.test.ts:63`
 - Modify: `apps/docs/lib/catalog.manifest.ts` — the 14 O rows
 
 **Interfaces:**
+
 - Consumes: `ManifestItem.layer` from Task 1's file (unchanged by Task 1).
 - Produces: every `layer: "block"` item has `specAnchor` matching `^block-specs\.md#`; every other
   item keeps `^component-specs\.md#`.
@@ -281,11 +285,11 @@ a test asserts the wrong pattern, so the data, the generator and the test must c
 Replace the assertion at `apps/docs/lib/catalog.manifest.test.ts:63`:
 
 ```ts
-      if (item.layer === "block") {
-        expect(item.specAnchor).toMatch(/^block-specs\.md#/);
-      } else {
-        expect(item.specAnchor).toMatch(/^component-specs\.md#/);
-      }
+if (item.layer === "block") {
+  expect(item.specAnchor).toMatch(/^block-specs\.md#/);
+} else {
+  expect(item.specAnchor).toMatch(/^component-specs\.md#/);
+}
 ```
 
 - [ ] **Step 2: Run it and confirm it fails**
@@ -394,11 +398,13 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 ## Task 3: `registry:block` and the contract gate's block branch
 
 **Files:**
+
 - Modify: `apps/docs/scripts/gen-registry.mts:30`
 - Modify: `apps/docs/scripts/check-contract.mts` — after the `contractExempt` early-return at line 112
 - Test: `apps/docs/scripts/lib/registry-extras.test.ts`
 
 **Interfaces:**
+
 - Consumes: `ManifestItem.regions` (Task 1), `layer: "block"` (already in the type).
 - Produces: blocks emit `type: "registry:block"`; `check-contract` applies four block assertions
   (non-empty `consumes`, every declared region present as `data-region="<id>"`, an `Empty` story
@@ -424,44 +430,46 @@ In `apps/docs/scripts/check-contract.mts`, immediately after the `contractExempt
 line 115, insert:
 
 ```ts
-  if (item.layer === "block") {
-    checked++;
+if (item.layer === "block") {
+  checked++;
 
-    // A block that composes nothing is a block that reimplemented its parts.
-    // This is the assertion that catches a shell agent writing its own
-    // inspector markup instead of composing property-inspector.
-    if (item.consumes.length === 0) {
-      errors.push(`${item.name}: blocks must declare a non-empty consumes list`);
-    }
-
-    const blockPath = fileFor.component(item.name);
-    const source = existsSync(blockPath) ? readFileSync(blockPath, "utf8") : "";
-    for (const region of item.regions ?? []) {
-      if (!source.includes(`data-region="${region}"`)) {
-        errors.push(`${item.name}: block does not render declared region "${region}" (expected data-region="${region}")`);
-      }
-    }
-    if (!(item.regions ?? []).length) {
-      errors.push(`${item.name}: blocks must declare a non-empty regions list`);
-    }
-
-    const blockStoryPath = storyFor(item.name);
-    if (!existsSync(blockStoryPath)) {
-      errors.push(`${item.name}: missing story file ${blockStoryPath}`);
-    } else {
-      const blockStory = readFileSync(blockStoryPath, "utf8");
-      // Empty is mandatory because F4, O1 and O3 all independently say the
-      // empty state is the view most users actually see. Responsive is
-      // mandatory because a shell is a layout and layout is what breaks.
-      for (const required of ["Empty", "Responsive"]) {
-        if (!new RegExp(`export const ${required}\\s*[:=]`).test(blockStory)) {
-          errors.push(`${item.name}: block story is missing the mandatory "${required}" export`);
-        }
-      }
-    }
-
-    continue; // blocks have no `states`; per-state coverage does not apply
+  // A block that composes nothing is a block that reimplemented its parts.
+  // This is the assertion that catches a shell agent writing its own
+  // inspector markup instead of composing property-inspector.
+  if (item.consumes.length === 0) {
+    errors.push(`${item.name}: blocks must declare a non-empty consumes list`);
   }
+
+  const blockPath = fileFor.component(item.name);
+  const source = existsSync(blockPath) ? readFileSync(blockPath, "utf8") : "";
+  for (const region of item.regions ?? []) {
+    if (!source.includes(`data-region="${region}"`)) {
+      errors.push(
+        `${item.name}: block does not render declared region "${region}" (expected data-region="${region}")`,
+      );
+    }
+  }
+  if (!(item.regions ?? []).length) {
+    errors.push(`${item.name}: blocks must declare a non-empty regions list`);
+  }
+
+  const blockStoryPath = storyFor(item.name);
+  if (!existsSync(blockStoryPath)) {
+    errors.push(`${item.name}: missing story file ${blockStoryPath}`);
+  } else {
+    const blockStory = readFileSync(blockStoryPath, "utf8");
+    // Empty is mandatory because F4, O1 and O3 all independently say the
+    // empty state is the view most users actually see. Responsive is
+    // mandatory because a shell is a layout and layout is what breaks.
+    for (const required of ["Empty", "Responsive"]) {
+      if (!new RegExp(`export const ${required}\\s*[:=]`).test(blockStory)) {
+        errors.push(`${item.name}: block story is missing the mandatory "${required}" export`);
+      }
+    }
+  }
+
+  continue; // blocks have no `states`; per-state coverage does not apply
+}
 ```
 
 - [ ] **Step 3: Run the gate and confirm it fails for the right reason**
@@ -510,11 +518,13 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 > shell rendered inside a centred preview frame is useless. That is what this task fixes.
 
 **Files:**
+
 - Modify: `apps/docs/lib/catalog.ts:3-19` — add the `"Blocks"` group
 - Modify: `apps/docs/app/components/[name]/page.tsx:69-88` — full-bleed preview for blocks
 - Test: `apps/docs/lib/catalog.test.ts` (create if absent)
 
 **Interfaces:**
+
 - Consumes: `ManifestItem.layer` — already present, unchanged by Task 1.
 - Produces: `CatalogItem.group` widens to `"Primitives" | "Components" | "Blocks"`. The component
   route renders blocks full-bleed. **No new route and no change to page count** — a shipped block
@@ -568,7 +578,7 @@ manifest with `toBeGreaterThan(0)` so it cannot pass vacuously.
 In `apps/docs/lib/catalog.ts`, widen the union at line 7, export the mapping, and use it at line 18:
 
 ```ts
-  group: "Primitives" | "Components" | "Blocks";
+group: "Primitives" | "Components" | "Blocks";
 ```
 
 ```ts
@@ -588,14 +598,14 @@ In `apps/docs/app/components/[name]/page.tsx`, derive the layer alongside the ex
 (after line 58):
 
 ```tsx
-  const isBlock = !isMarketing && CATALOG_ITEMS.find((i) => i.name === name)?.group === "Blocks";
+const isBlock = !isMarketing && CATALOG_ITEMS.find((i) => i.name === name)?.group === "Blocks";
 ```
 
 Then pass it through to the preview so a shell is not squeezed into a centred frame — replace the
 `<PreviewTabs ... />` call at line 76:
 
 ```tsx
-      <PreviewTabs preview={<Demo />} code={demoSource} fullBleed={isBlock} />
+<PreviewTabs preview={<Demo />} code={demoSource} fullBleed={isBlock} />
 ```
 
 Add the `fullBleed?: boolean` prop to `apps/docs/components/preview-tabs.tsx`, defaulting to
@@ -635,6 +645,7 @@ The one block built by hand. Its purpose is to prove the four block assertions f
 produce the brief for Phase 2.
 
 **Files:**
+
 - Modify: `apps/docs/lib/catalog.manifest.ts` — the O2 row
 - Create: `apps/docs/registry/super-ai/chat-shell.tsx`
 - Create: `apps/docs/registry/super-ai/chat-shell.test.tsx`
@@ -644,6 +655,7 @@ produce the brief for Phase 2.
 - Spec: [`docs/design-system/block-specs.md`](../../design-system/block-specs.md) § `O2 chat-shell`
 
 **Interfaces:**
+
 - Consumes: Tasks 1–4 — `regions` field, corrected anchor, block gate branch, showcase route.
 - Produces: the first `registry:block` item, and the empirical answers Task 6 writes down —
   whether a block fits one agent's context, and which of the four assertions needed adjusting.
@@ -796,11 +808,13 @@ The deliverable Phase 2's twelve agents are handed. Written **after** O2, from w
 taught, not before it from theory.
 
 **Files:**
+
 - Create: `docs/design-system/block-build-brief.md`
 - Reference: `docs/design-system/component-build-brief.md` — match its voice and length (163 lines);
   it is the proven model.
 
 **Interfaces:**
+
 - Consumes: everything Task 5 learned.
 - Produces: the single artifact each Phase 2 agent receives, alongside its spec anchor, declared
   regions and `consumes` list.
@@ -845,10 +859,12 @@ is the single source of truth and the one shared file — **agents must never wr
 this is its own task ahead of the seven builds.
 
 **Files:**
+
 - Modify: `apps/docs/lib/catalog.manifest.ts` — the C2, N2, N4, N5, N6, N7, N8 rows
 - Create (via scaffold): five files each for all seven components
 
 **Interfaces:**
+
 - Consumes: `ManifestItem.external` from Task 1.
 - Produces: seven rows at `status: "building"` with normalised `states`, C2 carrying its `external`
   entry, and 35 scaffolded files. Tasks 8–14 each own exactly one component's five files.
@@ -958,6 +974,7 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 ## Task 8: C2 `suggestion-chips`
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/suggestion-chips.tsx`
 - Modify: `apps/docs/registry/super-ai/suggestion-chips.test.tsx`
 - Modify: `apps/docs/components/demos/suggestion-chips-demo.tsx`
@@ -969,6 +986,7 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
   restated here**
 
 **Interfaces:**
+
 - Consumes: the scaffold from Task 7; `external` already set on the manifest row — do not edit the
   manifest.
 - Produces: story exports `Plain`, `WithIcon`, `WithThumbnail`, `OverflowLink`.
@@ -1032,6 +1050,7 @@ central (Task 15).
 ## Task 9: N2 `trust-dialog`
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/trust-dialog.tsx`
 - Modify: `apps/docs/registry/super-ai/trust-dialog.test.tsx`
 - Modify: `apps/docs/components/demos/trust-dialog-demo.tsx`
@@ -1042,12 +1061,13 @@ central (Task 15).
   restated here**
 
 **Interfaces:**
+
 - Consumes: the scaffold from Task 7. Do not edit the manifest.
 - Produces: story exports `Preview`, `Warning`, `TrustCheckbox`, `AccountPicker`.
 
 **Steering.** Base: Alert-dialog, Checkbox. The primary action **stays disabled until the trust
 checkbox is ticked** — that is the load-bearing behaviour and a test must pin it. A preview of what
-will run sits above the warning. The account picker on Continue chooses *where* untrusted code
+will run sits above the warning. The account picker on Continue chooses _where_ untrusted code
 executes, which matters as much as whether it runs at all.
 
 - [ ] **Step 1: Write the failing tests**
@@ -1088,6 +1108,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
 ## Task 10: N4 `trace-timeline`
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/trace-timeline.tsx`
 - Modify: `apps/docs/registry/super-ai/trace-timeline.test.tsx`
 - Modify: `apps/docs/components/demos/trace-timeline-demo.tsx`
@@ -1098,6 +1119,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
   restated here**
 
 **Interfaces:**
+
 - Consumes: the scaffold from Task 7. Do not edit the manifest.
 - Produces: story exports `Collapsed`, `Expanded`, `Errored`, `RetrySiblings`.
 
@@ -1146,6 +1168,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
 ## Task 11: N5 `run-inspector`
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/run-inspector.tsx`
 - Modify: `apps/docs/registry/super-ai/run-inspector.test.tsx`
 - Modify: `apps/docs/components/demos/run-inspector-demo.tsx`
@@ -1156,6 +1179,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
   restated here**
 
 **Interfaces:**
+
 - Consumes: the scaffold from Task 7; composes A10 `stat-readout` (shipped). Do not edit the
   manifest.
 - Produces: story exports `InputTab`, `OutputTab`, `MetadataTab`, `ErrorTab`.
@@ -1212,6 +1236,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
 ## Task 12: N6 `usage-dashboard`
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/usage-dashboard.tsx`
 - Modify: `apps/docs/registry/super-ai/usage-dashboard.test.tsx`
 - Modify: `apps/docs/components/demos/usage-dashboard-demo.tsx`
@@ -1222,6 +1247,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
   restated here**
 
 **Interfaces:**
+
 - Consumes: the scaffold from Task 7. Do not edit the manifest.
 - Produces: story exports `PeriodSelect`, `SummaryCards`, `ModelBreakdown`.
 
@@ -1269,6 +1295,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
 ## Task 13: N7 `env-status`
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/env-status.tsx`
 - Modify: `apps/docs/registry/super-ai/env-status.test.tsx`
 - Modify: `apps/docs/components/demos/env-status-demo.tsx`
@@ -1279,6 +1306,7 @@ Do **not** run `pnpm gen:wiring`, edit the manifest, or run any git write comman
   restated here**
 
 **Interfaces:**
+
 - Consumes: the scaffold from Task 7; composes A9 `entity-row` (shipped). Do not edit the manifest.
 - Produces: story exports `Ok`, `Degraded`, `KeyInvalid`, `NotRunning`.
 
@@ -1337,6 +1365,7 @@ tool-calling agent needs it, and it is a safety surface rather than a convenienc
 that weight.
 
 **Files:**
+
 - Modify: `apps/docs/registry/super-ai/permission-prompt.tsx`
 - Modify: `apps/docs/registry/super-ai/permission-prompt.test.tsx`
 - Modify: `apps/docs/components/demos/permission-prompt-demo.tsx`
@@ -1347,11 +1376,12 @@ that weight.
   restated here**
 
 **Interfaces:**
+
 - Consumes: the scaffold from Task 7. Do not edit the manifest.
 - Produces: story exports `AllowOnce`, `AlwaysAllow`, `Deny`, `EditFirst`.
 
 **Steering.** Base: Alert-dialog. **Four verbs, and edit-first carries equal visual weight with
-allow.** Every framework in the sampled agent population implements approve / reject / *edit* on a
+allow.** Every framework in the sampled agent population implements approve / reject / _edit_ on a
 paused tool call: deny throws the agent's work away and restarts the loop, while edit-first keeps it
 and puts the human in the loop productively. It is the difference between a gate and a
 collaboration — a test must pin that edit-first is not visually subordinate.
@@ -1409,9 +1439,11 @@ Central, controller-owned. Tasks 8–14 each wrote only their own files; this re
 the manifest and runs every gate.
 
 **Files:**
+
 - Modify: `apps/docs/lib/catalog.manifest.ts` — the seven rows
 
 **Interfaces:**
+
 - Consumes: seven implemented components from Tasks 8–14; O2 from Task 5.
 - Produces: seven rows at `status: "shipped"` with `shadcn`/`consumes`/`npm` reconciled against real
   imports. Catalog reaches 102 of 114.
@@ -1467,7 +1499,6 @@ git add apps/docs apps/storybook
 git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
   commit -m "feat(wave-11): C2 + family N's six — 94 to 102"
 ```
-
 
 ## Task 16: Close out Phase 1
 

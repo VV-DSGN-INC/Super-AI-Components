@@ -17,33 +17,42 @@ export const CompareViewerDocs: ComponentDocs = {
   whatItIs:
     "Two or more renders of the same thing, shown together in one of three modes: side by side with a draggable divider, one at a time, or overlaid with a wipe handle. Every pane is numbered as well as labelled, and the number is what survives into the modes that have no room for a caption.",
   whyItMatters:
-    "Upscalers, variant pickers and before/after comparisons all ask the same question — is this one actually better? — and they all fail the same two ways. The first is losing track of which pane is which: as soon as you go to a wipe or a single view there is nowhere to put two labels, so products drop them and leave the reader guessing. Numbering the panes fixes that, because a number is small enough to survive anywhere and stable enough to talk about (\"two is sharper\"). The second is treating the before/after slider as its own widget, which produces two comparison surfaces that behave differently and drift apart. Here a wipe is a mode, so there is one component and one mental model.",
+    'Upscalers, variant pickers and before/after comparisons all ask the same question — is this one actually better? — and they all fail the same two ways. The first is losing track of which pane is which: as soon as you go to a wipe or a single view there is nowhere to put two labels, so products drop them and leave the reader guessing. Numbering the panes fixes that, because a number is small enough to survive anywhere and stable enough to talk about ("two is sharper"). The second is treating the before/after slider as its own widget, which produces two comparison surfaces that behave differently and drift apart. Here a wipe is a mode, so there is one component and one mental model.',
   evidence: ["Topaz Video AI", "Freepik upscale", "Playground compare", "Midjourney variants"],
   anatomy: [
     { slot: "compare-viewer", note: "The root. Carries `data-mode` and, when given, `data-sync-key`." },
     { slot: "compare-viewer-modes", note: "The side / single / wipe switcher." },
-    { slot: "compare-viewer-pane-switcher", note: "Single mode only: the numbers, acting as the pane control." },
+    {
+      slot: "compare-viewer-pane-switcher",
+      note: "Single mode only: the numbers, acting as the pane control.",
+    },
     { slot: "compare-viewer-panes", note: "The frame holding the panes. A resizable group in side mode." },
     { slot: "compare-viewer-pane", note: "One pane's content, exactly as you passed it." },
     { slot: "compare-viewer-pane-number", note: "The pane's identity. Present in every mode." },
-    { slot: "compare-viewer-pane-label", note: "The caption. Side mode only — the one mode with room for it." },
-    { slot: "compare-viewer-wipe", note: "The wipe slider. Composes Base UI directly so its handle can be named." },
+    {
+      slot: "compare-viewer-pane-label",
+      note: "The caption. Side mode only — the one mode with room for it.",
+    },
+    {
+      slot: "compare-viewer-wipe",
+      note: "The wipe slider. Composes Base UI directly so its handle can be named.",
+    },
   ],
   usage:
-    "Pass `panes` in the order you want them numbered — first is 1, and in wipe mode the second is the one clipped over the top. Control `mode` yourself and update it from `onModeChange`. `wipePosition` is a prop, so it survives a trip out to side view and back; keep it in your own state rather than letting the component forget it. In single mode, supply `onActivePaneChange` as well as `activePaneId`, or the numbers have nothing to do and the reader cannot switch panes. Label panes by what differs — \"Original\" and \"Upscaled 4x\", not \"A\" and \"B\".",
+    'Pass `panes` in the order you want them numbered — first is 1, and in wipe mode the second is the one clipped over the top. Control `mode` yourself and update it from `onModeChange`. `wipePosition` is a prop, so it survives a trip out to side view and back; keep it in your own state rather than letting the component forget it. In single mode, supply `onActivePaneChange` as well as `activePaneId`, or the numbers have nothing to do and the reader cannot switch panes. Label panes by what differs — "Original" and "Upscaled 4x", not "A" and "B".',
   dos: [
     {
       text: "Label panes by the difference between them, not by their position — the numbers already carry position.",
       example: <LabelledByWhatDiffers />,
     },
     {
-      text: "Reach for `mode=\"wipe\"` instead of building a separate before/after slider; it is the same comparison with the same state.",
+      text: 'Reach for `mode="wipe"` instead of building a separate before/after slider; it is the same comparison with the same state.',
       example: <WipeIsAMode />,
     },
   ],
   donts: [
     {
-      text: "Don't label panes \"Version A\" and \"Version B\" — that is what the numbers are for, and it wastes the one place you could have said what changed.",
+      text: 'Don\'t label panes "Version A" and "Version B" — that is what the numbers are for, and it wastes the one place you could have said what changed.',
       example: <LabelsThatSayNothing />,
     },
     {
@@ -61,11 +70,11 @@ export const CompareViewerDocs: ComponentDocs = {
       "Nothing responds to Escape, and there is no shortcut for cycling modes. Reaching the wipe from side view means tabbing to the mode group and arrowing twice.",
     ],
     screenReader: [
-      "The mode group is named \"Comparison mode\" and each item is named by its visible label. `aria-orientation` is explicitly set to undefined because the primitive renders `role=\"group\"`, which does not support that attribute at any value.",
-      "Each pane-switcher button is named \"Show pane 2: Upscaled 4x\" — the number and the label together — so the control means something without seeing which pane is on screen. That is why labelling panes by what differs matters more here than it looks: the label is announced every time the number is.",
+      'The mode group is named "Comparison mode" and each item is named by its visible label. `aria-orientation` is explicitly set to undefined because the primitive renders `role="group"`, which does not support that attribute at any value.',
+      'Each pane-switcher button is named "Show pane 2: Upscaled 4x" — the number and the label together — so the control means something without seeing which pane is on screen. That is why labelling panes by what differs matters more here than it looks: the label is announced every time the number is.',
       "`aria-pressed` marks the active pane button, so which pane is showing is in the tree rather than only in the ring.",
       "The pane number badges and the side-mode label chips are plain text floating over the frame. Neither is wired to the pane it sits on, so nothing labels a pane region and a reader moving through the content hears no boundary between pane 1 and pane 2 — the numbering that solves the sighted version of this problem does not solve the announced one.",
-      "The wipe thumb is named \"Wipe position\" and its value announces as \"50 percent\". That naming is the reason this composes Base UI's slider directly instead of the vendored wrapper, whose thumbs cannot be named at all — keep both callbacks if you restyle the handle.",
+      'The wipe thumb is named "Wipe position" and its value announces as "50 percent". That naming is the reason this composes Base UI\'s slider directly instead of the vendored wrapper, whose thumbs cannot be named at all — keep both callbacks if you restyle the handle.',
       "In wipe mode both panes stay mounted and the top one is clipped with `clipPath`. Clipping hides nothing from assistive tech, so a reader hears both panes' content in full no matter where the handle sits. If your panes carry text, wipe mode announces all of it twice.",
       "Single mode is the exception: only the active pane is rendered, so the others are genuinely absent from the tree.",
       "Nothing announces a mode change. There is no live region, so switching between side, single and wipe is silent beyond the toggle's own pressed state.",

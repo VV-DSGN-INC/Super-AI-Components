@@ -41,7 +41,10 @@ function NavColumn({ children }: { children: React.ReactNode }) {
 function SearchField({ label, value }: { label: string; value: string }) {
   return (
     <div className="relative">
-      <Search aria-hidden className="text-muted-foreground pointer-events-none absolute top-2 left-2 size-4" />
+      <Search
+        aria-hidden
+        className="text-muted-foreground pointer-events-none absolute top-2 left-2 size-4"
+      />
       <Input type="search" aria-label={label} defaultValue={value} className="pl-7" readOnly />
     </div>
   );

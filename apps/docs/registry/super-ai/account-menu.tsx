@@ -20,6 +20,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 
 import { Kbd, KbdGroup } from "./kbd";
+import { initials } from "@/registry/super-ai/initials";
 
 /**
  * Account Menu — Avatar menu with nested appearance submenu
@@ -91,22 +92,32 @@ const DEFAULT_THEMES: AccountMenuThemeOption[] = [
 ];
 
 const DEFAULT_BACKGROUNDS: AccountMenuBackgroundOption[] = [
-  { value: "default", label: "Default", swatchClassName: "bg-chart-1 data-checked:bg-chart-1 dark:data-checked:bg-chart-1" },
-  { value: "slate", label: "Slate", swatchClassName: "bg-chart-2 data-checked:bg-chart-2 dark:data-checked:bg-chart-2" },
-  { value: "stone", label: "Stone", swatchClassName: "bg-chart-3 data-checked:bg-chart-3 dark:data-checked:bg-chart-3" },
-  { value: "forest", label: "Forest", swatchClassName: "bg-chart-4 data-checked:bg-chart-4 dark:data-checked:bg-chart-4" },
-  { value: "ink", label: "Ink", swatchClassName: "bg-chart-5 data-checked:bg-chart-5 dark:data-checked:bg-chart-5" },
+  {
+    value: "default",
+    label: "Default",
+    swatchClassName: "bg-chart-1 data-checked:bg-chart-1 dark:data-checked:bg-chart-1",
+  },
+  {
+    value: "slate",
+    label: "Slate",
+    swatchClassName: "bg-chart-2 data-checked:bg-chart-2 dark:data-checked:bg-chart-2",
+  },
+  {
+    value: "stone",
+    label: "Stone",
+    swatchClassName: "bg-chart-3 data-checked:bg-chart-3 dark:data-checked:bg-chart-3",
+  },
+  {
+    value: "forest",
+    label: "Forest",
+    swatchClassName: "bg-chart-4 data-checked:bg-chart-4 dark:data-checked:bg-chart-4",
+  },
+  {
+    value: "ink",
+    label: "Ink",
+    swatchClassName: "bg-chart-5 data-checked:bg-chart-5 dark:data-checked:bg-chart-5",
+  },
 ];
-
-function initials(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
 
 function AccountMenuAvatar({ user, className }: { user: AccountMenuUser; className?: string }) {
   return (
@@ -182,9 +193,7 @@ function AccountMenu({
             `motion-reduce:` block before the `data-*` variants, so `animation:
             enter` wins the tie. Restating the variant sorts after it and wins.
             See CONTINUE.md §9 — this component is on that list. */}
-        <DropdownMenuContent
-          className="w-64 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none"
-        >
+        <DropdownMenuContent className="w-64 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
           {/* Identity block on top — conventional order, do not reinvent it. */}
           <div data-slot="account-menu-identity" className="flex items-center gap-2 px-1.5 py-1.5">
             <AccountMenuAvatar user={user} />
@@ -225,7 +234,9 @@ function AccountMenu({
           {/* Appearance is a nested submenu, not a dialog — theme is changed
               often and should not cost a modal. */}
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger data-slot="account-menu-appearance-trigger">Appearance</DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger data-slot="account-menu-appearance-trigger">
+              Appearance
+            </DropdownMenuSubTrigger>
             {/* Same restated variant as the parent popup — the submenu carries
                 its own copy of the animation classes. */}
             <DropdownMenuSubContent
@@ -242,7 +253,11 @@ function AccountMenu({
               >
                 <DropdownMenuLabel>Theme</DropdownMenuLabel>
                 {themes.map((option) => (
-                  <DropdownMenuRadioItem key={option.value} value={option.value} data-slot="account-menu-theme-item">
+                  <DropdownMenuRadioItem
+                    key={option.value}
+                    value={option.value}
+                    data-slot="account-menu-theme-item"
+                  >
                     {option.label}
                   </DropdownMenuRadioItem>
                 ))}
@@ -294,4 +309,10 @@ function AccountMenu({
 }
 
 export { AccountMenu };
-export type { AccountMenuProps, AccountMenuUser, AccountMenuItem, AccountMenuThemeOption, AccountMenuBackgroundOption };
+export type {
+  AccountMenuProps,
+  AccountMenuUser,
+  AccountMenuItem,
+  AccountMenuThemeOption,
+  AccountMenuBackgroundOption,
+};

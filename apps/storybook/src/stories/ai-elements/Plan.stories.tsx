@@ -57,9 +57,7 @@ export const Default: Story = {
           </ol>
         </PlanContent>
         <PlanFooter>
-          <p className="text-muted-foreground text-xs">
-            Estimated total time: about 4 minutes.
-          </p>
+          <p className="text-muted-foreground text-xs">Estimated total time: about 4 minutes.</p>
         </PlanFooter>
       </Plan>
     </div>

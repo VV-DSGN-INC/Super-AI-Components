@@ -221,9 +221,23 @@ function SettingsRow({ row }: { row: SettingsRowData }) {
   );
 }
 
-function matchesQuery(row: SettingsRowData, query: string) {
+/**
+ * Case-insensitive substring match over the text a reader can actually see.
+ *
+ * Exported because O12 `settings-shell` had its own copy and the two diverged
+ * in shape — this one took a row, that one took an array — which is how a query
+ * matching only a gated description made the shell's badge read 1 while the
+ * panel one region up read "No settings match". They search different field
+ * sets by design; the rule they apply must not differ too.
+ */
+function matchesQuery(haystack: (string | undefined)[], query: string) {
   if (!query) return true;
-  return row.label.toLowerCase().includes(query) || row.description.toLowerCase().includes(query);
+  return haystack.some((text) => text?.toLowerCase().includes(query));
+}
+
+/** The row-shaped call this dialog makes: label and description, nothing else. */
+function rowMatchesQuery(row: SettingsRowData, query: string) {
+  return matchesQuery([row.label, row.description], query);
 }
 
 function SettingsDialog({
@@ -250,7 +264,7 @@ function SettingsDialog({
 
   const filtered = sections.map((section) => ({
     section,
-    rows: section.rows.filter((row) => matchesQuery(row, query)),
+    rows: section.rows.filter((row) => rowMatchesQuery(row, query)),
   }));
   const totalMatches = filtered.reduce((sum, entry) => sum + entry.rows.length, 0);
 
@@ -429,7 +443,7 @@ function SettingsDialog({
   );
 }
 
-export { SettingsDialog, SettingsDestructiveAction };
+export { matchesQuery, SettingsDialog, SettingsDestructiveAction };
 export type {
   SettingsDestructiveActionData,
   SettingsDialogProps,

@@ -5,40 +5,40 @@
 **Wave:** 6 (`I` + `H` + O3 `studio-shell` + O4 `timeline-shell`)
 **Covers:** I1–I5 · H1–H7 · O3 · O4 — 14 items
 
-| | |
-| --- | --- |
-| Scope | 12 components, 2 blocks. The heaviest shells in the catalog and the first wave to ship two blocks from one component set. |
-| Registry | `super-ai` namespace, `registry/super-ai/*.tsx` |
-| Depends on shipped | A6 `field-row` · A8 `preview-tile` · A11 `reset-affordance` · A12 `section-header` |
-| Blocked on unshipped | B4 · B7 (Wave 2) · E4 · F1 · F6 (Wave 4) — see §4.4 |
-| Testing | One co-located `*.test.tsx` per item, per repo convention |
+|                      |                                                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Scope                | 12 components, 2 blocks. The heaviest shells in the catalog and the first wave to ship two blocks from one component set. |
+| Registry             | `super-ai` namespace, `registry/super-ai/*.tsx`                                                                           |
+| Depends on shipped   | A6 `field-row` · A8 `preview-tile` · A11 `reset-affordance` · A12 `section-header`                                        |
+| Blocked on unshipped | B4 · B7 (Wave 2) · E4 · F1 · F6 (Wave 4) — see §4.4                                                                       |
+| Testing              | One co-located `*.test.tsx` per item, per repo convention                                                                 |
 
 ---
 
 ## 1. Consumer and dependency audit
 
-Method fixed by **D13**: *"The table in [concept-model.md](../../design-system/concept-model.md) is a
+Method fixed by **D13**: _"The table in [concept-model.md](../../design-system/concept-model.md) is a
 derived summary, not a source of truth. The per-component entries in
-[component-specs.md](../../design-system/component-specs.md) are authoritative."* Every claim below
+[component-specs.md](../../design-system/component-specs.md) are authoritative."_ Every claim below
 was checked against the component's own entry, and every shipped primitive was read in
 `apps/docs/registry/super-ai/`.
 
 ### 1.1 Declared dependencies of the twelve Wave 6 components
 
-| # | Component | Declares (component-specs.md) | Catalog "shadcn base" column | Agree? |
-| --- | --- | --- | --- | --- |
-| I1 | `tool-panel` | **"Built on: A12, A8"** | `A12, A8` | ✅ |
-| I2 | `property-inspector` | **"Built on: A6, A11"** | `A6, A11` | ✅ |
-| I3 | `context-toolbar` | Base: Toolbar | `Toolbar` | ✅ |
-| I4 | `ai-tools-menu` | **"Built on: A9"** | `A9` | ✅ |
-| I5 | `drawing-tools` | Base: Toggle-group, Popover; *"Size, hardness and opacity are A6 instances"* | `Toggle-group, Popover` | ⚠️ A6 undeclared in the catalog row |
-| H1 | `transport-controls` | Base: Button-group | `Button-group` | ✅ |
-| H2 | `time-ruler` | Base: Slider (heavily extended) | `Slider (heavily extended)` | ✅ |
-| H3 | `track-lane` | *(no base declared)* | `—` | ✅ |
-| H4 | `transcript-editor` | *(no base declared)* | `—` | ✅ |
-| H5 | `frame-strip` | **"Built on: A8"** | `built on A8` | ✅ |
-| H6 | `waveform-editor` | **NO ENTRY EXISTS** | `—` | ❌ §1.2 |
-| H7 | `stem-mixer` | **NO ENTRY EXISTS** | `Slider, Progress` | ❌ §1.2 |
+| #   | Component            | Declares (component-specs.md)                                                | Catalog "shadcn base" column | Agree?                              |
+| --- | -------------------- | ---------------------------------------------------------------------------- | ---------------------------- | ----------------------------------- |
+| I1  | `tool-panel`         | **"Built on: A12, A8"**                                                      | `A12, A8`                    | ✅                                  |
+| I2  | `property-inspector` | **"Built on: A6, A11"**                                                      | `A6, A11`                    | ✅                                  |
+| I3  | `context-toolbar`    | Base: Toolbar                                                                | `Toolbar`                    | ✅                                  |
+| I4  | `ai-tools-menu`      | **"Built on: A9"**                                                           | `A9`                         | ✅                                  |
+| I5  | `drawing-tools`      | Base: Toggle-group, Popover; _"Size, hardness and opacity are A6 instances"_ | `Toggle-group, Popover`      | ⚠️ A6 undeclared in the catalog row |
+| H1  | `transport-controls` | Base: Button-group                                                           | `Button-group`               | ✅                                  |
+| H2  | `time-ruler`         | Base: Slider (heavily extended)                                              | `Slider (heavily extended)`  | ✅                                  |
+| H3  | `track-lane`         | _(no base declared)_                                                         | `—`                          | ✅                                  |
+| H4  | `transcript-editor`  | _(no base declared)_                                                         | `—`                          | ✅                                  |
+| H5  | `frame-strip`        | **"Built on: A8"**                                                           | `built on A8`                | ✅                                  |
+| H6  | `waveform-editor`    | **NO ENTRY EXISTS**                                                          | `—`                          | ❌ §1.2                             |
+| H7  | `stem-mixer`         | **NO ENTRY EXISTS**                                                          | `Slider, Progress`           | ❌ §1.2                             |
 
 ### 1.2 CRITICAL — the eight D12 restorations were never written into the authoritative doc
 
@@ -61,9 +61,9 @@ table) and never in `component-specs.md` (the source of truth D13 designates). *
 components in this wave have no authoritative requirements.** The only requirement text for H6/H7 is
 gaps.md §2 rows R3/R4 — a document whose own header reads `**Status:** Analysis`.
 
-This is the same failure mode as D13, one layer up: D13 found that the *derived* table drifts from
+This is the same failure mode as D13, one layer up: D13 found that the _derived_ table drifts from
 the source of truth; this finds that the source of truth was never updated at all, so for these
-eight items the derived table is the *only* record.
+eight items the derived table is the _only_ record.
 
 **Consequence for this spec:** H6 and H7 below are designed from gaps.md §2 and from the H3/H2
 boundaries their restoration rationale names. They should be written back into `component-specs.md`
@@ -77,13 +77,13 @@ now, because I2 is its consumer:
 
 `concept-model.md:47` — **A6 field-row** | E3 parameter-panel · I2 property-inspector · G9 node-inspector · M1 settings-dialog · E1 generation-panel
 
-| Claimed | Its own entry says | Verdict |
-| --- | --- | --- |
-| E3 `parameter-panel` | *"Rows are A6, so this and I2 align to the same column grid."* | ✅ |
-| I2 `property-inspector` | **"Built on: A6, A11"** | ✅ |
-| G9 `node-inspector` | listed as `A6, Collapsible` — **cut by D9** | ❌ |
-| M1 `settings-dialog` | *"Rows are label + description + control"* — never names A6 | ❓ undeclared |
-| E1 `generation-panel` | Base: Card, Collapsible — never names A6 | ❓ undeclared |
+| Claimed                 | Its own entry says                                             | Verdict       |
+| ----------------------- | -------------------------------------------------------------- | ------------- |
+| E3 `parameter-panel`    | _"Rows are A6, so this and I2 align to the same column grid."_ | ✅            |
+| I2 `property-inspector` | **"Built on: A6, A11"**                                        | ✅            |
+| G9 `node-inspector`     | listed as `A6, Collapsible` — **cut by D9**                    | ❌            |
+| M1 `settings-dialog`    | _"Rows are label + description + control"_ — never names A6    | ❓ undeclared |
+| E1 `generation-panel`   | Base: Card, Collapsible — never names A6                       | ❓ undeclared |
 
 **Corrected: 2 confirmed, 1 cut component still listed, 2 unstated.** The identical D9-never-
 propagated error D13 recorded against A10 is also present in A6 — and in **A2** (lists G6 `model-bar`)
@@ -96,16 +96,16 @@ Running total: **every primitive fan-out row anyone has checked has been wrong �
 
 Read from source: `field-row.tsx`, `preview-tile.tsx`, `reset-affordance.tsx`, `section-header.tsx`.
 
-| # | Primitive | Required by | Satisfied? | Finding |
-| --- | --- | --- | --- | --- |
-| 1 | A6 `field-row` | I2, I5, E3 | **NO** | The reset slot is not a column. §1.4.1 |
-| 2 | A6 `field-row` | I2 (`xy-pair`) | **NO** | One `htmlFor` per row cannot label two inputs. §1.4.2 |
-| 3 | A12 `section-header` | I2 (group reset) | **NO** | Only trailing slot is documented *and tested* as "a link, never a button". §1.4.3 |
-| 4 | A11 `reset-affordance` | I2 (collapsed group) | **PARTIAL** | The modified-dot is `aria-hidden` — the signal it exists to give is invisible to AT. §1.4.4 |
-| 5 | A12 `section-header` | I1, I2 (persisted collapse) | **YES, with a coupling** | §1.4.5 |
-| 6 | A8 `preview-tile` | I1, H5 | **YES** | §1.4.6 |
+| #   | Primitive              | Required by                 | Satisfied?               | Finding                                                                                     |
+| --- | ---------------------- | --------------------------- | ------------------------ | ------------------------------------------------------------------------------------------- |
+| 1   | A6 `field-row`         | I2, I5, E3                  | **NO**                   | The reset slot is not a column. §1.4.1                                                      |
+| 2   | A6 `field-row`         | I2 (`xy-pair`)              | **NO**                   | One `htmlFor` per row cannot label two inputs. §1.4.2                                       |
+| 3   | A12 `section-header`   | I2 (group reset)            | **NO**                   | Only trailing slot is documented _and tested_ as "a link, never a button". §1.4.3           |
+| 4   | A11 `reset-affordance` | I2 (collapsed group)        | **PARTIAL**              | The modified-dot is `aria-hidden` — the signal it exists to give is invisible to AT. §1.4.4 |
+| 5   | A12 `section-header`   | I1, I2 (persisted collapse) | **YES, with a coupling** | §1.4.5                                                                                      |
+| 6   | A8 `preview-tile`      | I1, H5                      | **YES**                  | §1.4.6                                                                                      |
 
-#### 1.4.1 A6 shipped the reset *prop* but not the reset *column*
+#### 1.4.1 A6 shipped the reset _prop_ but not the reset _column_
 
 A6's own entry states the contract:
 
@@ -131,7 +131,7 @@ The shipped component has **two** grid tracks, and puts reset inside the control
 `field-row-control` is `flex … gap-2`, so the reset glyph sits immediately to the right of whatever
 control the caller rendered. A slider, a select, a switch and a colour swatch have different widths,
 so **a stack of A6 rows produces a ragged column of ↺ glyphs.** I2 is the component whose entire
-justification is that alignment — I2's spec says *"row-level reset at the end of each A6 row"*, and
+justification is that alignment — I2's spec says _"row-level reset at the end of each A6 row"_, and
 "the end of the row" is precisely what the shipped layout does not give.
 
 This is the A11 audit's finding recurring in a subtler form. D13 recorded:
@@ -190,7 +190,7 @@ action?: React.ReactNode;
 ```tsx
 it("renders the action as a link, never a button", () => {
   render(<SectionHeader title="Recent" action={<a href="/all">View all</a>} />);
-  expect(screen.queryByRole("button")).not.toBeInTheDocument();   // section-header.test.tsx:11
+  expect(screen.queryByRole("button")).not.toBeInTheDocument(); // section-header.test.tsx:11
 });
 ```
 
@@ -206,7 +206,7 @@ Wave 6 is where that bill comes due.
 
 **Fix (additive):** A12 gains `controls?: React.ReactNode`, rendered before `action`, semantically
 "things that act on this section" as opposed to `action`, "the link that navigates away". A12's test
-narrows from *no button anywhere* to *the `section-header-action` slot contains no button* — the rule
+narrows from _no button anywhere_ to _the `section-header-action` slot contains no button_ — the rule
 it actually meant. Existing callers pass no `controls` and render identically.
 
 #### 1.4.4 The modified-dot is announced to nobody
@@ -227,11 +227,11 @@ all — which is the exact user for whom a collapsed section is hardest to disco
 I2's visual design, but it defeats the stated purpose for one class of user.
 
 **Fix (additive):** drop `aria-hidden` and render an `sr-only` string derived from `label`
-(e.g. *"Position — modified"*). Visual output unchanged.
+(e.g. _"Position — modified"_). Visual output unchanged.
 
 #### 1.4.5 A12 satisfies I1 and I2, at the cost of a controlled-mode coupling
 
-I2 requires *"Sections remember collapsed state per element type"* (component-specs.md:673). A12's
+I2 requires _"Sections remember collapsed state per element type"_ (component-specs.md:673). A12's
 uncontrolled state is component-local and keyed to nothing, so it cannot survive an element-type
 switch that remounts the section list. I2 must therefore drive **every** A12 in controlled mode from
 a `Record<elementType, Record<sectionId, boolean>>` it owns.
@@ -239,8 +239,8 @@ a `Record<elementType, Record<sectionId, boolean>>` it owns.
 That is not a primitive defect — A12's `open`/`onOpenChange` pair exists for this — but it has a
 second consequence worth stating: the collapsed modified-dot (§1.4.4) can only be rendered by a
 caller that knows whether the section is open. **Controlled mode is not optional for I2.** The same
-applies to I1, which must know `open` to honour *"Infinite section lists must lazy-render"* — A12
-renders the header only (*"the panel below is a slot it knows nothing about"*), so the decision not
+applies to I1, which must know `open` to honour _"Infinite section lists must lazy-render"_ — A12
+renders the header only (_"the panel below is a slot it knows nothing about"_), so the decision not
 to render a closed panel belongs to I1.
 
 #### 1.4.6 A8 satisfies I1 and H5 as shipped — no retrofit needed
@@ -256,17 +256,17 @@ therefore attaches `draggable`/`onDragStart` to the wrapper, which is correct �
 
 ### 1.5 Other drift found while auditing
 
-| Location | Problem |
-| --- | --- |
-| `concept-model.md:12,18` | "84 components" / "L3 Components · 84" — the catalog is at 82 since D9+D12 |
-| `concept-model.md:14` | "L4 Blocks · 14" — 13 since D9 cut O5 |
-| `concept-model.md:103` | "makes 95 components feel like one library" — a third, different count |
-| `concept-model.md:47,48,49` | A6, A2 and A7 rows all still list D9-cut G items (G9, G6, G6) |
-| `catalog.md:139` | I1's "shadcn base" column reads `A12, A8` — primitives, not a shadcn base. Cosmetic, but it is why the column disagrees with I5's row |
-| `catalog.md:143` | I5's base column omits A6 though its entry says *"Size, hardness and opacity are A6 instances"* |
-| design spec §6 | *"Compound components: `ThreadList.Root`, `ThreadList.Item`"* — the shipped idiom is flat prefixed named exports (`ThreadList`, `ThreadListItem`, `ThreadListSection`). Every Wave 6 component is multi-part; **the shipped idiom wins**, but the spec line is stale and will keep misleading |
-| `apps/docs/lib/catalog.ts` | `group: "Primitives" \| "Components"` — no `"Blocks"` member |
-| `apps/docs/scripts/gen-registry.mts` | `file()` hardcodes `type: "registry:component"` and one file per item. No `registry:block` support, no multi-file items. O3/O4 cannot be published without extending it |
+| Location                             | Problem                                                                                                                                                                                                                                                                                       |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `concept-model.md:12,18`             | "84 components" / "L3 Components · 84" — the catalog is at 82 since D9+D12                                                                                                                                                                                                                    |
+| `concept-model.md:14`                | "L4 Blocks · 14" — 13 since D9 cut O5                                                                                                                                                                                                                                                         |
+| `concept-model.md:103`               | "makes 95 components feel like one library" — a third, different count                                                                                                                                                                                                                        |
+| `concept-model.md:47,48,49`          | A6, A2 and A7 rows all still list D9-cut G items (G9, G6, G6)                                                                                                                                                                                                                                 |
+| `catalog.md:139`                     | I1's "shadcn base" column reads `A12, A8` — primitives, not a shadcn base. Cosmetic, but it is why the column disagrees with I5's row                                                                                                                                                         |
+| `catalog.md:143`                     | I5's base column omits A6 though its entry says _"Size, hardness and opacity are A6 instances"_                                                                                                                                                                                               |
+| design spec §6                       | _"Compound components: `ThreadList.Root`, `ThreadList.Item`"_ — the shipped idiom is flat prefixed named exports (`ThreadList`, `ThreadListItem`, `ThreadListSection`). Every Wave 6 component is multi-part; **the shipped idiom wins**, but the spec line is stale and will keep misleading |
+| `apps/docs/lib/catalog.ts`           | `group: "Primitives" \| "Components"` — no `"Blocks"` member                                                                                                                                                                                                                                  |
+| `apps/docs/scripts/gen-registry.mts` | `file()` hardcodes `type: "registry:component"` and one file per item. No `registry:block` support, no multi-file items. O3/O4 cannot be published without extending it                                                                                                                       |
 
 The last two are inherited, not caused by Wave 6 — `home-shell` in Wave 2 hits them first — but Wave
 6 is the first wave that ships **two** blocks, and the second is a preset over the first (§2), which
@@ -288,21 +288,21 @@ The standing claim, asserted in two places:
 
 Region-by-region, from block-specs.md:45 and :61:
 
-| O3 region | O4 region | Occupant O3 | Occupant O4 | Same? |
-| --- | --- | --- | --- | --- |
-| modality rail | rail | B4 | B4 | ✅ identical |
-| tool panel | content panel | I1 | I1 | ✅ identical |
-| canvas | preview | *(caller)* | *(caller)* | ✅ identical — a slot in both |
-| inspector | inspector | I2 | I2 | ✅ identical |
-| page strip | tracks + ruler | H5 | H2 + H3 | ⛔ **the one divergence** |
-| — | **transport** | — | H1 | ⚠️ a sixth region O3 has no counterpart for |
+| O3 region     | O4 region      | Occupant O3 | Occupant O4 | Same?                                       |
+| ------------- | -------------- | ----------- | ----------- | ------------------------------------------- |
+| modality rail | rail           | B4          | B4          | ✅ identical                                |
+| tool panel    | content panel  | I1          | I1          | ✅ identical                                |
+| canvas        | preview        | _(caller)_  | _(caller)_  | ✅ identical — a slot in both               |
+| inspector     | inspector      | I2          | I2          | ✅ identical                                |
+| page strip    | tracks + ruler | H5          | H2 + H3     | ⛔ **the one divergence**                   |
+| —             | **transport**  | —           | H1          | ⚠️ a sixth region O3 has no counterpart for |
 
 Three discrepancies against the literal wording:
 
 1. **"Same five regions" is false as counted.** O4's region list has six entries. Transport (H1) has
    no O3 counterpart.
-2. **"One variant flag" understates the dock.** The dock has *three* occupants, not two, because
-   O4's own text says *"The transcript variant (H4) **replaces the track stack entirely**"*
+2. **"One variant flag" understates the dock.** The dock has _three_ occupants, not two, because
+   O4's own text says _"The transcript variant (H4) **replaces the track stack entirely**"_
    (block-specs.md:68). Pages · timeline · transcript. A boolean cannot express three.
 3. **O4's fill list omits B7 `app-topbar`**, which O3 lists. Descript and CapCut both have one; this
    reads as an omission in O4's list rather than a real difference. Flagged, not silently corrected.
@@ -311,7 +311,7 @@ Three discrepancies against the literal wording:
 
 **The claim survives.** Transport is not a peer region — it is the header strip of the dock assembly,
 which is why it appears and disappears with the dock rather than independently. Fold it in and the
-region count is five in both, four of which are filled by the *same components* (B4, I1, I2, plus a
+region count is five in both, four of which are filled by the _same components_ (B4, I1, I2, plus a
 caller-owned canvas). One region varies. A region whose occupant varies is the definition of a slot,
 and providing slots is what a block does.
 
@@ -319,8 +319,8 @@ Justification for not forking:
 
 - **Four of five regions would be duplicated verbatim**, including the resize behaviour, the
   panel/inspector collapse contracts, and the empty-state requirement on the inspector.
-- **The rail→panel rule is shared and load-bearing**: *"The rail selects which tool panel is shown.
-  It never changes the canvas — that separation is what keeps the shell legible."* (block-specs.md:52).
+- **The rail→panel rule is shared and load-bearing**: _"The rail selects which tool panel is shown.
+  It never changes the canvas — that separation is what keeps the shell legible."_ (block-specs.md:52).
   A fork gives two places for that rule to drift.
 - **The divergent occupants are all L3 components the block does not implement.** Nothing about
   H2+H3 vs H5 reaches above the dock region.
@@ -360,11 +360,11 @@ component. That is the anti-duplication rule.
 
 ### 3.1 The three axes
 
-| Axis | Owner | Never owned by |
-| --- | --- | --- |
+| Axis                                                                     | Owner                                                       | Never owned by |
+| ------------------------------------------------------------------------ | ----------------------------------------------------------- | -------------- |
 | **Horizontal coordinate** — time↔pixel, zoom, snapping, playhead, in/out | **H2** (frames/seconds) · **H6** (samples, its own surface) | H3, H7, H4, H5 |
-| **Selection granularity** — what a click selects | **H3** = whole clip · **H6** = arbitrary region | H2, H7 |
-| **Mix state** — mute/solo policy, volume, pan, metering, lineage | **H7** | H2, H3, H6 |
+| **Selection granularity** — what a click selects                         | **H3** = whole clip · **H6** = arbitrary region             | H2, H7         |
+| **Mix state** — mute/solo policy, volume, pan, metering, lineage         | **H7**                                                      | H2, H3, H6     |
 
 ### 3.2 H2 `time-ruler` — the coordinate authority
 
@@ -399,10 +399,10 @@ is an interval `{ start, end } | null`, not a set of clip ids.
 
 The relationship to H3 is the same one F3 `asset-detail` has to a tile in F2's grid: **the lane is
 the index, the editor is the detail surface.** A caller wanting region selection on a clip opens H6
-*on that clip*; H3 never grows a region model, and H6 never grows lanes.
+_on that clip_; H3 never grows a region model, and H6 never grows lanes.
 
 **The promotion rule fires here and I am deliberately not obeying it.** `concept-model.md:25` says
-*"If two L3 components need the same piece, that piece moves up to L2."* H2 and H6 both need a
+_"If two L3 components need the same piece, that piece moves up to L2."_ H2 and H6 both need a
 time↔pixel mapping. Promoting it would create a 13th primitive — a slot gaps.md §4 already reserves
 for U5 `confidence-badge` — and would couple frame-domain and sample-domain zoom policy, which
 differ by six orders of magnitude in range. The shared surface is roughly fifteen lines. **Recorded
@@ -423,7 +423,7 @@ while gaps.md says H3 does not model solo:
 > Exclusive-vs-additive solo is a real behavioural decision **H3 does not model.** — gaps.md:42
 
 **These contradict.** Flagged, and resolved here only as a proposal for the catalog owner to ratify:
-the *control* lives in H3's gutter, the *policy* lives in H7. H3 renders `muted`/`soloed`/`locked` as
+the _control_ lives in H3's gutter, the _policy_ lives in H7. H3 renders `muted`/`soloed`/`locked` as
 controlled booleans with `on*Change` callbacks and has **no** opinion about what soloing one lane
 does to the others. H7 owns `soloMode: "exclusive" | "additive"` and computes the resulting
 per-stem effective state, which a shell feeds back into H3's props. One control, one policy, no
@@ -442,8 +442,8 @@ a block. Each of H1, H2, H3, H6, H7 must render and be testable with no sibling 
 
 Both show frames; they are not variants of each other. **H5 `frame-strip` has no time axis** — it is
 a row of A8 tiles at fixed aspect with selection, reorder and add, and it is why O3's dock and O4's
-dock are different components rather than one. H3's filmstrip positions frames *by time inside a
-clip*, at whatever density the scale dictates. Different coordinate models is why H5 is built on A8
+dock are different components rather than one. H3's filmstrip positions frames _by time inside a
+clip_, at whatever density the scale dictates. Different coordinate models is why H5 is built on A8
 and H3 is not.
 
 ---
@@ -452,17 +452,17 @@ and H3 is not.
 
 ### 4.1 Forced by dependencies
 
-| Step | Item | Why here |
-| --- | --- | --- |
-| **1** | **Primitive retrofits** — A6 reset column + `labelAs`; A12 `controls`; A11 dot a11y | I2 cannot be built correctly without all three (§1.4). All additive; no existing output changes |
-| **2** | **H2 `time-ruler`** | Same argument A8 had in Wave 1: its coordinate contract propagates into H3, H4, H1's timecode and O4's dock. Hardest component, earliest slot — committing to the wrong scale shape costs four rewrites |
-| **3** | H1 `transport-controls` | Consumes H2's unit/timecode model; cheap; proves the unit model end-to-end before H3 depends on it |
-| **4** | H3 `track-lane` | Consumes the scale; defines the clip/EDL type H4 and H7 both key off |
-| **5** | H4 `transcript-editor` | Same EDL, different projection — *"both are views of the same edit-decision list"* (block-specs.md:68). After H3 so the type is settled |
-| **6** | H7 `stem-mixer` | Needs H3's gutter prop shape settled (step 4, §3.5) |
-| **7** | I2 `property-inspector` | After step 1 |
-| **8** | O3 `studio-shell` | After I1, I2, I3, I5, H5 |
-| **9** | O4 `timeline-shell` | After O3 and H1–H4 |
+| Step  | Item                                                                                | Why here                                                                                                                                                                                                |
+| ----- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **1** | **Primitive retrofits** — A6 reset column + `labelAs`; A12 `controls`; A11 dot a11y | I2 cannot be built correctly without all three (§1.4). All additive; no existing output changes                                                                                                         |
+| **2** | **H2 `time-ruler`**                                                                 | Same argument A8 had in Wave 1: its coordinate contract propagates into H3, H4, H1's timecode and O4's dock. Hardest component, earliest slot — committing to the wrong scale shape costs four rewrites |
+| **3** | H1 `transport-controls`                                                             | Consumes H2's unit/timecode model; cheap; proves the unit model end-to-end before H3 depends on it                                                                                                      |
+| **4** | H3 `track-lane`                                                                     | Consumes the scale; defines the clip/EDL type H4 and H7 both key off                                                                                                                                    |
+| **5** | H4 `transcript-editor`                                                              | Same EDL, different projection — _"both are views of the same edit-decision list"_ (block-specs.md:68). After H3 so the type is settled                                                                 |
+| **6** | H7 `stem-mixer`                                                                     | Needs H3's gutter prop shape settled (step 4, §3.5)                                                                                                                                                     |
+| **7** | I2 `property-inspector`                                                             | After step 1                                                                                                                                                                                            |
+| **8** | O3 `studio-shell`                                                                   | After I1, I2, I3, I5, H5                                                                                                                                                                                |
+| **9** | O4 `timeline-shell`                                                                 | After O3 and H1–H4                                                                                                                                                                                      |
 
 ### 4.2 Parallelisable — no intra-wave dependencies
 
@@ -509,8 +509,8 @@ share a coordinate system. The mechanism:
 ```tsx
 // Declared independently, structurally identically, in BOTH h2 and h3.
 interface TimeScale {
-  pxPerUnit: number;              // pixels per `unit`
-  offset: number;                 // px of domain scrolled off the left edge
+  pxPerUnit: number; // pixels per `unit`
+  offset: number; // px of domain scrolled off the left edge
   toPx: (t: number) => number;
   toTime: (px: number) => number;
 }
@@ -524,7 +524,7 @@ is the whole reason H3 stays standalone-usable, which is D6's stated purpose.
 ### 5.1 H2 `time-ruler` — the hard one
 
 **Base decision: custom implementation, ARIA slider semantics retained, shadcn/Radix `Slider` not
-used.** The catalog calls it *"Slider (heavily extended)"*; on inspection "extended" is doing more
+used.** The catalog calls it _"Slider (heavily extended)"_; on inspection "extended" is doing more
 work than it can bear. Radix Slider owns one continuous domain with a fixed step, renders its own
 track/range/thumb, and offers no tick layer, no scroll viewport, and no zoom. H2 needs **three
 interacting value domains** (playhead, in, out) over a **zoomable, scrollable viewport** with a
@@ -537,23 +537,23 @@ type TimeUnit = "seconds" | "frames";
 
 interface TimeRulerProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   // --- domain ---
-  duration: number;                     // domain end, expressed in `unit`
-  unit?: TimeUnit;                      // default "seconds"
-  fps?: number;                         // required when unit === "frames"; also drives timecode
-  formatLabel?: (t: number) => string;  // default: timecode derived from unit + fps
+  duration: number; // domain end, expressed in `unit`
+  unit?: TimeUnit; // default "seconds"
+  fps?: number; // required when unit === "frames"; also drives timecode
+  formatLabel?: (t: number) => string; // default: timecode derived from unit + fps
 
   // --- viewport: zoom and scroll are the caller's, so lanes stay in lockstep ---
-  pxPerUnit?: number;                   // controlled
+  pxPerUnit?: number; // controlled
   defaultPxPerUnit?: number;
   onPxPerUnitChange?: (px: number) => void;
-  offset?: number;                      // px scrolled; controlled
+  offset?: number; // px scrolled; controlled
   onOffsetChange?: (px: number) => void;
   minPxPerUnit?: number;
   maxPxPerUnit?: number;
 
   // --- playhead ---
-  playhead: number;                     // always controlled — H2 owns no clock
-  onPlayheadChange?: (t: number) => void;      // fires continuously during a scrub
+  playhead: number; // always controlled — H2 owns no clock
+  onPlayheadChange?: (t: number) => void; // fires continuously during a scrub
   onScrubStart?: () => void;
   onScrubEnd?: (t: number) => void;
 
@@ -563,9 +563,9 @@ interface TimeRulerProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   onRangeChange?: (r: { in: number | null; out: number | null }) => void;
 
   // --- snapping ---
-  snapTargets?: number[];                       // clip edges, markers, playhead
-  snapResolver?: (t: number) => number;         // wins over snapTargets when given
-  snapThreshold?: number;                       // px, default 8
+  snapTargets?: number[]; // clip edges, markers, playhead
+  snapResolver?: (t: number) => number; // wins over snapTargets when given
+  snapThreshold?: number; // px, default 8
 
   disabled?: boolean;
 }
@@ -579,25 +579,25 @@ export type { TimeRulerProps, TimeScale, TimeUnit };
 
 **Interaction model**
 
-| Gesture | Behaviour |
-| --- | --- |
-| Click on the ruler body | Seek. Playhead jumps to `toTime(clientX)`, snapped |
-| Press-drag | Continuous scrub under pointer capture; `onPlayheadChange` fires per frame, `onScrubEnd` once |
-| `alt`-drag | Bypasses snapping — the standard NLE escape hatch, and cheap |
-| Drag an in/out handle | Moves that bound only. Handles are a **separate layer above the playhead** (component-specs.md:624) and never trade z-order with it |
-| Plain wheel / trackpad-x | Scrolls the viewport (`onOffsetChange`) |
-| `ctrl`/`⌘` + wheel | Zooms **about the pointer**, not about the viewport's left edge. Load-bearing: anchoring zoom to the edge makes precise work impossible, and it is the single detail that separates a usable ruler from a demo |
-| `←` / `→` | Step one unit (one frame when `unit === "frames"`) |
-| `shift` + `←`/`→` | Step ten |
-| `Home` / `End` | Domain bounds |
-| `i` / `o` | Set in / out at the playhead — only when the ruler has focus |
+| Gesture                  | Behaviour                                                                                                                                                                                                      |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Click on the ruler body  | Seek. Playhead jumps to `toTime(clientX)`, snapped                                                                                                                                                             |
+| Press-drag               | Continuous scrub under pointer capture; `onPlayheadChange` fires per frame, `onScrubEnd` once                                                                                                                  |
+| `alt`-drag               | Bypasses snapping — the standard NLE escape hatch, and cheap                                                                                                                                                   |
+| Drag an in/out handle    | Moves that bound only. Handles are a **separate layer above the playhead** (component-specs.md:624) and never trade z-order with it                                                                            |
+| Plain wheel / trackpad-x | Scrolls the viewport (`onOffsetChange`)                                                                                                                                                                        |
+| `ctrl`/`⌘` + wheel       | Zooms **about the pointer**, not about the viewport's left edge. Load-bearing: anchoring zoom to the edge makes precise work impossible, and it is the single detail that separates a usable ruler from a demo |
+| `←` / `→`                | Step one unit (one frame when `unit === "frames"`)                                                                                                                                                             |
+| `shift` + `←`/`→`        | Step ten                                                                                                                                                                                                       |
+| `Home` / `End`           | Domain bounds                                                                                                                                                                                                  |
+| `i` / `o`                | Set in / out at the playhead — only when the ruler has focus                                                                                                                                                   |
 
 **Coordinate and units model**
 
 - The domain is a number line in **one declared unit**. `seconds` is the default; `frames` requires
   `fps` and makes every step integral.
 - `pxPerUnit` is the single zoom quantity. **Tick density is derived from it, never passed in**:
-  *"Tick density is derived from zoom. Labels thin out rather than overlapping."*
+  _"Tick density is derived from zoom. Labels thin out rather than overlapping."_
   (component-specs.md:622). H2 picks the coarsest tick interval from a fixed 1-2-5 ladder whose
   spacing exceeds a minimum label width, then draws two subordinate levels unlabelled.
 - **Zoom and scroll are controlled by the caller.** H2 proposes changes; it does not own them. This
@@ -606,7 +606,7 @@ export type { TimeRulerProps, TimeScale, TimeUnit };
 - **H2 owns no clock.** `playhead` is always controlled. A ruler with an internal timer fights the
   media element that actually knows the time.
 - **The playhead spans every track, not just the ruler** (component-specs.md:623). H2 renders its own
-  head and reports position; the *stem* across the lanes is drawn by the dock from the same value.
+  head and reports position; the _stem_ across the lanes is drawn by the dock from the same value.
   H2 cannot render into a sibling's box, and pretending otherwise would make it a layout component.
 - Only ticks intersecting the visible viewport are rendered. At 4 hours and 60fps a naive render is
   ~864 000 nodes.
@@ -615,7 +615,7 @@ export type { TimeRulerProps, TimeScale, TimeUnit };
 
 - **Sample resolution.** The floor is the frame. gaps.md:41 records this as the reason H6 exists.
 - **Bars, beats and time signatures.** A musical grid is a different tick derivation entirely, and
-  **nothing in the catalog records this gap** — gaps.md R5 names BPM and key as music *library*
+  **nothing in the catalog records this gap** — gaps.md R5 names BPM and key as music _library_
   facets but never the matching timeline requirement. **New gap; recorded in §7.**
 - Playback, transport and media elements — H1 and the caller.
 - Clips, thumbnails, waveforms, lane rendering — H3.
@@ -630,14 +630,14 @@ export type { TimeRulerProps, TimeScale, TimeUnit };
 
 ```tsx
 interface TransportControlsProps extends React.ComponentProps<"div"> {
-  variant?: "simple" | "frame-accurate";     // frame-accurate adds timecode, frame step, in/out
+  variant?: "simple" | "frame-accurate"; // frame-accurate adds timecode, frame step, in/out
   playing: boolean;
   onPlayingChange: (playing: boolean) => void;
   current: number;
   duration: number;
   unit?: TimeUnit;
   fps?: number;
-  onSeek?: (t: number) => void;              // typing a timecode seeks
+  onSeek?: (t: number) => void; // typing a timecode seeks
   speed?: number;
   speeds?: number[];
   onSpeedChange?: (s: number) => void;
@@ -649,31 +649,39 @@ interface TransportControlsProps extends React.ComponentProps<"div"> {
 }
 ```
 
-*"Two variants, one component… **button order is unchanged**"* (component-specs.md:612) — the
-frame-accurate controls are appended, never interleaved. *"Elapsed/total is text and editable —
-typing a timecode should seek."* *"Every control has a keyboard equivalent. Transport without
-keyboard is preview, not editing."*
+_"Two variants, one component… **button order is unchanged**"_ (component-specs.md:612) — the
+frame-accurate controls are appended, never interleaved. _"Elapsed/total is text and editable —
+typing a timecode should seek."_ _"Every control has a keyboard equivalent. Transport without
+keyboard is preview, not editing."_
 
 ### 5.3 H3 `track-lane`
 
 ```tsx
 type TrackType = "filmstrip" | "waveform" | "text" | "adjustment";
 
-interface Clip { id: string; start: number; duration: number; label?: React.ReactNode }
+interface Clip {
+  id: string;
+  start: number;
+  duration: number;
+  label?: React.ReactNode;
+}
 
 interface TrackLaneProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   type: TrackType;
-  scale: TimeScale;                       // structural; no import of H2 (§5.0)
+  scale: TimeScale; // structural; no import of H2 (§5.0)
   clips: Clip[];
-  renderClip?: (clip: Clip) => React.ReactNode;   // the four renderers are content, not behaviour
+  renderClip?: (clip: Clip) => React.ReactNode; // the four renderers are content, not behaviour
 
   // gutter — fixed width, never scrolls horizontally
   title: React.ReactNode;
-  muted?: boolean;   onMutedChange?: (v: boolean) => void;
-  soloed?: boolean;  onSoloedChange?: (v: boolean) => void;   // NO policy — see §3.5
-  locked?: boolean;  onLockedChange?: (v: boolean) => void;
+  muted?: boolean;
+  onMutedChange?: (v: boolean) => void;
+  soloed?: boolean;
+  onSoloedChange?: (v: boolean) => void; // NO policy — see §3.5
+  locked?: boolean;
+  onLockedChange?: (v: boolean) => void;
 
-  selectedClipIds?: string[];             // whole-clip granularity, never a region
+  selectedClipIds?: string[]; // whole-clip granularity, never a region
   onSelectClips?: (ids: string[]) => void;
   onTrimClip?: (id: string, next: { start: number; duration: number }) => void;
   height?: number;
@@ -689,39 +697,55 @@ when `locked` is false.
 ### 5.4 H4 `transcript-editor`
 
 ```tsx
-interface TranscriptWord { id: string; text: string; start: number; end: number; speakerId?: string; deleted?: boolean }
-interface Speaker { id: string; name: string; color?: string }
+interface TranscriptWord {
+  id: string;
+  text: string;
+  start: number;
+  end: number;
+  speakerId?: string;
+  deleted?: boolean;
+}
+interface Speaker {
+  id: string;
+  name: string;
+  color?: string;
+}
 
 interface TranscriptEditorProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   words: TranscriptWord[];
   speakers?: Speaker[];
-  playhead?: number;                       // highlights the current word
+  playhead?: number; // highlights the current word
   selectedWordIds?: string[];
   onSelectWords?: (ids: string[]) => void;
-  onDeleteWords?: (ids: string[]) => void;     // marks deleted; does not remove
+  onDeleteWords?: (ids: string[]) => void; // marks deleted; does not remove
   onRestoreWords?: (ids: string[]) => void;
   onRenameSpeaker?: (id: string, name: string) => void;
-  onSeek?: (t: number) => void;                // clicking a word seeks
-  media?: (word: TranscriptWord) => React.ReactNode;   // inline media chips
+  onSeek?: (t: number) => void; // clicking a word seeks
+  media?: (word: TranscriptWord) => React.ReactNode; // inline media chips
   readOnly?: boolean;
 }
 ```
 
-*"Deleted words are struck through before removal, so a destructive edit is visible and reversible."*
+_"Deleted words are struck through before removal, so a destructive edit is visible and reversible."_
 `deleted` is therefore a **flag on the word**, never a splice — `onDeleteWords` marks, `onRestoreWords`
-unmarks, and the caller decides when a commit removes them. *"Speaker labels are editable and drive
-diarisation corrections."*
+unmarks, and the caller decides when a commit removes them. _"Speaker labels are editable and drive
+diarisation corrections."_
 
 ### 5.5 H5 `frame-strip`
 
 ```tsx
-interface FrameStripItem { id: string; label?: React.ReactNode; thumbnail?: React.ReactNode; badge?: React.ReactNode }
+interface FrameStripItem {
+  id: string;
+  label?: React.ReactNode;
+  thumbnail?: React.ReactNode;
+  badge?: React.ReactNode;
+}
 
 interface FrameStripProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   items: FrameStripItem[];
   activeId?: string | null;
   onActivate?: (id: string) => void;
-  selectable?: "single" | "multiple" | "in-out";     // in-out feeds D2 (first/last frame)
+  selectable?: "single" | "multiple" | "in-out"; // in-out feeds D2 (first/last frame)
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
   range?: { in: string | null; out: string | null };
@@ -729,33 +753,36 @@ interface FrameStripProps extends Omit<React.ComponentProps<"div">, "onSelect"> 
   reorderable?: boolean;
   onReorder?: (from: number, to: number) => void;
   onAdd?: () => void;
-  aspect?: "square" | "video" | "portrait" | "wide";   // passed to A8
+  aspect?: "square" | "video" | "portrait" | "wide"; // passed to A8
 }
 ```
 
-Built on A8 with `labelPlacement="none"` by default. *"Active item is ringed, not bordered, so the
-strip does not shift when selection moves"* — inherited from A8's ring, not reimplemented.
-*"The in/out variant feeds D2 — picking first and last frames is how image→video conditioning is set."*
+Built on A8 with `labelPlacement="none"` by default. _"Active item is ringed, not bordered, so the
+strip does not shift when selection moves"_ — inherited from A8's ring, not reimplemented.
+_"The in/out variant feeds D2 — picking first and last frames is how image→video conditioning is set."_
 
 ### 5.6 H6 `waveform-editor`
 
 ```tsx
-interface WaveformRegion { start: number; end: number }        // in samples
+interface WaveformRegion {
+  start: number;
+  end: number;
+} // in samples
 
 interface WaveformEditorProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
-  peaks: Float32Array | number[];        // pre-computed min/max peaks; H6 never decodes audio
+  peaks: Float32Array | number[]; // pre-computed min/max peaks; H6 never decodes audio
   sampleRate: number;
-  length: number;                        // total samples
-  samplesPerPx?: number;                 // controlled zoom; floor is 1 (sample resolution)
+  length: number; // total samples
+  samplesPerPx?: number; // controlled zoom; floor is 1 (sample resolution)
   defaultSamplesPerPx?: number;
   onSamplesPerPxChange?: (v: number) => void;
-  offset?: number;                       // px scrolled
+  offset?: number; // px scrolled
   onOffsetChange?: (px: number) => void;
-  playhead?: number;                     // samples
+  playhead?: number; // samples
   onPlayheadChange?: (s: number) => void;
-  region?: WaveformRegion | null;        // arbitrary interval — never a clip id
+  region?: WaveformRegion | null; // arbitrary interval — never a clip id
   onRegionChange?: (r: WaveformRegion | null) => void;
-  regionActions?: React.ReactNode;       // trim · silence · fade · normalise — supplied by the caller
+  regionActions?: React.ReactNode; // trim · silence · fade · normalise — supplied by the caller
   snapToZeroCrossing?: boolean;
   disabled?: boolean;
 }
@@ -763,7 +790,7 @@ interface WaveformEditorProps extends Omit<React.ComponentProps<"div">, "onSelec
 
 **H6 never decodes audio.** `peaks` are pre-computed by the caller: decoding is I/O, the design spec
 forbids data fetching inside components, and peak generation for a 60-minute file belongs in a worker.
-`samplesPerPx` bottoming out at 1 is the literal expression of *"zoom to sample"*, and is the reason
+`samplesPerPx` bottoming out at 1 is the literal expression of _"zoom to sample"_, and is the reason
 H6 cannot reuse H2 (§3.4). `snapToZeroCrossing` is the audio analogue of frame snapping — cutting off
 a zero crossing is what produces clicks.
 
@@ -773,18 +800,18 @@ a zero crossing is what produces clicks.
 interface Stem {
   id: string;
   name: string;
-  lineage?: React.ReactNode;             // "separated from mix.wav" — must stay visible
-  volume: number;                        // 0..1
-  pan: number;                           // -1..1
+  lineage?: React.ReactNode; // "separated from mix.wav" — must stay visible
+  volume: number; // 0..1
+  pan: number; // -1..1
   muted: boolean;
   soloed: boolean;
 }
 
 interface StemMixerProps extends React.ComponentProps<"div"> {
   stems: Stem[];
-  soloMode?: "exclusive" | "additive";   // default "additive". THE behavioural decision (gaps.md:42)
+  soloMode?: "exclusive" | "additive"; // default "additive". THE behavioural decision (gaps.md:42)
   onStemChange?: (id: string, patch: Partial<Stem>) => void;
-  levels?: Record<string, number>;       // live meter values, 0..1; caller-driven from an analyser
+  levels?: Record<string, number>; // live meter values, 0..1; caller-driven from an analyser
   orientation?: "vertical" | "horizontal";
   disabled?: boolean;
 }
@@ -806,8 +833,8 @@ interface ToolPanelSection {
   id: string;
   title: React.ReactNode;
   count?: number;
-  action?: React.ReactNode;              // "See all" — a LINK, per A12
-  items: React.ReactNode;                // usually A8 tiles
+  action?: React.ReactNode; // "See all" — a LINK, per A12
+  items: React.ReactNode; // usually A8 tiles
   defaultOpen?: boolean;
 }
 
@@ -819,17 +846,17 @@ interface ToolPanelProps extends React.ComponentProps<"div"> {
   onSearchChange?: (v: string) => void;
   searchPlaceholder?: string;
   sections: ToolPanelSection[];
-  openSections?: Record<string, boolean>;        // CONTROLLED — required for lazy render (§1.4.5)
+  openSections?: Record<string, boolean>; // CONTROLLED — required for lazy render (§1.4.5)
   onOpenSectionsChange?: (next: Record<string, boolean>) => void;
-  prompt?: React.ReactNode;              // the docked prompt box — what makes it a modality panel
+  prompt?: React.ReactNode; // the docked prompt box — what makes it a modality panel
   empty?: React.ReactNode;
 }
 ```
 
-*"The docked prompt box is what makes it a modality panel rather than an asset browser"* — so
-`prompt` is a first-class region, not a footer slot. *"Infinite section lists must lazy-render"*:
+_"The docked prompt box is what makes it a modality panel rather than an asset browser"_ — so
+`prompt` is a first-class region, not a footer slot. _"Infinite section lists must lazy-render"_:
 a closed section renders its header only, and an open section's `items` are mounted on first open
-and kept thereafter. I1 is *"almost entirely composition, which is why it is cheap to build."*
+and kept thereafter. I1 is _"almost entirely composition, which is why it is cheap to build."_
 
 ### 5.9 I2 `property-inspector`
 
@@ -837,13 +864,13 @@ and kept thereafter. I1 is *"almost entirely composition, which is why it is che
 interface InspectorSection {
   id: string;
   title: React.ReactNode;
-  rows: React.ReactNode;                 // A6 field-rows
-  resetState?: "modified" | "default" | "keyframed";   // drives the A11 group affordance
+  rows: React.ReactNode; // A6 field-rows
+  resetState?: "modified" | "default" | "keyframed"; // drives the A11 group affordance
   onResetGroup?: () => void;
 }
 
 interface PropertyInspectorProps extends React.ComponentProps<"div"> {
-  elementType: string | null;            // null → empty state. The most common state.
+  elementType: string | null; // null → empty state. The most common state.
   sections: InspectorSection[];
   openSections?: Record<string, boolean>;
   onOpenSectionsChange?: (next: Record<string, boolean>) => void;
@@ -853,57 +880,62 @@ interface PropertyInspectorProps extends React.ComponentProps<"div"> {
 
 Three rules, all from I2's own entry:
 
-- *"Content is selection-driven: one variant per element type, plus an empty state."* `elementType`
+- _"Content is selection-driven: one variant per element type, plus an empty state."_ `elementType`
   is a plain string, not a union — element taxonomies are app-specific, and a closed union would make
   the component un-installable in any app whose objects differ from ours.
-- *"Group-level reset on the section header"* → A11 at `scope="group"` in A12's **new `controls`
+- _"Group-level reset on the section header"_ → A11 at `scope="group"` in A12's **new `controls`
   slot** (§1.4.3), degrading to the modified-dot when that section is closed.
-- *"Sections remember collapsed state per element type"* → I2 keys its disclosure map by
+- _"Sections remember collapsed state per element type"_ → I2 keys its disclosure map by
   `elementType`, which is why A12 must run controlled (§1.4.5).
 
 ### 5.10 I3 `context-toolbar`
 
 ```tsx
 interface ContextToolbarProps extends React.ComponentProps<"div"> {
-  anchor: DOMRect | null;                // selection bounds; null hides the toolbar
-  boundary?: DOMRect;                    // viewport/canvas bounds for flip logic
-  aiAction: React.ReactNode;             // ALWAYS first, and always opens I4
-  actions: React.ReactNode[];            // 6–8 max before overflow
+  anchor: DOMRect | null; // selection bounds; null hides the toolbar
+  boundary?: DOMRect; // viewport/canvas bounds for flip logic
+  aiAction: React.ReactNode; // ALWAYS first, and always opens I4
+  actions: React.ReactNode[]; // 6–8 max before overflow
   overflow?: React.ReactNode;
-  side?: "auto" | "top" | "bottom";      // default "auto"
+  side?: "auto" | "top" | "bottom"; // default "auto"
   offset?: number;
 }
 ```
 
-*"Six to eight actions maximum. Past that it competes with the inspector."* — enforced by collapsing
-the tail into `overflow`, not by a runtime error. *"The AI entry is always first and always opens
-I4"* — hence a dedicated `aiAction` prop rather than position 0 of `actions`, so the rule survives a
-caller reordering the array. *"Flips above or below the selection to stay in the viewport, and never
-covers the selection."*
+_"Six to eight actions maximum. Past that it competes with the inspector."_ — enforced by collapsing
+the tail into `overflow`, not by a runtime error. _"The AI entry is always first and always opens
+I4"_ — hence a dedicated `aiAction` prop rather than position 0 of `actions`, so the rule survives a
+caller reordering the array. _"Flips above or below the selection to stay in the viewport, and never
+covers the selection."_
 
 ### 5.11 I4 `ai-tools-menu`
 
 ```tsx
-interface AiToolGroup { id: string; label?: React.ReactNode; separated?: boolean; tools: AiTool[] }
+interface AiToolGroup {
+  id: string;
+  label?: React.ReactNode;
+  separated?: boolean;
+  tools: AiTool[];
+}
 interface AiTool {
   id: string;
   title: React.ReactNode;
   description?: React.ReactNode;
   icon?: React.ReactNode;
-  cost?: React.ReactNode;                // A2 cost-chip, rendered into A9's trailing slot
+  cost?: React.ReactNode; // A2 cost-chip, rendered into A9's trailing slot
   disabled?: boolean;
 }
 
 interface AiToolsMenuProps extends React.ComponentProps<"div"> {
   groups: AiToolGroup[];
   onSelectTool: (id: string) => void;
-  selectionLabel?: React.ReactNode;      // "3 objects" — the selection IS the prompt context
+  selectionLabel?: React.ReactNode; // "3 objects" — the selection IS the prompt context
   empty?: React.ReactNode;
 }
 ```
 
-Rows are A9 with `trailing={cost}`. *"Grouped by intent, with expensive or destructive options below
-a rule"* → `separated: true` draws that rule.
+Rows are A9 with `trailing={cost}`. _"Grouped by intent, with expensive or destructive options below
+a rule"_ → `separated: true` draws that rule.
 
 ### 5.12 I5 `drawing-tools`
 
@@ -916,19 +948,24 @@ interface DrawingToolsProps extends React.ComponentProps<"div"> {
   shapes?: { id: string; icon: React.ReactNode; label: string }[];
   activeShape?: string;
   onShapeChange?: (id: string) => void;
-  size?: number;      onSizeChange?: (v: number) => void;        // A6 rows
-  hardness?: number;  onHardnessChange?: (v: number) => void;
-  opacity?: number;   onOpacityChange?: (v: number) => void;
-  swatches?: string[];                   // caller-supplied CSS custom-property references
-  color?: string;     onColorChange?: (c: string) => void;
-  maskMode?: boolean; onMaskModeChange?: (v: boolean) => void;
+  size?: number;
+  onSizeChange?: (v: number) => void; // A6 rows
+  hardness?: number;
+  onHardnessChange?: (v: number) => void;
+  opacity?: number;
+  onOpacityChange?: (v: number) => void;
+  swatches?: string[]; // caller-supplied CSS custom-property references
+  color?: string;
+  onColorChange?: (c: string) => void;
+  maskMode?: boolean;
+  onMaskModeChange?: (v: boolean) => void;
   orientation?: "vertical" | "horizontal";
 }
 ```
 
-*"Rails are toggle-groups with flyouts, not nested menus. Switching tool is never more than one click
-deep."* *"Size, hardness and opacity are A6 instances, so brush controls and the inspector share one
-grid"* — which is a second consumer of the §1.4.1 column fix. **Token-gate note:** `swatches` and
+_"Rails are toggle-groups with flyouts, not nested menus. Switching tool is never more than one click
+deep."_ _"Size, hardness and opacity are A6 instances, so brush controls and the inspector share one
+grid"_ — which is a second consumer of the §1.4.1 column fix. **Token-gate note:** `swatches` and
 `color` carry user document colours, not theme colours. They are runtime `style` values supplied by
 the caller and must never be emitted as class names, or the check would either fail or be defeated.
 
@@ -938,31 +975,34 @@ the caller and must never be emitted as class names, or the check would either f
 type StudioDock = "pages" | "timeline" | "transcript" | "none";
 
 interface StudioShellProps extends React.ComponentProps<"div"> {
-  rail: React.ReactNode;                 // B4 modality-rail — invariant
-  topbar?: React.ReactNode;              // B7 app-topbar
-  panel?: React.ReactNode;               // I1 tool-panel — selected BY the rail
-  canvas: React.ReactNode;               // the only required region
-  overlay?: React.ReactNode;             // I3 context-toolbar / I5 drawing-tools, positioned over canvas
-  inspector?: React.ReactNode;           // I2 — MUST render its own empty state
-  dock?: React.ReactNode;                // H5 | H2+H3 | H4
-  dockVariant?: StudioDock;              // default "pages"
-  transport?: React.ReactNode;           // H1 — rendered only when dockVariant === "timeline"
+  rail: React.ReactNode; // B4 modality-rail — invariant
+  topbar?: React.ReactNode; // B7 app-topbar
+  panel?: React.ReactNode; // I1 tool-panel — selected BY the rail
+  canvas: React.ReactNode; // the only required region
+  overlay?: React.ReactNode; // I3 context-toolbar / I5 drawing-tools, positioned over canvas
+  inspector?: React.ReactNode; // I2 — MUST render its own empty state
+  dock?: React.ReactNode; // H5 | H2+H3 | H4
+  dockVariant?: StudioDock; // default "pages"
+  transport?: React.ReactNode; // H1 — rendered only when dockVariant === "timeline"
 
-  panelOpen?: boolean;      onPanelOpenChange?: (v: boolean) => void;
-  inspectorOpen?: boolean;  onInspectorOpenChange?: (v: boolean) => void;
-  dockOpen?: boolean;       onDockOpenChange?: (v: boolean) => void;
+  panelOpen?: boolean;
+  onPanelOpenChange?: (v: boolean) => void;
+  inspectorOpen?: boolean;
+  onInspectorOpenChange?: (v: boolean) => void;
+  dockOpen?: boolean;
+  onDockOpenChange?: (v: boolean) => void;
 }
 ```
 
 Invariants, all from block-specs.md:50–55:
 
-- *"Five regions, fixed positions. Rail and inspector are the invariants; the middle three vary by
-  what is being edited."*
-- *"The rail selects which tool panel is shown. **It never changes the canvas** — that separation is
-  what keeps the shell legible."* The shell therefore has no coupling at all between `rail` and
+- _"Five regions, fixed positions. Rail and inspector are the invariants; the middle three vary by
+  what is being edited."_
+- _"The rail selects which tool panel is shown. **It never changes the canvas** — that separation is
+  what keeps the shell legible."_ The shell therefore has no coupling at all between `rail` and
   `canvas`; both are opaque slots and the caller wires the rail to swap `panel`.
-- *"The inspector is selection-driven and must ship an empty state, because 'nothing selected' is
-  the most common state."* The shell does not enforce this — I2 does — but the region must remain
+- _"The inspector is selection-driven and must ship an empty state, because 'nothing selected' is
+  the most common state."_ The shell does not enforce this — I2 does — but the region must remain
   mounted when nothing is selected, or the layout jumps on every deselect.
 - **The shell imports no L3 component.** Every region is a slot. This is what makes it installable
   before B4/B7/E4/F1 exist (§4.4).
@@ -972,18 +1012,20 @@ Invariants, all from block-specs.md:50–55:
 
 ```tsx
 interface TimelineShellProps extends Omit<StudioShellProps, "dockVariant"> {
-  dockVariant?: Extract<StudioDock, "timeline" | "transcript">;   // default "timeline"
+  dockVariant?: Extract<StudioDock, "timeline" | "transcript">; // default "timeline"
 }
 
-function TimelineShell(props: TimelineShellProps) { /* StudioShell with the dock pinned */ }
+function TimelineShell(props: TimelineShellProps) {
+  /* StudioShell with the dock pinned */
+}
 ```
 
 Same five regions; the dock carries H2+H3 (or H4) and the transport strip instead of H5's page strip.
 
-- *"The transcript variant (H4) **replaces the track stack entirely** — both are views of the same
-  edit-decision list."* So `dockVariant="transcript"` renders `dock` full-height with no transport
+- _"The transcript variant (H4) **replaces the track stack entirely** — both are views of the same
+  edit-decision list."_ So `dockVariant="transcript"` renders `dock` full-height with no transport
   strip above it and no ruler.
-- *"Export is staged through F6: a cheap preview render precedes the expensive full export."* F6 is
+- _"Export is staged through F6: a cheap preview render precedes the expensive full export."_ F6 is
   not a region — it mounts inside `topbar`'s actions or as a caller-owned dialog. **O4's fill list
   names F6 without saying where it goes**; recorded in §7.
 - **O4's fill list omits B7 `app-topbar`** which O3 includes. Treated here as an omission — `topbar`
@@ -996,25 +1038,25 @@ Same five regions; the dock carries H2+H3 (or H4) and the transport strip instea
 One co-located test file per item. These are the assertions that protect a stated contract; regression
 in any of them means the component no longer does the thing it exists to do.
 
-| Item | Assertions |
-| --- | --- |
-| **A6 retrofit** | Without `reset`, the rendered DOM is unchanged from today (regression fixture). With `reset`, the affordance is a **direct grid child**, not a descendant of `field-row-control`. Two rows with different control widths place their resets at the same offset. `labelAs="group"` exposes `role="group"` and no `htmlFor`; default still emits `htmlFor` |
-| **A12 retrofit** | `controls` renders a button without failing the `action`-is-a-link rule; the narrowed assertion checks only `section-header-action`. No `controls` → no extra node |
-| **A11 retrofit** | The collapsed dot exposes an accessible name; visual classes unchanged |
-| **H1** | `simple` and `frame-accurate` render the shared controls **in the same order**; typing a timecode calls `onSeek` with the parsed value; every control is reachable and operable by keyboard |
-| **H2** | `toTime(toPx(t)) === t` across zoom levels (the coordinate round-trip — if this breaks, every lane misdraws). Tick **count** falls as `pxPerUnit` falls and no two labels overlap. Zoom about the pointer keeps the time under the pointer fixed. A scrub emits many `onPlayheadChange` and exactly one `onScrubEnd`. `alt`-drag bypasses snapping. Playhead, in and out each expose `role="slider"` with an `aria-valuetext` timecode. `unit="frames"` produces only integral values |
-| **H3** | Clip x/width derive from the passed `scale` — swapping the scale moves clips with **no internal state change**. Selection is whole-clip: no API can express a sub-clip range. Trim handles appear only for selected clips and never when `locked`. `onSoloedChange` fires and **nothing else in the lane changes** (no cross-lane policy). The gutter does not translate when the clip area scrolls horizontally |
-| **H4** | Deleting words marks `deleted` and keeps them mounted with strikethrough; restore reverses it. Clicking a word calls `onSeek` with that word's `start`. `playhead` highlights exactly one word. Speaker rename commits and fires once |
-| **H5** | Reorder preserves item count and identity. `in-out` mode yields at most one in and one out. Active item adds no layout box (A8's ring inherited). `labelPlacement` default renders no label |
-| **H6** | Region selection produces an arbitrary interval, not an item id. `samplesPerPx` reaches 1 (true sample zoom). `snapToZeroCrossing` moves boundaries to a peak sign change. Region actions render only when a region exists. **H6 never calls `decodeAudioData`** — peaks in, drawing out |
-| **H7** | `soloMode="exclusive"` — soloing B clears A's solo; `"additive"` — both stay soloed. `effectiveMuted` mutes every non-soloed stem when any stem is soloed, and mutes none when none is. Volume and pan changes emit patches and hold no internal state. Meters render from `levels` with no `AudioContext` constructed |
-| **I1** | A closed section renders its header and **no items**; opening mounts them; re-closing keeps them mounted. `action` renders as a link. The docked prompt renders outside the scrolling section list and does not scroll with it |
-| **I2** | `elementType={null}` renders the empty state and nothing else. Disclosure state survives an `elementType` change and is restored on switching back. Group reset renders in A12's `controls` slot; when the section is closed it degrades to the modified-dot. Row resets across mixed control types share one x-offset (the §1.4.1 contract, asserted from the consumer's side too) |
-| **I3** | `anchor=null` renders nothing. The toolbar's rect never intersects the anchor rect. Near the boundary top it flips to `bottom`. `aiAction` is the first focusable item regardless of `actions` order. Past the action cap the tail moves into `overflow` |
-| **I4** | Rows expose A9's button semantics; cost renders in the trailing slot without changing row height. `separated` groups draw a rule above them. `onSelectTool` fires with the row's id |
-| **I5** | Switching tool is one interaction (no intermediate menu). Size/hardness/opacity render as A6 rows sharing the inspector grid. Swatch colours are applied via `style`, never as class names (token-gate safety) |
-| **O3** | All five regions render their slot content and nothing else. Changing `rail` content does not re-render `canvas`. `dockVariant="none"` removes the dock without shifting the other four regions. Collapsing the inspector keeps it mounted. **The module imports no L3 component** (asserted by reading its own import list) |
-| **O4** | `dockVariant="timeline"` renders the transport strip; `"transcript"` renders neither transport nor ruler and gives the dock full height. `TimelineShell` and `StudioShell` produce identical markup for the four non-dock regions given identical props |
+| Item             | Assertions                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A6 retrofit**  | Without `reset`, the rendered DOM is unchanged from today (regression fixture). With `reset`, the affordance is a **direct grid child**, not a descendant of `field-row-control`. Two rows with different control widths place their resets at the same offset. `labelAs="group"` exposes `role="group"` and no `htmlFor`; default still emits `htmlFor`                                                                                                                              |
+| **A12 retrofit** | `controls` renders a button without failing the `action`-is-a-link rule; the narrowed assertion checks only `section-header-action`. No `controls` → no extra node                                                                                                                                                                                                                                                                                                                    |
+| **A11 retrofit** | The collapsed dot exposes an accessible name; visual classes unchanged                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **H1**           | `simple` and `frame-accurate` render the shared controls **in the same order**; typing a timecode calls `onSeek` with the parsed value; every control is reachable and operable by keyboard                                                                                                                                                                                                                                                                                           |
+| **H2**           | `toTime(toPx(t)) === t` across zoom levels (the coordinate round-trip — if this breaks, every lane misdraws). Tick **count** falls as `pxPerUnit` falls and no two labels overlap. Zoom about the pointer keeps the time under the pointer fixed. A scrub emits many `onPlayheadChange` and exactly one `onScrubEnd`. `alt`-drag bypasses snapping. Playhead, in and out each expose `role="slider"` with an `aria-valuetext` timecode. `unit="frames"` produces only integral values |
+| **H3**           | Clip x/width derive from the passed `scale` — swapping the scale moves clips with **no internal state change**. Selection is whole-clip: no API can express a sub-clip range. Trim handles appear only for selected clips and never when `locked`. `onSoloedChange` fires and **nothing else in the lane changes** (no cross-lane policy). The gutter does not translate when the clip area scrolls horizontally                                                                      |
+| **H4**           | Deleting words marks `deleted` and keeps them mounted with strikethrough; restore reverses it. Clicking a word calls `onSeek` with that word's `start`. `playhead` highlights exactly one word. Speaker rename commits and fires once                                                                                                                                                                                                                                                 |
+| **H5**           | Reorder preserves item count and identity. `in-out` mode yields at most one in and one out. Active item adds no layout box (A8's ring inherited). `labelPlacement` default renders no label                                                                                                                                                                                                                                                                                           |
+| **H6**           | Region selection produces an arbitrary interval, not an item id. `samplesPerPx` reaches 1 (true sample zoom). `snapToZeroCrossing` moves boundaries to a peak sign change. Region actions render only when a region exists. **H6 never calls `decodeAudioData`** — peaks in, drawing out                                                                                                                                                                                              |
+| **H7**           | `soloMode="exclusive"` — soloing B clears A's solo; `"additive"` — both stay soloed. `effectiveMuted` mutes every non-soloed stem when any stem is soloed, and mutes none when none is. Volume and pan changes emit patches and hold no internal state. Meters render from `levels` with no `AudioContext` constructed                                                                                                                                                                |
+| **I1**           | A closed section renders its header and **no items**; opening mounts them; re-closing keeps them mounted. `action` renders as a link. The docked prompt renders outside the scrolling section list and does not scroll with it                                                                                                                                                                                                                                                        |
+| **I2**           | `elementType={null}` renders the empty state and nothing else. Disclosure state survives an `elementType` change and is restored on switching back. Group reset renders in A12's `controls` slot; when the section is closed it degrades to the modified-dot. Row resets across mixed control types share one x-offset (the §1.4.1 contract, asserted from the consumer's side too)                                                                                                   |
+| **I3**           | `anchor=null` renders nothing. The toolbar's rect never intersects the anchor rect. Near the boundary top it flips to `bottom`. `aiAction` is the first focusable item regardless of `actions` order. Past the action cap the tail moves into `overflow`                                                                                                                                                                                                                              |
+| **I4**           | Rows expose A9's button semantics; cost renders in the trailing slot without changing row height. `separated` groups draw a rule above them. `onSelectTool` fires with the row's id                                                                                                                                                                                                                                                                                                   |
+| **I5**           | Switching tool is one interaction (no intermediate menu). Size/hardness/opacity render as A6 rows sharing the inspector grid. Swatch colours are applied via `style`, never as class names (token-gate safety)                                                                                                                                                                                                                                                                        |
+| **O3**           | All five regions render their slot content and nothing else. Changing `rail` content does not re-render `canvas`. `dockVariant="none"` removes the dock without shifting the other four regions. Collapsing the inspector keeps it mounted. **The module imports no L3 component** (asserted by reading its own import list)                                                                                                                                                          |
+| **O4**           | `dockVariant="timeline"` renders the transport strip; `"transcript"` renders neither transport nor ruler and gives the dock full height. `TimelineShell` and `StudioShell` produce identical markup for the four non-dock regions given identical props                                                                                                                                                                                                                               |
 
 ---
 
@@ -1032,7 +1074,7 @@ Ordered by severity.
 4. **`decisions.md` — extend D13** to record that the audit is now seven-for-seven, and that the
    propagation failure of D9 reached A2, A6 and A7 as well as A10.
 5. **`decisions.md` — record the A6/A12/A11 retrofits** (§1.4.1–1.4.4) the same way D13 recorded the
-   first A6 retrofit, including that A6 shipped the reset *prop* without the reset *column*.
+   first A6 retrofit, including that A6 shipped the reset _prop_ without the reset _column_.
 6. **`component-specs.md` A6** — state that the reset is a third grid track, and that `xy-pair`
    requires the group-labelling variant.
 7. **`component-specs.md` A12** — distinguish `controls` (acts on this section) from `action`

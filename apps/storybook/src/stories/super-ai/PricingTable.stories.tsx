@@ -76,13 +76,7 @@ const ADD_ONS: PricingAddOn[] = [
  * add-on therefore has to own that state, or the switch is inert (which is
  * the docs page's first pitfall, and not what these stories are documenting).
  */
-function LiveAddOns({
-  plans = TIERS,
-  addOns = ADD_ONS,
-}: {
-  plans?: PricingPlan[];
-  addOns?: PricingAddOn[];
-}) {
+function LiveAddOns({ plans = TIERS, addOns = ADD_ONS }: { plans?: PricingPlan[]; addOns?: PricingAddOn[] }) {
   const [enabled, setEnabled] = React.useState<Record<string, boolean>>({});
   return (
     <PricingTable
@@ -139,11 +133,7 @@ export const AddOnRows: Story = {
  */
 export const CurrentPlan: Story = {
   args: {
-    plans: [
-      TIERS[0],
-      { ...TIERS[1], current: true, highlighted: false },
-      TIERS[2],
-    ],
+    plans: [TIERS[0], { ...TIERS[1], current: true, highlighted: false }, TIERS[2]],
   },
 };
 
@@ -202,9 +192,7 @@ export const RTL: Story = {
 export const ReducedMotion: Story = {
   render: () => <LiveAddOns addOns={[ADD_ONS[0]]} />,
   play: async ({ canvasElement }) => {
-    const thumb = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="pricing-table-addon-switch"] > span',
-    );
+    const thumb = canvasElement.querySelector<HTMLElement>('[data-slot="pricing-table-addon-switch"] > span');
     await expect(thumb).not.toBeNull();
 
     // `transition-none` sets `transition-property: none`. Drop the
@@ -239,12 +227,7 @@ export const ReducedMotion: Story = {
  * stopped being focusable fails the count above instead of passing quietly.
  */
 export const KeyboardOrder: Story = {
-  render: () => (
-    <LiveAddOns
-      plans={[TIERS[1], TIERS[2]]}
-      addOns={[ADD_ONS[0]]}
-    />
-  ),
+  render: () => <LiveAddOns plans={[TIERS[1], TIERS[2]]} addOns={[ADD_ONS[0]]} />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
@@ -261,9 +244,9 @@ export const KeyboardOrder: Story = {
 
     // Outside the group the count *is* the assertion: two plan CTAs and one
     // add-on switch, each independently tabbable.
-    const outside = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>("button:not([disabled])"),
-    ).filter((el) => !group.contains(el));
+    const outside = Array.from(canvasElement.querySelectorAll<HTMLElement>("button:not([disabled])")).filter(
+      (el) => !group.contains(el),
+    );
     await expect(outside).toHaveLength(3);
     for (const el of outside) {
       await expect(el.getAttribute("tabindex")).not.toBe("-1");
@@ -309,11 +292,7 @@ function ControlledDemo() {
 
   return (
     <div className="flex flex-col gap-4">
-      <PricingTable
-        plans={[TIERS[1]]}
-        period={period}
-        onPeriodChange={(next) => setReported(next)}
-      />
+      <PricingTable plans={[TIERS[1]]} period={period} onPeriodChange={(next) => setReported(next)} />
       <p className="text-sm" data-testid="period-report">
         rendered: {period} · last reported: {reported ?? "nothing yet"}
       </p>
@@ -385,9 +364,7 @@ export const LongContent: Story = {
           monthly: 20,
           yearly: 16,
           highlighted: true,
-          featureGroups: [
-            { title: "Generation", features: ["2,000 credits a month"] },
-          ],
+          featureGroups: [{ title: "Generation", features: ["2,000 credits a month"] }],
         },
         {
           name: "Team",

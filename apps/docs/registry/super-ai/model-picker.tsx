@@ -114,9 +114,7 @@ function ModelPickerBadges({ model }: { model: ModelPickerModel }) {
           {capability}
         </Badge>
       ))}
-      {model.price !== undefined ? (
-        <CostChip amount={model.price} unit={model.priceUnit} />
-      ) : null}
+      {model.price !== undefined ? <CostChip amount={model.price} unit={model.priceUnit} /> : null}
     </div>
   );
 }
@@ -230,10 +228,14 @@ function ModelPicker({
         </Popover>
       ) : (
         <Select value={selectedId} onValueChange={(value) => onSelect?.(String(value))}>
-          <SelectTrigger data-slot="model-picker-trigger" aria-label={triggerName} className="w-full min-w-56">
+          <SelectTrigger
+            data-slot="model-picker-trigger"
+            aria-label={triggerName}
+            className="w-full min-w-56"
+          >
             <SelectValue placeholder={placeholder}>{current?.name ?? placeholder}</SelectValue>
           </SelectTrigger>
-          <SelectContent data-slot="model-picker-content">
+          <SelectContent data-slot="model-picker-content" aria-label={label}>
             {Array.from(groups.entries()).map(([group, groupModels]) => (
               <SelectGroup key={group} data-slot="model-picker-group">
                 <SelectLabel>{group}</SelectLabel>

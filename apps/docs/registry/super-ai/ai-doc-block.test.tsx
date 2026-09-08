@@ -19,13 +19,7 @@ const allVerbs = {
 };
 
 /** A block sitting in a document, with prose either side of it. */
-function Document({
-  state,
-  children,
-}: {
-  state: AiDocBlockState;
-  children: React.ReactNode;
-}) {
+function Document({ state, children }: { state: AiDocBlockState; children: React.ReactNode }) {
   return (
     <article>
       <p>The paragraph above.</p>
@@ -45,10 +39,7 @@ describe("AiDocBlock", () => {
       </AiDocBlock>,
     );
 
-    expect(container.querySelector('[data-slot="ai-doc-block"]')).toHaveAttribute(
-      "data-state",
-      "streaming",
-    );
+    expect(container.querySelector('[data-slot="ai-doc-block"]')).toHaveAttribute("data-state", "streaming");
     expect(container.querySelector('[data-slot="ai-doc-block-content"]')).toHaveAttribute(
       "aria-busy",
       "true",
@@ -58,14 +49,7 @@ describe("AiDocBlock", () => {
 
   it("renders the editable state", async () => {
     const onValueChange = vi.fn();
-    render(
-      <AiDocBlock
-        state="editable"
-        value="Revenue grew."
-        onValueChange={onValueChange}
-        {...allVerbs}
-      />,
-    );
+    render(<AiDocBlock state="editable" value="Revenue grew." onValueChange={onValueChange} {...allVerbs} />);
 
     const editor = screen.getByRole("textbox", { name: /edit generated text/i });
     expect(editor).toHaveValue("Revenue grew.");
@@ -91,9 +75,7 @@ describe("AiDocBlock", () => {
       </AiDocBlock>,
     );
 
-    expect(screen.getByRole("textbox", { name: /what should change/i })).toHaveValue(
-      "Make it shorter.",
-    );
+    expect(screen.getByRole("textbox", { name: /what should change/i })).toHaveValue("Make it shorter.");
     await userEvent.click(screen.getByRole("button", { name: /^regenerate$/i }));
     expect(onRePrompt).toHaveBeenCalledWith("Make it shorter.");
 
@@ -174,12 +156,7 @@ describe("AiDocBlock", () => {
 
   it("fixes verb order in the component, not by which handlers are supplied", () => {
     const { unmount } = render(
-      <AiDocBlock
-        onDiscard={() => {}}
-        onRegenerate={() => {}}
-        onEdit={() => {}}
-        onKeep={() => {}}
-      />,
+      <AiDocBlock onDiscard={() => {}} onRegenerate={() => {}} onEdit={() => {}} onKeep={() => {}} />,
     );
     expect(verbNames()).toEqual(["Keep", "Edit", "Regenerate", "Discard"]);
     unmount();
@@ -200,14 +177,7 @@ describe("AiDocBlock", () => {
     const onEdit = vi.fn();
     const onRegenerate = vi.fn();
     const onDiscard = vi.fn();
-    render(
-      <AiDocBlock
-        onKeep={onKeep}
-        onEdit={onEdit}
-        onRegenerate={onRegenerate}
-        onDiscard={onDiscard}
-      />,
-    );
+    render(<AiDocBlock onKeep={onKeep} onEdit={onEdit} onRegenerate={onRegenerate} onDiscard={onDiscard} />);
     await userEvent.click(screen.getByRole("button", { name: /discard/i }));
     expect(onDiscard).toHaveBeenCalledTimes(1);
     expect(onKeep).not.toHaveBeenCalled();

@@ -48,7 +48,7 @@ export const AssetLibraryDocs: ComponentDocs = {
     },
     {
       slot: "asset-library-row",
-      note: "One `tr` per item, addressed by `data-asset-id` and tagged `data-kind=\"file\" | \"folder\"`. A plain row: it carries no click handler of its own.",
+      note: 'One `tr` per item, addressed by `data-asset-id` and tagged `data-kind="file" | "folder"`. A plain row: it carries no click handler of its own.',
     },
     {
       slot: "asset-library-name",
@@ -72,7 +72,7 @@ export const AssetLibraryDocs: ComponentDocs = {
     },
   ],
   usage:
-    "Hand it one `items` array containing both kinds; mark a folder with `kind: \"folder\"` and give it an `itemCount` instead of a `size`. The component sorts folders above files and renders both through the same columns — do not pre-split the list or render two of these side by side. Opening is yours to define: give an item an `href` to navigate, or pass `onOpen` to open in place. Row actions are a render callback, `rowActions`, returning `DropdownMenuItem`s — return nothing for an item that has none and the trigger disappears for that row. Selection is fully controlled, exactly as F2 `generation-grid` does it: hold `selectedIds` yourself and update it from `onSelectionChange`. Search and filter chips are presentation only — the component owns the field and the chips row, you own the list it is given, so client-side and server-side filtering look identical from here.",
+    'Hand it one `items` array containing both kinds; mark a folder with `kind: "folder"` and give it an `itemCount` instead of a `size`. The component sorts folders above files and renders both through the same columns — do not pre-split the list or render two of these side by side. Opening is yours to define: give an item an `href` to navigate, or pass `onOpen` to open in place. Row actions are a render callback, `rowActions`, returning `DropdownMenuItem`s — return nothing for an item that has none and the trigger disappears for that row. Selection is fully controlled, exactly as F2 `generation-grid` does it: hold `selectedIds` yourself and update it from `onSelectionChange`. Search and filter chips are presentation only — the component owns the field and the chips row, you own the list it is given, so client-side and server-side filtering look identical from here.',
   dos: [
     {
       text: "Keep folders and files in one table, and let a folder fill the same columns a file does — Folder in the type column, its item count where a size would be.",
@@ -109,11 +109,11 @@ export const AssetLibraryDocs: ComponentDocs = {
     ],
     screenReader: [
       "The search field's label is `sr-only` and is taken from `searchPlaceholder`, so renaming the placeholder renames the field. There is no separate label prop.",
-      "The view switch is a group named \"View\"; each item is named by its `sr-only` text (\"List view\", \"Grid view\") and both icons are `aria-hidden`. `aria-orientation` is explicitly suppressed because the primitive renders `role=\"group\"`, which does not support it.",
-      "Every row checkbox is named \"Select {name}\" and every overflow trigger \"Actions for {name}\", so the two per-row controls are distinct across the table — the failure this shape usually has, and does not here.",
-      "The bulk bar is a `role=\"toolbar\"` named \"Bulk actions, N selected\". That name changes as the count does, but a toolbar is not a live region, so the number is announced only when a reader lands on it. The visible \"N selected\" text is not live either.",
+      'The view switch is a group named "View"; each item is named by its `sr-only` text ("List view", "Grid view") and both icons are `aria-hidden`. `aria-orientation` is explicitly suppressed because the primitive renders `role="group"`, which does not support it.',
+      'Every row checkbox is named "Select {name}" and every overflow trigger "Actions for {name}", so the two per-row controls are distinct across the table — the failure this shape usually has, and does not here.',
+      'The bulk bar is a `role="toolbar"` named "Bulk actions, N selected". That name changes as the count does, but a toolbar is not a live region, so the number is announced only when a reader lands on it. The visible "N selected" text is not live either.',
       "The Select and Actions columns have real `<th>`s carrying `sr-only` text, so the two control columns are named rather than blank.",
-      "The kind glyph is `aria-hidden` in both list and grid. \"Folder\" survives as the word in the Type column; `data-kind` is for your CSS and queries, not for assistive tech.",
+      'The kind glyph is `aria-hidden` in both list and grid. "Folder" survives as the word in the Type column; `data-kind` is for your CSS and queries, not for assistive tech.',
       "Nothing announces that the list changed. Searching, filtering, switching view and select-all all mutate the table with no live region, so a screen-reader user gets no confirmation and no new count until they navigate back to the header.",
       "A12 `section-header` renders the title and the count as plain `<span>`s inside a `<div>`, so the library's heading is not a heading element and does not appear in a heading list or a rotor. Put your own heading above it if the page needs one.",
       "That count is `items.length` — the number you passed, not the number matching the search, because the component does not filter.",
@@ -130,6 +130,6 @@ export const AssetLibraryDocs: ComponentDocs = {
     "Selection mode suppresses the overflow menu on purpose — the two affordances are never live at once, as in F2 `generation-grid`. If a bulk operation has no equivalent in the row menu, it needs a button in `bulkActions`, because there is no other way to reach it while selecting.",
     "Missing metadata renders an em-dash, never a zero or a blank. A file with no `size` and a folder with no `itemCount` both read as deliberately unknown rather than as empty.",
     "Passing `data-slot` to this component replaces `asset-library` on the root and silently breaks anything keyed to it. Address rows with `data-asset-id` and `data-kind` instead — they are there for exactly that.",
-    "A12 `section-header` documents its `action` slot as navigation (\"View all\" — a link, never a button). This is the one surface where that slot legitimately carries acting buttons: Upload and New folder are the header's whole point. Composing A12 anyway was deliberate, so the library header and every other section header in the product stay one component.",
+    'A12 `section-header` documents its `action` slot as navigation ("View all" — a link, never a button). This is the one surface where that slot legitimately carries acting buttons: Upload and New folder are the header\'s whole point. Composing A12 anyway was deliberate, so the library header and every other section header in the product stay one component.',
   ],
 };

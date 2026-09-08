@@ -323,9 +323,7 @@ export const RTL: Story = {
     await expect(first.borderTopRightRadius).not.toBe("0px");
 
     // 3. The board mirrors: the first group is the rightmost column.
-    const columns = Array.from(
-      canvasElement.querySelectorAll<HTMLElement>('[data-slot="kanban-column"]'),
-    );
+    const columns = Array.from(canvasElement.querySelectorAll<HTMLElement>('[data-slot="kanban-column"]'));
     await expect(columns).toHaveLength(4);
     await expect(columns[0].getBoundingClientRect().left).toBeGreaterThan(
       columns[3].getBoundingClientRect().left,
@@ -658,9 +656,7 @@ export const EmptyLabel: Story = {
 export const LongContent: Story = {
   args: { ...config, viewMode: "kanban" },
   render: (args) => {
-    const items = TASKS.map((task) =>
-      task.id === "1" ? { ...task, title: LONG_TITLE } : task,
-    );
+    const items = TASKS.map((task) => (task.id === "1" ? { ...task, title: LONG_TITLE } : task));
     return (
       <div className="flex h-full flex-col gap-3">
         <div className="min-h-0 flex-1">

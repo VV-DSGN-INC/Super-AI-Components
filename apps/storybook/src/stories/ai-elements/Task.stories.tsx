@@ -1,11 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Task,
-  TaskContent,
-  TaskItem,
-  TaskItemFile,
-  TaskTrigger,
-} from "@/components/ai-elements/task";
+import { Task, TaskContent, TaskItem, TaskItemFile, TaskTrigger } from "@/components/ai-elements/task";
 import { FileVideoIcon } from "lucide-react";
 
 const meta: Meta<typeof Task> = {
@@ -24,9 +18,7 @@ export const Default: Story = {
         <TaskTrigger title="Assembled the marketing video draft" />
         <TaskContent>
           <TaskItem>Trimmed the hook to 2.8 seconds for faster payoff.</TaskItem>
-          <TaskItem>
-            Rendered four scenes and stitched them together:
-          </TaskItem>
+          <TaskItem>Rendered four scenes and stitched them together:</TaskItem>
           <TaskItem>
             <TaskItemFile>
               <FileVideoIcon className="size-3" />

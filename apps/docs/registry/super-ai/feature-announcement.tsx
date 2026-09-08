@@ -56,8 +56,10 @@ const STAGE_VARIANT: Record<string, "default" | "secondary" | "outline"> = {
   preview: "outline",
 };
 
-interface FeatureAnnouncementProps
-  extends Omit<React.ComponentProps<"div">, "title" | "id" | "children" | "onSelect"> {
+interface FeatureAnnouncementProps extends Omit<
+  React.ComponentProps<"div">,
+  "title" | "id" | "children" | "onSelect"
+> {
   /**
    * Required, and the whole reason dismissal can be trusted. Every dismissal
    * emits this id (`onDismiss(id)`) so the host can record *which* announcement
@@ -226,7 +228,9 @@ function FeatureAnnouncement({
               {dismissButton}
             </div>
             {description ? (
-              <DialogDescription data-slot="feature-announcement-description">{description}</DialogDescription>
+              <DialogDescription data-slot="feature-announcement-description">
+                {description}
+              </DialogDescription>
             ) : null}
           </DialogHeader>
           {mediaNode}
@@ -279,7 +283,10 @@ function FeatureAnnouncement({
             {dismissButton}
           </div>
           {description ? (
-            <p data-slot="feature-announcement-description" className="text-xs leading-snug text-muted-foreground">
+            <p
+              data-slot="feature-announcement-description"
+              className="text-xs leading-snug text-muted-foreground"
+            >
               {description}
             </p>
           ) : null}
@@ -322,7 +329,10 @@ function FeatureAnnouncement({
           {title}
         </span>
         {description ? (
-          <span data-slot="feature-announcement-description" className="truncate text-xs text-muted-foreground">
+          <span
+            data-slot="feature-announcement-description"
+            className="truncate text-xs text-muted-foreground"
+          >
             {description}
           </span>
         ) : null}

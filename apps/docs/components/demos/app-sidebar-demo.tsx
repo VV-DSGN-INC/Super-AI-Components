@@ -34,7 +34,9 @@ export default function AppSidebarDemo() {
     <div className="h-96 w-full max-w-md overflow-hidden rounded-lg border">
       <SidebarProvider defaultOpen>
         <AppSidebar
-          switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId={currentId} onSelect={setCurrentId} />}
+          switcher={
+            <WorkspaceSwitcher workspaces={WORKSPACES} currentId={currentId} onSelect={setCurrentId} />
+          }
           nav={<SidebarNav sections={NAV_SECTIONS} activeId={activeId} onSelect={setActiveId} />}
         />
         <SidebarInset className="flex items-center gap-2 p-3">

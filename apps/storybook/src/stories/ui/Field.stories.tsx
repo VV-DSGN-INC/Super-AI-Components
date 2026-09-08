@@ -30,9 +30,7 @@ export const Default: Story = {
       <Field>
         <FieldLabel htmlFor="prompt">Prompt</FieldLabel>
         <Input id="prompt" defaultValue="cyberpunk alley at night, neon rain" />
-        <FieldDescription>
-          Describe the image you want Aurora-XL to generate.
-        </FieldDescription>
+        <FieldDescription>Describe the image you want Aurora-XL to generate.</FieldDescription>
       </Field>
       <Field>
         <FieldLabel htmlFor="seed">Seed</FieldLabel>

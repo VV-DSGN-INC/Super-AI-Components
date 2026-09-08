@@ -40,7 +40,7 @@ are the agents'.
 **Take these two first — they are contained and the stories already exist.**
 
 1. **`hover-card.tsx` has no reduced-motion branch.** One consumer,
-   `citation-ref.tsx:64`, and it *can* reach the class, so by this repo's own
+   `citation-ref.tsx:64`, and it _can_ reach the class, so by this repo's own
    rule the pair belongs at that call site rather than in the primitive. The
    three sibling primitives were fixed in wave 8 and their guards are the model:
    assert `animation-name: none`, then watch it fail on a reverted class before
@@ -90,7 +90,7 @@ are the agents'.
 
 6. **The notebook chat pane fails `scrollable-region-focusable` and cannot take
    the standard repair.** `shortcuts-sheet`'s idiom (`<section tabIndex={0}
-   aria-label>` plus a ring) is unavailable, because `StickToBottom.Content`
+aria-label>` plus a ring) is unavailable, because `StickToBottom.Content`
    renders the scrolling div itself and accepts exactly one prop for it,
    `scrollClassName` — a class, never `tabIndex` or `aria-label`, verified
    against `use-stick-to-bottom@1.1.6`'s own types. `notebook-shell.tsx:6`

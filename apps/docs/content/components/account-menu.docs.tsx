@@ -26,13 +26,28 @@ export const AccountMenuDocs: ComponentDocs = {
   anatomy: [
     { slot: "account-menu", note: "Root wrapper around the trigger and its menu." },
     { slot: "account-menu-trigger", note: "The avatar button that opens the menu." },
-    { slot: "account-menu-avatar", note: "Avatar image or initials, reused on the trigger and in the identity block." },
+    {
+      slot: "account-menu-avatar",
+      note: "Avatar image or initials, reused on the trigger and in the identity block.",
+    },
     { slot: "account-menu-identity", note: "Name + email block, always first in the open menu." },
-    { slot: "account-menu-item", note: "One product action row; shows a `kbd` hint when it carries a shortcut." },
-    { slot: "account-menu-appearance-trigger", note: "Opens the nested Appearance submenu — never a dialog." },
-    { slot: "account-menu-appearance-content", note: "The submenu popup holding theme and background controls." },
+    {
+      slot: "account-menu-item",
+      note: "One product action row; shows a `kbd` hint when it carries a shortcut.",
+    },
+    {
+      slot: "account-menu-appearance-trigger",
+      note: "Opens the nested Appearance submenu — never a dialog.",
+    },
+    {
+      slot: "account-menu-appearance-content",
+      note: "The submenu popup holding theme and background controls.",
+    },
     { slot: "account-menu-theme-item", note: "One theme option, exposed as a real `menuitemradio`." },
-    { slot: "account-menu-background-swatch", note: "One background option, exposed as a named radio, not colour alone." },
+    {
+      slot: "account-menu-background-swatch",
+      note: "One background option, exposed as a named radio, not colour alone.",
+    },
     { slot: "account-menu-sign-out", note: "The sign-out action, always last, below a rule." },
   ],
   usage:
@@ -66,11 +81,11 @@ export const AccountMenuDocs: ComponentDocs = {
       "`shortcut` is drawn, not bound. The component registers no key handler at all, so every hint it renders is a promise your own app has to keep.",
     ],
     screenReader: [
-      "The trigger's whole name is `aria-label=\"Account menu for <user.name>\"`. The avatar beside it — image or initials — is `aria-hidden`, so a blank or placeholder `name` leaves the only visible control on the surface effectively unnamed.",
+      'The trigger\'s whole name is `aria-label="Account menu for <user.name>"`. The avatar beside it — image or initials — is `aria-hidden`, so a blank or placeholder `name` leaves the only visible control on the surface effectively unnamed.',
       "The identity block is a plain `div`, not a menu item. Name and email never appear in the arrow-key walk; a screen reader meets them only when reading the popup as a document.",
       "Each background swatch is named by `aria-label={option.label}` and by nothing else — its colour contributes no name. A background option added without a `label` announces as an unnamed radio in a group of five.",
       "The `kbd` hints are `aria-hidden`, so a row with a shortcut announces exactly like a row without one.",
-      "Sign-out's `variant=\"destructive\"` is paint only. It announces identically to every other item, so the wording of `signOutLabel` is the only thing marking it as terminal.",
+      'Sign-out\'s `variant="destructive"` is paint only. It announces identically to every other item, so the wording of `signOutLabel` is the only thing marking it as terminal.',
       "Nothing announces an outcome. Changing theme or background updates a radio's checked state and calls your handler; there is no live region, so the appearance change itself is silent.",
     ],
     focus: [

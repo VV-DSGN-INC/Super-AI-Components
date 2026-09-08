@@ -443,9 +443,4 @@ function HomeShell({
 }
 
 export { HomeShell };
-export type {
-  HomeShellProps,
-  HomeShellRecommendation,
-  HomeShellSuggestion,
-  HomeShellSuggestionsOverflow,
-};
+export type { HomeShellProps, HomeShellRecommendation, HomeShellSuggestion, HomeShellSuggestionsOverflow };

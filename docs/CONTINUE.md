@@ -4,29 +4,33 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-08-15, after wave 0 of the story-guarantees retrofit —
-**`contractExempt` has no members left**. The catalog has been complete since
-family O's twelve blocks (2026-08-11).
+**Last updated:** 2026-09-07, after wave 2 of the post-case-story remediation.
+The catalog has been complete since family O's twelve blocks (2026-08-11), and
+`contractExempt` has had no members since 2026-08-15.
+
+**This header rotted three weeks behind §8 once already**, because §8 is where
+people enter the file and §1 is where they do not. That is why the nine wave
+ledgers moved out to `design-system/wave-history.md` — see §9.
 
 ---
 
 ## 1. Where things stand
 
-|                 |                                                                                                                             |
-| --------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                           |
-| Branch          | `claude/design-systems-tests-rules-870a35` — the convention PR (§2 of the spec) and wave 0                                   |
-| HEAD at handoff | **Wave 0 of the story-guarantees retrofit** — the 25 `contractExempt` items folded into the full contract, the flag at zero  |
-| Pushed          | pushed to `origin`, **not merged.** `main` is still at PR #29.                                                               |
-| Preview         | Not deployed. Production is behind and serves fewer registry items than this branch builds — see §7.                        |
+|                 |                                                                                                                                         |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Repo            | `VV-DSGN-INC/Super-AI-Components`                                                                                                       |
+| Branch          | `claude/wave-2-gates-and-truth`, merged into **local `main`** for wave 0                                                                |
+| HEAD at handoff | **Waves 0 and 2 of the post-case-story remediation** — a portable Storybook gate, D21, and the three gates that existed but never ran   |
+| Pushed          | **Nothing is pushed.** `origin/main` is still at PR #45. Pushing needs the `weeeha` identity, which a work-context session may not have |
+| Preview         | Not deployed. Production serves 133 items and **69 of them differ** from what `main` builds — see §7.                                   |
 
-**Catalog progress: 114 of 114 active items shipped. Nothing is planned.**
+**Catalog progress: 116 shipped. Nothing is planned, nothing is building.**
 11 cut (family G's 10 + O5, per decision D9 — do not revive them).
-*(`check:contract` counts **116**, and the two numbers are already reconciled:
+_(`check:contract` counts **116**, and the two numbers are already reconciled:
 the 114 is the frozen A–O count, and family P's 2 are counted alongside it
 rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
 at 114 while family P grows separately" asserts all three figures, which is
-what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)*
+what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
 
 **`contractExempt` has no members.** The 25 pre-Wave-1.5 legacy items that
 carried it were folded into the full contract by wave 0 of the story-guarantees
@@ -48,8 +52,7 @@ entry on both, and putting it under the enforced gate is what found the contrast
 failure the exemption had been covering. The two lists are paired by
 `check:contract`'s G3 rule, so they can only move together.
 
-Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the
-114. See §5.9.
+Plus one `registry:lib` contract, `cost` — not a catalog item, so not in the 114. See §5.9.
 
 **The case-story gate landed as a ratchet on 2026-09-04, not as the program's
 final step.** `apps/docs/scripts/lib/story-coverage.test.ts` derives the
@@ -95,7 +98,7 @@ debt ledger into a plain regression guard — an obligation that goes unmet from
 here is a new failure with nothing to hide behind. The wave's distinguishing
 feature is one line of tooling: `page.viewport(375, 812)` from `vitest/browser`
 makes a `Mobile` story move the real breakpoint, and everything it found had been
-unreachable for seven waves. §8's family O subsection and §9's wave 8 entry have
+unreachable for seven waves. §8's family O subsection and [wave-history](design-system/wave-history.md)'s wave 8 entry have
 the detail; what stays open is listed at the end of that entry.
 
 **Wave 7 — families M and N — landed 2026-09-06.** Baseline **219 → 104** (104
@@ -105,38 +108,38 @@ family O's 13 shells. The wave closed the dialog backdrop that wave 6 fixed one
 primitive short of — `components/ui/alert-dialog.tsx`, found independently by
 two agents — and it produced the first negative against the
 physical-to-logical swap rule that six waves had treated as free. §8's M/N
-subsection and §9's wave 7 entry have the detail.
+subsection and [wave-history](design-system/wave-history.md)'s wave 7 entry have the detail.
 
 **Wave 6 — families K and L — landed 2026-09-06.** Baseline **305 → 219** (200
 case, 19 described). Nine agents, nine items, all at zero unmet. It closed the
 last unrestated dropdown popup in the registry, fixed the dialog backdrop that
 no call site could reach, and corrected five more written claims — four docs
 notes and, for the third time, this file's own entry on right-to-left. §8's K/L
-subsection and §9's wave 6 entry have the detail.
+subsection and [wave-history](design-system/wave-history.md)'s wave 6 entry have the detail.
 
 **Wave 5 — family J — landed 2026-09-06.** Baseline **362 → 305** (272 case,
 33 described). Seven agents, seven items, all at zero unmet. Its distinguishing
 feature is how much of it was an audit of earlier work: three claims recorded in
 this file turned out to be stale or overstated, each caught by an agent that had
-been told to cite them. §8's J subsection and §9's wave 5 entry have the detail.
+been told to cite them. §8's J subsection and [wave-history](design-system/wave-history.md)'s wave 5 entry have the detail.
 
 **Wave 4 — family H — landed 2026-09-06.** Baseline **427 → 362** (328 case,
 34 described). Seven agents, seven items, all at zero unmet. It found more that
 the gates cannot see than any wave before it: four components whose slider
 handles paint no focus ring at all, a whole class of reduced-motion assertions
 that cannot fail, and two more holes in the focus-ring helper introduced during
-wave 3. §8's H subsection and §9's wave 4 entry have the detail.
+wave 3. §8's H subsection and [wave-history](design-system/wave-history.md)'s wave 4 entry have the detail.
 
 **Wave 3 — family F — landed 2026-09-06.** Baseline **490 → 427** (383 case,
 44 described). Seven agents, seven items, all at zero unmet. Its findings are
-in §8's F subsection and §9's wave 3 entry; the one with the widest reach is
+in §8's F subsection and [wave-history](design-system/wave-history.md)'s wave 3 entry; the one with the widest reach is
 that the focus-ring assertion the convention asks for could not fail, which is
 now fixed with a shared helper.
 
 **Wave 2 — families E and P — landed the same day.** Baseline **625 → 490**
 (439 case, 51 described). Four of the eleven agents reported normally; the
-other seven were killed by a session rate limit *between finishing their work
-and verifying it*, and were salvaged rather than re-run — §9's wave 2 entry
+other seven were killed by a session rate limit _between finishing their work
+and verifying it_, and were salvaged rather than re-run — [wave-history](design-system/wave-history.md)'s wave 2 entry
 carries the salvage procedure, because it will happen again.
 
 Gate baselines at the close of wave 0: `pnpm test` **1568** across 143 files ·
@@ -156,7 +159,7 @@ Recorded because both predictions held:
 
 - **The worktree isolation was necessary.** Twelve agents sharing one tree would
   have raced on `tsbuildinfo` exactly as the seven leaves did. One agent still
-  hit the residue of sharing — it found port 3000 held by a *sibling* worktree's
+  hit the residue of sharing — it found port 3000 held by a _sibling_ worktree's
   dev server, and its preview reported success while serving another worktree's
   build, so its new routes 404'd with no error anywhere. **If you hand-verify in
   a parallel worktree, take your own port and your own browser tab.**
@@ -164,7 +167,7 @@ Recorded because both predictions held:
   primitives; had `cost-chip` still carried its default, the compensation list
   would have grown rather than gone to zero.
 
-One thing that did *not* work as intended, and will bite the next fan-out the
+One thing that did _not_ work as intended, and will bite the next fan-out the
 same way: **the agent worktrees were cut from `main`, not from the integration
 branch.** So none of the twelve saw the manifest prep or the retrofit — all
 twelve independently reported "the five files were not scaffolded" and "the
@@ -190,13 +193,13 @@ test is named for is `expect(errors).toEqual([])` on the next line. `getByRole`
 queries the accessibility tree, and any demo opening a Base UI modal on mount
 makes the library set `aria-hidden` on the page shell — removing the `h1` from
 that tree while leaving it in the DOM. The gate was accidentally testing "this
-demo does not open a modal on mount". It also failed *differently* per
+demo does not open a modal on mount". It also failed _differently_ per
 environment: six locally, four on CI.
 
 Now located by tag: **119/119 pass.**
 
 **It then broke a second time, for a different reason, in this round.** A bare
-`h1` tag locator started matching *two* elements once family O landed: a block
+`h1` tag locator started matching _two_ elements once family O landed: a block
 is a page shell and renders its own heading inside the preview, below the docs
 chrome's own `<h1>`. Four blocks failed and looked like broken components. The
 gate now targets `[data-slot="component-page-title"]` — the docs page's own
@@ -213,7 +216,7 @@ Two things worth keeping:
 - **A green run proved nothing here.** The console-error assertion was verified
   by compiling a deliberate `console.error` into a demo and watching the test
   fail. The first attempt at that probe passed misleadingly, because
-  `playwright.config.ts` runs `pnpm start` — `next start` serves the *prebuilt*
+  `playwright.config.ts` runs `pnpm start` — `next start` serves the _prebuilt_
   output, so editing source without rebuilding tests a stale app.
 - **This gate was missing from the Phase 1 plan's gate list**, which is how it
   went unrun for a whole phase. Worse, because GitHub Actions stops at the first
@@ -459,7 +462,7 @@ keep its slot; it is also what makes the composition visible in the DOM.
 
 **A2 `cost-chip` fails contrast wherever you compose it.** It sets
 `text-muted-foreground` on its own `bg-muted` (4.34:1) and is excluded from
-the a11y gate only under its *own* story name — so any component that renders
+the a11y gate only under its _own_ story name — so any component that renders
 one fails its own stories. Until A2's retrofit lands, pass
 `className="text-foreground"` at the call site; tailwind-merge swaps the token
 and leaves the chip otherwise intact. See `action-stack.tsx`.
@@ -478,7 +481,7 @@ identity and every test and style keyed to it silently misses. `DateSection`,
 whitespace trimmed and no separator. Two agents hit this independently on the
 same afternoon (`frame-strip`, `transcript-editor`), and it broke three tests
 before either worked out why. Either set an outright `aria-label`, or make the
-visual half `aria-hidden` and put the *complete* phrase in the sr-only span.
+visual half `aria-hidden` and put the _complete_ phrase in the sr-only span.
 
 **A decorative thumbnail that renders text doubles the accessible name.**
 A tile whose thumbnail contains the item's label, inside A8 which also renders
@@ -503,7 +506,7 @@ composes Portal/Positioner/Popup directly; **`select` renders the raw value
 `template-detail` found via a failing test, not by inspection; and **`progress`
 is unusable for indeterminate as shipped** — it appends its own
 `Track`/`Indicator` with no handle on either, and Base UI gives an
-indeterminate indicator *no width*, so `<Progress value={null}>` renders an
+indeterminate indicator _no width_, so `<Progress value={null}>` renders an
 empty muted track that reads as broken (`source-panel` works around it with a
 call-site arbitrary-descendant fix; fixing `components/ui/progress.tsx`
 centrally would spare every future consumer). Read the wrapper before trusting
@@ -558,7 +561,7 @@ with `Executable doesn't exist` rather than anything a11y-shaped. Run
 
 **Defining `Element.getAnimations` in jsdom switches every Base UI overlay to
 its async exit path — and the switch is not uniformly safe to land.** Base UI
-branches on the method's *existence*, not its return value, so the two-line
+branches on the method's _existence_, not its return value, so the two-line
 `vitest.setup.ts` shim (`Element.prototype.getAnimations ??= () => []`) moves
 popups, dialogs and tab panels from synchronous unmount to awaited unmount all
 at once. Five components' tests asserted the synchronous behaviour:
@@ -570,7 +573,7 @@ not a fixed number. Splitting it out: `inline-generate-popup`,
 `recommendation-card` and `selection-toolbar` failed in all ten runs (a real,
 fixable synchronous assertion, exactly what the shim's own docs predict).
 `settings-dialog` and `tool-panel` did not — they flipped pass/fail run to
-run, and the flip tracked *what else was in the same vitest invocation*, not
+run, and the flip tracked _what else was in the same vitest invocation_, not
 the component's own logic: `tool-panel.test.tsx` run alone passed 9/9 but
 failed intermittently only when run alongside the other four files; the
 inverse held for `settings-dialog.test.tsx`, which failed 8/8 in isolation but
@@ -617,6 +620,7 @@ pre-existing.
      local, so a consumer gets upstream's unpatched file, and **no registry
      mechanism expresses "…but adapted."** That remains an open architectural
      question, not a solved one.
+
 2. **`gen-settings-bar` (A7) should compose `model-picker` (E2)**, not render the
    model as inert text. E2's spec says the picker owns capabilities and A7 only
    renders them. Same duplication class as the `hero-omnibox`/`mode-tabs`
@@ -628,7 +632,7 @@ pre-existing.
    `tts-composer` and E10 `voice-clone-recorder` have no section in
    `component-specs.md` at all**, and never have (`git log -S` finds none).
    Their manifest rows still carry `specAnchor:
-   "component-specs.md#e9-tts-composer"` / `#e10-voice-clone-recorder`, because
+"component-specs.md#e9-tts-composer"` / `#e10-voice-clone-recorder`, because
    `gen-manifest.mts` synthesises that string from the catalog row rather than
    from a heading that exists — so both anchors are dead links, and **nothing
    checks them**: `check:contract` asserts the manifest's shape and
@@ -645,7 +649,7 @@ pre-existing.
    is not written down anywhere either. The rule it describes is still right;
    its citation is not.
 
-   The rest stands. All five *other* missing entries were written on 2026-08-04
+   The rest stands. All five _other_ missing entries were written on 2026-08-04
    from `catalog.md` + `gaps.md` + D12: **H6
    `waveform-editor`** (gaps R3), **H7 `stem-mixer`** (R4), **J7 `track-list`**
    (R5), **M7 `connection-manager`** (T5) and **N7 `env-status`** (R1). The
@@ -657,16 +661,21 @@ pre-existing.
    to use `evidence: []` rather than inventing product names — the precedent
    E9/E10 set. Do not "improve" those entries by adding a product list; the
    screenshots were never collected.
+
 5. **D12 warns families J, K and N are not closed** pending re-sampling — 20 of
    the 64 remaining. Building them now risks rework.
 6. **The preview is SSO-protected.** Making it publicly shareable means
    promoting to production or disabling deployment protection. Nick's standing
    rule: never push to production without an explicit go.
-7. **The 14 legacy components are still `contractExempt`** — no per-state
-   stories, no guidance modules, and `entity-row` has a confirmed contrast
-   failure. The retrofit is unscheduled.
-8. **T14, the `/roadmap` page, was specced but never built.** The site still
-   shows no roadmap, so "56 of 114" is invisible to a visitor.
+7. **RESOLVED — nothing is `contractExempt`.** The flag reached zero members on
+   2026-08-15 and D20 deleted it outright; §1 of this file has said so since.
+   This item survived as an open decision for three weeks after it stopped
+   being true, which is the failure mode §1's new header is about.
+8. **T14, the `/roadmap` page, was specced but never built.** Still true —
+   `apps/docs/app` has no roadmap route. What has changed is the argument for
+   it: the catalog is complete at 116 shipped with nothing planned, so a
+   roadmap page would now be documenting a finished set rather than progress
+   toward one. Decide what it is for before building it.
 
 9. **SHIPPED — but family E still needs retrofitting to it.** The `cost`
    module now exists at `registry/super-ai/cost.tsx` as the registry's first
@@ -677,7 +686,7 @@ pre-existing.
    **What is still outstanding is the retrofit the spec called for**, none of
    which is done: E5 `run-button` and E7 `member-gate-row` are the two cost
    placements and still do not call `useCost`, so the rule that `insufficient`
-   is *derived* and never accepted as a prop is unenforced where it matters
+   is _derived_ and never accepted as a prop is unenforced where it matters
    most. A2 `cost-chip` still has only `amount`/`unit` against a spec that
    declares four states, and A7 `gen-settings-bar` still has no cost slot
    though its spec says "A2 lives inside the bar rather than beside it".
@@ -717,17 +726,17 @@ pre-existing.
 
 11. **THREE SHARED PIECES WANT PROMOTING — the clearest signal this catalog
     has produced.** In each case two builders working blind reached for the
-    same thing, which is what D3 means by *"promote shared pieces to L2 rather
-    than importing sideways"*. None is broken; all three are correct-but-
+    same thing, which is what D3 means by _"promote shared pieces to L2 rather
+    than importing sideways"_. None is broken; all three are correct-but-
     duplicated, and were deliberately left for a dedicated pass rather than
     stalling the build queue.
 
-    | Shared piece | Found by | Current state |
-    | --- | --- | --- |
-    | Timeline coordinates — `timeToPixels`, `pixelsToTime`, `snapTime` | H2 / H3 / H6 | H2 exports them and calls them "the coordinate model H3 shares"; H3 built its own from `duration × pixelsPerSecond`; H6 has a third. **Two implementations of the same math, and H2's spec requires the playhead to span every track — which is only true if they agree.** |
-    | The action row — A9 + A2 trailing chip + locked treatment + menu/inline split | F4 / I4 | I4 established it cannot *compose* F4 (F4's root owns the `DropdownMenu`, so composing per-group yields N menus where I4 needs one). It mirrored the shape instead and documented it. |
-    | `ParameterSlider` — A6 `field-row` + a slider with a real accessible name | E3 / I5 | I5 imports it from E3 — an L3→L3 sideways import across families, which is precisely what D3 forbids. It should be an L2 primitive. |
-    | The four-verb approval row | F7 / I4 / K1 | **Now a third instance.** K1 `ai-doc-block` could not compose F7 `approval-card` — F7's root *is* a `Card` carrying its own title/summary/undo model, so nesting it would invert the relationship (the block is the thing being approved, not a payload inside an approval surface) and double the frame. K1 copied the *rule* — a fixed `VERBS` array whose order the component owns — with prose labels. Lifting the verb row out of F7 into a shared primitive is the fix all three want. |
+    | Shared piece                                                                  | Found by     | Current state                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+    | ----------------------------------------------------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+    | Timeline coordinates — `timeToPixels`, `pixelsToTime`, `snapTime`             | H2 / H3 / H6 | H2 exports them and calls them "the coordinate model H3 shares"; H3 built its own from `duration × pixelsPerSecond`; H6 has a third. **Two implementations of the same math, and H2's spec requires the playhead to span every track — which is only true if they agree.**                                                                                                                                                                                                                   |
+    | The action row — A9 + A2 trailing chip + locked treatment + menu/inline split | F4 / I4      | I4 established it cannot _compose_ F4 (F4's root owns the `DropdownMenu`, so composing per-group yields N menus where I4 needs one). It mirrored the shape instead and documented it.                                                                                                                                                                                                                                                                                                        |
+    | `ParameterSlider` — A6 `field-row` + a slider with a real accessible name     | E3 / I5      | I5 imports it from E3 — an L3→L3 sideways import across families, which is precisely what D3 forbids. It should be an L2 primitive.                                                                                                                                                                                                                                                                                                                                                          |
+    | The four-verb approval row                                                    | F7 / I4 / K1 | **Now a third instance.** K1 `ai-doc-block` could not compose F7 `approval-card` — F7's root _is_ a `Card` carrying its own title/summary/undo model, so nesting it would invert the relationship (the block is the thing being approved, not a payload inside an approval surface) and double the frame. K1 copied the _rule_ — a fixed `VERBS` array whose order the component owns — with prose labels. Lifting the verb row out of F7 into a shared primitive is the fix all three want. |
 
     A fourth signal, different in kind — **A12 `section-header`'s `action` slot
     contract is too narrow.** A12 documents it as "a link, never a button. It
@@ -784,6 +793,42 @@ the `weeeha` GitHub account. Nothing in this round has shipped to production.
 ---
 
 ## 8. Composition gaps found by family O — the fan-out's most useful output
+
+> **Wave 3 of the post-case-story remediation closed five of these on 2026-09-07**
+> (branch `claude/wave-3-registry-sweeps`, gates green, not pushed):
+>
+> - **`hover-card.tsx` has a reduced-motion branch.** The bare
+>   `motion-reduce:animate-none` this file recommends is **inert** on a Base UI
+>   popup — `data-open:animate-in` is a data-attribute selector and wins on
+>   specificity, so `animation-name` reads back `enter`. The paired
+>   `motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none`
+>   is the form that works, and is what alert-dialog, dialog and tooltip already
+>   use. `citation-ref`'s `ReducedMotion` asserts it.
+> - **`model-picker`'s listbox is named**, from the same `label` prop that names
+>   the trigger. The name lands on Base UI's `List`, not the Popup that carries
+>   `data-slot="model-picker-content"` — an assertion querying the slot reads the
+>   wrong element and fails against a correct fix.
+> - **The `matchesQuery` divergence is gone.** `settings-dialog` exports the
+>   string-matching core; the shell deleted its copy. They still search different
+>   field sets, which is correct, but no longer with different rules.
+> - **Nine reduced-motion guards** where something actually moves, and
+>   `initials` promoted to a lib item. `asset-detail`'s prompt segments are keyed
+>   on their character offset.
+>
+> **Still open here:** the vendored sidebar's RTL mirroring, the tooltip that eats
+> an Escape, the notebook chat pane's scroll container (a dependency limit — see
+> below), roving tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar`,
+> and the logical-direction sweep across 32 files. The last two were deliberately
+> **not** attempted at the end of a long session: a roving tabIndex has RTL,
+> wrapping and disabled-item edge cases, and half-shipping a keyboard pattern into
+> a published registry is worse than leaving it recorded.
+>
+> Two duplicates are recorded as **deliberate, not debt**:
+> `usePrefersReducedMotion`'s four copies are all in `registry/marketing`, where
+> `gen-registry.mts` emits every item with `registryDependencies: []` and exactly
+> one file — a marketing component structurally cannot depend on another registry
+> item. `EMBEDDABLE_SHELL` and `SIDEBAR_FILLS_SHELL` are two string literals; a
+> cross-item dependency costs a consumer more than thirty characters of Tailwind.
 
 The block brief's rule — **when a composed component does not fit, report it, do
 not fork it** — held for all twelve builders. Nobody reimplemented a composed
@@ -843,7 +888,7 @@ composed into a surface that already has that chrome:**
 - **L6 `onboarding-wizard`** always draws a progress rail and Back/Skip footer,
   so O14's single-step sign-in had to suppress three dead buttons. Wants
   `progress={false}` / `nav={false}`.
-- **M1 `settings-dialog`** renders its own nav *and* search, both of which O12
+- **M1 `settings-dialog`** renders its own nav _and_ search, both of which O12
   had to suppress because the page owns them. Wants a `chrome` opt-out, and its
   private `matchesQuery` exported — O12 had to duplicate the predicate.
 - **J1 `asset-library`** has no `viewSwitch={false}` (O10) and no header-only
@@ -882,14 +927,14 @@ composed into a surface that already has that chrome:**
 - **~~Vendored `ui/tabs.tsx` ... sitting outside its scan scope~~ — corrected and
   handled 2026-08-17.** It is not outside the scan scope: TOK-5's rule scope
   (`packages/ds-rules`) covers `components/ui` and `findCvaViolations` detects
-  the base/variant pairing correctly. It is *found and downgraded to a warning* because the file
+  the base/variant pairing correctly. It is _found and downgraded to a warning_ because the file
   is vendored. Our two default-variant call sites now rebind
   `--muted-foreground`; the vendored default remains unsafe for consumers who
   compose a stock `TabsList`, recorded in `vendored-token-findings.md`.
 
 **One infrastructure fix worth doing before the next fan-out:** Base UI's
 `ScrollArea` (under C2 `suggestion-chips`) schedules a timer calling
-`getAnimations()`, which jsdom lacks — it throws *after* the triggering test
+`getAnimations()`, which jsdom lacks — it throws _after_ the triggering test
 resolves, so every assertion passes and the run still exits 1. O1 shimmed it in
 its own test file; **it belongs in the shared `vitest.setup.ts`** next to the
 ResizeObserver stub, and will bite anything composing a ScrollArea.
@@ -938,28 +983,28 @@ that is where the backlog lives.
   The remaining sites are a **scoped sweep**, not a research question. Verified
   present as listed, 2026-08-15:
 
-  | component | site | swap |
-  | --- | --- | --- |
-  | `citation-ref.tsx:46` | marker | `ml-0.5` → `ms-0.5` |
-  | `safety-block.tsx:95` | quoted fragment | `border-l-2 pl-2` → `border-s-2 ps-2` |
-  | `credits-indicator.tsx:114` | detail link | `border-l` → `border-s`, `pl-1.5` → `ps-1.5`, `-mr-1` → `-me-1` |
-  | `source-cards.tsx:100` | title button | `text-left` → `text-start` |
-  | `explore-gallery.tsx:418` | facet count | `ml-1.5` → `ms-1.5` |
-  | `artifact-grid.tsx:272` | count badge | `ml-1.5` → `ms-1.5` |
-  | `preview-tile.tsx:150` | badge slot | `right-2` → `end-2` (added 2026-09-05, flagged independently by two D/I agents) |
+  | component                   | site            | swap                                                                            |
+  | --------------------------- | --------------- | ------------------------------------------------------------------------------- |
+  | `citation-ref.tsx:46`       | marker          | `ml-0.5` → `ms-0.5`                                                             |
+  | `safety-block.tsx:95`       | quoted fragment | `border-l-2 pl-2` → `border-s-2 ps-2`                                           |
+  | `credits-indicator.tsx:114` | detail link     | `border-l` → `border-s`, `pl-1.5` → `ps-1.5`, `-mr-1` → `-me-1`                 |
+  | `source-cards.tsx:100`      | title button    | `text-left` → `text-start`                                                      |
+  | `explore-gallery.tsx:418`   | facet count     | `ml-1.5` → `ms-1.5`                                                             |
+  | `artifact-grid.tsx:272`     | count badge     | `ml-1.5` → `ms-1.5`                                                             |
+  | `preview-tile.tsx:150`      | badge slot      | `right-2` → `end-2` (added 2026-09-05, flagged independently by two D/I agents) |
 
-  **Changes that are *not* byte-identical stay open decisions, and must not be
+  **Changes that are _not_ byte-identical stay open decisions, and must not be
   swept in with the above.** Two of them:
 
   - **N11 `escalation-handoff`'s `ArrowRight` does not mirror** (line 115).
     Fixing it means `rtl:-scale-x-100`, which appears nowhere in the registry
-    and *is* a visible change — a new idiom for mirroring icons, and one worth
+    and _is_ a visible change — a new idiom for mirroring icons, and one worth
     choosing deliberately rather than as a side effect of a whitespace sweep.
   - **`kbd`'s `KbdGroup` has no `dir="ltr"` pin, and this one is a real bug.**
     `KbdGroup` is a plain `inline-flex` row, so under `dir="rtl"` a chord
     reverses with its container: `⌘ ⇧ Z` paints as `Z ⇧ ⌘`. Chords are written
-    modifier-first in every locale, so the RTL rendering is *a different
-    instruction that still looks correct* — the worst failure shape available,
+    modifier-first in every locale, so the RTL rendering is _a different
+    instruction that still looks correct_ — the worst failure shape available,
     because nothing about it reads as broken. Found independently by two
     agents (`shortcuts-sheet`, which records it as a pitfall, and the
     logical-properties pass). The fix belongs in the `kbd` primitive, and it
@@ -968,19 +1013,19 @@ that is where the backlog lives.
 
 - **Duplicate accessible names on repeated per-item controls — six instances,
   and no gate can see any of them.** A component that renders one control per
-  row, and gives that control a *constant* name, produces N identically-named
+  row, and gives that control a _constant_ name, produces N identically-named
   buttons in a list of N. The screen-reader element list a user navigates by
   reads "Reset, Reset, Reset"; the row each one acts on exists only in the
   visual adjacency. **This is the category, not six separate bugs:**
 
-  | component | the name | why it repeats |
-  | --- | --- | --- |
-  | A2 `thread-list` | `"Thread actions"` | ~~constant~~ **fixed 2026-08-15** — now `Thread actions for ${title}` |
-  | `stat-readout` | `"Copy"` | private `CopyButton` takes `value` only, never `item.label` |
-  | `autonomy-selector` | `"Revoke"` | visible button text, no `aria-label`; per grant row |
-  | A11 `reset-affordance` | `"Reset"` | `label` prop defaults to the bare word; three untouched fields announce alike |
-  | A5 `filter-bar` | `"Remove filter"` | `label` is derived as `typeof children === "string" ? children : ""`, so any chip with an icon child collapses to the generic name |
-  | A8 `preview-tile` | *(none)* | worse shape of the same defect — the frame button is named only when `labelPlacement === "overlay"`; `below`/`none` ship a nameless button (already recorded above under the family O list) |
+  | component              | the name           | why it repeats                                                                                                                                                                              |
+  | ---------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+  | A2 `thread-list`       | `"Thread actions"` | ~~constant~~ **fixed 2026-08-15** — now `Thread actions for ${title}`                                                                                                                       |
+  | `stat-readout`         | `"Copy"`           | private `CopyButton` takes `value` only, never `item.label`                                                                                                                                 |
+  | `autonomy-selector`    | `"Revoke"`         | visible button text, no `aria-label`; per grant row                                                                                                                                         |
+  | A11 `reset-affordance` | `"Reset"`          | `label` prop defaults to the bare word; three untouched fields announce alike                                                                                                               |
+  | A5 `filter-bar`        | `"Remove filter"`  | `label` is derived as `typeof children === "string" ? children : ""`, so any chip with an icon child collapses to the generic name                                                          |
+  | A8 `preview-tile`      | _(none)_           | worse shape of the same defect — the frame button is named only when `labelPlacement === "overlay"`; `below`/`none` ship a nameless button (already recorded above under the family O list) |
 
   **Two components in the catalog already solve it**, so the pattern is
   available and this is drift rather than an open question: `record-list.tsx`
@@ -1014,8 +1059,8 @@ that is where the backlog lives.
 
 - **K7 `answer-block` has no answer-level failure state.** `AnswerBlockProps`
   is `claims` / `streaming` / `retrievedUnused`, and coverage is derived from
-  the claims. There is no way to express *generation stopped* or *retrieval
-  errored* — an answer that failed halfway renders as a partially-cited answer
+  the claims. There is no way to express _generation stopped_ or _retrieval
+  errored_ — an answer that failed halfway renders as a partially-cited answer
   that simply ended. This is an API gap, not a story gap: no story can be
   written for it until the prop exists.
 
@@ -1038,10 +1083,10 @@ that is where the backlog lives.
   to its `statePascal` export and checking whether the preceding non-blank line
   closes a JSDoc block:
 
-  | scope | undocumented declared-state exports | files |
-  | --- | --- | --- |
-  | the 25 wave-0 components | **23** | 5 — `task-tray` 6, `source-cards` 5, `stat-readout` 4, `section-header` 4, `credits-indicator` 4 |
-  | the whole registry | **202** | 50 |
+  | scope                    | undocumented declared-state exports | files                                                                                            |
+  | ------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------ |
+  | the 25 wave-0 components | **23**                              | 5 — `task-tray` 6, `source-cards` 5, `stat-readout` 4, `section-header` 4, `credits-indicator` 4 |
+  | the whole registry       | **202**                             | 50                                                                                               |
 
   The registry-wide figure is the one that matters: wave 0 accounts for barely
   a tenth of it, so this is a pre-existing convention gap the retrofit merely
@@ -1085,7 +1130,7 @@ that is where the backlog lives.
 
 Same provenance rule: each was found by an agent writing a story who could not
 write it honestly without noticing. The sanctioned mechanical fixes landed
-in-wave (spec §3.4) and are listed under §9's wave 1 entry; these are the gaps
+in-wave (spec §3.4) and are listed under [wave-history](design-system/wave-history.md)'s wave 1 entry; these are the gaps
 that stayed open, plus what the wave learned about the primitives underneath.
 
 - **`PopoverContent` supplies no accessible name.** Base UI renders the popup
@@ -1110,11 +1155,11 @@ that stayed open, plus what the wave learned about the primitives underneath.
   **`align` is a separate mechanism and does work; `side` is not.** Three
   agents narrowed this in turn. K4 `selection-toolbar` and K2
   `inline-generate-popup` measured that floating-ui's `platform.isRTL` reads
-  *computed style*, so `align="start"` mirrors correctly whenever `dir` sits on
+  _computed style_, so `align="start"` mirrors correctly whenever `dir` sits on
   the document — K2's numbers: RTL popup 495..815 against a trigger at 685..815,
   LTR 385..705 against 385..515. L2 `coach-mark` then measured the half that
   does **not**: a physical `side="right"` request stays physically right
-  (596..916 against an anchor at 483..584), because Base UI reads *that* from
+  (596..916 against an anchor at 483..584), because Base UI reads _that_ from
   the same `DirectionContext` nothing mounts. So the split is not
   positioning-versus-keyboard, it is which source each property happens to
   read: `align` off rendered direction, `side` and composite arrow travel off
@@ -1128,6 +1173,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
 
   The fix for the keyboard half is one provider at the app shell, or the
   primitive reading `dir` — a shell-level decision, recorded, not made here.
+
 - **The vendored `Button` moves on press with no reduced-motion branch.**
   `components/ui/button.tsx` carries `transition-all` and
   `active:not-aria-[haspopup]:translate-y-px`, so every button in the registry
@@ -1138,7 +1184,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   `transition-all` blocker, is a core rule scoped to
   `apps/docs/registry/super-ai` and `apps/docs/registry/marketing` only, so
   `components/ui` is outside it entirely — the finding is not demoted, it is
-  never made. The demotion mechanism is real but belongs to the *local* rules,
+  never made. The demotion mechanism is real but belongs to the _local_ rules,
   whose `CATALOG_SCOPES` do include `components/ui`; that is why
   `check:tokens` reports vendored warnings for TOK-8 and none for MOT-2. The
   triage is still in `vendored-token-findings.md` (`vendored-token-findings.md`) — a primitive-wide posture, not any one
@@ -1157,7 +1203,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   counts. Position is a design decision, so it stays recorded.
 - **Reorder controls are named and iconed by physical direction.** D2
   `reference-strip`'s "Move X left" carries `ChevronLeft` and calls
-  `onMove(id, "left")`, meaning "toward index 0" — which renders on the *right*
+  `onMove(id, "left")`, meaning "toward index 0" — which renders on the _right_
   under RTL. The array semantics stay correct; the label and icon mislead. H5
   `frame-strip`'s `onReorder(id, "left" | "right")` has the same shape. An API
   naming decision (`"start" | "end"`, or index deltas), not a class swap.
@@ -1187,7 +1233,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   target is multiplied across I2's column of rows. Axe's `target-size` is
   experimental and off, so no gate sees either.
 - **Sweep-table addition, above.** A8 `preview-tile`'s badge slot is `absolute
-  top-2 right-2` — the byte-identical `end-2` swap, flagged independently by
+top-2 right-2` — the byte-identical `end-2` swap, flagged independently by
   the `quote-reply` and `tool-panel` agents. Its own `RTL` story still says the
   swap would be "a system-wide decision"; that premise expired when the sweep
   was decided, and the description should be corrected when the sweep runs.
@@ -1203,7 +1249,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   it. Its sibling is `components/ui/button-group.tsx`, which joins children with
   `rounded-r-none` / `rounded-r-lg!` / `rounded-l-none` / `border-l-0` — measured
   on E8 `generation-wizard`, the radii land on the seam instead of the outer
-  edges and `border-l-0` strips the border from the group's *outer* edge while
+  edges and `border-l-0` strips the border from the group's _outer_ edge while
   two borders stack at the seam. Each is one logical-utility fix that would
   repair every consumer at once, and both are vendored, so neither was swept.
 
@@ -1219,7 +1265,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
 
 - **An unselected tab's count badge measures 4.34:1.** `detail-tabs.tsx` dims
   the badge with `opacity-70` rather than choosing a token, and against its
-  surface that lands under the 4.5:1 minimum; the *selected* tab's badge
+  surface that lands under the 4.5:1 minimum; the _selected_ tab's badge
   measures 18.15:1, so the failure exists only in the state nobody is looking
   at. axe does not catch it, because the rule reads composited colour rather
   than an opacity applied to a foreground — the same blind spot TOK-8 exists to
@@ -1239,7 +1285,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   indistinguishable.** A8 `preview-tile` paints both on `bg-muted` and adds text
   for neither, and E4 `preset-grid` passes no `action` node, so suppressing the
   pulse removes the only signal separating them. The docs already record that
-  the two *announce* alike; the visual collapse is new. Both are rendered side
+  the two _announce_ alike; the visual collapse is new. Both are rendered side
   by side in `preset-grid`'s `ReducedMotion`, and nothing asserts they are
   distinguishable.
 
@@ -1250,7 +1296,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   then on. E1 `generation-panel` exposes no
   `openSections`/`onSectionOpenChange` at all, one step past I2's
   after-the-fact callback. E8 `generation-wizard` focuses its step title on
-  *any* change of the active step except the first render, so a host restoring
+  _any_ change of the active step except the first render, so a host restoring
   a saved position a tick after mount yanks focus into the wizard.
 
 - **Four more rotating chevrons animate with no reduced-motion branch.** E1's
@@ -1267,7 +1313,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   (`rgba(0, 0, 0, 0) 0px 0px 0px 0`, measured on P2 `detail-view-shell`'s close
   button) is not the string `"none"`, and an `sr-only` input clipped to 1×1
   still carries the UA outline (measured on E1). Until the helper checks size
-  and alpha, "every stop shows a ring" means "every stop has *something* in
+  and alpha, "every stop shows a ring" means "every stop has _something_ in
   those two properties".
 
 ### Added by the F case-story wave (2026-09-06)
@@ -1275,18 +1321,18 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **The focus-ring assertion could not fail, and that is now fixed.** Four
   agents across three waves reached the same finding independently, and between
   them they measured the whole mechanism. A Tailwind `ring-*` utility composes
-  shadow layers that are *always present*, reading
+  shadow layers that are _always present_, reading
   `rgba(0, 0, 0, 0) 0px 0px 0px 0px` when the ring is off — not the string
   `"none"`, so `boxShadow !== "none"` passes on an element painting nothing.
   `focus-visible:outline-none` leaves `outline-width` at its used value while
   `outline-style` reads `none`, so a width-based check has the same hole. And
-  the vendored `Button`'s `transition-all` *fades the ring in*, so an immediate
+  the vendored `Button`'s `transition-all` _fades the ring in_, so an immediate
   read on a control that does paint one is a false negative — the same element
   reads transparent and zero-sized on the frame focus lands and
   `oklab(0.708 0 0 / 0.5) 0px 0px 0px 3px` at 250ms. F5's agent put it best:
   this is the default reading for every shadcn-v4 control in the registry, not
   a quirk of two components. `apps/storybook/src/lib/focus-ring.ts` now checks
-  the layers for non-zero alpha *and* non-zero geometry and waits for them to
+  the layers for non-zero alpha _and_ non-zero geometry and waits for them to
   settle; `story-conventions.md`'s mechanical fact 5 has the details.
   **Additive: 63 story files still carry the inline string check**, so a
   "shows a ring" claim in an older file is weaker than it reads.
@@ -1303,12 +1349,12 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **A physical class is not always safe to swap, and F5 is the counter-example
   worth keeping.** The sanctioned swap assumes the class is the only thing
   deciding a side. In `compare-viewer` the pane numbers are `top-2 left-2` /
-  `right-2` *and* the wipe clip is `clipPath: inset(0 0 0 N%)`, which is
+  `right-2` _and_ the wipe clip is `clipPath: inset(0 0 0 N%)`, which is
   physical and has no logical form. The badges pair with the content today
   because both halves are physical, so swapping only the classes would put each
   number over the other pane's picture — a class-only swap makes RTL worse. The
   same shape, resolved the other way, is F1/A8's corner pair: there both halves
-  *were* classes, so the integrator swapped them together (a half-swap would
+  _were_ classes, so the integrator swapped them together (a half-swap would
   have stacked the badge on the checkbox). The rule the two cases give: swap
   when every participant in the layout is a class, and check what else decides
   the side before you do.
@@ -1360,36 +1406,33 @@ that stayed open, plus what the wave learned about the primitives underneath.
 
 - **The turbo cache is shared across worktrees, confirmed.** Wave 1 filed it as
   unconfirmed; three F agents saw it. A cached `docs:lint` replay prints paths
-  under a *sibling* worktree, which means a docs lint error in an agent's
+  under a _sibling_ worktree, which means a docs lint error in an agent's
   worktree can be masked by another worktree's cache. Verify a lint result in
   the integration tree, not in an agent's.
 
 ### Added by the H case-story wave (2026-09-06)
 
-- **`components/ui/**` exists twice, and only one copy is what the gate
-  renders.** `apps/docs/components/ui` has 39 primitives; `apps/storybook/src/components/ui`
-  has 60. Storybook's Vite alias sends `@/components/ui/*` to its own copy, so a
-  registry component renders against the docs copy on the docs site and against
-  the storybook copy under the a11y gate. Today the overlap differs only
-  cosmetically — `"use client"` directives the Next app needs and Vite does not,
+- **`components/ui/**`exists twice, and only one copy is what the gate
+renders.**`apps/docs/components/ui`has 39 primitives;`apps/storybook/src/components/ui`has 60. Storybook's Vite alias sends`@/components/ui/\*`to its own copy, so a
+registry component renders against the docs copy on the docs site and against
+the storybook copy under the a11y gate. Today the overlap differs only
+cosmetically —`"use client"` directives the Next app needs and Vite does not,
   plus semicolon formatting — so nothing is broken, **but a substantive fix has
   to be made in both and nothing checks that.** Found the hard way: the fix for
   the unnamed select listbox went into the docs copy, the gate kept failing
   intermittently, and the probe that explained it showed the listbox still
   unlabelled. Both copies now carry it.
 
-
 - **Every `SelectContent` in the registry is an unnamed listbox.** Base UI
   renders the popup as `role="listbox"`, and axe's `aria-input-field-name`
   fails one with no accessible name. Found the way the popover equivalents were
   — a story opened a select for the first time — and it surfaced
-  *intermittently*, because axe has to run while the popup is open. Named at
+  _intermittently_, because axe has to run while the popup is open. Named at
   four call sites: H1 `transport-controls` (the one that found it), plus C1
   `hero-omnibox` and E9 `tts-composer`'s two, whose families have no case-story
   debt left to bring anyone back. **Still unnamed, and belonging to their own
   waves: `records-shell`, `template-detail`, `trust-dialog`,
   `usage-dashboard`.** The name comes from the trigger, which already has one.
-
 
 - **Four components have slider handles that paint no focus ring, and four docs
   pages said otherwise.** Base UI renders a real `<input>` inside each thumb and
@@ -1491,14 +1534,14 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **H1's `aria-keyshortcuts="Space"` never fires, and the unit suite hid it.**
   `transport-controls.test.tsx` dispatches synthetic keydowns at the root
   `<div>`, which has no `tabIndex` and can never be the event target in a
-  browser; every element that *can* hold focus takes an early return. The docs
+  browser; every element that _can_ hold focus takes an early return. The docs
   module already carried the sentence — this is the measurement behind it.
 
 ### Added by the J case-story wave (2026-09-06)
 
 - **The vendored carousel is broken under right-to-left, not merely
   mis-positioned.** J6 `template-detail` measured it: the same eight previews in
-  the same 430px strip report `canScrollPrev` *and* `canScrollNext` both false
+  the same 430px strip report `canScrollPrev` _and_ `canScrollNext` both false
   under `dir="rtl"`, so both arrows are natively disabled and **the four
   previews past the fold cannot be reached at all**; the LTR control has next
   enabled and steps one thumbnail. At 375px with four previews, RTL's "Next"
@@ -1533,7 +1576,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
 
 - **Viewport-keyed columns survive in a third component.** D19 fixed J4 and C4;
   J3 `explore-gallery` was never on that list and still keys `sm:columns-2
-  lg:columns-3` off the viewport, so any 375px container on a desktop page gets
+lg:columns-3` off the viewport, so any 375px container on a desktop page gets
   three ~114px columns.
 
 - **Two more host-unreachable states, making four.** J4 `artifact-grid` keeps
@@ -1544,7 +1587,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   because it toggles, so it strands the host rather than the person.
 
 - **The empty-string class keeps producing new shapes.** J4: a session `label`
-  of `""` is *not* an axe failure and is worse for it, because `aria-labelledby`
+  of `""` is _not_ an axe failure and is worse for it, because `aria-labelledby`
   pointing at an empty span leaves a region with no name, so the session stops
   being a landmark. J1: `searchPlaceholder=""` deletes the field's only
   accessible name and is a red gate. J7 and H7: `label=""` defeats its own
@@ -1560,7 +1603,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **Every dialog in the registry was still fading its backdrop under reduced
   motion, and no call site could fix it.** `DialogContent` renders
   `<DialogOverlay />` with no `className` threaded through, so the pair that
-  waves 3, 4 and 6 applied to dialog *panels* never reached the scrim. L3
+  waves 3, 4 and 6 applied to dialog _panels_ never reached the scrim. L3
   `feature-announcement` measured it: its popup read `animation-name: none`
   while its overlay read `enter`. The pair now lives on `DialogOverlay`'s own
   class string in both copies of the vendored file, verified by probe.
@@ -1568,7 +1611,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **Tabbing past the last control destroys work in two components.** L2
   `coach-mark`: Base UI's trigger focus guard closes the popup on `focusOut`
   before forwarding, so Tab past Next ends the tour — and the guard forwards to
-  the tabbable *after* the anchor, so forward-tabbing never reaches the control
+  the tabbable _after_ the anchor, so forward-tabbing never reaches the control
   being pointed at, which is the opposite of the intent. L3
   `feature-announcement`: the same close path fires `onDismiss(id)`, and the
   contract says a dismissed id must never re-show, so a Tab permanently
@@ -1588,7 +1631,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   `source-panel`'s indeterminate bar is a full-width pulse; stopping the pulse
   leaves a solid 100% bar under a row reading "Step 1 of 3", so a stalled import
   reads as finished. Distinct from E4 `preset-grid`'s collapse, where two states
-  became indistinguishable — here one state reads as a *different* state. K5 is
+  became indistinguishable — here one state reads as a _different_ state. K5 is
   otherwise the counter-case: all five stage names survive as visible text.
 
 - **Neither focus helper can see a menu row's treatment.** `DropdownMenuItem`
@@ -1599,7 +1642,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   for the shared helper.
 
 - **`check:tokens` false-positives on prose.** L6 `onboarding-wizard` found that
-  writing the literal class name `transition-all` inside a source *comment*
+  writing the literal class name `transition-all` inside a source _comment_
   fails MOT-2 as a blocker. Same shape as the documented `#1234`-reads-as-hex
   limitation, and not written down anywhere until now.
 
@@ -1612,7 +1655,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   there.
 
 - **Three positives worth recording, because the program has mostly logged
-  failures.** K2 `inline-generate-popup` does *not* lose focus on cancel — the
+  failures.** K2 `inline-generate-popup` does _not_ lose focus on cancel — the
   shape broken in four other components — because Cancel and Try again are the
   same element in the same slot of one ternary, so React relabels one node in
   place. L4 `whats-new`'s vertical composite never consults direction, so the
@@ -1646,16 +1689,16 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **Two components need direction handled in JS, not in a class swap.** N4
   `trace-timeline` positions its waterfall bars with an inline
   `style={{ left }}`, so under RTL the time axis runs backwards: the first span
-  sits 0px from the *left* under both directions. N5 `run-inspector`'s `<pre>`
+  sits 0px from the _left_ under both directions. N5 `run-inspector`'s `<pre>`
   inherits `direction: rtl` and JSON reorders inside it — on one line, LTR puts
   the opening quote at x27 and the trailing comma 159px to its right, RTL puts
-  them at x1165 and 159px to its *left*. The fix there is `dir="ltr"` on the
+  them at x1165 and 159px to its _left_. The fix there is `dir="ltr"` on the
   `<pre>`. Neither is on the sanctioned physical-to-logical list, and H2
   `time-ruler` has the same shape as the first.
 
 - **A trailing full stop renders at the wrong end under RTL.** N3
   `disclaimer-note` measured it reading `.AI can make mistakes. Check important
-  info` — `.` is a bidi neutral with nothing strong after it, so it takes the
+info` — `.` is a bidi neutral with nothing strong after it, so it takes the
   paragraph level. Passing a `link` hides the defect, because the link's Latin
   text makes the stop interior. A new shape: every earlier RTL finding in this
   file was a physical utility or a positioning API.
@@ -1670,7 +1713,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **The vendored `text-left` collection is six files**, not one: `alert.tsx`,
   `alert-dialog.tsx`, `field.tsx`, `sidebar.tsx`, `table.tsx`, `select.tsx`
   (`grep -l` across `components/ui`). M6 `rate-limit-banner` measured `alert.tsx`
-  putting a heading and its body on *opposite edges* of a 32rem RTL frame, 256px
+  putting a heading and its body on _opposite edges_ of a 32rem RTL frame, 256px
   apart; N2 `trust-dialog` measured `alert-dialog.tsx`'s header doing the same
   inside a mirrored dialog at 1200px. Byte-identical swaps in a shared file, so
   still not taken from a consumer.
@@ -1683,15 +1726,14 @@ that stayed open, plus what the wave learned about the primitives underneath.
 
 - **A permission editor seeded once at mount emits the previous call's
   arguments.** N8 `permission-prompt` swapped `to/subject/attachment` for
-  `to/subject/amount_usd` on a mounted prompt: carried fields showed the *old*
+  `to/subject/amount_usd` on a mounted prompt: carried fields showed the _old_
   values, the new field rendered empty, and Approve-edited emitted three
   arguments including one the current call does not have. A permission gate is
   the natural singleton, so this is the shape a real host reaches.
 
 - **A long label can push a dialog's footer outside the dialog with no rule
   seeing it.** N2 `trust-dialog`: `button-group`'s `w-fit` plus the trigger's
-  `whitespace-nowrap` gave a `scrollWidth` of 768 against a `clientWidth` of
-  384. The `entity-row` truncation that would have saved it is defeated by
+  `whitespace-nowrap` gave a `scrollWidth` of 768 against a `clientWidth` of 384. The `entity-row` truncation that would have saved it is defeated by
   `w-(--anchor-width)` sizing off the same over-wide trigger. Related: this
   component's own `sm:max-w-md` never applies, because the vendored
   `data-[size=default]:sm:max-w-sm` outranks it.
@@ -1708,7 +1750,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **Two more docs focus bullets were wrong in the same direction.** N3
   `disclaimer-note`'s said its one focusable element is "invisible when
   focused"; the user agent supplies `outline: auto 1px`, recoloured by the
-  repo's global `outline-ring/50`, so it is *thin* against the registry's ring-2
+  repo's global `outline-ring/50`, so it is _thin_ against the registry's ring-2
   and ring-3, not absent. M1 `settings-dialog`'s said the panel "sets
   `outline-none` without adding a ring"; the `Tabs.Panel` has carried
   `focus-visible:ring-2` since before this program, verified in the source at
@@ -1727,13 +1769,13 @@ that stayed open, plus what the wave learned about the primitives underneath.
   last of eight `<PopoverContent` call sites in the registry
   (`inline-generate-popup` never used the wrapper). With the dropdown holdout
   closed in wave 6 and the alert-dialog backdrop closed here, no registry
-  surface *reachable at desktop width* still animates under
+  surface _reachable at desktop width_ still animates under
   `prefers-reduced-motion: reduce`. **Wave 8 found the qualifier the sentence
   needed, twice.** The vendored `sheet.tsx` drawer that every B1 sidebar swaps
   to below 768px was never suppressed — panel `0.2s`, backdrop `0.15s`, 40px of
   translate — and nothing could reach it, because the branch needs a real
   viewport media query and every `Mobile` story until wave 8 constrained a
-  wrapper instead. Then `components/ui/sidebar.tsx`'s *desktop* collapse turned
+  wrapper instead. Then `components/ui/sidebar.tsx`'s _desktop_ collapse turned
   out to be unsuppressed as well — `transition-[width]` on the in-flow gap and
   `transition-[left,right,width]` on the fixed container, 256px of travel — which
   needed no new tooling at all, only a story that opened a sidebar under reduce.
@@ -1744,7 +1786,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   per-consumer.
 
 - **Two findings narrowed rather than added.** N1 `feedback` narrowed K1's
-  `button-group` border defect further: the `border-l-0` is invisible on *ghost*
+  `button-group` border defect further: the `border-l-0` is invisible on _ghost_
   children too, because `buttonVariants`' base is `border-transparent`, so the
   severity depends on the call site's variants and not on the group. And N4
   `trace-timeline` kept a `text-left` → `text-start` swap that changes no box in
@@ -1754,12 +1796,12 @@ that stayed open, plus what the wave learned about the primitives underneath.
 - **Two positives.** N4 `trace-timeline` is the counter-case to the four
   host-unreachable-fold findings (E4, E1, J4, J2): `expandedId`,
   `defaultExpandedId` and `onExpandedChange` are a complete trio, so a saved
-  fold can be restored *and* held against the user. And M1
+  fold can be restored _and_ held against the user. And M1
   `settings-dialog`'s nav rows paint a real focus ring — the wave-3
   suppressed-treatment check came back negative, asserted rather than assumed.
 
 - **The sanctioned `text-left` → `text-start` swap is not always byte-identical,
-  and where the class *sits* decides it.** N6 `usage-dashboard` put the swap on a
+  and where the class _sits_ decides it.** N6 `usage-dashboard` put the swap on a
   `<tr>` whose alignment is consumed by its `<th>`s: Chrome's user-agent rule is
   `th { text-align: -internal-center }`, which defers to an inherited value only
   when that value is not the initial `start`, so `text-left` was being inherited
@@ -1796,10 +1838,10 @@ that stayed open, plus what the wave learned about the primitives underneath.
   bar fill resolves to `--chart-1`, with no `#8884d8` and no `strokeDasharray`.
 
 - **Two query shapes that cost an agent real time**, both now in N6's file
-  header: a component's own `data-slot` override *replaces* the vendored
+  header: a component's own `data-slot` override _replaces_ the vendored
   `select-trigger` / `select-content` name, so querying the vendored name reads
   as "the popup never opened"; and Base UI's select popup never unmounts — the
-  *positioner* takes `hidden` — so `waitFor(() => expect(popup).toBeNull())`
+  _positioner_ takes `hidden` — so `waitFor(() => expect(popup).toBeNull())`
   times out rather than passing.
 
 - **A cold-cache-only flake in landed work, found by running the full suite
@@ -1809,8 +1851,7 @@ that stayed open, plus what the wave learned about the primitives underneath.
   entry's pane. Warm: passed on every run, including three repeats. Cold: failed
   deterministically. Fixed by re-querying inside the `waitFor`. **The integrator
   should clear `apps/storybook/node_modules/.cache/storybook` and run
-  `test:stories` once per wave** — a warm cache had been hiding this since wave
-  6.
+  `test:stories` once per wave** — a warm cache had been hiding this since wave 6.
 
 ### Added by the family O case-story wave (2026-09-06)
 
@@ -1823,7 +1864,7 @@ before that one line.
   `prefers-reduced-motion: reduce`, and the wave-7 entry above was wrong to
   imply none were left.** `sheet.tsx`'s mobile drawer (panel `0.2s`, backdrop
   `0.15s`, 40px of translate) is the one nothing could see, because the drawer
-  branch needs a genuine viewport media query. `sidebar.tsx`'s *desktop*
+  branch needs a genuine viewport media query. `sidebar.tsx`'s _desktop_
   collapse (`transition-[width]` on the in-flow gap, `transition-[left,right,width]`
   on the fixed container, 256px of travel) needed no new tooling at all — only a
   story that opened a sidebar under reduce. And `tooltip.tsx` had no branch and
@@ -1832,7 +1873,7 @@ before that one line.
   className threaded through. All three fixed in both copies; each guard was
   watched fail on a reverted class first. **`hover-card.tsx` is in the same
   state and was deliberately left**: it has exactly one consumer
-  (`citation-ref`) which *can* reach it, so by this file's own rule the branch
+  (`citation-ref`) which _can_ reach it, so by this file's own rule the branch
   belongs at that call site, and taking it without writing the assertion would
   be worse than recording it.
 
@@ -1872,7 +1913,7 @@ before that one line.
   heading-level prop. O1 turned this into the boundary rule itself — "a shell is
   the page", asserted as `querySelectorAll("main").length === 1` — rather than
   suppressing a rule or inerting one shell, which would trade a duplicate
-  landmark for focusable content inside `aria-hidden`. O11 and O12 *can* share
+  landmark for focusable content inside `aria-hidden`. O11 and O12 _can_ share
   one, because O12 renders no `main`.
 
 - **The empty-label gate hole is settled, by probe rather than by argument.**
@@ -1917,7 +1958,7 @@ before that one line.
   thin against the ring-2 its neighbours draw, not absent. Every family O docs
   module carried one. **Two more had a tab order backwards** (O2, O10): both
   said the sequence starts with the sidebar trigger, and in both the rail comes
-  first, because the topbar is a DOM sibling *after* the sidebar. O10's read
+  first, because the topbar is a DOM sibling _after_ the sidebar. O10's read
   true only because the default `nav` is an L1 with nothing focusable in it —
   which is why a walk with a filled rail is what found it.
 
@@ -1937,787 +1978,13 @@ before that one line.
   instruction, and `KeyboardOrder` now measures the cost: zero tabs, and one
   orphan `tabpanel` announcing as a tab panel with no tab list.
 
-## 9. Gaps found by the case-story pilot
-
-Three components (`suggestion-chips`, `generation-queue`, `empty-state`) were
-given the case-story block defined in
-[`story-conventions.md`](design-system/story-conventions.md). The convention was
-adopted on the strength of what one afternoon of it turned up. Same provenance
-rule as §8: each item was found by someone writing a story who could not write
-it honestly without noticing.
-
-**Fixed on the pilot branch:**
-
-- **N10 `safety-block` shipped a 4.33:1 contrast failure.** Its root paints
-  `bg-destructive/5` (#fef2f3) and the vendored `AlertDescription` child carries
-  its own `text-muted-foreground` (#737373). This is the *cross-component* shape
-  `check:tokens` documents that it cannot see, and it had never been caught
-  because the component has no story. Fixed with the house idiom — rebinding
-  `[--muted-foreground:var(--accent-foreground)]` on the surface-painting root,
-  which reaches the composed children a slot-level `className` cannot. Found by
-  L1 `empty-state`'s `Boundary` story, which renders `safety-block` as a
-  neighbour.
-
-**Open, and the largest of the three:**
-
-- **11 of the 25 shipped `contractExempt` components have no story file at
-  all**, so they have never been rendered under axe: `slot-summary`,
-  `citation-ref`, `answer-block`, `source-cards`, `credits-indicator`,
-  `quota-meter`, `pricing-table`, `autonomy-selector`, `safety-block`,
-  `escalation-handoff`, `task-tray`. The cause is mechanical:
-  `check-contract.mts` does `if (item.contractExempt) { exempt++; continue; }`
-  *before* the story-existence assertion, so the exemption silently covers the
-  story file too, not only the per-state and docs assertions it is documented to
-  cover. `safety-block` is the proof this is not theoretical — one of the eleven,
-  carrying a real contrast bug, for as long as it has shipped. **Requiring a
-  story file (not per-state stories) from exempt items would be a small change
-  to the gate and would put eleven components under axe for the first time.**
-
-- **14 of the 17 components that animate ignore `prefers-reduced-motion`.**
-  `motion-reduce:` appears in `citation-ref`, `task-tray` and `trace-timeline`
-  only. The other fourteen — including `generation-queue` and `render-queue`,
-  which are `task-tray`'s own near-twins and use the identical lucide spinner —
-  write a bare `animate-spin`/`animate-pulse`. So the convention exists and was
-  then lost, which makes this drift rather than an open question. Nothing in the
-  pipeline sees it: `check:tokens` reads colour, and axe does not evaluate the
-  media feature at all. The fix is one class per site — **but see the correction
-  immediately below before applying it to a dialog, popover or sheet.**
-
-- **Correction (2026-08-15): "one class per site" is wrong on a Base UI popup
-  surface, and the earlier sentence should not be applied there.** The
-  prescription above is written for the shape it was found in — a lucide
-  spinner carrying a plain `animate-spin`. It does not hold where the animating
-  element is a Base UI popup, and anyone who applied it to a dialog, popover or
-  hover-card fixed nothing and has no way to tell. The mechanism, measured on
-  `shortcuts-sheet` while writing its `ReducedMotion` story:
-
-  `dialog`, `alert-dialog`, `popover`, `tooltip`, `hover-card`,
-  `dropdown-menu` and `select` animate through `data-open:animate-in` /
-  `data-closed:animate-out`. Tailwind v4 compiles that to
-  `.data-open\:animate-in:where([data-open]:not([data-open=false]))` — the
-  attribute test sits inside `:where()`, which contributes **no** specificity,
-  so it and `.motion-reduce\:animate-none` are both a single class and the tie
-  falls to source order. Tailwind emits the plain `motion-reduce:` block well
-  before the `data-*` variants (offsets 112494 vs 124370 in the current docs
-  CSS chunk), so `animation: enter` wins and `animation-name` reads back
-  `"enter"` under emulated reduce. The remedy is to restate the variant on both
-  halves — `motion-reduce:data-open:animate-none
-  motion-reduce:data-closed:animate-none` — which sorts *after* its counterpart
-  and wins the same tie. `sheet` is a third case: it animates by transition
-  (`data-starting-style` / `data-ending-style`), so
-  `motion-reduce:transition-none` is what suppresses it.
-
-  **Surveyed, and the honest answer is that no shipped branch is inert today.**
-  Every bare `motion-reduce:animate-none` in `registry/super-ai/` sits on a
-  plain `animate-spin`/`animate-pulse`, where the same source order works in
-  its favour: K6 `citation-ref` (`animate-pulse` on the marker, which is the
-  hover-card *trigger*, not its surface), A8 `preview-tile` (skeleton),
-  `task-tray` and `trace-timeline` (both lucide spinners). All four work.
-
-  What the finding costs is the *remainder* of the backlog above. These 33
-  registry components render a keyframe-animating popup surface, none of them
-  suppresses it, and each is a site where the plain remedy would be inert:
-  `account-menu`, `action-stack`, `ai-tools-menu`, `asset-detail`,
-  `asset-library`, `citation-ref`, `coach-mark`, `context-toolbar`,
-  `detail-view-shell`, `docs-shell`, `drawing-tools`, `feature-announcement`,
-  `feedback`, `hero-omnibox`, `inline-generate-popup`, `modality-rail`,
-  `mode-tabs`, `model-picker`, `permission-prompt`, `recommendation-card`,
-  `record-list`, `records-shell`, `selection-toolbar`, `settings-dialog`,
-  `template-detail`, `thread-list`, `transport-controls`, `trust-dialog`,
-  `tts-composer`, `usage-dashboard`, `voice-clone-recorder`, `whats-new`,
-  `workspace-switcher`, plus `task-tray` on the transition path. Only
-  `shortcuts-sheet` has the working form. Not fixed here — that is a follow-up
-  wave, and the point of this entry is that the list is accurate before anyone
-  starts it. The idiom is written up in
-  [`story-conventions.md`](design-system/story-conventions.md), mechanical
-  fact 3.
-
-- **E6 `generation-queue` does not manage focus when a row resolves.** A row's
-  Cancel button unmounts as it transitions to done/failed/cancelled, and nothing
-  moves focus, so a keyboard user cancelling the second of three rows loses
-  their place. Deliberately *not* pinned by the `KeyboardOrder` play function —
-  asserting the current behaviour would make the bug permanent. Recorded in that
-  story's description.
-
-The convention became a program on 2026-08-14: eight names (`Controlled`
-joined), manifest-shape rules, and a retrofit —
-`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md` — and
-a shrink-only ratchet on 2026-09-04 (§1).
-
-### Wave 0 — the 25 `contractExempt` items (2026-08-15)
-
-Two batches, one agent per component, every manifest edit made centrally (§3.2).
-**Batch A** took the 11 with no story file — the largest of the pilot's three
-open items above, now closed: all 11 were rendered under axe for the first time.
-**Batch B** took the other 14, **every one of which exported `Default`**, the one
-name the house rule forbids; all 14 are gone, each renamed to the state it was
-actually rendering or split into the states it conflated. Each of the 25 got the
-full fold-in — states normalized and declared, one story per declared state,
-case stories, a docs module, the flag dropped. `contractExempt` reached zero
-(§1).
-
-What it found:
-
-- **Fifteen declared states across the 25 name behaviour no component
-  implements.** Ten of batch B's 14 needed real normalization before a single
-  story per state could be written, and the retrofit turned into an audit of
-  `catalog.md`'s states column — which is normative prose, not a hint. A7
-  `gen-settings-bar` declares `inline · compact · node-docked` and implements
-  none of the three; the last names the node builder **D9 cut**. Absent for the
-  same reason: A5 `filter-bar`'s overflow count and clear-all, A3
-  `date-section`'s with/without count and collapsible, L5 `shortcuts-sheet`'s
-  `searchable` and its controls-primer variant, A2 `cost-chip`'s
-  estimate/confirmed/insufficient, and K6 `citation-ref`'s "copy quote" (filed
-  separately in §8). One is factually **wrong** rather than absent: A10
-  `stat-readout`'s "inline rows" describes `columns={1}`, which sets
-  `grid-cols-1` and therefore stacks label *above* value — the inline form is
-  `columns={2}`. B6 `thread-list`'s `running` is removed outright; the spec's
-  status slot was never built. **The mechanism is the finding.** Nobody had ever
-  written one story per declared state for these components, because an exempt
-  component was not required to have a story at all — so nothing had ever
-  compared the column to the code.
-
-- **Two components ship colourless to consumers.** M6 `rate-limit-banner` paints
-  `border-warning/40 bg-warning/5`, and P1 `data-views` paints
-  `bg-warning text-warning-foreground` through `data-views-shared.tsx`. Neither
-  declares `cssVars`, so `shadcn add` installs them without the token and the
-  surface arrives unpainted in a consumer's app. This is a
-  registry-is-the-product bug and it is **distinct from** the Storybook
-  `--warning` gate hole recorded in §8 — the six components carrying
-  `WARNING_CSS_VARS` are wrong only under the axe gate; these two are wrong
-  wherever they are installed. Found by the audit of that hole, recorded beside
-  it, not fixed.
-
-- **A keyboard-help panel was unusable by keyboard.** L5 `shortcuts-sheet`'s
-  section list scrolls once the sections pass its 80vh cap, and the scroll
-  container was not focusable — axe `scrollable-region-focusable`, whose real
-  consequence is that a keyboard user opens a 60-binding shortcuts panel and can
-  read only the first screenful. **Fixed in-wave**, then corrected in review: the
-  first fix put `tabIndex` and `aria-label` on a bare `<div>`, which is
-  `role="generic"`, where ARIA prohibits `aria-label`. The tab stop was real and
-  did clear the axe rule, but it arrived anonymous. It is now a `<section>` named
-  for its contents, and the story asserts the name *through* the role — the only
-  form that catches the original failure.
-
-- **A disabled filter chip can still be deleted.** A5 `filter-bar`'s
-  `FilterChip` spreads `...props` onto its toggle button, so `disabled` reaches
-  the toggle only; the remove button is a sibling built from `onRemove` alone and
-  never sees it. A facet you cannot turn off, you can still delete — by mouse or
-  by Tab. A caller has to withhold `onRemove` in the same breath. (Milder, same
-  site: nothing in `filter-bar.tsx` styles the disabled path at all, and these
-  are unstyled `<button>`s with explicit colour classes, so the UA greying never
-  applies — a locked chip is pixel-identical to a live one.) Recorded in the
-  `Disabled` story, **not fixed**: what `disabled` means on a composite chip is
-  an API decision.
-
-- **`kbd` renders chords backwards under RTL.** `KbdGroup` is a bare
-  `inline-flex` with no direction pin, so `⌘ ⇧ Z` paints as `Z ⇧ ⌘` under
-  `dir="rtl"` — *a different instruction that still looks correct*, which is the
-  worst failure shape available, because nothing about it reads as broken. Found
-  independently by two of the wave's agents. **Not fixed**: the pin belongs in
-  the `kbd` primitive and is a behaviour change rather than a compile-identical
-  swap. Full entry in §8, under logical properties.
-
-**Two defects the wave's own review caught — the program's quality evidence, and
-the reason a retrofit wave gets reviewed rather than merged on green.** Both were
-`KeyboardOrder` play functions that pinned the exact defect their own JSDoc
-documented: green today, **red the moment someone fixed it**. That is the one
-move `story-conventions.md` forbids outright, and neither would have been caught
-by any gate — a pinned bug passes.
-
-- **M4 `pricing-table`** asserted which element each tab landed on. The same
-  story records that its `role="radiogroup"` has no roving tabindex; implementing
-  that gives the unchecked radio `tabindex="-1"`, the second tab skips it, and
-  the test goes red on the fix. Rewritten on `autonomy-selector`'s shape, which
-  asserts invariants that hold both today and under APG: the checked radio is
-  tabbable, the controls outside the group are each independently tabbable, plus
-  containment, ring and no-trap — with the expected stop count derived from live
-  DOM `tabindex` rather than hardcoded.
-- **A7 `gen-settings-bar`** asserted that Tab visits all five toolbar segments in
-  DOM order — the exact traversal its `role="toolbar"` contradicts. Its JSDoc
-  argued the pin was a *feature* ("this story is what notices"), which is
-  precisely the inversion the convention warns about. Rewritten on
-  `choice-chips`' pattern, which carries the identical defect and asserts only
-  that the stops exist and each shows a ring. `pricing-table`'s DOM-derived bound
-  was considered and rejected for this shape: nothing here sets `tabindex` at
-  all, so the derivation reduces to counting the buttons — the same claim wearing
-  a disguise.
-
-**What wave 0 closed from the list above:** the 11-with-no-story item, outright.
-The reduced-motion backlog moved from three branching components to seven —
-`choice-chips`, `preview-tile`, `pricing-table` and `shortcuts-sheet` gained
-branches — and `shortcuts-sheet` is what produced the Base UI popup correction
-recorded above. `generation-queue`'s focus-loss finding is untouched and stays
-open. The remaining ~91 items are spec §3.2's family waves; the gate is §4.
-
-### Wave 1 — families D and I (2026-09-05)
-
-Eleven agents, one per item, each in its own worktree cut from `origin/main` and
-fast-forwarded to the integration branch as step 0 of the brief (the base-commit
-trap from §1, handled rather than re-hit). All eleven reached zero unmet
-obligations: 88 case obligations and 28 descriptions resolved, the baseline
-regenerated once at the end. Brief and integrator procedure:
-[`superpowers/plans/2026-09-05-case-story-family-waves.md`](superpowers/plans/2026-09-05-case-story-family-waves.md).
-
-**Skips versus writes.** 11 `case-skip` lines across six files (`quote-reply`
-3, `property-inspector` 2, `context-chips` 2, `skill-menu` 2,
-`media-prompt-bar` 1, `ai-tools-menu` 1) and five files with all eight written
-(`reference-strip`, `mode-tabs`, `context-toolbar`, `tool-panel`,
-`drawing-tools`). Every skip is one of three shapes: `Controlled` where no
-value/onChange pair exists (six items — `onSelect`/`onRemove`/`onAction`
-report an intent and carry no value), `ReducedMotion` where nothing moves or
-only a colour crossfades (four), and `EmptyLabel` where the only optional text
-slot is a defaulted label whose empty case would ship a `button-name` violation
-into the gate (two). `Controlled` was skipped *against* the steering on
-`property-inspector`, correctly: its `onSectionOpenChange` fires after the
-section has already moved, so it is half a controlled pair and a host cannot
-refuse; the reasoning is in the skip block.
-
-**Mechanical fixes landed in-wave (seven source files):**
-
-- Reduced-motion pairs restated on Base UI popups, each measured
-  (`animationName` "enter" → "none" under emulated reduce): `mode-tabs`
-  (tooltip), `context-toolbar` (tooltip, menu, popover), `ai-tools-menu`
-  (menu), `drawing-tools` (popover). Four more off §8's 33-item list.
-- Logical-property swaps, byte-identical in LTR: `context-chips`
-  (`pl-2`/`pr-1`/`pr-2`/`ml-0.5` → `ps`/`pe`/`ms`), `skill-menu` (`border-r` →
-  `border-e`), `tool-panel` (`left-2.5` → `start-2.5`, `pl-8` → `ps-8`,
-  `text-left` → `text-start`), `drawing-tools` (`text-left` → `text-start`).
-  `left-` → `start-` is not one of the four swaps §8's sweep entry enumerates;
-  it was taken because it meets that entry's own test, and because swapping
-  only the gutter would have left icon and gutter on opposite sides.
-- `aria-label` on two unnamed `PopoverContent`s (`context-toolbar`,
-  `drawing-tools`) — the one fix outside §3.4's literal list, accepted because
-  it is a one-attribute drift correction with an in-repo idiom
-  (`modality-rail`) and the alternative was leaving the popover closed so the
-  gate stayed quiet. §8 has the general finding.
-
-**Recorded, never pinned** — every play function in the wave stops short of
-the defect its description names:
-
-- Focus lost on removal or dismissal: `quote-reply` and `context-chips` (the
-  remove control is the only focusable a chip owns), `reference-strip` (the
-  last enabled Move disables itself under the cursor), plus the two
-  `media-prompt-bar` behaviours its docs module already carried.
-- No visible focus treatment: `media-prompt-bar`'s two textareas
-  (`border-none focus-visible:ring-0`, no container `focus-within`);
-  `skill-menu`'s search field (`InputGroup` keys its ring off
-  `has-[[data-slot=input-group-control]:focus-visible]`, but cmdk's input sets
-  `data-slot="command-input"`, so the selector never matches); `ai-tools-menu`'s
-  menu rows (§8).
-- `mode-tabs`: Tab lands on the first mode, not the active one (as
-  `modality-rail` records on the same primitive); five modes with icons measure
-  422px in a 375px column with no overflow handling, so the fifth is off-column
-  with nothing saying it exists.
-- `context-chips`: mention labels reorder under RTL (`@teammate` paints
-  `teammate@` — the `@` is a neutral with no Latin before it), fix is
-  `dir="ltr"` on the label; no `title` on the `max-w-40` truncated label.
-- `quote-reply`: `<cite>` interpolates a caller-supplied `anchor` with no
-  `<bdi>` isolation, so a mixed-script anchor reorders around the `·`.
-- `reference-strip`: inherits C3's three RTL findings (Embla `direction` never
-  set, physical `-ml-4`/`pl-4` gutter, previous/next on the wrong sides);
-  Embla's JS tween has no reduced-motion branch; the empty slot still carries
-  `aria-pressed` from `preview-tile`'s default `selectMode="toggle"`.
-- `property-inspector`: a long value scrolls inside the fixed `w-20`
-  `UnitInput` and loses its leading digits — 1920000 reads as a smaller number,
-  not a clipped one.
-- `drawing-tools`: long alternate labels spill (`toggleVariants`' base
-  `whitespace-nowrap` plus a fixed `h-8`, the B4 trap again).
-- `ai-tools-menu`: no `open`/`onOpenChange`, so a host cannot close the menu
-  when the selection changes behind it.
-
-**Spec and docs drift found by writing stories:**
-
-- `component-specs.md` D3 lists `resolved · resolving · unresolved`; the
-  component and manifest have no `resolving` state. Same class as wave 0's
-  "declared states name behaviour no component implements".
-- D6 `skill-menu`'s spec says search filters titles *and* descriptions;
-  `CommandItem` gets `value={skill.id}` with the description as its only
-  `keywords`, so a title-only skill is findable by nothing the user can see.
-  `Search`'s play asserts only the honoured half.
-- Three docs corrections made centrally in the integration commit:
-  `skill-menu.docs.tsx`'s second "do" told callers to override `cost-chip`'s
-  `text-muted-foreground`, which the chip stopped shipping in the A retrofit;
-  `drawing-tools.docs.tsx`'s keyboard note counted ten stops where roving
-  tabindex makes five; and a stale comment in `ai-tools-menu.tsx`'s `ToolCost`
-  described the same deleted override.
-- `choice-chips`' `Boundary` one-liner ("if a chip can be removed, it is a
-  filter chip") is one line short — context chips are removable too.
-
-**Idiom hardening.** `ai-tools-menu`'s `KeyboardOrder` passed 13 warm runs and
-failed the first run against a cleared Storybook cache: a key press read before
-it applied leaves focus on the *previous* stop, which is itself an expected
-stop, so the "settle until focus is on some expected stop" wait cannot see it.
-The tightened form waits for focus to *leave* the previous stop before reading.
-Recorded in `story-conventions.md` fact 4; `TaskTray` and `ShortcutsSheet`
-still use the arrival form.
-
-**Steering that did not bind** — for the next wave's prompts: `quote-reply`
-has no `border-l`/`pl-` quote bar (it is icon + `gap-2`), so the predicted swap
-did not exist; `property-inspector` is not controlled; `context-toolbar` needed
-no frame/group/camera variant; `tool-panel`'s tabs contrast concern does not
-apply (`variant="line"`, `text-foreground/60` at TOK-8's floor). One agent also
-reported a repo-root `pnpm lint` cache hit whose output named a sibling agent
-worktree's paths; `turbo.json` configures no shared cache dir, so the mechanism
-is unconfirmed — noted here rather than in §4 until it bites again.
-
-### Wave 2 — families E and P (2026-09-05)
-
-Eleven agents, same shape as wave 1. All eleven reached zero unmet obligations
-and families E and P are complete, but only four reported: **the other seven
-were killed by a session rate limit in the window between finishing their work
-and verifying it.** That window is the interesting part, because the work was
-not lost — and the recovery is worth writing down, since the next long wave will
-hit the same wall.
-
-**The salvage procedure.** A killed agent's worktree survives with its working
-tree intact. Every one of the seven had fast-forwarded correctly (step 0 of the
-brief) and left a complete, uncommitted tree. So:
-
-1. `git -C <agent worktree> diff > patch` for each, then `git apply --check`
-   every patch against the integration branch before applying any. All seven
-   applied clean, because each wave agent writes only its own files.
-2. Read every registry-source hunk before adopting it. Seven of the seven were
-   the sanctioned shapes, so nothing needed rejecting — but the review is the
-   point, not a formality: nobody had verified this code.
-3. Run `pnpm story-coverage:report <the whole list>`. All seven printed zero
-   unmet, which is what established the work was finished rather than
-   abandoned mid-file — including the one whose last words were "now the story
-   file, writing it in full".
-4. Run the story files. **Five passed as delivered. The two that had never been
-   run once both failed**, which is the lesson: an unverified story file is not
-   evidence of anything, and the two failures were of completely different
-   kinds (see below).
-5. Commit as one reviewed change rather than seven forged agent commits, and
-   say in the message that the verification was done centrally.
-
-**What the two unverified files were hiding.**
-
-- **P1 `data-views` had a real defect and two false assertions.** The defect:
-  the kanban board's scroll container was a bare `<div class="overflow-x-auto">`
-  with no keyboard access — axe `scrollable-region-focusable`, the same rule
-  L5 `shortcuts-sheet` failed in wave 0, and with the same consequence, that a
-  keyboard user reaches the first columns of a board and no further. It is
-  invisible at desktop width because nothing overflows there; the `Mobile`
-  story is the only reason it was found. Fixed with that wave-0 idiom exactly:
-  a `<section>` rather than a `<div>` (a bare div is `role="generic"`, where
-  ARIA prohibits `aria-label`, so the tab stop would arrive anonymous),
-  `tabIndex={0}`, a name for its contents, and a focus ring.
-
-  The two false assertions are the more useful half, because **both were
-  written from reading the source rather than running it, and both read
-  perfectly.** One asserted that a group with an empty label "still announces
-  its count and its tone", reasoning correctly about `groupAccessibleName` and
-  never noticing that `feed-view.tsx` guards the whole header on
-  `section.label ?` so the function is never called. The other asserted that a
-  long title wraps in a table cell and grows the row — true in principle, false
-  at the width the gate runs, where the title column takes 974px of a 1200px
-  table and absorbs it on one line. Both descriptions asserted the same wrong
-  things in prose. Rewritten against measurements, with the measurements in the
-  descriptions.
-
-- **P2 `detail-view-shell` failed on its own debugging probes**, left behind
-  mid-run: two `expect(...).toBe("PROBE")` calls whose whole purpose was to
-  print measurements into a failure message. Deleting them restored the real
-  assertions underneath, which pass. One probe was worth keeping the output of
-  — the 4.34:1 badge contrast now recorded in §8.
-
-**The general lesson, and it is not about rate limits.** A story file that has
-never been executed is a draft, however good it looks; two of two unverified
-files failed, and the failures were a live accessibility defect and two
-confidently-argued untruths. The convention already says a story earns its place
-by being the only place a fact exists — this wave adds that **a fact nobody ran
-is not yet a fact.**
-
-**Also worth carrying forward:** `layout: "centered"` in a meta wraps every
-story, so `canvasElement.firstElementChild` is the ~1200px centring div rather
-than the story's own frame — a `Mobile` overflow assertion against it measures
-the wrapper and passes for the wrong reason. Give the frame a `data-testid`.
-Found on E7 `member-gate-row`; it will bite the next `Mobile` author.
-
-### Wave 3 — family F (2026-09-06)
-
-Seven agents, seven items, all at zero unmet, and no rate-limit casualties —
-the batch was deliberately smaller than the eleven that hit the session wall in
-wave 2. Six of the seven wrote all eight case stories with no skips at all,
-which is worth noting against the D/I wave's eleven `case-skip` lines: family F
-is result surfaces, and a result surface genuinely meets every one of the eight
-situations.
-
-**Fixed in-wave:** reduced-motion branches on F3 `asset-detail`'s dialog (the
-fifth popup family off §8's list), F6 `render-queue`'s streaming spinner, F7
-`approval-card`'s chevron *and* its Confirm spinner, and F4 `action-stack`'s
-menu popup. F4's measurement is the one that generalises: suppressing the popup
-animation changed `animation-name` from `enter` to `none` **and** the popup's
-width from 304px to 320px, because `data-open:animate-in` composes `zoom-in-95`
-— the popup was arriving at 95% and growing, so this is real motion rather than
-a fade. That agent also stated the rule the whole program had been circling:
-the animation classes live on the vendored primitive, but the suppression has
-to be restated per call site, **so fixing one consumer fixes none of the
-others.**
-
-**Which is how a false skip surfaced.** Acting on that rule, the integrator
-swept the registry for `DropdownMenuContent` call sites without the pair and
-found four. Three belong to families J and K and were left to their waves. The
-fourth was B6 `thread-list`, whose `ReducedMotion` skip read "nothing this
-component owns animates", on the grounds that the motion belonged to the
-vendored popups and was therefore upstream — a reasonable position when it was
-written and wrong under the per-call-site rule, since the component renders both
-a dropdown menu and a delete confirmation and both animated. **Family B had no
-case-story debt at adoption, so no later wave was going to reopen that file.**
-Both surfaces now carry the pair and the skip is a real story that reads
-`animationName` back on each. A skip is the one part of this convention with no
-gate behind it: `story-coverage` checks that a reason exists, never that it is
-true.
-
-**Two integrator fixes an agent correctly declined to make.** F1's agent found
-that A8 `preview-tile` owns the badge at `right-2` while F1 `result-card` owns
-the select checkbox and hover actions at `left-2`, so swapping either alone
-stacks both occupants on one edge — and it may not edit A8. It wrote an RTL
-assertion that fails on a half-swap and passes on a full one, then left both.
-Done centrally, with all eight `preview-tile` consumers re-run. F5's agent
-declined the *same* swap for the opposite reason and was equally right: its wipe
-clip is `clipPath: inset(...)`, physical with no logical form, so a class-only
-swap would put each pane number over the other pane's picture. §8 carries the
-rule the pair gives.
-
-**A claim that was checked twice and not reproduced.** F6's report stated that
-transition assertions are vacuous in this gate — that the browser runner injects
-`*, ::before, ::after { transition-property: none }`, defeating every Tailwind
-`transition-*`, so wave 2's `run-button` assertion would pass with or without
-the fix it was written to prove. H5's report later refined it: the suppressor is
-Playwright's animations-disabled CSS, left behind by the runner's
-screenshot-on-failure, so it is present *only after an earlier story in the same
-file has failed* — which is exactly when a story is being written.
-
-Two experiments, neither reproducing it. A plain vendored `Button` inside a
-deliberately failing story computes `transition-property: all` at `0.15s`, and a
-sweep of every stylesheet in the document finds one `transition-property: none`:
-Tailwind's own `.transition-none` utility definition. Adding a second story
-*after* a deliberate failure in the same file — the exact condition H5 named —
-the later story still reads `all` / `0.15s`, and no 185-character injected style
-is present. F7's independent measurement (its unfixed chevron read
-`transform, translate, scale, rotate`, suppressed `none`) agrees that the
-suppression does real work.
-
-So the transition assertions written in waves 2 and 3 stand, and this entry
-records the conditions actually tested rather than declaring the reports wrong:
-two agents saw something on their own machines that a third measurement could
-not reproduce, and if it resurfaces the thing to capture is the injected
-`<style>` element itself alongside the failing story that preceded it.
-
-### Wave 4 — family H (2026-09-06)
-
-Seven agents, seven items, all at zero unmet. Six wrote all eight case stories
-with no skips; the seventh skipped only `ReducedMotion`, and wrote its reason as
-a grep it had run rather than an argument — which is the shape the convention
-started asking for after wave 3's false skip.
-
-**This wave found more that no gate can see than any before it**, and the reason
-is worth naming: family H is timelines, faders and waveforms, so almost
-everything it does is a direct-manipulation surface with a keyboard story
-underneath. Four components turned out to have handles that paint no focus ring
-at all, and four docs pages promised one — see §8. Nothing in the registry could
-have caught that, because the ring is present in the source; it is simply on the
-element that never receives focus.
-
-**The wave audited the tooling this program itself introduced.** Wave 3 shipped
-`focus-ring.ts` after four agents independently found the old ring predicate
-could not fail. Wave 4 found two more holes in it, one of them fundamental:
-
-- H2 `time-ruler` measured a false positive on the clipped `<input>` Base UI
-  focuses, which still carries the user agent's outline. Its agent noticed,
-  **declined to use the helper rather than manufacture the green it exists to
-  prevent**, and explained the absence in the story. Fixed with an `isPainted`
-  guard the same day; H7 `stem-mixer` reported the identical shape independently
-  while the fix was being written.
-- H6 `waveform-editor` went further and named the limit of the approach: an
-  absolute check asks whether an element paints a treatment, never whether focus
-  caused it, so a span carrying a permanent `shadow-sm` passes either way. Three
-  of its slider spans are exactly that. `focusTreatmentSignature` now exists for
-  the before/after differential, and `story-conventions.md` fact 5 says which
-  tool to reach for: the differential where an element can be focused directly,
-  `settledFocusRing` inside a tab walk where blurring to take a baseline would
-  disturb the sequence under test.
-
-The general lesson is the same one wave 2 recorded about unverified stories,
-pointed at the harness instead of the components: **a checker written to catch a
-class of defect is itself in that class until something measures it.** Three
-waves used the old predicate before anyone read what it computed, and one wave
-used the replacement before anyone found what it still missed.
-
-**One claim was true and one was not, and the difference was checkability.**
-H1's report said a whole class of reduced-motion assertions cannot fail because
-`select.tsx` kills the popup animation by default — it named the file, the prop
-and the class, all three checked out, and two already-merged stories were
-audited against it. H5's report refined F6's transition claim into a specific
-condition (the suppressor appears only after an earlier story in the same file
-has failed); that condition was tested directly and did not reproduce, and §9's
-wave 3 entry now records what was tested rather than declaring the reports
-wrong. Both reports were written with the same confidence. Only one named
-something a reader could go and read.
-
-**The gate failed twice during integration, and both failures were real.** Worth
-writing down, because the reflex on an intermittent gate is to re-run it.
-
-The first run failed on B8 `account-menu`'s `KeyboardOrder`, a file this wave
-did not touch: the closing wrap read `stop#4 Sign out` where it expected
-`stop#0 Settings`. That is the settle-on-*arrival* hole exactly — wave 1 found
-it on `ai-tools-menu`, wave 3 wrote it into mechanical fact 4, and this file
-predates both. A key that has not applied yet leaves focus on the previous row,
-which is itself a row, so an arrival-only wait returns a stale read and the lap
-looks like it never wrapped. Hardened to settle on departure, and the three
-other files still on the arrival form went with it: `recommendation-card`,
-`shortcuts-sheet` and `task-tray` — wave 1 had already recorded the last two as
-holding the hole. Four files, 48 tests, green twice.
-
-The second run failed somewhere else entirely: axe's `aria-input-field-name` on
-a Base UI listbox, from H1 `transport-controls`' `ReducedMotion` story opening
-the speed select. **Every `SelectContent` in the registry was unnamed**, and the
-failure is intermittent only because axe has to run while the popup is open —
-which is why eight call sites shipped that way. §8 has the four now named and
-the four left to their waves.
-
-So neither failure was flakiness in the ordinary sense. One was a test that
-could not reliably observe what it asserted, the other a defect that could only
-be seen in a window a story had just learned to open. Both were found because a
-full run with a cleared cache was run twice rather than once.
-
-**A postscript on those two gate failures: there were four, and the last one
-took three attempts to fix.** Worth the space, because every wrong turn was
-plausible.
-
-The unnamed select listbox was fixed three times before it was fixed. The first
-attempt put `aria-label` on `<SelectContent>` — the wrapper spreads its props
-onto Base UI's `Popup`, and `role="listbox"` is on the `List` inside it, so the
-attribute landed one element away from the thing axe reads. A probe that dumped
-every `[role="listbox"]` and its name is what showed that; the story had been
-passing four runs in five, so nothing else would have.
-
-The second attempt forwarded the name to the `List` in
-`apps/docs/components/ui/select.tsx`, and the gate kept failing. **The storybook
-workspace has its own copy of every vendored primitive**, and its Vite alias
-sends `@/components/ui/*` there, so the gate had never seen the fix. That is
-now §8's own entry: 39 primitives in one copy, 60 in the other, identical today
-apart from `"use client"` and formatting, synced by hand, and unchecked. The
-third attempt patched both and the probe read the name back.
-
-The lesson is not about selects. **Four runs in five is what a defect looks like
-when the thing that reveals it is a race**, and a story that passes is not
-evidence the thing it asserts is true — the same sentence wave 2 wrote about
-stories nobody had run, reached from the other direction. Both full-suite runs
-after the real fix were green, and so were the two before it, which is exactly
-why the fix had to be confirmed with a probe rather than a passing run.
-
-### Wave 5 — family J (2026-09-06)
-
-Seven agents, seven items, all at zero unmet. Family J is libraries, grids and
-filter rails, so most of what it found is about tables, names and layout under
-pressure — §8 has those. What distinguishes the wave is that **three of the
-things it corrected were written in this file by earlier waves**, and each was
-caught by an agent that had been told to cite an entry and read it first.
-
-- J4 `artifact-grid` was told to cite §8's "grid columns keyed off the viewport"
-  bullet and not fix it. That bullet described a defect D19 had already removed
-  in August, with J4 itself as the pilot and C4 converting after; both files
-  carry container queries and four stories already assert the thresholds. It is
-  the second stale §8 entry a wave agent has caught, after the carousel one.
-- J2 `filter-panel` found a hole in `focusTreatmentSignature`, added one wave
-  earlier: it read `outline-width`, which flips 3px to 1px on focus on Base UI's
-  controls while `outline-style` stays `none`, so the signature reported a
-  change on all fourteen of that component's stops including one painting
-  nothing new.
-- J6 `template-detail` measured its own unnamed listbox open under the gate and
-  axe raised nothing, where H1 `transport-controls` had failed outright on the
-  same rule a wave earlier. §8's entry now says "fails axe in at least one
-  shape" and carries both measurements, neither of which explains the other.
-
-**And the wave settled how the two focus checks relate, which two waves had got
-wrong in opposite directions.** Wave 4 introduced the differential and this file
-said to prefer it. J3 `explore-gallery` then measured a composer textarea whose
-focus moves a shadow layer from transparent to coloured *while its geometry
-stays zero* — so the differential reports a change and `settledFocusRing`
-correctly reports no ring. J2's selected chip is the mirror image: a permanent
-ring identical in colour and width to its focus ring, where the absolute check
-passes and the differential correctly reports nothing. They answer different
-questions. `story-conventions.md` fact 5 now says to use both and carries both
-measurements; it also drops the claim that the differential cannot work inside a
-tab walk, which J5 `record-list` and J2 disproved independently by reading the
-*next* stop's signature while focus is still on the previous one.
-
-The pattern across three waves is worth naming, because it is the argument for
-the whole retrofit. **Every one of these corrections came from an agent
-measuring something it had been handed as settled.** The instructions said cite,
-not verify, and the citation was wrong four times out of four attempts to check.
-A note in a file is not evidence; the thing that made these findable was that
-writing a story forces you to render the claim.
-
-### Wave 6 — families K and L (2026-09-06)
-
-Nine agents, nine items, all at zero unmet, and the last reduced-motion holdouts
-closed: K4 `selection-toolbar` carried the final unrestated `DropdownMenuContent`
-in the registry, and the integrator closed the dialog backdrop that no call site
-could reach. §8 has what the wave found in the components.
-
-**What is worth reading twice is how much of it was correction.** Five written
-claims were wrong, and every one was caught by an agent that had been handed the
-claim as background:
-
-- L4 `whats-new`'s docs said its detail pane carries no focus ring. It carries
-  one and paints it — **the first correction in this program that made a
-  component look better than its documentation**, and it was verified in the
-  source before the text was changed.
-- L3 `feature-announcement`'s docs said its card and chip are both
-  CTA-then-dismiss. The chip is; the card is reversed, because its action slot
-  sits inside the header.
-- L6 `onboarding-wizard`'s docs said Home and End reach the first and last
-  choice card. Neither is bound, nor is PageUp, so arrowing is the only route to
-  a later option — and arrowing *answers the question* with every card it
-  passes.
-- K3 `diff-review`'s docs quoted a button name without the space the
-  accessible-name computation inserts before a hidden suffix.
-- L2 `coach-mark`'s docs said Tab past Next continues into the page so the
-  control being pointed at stays usable. It ends the tour instead.
-
-**And this file's own right-to-left entry was narrowed for the third time**,
-which is worth stating plainly because the first two versions were also written
-here with confidence. Wave 1 said Base UI composites never learn about
-direction. Wave 5 split that into positioning-works and keyboard-does-not. Wave
-6 shows the real split is neither: `align` reads rendered direction and mirrors,
-while `side` reads the same missing React context the arrow keys do. Three
-measurements, each narrowing the last, none of which required new tooling —
-only rendering the claim.
-
-**The sharpest single finding is about the gate itself.** K1 `ai-doc-block` has
-two textareas. Giving both an empty label produces a red gate on one and silence
-on the other, and the only structural difference is that the silent one has a
-placeholder to fall back on. The gate is a floor, not a check: whether it
-catches this defect depends on an unrelated property of the field the defect
-lands on. That is the argument for case stories in one sentence, and it took
-six waves and a component with two nearly identical fields to say it this
-cleanly.
-
-### Wave 7 — families M and N (2026-09-06)
-
-Twelve agents, twelve items, all at zero unmet. Baseline **219 → 104**, and the
-description-only debt reaches **zero** — every declared-state export in the
-registry now carries a JSDoc description. What is left is family O's 13 shells
-and nothing else.
-
-**The wave's defining moment is that two agents disproved their own steering.**
-Both were told, in the prompt, that the dialog backdrop had been fixed centrally
-in wave 6 and that they should not add a branch for it. Both fixed their panels,
-measured the backdrop anyway, and found it still reading `animation-name: enter`
-under emulated reduce. The wave-6 fix went into `components/ui/dialog.tsx`;
-`components/ui/alert-dialog.tsx` is a separate file with the identical
-unreachable overlay, and it had been missed. N2 `trust-dialog` said so in as many
-words — "your steering was wrong about the backdrop, and this is the finding to
-carry" — which is the behaviour the brief asks for and the first time an agent
-has contradicted a *current-wave* instruction rather than an old written claim.
-Fixed centrally in both copies, and the regression guard in
-`TrustDialog.stories.tsx` was verified to fail on a reverted class before it was
-kept, because a guard that has never been seen red is not a guard.
-
-**The most useful single finding is a negative against a rule this program has
-leaned on for six waves.** `text-left` → `text-start` has been treated as a
-free, byte-identical swap in every wave since the first. N6 `usage-dashboard`
-measured it centring all four table headings in LTR: the class sat on a `<tr>`
-and the alignment was consumed by `<th>`s, and Chrome's user-agent
-`th { text-align: -internal-center }` defers to an inherited value only when
-that value is not the initial `start`. The swap is free on the element that
-paints the text and not on an ancestor the user agent has an opinion about. It
-was caught by the agent's own RTL assertion, before it shipped, which is the
-case for writing the assertion before making the change rather than after.
-
-**Two more docs focus bullets were wrong, both in the same direction** — a note
-claiming a control has no visible focus treatment when it has one. N3
-`disclaimer-note`'s element takes the user agent's own outline, recoloured by
-this repo's global `outline-ring/50`: thin against the registry's ring-2, not
-absent. M1 `settings-dialog`'s panel has carried `focus-visible:ring-2` since
-before this program began, verified in the source at the commit before the wave.
-That is seven docs corrections across waves 6 and 7, and the pattern in them is
-consistent: prose written from reading a class list, contradicted by rendering
-it.
-
-**Two lists in this file were stale and were re-derived rather than edited.**
-N6 flagged that the "unnamed `SelectContent`" list no longer matched the
-registry; a `grep` across `registry/super-ai` after the wave gives
-`model-picker` and `records-shell`, and N6's own correction was itself one item
-stale, because `trust-dialog` had been named in a sibling worktree it could not
-see. The reduced-motion half of that list should not be kept at all: no call
-site passes `alignItemWithTrigger={false}`, so the five call sites without the
-pair are already suppressed and listing them invites a fix that changes nothing.
-Both figures in this file are now derivations, with the command that produces
-them written down beside the answer.
-
-**And the integrator found a flake in landed work by running the suite cold.**
-L4 `whats-new`'s `KeyboardOrder` passed on every warm run — three repeats of the
-wave's files, three full suites — and failed deterministically the first time
-the Storybook cache was cleared: it read the detail pane once after waiting on
-`aria-selected`, and the `hidden` attribute moves between the two Base UI tab
-panels a tick later. Agents are already told to run their own file from a
-cleared cache; the integrator was not, and a warm cache had been hiding this
-since wave 6. Clearing
-`apps/storybook/node_modules/.cache/storybook` and running `test:stories` once
-per wave is now part of integration — with the dev server down, per the trap in
-§4.
-
-### Wave 8 — family O (2026-09-06) — the last one
-
-Thirteen shells, thirteen agents, all at zero unmet. **Baseline 104 → 0.** Every
-one of the 116 registry items now carries the eight case names or an annotated
-skip, and every declared-state export carries a JSDoc description. The ratchet
-file is an empty list, which turns it from a debt ledger into a plain
-regression guard: any obligation that goes unmet from here is a new failure with
-nothing to hide behind.
-
-**One line of tooling changed what the wave could see.** The block brief had
-said since family O shipped that the mandatory `Responsive` story proves nothing
-mechanically — the viewport addon contributes only `initialGlobals`, all
-resizing happens in Storybook's manager, and the vitest runner has no manager —
-and its proposed fix was a second vitest project pinned to a mobile viewport,
-which would have doubled a 1,300-test suite. `page.viewport(375, 812)` from
-`vitest/browser`, called inside a play, does the same job in one line and does
-not leak into the next story. What it found: the mobile drawer every sidebar
-swaps to had never been suppressed under reduced motion, `modality-rail` is
-92px at every width so a rail-based shell has no narrow layout to swap into, and
-a claim recorded as *conditional* in wave 2 (E1's "Generate never scrolls away")
-turned out to hold in this composition after all. Seven waves of width-wrapper
-`Mobile` stories could not have reached any of it.
-
-**Three agents corrected the instruction they were given, and none of them acted
-alone.** The import path in the convention was wrong twice over —
-`@vitest/browser/context` is deprecated, and `vitest/browser` throws on
-evaluation outside Browser Mode, so a top-level import breaks the whole story
-file in a built Storybook. Three agents used a dynamic in-play import for that
-reason and said so; three used a static one, and one of those verified
-`storybook build` exits 0, which is true and a different claim, because the
-throw happens at evaluation time in the browser. Both halves were needed to see
-the whole thing.
-
-**The wave's own steering was wrong four times and the agents caught all four.**
-`pricing-table` is not a table and never touches the vendored `text-left` that
-was cited at it. §8's citation-jump entry says the jump has to find rows
-positionally; the paraphrase handed to O13 said it "cannot be built", and O13
-built a story that measures it. The `scrollable-region-focusable` instance count
-in one prompt was off by one, and the agent cited no number rather than pick
-between two contradicting sources. And a merge-base artifact produced two more
-apparent corrections that were true of what the agent had and false of the
-branch — **batch 2 was dispatched while the updated brief and a vendored fix were
-still uncommitted**, which is now written into the brief's step 0 as a rule:
-commit before dispatching.
-
-**Eleven docs modules said a control paints no focus treatment when it paints
-the user agent's outline.** Every family O docs module had one. Together with
-waves 6 and 7 that is eighteen corrections to written claims across three waves,
-and the distribution is worth reading: almost all of them are prose written from
-reading a class list, contradicted the first time someone rendered it. The two
-exceptions are the sharper kind — a documented tab order that was backwards in
-two shells, because the topbar is a DOM sibling after the sidebar and nobody had
-walked it.
-
-**What the program leaves open** is in §8: the vendored sidebar's RTL mirroring,
-the tooltip that eats an Escape, `hover-card.tsx`'s missing branch, the
-`matchesQuery` divergence, `model-picker`'s unnamed listbox, and the notebook
-chat pane that cannot take the standard scroll-container repair. Each is
-recorded with a measurement, and none of them is a case story's to fix.
+## 9. What each wave found
+
+Moved to [`design-system/wave-history.md`](design-system/wave-history.md), which
+is append-only and records how the case-story program's nine waves reached the
+current state. Nothing in it is current state: §1 above is, and §8 is the live
+backlog.
+
+It was 1,700 of this file's 2,728 lines. Keeping a ledger inside the handoff is
+why §1 sat three weeks behind §8 — people enter this file in the middle, and a
+header nobody reaches is a header nobody corrects.

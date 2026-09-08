@@ -185,7 +185,10 @@ export const EmptyLabel: Story = {
 export const LongContent: Story = {
   render: () => (
     <div className="flex w-[220px] items-start gap-2 border p-2">
-      <CostChip amount="1,200–1,800" unit="credits, depending on the selected resolution and the frame count" />
+      <CostChip
+        amount="1,200–1,800"
+        unit="credits, depending on the selected resolution and the frame count"
+      />
     </div>
   ),
 };

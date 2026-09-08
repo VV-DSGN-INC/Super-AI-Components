@@ -57,7 +57,15 @@ describe("FrameStrip", () => {
   it("renders the slide-pages state", async () => {
     const onValueChange = vi.fn();
     const onAdd = vi.fn();
-    render(<FrameStrip kind="slides" items={PAGES} defaultValue="p2" onValueChange={onValueChange} onAdd={onAdd} />);
+    render(
+      <FrameStrip
+        kind="slides"
+        items={PAGES}
+        defaultValue="p2"
+        onValueChange={onValueChange}
+        onAdd={onAdd}
+      />,
+    );
 
     const strip = document.querySelector('[data-slot="frame-strip"]')!;
     expect(strip).toHaveAttribute("data-kind", "slides");
@@ -86,7 +94,13 @@ describe("FrameStrip", () => {
       const onReorder = vi.fn();
       const onAdd = vi.fn();
       const { unmount } = render(
-        <FrameStrip kind={kind} items={items} onValueChange={onValueChange} onReorder={onReorder} onAdd={onAdd} />,
+        <FrameStrip
+          kind={kind}
+          items={items}
+          onValueChange={onValueChange}
+          onReorder={onReorder}
+          onAdd={onAdd}
+        />,
       );
 
       // Same slots, same counts, whatever the content kind.
@@ -126,7 +140,10 @@ describe("FrameStrip", () => {
     expect(marked).toHaveLength(2);
     expect(marked[0].querySelector('[data-slot="frame-strip-mark"]')).toHaveTextContent("In");
     expect(marked[1].querySelector('[data-slot="frame-strip-mark"]')).toHaveTextContent("Out");
-    expect(screen.getByRole("button", { name: /in point at 00:00:00/i })).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByRole("button", { name: /in point at 00:00:00/i })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
 
     // In must precede out: marking in past the current out point drops the out
     // point rather than keeping an impossible range (this pair feeds D2).
@@ -187,7 +204,9 @@ describe("FrameStrip", () => {
     for (const frame of frames) {
       expect(frame.querySelector('[data-slot="preview-tile"]')).toBeInTheDocument();
     }
-    expect(document.querySelector('[data-slot="frame-strip-add"] [data-slot="preview-tile"]')).toBeInTheDocument();
+    expect(
+      document.querySelector('[data-slot="frame-strip-add"] [data-slot="preview-tile"]'),
+    ).toBeInTheDocument();
 
     // A8 renders its `action` slot inside the frame, so no control ever goes
     // there: one interactive element per tile, no nested interactives at all.

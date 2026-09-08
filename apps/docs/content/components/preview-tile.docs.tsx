@@ -105,7 +105,7 @@ export const PreviewTileDocs: ComponentDocs = {
     ],
   },
   pitfalls: [
-    'Props spread onto the outer wrapper, not the frame. An `aria-label`, `id` or `title` you pass lands on the div around the tile, while the button is one level down — so you cannot name a tile from the outside that way. `below` names its own frame automatically, from the visible label; `none` has no label element to point at, so it needs `frameLabel` explicitly, or the button ships with no accessible name.',
+    "Props spread onto the outer wrapper, not the frame. An `aria-label`, `id` or `title` you pass lands on the div around the tile, while the button is one level down — so you cannot name a tile from the outside that way. `below` names its own frame automatically, from the visible label; `none` has no label element to point at, so it needs `frameLabel` explicitly, or the button ships with no accessible name.",
     "`loading` replaces the children but announces nothing — no `aria-busy`, no live region. To a screen reader a tile that is generating is indistinguishable from one that finished empty, so if the wait matters, put the status in text outside the tile.",
     "`selected` draws the ring whether or not the tile is interactive. That is deliberate — it is what lets a parent own the click and the tile own the appearance — but it also means a ring is not proof anything is focusable, which is worth knowing when you are debugging a grid that looks selectable and is not.",
     'The badge is pinned to the frame\'s top-right with physical classes, so under `dir="rtl"` it stays visually top-right instead of mirroring to the logical end. Nothing in this registry uses logical inset utilities yet, so a right-to-left layout will want a call-site override.',

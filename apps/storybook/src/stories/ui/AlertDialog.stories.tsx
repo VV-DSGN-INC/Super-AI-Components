@@ -27,9 +27,7 @@ type Story = StoryObj<typeof AlertDialog>;
 export const Default: Story = {
   render: () => (
     <AlertDialog defaultOpen>
-      <AlertDialogTrigger render={<Button variant="destructive" />}>
-        Delete thread
-      </AlertDialogTrigger>
+      <AlertDialogTrigger render={<Button variant="destructive" />}>Delete thread</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogMedia>
@@ -37,15 +35,12 @@ export const Default: Story = {
           </AlertDialogMedia>
           <AlertDialogTitle>Delete &ldquo;Neon city concepts&rdquo;?</AlertDialogTitle>
           <AlertDialogDescription>
-            This permanently removes 48 generated images and their prompts. This
-            action cannot be undone.
+            This permanently removes 48 generated images and their prompts. This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Keep thread</AlertDialogCancel>
-          <AlertDialogAction variant="destructive">
-            Delete forever
-          </AlertDialogAction>
+          <AlertDialogAction variant="destructive">Delete forever</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -55,15 +50,12 @@ export const Default: Story = {
 export const DiscardChanges: Story = {
   render: () => (
     <AlertDialog defaultOpen>
-      <AlertDialogTrigger render={<Button variant="outline" />}>
-        Discard prompt
-      </AlertDialogTrigger>
+      <AlertDialogTrigger render={<Button variant="outline" />}>Discard prompt</AlertDialogTrigger>
       <AlertDialogContent size="sm">
         <AlertDialogHeader>
           <AlertDialogTitle>Discard unsaved prompt?</AlertDialogTitle>
           <AlertDialogDescription>
-            Your edits to the cinematic lighting preset haven&apos;t been saved
-            yet.
+            Your edits to the cinematic lighting preset haven&apos;t been saved yet.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

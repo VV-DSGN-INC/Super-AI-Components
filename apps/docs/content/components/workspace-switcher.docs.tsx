@@ -25,12 +25,24 @@ export const WorkspaceSwitcherDocs: ComponentDocs = {
   evidence: ["Descript", "CapCut", "Spline", "Make", "Lovable"],
   anatomy: [
     { slot: "workspace-switcher", note: "Root wrapper around the trigger and its menu." },
-    { slot: "workspace-switcher-trigger", note: "The button that opens the menu; shows avatar, name, and plan." },
+    {
+      slot: "workspace-switcher-trigger",
+      note: "The button that opens the menu; shows avatar, name, and plan.",
+    },
     { slot: "workspace-switcher-avatar", note: "Initials or logo, reused on the trigger and every row." },
     { slot: "workspace-switcher-trigger-name", note: "Current workspace name on the trigger." },
-    { slot: "workspace-switcher-plan-badge", note: "The upgrade prompt — always on the trigger, never menu-only." },
-    { slot: "workspace-switcher-item", note: "One workspace row: checked-list item or entity row, depending on data." },
-    { slot: "workspace-switcher-separator", note: "Rule that separates workspaces from the creation action." },
+    {
+      slot: "workspace-switcher-plan-badge",
+      note: "The upgrade prompt — always on the trigger, never menu-only.",
+    },
+    {
+      slot: "workspace-switcher-item",
+      note: "One workspace row: checked-list item or entity row, depending on data.",
+    },
+    {
+      slot: "workspace-switcher-separator",
+      note: "Rule that separates workspaces from the creation action.",
+    },
     { slot: "workspace-switcher-create", note: "The 'create new workspace' action, always last." },
   ],
   usage:
@@ -47,7 +59,7 @@ export const WorkspaceSwitcherDocs: ComponentDocs = {
   ],
   donts: [
     {
-      text: "Don't bolt a \"+\" icon button onto the trigger — creation belongs inside the menu, last, below a rule.",
+      text: 'Don\'t bolt a "+" icon button onto the trigger — creation belongs inside the menu, last, below a rule.',
       example: <PlusButtonBoltedOn />,
     },
     {
@@ -63,13 +75,13 @@ export const WorkspaceSwitcherDocs: ComponentDocs = {
       "Choosing a row closes the menu, so there is no way to try options without reopening it each time.",
     ],
     screenReader: [
-      "Rows are `role=\"menuitemradio\"` carrying `aria-checked`, so the current workspace announces as checked. The tick glyph is decoration layered on that state, not the state itself.",
+      'Rows are `role="menuitemradio"` carrying `aria-checked`, so the current workspace announces as checked. The tick glyph is decoration layered on that state, not the state itself.',
       "The avatar is `aria-hidden` on the trigger and on every row, so initials never leak into a name — which also means a custom `icon` contributes nothing to the announcement.",
-      "The trigger's name is just its visible contents: \"Acme Pro\". Nothing says workspace, organisation or switcher, and the plan reads as part of the name. It does announce as a menu button with an expanded state, but if the surrounding context does not make its purpose obvious, pass your own `aria-label`.",
-      "Give any workspace a `description` and every row becomes an entity row, which folds the description and the plan into that row's own name — \"Acme, Acme workspace, Pro\" as one string. The plain list announces the much shorter \"Acme Pro\".",
-      "`plan` is text, so the tier survives for anyone who cannot see the badge tint. It is unlabelled text, though: \"Free\" and \"Pro\" arrive with nothing saying they are plans.",
+      'The trigger\'s name is just its visible contents: "Acme Pro". Nothing says workspace, organisation or switcher, and the plan reads as part of the name. It does announce as a menu button with an expanded state, but if the surrounding context does not make its purpose obvious, pass your own `aria-label`.',
+      'Give any workspace a `description` and every row becomes an entity row, which folds the description and the plan into that row\'s own name — "Acme, Acme workspace, Pro" as one string. The plain list announces the much shorter "Acme Pro".',
+      '`plan` is text, so the tier survives for anyone who cannot see the badge tint. It is unlabelled text, though: "Free" and "Pro" arrive with nothing saying they are plans.',
       "Nothing announces that the workspace changed. The component holds no live region — the only confirmation is the trigger's own name, which focus returns to as the menu closes.",
-      "An empty `workspaces` array announces the trigger as \"Select workspace\" and still opens a menu, which is then empty; there is no empty-state row.",
+      'An empty `workspaces` array announces the trigger as "Select workspace" and still opens a menu, which is then empty; there is no empty-state row.',
     ],
     focus: [
       "Opening moves focus into the menu. Closing — by choosing, by Escape, or by clicking away — returns it to the trigger, so nothing here strands focus on `<body>`.",

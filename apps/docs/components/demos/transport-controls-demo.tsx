@@ -75,8 +75,8 @@ export default function TransportControlsDemo() {
       </div>
 
       <p className="text-muted-foreground text-xs">
-        Focus the bar and try the shortcuts: Space plays, arrows skip, comma and period step a frame, I and O mark in
-        and out. Type a timecode into the elapsed field to seek.
+        Focus the bar and try the shortcuts: Space plays, arrows skip, comma and period step a frame, I and O
+        mark in and out. Type a timecode into the elapsed field to seek.
       </p>
     </div>
   );

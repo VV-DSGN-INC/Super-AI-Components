@@ -655,10 +655,17 @@ export const LongContent: Story = {
     // URL nor the underscores in a filename are break opportunities.
     const url = tokenAt(canvasElement, "url");
     const file = tokenAt(canvasElement, "file");
-    await expect(`url lines=${lineCount(url)} width=${Math.round(url.getBoundingClientRect().width)}`).toBe(
-      "url lines=1 width=301",
-    );
-    await expect(`chip width=${Math.round(file.getBoundingClientRect().width)}`).toBe("chip width=347");
+    // One line each is the claim; the width is the token's own text and moves
+    // with the platform's rasterization (301px on macOS, 303px here). Per D21
+    // the line count is asserted exactly and the width only has to show the
+    // token is wide enough to be the oversize case this story is about.
+    await expect(lineCount(url)).toBe(1);
+    await expect(lineCount(file)).toBe(1);
+    await expect(url.getBoundingClientRect().width).toBeGreaterThan(250);
+    await expect(file.getBoundingClientRect().width).toBeGreaterThan(300);
+    // The filename is the longer of the two, and that ordering is the point:
+    // neither breaks internally, so each keeps its full intrinsic width.
+    await expect(file.getBoundingClientRect().width).toBeGreaterThan(url.getBoundingClientRect().width);
 
     // The speaker label is intact in the data even though the field cannot
     // show it. That is the half that must stay true; the clipping described

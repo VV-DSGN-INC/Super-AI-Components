@@ -51,19 +51,14 @@ export const Default: Story = {
           defaultValue="A lone lighthouse on a cliff at dusk, long exposure, bioluminescent waves crashing below, cinematic, 35mm"
           className="min-h-28"
         />
-        <p className="text-xs text-muted-foreground">
-          Nova v3 · ~4 credits per render · 1024 × 1024
-        </p>
+        <p className="text-xs text-muted-foreground">Nova v3 · ~4 credits per render · 1024 × 1024</p>
       </TabsContent>
 
       <TabsContent value="style" className="mt-3 space-y-2">
         <p className="text-sm font-medium">Pick a base style</p>
         <div className="grid grid-cols-2 gap-2">
           {styles.map((s) => (
-            <div
-              key={s.id}
-              className="rounded-lg border border-input p-2.5 transition-colors hover:bg-muted"
-            >
+            <div key={s.id} className="rounded-lg border border-input p-2.5 transition-colors hover:bg-muted">
               <p className="text-sm font-medium">{s.label}</p>
               <p className="text-xs text-muted-foreground">{s.desc}</p>
             </div>
@@ -83,9 +78,7 @@ export const Default: Story = {
                 {h.id} · {h.time}
               </p>
             </div>
-            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-              {h.credits} cr
-            </span>
+            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{h.credits} cr</span>
           </div>
         ))}
       </TabsContent>

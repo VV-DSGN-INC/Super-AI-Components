@@ -454,7 +454,10 @@ function FilterPanel({
               >
                 {/* Shape, not colour: the tick is the visible signal, and
                     "active" is spelled into the accessible name beside it. */}
-                <Check aria-hidden className={cn("size-3.5 shrink-0", active ? "opacity-100" : "opacity-0")} />
+                <Check
+                  aria-hidden
+                  className={cn("size-3.5 shrink-0", active ? "opacity-100" : "opacity-0")}
+                />
                 <span data-slot="filter-panel-saved-search-label" className="min-w-0 flex-1 truncate">
                   {search.label}
                 </span>

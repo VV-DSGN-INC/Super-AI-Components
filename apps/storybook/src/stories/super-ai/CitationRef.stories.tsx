@@ -143,12 +143,39 @@ export const RTL: Story = {
  * and it differs from `Loading` only under that emulation.
  *
  * The preview card's own mount transition (`data-open:animate-in`,
- * `fade-in-0`, `zoom-in-95`) comes from the shared hover-card primitive and
- * carries no reduced-motion branch, but that file is outside this
- * component's registry entry.
+ * `fade-in-0`, `zoom-in-95`) comes from the shared hover-card primitive, which
+ * carried no reduced-motion branch until 2026-09-07. It does now, and this
+ * story asserts it — the second marker below is a resolved one so there is a
+ * popup to open and read. The guard lives on the primitive rather than at this
+ * call site because every hover-card consumer inherits the same default.
  */
 export const ReducedMotion: Story = {
   args: { label: "2", state: "loading" },
+  render: (args) => (
+    <p className="text-foreground max-w-prose text-sm">
+      {CLAIM}
+      <CitationRef {...args} />
+      {" And a resolved one, whose preview card is the thing that animates."}
+      <CitationRef label="3" state="resolved" source={SOURCE} quote={QUOTE} onJumpToSource={() => {}} />
+    </p>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const marker = canvas.getByRole("button", { name: /3/ });
+    marker.focus();
+
+    // The popup portals to document.body, outside canvasElement.
+    const popup = await waitFor(() => {
+      const el = document.querySelector<HTMLElement>('[data-slot="hover-card-content"]');
+      if (!el) throw new Error("the preview card never opened");
+      return el;
+    });
+
+    // `motion-reduce:animate-none` sets animation-NAME, not duration — three
+    // wave-8 assertions passed green against a fix they could not see because
+    // they read the duration. Watched failing on a reverted class.
+    await expect(getComputedStyle(popup).animationName).toBe("none");
+  },
 };
 
 /**

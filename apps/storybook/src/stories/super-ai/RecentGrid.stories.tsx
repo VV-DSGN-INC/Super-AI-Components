@@ -313,7 +313,9 @@ export const KeyboardOrder: Story = {
   ),
   play: async ({ canvasElement }) => {
     const tiles = [...canvasElement.querySelectorAll<HTMLElement>('[data-slot="preview-tile-frame"]')];
-    const menus = [...canvasElement.querySelectorAll<HTMLElement>('[data-slot="recent-grid-actions"] button')];
+    const menus = [
+      ...canvasElement.querySelectorAll<HTMLElement>('[data-slot="recent-grid-actions"] button'),
+    ];
     await expect(tiles).toHaveLength(3);
     await expect(menus).toHaveLength(3);
 
@@ -578,7 +580,8 @@ const BOUNDARY_ARTIFACTS: ArtifactGridSession[] = [
       {
         id: "s2",
         type: "data-table",
-        excerpt: "Shot list — 14 clips, in/out timecodes, source file, and which of them still need a retake.",
+        excerpt:
+          "Shot list — 14 clips, in/out timecodes, source file, and which of them still need a retake.",
         editedAgo: "Edited yesterday",
         href: "#s2",
       },
@@ -605,7 +608,7 @@ const BOUNDARY_FEATURES: FeatureCardRowItem[] = [
     id: "auto-edit",
     icon: <Scissors className="size-4" aria-hidden />,
     title: "Remove filler words",
-    description: "Cut silences and \"um\"s from a raw recording automatically.",
+    description: 'Cut silences and "um"s from a raw recording automatically.',
     onSelect: () => {},
   },
 ];

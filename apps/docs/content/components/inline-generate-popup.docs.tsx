@@ -36,7 +36,10 @@ export const InlineGeneratePopupDocs: ComponentDocs = {
       slot: "inline-generate-popup-context",
       note: "What the popup inherited — usually the heading above. Also the dialog's description.",
     },
-    { slot: "inline-generate-popup-prompt", note: "The prompt field. Enter sends, Shift+Enter breaks the line." },
+    {
+      slot: "inline-generate-popup-prompt",
+      note: "The prompt field. Enter sends, Shift+Enter breaks the line.",
+    },
     {
       slot: "inline-generate-popup-status",
       note: "Live region, present in every state. Carries the generating and cancelled sentences.",
@@ -83,11 +86,11 @@ export const InlineGeneratePopupDocs: ComponentDocs = {
       "There is no keyboard route to the result, because there is no result here. Commit happens through `onCommit` and the popup closes — whatever you render next has to take the focus.",
     ],
     screenReader: [
-      "The popup is `role=\"dialog\"` named by `title`, which is why `title` is not optional: an unnamed dialog is an outright axe `aria-dialog-name` failure. Replacing it with an icon or an empty string breaks the gate, not merely the announcement.",
-      "`context`, when supplied, becomes the dialog's accessible description, so the popup announces as \"Generate here\" plus \"Under Q3 revenue drivers\" rather than making the person hunt for what they are writing under. Omit `context` and the dialog has a name and no description at all.",
-      "The prompt field is named by `aria-label` (`promptLabel`, default \"Prompt\"). There is no visible label — the placeholder is not one, and it is deliberately four words rather than an instruction template.",
-      "`inline-generate-popup-status` is a `role=\"status\" aria-live=\"polite\"` paragraph mounted in every state with a `min-h-4` and an empty string in it. That is what makes the first announcement fire: a live region that appears at the same moment as its content is usually missed.",
-      "Cancelled is announced in words — `cancelledLabel`, \"Cancelled. Nothing was inserted.\" — and the primary button relabels itself to `retryLabel`. Neither the dashed treatment nor the icon carries the meaning; both glyphs are `aria-hidden`.",
+      'The popup is `role="dialog"` named by `title`, which is why `title` is not optional: an unnamed dialog is an outright axe `aria-dialog-name` failure. Replacing it with an icon or an empty string breaks the gate, not merely the announcement.',
+      '`context`, when supplied, becomes the dialog\'s accessible description, so the popup announces as "Generate here" plus "Under Q3 revenue drivers" rather than making the person hunt for what they are writing under. Omit `context` and the dialog has a name and no description at all.',
+      'The prompt field is named by `aria-label` (`promptLabel`, default "Prompt"). There is no visible label — the placeholder is not one, and it is deliberately four words rather than an instruction template.',
+      '`inline-generate-popup-status` is a `role="status" aria-live="polite"` paragraph mounted in every state with a `min-h-4` and an empty string in it. That is what makes the first announcement fire: a live region that appears at the same moment as its content is usually missed.',
+      'Cancelled is announced in words — `cancelledLabel`, "Cancelled. Nothing was inserted." — and the primary button relabels itself to `retryLabel`. Neither the dashed treatment nor the icon carries the meaning; both glyphs are `aria-hidden`.',
       "`data-state` and `data-placement` announce as nothing. They exist for tests and for your own styling; the state a screen-reader user hears is the live region's sentence.",
     ],
     focus: [
@@ -99,7 +102,7 @@ export const InlineGeneratePopupDocs: ComponentDocs = {
   pitfalls: [
     "Expecting the popup to find the caret. It measures nothing — a registry component owns no editor and cannot read a selection range. You compute the caret rect (a virtual element with getBoundingClientRect is the usual trick) and pass it as `anchor`; you decide whether there is room below and pass `placement`. Both decisions land on the DOM as `data-placement` so they are visible in a snapshot.",
     "Waiting for the popup to render the result. There is no state that draws generated text, on purpose. `result` goes in, `onCommit` fires once with it, the popup closes — if nothing appears in your document, the missing piece is your `onCommit` handler, not the component.",
-    "Sending a late result after a cancel. Cancelled means nothing was committed, so a `result` arriving while `state=\"cancelled\"` is discarded rather than quietly inserted. Abort your own request too — the component cannot reach into your fetch.",
+    'Sending a late result after a cancel. Cancelled means nothing was committed, so a `result` arriving while `state="cancelled"` is discarded rather than quietly inserted. Abort your own request too — the component cannot reach into your fetch.',
     "Treating the cancelled state as a colour. It says so in words in the live region, and the primary button relabels itself to Try again, because a faded border is invisible in greyscale and silent to a screen reader.",
     "Dropping the title. Base UI renders the popup as role=dialog, and a dialog without an accessible name fails axe (aria-dialog-name) outright. The title supplies it, so replacing it with an icon or an empty string breaks the gate.",
     "Reaching for an import of K1 ai-doc-block. The handoff is the `onCommit` callback so the dependency runs one way, and so this popup stays usable in hosts whose document nodes are their own.",

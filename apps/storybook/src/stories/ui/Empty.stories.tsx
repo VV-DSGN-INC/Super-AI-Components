@@ -29,8 +29,7 @@ export const Default: Story = {
         </EmptyMedia>
         <EmptyTitle>No renders yet</EmptyTitle>
         <EmptyDescription>
-          Start a prompt to generate your first image. Your renders will appear
-          here.
+          Start a prompt to generate your first image. Your renders will appear here.
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
@@ -52,8 +51,8 @@ export const NoSearchResults: Story = {
         </EmptyMedia>
         <EmptyTitle>No matching threads</EmptyTitle>
         <EmptyDescription>
-          We couldn&apos;t find any threads for &ldquo;volcano&rdquo;. Try a
-          different keyword or <a href="#">browse all threads</a>.
+          We couldn&apos;t find any threads for &ldquo;volcano&rdquo;. Try a different keyword or{" "}
+          <a href="#">browse all threads</a>.
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

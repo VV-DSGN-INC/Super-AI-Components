@@ -333,11 +333,19 @@ function ToolPanel({
           </div>
         ) : null}
         {tabs ? (
-          <TabsList variant="line" data-slot="tool-panel-tabs" aria-label={tabsLabel} className="w-full justify-start">
+          <TabsList
+            variant="line"
+            data-slot="tool-panel-tabs"
+            aria-label={tabsLabel}
+            className="w-full justify-start"
+          >
             {tabs.map((tab) => (
               <TabsTrigger key={tab.value} value={tab.value}>
                 {tab.icon ? (
-                  <span aria-hidden="true" className="flex size-4 items-center justify-center [&_svg]:size-full">
+                  <span
+                    aria-hidden="true"
+                    className="flex size-4 items-center justify-center [&_svg]:size-full"
+                  >
                     {tab.icon}
                   </span>
                 ) : null}
@@ -370,7 +378,9 @@ function ToolPanel({
               data-slot="tool-panel-tab-panel"
               className="flex flex-col gap-4"
             >
-              {renderSections(sections.filter((section) => section.tab === undefined || section.tab === tab.value))}
+              {renderSections(
+                sections.filter((section) => section.tab === undefined || section.tab === tab.value),
+              )}
             </TabsContent>
           ))
         : renderSections(sections)}
@@ -381,7 +391,10 @@ function ToolPanel({
     <div
       data-slot="tool-panel"
       data-docked-prompt={prompt ? "true" : undefined}
-      className={cn("bg-background flex h-full min-h-0 w-full flex-col overflow-hidden rounded-lg border", className)}
+      className={cn(
+        "bg-background flex h-full min-h-0 w-full flex-col overflow-hidden rounded-lg border",
+        className,
+      )}
       {...props}
     >
       {tabs ? (

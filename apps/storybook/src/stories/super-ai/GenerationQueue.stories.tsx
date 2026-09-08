@@ -45,8 +45,20 @@ export const Running: Story = {
   args: {
     heading: "Generating 3 images",
     items: [
-      { id: "1", title: "Rooftop garden, golden hour", description: "Image · 4:5", state: "running", progress: 24 },
-      { id: "2", title: "Studio portrait, soft light", description: "Image · 1:1", state: "running", progress: 71 },
+      {
+        id: "1",
+        title: "Rooftop garden, golden hour",
+        description: "Image · 4:5",
+        state: "running",
+        progress: 24,
+      },
+      {
+        id: "2",
+        title: "Studio portrait, soft light",
+        description: "Image · 1:1",
+        state: "running",
+        progress: 71,
+      },
       { id: "3", title: "Neon alley, rain reflections", description: "Image · 16:9", state: "queued" },
     ],
     onCancelItem: () => {},
@@ -87,7 +99,13 @@ export const Failed: Story = {
         state: "failed",
         errorMessage: "Generation timed out",
       },
-      { id: "3", title: "Neon alley, rain reflections", description: "Image · 16:9", state: "running", progress: 45 },
+      {
+        id: "3",
+        title: "Neon alley, rain reflections",
+        description: "Image · 16:9",
+        state: "running",
+        progress: 45,
+      },
     ],
     onCancelItem: () => {},
     onRetryItem: () => {},
@@ -144,7 +162,13 @@ export const RTL: Story = {
   args: {
     heading: "Generating 3 images",
     items: [
-      { id: "1", title: "Rooftop garden, golden hour", description: "Image · 4:5", state: "running", progress: 24 },
+      {
+        id: "1",
+        title: "Rooftop garden, golden hour",
+        description: "Image · 4:5",
+        state: "running",
+        progress: 24,
+      },
       { id: "2", title: "Studio portrait, soft light", description: "Image · 1:1", state: "done" },
       { id: "3", title: "Neon alley, rain reflections", description: "Image · 16:9", state: "queued" },
     ],
@@ -173,7 +197,13 @@ export const ReducedMotion: Story = {
   args: {
     heading: "Generating 3 images",
     items: [
-      { id: "1", title: "Rooftop garden, golden hour", description: "Image · 4:5", state: "running", progress: 24 },
+      {
+        id: "1",
+        title: "Rooftop garden, golden hour",
+        description: "Image · 4:5",
+        state: "running",
+        progress: 24,
+      },
       { id: "2", title: "Studio portrait, soft light", description: "Image · 1:1", state: "queued" },
       { id: "3", title: "Neon alley, rain reflections", description: "Image · 16:9", state: "queued" },
     ],
@@ -201,9 +231,20 @@ export const KeyboardOrder: Story = {
   args: {
     heading: "Generating 3 images",
     items: [
-      { id: "1", title: "Rooftop garden, golden hour", description: "Image · 4:5", state: "running", progress: 24 },
+      {
+        id: "1",
+        title: "Rooftop garden, golden hour",
+        description: "Image · 4:5",
+        state: "running",
+        progress: 24,
+      },
       { id: "2", title: "Studio portrait, soft light", description: "Image · 1:1", state: "queued" },
-      { id: "3", title: "Neon alley, rain reflections", state: "failed", errorMessage: "Generation timed out" },
+      {
+        id: "3",
+        title: "Neon alley, rain reflections",
+        state: "failed",
+        errorMessage: "Generation timed out",
+      },
     ],
     onCancelItem: () => {},
     onRetryItem: () => {},
@@ -218,9 +259,15 @@ export const KeyboardOrder: Story = {
 
     // Each row's control names its own row. This is the contract that makes
     // the sequence navigable without sight of the list.
-    await expect(canvas.getByRole("button", { name: "Cancel Rooftop garden, golden hour" })).toBeInTheDocument();
-    await expect(canvas.getByRole("button", { name: "Cancel Studio portrait, soft light" })).toBeInTheDocument();
-    await expect(canvas.getByRole("button", { name: "Retry Neon alley, rain reflections" })).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: "Cancel Rooftop garden, golden hour" }),
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: "Cancel Studio portrait, soft light" }),
+    ).toBeInTheDocument();
+    await expect(
+      canvas.getByRole("button", { name: "Retry Neon alley, rain reflections" }),
+    ).toBeInTheDocument();
 
     // Resolved rows contribute no control at all, so nothing focusable is
     // left behind pointing at work that already finished.
@@ -305,7 +352,13 @@ export const Mobile: Story = {
   args: {
     heading: "Generating 3 images",
     items: [
-      { id: "1", title: "Rooftop garden, golden hour", description: "Image · 4:5", state: "running", progress: 24 },
+      {
+        id: "1",
+        title: "Rooftop garden, golden hour",
+        description: "Image · 4:5",
+        state: "running",
+        progress: 24,
+      },
       { id: "2", title: "Studio portrait, soft light", description: "Image · 1:1", state: "queued" },
       { id: "3", title: "Neon alley, rain reflections", description: "Image · 16:9", state: "done" },
     ],
@@ -343,7 +396,13 @@ export const Boundary: Story = {
         <GenerationQueue
           heading="Generating 2 images"
           items={[
-            { id: "1", title: "Rooftop garden, golden hour", description: "Image · 4:5", state: "running", progress: 24 },
+            {
+              id: "1",
+              title: "Rooftop garden, golden hour",
+              description: "Image · 4:5",
+              state: "running",
+              progress: 24,
+            },
             { id: "2", title: "Studio portrait, soft light", description: "Image · 1:1", state: "queued" },
           ]}
           onCancelItem={() => {}}
@@ -352,7 +411,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Render queue — jobs that carry a spec and a price</p>
+        <p className="text-foreground text-xs font-medium">
+          Render queue — jobs that carry a spec and a price
+        </p>
         <RenderQueue
           jobs={[
             {
@@ -382,8 +443,18 @@ export const Boundary: Story = {
         <TaskTray
           trigger={<Button variant="outline">Tasks</Button>}
           tasks={[
-            { id: "1", title: "Relight the product set", description: "Started from Library", status: "running" },
-            { id: "2", title: "Batch export, Q3 review", description: "Waiting on approval", status: "needs-input" },
+            {
+              id: "1",
+              title: "Relight the product set",
+              description: "Started from Library",
+              status: "running",
+            },
+            {
+              id: "2",
+              title: "Batch export, Q3 review",
+              description: "Waiting on approval",
+              status: "needs-input",
+            },
           ]}
           onOpenTask={() => {}}
           onCancelTask={() => {}}

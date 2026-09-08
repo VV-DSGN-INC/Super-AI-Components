@@ -22,8 +22,33 @@ fi
 # tree where `pnpm build:registry` has not been run, which is every fresh
 # worktree. A baseline that prints "?" the moment you most need it is worse
 # than no baseline.
-shipped=$(grep -c 'status: "shipped"' "$manifest" || echo "?")
-exempt=$(grep -c 'contractExempt' "$manifest" || echo "?")
-echo "super-ai-components — $shipped shipped · $exempt contractExempt"
+# `grep -c` exits 1 on zero matches while still printing "0", so `|| echo "?"`
+# fired on top of it and the variable became two lines — every session start
+# printed a stray "? contractExempt". Validate the output rather than trusting
+# the exit code: a number is a number, anything else is unknown.
+numeric_or_unknown() {
+  case "$1" in '' | *[!0-9]*) printf '?' ;; *) printf '%s' "$1" ;; esac
+}
+
+shipped=$(numeric_or_unknown "$(grep -c 'status: "shipped"' "$manifest" 2>/dev/null)")
+
+# contractExempt was deleted by D20, so counting it always reported 0. The
+# story-coverage baseline is the live ratchet worth surfacing in its place:
+# empty is the guarantee, and any non-zero number is a regression in progress.
+baseline_file="$root/apps/docs/scripts/lib/story-coverage.baseline.json"
+if [ -f "$baseline_file" ]; then
+  baseline=$(numeric_or_unknown "$(node -e '
+    const fs = require("fs");
+    try {
+      process.stdout.write(String(JSON.parse(fs.readFileSync(process.argv[1], "utf8")).length));
+    } catch {
+      process.stdout.write("");
+    }
+  ' "$baseline_file" 2>/dev/null)")
+else
+  baseline="?"
+fi
+
+echo "super-ai-components — $shipped shipped · story-coverage baseline: $baseline"
 echo "Worktree: $(git -C "$root" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '?') @ $(git -C "$root" rev-parse --short HEAD 2>/dev/null || echo '?')"
 echo "If this is an isolated worktree for a fan-out, CHECK ITS BASE COMMIT — twelve agents were once cut from main and none saw the integration branch's prep (CONTINUE.md §1). Take your own dev-server port too."

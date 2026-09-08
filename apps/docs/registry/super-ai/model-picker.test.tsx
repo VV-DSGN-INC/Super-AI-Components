@@ -42,7 +42,9 @@ describe("ModelPicker", () => {
   });
 
   it("renders the expanded-cards state as interactive, programmatically-selected rows", () => {
-    render(<ModelPicker presentation="expanded-cards" models={MODELS} selectedId="veo-3-1" onSelect={vi.fn()} />);
+    render(
+      <ModelPicker presentation="expanded-cards" models={MODELS} selectedId="veo-3-1" onSelect={vi.fn()} />,
+    );
 
     const selected = screen.getByRole("button", { name: /Veo 3.1/ });
     expect(selected).toHaveAttribute("aria-pressed", "true");
@@ -53,7 +55,9 @@ describe("ModelPicker", () => {
   it("renders the node-inline state as a compact trigger that opens a popover of rows", async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
-    render(<ModelPicker presentation="node-inline" models={MODELS} selectedId="veo-3-1" onSelect={onSelect} />);
+    render(
+      <ModelPicker presentation="node-inline" models={MODELS} selectedId="veo-3-1" onSelect={onSelect} />,
+    );
 
     const trigger = screen.getByRole("button", { name: "Model: Veo 3.1" });
     await user.click(trigger);
@@ -64,7 +68,9 @@ describe("ModelPicker", () => {
   });
 
   it("badges price, capability and runtime as text, not colour alone — local models surface hardware requirements", () => {
-    render(<ModelPicker presentation="expanded-cards" models={MODELS} selectedId="veo-3-1" onSelect={vi.fn()} />);
+    render(
+      <ModelPicker presentation="expanded-cards" models={MODELS} selectedId="veo-3-1" onSelect={vi.fn()} />,
+    );
 
     expect(screen.getByText(/20\s*credits/)).toBeInTheDocument();
     expect(screen.getByText("Audio")).toBeInTheDocument();

@@ -27,7 +27,12 @@ const CAREFUL: AiToolGroup = {
   label: "Costly or irreversible",
   destructive: true,
   actions: [
-    { id: "regenerate", title: "Regenerate from scratch", description: "Discards every edit", cost: { amount: 2400 } },
+    {
+      id: "regenerate",
+      title: "Regenerate from scratch",
+      description: "Discards every edit",
+      cost: { amount: 2400 },
+    },
     { id: "clear", title: "Clear the layer", description: "Cannot be undone" },
   ],
 };

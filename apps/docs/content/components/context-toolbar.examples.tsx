@@ -1,6 +1,18 @@
 "use client";
 
-import { Bold, Copy, Crop, Italic, Link2, Palette, Scissors, Sparkles, Trash2, Type, Wand2 } from "lucide-react";
+import {
+  Bold,
+  Copy,
+  Crop,
+  Italic,
+  Link2,
+  Palette,
+  Scissors,
+  Sparkles,
+  Trash2,
+  Type,
+  Wand2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ContextToolbar, type ContextToolbarAction } from "@/registry/super-ai/context-toolbar";

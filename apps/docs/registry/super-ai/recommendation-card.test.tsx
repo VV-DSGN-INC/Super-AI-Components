@@ -63,7 +63,9 @@ describe("RecommendationCard", () => {
     await userEvent.click(dismiss);
     expect(h.onDismiss).toHaveBeenCalledOnce();
 
-    const { container } = render(<RecommendationCard title="X" steps={STEPS} dismissed onDismiss={vi.fn()} />);
+    const { container } = render(
+      <RecommendationCard title="X" steps={STEPS} dismissed onDismiss={vi.fn()} />,
+    );
     expect(container.querySelector('[data-slot="recommendation-card"]')).toBeNull();
   });
 

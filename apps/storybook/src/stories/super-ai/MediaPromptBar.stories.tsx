@@ -372,11 +372,11 @@ export const LongContent: Story = {
 
       <section className="flex flex-col gap-2">
         <p className="text-foreground text-xs font-medium">
-          199 characters — past two lines, the field grows
+          259 characters — past two lines, the field grows
         </p>
         <MediaPromptBar
           presentation="floating"
-          value="A slow dolly-in through morning fog toward a lighthouse, shot on 35mm with a shallow depth of field, muted blue-grey palette, gulls crossing the frame twice, no lens flare and no visible camera shake"
+          value="A slow dolly-in through morning fog toward a lighthouse, shot on 35mm with a shallow depth of field, muted blue-grey palette, gulls crossing the frame twice, no lens flare and no visible camera shake, holding on the lamp room for a beat before the horn sounds"
           cost={5}
           onSubmit={() => {}}
         />
@@ -395,6 +395,13 @@ export const LongContent: Story = {
     // The longer one is past the headroom, so growth is what happens instead of
     // a scrollbar. Both halves matter: taller than the floor, and nothing
     // hidden inside it.
+    //
+    // The sample is 259 characters rather than the 199 it started at. How many
+    // lines a string wraps to is font-derived, and 199 crossed the two-line
+    // boundary in the Google-hosted Geist and stopped crossing it in the
+    // self-hosted one — the assertion went red on a fixture that was only just
+    // long enough. Per D21 the fix is a sample that is unambiguously past two
+    // lines in any reasonable stack, not a weaker assertion.
     await expect(long.clientHeight).toBeGreaterThan(short.clientHeight);
     await expect(long.scrollHeight).toBeLessThanOrEqual(long.clientHeight);
   },

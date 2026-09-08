@@ -36,11 +36,7 @@ export const Default: Story = {
     function QualityPicker() {
       const [value, setValue] = React.useState("standard");
       return (
-        <RadioGroup
-          value={value}
-          onValueChange={(v) => setValue(v as string)}
-          className="w-80"
-        >
+        <RadioGroup value={value} onValueChange={(v) => setValue(v as string)} className="w-80">
           {presets.map((preset) => (
             <Label
               key={preset.value}
@@ -49,9 +45,7 @@ export const Default: Story = {
               <RadioGroupItem value={preset.value} className="mt-0.5" />
               <span className="flex flex-col gap-0.5">
                 <span className="text-sm font-medium">{preset.title}</span>
-                <span className="text-xs font-normal text-muted-foreground">
-                  {preset.desc}
-                </span>
+                <span className="text-xs font-normal text-muted-foreground">{preset.desc}</span>
               </span>
             </Label>
           ))}
@@ -68,11 +62,7 @@ export const Inline: Story = {
       const [value, setValue] = React.useState("ultra");
       return (
         <div className="flex flex-col gap-3">
-          <RadioGroup
-            value={value}
-            onValueChange={(v) => setValue(v as string)}
-            className="grid-flow-col"
-          >
+          <RadioGroup value={value} onValueChange={(v) => setValue(v as string)} className="grid-flow-col">
             {presets.map((preset) => (
               <Label
                 key={preset.value}

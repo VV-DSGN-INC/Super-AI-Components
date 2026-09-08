@@ -377,9 +377,7 @@ export const KeyboardOrder: Story = {
 
     const assertVisiblyFocused = async (el: HTMLElement) => {
       const id = nameOf(el);
-      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(
-        `${id} focusVisible=true`,
-      );
+      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(`${id} focusVisible=true`);
       const style = getComputedStyle(el);
       await expect(`${id} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`).toBe(
         `${id} ring=true`,
@@ -399,9 +397,7 @@ export const KeyboardOrder: Story = {
       await userEvent.tab();
       const focused = await settledStop(previous);
       previous = focused;
-      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
-        `${nameOf(focused)} repeat=false`,
-      );
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await assertVisiblyFocused(focused);
       seen.add(focused);
     }
@@ -449,9 +445,7 @@ export const Controlled: Story = {
     await expect(sheet).toBeInTheDocument();
 
     await userEvent.click(await body.findByRole("button", { name: "Close" }));
-    await waitFor(() =>
-      expect(canvas.getByTestId("open-change-calls")).toHaveTextContent("false,false"),
-    );
+    await waitFor(() => expect(canvas.getByTestId("open-change-calls")).toHaveTextContent("false,false"));
 
     // Two dismiss attempts, two callbacks, and the sheet is still on screen
     // because the parent never moved `open`.

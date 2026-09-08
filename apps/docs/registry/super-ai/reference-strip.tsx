@@ -4,7 +4,13 @@ import * as React from "react";
 import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { PreviewTile } from "@/registry/super-ai/preview-tile";
 

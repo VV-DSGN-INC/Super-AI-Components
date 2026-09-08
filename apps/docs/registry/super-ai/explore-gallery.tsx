@@ -239,7 +239,10 @@ function ExploreGalleryTile({
             // text-foreground/70, not text-muted-foreground: the tile sits on
             // bg-card but the media box above it is bg-muted, and this
             // registry keeps shipping the 4.34:1 muted-on-muted pairing.
-            <span data-slot="explore-gallery-item-author" className="text-foreground/70 block truncate text-xs">
+            <span
+              data-slot="explore-gallery-item-author"
+              className="text-foreground/70 block truncate text-xs"
+            >
               {item.author}
             </span>
           ) : null}
@@ -384,7 +387,12 @@ function ExploreGallery({
       </ul>
 
       <div data-slot="explore-gallery-more" className="flex flex-col items-center gap-2 py-4">
-        <p data-slot="explore-gallery-status" role="status" aria-live="polite" className="text-foreground/70 text-xs">
+        <p
+          data-slot="explore-gallery-status"
+          role="status"
+          aria-live="polite"
+          className="text-foreground/70 text-xs"
+        >
           {statusText}
         </p>
         {hasMore ? (

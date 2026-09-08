@@ -59,8 +59,10 @@ const PLACEMENT_SIDE: Record<InlineGeneratePopupPlacement, "top" | "bottom"> = {
   below: "bottom",
 };
 
-interface InlineGeneratePopupProps
-  extends Omit<React.ComponentProps<"div">, "children" | "title" | "onSubmit"> {
+interface InlineGeneratePopupProps extends Omit<
+  React.ComponentProps<"div">,
+  "children" | "title" | "onSubmit"
+> {
   /** Which of the three states to draw. Controlled: the host owns the request. */
   state?: InlineGeneratePopupState;
   /**
@@ -250,8 +252,7 @@ function InlineGeneratePopup({
 
             {context ? (
               <PopoverDescription data-slot="inline-generate-popup-context" className="text-xs">
-                {contextLabel}{" "}
-                <span className="text-foreground font-medium">{context}</span>
+                {contextLabel} <span className="text-foreground font-medium">{context}</span>
               </PopoverDescription>
             ) : null}
 
@@ -289,19 +290,13 @@ function InlineGeneratePopup({
                   so there are no `data-open:animate-in` / `data-closed:animate-out`
                   classes to lose the source-order tie against. */}
               {isGenerating ? (
-                <Loader2
-                  aria-hidden="true"
-                  className="size-3.5 animate-spin motion-reduce:animate-none"
-                />
+                <Loader2 aria-hidden="true" className="size-3.5 animate-spin motion-reduce:animate-none" />
               ) : null}
               {isCancelled ? <Ban aria-hidden="true" className="size-3.5" /> : null}
               {statusText}
             </p>
 
-            <div
-              data-slot="inline-generate-popup-actions"
-              className="flex items-center justify-end gap-2"
-            >
+            <div data-slot="inline-generate-popup-actions" className="flex items-center justify-end gap-2">
               {isGenerating ? (
                 <Button
                   type="button"

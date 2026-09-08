@@ -16,9 +16,7 @@ export const Horizontal: Story = {
     <div className="w-72">
       <div className="space-y-1">
         <h4 className="text-sm font-medium">Nova workspace</h4>
-        <p className="text-sm text-muted-foreground">
-          AI image and chat studio for your team.
-        </p>
+        <p className="text-sm text-muted-foreground">AI image and chat studio for your team.</p>
       </div>
       <Separator className="my-4" />
       <div className="flex items-center gap-3 text-sm text-muted-foreground">

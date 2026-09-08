@@ -8,7 +8,7 @@
 
 The registry carries 31 live foreground-opacity composite sites across 15
 components — `text-foreground/70` ×26, `/60` and `/80` for the rest — and the
-docs *recommend* the device: `generation-wizard.docs.tsx` and
+docs _recommend_ the device: `generation-wizard.docs.tsx` and
 `onboarding-wizard.docs.tsx` both steer consumers away from
 `text-muted-foreground` on muted panes and toward a foreground composite.
 Several component comments defend individual sites the same way.
@@ -36,20 +36,20 @@ gamma-encoded sRGB as the browser composites it. Computed for
 parsing — the sibling repo turned a real 4.32:1 failure into a false 5.5:1
 pass by regex-parsing oklab strings):
 
-| composite | light: bg / card / muted | dark: bg / card / muted |
-| --- | --- | --- |
-| `foreground/50` | **3.71 / 3.71 / 3.65** — AA fail | 5.15 / 5.09 / 4.74 |
-| `foreground/60` | 5.25 / 5.25 / 5.11 | 7.03 / 6.79 / 6.15 |
-| `foreground/70` | 7.63 / 7.63 / 7.33 | 9.33 / 8.82 / 7.82 |
-| `foreground/80` | 11.20 / 11.20 / 10.58 | 12.07 / 11.22 / 9.76 |
-| `muted-foreground` flat | 4.73 / 4.73 / **4.34** | 7.63 / 6.91 / 5.83 |
+| composite               | light: bg / card / muted         | dark: bg / card / muted |
+| ----------------------- | -------------------------------- | ----------------------- |
+| `foreground/50`         | **3.71 / 3.71 / 3.65** — AA fail | 5.15 / 5.09 / 4.74      |
+| `foreground/60`         | 5.25 / 5.25 / 5.11               | 7.03 / 6.79 / 6.15      |
+| `foreground/70`         | 7.63 / 7.63 / 7.33               | 9.33 / 8.82 / 7.82      |
+| `foreground/80`         | 11.20 / 11.20 / 10.58            | 12.07 / 11.22 / 9.76    |
+| `muted-foreground` flat | 4.73 / 4.73 / **4.34**           | 7.63 / 6.91 / 5.83      |
 
 Read it in two directions:
 
 - **Every live site is correct.** `/60`+ clears 4.5:1 on every surface in both
   themes; each of the 31 sites was checked against its actual surface
   (cards, muted panes, `bg-muted/30` tints — all token-derived, no image
-  overlays). The composites *outperform* the token they replace: `/70` on
+  overlays). The composites _outperform_ the token they replace: `/70` on
   muted is 7.33 where flat `muted-foreground` is the infamous 4.34.
 - **`/50` is the cliff.** 3.65–3.71 in light mode — an AA failure the moment
   someone reaches for the roundest number. Nothing catches it today.
@@ -62,7 +62,7 @@ Read it in two directions:
    registry: it cannot mint global text rungs (consumers bring stock shadcn
    tokens; `--warning` is the single sanctioned extra), and its measured
    composites beat its flat alternative. Different constraints, different
-   ruling — the *method* (measure, then gate) transfers, the verdict doesn't.
+   ruling — the _method_ (measure, then gate) transfers, the verdict doesn't.
 2. **The floor is `/60`, and it becomes a blocker.** TOK-8 bans any
    foreground-property composite below the floor or off the pinned set.
 3. **The pinned set is the live set: {60, 70, 80}.** Ratchet semantics: it may
@@ -107,7 +107,7 @@ if the token values ever change; today they are stock shadcn and stable).
   heuristic method's `falsePositives` field.
 - **A consumer's theme differs.** A registry component lands in apps with
   arbitrary palettes; no static rule can promise AA there. The rule promises
-  the floor *for this token set*, which is also what TOK-4/5/6 promise.
+  the floor _for this token set_, which is also what TOK-4/5/6 promise.
 
 ## Verification
 

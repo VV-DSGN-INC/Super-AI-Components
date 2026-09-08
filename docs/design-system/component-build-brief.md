@@ -12,13 +12,13 @@ task, which is how instructions drift.
 You fill five already-scaffolded files. The scaffold (`pnpm new:component
 <name>`) has already created them, with **deliberately failing tests**:
 
-| File | What it is |
-| --- | --- |
-| `apps/docs/registry/super-ai/<name>.tsx` | the component |
-| `apps/docs/registry/super-ai/<name>.test.tsx` | co-located vitest suite, starts red |
-| `apps/docs/components/demos/<name>-demo.tsx` | the docs-site demo |
-| `apps/docs/content/components/<name>.docs.tsx` | the guidance module |
-| `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx` | one story per declared state |
+| File                                                       | What it is                          |
+| ---------------------------------------------------------- | ----------------------------------- |
+| `apps/docs/registry/super-ai/<name>.tsx`                   | the component                       |
+| `apps/docs/registry/super-ai/<name>.test.tsx`              | co-located vitest suite, starts red |
+| `apps/docs/components/demos/<name>-demo.tsx`               | the docs-site demo                  |
+| `apps/docs/content/components/<name>.docs.tsx`             | the guidance module                 |
+| `apps/storybook/src/stories/super-ai/<Pascal>.stories.tsx` | one story per declared state        |
 
 You may also create `apps/docs/content/components/<name>.examples.tsx` — see
 §Guidance below.
@@ -34,6 +34,11 @@ integrator runs the full gates and commits centrally.
 
 **Do run**, from `apps/docs`: `pnpm vitest run registry/super-ai/<name>.test.tsx`,
 `pnpm typecheck`, `pnpm check:tokens`.
+
+**User-facing strings a component owns are written in English, at the call
+site.** Do not invent a labels prop, a translation hook, or a message map — see
+D22. A string a consumer must change belongs in an existing content prop, not in
+a new internationalisation surface.
 
 ## Compose before you build
 
@@ -61,7 +66,7 @@ report with the reason — do not silently reimplement.
 `bg-secondary`.** Those three tokens resolve to the same value, and the pairing
 measures **4.34:1** against a 4.5 minimum. It has failed the gate five separate
 rounds running. Use `text-foreground` (~18:1) or that surface's own foreground
-token. This includes muted text layered *inside* another component whose frame
+token. This includes muted text layered _inside_ another component whose frame
 is `bg-muted` — `preview-tile`'s frame is, for example — and muted text in a
 component you compose that doesn't forward `className` down to the specific
 span you need (see `model-picker.tsx`'s `ENTITY_ROW_SELECTED_DESCRIPTION_FIX`
@@ -81,7 +86,7 @@ you remembering this section.** It flags a bare `text-muted-foreground` and a
 bare `bg-muted`/`bg-accent`/`bg-secondary` (opacity variants included)
 appearing in the same class-list string — your build fails at `check:tokens`,
 before anyone opens a browser, if you write that. It does **not** catch the
-*cross-component* shape — muted text in a child whose ancestor (a different
+_cross-component_ shape — muted text in a child whose ancestor (a different
 element, or a component you're composing) sets the muted background — which
 is how most real instances of this bug have actually shipped. That shape only
 shows up once you run `pnpm test:stories` and axe measures the real computed
@@ -111,7 +116,7 @@ traps that have actually bitten this system:
   **"Inpoint at 3s"** — accname concatenates name-from-content chunks with
   whitespace trimmed and no separator. Two components shipped this on the same
   afternoon. Either set an outright `aria-label`, or mark the visual half
-  `aria-hidden` and put the *complete* phrase in the sr-only span. Assert it
+  `aria-hidden` and put the _complete_ phrase in the sr-only span. Assert it
   with `expectAccessibleName` from `@/lib/test-utils`, not with
   `toHaveTextContent` — text content will not show you the bug.
 
@@ -171,8 +176,8 @@ is `filter-bar.docs.tsx`.
 it has broken the lint gate in consecutive batches. Any literal `'` or `"` in a
 JSX text node must be written as `&apos;` / `&quot;` (or the curly forms). This
 bites hardest in `.examples.tsx` and demo files, where guidance prose quotes
-things — `"Recommended for you"`, `don't`, `you're`. Prose inside a *string
-prop* or in the `.docs.tsx` data module is fine; only JSX text nodes are
+things — `"Recommended for you"`, `don't`, `you're`. Prose inside a _string
+prop_ or in the `.docs.tsx` data module is fine; only JSX text nodes are
 affected.
 
 ## Story

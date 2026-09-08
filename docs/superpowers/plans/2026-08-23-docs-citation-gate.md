@@ -22,18 +22,19 @@
 
 ## File Structure
 
-| File | Responsibility |
-| --- | --- |
-| `apps/docs/scripts/check-citations.mts` | **Create.** Pure extraction/classification + the tree-wide gate main. |
-| `apps/docs/scripts/check-citations.test.ts` | **Create.** The spec's positive/negative controls as unit tests. |
-| `apps/docs/package.json` | **Modify.** `check:contract` chains the new script. |
-| `apps/docs/content/components/*.docs.tsx` | **Modify as the gate directs.** Backlog unknown until the first run. |
+| File                                        | Responsibility                                                        |
+| ------------------------------------------- | --------------------------------------------------------------------- |
+| `apps/docs/scripts/check-citations.mts`     | **Create.** Pure extraction/classification + the tree-wide gate main. |
+| `apps/docs/scripts/check-citations.test.ts` | **Create.** The spec's positive/negative controls as unit tests.      |
+| `apps/docs/package.json`                    | **Modify.** `check:contract` chains the new script.                   |
+| `apps/docs/content/components/*.docs.tsx`   | **Modify as the gate directs.** Backlog unknown until the first run.  |
 
 ---
 
 ### Task 1: Pure functions, failing tests first
 
 **Interfaces:**
+
 - Produces: `classifySpan(span: string): "utility" | "name" | "allowed" | "ignored"`, `extractCitations(docs: unknown): { path: string; span: string }[]`, `slotTargets(source: string): { literals: Set<string>; prefixes: string[] }`, exported `ALLOWED_TERMS: Set<string>`, `UTILITY_PREFIXES: Set<string>`.
 
 - [ ] **Step 1: Write the failing tests** (`check-citations.test.ts`)
@@ -123,4 +124,4 @@ describe("the allow-list is deliberate", () => {
 ## Self-Review Notes
 
 - Spec decisions 1–7 → Task 1 (1, 2, 5-part), Task 2 (3, 4, 6, 7).
-- The PR body flags this as the second bundle transfer and portable in *shape* (the sibling's meta layer) though not in code.
+- The PR body flags this as the second bundle transfer and portable in _shape_ (the sibling's meta layer) though not in code.

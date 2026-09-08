@@ -61,8 +61,7 @@ function defaultStepLabel(step: number, total: number) {
   return `Step ${step} of ${total}`;
 }
 
-interface CoachMarkProps
-  extends Omit<React.ComponentProps<"div">, "title" | "content" | "onChange"> {
+interface CoachMarkProps extends Omit<React.ComponentProps<"div">, "title" | "content" | "onChange"> {
   /**
    * The heading. It is the coach-mark's accessible name — a tour step with no
    * name is announced as an unlabelled dialog, so this is required.
@@ -260,16 +259,11 @@ function CoachMark({
         <PopoverHeader data-slot="coach-mark-header">
           <PopoverTitle data-slot="coach-mark-title">{title}</PopoverTitle>
           {description ? (
-            <PopoverDescription data-slot="coach-mark-description">
-              {description}
-            </PopoverDescription>
+            <PopoverDescription data-slot="coach-mark-description">{description}</PopoverDescription>
           ) : null}
         </PopoverHeader>
 
-        <div
-          data-slot="coach-mark-footer"
-          className="flex flex-wrap items-center justify-between gap-2"
-        >
+        <div data-slot="coach-mark-footer" className="flex flex-wrap items-center justify-between gap-2">
           {/* Mandatory, and text first: the dots are decoration on top of a
               sentence, never the only carrier of "how much is left". */}
           <p data-slot="coach-mark-step" className="flex items-center gap-2 text-xs">
@@ -299,23 +293,12 @@ function CoachMark({
               {skipLabel}
             </PopoverPrimitive.Close>
             {onBack && !isFirst ? (
-              <Button
-                data-slot="coach-mark-back"
-                variant="outline"
-                size="sm"
-                onClick={onBack}
-                type="button"
-              >
+              <Button data-slot="coach-mark-back" variant="outline" size="sm" onClick={onBack} type="button">
                 {backLabel}
               </Button>
             ) : null}
             {onNext ? (
-              <Button
-                data-slot="coach-mark-next"
-                size="sm"
-                onClick={onNext}
-                type="button"
-              >
+              <Button data-slot="coach-mark-next" size="sm" onClick={onNext} type="button">
                 {isLast ? finishLabel : nextLabel}
               </Button>
             ) : null}

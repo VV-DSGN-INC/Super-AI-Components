@@ -5,6 +5,7 @@
 **Goal:** Ship the Flow Kit's 10 modality node presets as registry items (thin compositions over Wave 2's flow L2), the demo app's provider layer (one adapter interface, a stub adapter, four real adapters, seven route handlers), and the Luxury Perfume demo upgrade (seed graph + fetch-based execute + persistence), each through the full definition of done (states · tokens clean · behavior test · demo page · catalog page · registry entry).
 
 **Architecture:** Three concerns, three homes.
+
 1. **Presets (registry items, L3):** `apps/docs/registry/super-ai/flow/<preset>.tsx` (install target `components/super-ai/flow/`). Each preset is a **thin React Flow node component** composing Wave 2's `ai-node` + `media-slot` + `node-prompt` + `model-bar` + `typed-handle` + `port-chip` + `run-button`. Per the master layer rule, presets are L3: they depend on flow L2 + L1 (AI Elements) + L0 (shadcn) **only — never on each other**. They contain zero data fetching and zero raw colors. `track-timeline` lives in its own file (`track-timeline.tsx`), consumed by `composition-node`.
 2. **Provider layer (demo app, NOT registry items):** `apps/docs/lib/flow/adapters/*` + `apps/docs/app/api/generate/*/route.ts`. This is where all fetching lives. Components stay fetch-free; the demo's execute function calls these routes.
 3. **Demo upgrade:** `apps/docs/lib/flow/seed-perfume.ts` + `apps/docs/lib/flow/fetch-execute.ts` + the `/flow` page switched from Wave 2's `stubExecute` to a route-backed execute with `localStorage` persistence and reset-to-seed.
@@ -136,6 +137,7 @@ git commit --allow-empty -m "chore(flow): begin wave-3 presets + provider layer"
 ### Task 1: Provider adapter interface + error normalization
 
 **Files:**
+
 - Create: `apps/docs/lib/flow/adapters/types.ts`
 
 This task defines the shared types every adapter and route imports. It has no test of its own (pure types + a tiny error helper exercised by Task 2's stub test).
@@ -211,6 +213,7 @@ export async function errorFromResponse(res: Response, code: string): Promise<Ge
 ### Task 2: Stub adapter + bundled placeholder media
 
 **Files:**
+
 - Create: `apps/docs/lib/flow/adapters/stub.ts`
 - Create: `apps/docs/lib/flow/adapters/stub.test.ts`
 - Create: `apps/docs/public/stubs/` assets (see Step 4) + `apps/docs/public/stubs/README.md`
@@ -250,7 +253,10 @@ describe("stubAdapter", () => {
 
   it("honors the scripted failure flag", async () => {
     vi.useFakeTimers();
-    const p = stubAdapter.generate(req("image", { options: { failPlease: true } }), new AbortController().signal);
+    const p = stubAdapter.generate(
+      req("image", { options: { failPlease: true } }),
+      new AbortController().signal,
+    );
     const assertion = expect(p).rejects.toThrow(/stub failure/i);
     await vi.runAllTimersAsync();
     await assertion;
@@ -325,6 +331,7 @@ export const stubAdapter: GenerateAdapter & { kind: "stub" } = {
 ### Task 3: Status route + ElevenLabs speech adapter + speech route
 
 **Files:**
+
 - Create: `apps/docs/lib/flow/adapters/elevenlabs.ts` (speech only in this task; sfx/music added in Task 4 — same file, additive)
 - Create: `apps/docs/app/api/generate/status/route.ts`
 - Create: `apps/docs/app/api/generate/speech/route.ts`
@@ -344,14 +351,19 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe("elevenSpeechAdapter", () => {
   it("POSTs to /v1/text-to-speech/{voice_id} with text + model_id and returns an object url", async () => {
-    const fetchMock = vi.fn(async () =>
-      new Response(new Blob([new Uint8Array([1, 2, 3])], { type: "audio/mpeg" }), { status: 200 }),
+    const fetchMock = vi.fn(
+      async () =>
+        new Response(new Blob([new Uint8Array([1, 2, 3])], { type: "audio/mpeg" }), { status: 200 }),
     );
     vi.stubGlobal("fetch", fetchMock);
     vi.stubGlobal("URL", { ...URL, createObjectURL: vi.fn(() => "blob:fake") });
 
     const out = await elevenSpeechAdapter("k").generate(
-      { kind: "speech", prompt: "Hello there", options: { voiceId: "Roger", modelId: "eleven_multilingual_v2" } },
+      {
+        kind: "speech",
+        prompt: "Hello there",
+        options: { voiceId: "Roger", modelId: "eleven_multilingual_v2" },
+      },
       new AbortController().signal,
     );
 
@@ -364,7 +376,10 @@ describe("elevenSpeechAdapter", () => {
   });
 
   it("normalizes a non-ok response into a thrown Error with status text", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 401, statusText: "Unauthorized" })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("nope", { status: 401, statusText: "Unauthorized" })),
+    );
     await expect(
       elevenSpeechAdapter("k").generate({ kind: "speech", prompt: "x" }, new AbortController().signal),
     ).rejects.toThrow(/401/);
@@ -384,7 +399,12 @@ describe("GET /api/generate/status", () => {
   it("reports stub for every provider when no keys are set", async () => {
     const body = await (await GET()).json();
     expect(body.providers).toEqual({
-      image: "stub", video: "stub", speech: "stub", sfx: "stub", music: "stub", llm: "stub",
+      image: "stub",
+      video: "stub",
+      speech: "stub",
+      sfx: "stub",
+      music: "stub",
+      llm: "stub",
     });
   });
   it("flips ElevenLabs-backed providers to live when ELEVENLABS_API_KEY is present", async () => {
@@ -498,10 +518,7 @@ import { toGenerateError, type GenerateAdapter, type GenerateRequest } from "./t
  * (i.e. its env key was present) else the stub, run with the request's AbortSignal,
  * and normalize failures to { code, message } with the right HTTP status.
  */
-export async function runGenerateRoute(
-  request: Request,
-  real: GenerateAdapter | null,
-): Promise<Response> {
+export async function runGenerateRoute(request: Request, real: GenerateAdapter | null): Promise<Response> {
   let body: GenerateRequest;
   try {
     body = (await request.json()) as GenerateRequest;
@@ -539,6 +556,7 @@ export async function POST(request: Request) {
 ### Task 4: Remaining adapters + routes (sfx, music, image, llm, video)
 
 **Files:**
+
 - Modify: `apps/docs/lib/flow/adapters/elevenlabs.ts` (add `elevenSfxAdapter`, `elevenMusicAdapter` — reuse `postAudio`)
 - Create: `apps/docs/lib/flow/adapters/gateway.ts` (image + llm via `ai` SDK)
 - Create: `apps/docs/lib/flow/adapters/fal.ts` (video via fal queue)
@@ -555,16 +573,26 @@ Append to `elevenlabs.test.ts`:
 ```ts
 describe("elevenSfxAdapter", () => {
   it("POSTs to /v1/sound-generation with text, duration_seconds, prompt_influence, loop", async () => {
-    const fetchMock = vi.fn(async () => new Response(new Blob([new Uint8Array([1])], { type: "audio/mpeg" })));
+    const fetchMock = vi.fn(
+      async () => new Response(new Blob([new Uint8Array([1])], { type: "audio/mpeg" })),
+    );
     vi.stubGlobal("fetch", fetchMock);
     vi.stubGlobal("URL", { ...URL, createObjectURL: vi.fn(() => "blob:sfx") });
     const out = await elevenSfxAdapter("k").generate(
-      { kind: "sfx", prompt: "rain on a window", options: { durationSeconds: "auto", promptInfluence: 0.3, loop: true } },
+      {
+        kind: "sfx",
+        prompt: "rain on a window",
+        options: { durationSeconds: "auto", promptInfluence: 0.3, loop: true },
+      },
       new AbortController().signal,
     );
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("https://api.elevenlabs.io/v1/sound-generation");
-    expect(JSON.parse(init.body)).toMatchObject({ text: "rain on a window", prompt_influence: 0.3, loop: true });
+    expect(JSON.parse(init.body)).toMatchObject({
+      text: "rain on a window",
+      prompt_influence: 0.3,
+      loop: true,
+    });
     // "auto" duration is omitted (let the model choose), not sent as a string
     expect(JSON.parse(init.body).duration_seconds).toBeUndefined();
     expect(out).toMatchObject({ kind: "sfx", url: "blob:sfx", provider: "live" });
@@ -573,7 +601,9 @@ describe("elevenSfxAdapter", () => {
 
 describe("elevenMusicAdapter", () => {
   it("POSTs to /v1/music with prompt + music_length_ms", async () => {
-    const fetchMock = vi.fn(async () => new Response(new Blob([new Uint8Array([1])], { type: "audio/mpeg" })));
+    const fetchMock = vi.fn(
+      async () => new Response(new Blob([new Uint8Array([1])], { type: "audio/mpeg" })),
+    );
     vi.stubGlobal("fetch", fetchMock);
     vi.stubGlobal("URL", { ...URL, createObjectURL: vi.fn(() => "blob:music") });
     const out = await elevenMusicAdapter("k").generate(
@@ -919,11 +949,18 @@ import { Background, ReactFlow, type Node } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { TextNode } from "@/registry/super-ai/flow/text-node";
 
-const nodes: Node[] = [{ id: "t", type: "text", position: { x: 40, y: 30 }, data: { value: "A luxury perfume, golden hour" } }];
+const nodes: Node[] = [
+  { id: "t", type: "text", position: { x: 40, y: 30 }, data: { value: "A luxury perfume, golden hour" } },
+];
 export default function TextNodeDemo() {
   return (
     <div className="h-56 rounded-lg border">
-      <ReactFlow defaultNodes={nodes} nodeTypes={{ text: TextNode }} fitView proOptions={{ hideAttribution: true }}>
+      <ReactFlow
+        defaultNodes={nodes}
+        nodeTypes={{ text: TextNode }}
+        fitView
+        proOptions={{ hideAttribution: true }}
+      >
         <Background />
       </ReactFlow>
     </div>
@@ -1016,13 +1053,22 @@ export function LlmNode({ id, data, selected }: NodeProps & { data: LlmNodeData 
       media={<MediaSlot kind="text" status={data.status} emptyText="Generated text will appear here" />}
       footer={<RunButton status={data.status} onRun={() => data.onRun?.()} onStop={() => data.onStop?.()} />}
     >
-      <NodePrompt value={data.prompt} onChange={(v) => data.onPromptChange?.(v)} placeholder="Instructions…" />
+      <NodePrompt
+        value={data.prompt}
+        onChange={(v) => data.onPromptChange?.(v)}
+        placeholder="Instructions…"
+      />
       <ModelBar
         className="mt-2"
         disabled={data.status === "streaming"}
         onChange={(patch) => data.onSettingChange?.(patch)}
         segments={[
-          { kind: "model", id: "model", value: data.model ?? "Gemini 3.5 Flash", options: [{ value: data.model ?? "Gemini 3.5 Flash", label: data.model ?? "Gemini 3.5 Flash" }] },
+          {
+            kind: "model",
+            id: "model",
+            value: data.model ?? "Gemini 3.5 Flash",
+            options: [{ value: data.model ?? "Gemini 3.5 Flash", label: data.model ?? "Gemini 3.5 Flash" }],
+          },
           { kind: "toggle", id: "thinking", label: "Thinking", value: data.thinking ?? false },
           { kind: "duration", id: "length", value: data.length ?? "auto", options: [256, 512, 1024] },
         ]}
@@ -1061,7 +1107,11 @@ import { ImageNode } from "./image-node";
 
 const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
 const props = (data = {}) =>
-  ({ id: "n1", data: { prompt: "", status: "idle", model: "Nano Banana 2", ...data }, selected: false }) as never;
+  ({
+    id: "n1",
+    data: { prompt: "", status: "idle", model: "Nano Banana 2", ...data },
+    selected: false,
+  }) as never;
 
 describe("ImageNode", () => {
   it("renders model-bar segments model · aspect · resolution · quality and image OUT", () => {
@@ -1125,25 +1175,60 @@ export function ImageNode({ id, data, selected }: NodeProps & { data: ImageNodeD
       selected={selected}
       size="md"
       data-slot="image-node"
-      media={<MediaSlot kind="image" status={data.status} src={data.src} alt="Generated image" emptyText="Your generation will appear here" />}
+      media={
+        <MediaSlot
+          kind="image"
+          status={data.status}
+          src={data.src}
+          alt="Generated image"
+          emptyText="Your generation will appear here"
+        />
+      }
       footer={<RunButton status={data.status} onRun={() => data.onRun?.()} onStop={() => data.onStop?.()} />}
     >
-      <NodePrompt value={data.prompt} onChange={(v) => data.onPromptChange?.(v)} placeholder="Describe the image…" />
+      <NodePrompt
+        value={data.prompt}
+        onChange={(v) => data.onPromptChange?.(v)}
+        placeholder="Describe the image…"
+      />
       <ModelBar
         className="mt-2"
         disabled={data.status === "streaming"}
         onChange={(patch) => data.onSettingChange?.(patch)}
         segments={[
-          { kind: "model", id: "model", value: data.model ?? "Nano Banana 2", options: [{ value: data.model ?? "Nano Banana 2", label: data.model ?? "Nano Banana 2" }] },
+          {
+            kind: "model",
+            id: "model",
+            value: data.model ?? "Nano Banana 2",
+            options: [{ value: data.model ?? "Nano Banana 2", label: data.model ?? "Nano Banana 2" }],
+          },
           { kind: "aspect", id: "aspect", value: data.aspect ?? "16:9", options: ["1:1", "16:9", "9:16"] },
           { kind: "resolution", id: "resolution", value: data.resolution ?? "1K", options: ["1K", "2K"] },
-          { kind: "quality", id: "quality", value: data.quality ?? "Standard", options: ["Standard", "High"] },
+          {
+            kind: "quality",
+            id: "quality",
+            value: data.quality ?? "Standard",
+            options: ["Standard", "High"],
+          },
         ]}
       />
       {Array.from({ length: imageInputs }).map((_, i) => (
-        <TypedHandle key={i} nodeId={id} dataType="image" type="target" position={Position.Left} top={28 + i * 22} />
+        <TypedHandle
+          key={i}
+          nodeId={id}
+          dataType="image"
+          type="target"
+          position={Position.Left}
+          top={28 + i * 22}
+        />
       ))}
-      <TypedHandle nodeId={id} dataType="text" type="target" position={Position.Left} top={28 + imageInputs * 22} />
+      <TypedHandle
+        nodeId={id}
+        dataType="text"
+        type="target"
+        position={Position.Left}
+        top={28 + imageInputs * 22}
+      />
       <TypedHandle nodeId={id} dataType="image" type="source" position={Position.Right} />
     </AiNode>
   );
@@ -1176,7 +1261,11 @@ import { VideoNode } from "./video-node";
 
 const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
 const props = (data = {}) =>
-  ({ id: "n1", data: { prompt: "", status: "idle", model: "LTX 2.3", runtime: "local", ...data }, selected: false }) as never;
+  ({
+    id: "n1",
+    data: { prompt: "", status: "idle", model: "LTX 2.3", runtime: "local", ...data },
+    selected: false,
+  }) as never;
 
 describe("VideoNode", () => {
   it("renders image IN, text IN and video OUT", () => {
@@ -1239,18 +1328,39 @@ export function VideoNode({ id, data, selected }: NodeProps & { data: VideoNodeD
       selected={selected}
       size="md"
       data-slot="video-node"
-      media={<MediaSlot kind="video" status={data.status} src={data.src} emptyText="Your generation will appear here" />}
+      media={
+        <MediaSlot
+          kind="video"
+          status={data.status}
+          src={data.src}
+          emptyText="Your generation will appear here"
+        />
+      }
       footer={<RunButton status={data.status} onRun={() => data.onRun?.()} onStop={() => data.onStop?.()} />}
     >
-      <NodePrompt value={data.prompt} onChange={(v) => data.onPromptChange?.(v)} placeholder="Describe the motion…" />
+      <NodePrompt
+        value={data.prompt}
+        onChange={(v) => data.onPromptChange?.(v)}
+        placeholder="Describe the motion…"
+      />
       <ModelBar
         className="mt-2"
         disabled={data.status === "streaming"}
         onChange={(patch) => data.onSettingChange?.(patch)}
         segments={[
-          { kind: "model", id: "model", value: data.model ?? "LTX 2.3", options: [{ value: data.model ?? "LTX 2.3", label: data.model ?? "LTX 2.3" }] },
+          {
+            kind: "model",
+            id: "model",
+            value: data.model ?? "LTX 2.3",
+            options: [{ value: data.model ?? "LTX 2.3", label: data.model ?? "LTX 2.3" }],
+          },
           { kind: "aspect", id: "aspect", value: data.aspect ?? "16:9", options: ["1:1", "16:9", "9:16"] },
-          { kind: "resolution", id: "resolution", value: data.resolution ?? "720p", options: ["480p", "720p", "1080p"] },
+          {
+            kind: "resolution",
+            id: "resolution",
+            value: data.resolution ?? "720p",
+            options: ["480p", "720p", "1080p"],
+          },
           { kind: "duration", id: "duration", value: data.duration ?? 4, options: [4, 6, 8] },
           { kind: "toggle", id: "mute", label: "Mute", value: data.mute ?? false },
         ]}
@@ -1289,7 +1399,11 @@ import { TtsNode } from "./tts-node";
 const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
 const voice = { id: "roger", name: "Roger", descriptors: ["Laid-Back", "Casual", "Resonant"] };
 const props = (data = {}) =>
-  ({ id: "n1", data: { script: "", status: "idle", model: "Eleven Multilingual v2", voice, ...data }, selected: false }) as never;
+  ({
+    id: "n1",
+    data: { script: "", status: "idle", model: "Eleven Multilingual v2", voice, ...data },
+    selected: false,
+  }) as never;
 
 describe("TtsNode", () => {
   it("renders the voice row with name and descriptors", () => {
@@ -1350,9 +1464,17 @@ function VoiceSelector({ voice, onClick }: { voice: Voice; onClick?: () => void 
       data-slot="voice-selector"
       aria-label="Change voice"
       onClick={onClick}
-      className={cn("flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-xs", "hover:bg-accent")}
+      className={cn(
+        "flex w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left text-xs",
+        "hover:bg-accent",
+      )}
     >
-      <span aria-hidden data-slot="voice-avatar" className="size-5 shrink-0 rounded-full" style={{ background: "var(--flow-audio)" }} />
+      <span
+        aria-hidden
+        data-slot="voice-avatar"
+        className="size-5 shrink-0 rounded-full"
+        style={{ background: "var(--flow-audio)" }}
+      />
       <span className="flex min-w-0 flex-col">
         <span className="font-medium">{voice.name}</span>
         <span className="text-muted-foreground truncate">{voice.descriptors.join(", ")}</span>
@@ -1371,11 +1493,18 @@ export function TtsNode({ id, data, selected }: NodeProps & { data: TtsNodeData 
       selected={selected}
       size="sm"
       data-slot="tts-node"
-      media={<MediaSlot kind="audio" status={data.status} src={data.src} emptyText="Your audio will appear here" />}
+      media={
+        <MediaSlot kind="audio" status={data.status} src={data.src} emptyText="Your audio will appear here" />
+      }
       footer={<RunButton status={data.status} onRun={() => data.onRun?.()} onStop={() => data.onStop?.()} />}
     >
       <VoiceSelector voice={data.voice} onClick={data.onVoiceClick} />
-      <NodePrompt className="mt-2" value={data.script} onChange={(v) => data.onScriptChange?.(v)} placeholder="Script to speak…" />
+      <NodePrompt
+        className="mt-2"
+        value={data.script}
+        onChange={(v) => data.onScriptChange?.(v)}
+        placeholder="Script to speak…"
+      />
       <TypedHandle nodeId={id} dataType="text" type="target" position={Position.Left} />
       <TypedHandle nodeId={id} dataType="audio" type="source" position={Position.Right} />
     </AiNode>
@@ -1407,7 +1536,19 @@ import { SfxNode } from "./sfx-node";
 
 const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
 const props = (data = {}) =>
-  ({ id: "n1", data: { prompt: "", status: "idle", model: "Eleven SFX", loop: false, duration: "auto", promptInfluence: 30, ...data }, selected: false }) as never;
+  ({
+    id: "n1",
+    data: {
+      prompt: "",
+      status: "idle",
+      model: "Eleven SFX",
+      loop: false,
+      duration: "auto",
+      promptInfluence: 30,
+      ...data,
+    },
+    selected: false,
+  }) as never;
 
 describe("SfxNode", () => {
   it("renders loop toggle, Auto duration, and percent influence segments", () => {
@@ -1463,10 +1604,21 @@ export function SfxNode({ id, data, selected }: NodeProps & { data: SfxNodeData 
       selected={selected}
       size="sm"
       data-slot="sfx-node"
-      media={<MediaSlot kind="audio" status={data.status} src={data.src} emptyText="Your sound effect will appear here" />}
+      media={
+        <MediaSlot
+          kind="audio"
+          status={data.status}
+          src={data.src}
+          emptyText="Your sound effect will appear here"
+        />
+      }
       footer={<RunButton status={data.status} onRun={() => data.onRun?.()} onStop={() => data.onStop?.()} />}
     >
-      <NodePrompt value={data.prompt} onChange={(v) => data.onPromptChange?.(v)} placeholder="Describe the sound…" />
+      <NodePrompt
+        value={data.prompt}
+        onChange={(v) => data.onPromptChange?.(v)}
+        placeholder="Describe the sound…"
+      />
       <ModelBar
         className="mt-2"
         disabled={data.status === "streaming"}
@@ -1474,7 +1626,12 @@ export function SfxNode({ id, data, selected }: NodeProps & { data: SfxNodeData 
         segments={[
           { kind: "toggle", id: "loop", label: "Loop", value: data.loop ?? false },
           { kind: "duration", id: "duration", value: data.duration ?? "auto", options: [2, 5, 10] },
-          { kind: "percent", id: "promptInfluence", label: "Prompt influence", value: data.promptInfluence ?? 30 },
+          {
+            kind: "percent",
+            id: "promptInfluence",
+            label: "Prompt influence",
+            value: data.promptInfluence ?? 30,
+          },
         ]}
       />
       <TypedHandle nodeId={id} dataType="text" type="target" position={Position.Left} />
@@ -1511,7 +1668,11 @@ import { MusicNode } from "./music-node";
 
 const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
 const props = (data = {}) =>
-  ({ id: "n1", data: { prompt: "", lyrics: "", status: "idle", model: "Eleven Music", showLyrics: false, ...data }, selected: false }) as never;
+  ({
+    id: "n1",
+    data: { prompt: "", lyrics: "", status: "idle", model: "Eleven Music", showLyrics: false, ...data },
+    selected: false,
+  }) as never;
 
 describe("MusicNode", () => {
   it("hides the lyrics field until the lyrics toggle is on", () => {
@@ -1581,13 +1742,23 @@ export function MusicNode({ id, data, selected }: NodeProps & { data: MusicNodeD
       selected={selected}
       size="sm"
       data-slot="music-node"
-      media={<MediaSlot kind="audio" status={data.status} src={data.src} emptyText="Your music will appear here" />}
+      media={
+        <MediaSlot kind="audio" status={data.status} src={data.src} emptyText="Your music will appear here" />
+      }
       footer={<RunButton status={data.status} onRun={() => data.onRun?.()} onStop={() => data.onStop?.()} />}
     >
-      <NodePrompt value={data.prompt} onChange={(v) => data.onPromptChange?.(v)} placeholder="Describe the track…" />
+      <NodePrompt
+        value={data.prompt}
+        onChange={(v) => data.onPromptChange?.(v)}
+        placeholder="Describe the track…"
+      />
       <label data-slot="music-lyrics-toggle" className="mt-2 flex items-center justify-between text-xs">
         <span>Lyrics</span>
-        <Switch aria-label="Lyrics" checked={data.showLyrics ?? false} onCheckedChange={(v) => data.onToggleLyrics?.(v)} />
+        <Switch
+          aria-label="Lyrics"
+          checked={data.showLyrics ?? false}
+          onCheckedChange={(v) => data.onToggleLyrics?.(v)}
+        />
       </label>
       {data.showLyrics ? (
         <textarea
@@ -1595,7 +1766,10 @@ export function MusicNode({ id, data, selected }: NodeProps & { data: MusicNodeD
           value={data.lyrics}
           onChange={(e) => data.onLyricsChange?.(e.target.value)}
           placeholder="Add your lyrics here or leave blank to infer from prompt"
-          className={cn("mt-1 min-h-16 w-full resize-none rounded-md border bg-transparent px-2 py-1.5 text-xs", "focus-visible:ring-ring outline-none focus-visible:ring-2")}
+          className={cn(
+            "mt-1 min-h-16 w-full resize-none rounded-md border bg-transparent px-2 py-1.5 text-xs",
+            "focus-visible:ring-ring outline-none focus-visible:ring-2",
+          )}
         />
       ) : null}
       <ModelBar
@@ -1603,7 +1777,12 @@ export function MusicNode({ id, data, selected }: NodeProps & { data: MusicNodeD
         disabled={data.status === "streaming"}
         onChange={(patch) => data.onSettingChange?.(patch)}
         segments={[
-          { kind: "model", id: "model", value: data.model ?? "Eleven Music", options: [{ value: data.model ?? "Eleven Music", label: data.model ?? "Eleven Music" }] },
+          {
+            kind: "model",
+            id: "model",
+            value: data.model ?? "Eleven Music",
+            options: [{ value: data.model ?? "Eleven Music", label: data.model ?? "Eleven Music" }],
+          },
           { kind: "duration", id: "duration", value: data.duration ?? "auto", options: [10, 20, 30] },
         ]}
       />
@@ -1655,7 +1834,14 @@ describe("TrackTimeline", () => {
   it("fires onToggleMute for a track and onAddTrack for the add row", async () => {
     const onToggleMute = vi.fn();
     const onAddTrack = vi.fn();
-    render(<TrackTimeline tracks={tracks} durationSeconds={28} onToggleMute={onToggleMute} onAddTrack={onAddTrack} />);
+    render(
+      <TrackTimeline
+        tracks={tracks}
+        durationSeconds={28}
+        onToggleMute={onToggleMute}
+        onAddTrack={onAddTrack}
+      />,
+    );
     await userEvent.click(screen.getByRole("button", { name: "Mute Video" }));
     await userEvent.click(screen.getByRole("button", { name: "Add audio track" }));
     expect(onToggleMute).toHaveBeenCalledWith("v");
@@ -1679,7 +1865,12 @@ const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowP
 const props = (data = {}) =>
   ({
     id: "n1",
-    data: { status: "idle", durationSeconds: 28, tracks: [{ id: "v", label: "Video", dataType: "video", muted: false }], ...data },
+    data: {
+      status: "idle",
+      durationSeconds: 28,
+      tracks: [{ id: "v", label: "Video", dataType: "video", muted: false }],
+      ...data,
+    },
     selected: false,
   }) as never;
 
@@ -1722,7 +1913,13 @@ export interface TrackTimelineProps {
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
-export function TrackTimeline({ tracks, durationSeconds, onToggleMute, onAddTrack, className }: TrackTimelineProps) {
+export function TrackTimeline({
+  tracks,
+  durationSeconds,
+  onToggleMute,
+  onAddTrack,
+  className,
+}: TrackTimelineProps) {
   const ticks = Array.from({ length: 5 }, (_, i) => Math.round((durationSeconds / 4) * i));
   return (
     <div data-slot="track-timeline" className={cn("flex flex-col gap-1", className)}>
@@ -1732,7 +1929,10 @@ export function TrackTimeline({ tracks, durationSeconds, onToggleMute, onAddTrac
         ))}
       </div>
       {tracks.length === 0 ? (
-        <p data-slot="track-empty" className="text-muted-foreground rounded-md border border-dashed px-2 py-3 text-center text-xs">
+        <p
+          data-slot="track-empty"
+          className="text-muted-foreground rounded-md border border-dashed px-2 py-3 text-center text-xs"
+        >
           Connect video and audio nodes
         </p>
       ) : (
@@ -1746,7 +1946,11 @@ export function TrackTimeline({ tracks, durationSeconds, onToggleMute, onAddTrac
               className="flex items-center gap-2 rounded-md border px-2 py-1"
               style={{ background: `color-mix(in oklch, var(${cssVar}) 12%, transparent)` }}
             >
-              <span aria-hidden className="size-1.5 shrink-0 rounded-full" style={{ background: `var(${cssVar})` }} />
+              <span
+                aria-hidden
+                className="size-1.5 shrink-0 rounded-full"
+                style={{ background: `var(${cssVar})` }}
+              />
               <span className="flex-1 truncate text-[11px]" style={{ color: `var(${cssVar})` }}>
                 {track.label}
               </span>
@@ -1809,7 +2013,14 @@ export function CompositionNode({ id, data, selected }: NodeProps & { data: Comp
       selected={selected}
       size="lg"
       data-slot="composition-node"
-      media={<MediaSlot kind="video" status={data.status} src={data.src} emptyText="Your generation will appear here" />}
+      media={
+        <MediaSlot
+          kind="video"
+          status={data.status}
+          src={data.src}
+          emptyText="Your generation will appear here"
+        />
+      }
     >
       <TrackTimeline
         tracks={data.tracks}
@@ -1829,7 +2040,7 @@ export function CompositionNode({ id, data, selected }: NodeProps & { data: Comp
 - [ ] **Step 7: Register both** —
   - `track-timeline`: `registryDependencies: [self("flow-types")]`, npm `["lucide-react"]`.
   - `composition-node`: `registryDependencies: [self("ai-node"), self("media-slot"), self("typed-handle"), self("track-timeline"), self("flow-types")]`, npm `["@xyflow/react"]`.
-  Rebuild; expect `public/r/track-timeline.json` + `public/r/composition-node.json`.
+    Rebuild; expect `public/r/track-timeline.json` + `public/r/composition-node.json`.
 - [ ] **Step 8: Commit** — `git add -A && git commit -m "feat(flow): track-timeline + composition-node presets"`
 
 ---
@@ -1851,7 +2062,8 @@ import { describe, expect, it, vi } from "vitest";
 import { AssetOutputNode } from "./asset-output-node";
 
 const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
-const props = (data = {}) => ({ id: "n1", data: { folder: "Perfume Ad", status: "idle", ...data }, selected: false }) as never;
+const props = (data = {}) =>
+  ({ id: "n1", data: { folder: "Perfume Ad", status: "idle", ...data }, selected: false }) as never;
 
 describe("AssetOutputNode", () => {
   it("renders the routing explainer and a folder field, with an IN port and no OUT", () => {
@@ -1892,8 +2104,18 @@ export interface AssetOutputNodeData {
 
 export function AssetOutputNode({ id, data, selected }: NodeProps & { data: AssetOutputNodeData }) {
   return (
-    <AiNode id={id} title="Asset Output" status={data.status} selected={selected} size="sm" data-slot="asset-output-node">
-      <div data-slot="asset-output-routing" className="text-muted-foreground flex items-center gap-1.5 text-[11px]">
+    <AiNode
+      id={id}
+      title="Asset Output"
+      status={data.status}
+      selected={selected}
+      size="sm"
+      data-slot="asset-output-node"
+    >
+      <div
+        data-slot="asset-output-routing"
+        className="text-muted-foreground flex items-center gap-1.5 text-[11px]"
+      >
         <FolderInput aria-hidden className="size-3.5 shrink-0" />
         <span>results go to → Assets/{data.folder || "…"}</span>
       </div>
@@ -1904,7 +2126,10 @@ export function AssetOutputNode({ id, data, selected }: NodeProps & { data: Asse
           value={data.folder}
           onChange={(e) => data.onFolderChange?.(e.target.value)}
           placeholder="Folder name"
-          className={cn("w-full rounded-md border bg-transparent px-2 py-1 text-xs", "focus-visible:ring-ring outline-none focus-visible:ring-2")}
+          className={cn(
+            "w-full rounded-md border bg-transparent px-2 py-1 text-xs",
+            "focus-visible:ring-ring outline-none focus-visible:ring-2",
+          )}
         />
       </label>
       <TypedHandle nodeId={id} dataType={data.accepts ?? "video"} type="target" position={Position.Left} />
@@ -1937,7 +2162,12 @@ import { describe, expect, it, vi } from "vitest";
 import { ReferenceNode } from "./reference-node";
 
 const wrap = (ui: React.ReactNode) => render(<ReactFlowProvider>{ui}</ReactFlowProvider>);
-const props = (data = {}) => ({ id: "n1", data: { variant: "image-input", status: "idle", url: "", ...data }, selected: false }) as never;
+const props = (data = {}) =>
+  ({
+    id: "n1",
+    data: { variant: "image-input", status: "idle", url: "", ...data },
+    selected: false,
+  }) as never;
 
 describe("ReferenceNode", () => {
   it("image-input variant titles correctly and exposes an image OUT port", () => {
@@ -2000,7 +2230,15 @@ export function ReferenceNode({ id, data, selected }: NodeProps & { data: Refere
       selected={selected}
       size="sm"
       data-slot="reference-node"
-      media={<MediaSlot kind="image" status={data.src ? "done" : "idle"} src={data.src} alt={meta.title} emptyText="Pick an asset" />}
+      media={
+        <MediaSlot
+          kind="image"
+          status={data.src ? "done" : "idle"}
+          src={data.src}
+          alt={meta.title}
+          emptyText="Pick an asset"
+        />
+      }
     >
       <label data-slot="reference-upload" className="mt-1 block text-[11px]">
         <span className="sr-only">Upload asset</span>
@@ -2017,7 +2255,10 @@ export function ReferenceNode({ id, data, selected }: NodeProps & { data: Refere
         value={data.url}
         onChange={(e) => data.onUrlChange?.(e.target.value)}
         placeholder="…or paste an image URL"
-        className={cn("mt-1 w-full rounded-md border bg-transparent px-2 py-1 text-xs", "focus-visible:ring-ring outline-none focus-visible:ring-2")}
+        className={cn(
+          "mt-1 w-full rounded-md border bg-transparent px-2 py-1 text-xs",
+          "focus-visible:ring-ring outline-none focus-visible:ring-2",
+        )}
       />
       <TypedHandle nodeId={id} dataType={meta.outType} type="source" position={Position.Right} />
     </AiNode>
@@ -2037,6 +2278,7 @@ export function ReferenceNode({ id, data, selected }: NodeProps & { data: Refere
 ### Task 15: Seed graph + fetch-based execute
 
 **Files:**
+
 - Create: `apps/docs/lib/flow/seed-perfume.ts`
 - Create: `apps/docs/lib/flow/fetch-execute.ts`
 - Create: `apps/docs/lib/flow/fetch-execute.test.ts`
@@ -2064,11 +2306,18 @@ describe("createFetchExecute", () => {
     );
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe("/api/generate/image");
-    expect(JSON.parse(init.body)).toMatchObject({ kind: "image", prompt: "a bottle", inputs: { up: { url: "blob:up" } } });
+    expect(JSON.parse(init.body)).toMatchObject({
+      kind: "image",
+      prompt: "a bottle",
+      inputs: { up: { url: "blob:up" } },
+    });
     expect(out).toMatchObject({ url: "blob:x", kind: "image" });
   });
   it("throws a normalized error when the route returns an error body", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ code: "elevenlabs_speech_error", message: "401" }, { status: 502 })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => Response.json({ code: "elevenlabs_speech_error", message: "401" }, { status: 502 })),
+    );
     const execute = createFetchExecute();
     await expect(
       execute(node("n1", { kind: "speech", prompt: "x" }), {}, new AbortController().signal),
@@ -2096,7 +2345,11 @@ import type { NodeOutput, RunnerNode } from "@/registry/super-ai/flow/use-flow-r
 type Inputs = Record<string, { url?: string; text?: string; kind?: string }>;
 
 export function createFetchExecute() {
-  return async function fetchExecute(node: RunnerNode, inputs: Inputs, signal: AbortSignal): Promise<NodeOutput> {
+  return async function fetchExecute(
+    node: RunnerNode,
+    inputs: Inputs,
+    signal: AbortSignal,
+  ): Promise<NodeOutput> {
     const kind = String(node.data.kind ?? "image");
     const prompt = String(node.data.prompt ?? node.data.script ?? node.data.lyrics ?? "");
     const res = await fetch(`/api/generate/${kind}`, {
@@ -2129,30 +2382,170 @@ const roger = { id: "roger", name: "Roger", descriptors: ["Laid-Back", "Casual",
 
 export function seedPerfumeGraph(): SeedGraph {
   const nodes: Node[] = [
-    { id: "img-a", type: "image", position: { x: 0, y: 0 }, data: { kind: "image", status: "idle", model: "Nano Banana 2", prompt: "A crystal perfume bottle on marble, golden hour" } },
-    { id: "img-b", type: "image", position: { x: 0, y: 220 }, data: { kind: "image", status: "idle", model: "Nano Banana 2", prompt: "Soft silk fabric backdrop, warm tones" } },
-    { id: "combine", type: "image", position: { x: 360, y: 110 }, data: { kind: "image", status: "idle", model: "Nano Banana 2", maxImageInputs: 2, prompt: "Bottle from @1 resting on fabric from @2" } },
-    { id: "video", type: "video", position: { x: 720, y: 110 }, data: { kind: "video", status: "idle", model: "LTX 2.3", runtime: "local", prompt: "Slow dolly-in on the bottle, light glints" } },
-    { id: "script", type: "text", position: { x: 0, y: 460 }, data: { value: "Discover the new signature scent." } },
-    { id: "tts", type: "tts", position: { x: 360, y: 460 }, data: { kind: "speech", status: "idle", model: "Eleven Multilingual v2", voice: roger, script: "Discover the new signature scent." } },
-    { id: "sfx", type: "sfx", position: { x: 360, y: 660 }, data: { kind: "sfx", status: "idle", model: "Eleven SFX", loop: false, duration: "auto", promptInfluence: 30, prompt: "A soft glass chime and gentle ambience" } },
-    { id: "music", type: "music", position: { x: 360, y: 860 }, data: { kind: "music", status: "idle", model: "Eleven Music", showLyrics: false, duration: "auto", prompt: "Warm cinematic lo-fi bed, elegant" } },
-    { id: "comp", type: "composition", position: { x: 1080, y: 360 }, data: { status: "idle", durationSeconds: 28, tracks: [
-      { id: "t-video", label: "Video", dataType: "video", muted: false },
-      { id: "t-tts", label: "Text to Speech", dataType: "audio", muted: false },
-      { id: "t-sfx", label: "Sound Effects", dataType: "audio", muted: false },
-      { id: "t-music", label: "Music", dataType: "audio", muted: false },
-    ] } },
+    {
+      id: "img-a",
+      type: "image",
+      position: { x: 0, y: 0 },
+      data: {
+        kind: "image",
+        status: "idle",
+        model: "Nano Banana 2",
+        prompt: "A crystal perfume bottle on marble, golden hour",
+      },
+    },
+    {
+      id: "img-b",
+      type: "image",
+      position: { x: 0, y: 220 },
+      data: {
+        kind: "image",
+        status: "idle",
+        model: "Nano Banana 2",
+        prompt: "Soft silk fabric backdrop, warm tones",
+      },
+    },
+    {
+      id: "combine",
+      type: "image",
+      position: { x: 360, y: 110 },
+      data: {
+        kind: "image",
+        status: "idle",
+        model: "Nano Banana 2",
+        maxImageInputs: 2,
+        prompt: "Bottle from @1 resting on fabric from @2",
+      },
+    },
+    {
+      id: "video",
+      type: "video",
+      position: { x: 720, y: 110 },
+      data: {
+        kind: "video",
+        status: "idle",
+        model: "LTX 2.3",
+        runtime: "local",
+        prompt: "Slow dolly-in on the bottle, light glints",
+      },
+    },
+    {
+      id: "script",
+      type: "text",
+      position: { x: 0, y: 460 },
+      data: { value: "Discover the new signature scent." },
+    },
+    {
+      id: "tts",
+      type: "tts",
+      position: { x: 360, y: 460 },
+      data: {
+        kind: "speech",
+        status: "idle",
+        model: "Eleven Multilingual v2",
+        voice: roger,
+        script: "Discover the new signature scent.",
+      },
+    },
+    {
+      id: "sfx",
+      type: "sfx",
+      position: { x: 360, y: 660 },
+      data: {
+        kind: "sfx",
+        status: "idle",
+        model: "Eleven SFX",
+        loop: false,
+        duration: "auto",
+        promptInfluence: 30,
+        prompt: "A soft glass chime and gentle ambience",
+      },
+    },
+    {
+      id: "music",
+      type: "music",
+      position: { x: 360, y: 860 },
+      data: {
+        kind: "music",
+        status: "idle",
+        model: "Eleven Music",
+        showLyrics: false,
+        duration: "auto",
+        prompt: "Warm cinematic lo-fi bed, elegant",
+      },
+    },
+    {
+      id: "comp",
+      type: "composition",
+      position: { x: 1080, y: 360 },
+      data: {
+        status: "idle",
+        durationSeconds: 28,
+        tracks: [
+          { id: "t-video", label: "Video", dataType: "video", muted: false },
+          { id: "t-tts", label: "Text to Speech", dataType: "audio", muted: false },
+          { id: "t-sfx", label: "Sound Effects", dataType: "audio", muted: false },
+          { id: "t-music", label: "Music", dataType: "audio", muted: false },
+        ],
+      },
+    },
   ];
   const edges: Edge[] = [
-    { id: "e-a-combine", source: "img-a", target: "combine", sourceHandle: "img-a:image:out", targetHandle: "combine:image:in" },
-    { id: "e-b-combine", source: "img-b", target: "combine", sourceHandle: "img-b:image:out", targetHandle: "combine:image:in" },
-    { id: "e-combine-video", source: "combine", target: "video", sourceHandle: "combine:image:out", targetHandle: "video:image:in" },
-    { id: "e-script-tts", source: "script", target: "tts", sourceHandle: "script:text:out", targetHandle: "tts:text:in" },
-    { id: "e-video-comp", source: "video", target: "comp", sourceHandle: "video:video:out", targetHandle: "comp:video:in" },
-    { id: "e-tts-comp", source: "tts", target: "comp", sourceHandle: "tts:audio:out", targetHandle: "comp:audio:in" },
-    { id: "e-sfx-comp", source: "sfx", target: "comp", sourceHandle: "sfx:audio:out", targetHandle: "comp:audio:in" },
-    { id: "e-music-comp", source: "music", target: "comp", sourceHandle: "music:audio:out", targetHandle: "comp:audio:in" },
+    {
+      id: "e-a-combine",
+      source: "img-a",
+      target: "combine",
+      sourceHandle: "img-a:image:out",
+      targetHandle: "combine:image:in",
+    },
+    {
+      id: "e-b-combine",
+      source: "img-b",
+      target: "combine",
+      sourceHandle: "img-b:image:out",
+      targetHandle: "combine:image:in",
+    },
+    {
+      id: "e-combine-video",
+      source: "combine",
+      target: "video",
+      sourceHandle: "combine:image:out",
+      targetHandle: "video:image:in",
+    },
+    {
+      id: "e-script-tts",
+      source: "script",
+      target: "tts",
+      sourceHandle: "script:text:out",
+      targetHandle: "tts:text:in",
+    },
+    {
+      id: "e-video-comp",
+      source: "video",
+      target: "comp",
+      sourceHandle: "video:video:out",
+      targetHandle: "comp:video:in",
+    },
+    {
+      id: "e-tts-comp",
+      source: "tts",
+      target: "comp",
+      sourceHandle: "tts:audio:out",
+      targetHandle: "comp:audio:in",
+    },
+    {
+      id: "e-sfx-comp",
+      source: "sfx",
+      target: "comp",
+      sourceHandle: "sfx:audio:out",
+      targetHandle: "comp:audio:in",
+    },
+    {
+      id: "e-music-comp",
+      source: "music",
+      target: "comp",
+      sourceHandle: "music:audio:out",
+      targetHandle: "comp:audio:in",
+    },
   ];
   return { nodes, edges };
 }
@@ -2166,6 +2559,7 @@ export function seedPerfumeGraph(): SeedGraph {
 ### Task 16: `/flow` demo upgrade (route-backed execute + persistence + reset)
 
 **Files:**
+
 - Modify: `apps/docs/app/flow/flow-demo.tsx` (Wave 2 created it with `stubExecute`; this wave swaps in the seed graph, `createFetchExecute`, persistence, and reset)
 - Modify (if needed): `apps/docs/app/flow/page.tsx` (server shell — only if it must pass anything new; otherwise unchanged)
 
@@ -2206,6 +2600,7 @@ Replace the Wave 2 `useFlowRunner({ ..., execute: stubExecute })` with `execute:
 - [ ] **Step 4: Wire node `data.on*` handlers to the runner**
 
 Each preset reads `data.onRun` / `data.onStop` / `data.onPromptChange` / `data.onSettingChange` etc. In the `withHandlers` mapper, inject:
+
 - `onRun: () => runner.runFrom(node.id)` (run this node + downstream; dirty-tracking cache skips clean upstream — the partial-generation behavior from the spec).
 - `onStop: () => runner.stop()`.
 - `onPromptChange / onScriptChange / onLyricsChange / onFolderChange / onUrlChange`: `(v) => updateNodeData(node.id, { <field>: v })` and `markDirty(node.id)`.
@@ -2229,6 +2624,7 @@ Each preset reads `data.onRun` / `data.onStop` / `data.onPromptChange` / `data.o
 ### Task 17: Catalog pages + final gate
 
 **Files:**
+
 - Create: `apps/docs/app/components/[name]` entries (or `lib/catalog.ts` additions + demo wiring) for the 10 presets, following Wave 0's Task 14 pattern exactly. Read one existing component page first; copy its structure (live demo import, install command with `REGISTRY_URL`, props table, states showcase).
 - Modify: catalog index — add the 10 presets under the existing "Flow Kit" group (created in Wave 2 Task 14).
 
@@ -2259,13 +2655,13 @@ Expected: lint clean, no type errors, tokens clean (every preset uses only `var(
 
 Presets are mutually independent (no L3→L3 edges) and depend only on Wave 2 L2 → maximally parallel. The provider layer is independent of the presets and parallelizes with them. Demo + catalog are last (they consume everything).
 
-| Group | Tasks | Parallel? |
-|---|---|---|
-| G0 | 0 | sequential — verifies the Wave 2 end-state before anything runs |
-| G1 (provider) | 1 → 2 → 3 → 4 | sequential within the group (2 needs 1's types; 3 needs 2's stub + the shared `run-route`; 4 reuses 3's `postAudio` + `runGenerateRoute`). Runs in parallel with G2. |
-| G2 (presets) | 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | all parallel after G0. Each is self-contained; only requirement is reading `gen-registry.mts` before registering (serialize the registry-file edits, or have each agent append its one item and let the integration step reconcile — prefer one agent owning `gen-registry.mts` edits if conflicts arise). Task 12 produces two items (track-timeline + composition-node) in one task. |
-| G3 (demo glue) | 15 | after G1 (needs the routes) and after G2 (needs the preset node types referenced by the seed graph's `type` keys — though the seed graph only uses string keys, the demo in G4 needs the components). 15 itself only needs the routes (G1) + Wave 2 runner; can start once G1 done. |
-| G4 (assembly) | 16 → 17 | sequential, last. 16 wires presets (G2) + routes (G1) + seed/execute (G15) into `/flow`; 17 adds catalog pages and runs the full gate. |
+| Group          | Tasks                             | Parallel?                                                                                                                                                                                                                                                                                                                                                                              |
+| -------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| G0             | 0                                 | sequential — verifies the Wave 2 end-state before anything runs                                                                                                                                                                                                                                                                                                                        |
+| G1 (provider)  | 1 → 2 → 3 → 4                     | sequential within the group (2 needs 1's types; 3 needs 2's stub + the shared `run-route`; 4 reuses 3's `postAudio` + `runGenerateRoute`). Runs in parallel with G2.                                                                                                                                                                                                                   |
+| G2 (presets)   | 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | all parallel after G0. Each is self-contained; only requirement is reading `gen-registry.mts` before registering (serialize the registry-file edits, or have each agent append its one item and let the integration step reconcile — prefer one agent owning `gen-registry.mts` edits if conflicts arise). Task 12 produces two items (track-timeline + composition-node) in one task. |
+| G3 (demo glue) | 15                                | after G1 (needs the routes) and after G2 (needs the preset node types referenced by the seed graph's `type` keys — though the seed graph only uses string keys, the demo in G4 needs the components). 15 itself only needs the routes (G1) + Wave 2 runner; can start once G1 done.                                                                                                    |
+| G4 (assembly)  | 16 → 17                           | sequential, last. 16 wires presets (G2) + routes (G1) + seed/execute (G15) into `/flow`; 17 adds catalog pages and runs the full gate.                                                                                                                                                                                                                                                 |
 
 Each subagent receives: this plan's task text (self-contained), plus paths to the wave spec, the inventory (§Group 3 + audio-family + composition deep spec), the Wave 2 plan (for the L2 contracts), and master spec §6. Subagents work ONLY in the `../flow-kit-worktree` worktree on `wave-2-flow-foundation`. Rebase onto `wave-0-foundation` between groups.
 

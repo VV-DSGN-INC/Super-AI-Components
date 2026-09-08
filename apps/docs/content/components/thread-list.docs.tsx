@@ -148,12 +148,12 @@ export const ThreadListDocs: ComponentDocs = {
     ],
     screenReader: [
       "The root renders a `<nav>` and therefore a navigation landmark — with no name of its own. Pass `aria-label`, because a product that has this component almost always has a second nav on screen and two unnamed navigation landmarks are indistinguishable in a landmark list.",
-      "Each date bucket is `role=\"group\"` labelled by its visible date text, so \"Today\" and \"Yesterday\" are announced as groups. There is no list markup inside them, though, so nothing announces how many threads a bucket holds.",
-      "A row's name is built from content: the title, plus \"Unread\" when the dot is present. That dot is a `<span aria-label=\"Unread\">` with no role — browsers currently fold it into the button's name, giving \"Unread <title>\", but ARIA does not permit `aria-label` on a generic element, so it is not a guaranteed carrier. It also puts the state first, so a run of unread threads all begin with the same word.",
-      "The pinned state is not announced at all. It renders as a `Pin` glyph that is `aria-hidden`, so a pinned row and an unpinned one are indistinguishable to assistive tech — and because the menu item only reads \"Unpin\" once opened, the state is discoverable only by opening the menu.",
-      "The open thread carries `aria-current=\"page\"`, so \"which conversation am I in\" is answerable without seeing the highlight.",
-      "Each actions button is named `\"Thread actions for <title>\"`, so the menus are distinguishable — but only as far as the titles are. A sidebar of threads all called \"New chat\" is a column of identical buttons, which is the real accessibility argument for generating distinct titles.",
-      "The rename input is labelled with the constant string \"Thread title\". Only one row can be renaming at a time, so that is unambiguous in practice, but it does not say which thread is being renamed.",
+      'Each date bucket is `role="group"` labelled by its visible date text, so "Today" and "Yesterday" are announced as groups. There is no list markup inside them, though, so nothing announces how many threads a bucket holds.',
+      'A row\'s name is built from content: the title, plus "Unread" when the dot is present. That dot is a `<span aria-label="Unread">` with no role — browsers currently fold it into the button\'s name, giving "Unread <title>", but ARIA does not permit `aria-label` on a generic element, so it is not a guaranteed carrier. It also puts the state first, so a run of unread threads all begin with the same word.',
+      'The pinned state is not announced at all. It renders as a `Pin` glyph that is `aria-hidden`, so a pinned row and an unpinned one are indistinguishable to assistive tech — and because the menu item only reads "Unpin" once opened, the state is discoverable only by opening the menu.',
+      'The open thread carries `aria-current="page"`, so "which conversation am I in" is answerable without seeing the highlight.',
+      'Each actions button is named `"Thread actions for <title>"`, so the menus are distinguishable — but only as far as the titles are. A sidebar of threads all called "New chat" is a column of identical buttons, which is the real accessibility argument for generating distinct titles.',
+      'The rename input is labelled with the constant string "Thread title". Only one row can be renaming at a time, so that is unambiguous in practice, but it does not say which thread is being renamed.',
       "Nothing announces the result of anything. Renaming, pinning, unpinning and deleting all complete with no live region, so a screen-reader user gets no confirmation that a thread was renamed or that it is gone.",
     ],
     focus: [

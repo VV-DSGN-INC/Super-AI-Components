@@ -7,12 +7,7 @@ import {
   MessageScrollerItem,
   MessageScrollerButton,
 } from "@/components/ui/message-scroller";
-import {
-  MessageGroup,
-  Message,
-  MessageAvatar,
-  MessageContent,
-} from "@/components/ui/message";
+import { MessageGroup, Message, MessageAvatar, MessageContent } from "@/components/ui/message";
 import { Sparkles } from "lucide-react";
 
 const meta: Meta<typeof MessageScroller> = {
@@ -24,8 +19,7 @@ export default meta;
 type Story = StoryObj<typeof MessageScroller>;
 
 const bubble = "rounded-2xl bg-muted px-3 py-2";
-const bubblePrimary =
-  "rounded-2xl bg-primary px-3 py-2 text-primary-foreground";
+const bubblePrimary = "rounded-2xl bg-primary px-3 py-2 text-primary-foreground";
 
 function Bot({ children }: { children: React.ReactNode }) {
   return (
@@ -57,13 +51,22 @@ function User({ children }: { children: React.ReactNode }) {
 
 const thread = [
   { role: "user", text: "Make me a logo for a coffee brand called Orbit Roasters." },
-  { role: "bot", text: "Sketching concepts — a planetary ring formed from a coffee bean. Want minimalist or retro?" },
+  {
+    role: "bot",
+    text: "Sketching concepts — a planetary ring formed from a coffee bean. Want minimalist or retro?",
+  },
   { role: "user", text: "Retro, warm palette, 70s vibe." },
   { role: "bot", text: "Generating 6 retro marks with burnt-orange and cream tones using Recraft V3." },
   { role: "user", text: "I like #3. Can you make a horizontal lockup with the wordmark?" },
-  { role: "bot", text: "Done. Added a condensed serif wordmark to the right of the orbit mark. Exported SVG + PNG." },
+  {
+    role: "bot",
+    text: "Done. Added a condensed serif wordmark to the right of the orbit mark. Exported SVG + PNG.",
+  },
   { role: "user", text: "Now a dark-mode version." },
-  { role: "bot", text: "Inverted the lockup — cream mark on charcoal, kept the orange accent. Looks great on dark UIs." },
+  {
+    role: "bot",
+    text: "Inverted the lockup — cream mark on charcoal, kept the orange accent. Looks great on dark UIs.",
+  },
   { role: "user", text: "Perfect. Generate a few social avatars from this." },
   { role: "bot", text: "Cropped the orbit mark into 6 circular avatars at 512×512. Ready to download." },
 ];
@@ -76,11 +79,7 @@ export const Default: Story = {
           <MessageGroup>
             {thread.map((m, i) => (
               <MessageScrollerItem key={i} scrollAnchor={i === thread.length - 1}>
-                {m.role === "user" ? (
-                  <User>{m.text}</User>
-                ) : (
-                  <Bot>{m.text}</Bot>
-                )}
+                {m.role === "user" ? <User>{m.text}</User> : <Bot>{m.text}</Bot>}
               </MessageScrollerItem>
             ))}
           </MessageGroup>
@@ -102,8 +101,8 @@ export const ShortThread: Story = {
             </MessageScrollerItem>
             <MessageScrollerItem scrollAnchor>
               <Bot>
-                Upscaled to 3840×2160 with the Topaz pipeline. Edges are crisp
-                and the neon kept its glow. 12 credits used.
+                Upscaled to 3840×2160 with the Topaz pipeline. Edges are crisp and the neon kept its glow. 12
+                credits used.
               </Bot>
             </MessageScrollerItem>
           </MessageGroup>

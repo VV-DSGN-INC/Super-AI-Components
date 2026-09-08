@@ -83,11 +83,7 @@ function FeatureCardRow({ items, className, ...props }: FeatureCardRowProps) {
     >
       <CarouselContent className="-ml-4">
         {items.map((item) => (
-          <CarouselItem
-            key={item.id}
-            data-slot="feature-card-row-item"
-            className="basis-64 sm:basis-72"
-          >
+          <CarouselItem key={item.id} data-slot="feature-card-row-item" className="basis-64 sm:basis-72">
             <FeatureCard item={item} />
           </CarouselItem>
         ))}

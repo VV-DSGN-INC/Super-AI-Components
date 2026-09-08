@@ -3,7 +3,13 @@
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import {
   Dialog,
   DialogContent,
@@ -117,8 +123,10 @@ interface TemplateDetailTemplate {
   relatedIds?: string[];
 }
 
-interface TemplateDetailProps
-  extends Omit<React.ComponentProps<"div">, "onSelect" | "title" | "defaultValue" | "children"> {
+interface TemplateDetailProps extends Omit<
+  React.ComponentProps<"div">,
+  "onSelect" | "title" | "defaultValue" | "children"
+> {
   /**
    * The template on screen *and* everything reachable from it. Handing the
    * component a pool rather than a single template is what makes the
@@ -196,7 +204,9 @@ function TemplateDetail({
     const pool = template.relatedIds
       ? template.relatedIds.map((id) => templates.find((entry) => entry.id === id))
       : templates;
-    return pool.filter((entry): entry is TemplateDetailTemplate => Boolean(entry) && entry!.id !== template.id);
+    return pool.filter(
+      (entry): entry is TemplateDetailTemplate => Boolean(entry) && entry!.id !== template.id,
+    );
   }, [template, templates]);
 
   if (!template) return null;
@@ -220,7 +230,10 @@ function TemplateDetail({
 
   const setOption = (optionId: string, value: string) => {
     if (!optionsControlled) {
-      setOptionOverrides((prev) => ({ ...prev, [template.id]: { ...(prev[template.id] ?? {}), [optionId]: value } }));
+      setOptionOverrides((prev) => ({
+        ...prev,
+        [template.id]: { ...(prev[template.id] ?? {}), [optionId]: value },
+      }));
     }
     onOptionValuesChange?.({ ...resolvedOptions, [optionId]: value });
   };
@@ -300,7 +313,12 @@ function TemplateDetail({
                           // this side, which is the condition for swapping it.
                           className="focus-visible:ring-ring w-full rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none"
                         >
-                          <PreviewTile aspect="video" selected={active} label={preview.label} labelPlacement="overlay">
+                          <PreviewTile
+                            aspect="video"
+                            selected={active}
+                            label={preview.label}
+                            labelPlacement="overlay"
+                          >
                             {preview.thumbnail ?? preview.media}
                           </PreviewTile>
                         </button>
@@ -320,7 +338,9 @@ function TemplateDetail({
                 {template.title}
               </DialogTitle>
               {template.description ? (
-                <DialogDescription data-slot="template-detail-description">{template.description}</DialogDescription>
+                <DialogDescription data-slot="template-detail-description">
+                  {template.description}
+                </DialogDescription>
               ) : null}
             </DialogHeader>
 
@@ -334,11 +354,17 @@ function TemplateDetail({
                   {author.avatar ?? author.name.slice(0, 1)}
                 </span>
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <span data-slot="template-detail-author-name" className="text-foreground truncate text-sm font-medium">
+                  <span
+                    data-slot="template-detail-author-name"
+                    className="text-foreground truncate text-sm font-medium"
+                  >
                     {author.name}
                   </span>
                   {author.meta ? (
-                    <span data-slot="template-detail-author-meta" className="text-muted-foreground truncate text-xs">
+                    <span
+                      data-slot="template-detail-author-meta"
+                      className="text-muted-foreground truncate text-xs"
+                    >
                       {author.meta}
                     </span>
                   ) : null}

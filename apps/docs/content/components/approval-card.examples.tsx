@@ -32,8 +32,8 @@ export function DetailBehindAnExpand() {
       summary="Covers the new export formats and the billing change."
       detail={
         <p>
-          Billing now prorates mid-cycle upgrades. Customers on the legacy annual plan are excluded
-          until their renewal date, which means roughly 400 accounts see no change this month.
+          Billing now prorates mid-cycle upgrades. Customers on the legacy annual plan are excluded until
+          their renewal date, which means roughly 400 accounts see no change this month.
         </p>
       }
       onConfirm={() => {}}

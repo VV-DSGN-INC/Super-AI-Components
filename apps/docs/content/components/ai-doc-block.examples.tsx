@@ -17,19 +17,13 @@ import { AiDocBlock } from "@/registry/super-ai/ai-doc-block";
  * element, so nothing has to serialise across the boundary.
  */
 
-const DRAFT =
-  "Support volume rose 30% this quarter against a headcount that did not move.";
+const DRAFT = "Support volume rose 30% this quarter against a headcount that did not move.";
 
 export function BlockInFlow() {
   return (
     <article className="text-foreground flex w-full max-w-md flex-col gap-2 text-sm">
       <p>The paragraph above the generated passage.</p>
-      <AiDocBlock
-        onKeep={() => {}}
-        onEdit={() => {}}
-        onRegenerate={() => {}}
-        onDiscard={() => {}}
-      >
+      <AiDocBlock onKeep={() => {}} onEdit={() => {}} onRegenerate={() => {}} onDiscard={() => {}}>
         <p>{DRAFT}</p>
       </AiDocBlock>
       <p>The paragraph below it, which never moves.</p>
@@ -61,9 +55,8 @@ export function OverlayOverTheDocument() {
   return (
     <div className="text-foreground relative w-full max-w-md text-sm">
       <p>
-        The paragraph underneath is the only thing the document model knows
-        about. The generated text sits in a layer above it, so it cannot be
-        saved, reloaded or exported with the rest of the page.
+        The paragraph underneath is the only thing the document model knows about. The generated text sits in
+        a layer above it, so it cannot be saved, reloaded or exported with the rest of the page.
       </p>
       <div className="bg-card ring-foreground/10 absolute inset-x-4 top-4 rounded-lg p-3 shadow-lg ring-1">
         <p className="text-card-foreground text-sm">{DRAFT}</p>
@@ -80,11 +73,7 @@ export function OverlayOverTheDocument() {
 export function VerbsReordered() {
   return (
     <ButtonGroup aria-label="Reordered actions">
-      <Button
-        type="button"
-        size="sm"
-        className="bg-destructive text-background hover:bg-destructive/90"
-      >
+      <Button type="button" size="sm" className="bg-destructive text-background hover:bg-destructive/90">
         <Trash2 aria-hidden />
         Discard
       </Button>

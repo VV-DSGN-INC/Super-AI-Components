@@ -25,17 +25,17 @@ after O and counted separately, so every number in that table stays literally tr
 State at the time of writing, read from `apps/docs/lib/catalog.manifest.ts`, not from
 documentation:
 
-| | |
-| --- | --- |
-| Shipped | 102 |
-| Planned | 12 — all family O blocks |
-| Cut | 11 — family G's 10 (D9) plus O5 `flow-shell` |
-| `registry.json` items | 98 |
+|                       |                                              |
+| --------------------- | -------------------------------------------- |
+| Shipped               | 102                                          |
+| Planned               | 12 — all family O blocks                     |
+| Cut                   | 11 — family G's 10 (D9) plus O5 `flow-shell` |
+| `registry.json` items | 98                                           |
 
 ## 2. Provenance
 
 `shells/shadcn-shell` in DS-WebApp-Shells answers one structural question: how does a user choose
-*how they browse* and *how records open*, independently and persistently, without either choice
+_how they browse_ and _how records open_, independently and persistently, without either choice
 constraining the other? It ships two separately persisted axes — collection
 (`list`·`kanban`·`table`·`calendar`·`timeline`, keyed per section) and record
 (`popup`·`overlay`·`fullscreen`, keyed per entity) — behind one config.
@@ -47,7 +47,7 @@ Two facts make it portable, both verified rather than assumed:
 
 - **The components are already controlled.** `DataViewsProps` takes `viewMode: ViewMode`;
   `DetailViewShellProps` takes `mode`, `open`, `onOpenChange`. Neither touches `localStorage` or a
-  router. This is not luck — `use-persisted-preference.ts` documents a *single-owner rule* (a
+  router. This is not luck — `use-persisted-preference.ts` documents a _single-owner rule_ (a
   `storage` event does not fire in the tab that wrote it, so two hooks sharing a key drift), which
   forced a props-down architecture for correctness reasons.
 - **The view components are framework-free.** `src/components/ui/` contains zero `react-router`
@@ -152,7 +152,7 @@ records-shaped, none represented on the existing boards.
 **Questions it must answer, each with named products and source URLs:**
 
 1. Does a user-selectable multi-view switch over one collection appear in 3+?
-2. Is the view preference *persisted*, and at what scope — per section, per user, per workspace?
+2. Is the view preference _persisted_, and at what scope — per section, per user, per workspace?
 3. Does the record-open mode vary independently of the collection view, or do products couple them?
 4. Do calendar and timeline appear as peers of list/board, or as separate destinations?
 
@@ -169,11 +169,11 @@ code.
 
 ## 5. Wave 2 — two catalog items and one contract
 
-| # | Item | Layer | Type |
-|---|---|---|---|
-| P1 | `data-views` | component | `registry:component` |
-| P2 | `detail-view-shell` | component | `registry:component` |
-| — | `use-view-mode` | — | `registry:lib`, via `lib.manifest.ts` |
+| #   | Item                | Layer     | Type                                  |
+| --- | ------------------- | --------- | ------------------------------------- |
+| P1  | `data-views`        | component | `registry:component`                  |
+| P2  | `detail-view-shell` | component | `registry:component`                  |
+| —   | `use-view-mode`     | —         | `registry:lib`, via `lib.manifest.ts` |
 
 **P1 `data-views`** — the collection axis. One config (`ViewGroup<T>`, `ColumnDef<T>`,
 `TimeCapability<T>`) drives every view; the switcher picks a shell by `viewMode`. Its file set is
@@ -187,7 +187,7 @@ compile error, because a calendar falling back to `renderCard` overflows a day c
 **P2 `detail-view-shell`** — the record axis. Branches on `mode` into Dialog, Sheet or a plain
 container. File set adds `detail-tabs`, `detail-fields` and `use-container-width.ts`.
 
-Collapse is driven by *measured container width* at a 720px threshold, not by viewport or by mode —
+Collapse is driven by _measured container width_ at a 720px threshold, not by viewport or by mode —
 so the same body works inside a 480px sheet and a full-width route without branching. The
 pessimistic default before first measurement is retained; it is what prevents a flash of two
 columns.
@@ -198,10 +198,10 @@ columns.
 
 **Not ported:**
 
-| | Why |
-|---|---|
-| `use-detail-navigation.ts` | `react-router`-bound. Fullscreen's URL is the host's job; P2 already ignores `open` in fullscreen. |
-| `AppLayout.tsx`, `src/pages/`, `src/lib/mock-data/` | App-level. Stay in the shell. |
+|                                                     | Why                                                                                                |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `use-detail-navigation.ts`                          | `react-router`-bound. Fullscreen's URL is the host's job; P2 already ignores `open` in fullscreen. |
+| `AppLayout.tsx`, `src/pages/`, `src/lib/mock-data/` | App-level. Stay in the shell.                                                                      |
 
 **House conventions applied on the way in:** `data-slot` attributes, `components/super-ai/`
 targets, one test file per item, a manifest row each, a docs page each, per-state stories. No item
@@ -238,12 +238,12 @@ J5 `record-list` — the component O10 composes — already answered this, and s
 
 That idiom is adopted wholesale. Group headers become an untinted surface plus a leading mark:
 
-| Tone | Today | Ported |
-|---|---|---|
-| `neutral` | `bg-muted` + muted text | plain header, `CircleDashed` |
-| `info` | blue tint | plain header, `Circle`, `text-primary` |
-| `warning` | amber tint | plain header, `AlertTriangle`, `text-warning` |
-| `success` | emerald tint | plain header, `CheckCircle2`, `text-primary` |
+| Tone      | Today                   | Ported                                        |
+| --------- | ----------------------- | --------------------------------------------- |
+| `neutral` | `bg-muted` + muted text | plain header, `CircleDashed`                  |
+| `info`    | blue tint               | plain header, `Circle`, `text-primary`        |
+| `warning` | amber tint              | plain header, `AlertTriangle`, `text-warning` |
+| `success` | emerald tint            | plain header, `CheckCircle2`, `text-primary`  |
 
 `task-card` P0 becomes a `text-destructive` mark and P1 a `text-warning` mark, under the same rule.
 The four call sites — kanban column headers, feed section headers, timeline lanes, calendar bars —
@@ -263,7 +263,7 @@ Sequenced last, after the registry is published.
 `npx shadcn add`. It keeps `src/pages/`, `AppLayout.tsx`, `use-detail-navigation.ts`,
 `src/lib/mock-data/` and its routing.
 
-This is not tidying. `consumer-test.sh` proves the registry installs into a *scratch* app;
+This is not tidying. `consumer-test.sh` proves the registry installs into a _scratch_ app;
 `shadcn-shell` is a real one, with routing, fullscreen URLs and multi-section state that the
 scratch test cannot reproduce. Making it a consumer turns it into a standing integration test and
 removes the second copy that would otherwise drift.

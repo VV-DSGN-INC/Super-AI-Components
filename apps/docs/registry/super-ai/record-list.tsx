@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
+import { initials } from "@/registry/super-ai/initials";
 
 /**
  * Record List — project / scenario rows.
@@ -132,16 +133,6 @@ const RUN_STATE_ICON: Record<RecordRunState, React.ReactNode> = {
   never: <CircleDashed aria-hidden className="size-3.5" />,
 };
 
-/** "Google Sheets" → "GS". Two letters is all a 24px mark can hold. */
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
 /**
  * The cluster. Each entry is a hidden mark plus a readable name, never both
  * visible — an sr-only suffix beside visible text fuses into one word in the
@@ -240,7 +231,10 @@ function RecordList({
               <a
                 data-slot="record-list-title"
                 href={record.href}
-                className={cn(titleClassName, "focus-visible:ring-ring rounded-sm hover:underline focus-visible:ring-2 focus-visible:outline-none")}
+                className={cn(
+                  titleClassName,
+                  "focus-visible:ring-ring rounded-sm hover:underline focus-visible:ring-2 focus-visible:outline-none",
+                )}
               >
                 {record.title}
               </a>
@@ -249,7 +243,10 @@ function RecordList({
                 data-slot="record-list-title"
                 type="button"
                 onClick={() => onOpen(record.id)}
-                className={cn(titleClassName, "focus-visible:ring-ring rounded-sm text-start hover:underline focus-visible:ring-2 focus-visible:outline-none")}
+                className={cn(
+                  titleClassName,
+                  "focus-visible:ring-ring rounded-sm text-start hover:underline focus-visible:ring-2 focus-visible:outline-none",
+                )}
               >
                 {record.title}
               </button>
@@ -289,6 +286,13 @@ function RecordList({
                           // `text-muted-foreground`: the row's hover background
                           // is `bg-muted/50`, and muted text on a muted surface
                           // measures 4.34:1 against a 4.5 minimum.
+                          //
+                          // `key={i}` on purpose. `fragments` is derived here
+                          // rather than passed in, its members are plain
+                          // strings with no identity, and two of them can be
+                          // equal — so keying on the text would risk duplicate
+                          // keys, which is worse than an index. The index is
+                          // load-bearing anyway: `i > 0` places the separator.
                           <span
                             key={i}
                             data-slot="record-list-meta"
@@ -304,11 +308,7 @@ function RecordList({
                 </TableCell>
 
                 <TableCell data-slot="record-list-apps-cell">
-                  <AppCluster
-                    apps={record.apps ?? []}
-                    max={maxApps}
-                    recordTitle={record.title}
-                  />
+                  <AppCluster apps={record.apps ?? []} max={maxApps} recordTitle={record.title} />
                 </TableCell>
 
                 <TableCell>

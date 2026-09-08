@@ -139,9 +139,7 @@ function formatTimecode(seconds: number, decimals = 0): string {
   const secs = rest.toFixed(decimals);
   const padded = rest < 10 ? `0${secs}` : secs;
 
-  return hours > 0
-    ? `${hours}:${String(minutes).padStart(2, "0")}:${padded}`
-    : `${minutes}:${padded}`;
+  return hours > 0 ? `${hours}:${String(minutes).padStart(2, "0")}:${padded}` : `${minutes}:${padded}`;
 }
 
 interface TimeRulerPlayheadProps extends Omit<React.ComponentProps<"div">, "children"> {
@@ -166,22 +164,12 @@ interface TimeRulerPlayheadProps extends Omit<React.ComponentProps<"div">, "chil
  * defaults to the ruler's own height — set it to the height of your track stack
  * and the line runs the whole way down without a second component.
  */
-function TimeRulerPlayhead({
-  time,
-  zoom,
-  label,
-  className,
-  style,
-  ...props
-}: TimeRulerPlayheadProps) {
+function TimeRulerPlayhead({ time, zoom, label, className, style, ...props }: TimeRulerPlayheadProps) {
   return (
     <div
       data-slot="time-ruler-playhead"
       data-time={time}
-      className={cn(
-        "bg-primary pointer-events-none absolute top-0 z-40 w-0.5 -translate-x-1/2",
-        className,
-      )}
+      className={cn("bg-primary pointer-events-none absolute top-0 z-40 w-0.5 -translate-x-1/2", className)}
       style={{
         left: timeToPixels(time, zoom),
         height: "var(--time-ruler-playhead-height, 100%)",
@@ -302,10 +290,7 @@ function TimeRuler({
               data-slot="time-ruler-tick"
               data-major={tick.major ? "true" : undefined}
               data-time={tick.time}
-              className={cn(
-                "absolute bottom-0 w-px",
-                tick.major ? "bg-foreground h-3" : "bg-border h-1.5",
-              )}
+              className={cn("absolute bottom-0 w-px", tick.major ? "bg-foreground h-3" : "bg-border h-1.5")}
               style={{ left: tick.offset }}
             />
             {tick.major ? (
@@ -395,11 +380,7 @@ function TimeRuler({
       ) : null}
 
       {/* Layer 3 — the playhead itself, drawn rather than dragged. */}
-      <TimeRulerPlayhead
-        time={playhead}
-        zoom={zoom}
-        label={isScrubbing ? readout(playhead) : undefined}
-      />
+      <TimeRulerPlayhead time={playhead} zoom={zoom} label={isScrubbing ? readout(playhead) : undefined} />
     </div>
   );
 }

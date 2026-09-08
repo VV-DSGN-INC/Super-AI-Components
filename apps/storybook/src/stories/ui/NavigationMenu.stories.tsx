@@ -76,11 +76,7 @@ export const Default: Story = {
                   title="My projects"
                   desc="Open recent boards and threads"
                 />
-                <FeatureLink
-                  icon={<Zap className="size-4" />}
-                  title="Credits"
-                  desc="2,480 left this cycle"
-                />
+                <FeatureLink icon={<Zap className="size-4" />} title="Credits" desc="2,480 left this cycle" />
                 <FeatureLink
                   icon={<Settings className="size-4" />}
                   title="Settings"

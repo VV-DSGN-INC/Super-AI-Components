@@ -7,8 +7,23 @@ import { RenderQueue, type RenderJob } from "@/registry/super-ai/render-queue";
 const SPEC = { format: "MP4", codec: "H.264", resolution: "3840×2160", fps: 24 };
 
 const AUDITABLE: RenderJob[] = [
-  { id: "1", name: "Opening titles", spec: { ...SPEC, resolution: "1280×720" }, stage: "preview", state: "done", cost: { amount: 4 } },
-  { id: "2", name: "Main cut", spec: SPEC, stage: "export", state: "streaming", progress: 62, cost: { amount: 900, per: "min" } },
+  {
+    id: "1",
+    name: "Opening titles",
+    spec: { ...SPEC, resolution: "1280×720" },
+    stage: "preview",
+    state: "done",
+    cost: { amount: 4 },
+  },
+  {
+    id: "2",
+    name: "Main cut",
+    spec: SPEC,
+    stage: "export",
+    state: "streaming",
+    progress: 62,
+    cost: { amount: 900, per: "min" },
+  },
 ];
 
 const NAMES_ONLY: RenderJob[] = [

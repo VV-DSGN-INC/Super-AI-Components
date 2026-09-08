@@ -11,10 +11,12 @@ import { execFileSync } from "node:child_process";
 // but is absent from @types/node@20, so it would typecheck in an untyped
 // .mjs script but fails in this typed .mts one.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { LIB_MANIFEST } from "../lib/lib.manifest";
 import {
+  anchorErrors,
   compareExemptionLists,
   findReservedStateNames,
   findSlotErasures,
@@ -244,9 +246,7 @@ for (const item of manifest) {
   const storybookConfigPath = "../storybook/vitest.config.ts";
   try {
     const storybookConfig = readFileSync(storybookConfigPath, "utf8");
-    errors.push(
-      ...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)),
-    );
+    errors.push(...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)));
   } catch (err) {
     errors.push(
       `${storybookConfigPath}: could not read file to compare exemption lists (${(err as Error).message})`,
@@ -346,6 +346,17 @@ try {
 } catch {
   errors.push("generated wiring is stale — run pnpm gen:wiring");
 }
+
+// Every specAnchor must reach a heading that exists. gen-manifest synthesises
+// the anchor from the catalog row, so an item whose spec section was never
+// written still carries a confident-looking link.
+const specsDir = resolve(import.meta.dirname, "../../../docs/design-system");
+errors.push(
+  ...anchorErrors([...MANIFEST.filter((i) => i.status === "shipped")], (file) => {
+    const path = resolve(specsDir, file);
+    return existsSync(path) ? readFileSync(path, "utf8") : undefined;
+  }),
+);
 
 if (errors.length) {
   for (const e of errors) console.error(`check:contract — ${e}`);

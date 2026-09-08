@@ -24,7 +24,10 @@ export const SlotSummaryDocs: ComponentDocs = {
     "It is the difference between a user auditing an agent and a user rubber-stamping it. If an inferred value renders identically to one the user supplied, they scan the list, recognise their own words, and approve four things the model guessed at — which is the failure mode this surface exists to prevent. Google Assistant scales exactly this read-back to how reversible the action is, Rasa gives correction and slot validation first-class flows rather than treating a fix as a restart, and ServiceNow Horizon puts the same resolved-parameter card in front of its AI actions.",
   evidence: ["Google Assistant", "Rasa", "ServiceNow Horizon"],
   anatomy: [
-    { slot: "slot-summary", note: "Root container holding the row list and, when handlers are supplied, the action footer." },
+    {
+      slot: "slot-summary",
+      note: "Root container holding the row list and, when handlers are supplied, the action footer.",
+    },
     {
       slot: "slot-summary-slot",
       note: "One resolved parameter. Carries `data-source` (stated / inferred / defaulted / retrieved) and, when it has no value, `data-missing` — both are addressable in tests without reaching for text.",
@@ -64,7 +67,7 @@ export const SlotSummaryDocs: ComponentDocs = {
       "Rows are `<li>` elements and are not focusable. A value, its source badge and its low-confidence flag are read-only text, reachable only by reading the row — there is no keyboard path that lands on a slot.",
     ],
     screenReader: [
-      "The rows are a plain `<ul>`, so the summary announces as a list with a count. Within a row the label, the value and the badges are three separate runs of text with no programmatic association — a row reads as \"Send at, 9:00am, Inferred\" because of source order, not because anything marks the label as the name of that value.",
+      'The rows are a plain `<ul>`, so the summary announces as a list with a count. Within a row the label, the value and the badges are three separate runs of text with no programmatic association — a row reads as "Send at, 9:00am, Inferred" because of source order, not because anything marks the label as the name of that value.',
       'The correction button is named by `aria-label={`Change ${slot.label}`}` — or `Add ${slot.label}` when the slot is empty. `label` is typed `React.ReactNode`, so an element there ships a button announced as "Change [object Object]"; only a plain string survives.',
       'The source badges are ordinary text, so "Inferred", "Default" and "From records" are announced in the row. A `stated` slot has no badge, which means an unmarked row and a user-supplied row are indistinguishable to assistive tech — that absence is the design, and it is why every other source has to keep its badge.',
       'The low-confidence flag announces as "Check this"; its warning triangle is `aria-hidden`. It is suppressed on a slot with no value, so a row that is both empty and doubtful announces only "Still needed".',

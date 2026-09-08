@@ -39,7 +39,12 @@ export default function ModeTabsDemo() {
 
       <div className="space-y-2">
         <p className="text-muted-foreground text-xs font-medium">With tooltip — icon-only, compact</p>
-        <ModeTabs modes={COMPACT_MODES} variant="with-tooltip" value={compactMode} onValueChange={setCompactMode} />
+        <ModeTabs
+          modes={COMPACT_MODES}
+          variant="with-tooltip"
+          value={compactMode}
+          onValueChange={setCompactMode}
+        />
       </div>
     </div>
   );

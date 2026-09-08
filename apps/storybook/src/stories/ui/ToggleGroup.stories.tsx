@@ -34,11 +34,7 @@ export const Default: Story = {
       const [value, setValue] = React.useState<string[]>(["1:1"]);
       return (
         <div className="flex flex-col items-center gap-3">
-          <ToggleGroup
-            variant="outline"
-            value={value}
-            onValueChange={setValue}
-          >
+          <ToggleGroup variant="outline" value={value} onValueChange={setValue}>
             {aspectRatios.map(({ value: v, label, icon: Icon }) => (
               <ToggleGroupItem key={v} value={v} aria-label={`Aspect ratio ${label}`}>
                 <Icon />
@@ -46,9 +42,7 @@ export const Default: Story = {
               </ToggleGroupItem>
             ))}
           </ToggleGroup>
-          <p className="text-xs text-muted-foreground">
-            Output: {value[0] ?? "none"}
-          </p>
+          <p className="text-xs text-muted-foreground">Output: {value[0] ?? "none"}</p>
         </div>
       );
     }

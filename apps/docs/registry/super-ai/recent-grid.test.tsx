@@ -25,13 +25,9 @@ describe("RecentGrid", () => {
 
   it("opens rather than toggles, in both layouts", () => {
     const { rerender } = render(<RecentGrid items={OPENABLE} layout="grid" />);
-    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute(
-      "aria-pressed",
-    );
+    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute("aria-pressed");
     rerender(<RecentGrid items={OPENABLE} layout="list" />);
-    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute(
-      "aria-pressed",
-    );
+    expect(screen.getByRole("button", { name: "Q3 Launch Video" })).not.toHaveAttribute("aria-pressed");
   });
 
   it("renders the grid state", () => {

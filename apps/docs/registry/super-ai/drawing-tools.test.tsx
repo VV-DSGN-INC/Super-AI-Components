@@ -47,14 +47,8 @@ describe("DrawingTools", () => {
     // Icon-only buttons still carry real accessible names — the icons are
     // aria-hidden and the name ships as (visually hidden) button content.
     expect(within(rail).getByRole("button", { name: "Select" })).toBeInTheDocument();
-    expect(within(rail).getByRole("button", { name: "Pencil" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(within(rail).getByRole("button", { name: "Eraser" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
+    expect(within(rail).getByRole("button", { name: "Pencil" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(rail).getByRole("button", { name: "Eraser" })).toHaveAttribute("aria-pressed", "false");
     expect(container.querySelectorAll('[data-slot="drawing-tools-tool"]')).toHaveLength(3);
   });
 
@@ -87,9 +81,7 @@ describe("DrawingTools", () => {
 
   it("renders the brush-controls state", () => {
     const onBrushChange = vi.fn();
-    const { container } = render(
-      <DrawingTools tools={TOOLS} brush={BRUSH} onBrushChange={onBrushChange} />,
-    );
+    const { container } = render(<DrawingTools tools={TOOLS} brush={BRUSH} onBrushChange={onBrushChange} />);
 
     const brush = container.querySelector('[data-slot="drawing-tools-brush"]') as HTMLElement;
     expect(within(brush).getByText("Size")).toBeInTheDocument();
@@ -119,14 +111,8 @@ describe("DrawingTools", () => {
 
     // A swatch is named, never identified by its fill alone, and its selected
     // state is programmatic rather than a ring you have to see.
-    expect(within(grid).getByRole("button", { name: "Coral" })).toHaveAttribute(
-      "aria-pressed",
-      "true",
-    );
-    expect(within(grid).getByRole("button", { name: "Ink" })).toHaveAttribute(
-      "aria-pressed",
-      "false",
-    );
+    expect(within(grid).getByRole("button", { name: "Coral" })).toHaveAttribute("aria-pressed", "true");
+    expect(within(grid).getByRole("button", { name: "Ink" })).toHaveAttribute("aria-pressed", "false");
 
     await userEvent.click(within(grid).getByRole("button", { name: "Ink" }));
     expect(onSwatchChange).toHaveBeenCalledWith("ink");
@@ -144,10 +130,7 @@ describe("DrawingTools", () => {
       />,
     );
 
-    expect(container.querySelector('[data-slot="drawing-tools"]')).toHaveAttribute(
-      "data-mode",
-      "mask",
-    );
+    expect(container.querySelector('[data-slot="drawing-tools"]')).toHaveAttribute("data-mode", "mask");
     expect(container.querySelector('[data-slot="drawing-tools-mask"]')).toBeInTheDocument();
 
     // The point of mask mode: it names what the mask is input to.
@@ -197,10 +180,11 @@ describe("DrawingTools", () => {
     const flyout = await screen.findByRole("group", { name: "Pencil alternates" });
     // A flyout, not a nested menu: nothing inside it opens a further level.
     expect(flyout.querySelector('[data-slot="drawing-tools-flyout-trigger"]')).toBeNull();
-    expect(within(flyout).getAllByRole("button").map((b) => b.textContent)).toEqual([
-      "Soft pencil",
-      "Marker",
-    ]);
+    expect(
+      within(flyout)
+        .getAllByRole("button")
+        .map((b) => b.textContent),
+    ).toEqual(["Soft pencil", "Marker"]);
   });
 
   it("makes the rail button become the chosen alternate, so returning to it is one click", async () => {
@@ -214,9 +198,7 @@ describe("DrawingTools", () => {
     await userEvent.click(within(flyout).getByRole("button", { name: "Marker" }));
     expect(onToolChange).toHaveBeenCalledWith("pencil-marker");
 
-    rerender(
-      <DrawingTools tools={TOOLS} activeToolId="pencil-marker" onToolChange={onToolChange} />,
-    );
+    rerender(<DrawingTools tools={TOOLS} activeToolId="pencil-marker" onToolChange={onToolChange} />);
 
     // The rail slot is now Marker — pressed, named, and one click away. Nobody
     // has to walk the flyout again to get back to the tool they were using.
@@ -247,9 +229,11 @@ describe("DrawingTools", () => {
     // The spec's reason for this: the brush and the property inspector share
     // one grid. If these stop being field-rows, they have stopped sharing it.
     expect(brush.querySelectorAll('[data-slot="field-row"]')).toHaveLength(3);
-    expect(
-      [...brush.querySelectorAll('[data-slot="field-row-label"]')].map((n) => n.textContent),
-    ).toEqual(["Size", "Hardness", "Opacity"]);
+    expect([...brush.querySelectorAll('[data-slot="field-row-label"]')].map((n) => n.textContent)).toEqual([
+      "Size",
+      "Hardness",
+      "Opacity",
+    ]);
     expect(screen.getByRole("spinbutton", { name: "Hardness value" })).toHaveValue(60);
   });
 
@@ -260,13 +244,7 @@ describe("DrawingTools", () => {
     expect(screen.getByRole("group", { name: "Colour" })).toBeInTheDocument();
 
     rerender(
-      <DrawingTools
-        tools={TOOLS}
-        brush={BRUSH}
-        swatches={SWATCHES}
-        activeSwatchId="ink"
-        mode="mask"
-      />,
+      <DrawingTools tools={TOOLS} brush={BRUSH} swatches={SWATCHES} activeSwatchId="ink" mode="mask" />,
     );
     // A mask is a region, not a stroke — colour has nothing to mean here.
     expect(screen.queryByRole("group", { name: "Colour" })).toBeNull();

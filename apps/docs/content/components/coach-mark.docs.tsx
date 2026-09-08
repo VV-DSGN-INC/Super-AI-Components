@@ -22,18 +22,42 @@ export const CoachMarkDocs: ComponentDocs = {
     "Every onboarding surface on the reference board points at something specific. CapCut's yellow tips, Lovable's inline tooltips, Airtable's Omni introduction and Spline's first-run walkthrough all teach by highlighting one live control at a time rather than describing it in a modal. The cut-out is what makes that work: the moment the scrim covers the thing being explained, the user is reading a description of a button they can no longer see, and the tour becomes a slideshow. The counter and Skip matter for the opposite reason — a tour with no visible length and no exit is a hostage situation, and it is the single most common complaint about onboarding flows.",
   evidence: ["CapCut", "Lovable", "Airtable Omni", "Spline"],
   anatomy: [
-    { slot: "coach-mark", note: "Root wrapper around the anchored element. Establishes the positioning context; adds no visual of its own." },
-    { slot: "coach-mark-anchor", note: "Empty, aria-hidden span laid over the anchor box. Positions the popover and nothing else — it is never a control." },
-    { slot: "coach-mark-scrim", note: "The dim. Painted outside the cut-out by a large shadow spread, so the anchor is never covered." },
-    { slot: "coach-mark-cutout", note: "Full-strength ring around the lit area, so the hole reads as deliberate rather than as a rendering gap." },
-    { slot: "coach-mark-content", note: "The popover itself — role=dialog, named by the title, and where focus lands when the step opens." },
-    { slot: "coach-mark-arrow", note: "Pointer back to the anchor. Carries data-side, so it follows the popover when it flips." },
+    {
+      slot: "coach-mark",
+      note: "Root wrapper around the anchored element. Establishes the positioning context; adds no visual of its own.",
+    },
+    {
+      slot: "coach-mark-anchor",
+      note: "Empty, aria-hidden span laid over the anchor box. Positions the popover and nothing else — it is never a control.",
+    },
+    {
+      slot: "coach-mark-scrim",
+      note: "The dim. Painted outside the cut-out by a large shadow spread, so the anchor is never covered.",
+    },
+    {
+      slot: "coach-mark-cutout",
+      note: "Full-strength ring around the lit area, so the hole reads as deliberate rather than as a rendering gap.",
+    },
+    {
+      slot: "coach-mark-content",
+      note: "The popover itself — role=dialog, named by the title, and where focus lands when the step opens.",
+    },
+    {
+      slot: "coach-mark-arrow",
+      note: "Pointer back to the anchor. Carries data-side, so it follows the popover when it flips.",
+    },
     { slot: "coach-mark-header", note: "Title and description." },
     { slot: "coach-mark-title", note: "The step heading, and the accessible name of the dialog." },
     { slot: "coach-mark-description", note: "Body copy explaining the anchored element." },
     { slot: "coach-mark-footer", note: "Counter on one side, controls on the other." },
-    { slot: "coach-mark-step", note: "The mandatory counter. Text first; the dots beside it are decorative and aria-hidden." },
-    { slot: "coach-mark-skip", note: "The mandatory exit. Always rendered, always inside the popup where focus lands." },
+    {
+      slot: "coach-mark-step",
+      note: "The mandatory counter. Text first; the dots beside it are decorative and aria-hidden.",
+    },
+    {
+      slot: "coach-mark-skip",
+      note: "The mandatory exit. Always rendered, always inside the popup where focus lands.",
+    },
     { slot: "coach-mark-back", note: "Previous step. Suppressed on step 1 whether or not onBack is passed." },
     { slot: "coach-mark-next", note: "Advance. Relabels to the finish label on the last step." },
   ],
@@ -62,18 +86,18 @@ export const CoachMarkDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "Step 1 is two tab stops inside the popup — Skip, then Next — and later steps are three, because Back is suppressed on the first step whether or not `onBack` is passed. Omitting `onNext` drops it to one: Skip is the only control that always exists.",
-      "Escape closes the step, because the popover dismisses by default. It does **not** call `onSkip` — only the Skip button does. A tour that records \"user bailed out\" in `onSkip` will miss every Escape; do that bookkeeping in `onOpenChange` instead.",
+      'Escape closes the step, because the popover dismisses by default. It does **not** call `onSkip` — only the Skip button does. A tour that records "user bailed out" in `onSkip` will miss every Escape; do that bookkeeping in `onOpenChange` instead.',
       "Nothing is trapped, but Tab past Next does not do what this note used to claim. It ends the tour: Base UI's trigger focus guard closes the popup on `focusOut` before forwarding, so the step is dismissed and the spotlight goes with it. The guard also forwards to the tabbable *after* the anchor, so forward-tabbing never lands on the control being pointed at — the opposite of the intent. Measured in the KeyboardOrder story, which stops at Next rather than taking the convention's closing tab, because that tab is the defect",
       "The anchored element keeps its own tab stop. The positioning anchor is an `aria-hidden`, `tabIndex={-1}` span laid over the anchor box and never wrapped around your children, so a tour pointing at a button leaves that button focusable and activatable, and never nests one control inside another.",
       "The dot rail is decorative and unreachable; the counter beside it is plain text, so there is nothing to tab to in the footer's left half.",
     ],
     screenReader: [
       "The popup is a dialog named by `title` and described by `description` when you pass one. `title` is required for exactly that reason — a step without one announces as an unlabelled dialog.",
-      "The counter is a real sentence inside the popup, so \"Step 2 of 5\" is announced with the step. The dots are `aria-hidden`, and past eight steps they are not rendered at all while the sentence stays.",
+      'The counter is a real sentence inside the popup, so "Step 2 of 5" is announced with the step. The dots are `aria-hidden`, and past eight steps they are not rendered at all while the sentence stays.',
       "The scrim, the cut-out ring and the anchor span are all `aria-hidden`, so the spotlight contributes nothing to what is announced — the visual and the semantics say the same thing, which is that one specific element is the subject.",
-      "The component is not modal and not `modal=\"trap-focus\"`, both of which would mark everything outside the popup `aria-hidden` — including the element the step points at. The trade-off is real: a reader browsing the page rather than following focus reaches the step only in DOM order, at the end of the body where it is portaled.",
+      'The component is not modal and not `modal="trap-focus"`, both of which would mark everything outside the popup `aria-hidden` — including the element the step points at. The trade-off is real: a reader browsing the page rather than following focus reaches the step only in DOM order, at the end of the body where it is portaled.',
       "Nothing announces the step count changing. Advancing unmounts one dialog and mounts the next, with no live region tying them together; the new dialog's name and counter are announced when focus lands in it.",
-      "`skipLabel`, `nextLabel`, `backLabel` and `finishLabel` are the buttons' entire names. \"Next\" and \"Done\" are fine inside a named dialog and thin if your reader is navigating by button list.",
+      '`skipLabel`, `nextLabel`, `backLabel` and `finishLabel` are the buttons\' entire names. "Next" and "Done" are fine inside a named dialog and thin if your reader is navigating by button list.',
     ],
     focus: [
       "Focus is moved into the step when it opens — onto the popup element itself, not onto a button, so the title and description are announced before Skip is reached, and Skip is one Tab away. That is `autoFocus`, on by default; the underlying primitive would move nothing, because a tour opens its steps programmatically rather than by a real interaction.",

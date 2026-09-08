@@ -53,8 +53,7 @@ export const Default: Story = {
       <ItemContent>
         <ItemTitle>Aurora Diffusion XL</ItemTitle>
         <ItemDescription>
-          High-fidelity text-to-image model. Best for cinematic stills and
-          product renders.
+          High-fidelity text-to-image model. Best for cinematic stills and product renders.
         </ItemDescription>
       </ItemContent>
       <ItemActions>
@@ -131,9 +130,7 @@ export const WithImageMedia: Story = {
       </ItemMedia>
       <ItemContent>
         <ItemTitle>Neon koi in a midnight pond</ItemTitle>
-        <ItemDescription>
-          Aurora Diffusion XL · seed 84213 · 1024×1024
-        </ItemDescription>
+        <ItemDescription>Aurora Diffusion XL · seed 84213 · 1024×1024</ItemDescription>
       </ItemContent>
       <ItemActions>
         <Button size="sm" variant="outline">
@@ -157,14 +154,10 @@ export const HeaderAndFooter: Story = {
       </ItemMedia>
       <ItemContent>
         <ItemTitle>Batch: &quot;Cyberpunk alley pack&quot;</ItemTitle>
-        <ItemDescription>
-          12 of 16 images complete · est. 40s remaining
-        </ItemDescription>
+        <ItemDescription>12 of 16 images complete · est. 40s remaining</ItemDescription>
       </ItemContent>
       <ItemFooter>
-        <span className="text-xs text-muted-foreground">
-          Started 2:14 PM · 96 credits used
-        </span>
+        <span className="text-xs text-muted-foreground">Started 2:14 PM · 96 credits used</span>
         <Button size="sm" variant="ghost">
           <MoreHorizontal />
         </Button>

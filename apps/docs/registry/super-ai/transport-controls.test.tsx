@@ -59,7 +59,9 @@ describe("TransportControls", () => {
     expect(screen.getByRole("textbox", { name: /elapsed time/i })).toHaveValue("00:00:12:12");
 
     // In/out reads as text, not as a colour on a ruler somewhere else.
-    expect(document.querySelector('[data-slot="transport-controls-range"]')).toHaveTextContent("In 00:00:02:00");
+    expect(document.querySelector('[data-slot="transport-controls-range"]')).toHaveTextContent(
+      "In 00:00:02:00",
+    );
   });
 
   it("keeps button order unchanged between variants — frame-accurate appends, never reorders", () => {
@@ -229,7 +231,9 @@ describe("TransportControls", () => {
 
   it("falls back to onSeek when skip and step have no dedicated handler", () => {
     const onSeek = vi.fn();
-    render(<TransportControls variant="frame-accurate" currentTime={10} duration={90} fps={25} onSeek={onSeek} />);
+    render(
+      <TransportControls variant="frame-accurate" currentTime={10} duration={90} fps={25} onSeek={onSeek} />,
+    );
 
     screen.getByRole("button", { name: /skip forward/i }).click();
     expect(onSeek).toHaveBeenLastCalledWith(15);

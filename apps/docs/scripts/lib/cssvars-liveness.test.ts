@@ -14,9 +14,7 @@ const STOCK_CSS = ["app/globals.css", "app/marketing.css"];
 const BASELINE = "cssvars-liveness.baseline.json";
 
 const stockVars = new Set<string>(
-  STOCK_CSS.flatMap((f) =>
-    [...readFileSync(f, "utf8").matchAll(/(--[a-zA-Z0-9-]+)\s*:/g)].map((m) => m[1]),
-  ),
+  STOCK_CSS.flatMap((f) => [...readFileSync(f, "utf8").matchAll(/(--[a-zA-Z0-9-]+)\s*:/g)].map((m) => m[1])),
 );
 
 const fileFor = (name: string) => `registry/super-ai/${name}.tsx`;

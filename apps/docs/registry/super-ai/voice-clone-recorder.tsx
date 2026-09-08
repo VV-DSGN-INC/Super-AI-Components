@@ -137,7 +137,13 @@ function VoiceCloneRecorderConsentDialog({
   onConsent,
 }: Pick<
   VoiceCloneRecorderProps,
-  "speakerName" | "consentTitle" | "consentConfirmLabel" | "consentCancelLabel" | "disclaimer" | "onConsentCancel" | "onConsent"
+  | "speakerName"
+  | "consentTitle"
+  | "consentConfirmLabel"
+  | "consentCancelLabel"
+  | "disclaimer"
+  | "onConsentCancel"
+  | "onConsent"
 >) {
   // Local and unexported on purpose: there is no `consented`/`defaultConsented`
   // prop that would let a consumer pre-check this from outside. It also
@@ -171,8 +177,8 @@ function VoiceCloneRecorderConsentDialog({
         <AlertDialogHeader>
           <AlertDialogTitle>{consentTitle}</AlertDialogTitle>
           <AlertDialogDescription>
-            This creates an AI model that can generate new speech in {who}&apos;s voice from this recording. It
-            must not proceed without {who}&apos;s own, specific permission — not a general terms-of-service
+            This creates an AI model that can generate new speech in {who}&apos;s voice from this recording.
+            It must not proceed without {who}&apos;s own, specific permission — not a general terms-of-service
             acceptance.
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -195,20 +201,22 @@ function VoiceCloneRecorderConsentDialog({
           </span>
         </label>
 
-        {disclaimer === null ? null : (
-          disclaimer ?? (
-            // No data-slot override: DisclaimerNote spreads ...props after its
-            // own attributes, so one would erase `disclaimer-note` and hide
-            // that this is a composed N3 (CONTINUE.md §4).
-            <DisclaimerNote variant="in-card">
-              Voice clones can convincingly imitate someone without their knowledge. Consent has to come from{" "}
-              {who} — never from whoever happens to be holding the microphone.
-            </DisclaimerNote>
-          )
-        )}
+        {disclaimer === null
+          ? null
+          : (disclaimer ?? (
+              // No data-slot override: DisclaimerNote spreads ...props after its
+              // own attributes, so one would erase `disclaimer-note` and hide
+              // that this is a composed N3 (CONTINUE.md §4).
+              <DisclaimerNote variant="in-card">
+                Voice clones can convincingly imitate someone without their knowledge. Consent has to come
+                from {who} — never from whoever happens to be holding the microphone.
+              </DisclaimerNote>
+            ))}
 
         <AlertDialogFooter>
-          <AlertDialogCancel data-slot="voice-clone-recorder-consent-cancel">{consentCancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel data-slot="voice-clone-recorder-consent-cancel">
+            {consentCancelLabel}
+          </AlertDialogCancel>
           <AlertDialogAction
             data-slot="voice-clone-recorder-consent-confirm"
             disabled={!checked}
@@ -281,7 +289,10 @@ function VoiceCloneRecorder({
               beside it rather than folded into the live region (which would
               re-announce every tick). */}
           <div className="text-destructive flex items-center gap-2 text-sm font-medium">
-            <span aria-hidden="true" className="bg-destructive size-2 shrink-0 animate-pulse rounded-full motion-reduce:animate-none" />
+            <span
+              aria-hidden="true"
+              className="bg-destructive size-2 shrink-0 animate-pulse rounded-full motion-reduce:animate-none"
+            />
             <span role="status" aria-live="polite" data-slot="voice-clone-recorder-status">
               Recording
             </span>

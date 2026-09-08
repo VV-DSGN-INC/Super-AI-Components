@@ -1,10 +1,7 @@
 import * as React from "react";
 
 // Minimal next/link stand-in for Storybook (Vite) — renders a plain <a>.
-type NextLinkProps = Omit<
-  React.AnchorHTMLAttributes<HTMLAnchorElement>,
-  "href"
-> & {
+type NextLinkProps = Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> & {
   href: string | { pathname?: string };
   prefetch?: boolean;
   replace?: boolean;

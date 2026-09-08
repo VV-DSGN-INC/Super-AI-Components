@@ -41,7 +41,9 @@ describe("MemberGateRow", () => {
 
   it("renders the unlocked state: a plain, functioning switch with no gate badge", () => {
     const onCheckedChange = vi.fn();
-    render(<MemberGateRow state="unlocked" label="4K export" checked={true} onCheckedChange={onCheckedChange} />);
+    render(
+      <MemberGateRow state="unlocked" label="4K export" checked={true} onCheckedChange={onCheckedChange} />,
+    );
 
     const row = document.querySelector('[data-slot="member-gate-row"]')!;
     expect(row).toHaveAttribute("data-state", "unlocked");

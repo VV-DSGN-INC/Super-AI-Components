@@ -101,7 +101,10 @@ export default function ToolPanelDemo() {
     if (!q) return withThumbnails;
 
     return withThumbnails
-      .map((section) => ({ ...section, items: section.items?.filter((i) => i.label.toLowerCase().includes(q)) }))
+      .map((section) => ({
+        ...section,
+        items: section.items?.filter((i) => i.label.toLowerCase().includes(q)),
+      }))
       .filter((section) => (section.items?.length ?? 0) > 0)
       .map((section) => ({ ...section, count: section.items?.length }));
   }, [query]);

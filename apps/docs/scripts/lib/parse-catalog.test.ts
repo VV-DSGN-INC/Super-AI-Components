@@ -33,11 +33,7 @@ describe("parseCatalogTables", () => {
   });
 
   it("splits states on the middle dot", () => {
-    expect(rows.find((r) => r.id === "B1")!.states).toEqual([
-      "expanded",
-      "icon-rail",
-      "mobile-drawer",
-    ]);
+    expect(rows.find((r) => r.id === "B1")!.states).toEqual(["expanded", "icon-rail", "mobile-drawer"]);
   });
 
   it("kebab-cases and splits the shadcn base column", () => {

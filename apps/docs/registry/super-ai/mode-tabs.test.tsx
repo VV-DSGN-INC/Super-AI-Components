@@ -31,12 +31,7 @@ describe("ModeTabs", () => {
     const user = userEvent.setup();
     const onValueChange = vi.fn();
     render(
-      <ModeTabs
-        modes={ICON_MODES}
-        variant="with-icon"
-        defaultValue="chat"
-        onValueChange={onValueChange}
-      />,
+      <ModeTabs modes={ICON_MODES} variant="with-icon" defaultValue="chat" onValueChange={onValueChange} />,
     );
 
     const cowork = screen.getByRole("button", { name: "Cowork" });

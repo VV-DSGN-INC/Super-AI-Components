@@ -4,13 +4,7 @@ import { Copy, Pencil, Shuffle } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { formatCost, type Cost } from "@/registry/super-ai/cost";
 import { StatReadout } from "@/registry/super-ai/stat-readout";
 
@@ -83,15 +77,21 @@ function segmentPrompt(prompt: string, spans: PromptSpan[]) {
     .filter((s) => s.end > s.start)
     .sort((a, b) => a.start - b.start);
 
-  const segments: { text: string; span?: PromptSpan }[] = [];
+  // `start` is emitted, not just tracked: it is the segment's character offset
+  // in the prompt, which makes it a stable React key. The three renders below
+  // keyed on the array index instead, so re-highlighting a prompt reordered or
+  // resized the segment list and React reused the wrong nodes.
+  const segments: { text: string; start: number; span?: PromptSpan }[] = [];
   let cursor = 0;
   for (const span of clean) {
     if (span.start < cursor) continue; // overlaps one already emitted
-    if (span.start > cursor) segments.push({ text: prompt.slice(cursor, span.start) });
-    segments.push({ text: prompt.slice(span.start, span.end), span });
+    if (span.start > cursor) {
+      segments.push({ text: prompt.slice(cursor, span.start), start: cursor });
+    }
+    segments.push({ text: prompt.slice(span.start, span.end), start: span.start, span });
     cursor = span.end;
   }
-  if (cursor < prompt.length) segments.push({ text: prompt.slice(cursor) });
+  if (cursor < prompt.length) segments.push({ text: prompt.slice(cursor), start: cursor });
   return segments;
 }
 
@@ -139,10 +139,10 @@ function AssetDetail({
               <div className="flex flex-col gap-2">
                 <h3 className="text-foreground text-xs font-medium">Prompt</h3>
                 <p data-slot="asset-detail-prompt" className="text-foreground text-sm">
-                  {segments.map((segment, i) =>
+                  {segments.map((segment) =>
                     segment.span && onSpanSelect ? (
                       <button
-                        key={i}
+                        key={segment.start}
                         type="button"
                         data-slot="asset-detail-span"
                         // The button's text is its accessible name, so what a
@@ -156,14 +156,14 @@ function AssetDetail({
                       // Highlighted but inert: still marked, because the
                       // highlight is information even without a handler.
                       <mark
-                        key={i}
+                        key={segment.start}
                         data-slot="asset-detail-span"
                         className="bg-foreground/10 text-foreground rounded px-0.5"
                       >
                         {segment.text}
                       </mark>
                     ) : (
-                      <React.Fragment key={i}>{segment.text}</React.Fragment>
+                      <React.Fragment key={segment.start}>{segment.text}</React.Fragment>
                     ),
                   )}
                 </p>

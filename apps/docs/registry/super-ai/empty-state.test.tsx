@@ -9,8 +9,7 @@ const PAIR = {
   after: { content: <span>relit photo</span>, label: "After" },
 };
 
-const root = (container: HTMLElement) =>
-  container.querySelector('[data-slot="empty-state"]') as HTMLElement;
+const root = (container: HTMLElement) => container.querySelector('[data-slot="empty-state"]') as HTMLElement;
 
 const slotsOf = (container: HTMLElement) =>
   [...container.querySelectorAll("[data-slot]")].map((el) => el.getAttribute("data-slot"));
@@ -151,7 +150,9 @@ describe("EmptyState", () => {
   });
 
   it("never invents a CTA — the caller owns the verb", () => {
-    const { rerender } = render(<EmptyState title="No exports" description="Export a take to see it here." />);
+    const { rerender } = render(
+      <EmptyState title="No exports" description="Export a take to see it here." />,
+    );
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
     expect(document.querySelector('[data-slot="empty-state-actions"]')).toBeNull();
 
@@ -206,9 +207,7 @@ describe("EmptyState", () => {
   });
 
   it("composes the example pair with any size rather than being a fourth size", () => {
-    const { container } = render(
-      <EmptyState size="page" title="Try a relight" examplePair={PAIR} />,
-    );
+    const { container } = render(<EmptyState size="page" title="Try a relight" examplePair={PAIR} />);
     expect(root(container).dataset.size).toBe("page");
     expect(container.querySelector('[data-slot="empty-state-example-pair"]')).toBeInTheDocument();
   });

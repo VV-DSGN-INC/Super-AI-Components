@@ -22,8 +22,7 @@ const GROUPS: ArtifactShellGroup[] = [
           },
           {
             id: "a2",
-            excerpt:
-              "const TONE = ['reassuring', 'plain', 'unhurried'] // extracted from 41 sampled pages",
+            excerpt: "const TONE = ['reassuring', 'plain', 'unhurried'] // extracted from 41 sampled pages",
             type: "code",
             editedAgo: "Edited 9 minutes ago",
             viewCount: 3,

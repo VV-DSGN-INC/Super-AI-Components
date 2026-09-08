@@ -2,11 +2,7 @@
 
 import * as React from "react";
 
-import {
-  ApprovalCard,
-  type ApprovalResolution,
-  type ApprovalState,
-} from "@/registry/super-ai/approval-card";
+import { ApprovalCard, type ApprovalResolution, type ApprovalState } from "@/registry/super-ai/approval-card";
 
 export default function ApprovalCardDemo() {
   const [state, setState] = React.useState<ApprovalState>("pending");
@@ -27,9 +23,9 @@ export default function ApprovalCardDemo() {
         summary="Three paragraphs drafted from last quarter's metrics, ready to post in #general."
         detail={
           <p>
-            Revenue grew 14% quarter over quarter, driven mostly by the self-serve tier. Churn held
-            flat at 2.1%. The one number worth flagging is support volume, which rose 30% against a
-            headcount that did not move.
+            Revenue grew 14% quarter over quarter, driven mostly by the self-serve tier. Churn held flat at
+            2.1%. The one number worth flagging is support volume, which rose 30% against a headcount that did
+            not move.
           </p>
         }
         state={state}

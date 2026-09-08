@@ -3,7 +3,11 @@
 import { FileText, Sparkles } from "lucide-react";
 import { useState } from "react";
 
-import { SuggestionChip, SuggestionChips, SuggestionChipsOverflow } from "@/registry/super-ai/suggestion-chips";
+import {
+  SuggestionChip,
+  SuggestionChips,
+  SuggestionChipsOverflow,
+} from "@/registry/super-ai/suggestion-chips";
 
 export default function SuggestionChipsDemo() {
   const [draft, setDraft] = useState("");

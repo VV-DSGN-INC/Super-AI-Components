@@ -16,13 +16,25 @@ import { FrameStrip, type FrameStripItem } from "@/registry/super-ai/frame-strip
 const FRAMES: FrameStripItem[] = ["00:00:00", "00:00:04", "00:00:08"].map((timecode, index) => ({
   id: `f${index + 1}`,
   label: timecode,
-  thumbnail: <img src={`https://placehold.co/320x180?text=${index + 1}`} alt="" className="h-full w-full object-cover" />,
+  thumbnail: (
+    <img
+      src={`https://placehold.co/320x180?text=${index + 1}`}
+      alt=""
+      className="h-full w-full object-cover"
+    />
+  ),
 }));
 
 const PAGES: FrameStripItem[] = ["1. Title", "2. Problem", "3. Results"].map((label, index) => ({
   id: `p${index + 1}`,
   label,
-  thumbnail: <img src={`https://placehold.co/320x180?text=${index + 1}`} alt="" className="h-full w-full object-cover" />,
+  thumbnail: (
+    <img
+      src={`https://placehold.co/320x180?text=${index + 1}`}
+      alt=""
+      className="h-full w-full object-cover"
+    />
+  ),
 }));
 
 /** One component, three content kinds — the same strip with different tiles. */

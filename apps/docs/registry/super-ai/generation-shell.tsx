@@ -14,7 +14,11 @@ import {
   type GenerationGroup,
 } from "@/registry/super-ai/generation-grid";
 import { GenerationPanel, type GenerationPanelProps } from "@/registry/super-ai/generation-panel";
-import { ModelPicker, type ModelPickerModel, type ModelPickerPresentation } from "@/registry/super-ai/model-picker";
+import {
+  ModelPicker,
+  type ModelPickerModel,
+  type ModelPickerPresentation,
+} from "@/registry/super-ai/model-picker";
 import { ParameterPanel } from "@/registry/super-ai/parameter-panel";
 import { PresetGrid, type PresetGridContent, type PresetGridItem } from "@/registry/super-ai/preset-grid";
 import { ResultCard, type ResultCardProps } from "@/registry/super-ai/result-card";
@@ -100,8 +104,10 @@ const COST_ROW_ON_MUTED = "[--muted-foreground:var(--foreground)]";
  */
 const EMPTY_SPANS_THE_CANVAS = "[&_[data-slot=generation-grid-empty]]:col-span-full";
 
-interface GenerationShellResult
-  extends Omit<ResultCardProps, "children" | "selectable" | "selected" | "onSelect"> {
+interface GenerationShellResult extends Omit<
+  ResultCardProps,
+  "children" | "selectable" | "selected" | "onSelect"
+> {
   id: string;
   /** The media itself. F1 treats it as opaque, and so does this shell. */
   media?: React.ReactNode;

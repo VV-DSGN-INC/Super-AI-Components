@@ -13,7 +13,7 @@ import { DateSection } from "@/registry/super-ai/date-section";
  */
 export const DateSectionDocs: ComponentDocs = {
   whatItIs:
-    "The bucket header that groups a list by when — a small label above the rows it names, wrapping them in a real group rather than floating above them as a heading. That is the entire component: a `label` string, whatever children you put inside, and `role=\"group\"` with `aria-labelledby` pointing at the label. It does no date maths, no localization and no grouping; you decide which bucket a row belongs to and what that bucket is called.",
+    'The bucket header that groups a list by when — a small label above the rows it names, wrapping them in a real group rather than floating above them as a heading. That is the entire component: a `label` string, whatever children you put inside, and `role="group"` with `aria-labelledby` pointing at the label. It does no date maths, no localization and no grouping; you decide which bucket a row belongs to and what that bucket is called.',
   whyItMatters:
     "Every list an AI product accumulates is ordered by recency — threads in Manus and Claude, generations in Midjourney, scenario runs in Make — and recency is the one axis people navigate from memory. Nobody remembers a thread title, but everybody remembers that they were working on it yesterday. A date bucket turns that memory into a place to look, at the cost of one line of 12px text, which is why all four of those products reach for it before they reach for search. The group semantics are the second half of the argument: because the rows sit inside a labelled group instead of after a heading, a screen reader announces the bucket name on entering the rows, so the temporal context travels with the items for everyone rather than only for people who can see the header above them.",
   evidence: ["Manus", "Claude", "Midjourney", "Make"],
@@ -98,17 +98,17 @@ export const DateSectionDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "Zero tab stops of its own. The wrapper is a `<div role=\"group\">` and the label is a `<p>` — neither takes focus, so every tab stop inside a date section belongs to the rows you passed as children.",
+      'Zero tab stops of its own. The wrapper is a `<div role="group">` and the label is a `<p>` — neither takes focus, so every tab stop inside a date section belongs to the rows you passed as children.',
       "There are no keys, no collapse and nothing to activate. Arrow keys, Enter, Space and Escape all fall through to whatever is inside, which means the group adds no keyboard behaviour that could conflict with a row list, a link list or a menu placed in it.",
-      "Because there is no collapse trigger, there is no way to skip a long bucket from the keyboard: 40 rows under \"Today\" is 40 tab stops before \"Yesterday\" begins. `section-header` is the component with the fold.",
+      'Because there is no collapse trigger, there is no way to skip a long bucket from the keyboard: 40 rows under "Today" is 40 tab stops before "Yesterday" begins. `section-header` is the component with the fold.',
     ],
     screenReader: [
-      "`role=\"group\"` plus `aria-labelledby` pointing at the label is the whole accessibility argument for this component: the rows are inside a named group rather than after a heading, so the bucket name travels with the items instead of being a line you had to have seen.",
+      '`role="group"` plus `aria-labelledby` pointing at the label is the whole accessibility argument for this component: the rows are inside a named group rather than after a heading, so the bucket name travels with the items instead of being a line you had to have seen.',
       "The label is a `<p>`, not a heading, so date buckets are deliberately absent from the heading outline. Jumping bucket to bucket is by group, not by heading — and a sidebar of `<h3>Today</h3>` would pollute the outline of the page beside it.",
       "The label's `id` comes from `React.useId()`, so it is unique per instance and several sections in one list cannot cross-wire their names.",
       "`...props` spreads after the component's own attributes, so passing your own `role` or `aria-labelledby` silently replaces the group semantics and orphans the label paragraph. If you need a different name, change `label`.",
       "An empty `label` leaves `aria-labelledby` pointing at an empty paragraph, which computes to no accessible name — an unnamed group with a mystery gap above it. Skip the bucket rather than rendering it nameless.",
-      "Nothing announces regrouping. When \"Today\" becomes \"Yesterday\" at midnight, or a row moves between buckets, the DOM changes with no live region, so the new grouping is only discovered by re-reading the list.",
+      'Nothing announces regrouping. When "Today" becomes "Yesterday" at midnight, or a row moves between buckets, the DOM changes with no live region, so the new grouping is only discovered by re-reading the list.',
     ],
   },
   pitfalls: [

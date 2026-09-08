@@ -8,11 +8,11 @@ Steps 3 (the family waves) and 4 (the gate) remain — outcome in `CONTINUE.md` 
 program extends and spreads; the benchmark comparison from the same session, whose finding was
 "ours has more components and fewer of every single guarantee."
 
-| | |
-| --- | --- |
-| Scope | Convention expansion (the seven → eight + two manifest rules), retrofit of case stories across all 116 registry items, full `contractExempt` fold-in (25 items), then a `check:contract` gate |
-| Touches | `docs/design-system/story-conventions.md`, `component-build-brief.md`, all 105 story files + 11 new ones, `apps/docs/lib/catalog.manifest.ts` (integrator only), `apps/docs/scripts/check-contract.mts` (last) |
-| Explicitly out | Sizes stories, variant × intent grids, any benchmark number-parity goal |
+|                |                                                                                                                                                                                                                |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scope          | Convention expansion (the seven → eight + two manifest rules), retrofit of case stories across all 116 registry items, full `contractExempt` fold-in (25 items), then a `check:contract` gate                  |
+| Touches        | `docs/design-system/story-conventions.md`, `component-build-brief.md`, all 105 story files + 11 new ones, `apps/docs/lib/catalog.manifest.ts` (integrator only), `apps/docs/scripts/check-contract.mts` (last) |
+| Explicitly out | Sizes stories, variant × intent grids, any benchmark number-parity goal                                                                                                                                        |
 
 ---
 
@@ -43,8 +43,8 @@ One PR, before any wave runs. Two files.
 
 Added to the table in `story-conventions.md`:
 
-| Story | Write it when | What it must show |
-| --- | --- | --- |
+| Story        | Write it when                                                                  | What it must show                                                                              |
+| ------------ | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
 | `Controlled` | the component exposes a value/selection API (`value`/`onChange` or equivalent) | the component driven by external state, with a play function asserting the controlled contract |
 
 The play function is the point, and it asserts three things: interaction alone does not move the
@@ -108,7 +108,7 @@ Per `CONTINUE.md` §3.4 and the parallel-builds section of `CLAUDE.md`:
 
 - One agent per component, each in its own git worktree with its own port. Verify each
   worktree's base commit carries the convention PR before dispatch.
-- **No agent writes `catalog.manifest.ts`.** Wave-0 agents *report* their proposed states
+- **No agent writes `catalog.manifest.ts`.** Wave-0 agents _report_ their proposed states
   (name, description, story export name) in their reports; the integrator applies all manifest
   edits centrally, then runs the full gate list from the repo root in `ci.yml` order. This is
   the §3.2 single-shared-file rule applied to the one wave that must touch manifest content.
@@ -175,16 +175,16 @@ System repo, same as the token checker note in `CLAUDE.md`.
 
 ## 6. Sequencing
 
-| Step | Deliverable | Depends on |
-| --- | --- | --- |
-| 1 | Convention PR (§2) | this spec approved |
-| 2 | Wave 0: 25-item fold-in (§3.1) | convention PR merged |
-| 3 | Family waves (§3.2), one PR each | wave 0 merged |
-| 4 | Gate PR (§4) | all family waves merged |
+| Step | Deliverable                      | Depends on              |
+| ---- | -------------------------------- | ----------------------- |
+| 1    | Convention PR (§2)               | this spec approved      |
+| 2    | Wave 0: 25-item fold-in (§3.1)   | convention PR merged    |
+| 3    | Family waves (§3.2), one PR each | wave 0 merged           |
+| 4    | Gate PR (§4)                     | all family waves merged |
 
 Step 3's waves are independent of each other and run in any interleaving. The gate goes
 strictly last: it fails every story file that has not been retrofitted, and a red gate can
 never land on `main`, so its merge-precondition is that no file it checks would fail. Its
-*design* is validated earlier — after wave 0 plus one family wave, the checker is written and
+_design_ is validated earlier — after wave 0 plus one family wave, the checker is written and
 run locally in report-only form against the whole tree, so the annotation grammar gets proven
 against real files before the remaining waves write hundreds of `case-skip` lines against it.

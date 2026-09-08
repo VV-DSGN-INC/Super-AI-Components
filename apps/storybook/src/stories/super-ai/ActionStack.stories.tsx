@@ -234,9 +234,7 @@ export const RTL: Story = {
     // …and the pair inside it reverses with it. Chip first in the DOM, so
     // chip on the right, the word on its left — the LTR arrangement flipped,
     // not the block slid across with its contents left alone.
-    await expect(`word left of chip: ${box(word).right <= box(chip).left}`).toBe(
-      "word left of chip: true",
-    );
+    await expect(`word left of chip: ${box(word).right <= box(chip).left}`).toBe("word left of chip: true");
 
     // The price itself does not mirror. I4's finding, asserted here because
     // this call site suppresses A2's own unit and passes the whole formatted
@@ -309,23 +307,17 @@ export const ReducedMotion: Story = {
     // Still opening — the attribute the animation is keyed off is on the
     // element, so this is the frame the bare class fails to reach.
     await expect(menu).toHaveAttribute("data-open");
-    await expect(`open animation=${getComputedStyle(menu).animationName}`).toBe(
-      "open animation=none",
-    );
+    await expect(`open animation=${getComputedStyle(menu).animationName}`).toBe("open animation=none");
 
     // …and it is already full size on that same frame, rather than arriving at
     // the 95% `zoom-in-95` starts from and growing into place.
-    await expect(`open width=${Math.round(menu.getBoundingClientRect().width)}`).toBe(
-      "open width=320",
-    );
+    await expect(`open width=${Math.round(menu.getBoundingClientRect().width)}`).toBe("open width=320");
 
     // The dismissal runs every time a caller uses this menu, and it leaves
     // nothing behind to measure — see the note above.
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(within(document.body).queryByRole("menu")).toBeNull());
-    await expect(`popup still in the document=${menu.isConnected}`).toBe(
-      "popup still in the document=false",
-    );
+    await expect(`popup still in the document=${menu.isConnected}`).toBe("popup still in the document=false");
   },
 };
 
@@ -383,7 +375,11 @@ export const KeyboardOrder: Story = {
   render: (args) => (
     <div className="flex w-full flex-col gap-6">
       <ActionStack {...args} presentation="inline" className="rounded-lg border p-1" />
-      <ActionStack {...args} presentation="menu" trigger={<Button variant="outline">Use this result</Button>} />
+      <ActionStack
+        {...args}
+        presentation="menu"
+        trigger={<Button variant="outline">Use this result</Button>}
+      />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -411,16 +407,12 @@ export const KeyboardOrder: Story = {
 
     for (const [index, row] of stops.entries()) {
       await userEvent.tab();
-      await expect(`stop ${index}: ${nameOf(document.activeElement)}`).toBe(
-        `stop ${index}: ${nameOf(row)}`,
-      );
+      await expect(`stop ${index}: ${nameOf(document.activeElement)}`).toBe(`stop ${index}: ${nameOf(row)}`);
       await expect(row.matches(":focus-visible")).toBe(true);
       // A real ring, not the decoy: A9's `focus-visible:ring-2` paints an
       // opaque 2px layer, while its `focus-visible:outline-none` on the same
       // row leaves `outline-width` reading 1px at `outline-style: none`.
-      await expect(`${nameOf(row)} ring=${visibleRing(row)}`).toBe(
-        `${nameOf(row)} ring=2px spread, opaque`,
-      );
+      await expect(`${nameOf(row)} ring=${visibleRing(row)}`).toBe(`${nameOf(row)} ring=2px spread, opaque`);
       await expect(`${nameOf(row)} outline=${getComputedStyle(row).outlineStyle}`).toBe(
         `${nameOf(row)} outline=none`,
       );
@@ -431,9 +423,7 @@ export const KeyboardOrder: Story = {
     // trigger — which is the whole of the menu's contribution to the page.
     const trigger = within(canvasElement).getByRole("button", { name: "Use this result" });
     await userEvent.tab();
-    await expect(`after last row: ${nameOf(document.activeElement)}`).toBe(
-      `after last row: Use this result`,
-    );
+    await expect(`after last row: ${nameOf(document.activeElement)}`).toBe(`after last row: Use this result`);
     await expect(document.activeElement).toBe(trigger);
 
     // Opening it adds no tab stops: the rows are a roving arrow walk, which is
@@ -581,9 +571,7 @@ export const LongContent: Story = {
 
     // 320px regardless of the trigger, which is narrower than the inline
     // column the declared-state stories render into.
-    await expect(`popup width=${Math.round(menu.getBoundingClientRect().width)}`).toBe(
-      "popup width=320",
-    );
+    await expect(`popup width=${Math.round(menu.getBoundingClientRect().width)}`).toBe("popup width=320");
 
     const row = menu.querySelector<HTMLElement>('[data-action-id="lipsync"]')!;
     const clipped = (slot: string) => {
@@ -601,9 +589,7 @@ export const LongContent: Story = {
     await expect(row).toHaveTextContent("900 credits/min");
 
     // And the popup does not solve it by growing sideways.
-    await expect(`popup overflows=${menu.scrollWidth > menu.clientWidth}`).toBe(
-      "popup overflows=false",
-    );
+    await expect(`popup overflows=${menu.scrollWidth > menu.clientWidth}`).toBe("popup overflows=false");
   },
 };
 
@@ -643,33 +629,31 @@ export const Mobile: Story = {
   ),
   play: async ({ canvasElement }) => {
     const frame = within(canvasElement).getByTestId("mobile-frame");
-    await expect(`frame width=${Math.round(frame.getBoundingClientRect().width)}`).toBe(
-      "frame width=375",
-    );
-    await expect(`frame overflows=${frame.scrollWidth > frame.clientWidth}`).toBe(
-      "frame overflows=false",
-    );
+    await expect(`frame width=${Math.round(frame.getBoundingClientRect().width)}`).toBe("frame width=375");
+    await expect(`frame overflows=${frame.scrollWidth > frame.clientWidth}`).toBe("frame overflows=false");
 
     const root = frame.querySelector<HTMLElement>('[data-slot="action-stack"]')!;
-    await expect(`root overflows=${root.scrollWidth > root.clientWidth}`).toBe(
-      "root overflows=false",
-    );
+    await expect(`root overflows=${root.scrollWidth > root.clientWidth}`).toBe("root overflows=false");
 
     const locked = root.querySelector<HTMLElement>('[data-action-id="lipsync"]')!;
     const width = (el: Element) => Math.round(el.getBoundingClientRect().width);
-    const textColumn = locked.querySelector<HTMLElement>('[data-slot="entity-row-title"]')!
-      .parentElement!;
+    const textColumn = locked.querySelector<HTMLElement>('[data-slot="entity-row-title"]')!.parentElement!;
     const trailing = locked.querySelector<HTMLElement>('[data-slot="entity-row-trailing"]')!;
 
     // The trailing slot wins the width fight, and the prose column takes what
     // is left rather than pushing the row wider.
-    // Measured: a 365px row gives 172px to the price-and-Locked pair and
-    // leaves the prose 129px, the rest going to the padlock, the gaps and the
-    // row padding. The trailing slot wins outright, and the prose column takes
-    // what is left rather than pushing the row wider.
-    await expect(
-      `row=${width(locked)} text=${width(textColumn)} trailing=${width(trailing)}`,
-    ).toBe("row=365 text=129 trailing=172");
+    //
+    // The row is 365 because the 375px frame dictates it, so that one is
+    // pinned. The split between prose and trailing is not: both columns are
+    // sized by their own text, and text advances differ by platform (129/172
+    // on macOS, 125/176 on Linux). Per D21 the claim is asserted as the
+    // relationship the comment states, not as the two numbers it produced on
+    // one machine.
+    await expect(width(locked)).toBe(365);
+    await expect(width(trailing)).toBeGreaterThan(width(textColumn));
+    // "takes what is left": the two columns plus the padlock, gaps and padding
+    // fill the row without pushing past it.
+    await expect(width(textColumn) + width(trailing)).toBeLessThan(width(locked));
 
     // The price still renders in full — it is the number the row exists to
     // show, and `shrink-0` is what keeps it.

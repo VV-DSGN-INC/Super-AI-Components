@@ -35,28 +35,15 @@ const lineNumberTransformer: ShikiTransformer = {
       type: "element",
       tagName: "span",
       properties: {
-        className: [
-          "inline-block",
-          "min-w-10",
-          "mr-4",
-          "text-right",
-          "select-none",
-          "text-muted-foreground",
-        ],
+        className: ["inline-block", "min-w-10", "mr-4", "text-right", "select-none", "text-muted-foreground"],
       },
       children: [{ type: "text", value: String(line) }],
     });
   },
 };
 
-export async function highlightCode(
-  code: string,
-  language: BundledLanguage,
-  showLineNumbers = false
-) {
-  const transformers: ShikiTransformer[] = showLineNumbers
-    ? [lineNumberTransformer]
-    : [];
+export async function highlightCode(code: string, language: BundledLanguage, showLineNumbers = false) {
+  const transformers: ShikiTransformer[] = showLineNumbers ? [lineNumberTransformer] : [];
 
   return await Promise.all([
     codeToHtml(code, {
@@ -103,7 +90,7 @@ export const CodeBlock = ({
       <div
         className={cn(
           "group relative w-full overflow-hidden rounded-md border bg-background text-foreground",
-          className
+          className,
         )}
         {...props}
       >
@@ -118,11 +105,7 @@ export const CodeBlock = ({
             // biome-ignore lint/security/noDangerouslySetInnerHtml: "this is needed."
             dangerouslySetInnerHTML={{ __html: darkHtml }}
           />
-          {children && (
-            <div className="absolute top-2 right-2 flex items-center gap-2">
-              {children}
-            </div>
-          )}
+          {children && <div className="absolute top-2 right-2 flex items-center gap-2">{children}</div>}
         </div>
       </div>
     </CodeBlockContext.Provider>

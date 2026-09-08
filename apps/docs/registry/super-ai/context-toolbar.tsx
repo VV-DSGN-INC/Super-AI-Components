@@ -250,9 +250,7 @@ function ContextToolbar({
           aiButton
         )}
 
-        {visibleActions.length > 0 ? (
-          <Separator orientation="vertical" className="mx-0.5 h-5" />
-        ) : null}
+        {visibleActions.length > 0 ? <Separator orientation="vertical" className="mx-0.5 h-5" /> : null}
 
         {visibleActions.map((action) => (
           <ContextToolbarButton key={action.id} action={action} onAction={onAction} side={side} />
@@ -313,9 +311,4 @@ function ContextToolbar({
 }
 
 export { ContextToolbar, MAX_TOOLBAR_ACTIONS };
-export type {
-  ContextToolbarAction,
-  ContextToolbarPlacement,
-  ContextToolbarProps,
-  ContextToolbarSelection,
-};
+export type { ContextToolbarAction, ContextToolbarPlacement, ContextToolbarProps, ContextToolbarSelection };

@@ -22,15 +22,27 @@ export const ApprovalCardDocs: ComponentDocs = {
   anatomy: [
     { slot: "approval-card", note: "The card. Carries `data-state` for pending, submitting or resolved." },
     { slot: "approval-card-title", note: "What is being decided, in a few words." },
-    { slot: "approval-card-summary", note: "The sentence the decision is made on. Full-contrast text, not secondary." },
-    { slot: "approval-card-expand", note: "The explicit expand toggle, carrying aria-expanded and aria-controls." },
+    {
+      slot: "approval-card-summary",
+      note: "The sentence the decision is made on. Full-contrast text, not secondary.",
+    },
+    {
+      slot: "approval-card-expand",
+      note: "The explicit expand toggle, carrying aria-expanded and aria-controls.",
+    },
     { slot: "approval-card-detail", note: "The full detail. Rendered only when expanded — not clipped." },
-    { slot: "approval-card-verbs", note: "The button group. Iterates a fixed list, so caller order cannot reach it." },
+    {
+      slot: "approval-card-verbs",
+      note: "The button group. Iterates a fixed list, so caller order cannot reach it.",
+    },
     { slot: "approval-card-confirm", note: "Terminal. Shows the spinner while submitting." },
     { slot: "approval-card-edit", note: "Returns you to the artifact; resolves nothing on its own." },
     { slot: "approval-card-regenerate", note: "Returns you to the artifact; resolves nothing on its own." },
     { slot: "approval-card-skip", note: "Terminal." },
-    { slot: "approval-card-resolution", note: "The outcome, stated in words. Replaces the verbs once resolved." },
+    {
+      slot: "approval-card-resolution",
+      note: "The outcome, stated in words. Replaces the verbs once resolved.",
+    },
     { slot: "approval-card-undo", note: "Available for `undoWindowMs` after resolution, then withdrawn." },
     { slot: "approval-card-status", note: "Visually hidden live region announcing each transition." },
   ],
@@ -59,18 +71,18 @@ export const ApprovalCardDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "Pending, the card is one tab stop per supplied verb, plus one more for the expand toggle when there is `detail`. A card with all four verbs and a detail block is five stops; a card with only `onConfirm` is one.",
-      "The verb row is a plain `role=\"group\"` with no roving tabindex, so the arrows do nothing and each verb costs a Tab.",
+      'The verb row is a plain `role="group"` with no roving tabindex, so the arrows do nothing and each verb costs a Tab.',
       "In `submitting` every verb is `disabled`, so the pending card's tab stops drop to just the expand toggle. In `resolved` they are gone entirely and the only stop is Undo, for as long as its window lasts.",
       "There is no Escape, no Enter-to-confirm and no shortcut for any verb. Every decision is a Tab-and-Space, which is deliberate for a step that exists to be read first.",
       "The Undo window is wall-clock and cannot be extended, paused or dismissed from the keyboard. Someone reading the resolution with a screen reader can easily spend the default eight seconds before reaching the button, at which point it is simply gone.",
     ],
     screenReader: [
-      "A persistent `role=\"status\"` line is in the DOM in every state and changes with it — \"Awaiting your decision\", \"Submitting your decision\", then the resolution wording. That is what makes the transition audible rather than merely visible.",
-      "With several cards on screen those live regions are indistinguishable: each announces \"Awaiting your decision\" with no reference to which artifact, so the surface around them has to supply that.",
+      'A persistent `role="status"` line is in the DOM in every state and changes with it — "Awaiting your decision", "Submitting your decision", then the resolution wording. That is what makes the transition audible rather than merely visible.',
+      'With several cards on screen those live regions are indistinguishable: each announces "Awaiting your decision" with no reference to which artifact, so the surface around them has to supply that.',
       "The card is a plain `div` and the title renders as a `div` too, not a heading. There is no region, no landmark and no heading to jump between cards with — a queue of approvals is one undifferentiated run of text in browse mode.",
-      "The expand toggle carries `aria-expanded` and `aria-controls`, and its name flips between \"Show detail\" and \"Hide detail\". The detail is genuinely unmounted while collapsed, not clipped, so a screen reader cannot read past the fold — that is the point, and it means `aria-controls` points at an element that does not exist until you expand.",
+      'The expand toggle carries `aria-expanded` and `aria-controls`, and its name flips between "Show detail" and "Hide detail". The detail is genuinely unmounted while collapsed, not clipped, so a screen reader cannot read past the fold — that is the point, and it means `aria-controls` points at an element that does not exist until you expand.',
       "Every verb is named by its visible word; the icons and the submitting spinner are all `aria-hidden`. The spinner is therefore silent — only the status line says a submission is in flight.",
-      "The resolution line's tick is `aria-hidden` and the wording carries it, so \"Sent back for editing\" is a real sentence rather than a coloured state.",
+      'The resolution line\'s tick is `aria-hidden` and the wording carries it, so "Sent back for editing" is a real sentence rather than a coloured state.',
     ],
     focus: [
       "A decision costs focus twice. Pressing Confirm moves the card to `submitting`, which disables the button under the pointer or caret and drops focus to `<body>`; reaching `resolved` then unmounts the whole verb row. Nothing moves focus to the resolution or to Undo.",
@@ -84,6 +96,6 @@ export const ApprovalCardDocs: ComponentDocs = {
     "Entering `resolved` a second time restarts the window — that is deliberate, so a re-decision gets a fresh chance — but it means holding the component in `resolved` while changing `resolution` also restarts it.",
     "`detail` is not rendered at all while collapsed, rather than hidden with CSS. That is the point (a screen reader should not be able to read what a sighted user has not been shown), but it means anything expensive in `detail` mounts on expand, not on first render.",
     "Only verbs with handlers appear. A card with no handlers at all renders an empty button group, which usually means the callbacks were forgotten rather than that no action was intended.",
-    "Edit and Regenerate resolve nothing on their own — they hand control back to the artifact. If you set `state=\"resolved\"` from them without actually returning the user anywhere, the card claims a decision that was never made.",
+    'Edit and Regenerate resolve nothing on their own — they hand control back to the artifact. If you set `state="resolved"` from them without actually returning the user anywhere, the card claims a decision that was never made.',
   ],
 };

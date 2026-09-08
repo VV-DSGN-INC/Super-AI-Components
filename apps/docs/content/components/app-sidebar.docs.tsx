@@ -28,7 +28,10 @@ export const AppSidebarDocs: ComponentDocs = {
     { slot: "app-sidebar", note: "Root — the vendored Sidebar itself, arranged with the four slots below." },
     { slot: "app-sidebar-switcher", note: "Workspace/product switcher slot, e.g. workspace-switcher." },
     { slot: "app-sidebar-nav", note: "Primary navigation slot, e.g. sidebar-nav or thread-list." },
-    { slot: "app-sidebar-promo", note: "Ambient upgrade/invite/quota slot; hidden automatically at icon-rail width." },
+    {
+      slot: "app-sidebar-promo",
+      note: "Ambient upgrade/invite/quota slot; hidden automatically at icon-rail width.",
+    },
     { slot: "app-sidebar-footer", note: "Footer slot, typically an account menu or identity row." },
     { slot: "app-sidebar-rail", note: "The drag-to-resize/collapse handle along the sidebar's edge." },
   ],
@@ -70,8 +73,8 @@ export const AppSidebarDocs: ComponentDocs = {
       "This component adds no landmark. `SidebarContent` is a plain `div`, so whatever fills `nav` has to bring its own `<nav>` — `sidebar-nav` and `thread-list` do, which is why wrapping them in a second one produces two nested landmarks with the same name.",
       "Collapsing to the icon rail keeps every nav label in the accessible tree — the labels are clipped by width, not removed — so the rail announces exactly like the expanded sidebar.",
       "The promo slot is the exception: it is `display: none` at icon-rail width, so a quota warning or upgrade prompt leaves the accessible tree entirely and silently the moment the sidebar collapses.",
-      "The mobile drawer is a dialog titled \"Sidebar\" with the description \"Displays the mobile sidebar\", both visually hidden and both fixed by the vendored primitive. Neither can be renamed through this component, so every product's drawer announces the same generic title.",
-      "The rail is labelled \"Toggle Sidebar\" and carries no `aria-expanded`, so its state is never announced — and the same is true of `SidebarTrigger`. Nothing anywhere says whether the sidebar is now open or closed.",
+      'The mobile drawer is a dialog titled "Sidebar" with the description "Displays the mobile sidebar", both visually hidden and both fixed by the vendored primitive. Neither can be renamed through this component, so every product\'s drawer announces the same generic title.',
+      'The rail is labelled "Toggle Sidebar" and carries no `aria-expanded`, so its state is never announced — and the same is true of `SidebarTrigger`. Nothing anywhere says whether the sidebar is now open or closed.',
     ],
     focus: [
       "Collapsing to the icon rail while focus is inside the promo slot drops focus to `<body>`, because that slot is removed from the layout rather than hidden. Focus inside the nav survives, since those controls stay mounted.",

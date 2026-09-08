@@ -48,8 +48,10 @@ interface SkillMenuItem {
   preview?: React.ReactNode;
 }
 
-interface SkillMenuProps
-  extends Omit<React.ComponentProps<typeof Command>, "children" | "value" | "onValueChange" | "label"> {
+interface SkillMenuProps extends Omit<
+  React.ComponentProps<typeof Command>,
+  "children" | "value" | "onValueChange" | "label"
+> {
   skills?: SkillMenuItem[];
   onSelectSkill?: (skill: SkillMenuItem) => void;
   searchLabel?: string;
@@ -136,9 +138,7 @@ function SkillMenu({
                 title={skill.title}
                 description={skill.description}
                 trailing={
-                  skill.cost != null ? (
-                    <CostChip amount={skill.cost} unit={skill.costUnit} />
-                  ) : undefined
+                  skill.cost != null ? <CostChip amount={skill.cost} unit={skill.costUnit} /> : undefined
                 }
                 className="w-full"
               />

@@ -19,17 +19,37 @@ const UNPRICED: AssetAction[] = [
 
 const WITH_LOCK: AssetAction[] = [
   ...PRICED,
-  { id: "lipsync", title: "Use in Lip sync", description: "Available on Studio", cost: { amount: 120 }, locked: true },
+  {
+    id: "lipsync",
+    title: "Use in Lip sync",
+    description: "Available on Studio",
+    cost: { amount: 120 },
+    locked: true,
+  },
 ];
 
 /** DO — a price on every row, because chaining is where credits vanish. */
 export function PriceOnEveryRow() {
-  return <ActionStack presentation="inline" actions={PRICED} onAction={() => {}} className="rounded-lg border p-1" />;
+  return (
+    <ActionStack
+      presentation="inline"
+      actions={PRICED}
+      onAction={() => {}}
+      className="rounded-lg border p-1"
+    />
+  );
 }
 
 /** DO — keep locked rows visible, with their cost, so the upgrade has a subject. */
 export function LockedRowsStayVisible() {
-  return <ActionStack presentation="inline" actions={WITH_LOCK} onAction={() => {}} className="rounded-lg border p-1" />;
+  return (
+    <ActionStack
+      presentation="inline"
+      actions={WITH_LOCK}
+      onAction={() => {}}
+      className="rounded-lg border p-1"
+    />
+  );
 }
 
 /**
@@ -37,7 +57,14 @@ export function LockedRowsStayVisible() {
  * gives no way to tell the 55-credit hop from the 900-a-minute one.
  */
 export function NoPrices() {
-  return <ActionStack presentation="inline" actions={UNPRICED} onAction={() => {}} className="rounded-lg border p-1" />;
+  return (
+    <ActionStack
+      presentation="inline"
+      actions={UNPRICED}
+      onAction={() => {}}
+      className="rounded-lg border p-1"
+    />
+  );
 }
 
 /**
@@ -45,5 +72,12 @@ export function NoPrices() {
  * the person never learns Lip sync exists, so the upgrade never gets asked for.
  */
 export function LockedRowsRemoved() {
-  return <ActionStack presentation="inline" actions={PRICED} onAction={() => {}} className="rounded-lg border p-1" />;
+  return (
+    <ActionStack
+      presentation="inline"
+      actions={PRICED}
+      onAction={() => {}}
+      className="rounded-lg border p-1"
+    />
+  );
 }

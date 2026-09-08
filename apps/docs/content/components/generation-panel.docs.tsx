@@ -44,7 +44,10 @@ export const GenerationPanelDocs: ComponentDocs = {
     { slot: "generation-panel-directions-textarea", note: "The prompt/instructions field." },
     { slot: "generation-panel-presets", note: "Slot for E4 preset-grid." },
     { slot: "generation-panel-settings", note: "Slot for E2 model-picker and/or E3 parameter-panel." },
-    { slot: "generation-panel-generate", note: "The pinned footer — cost and the Generate slot, always together." },
+    {
+      slot: "generation-panel-generate",
+      note: "The pinned footer — cost and the Generate slot, always together.",
+    },
   ],
   usage:
     "Reach for it as the whole left column of a generation tool, not as a layout you re-lay-out per tool. Wire `onFilesAdd` (which is what turns the upload stage on at all — omit it for text-only tools) and `directions`/`onDirectionsChange` for the two stages this component owns outright, then pass `presets`, `settings` and `generate` as the real E4/E2/E3/E5 components once they exist in your app — pass `cost` alongside `generate` and never route it through a different slot. Each stage collapses independently via `defaultOpenSections`, but that only changes the initial state; the cost-and-generate row lives outside the scrolling body on purpose, so it can't accidentally end up requiring a scroll to reach.",

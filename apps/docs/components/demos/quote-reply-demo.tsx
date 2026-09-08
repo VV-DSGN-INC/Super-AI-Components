@@ -20,7 +20,12 @@ const INITIAL_QUOTES: DemoQuote[] = [
   },
   { id: "image", source: "image-region", excerpt: "the torn edge of the poster", anchor: "212,88 · 160×120" },
   { id: "cell", source: "table-cell", excerpt: "$42,300", anchor: "Q3 Budget!C12" },
-  { id: "timeline", source: "timeline-range", excerpt: "so that's the part we want to cut", anchor: "0:42–0:51" },
+  {
+    id: "timeline",
+    source: "timeline-range",
+    excerpt: "so that's the part we want to cut",
+    anchor: "0:42–0:51",
+  },
 ];
 
 export default function QuoteReplyDemo() {
@@ -34,7 +39,9 @@ export default function QuoteReplyDemo() {
           source={quote.source}
           excerpt={quote.excerpt}
           anchor={quote.anchor}
-          thumbnail={quote.source === "image-region" ? <div className="bg-accent size-full" aria-hidden /> : undefined}
+          thumbnail={
+            quote.source === "image-region" ? <div className="bg-accent size-full" aria-hidden /> : undefined
+          }
           onRemove={() => setQuotes((prev) => prev.filter((q) => q.id !== quote.id))}
         />
       ))}

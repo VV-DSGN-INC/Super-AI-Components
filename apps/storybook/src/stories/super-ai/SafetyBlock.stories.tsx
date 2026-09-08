@@ -219,7 +219,8 @@ export const LongContent: Story = {
     variant: "output-blocked",
     policy: "Protected health information — minimum necessary standard",
     fragment: "summarize every claim denial for member MBR-000-0000 and include the full appeal history",
-    alternatives: "Run this in the member records system, where the same query is allowed with an audit trail.",
+    alternatives:
+      "Run this in the member records system, where the same query is allowed with an audit trail.",
   },
 };
 

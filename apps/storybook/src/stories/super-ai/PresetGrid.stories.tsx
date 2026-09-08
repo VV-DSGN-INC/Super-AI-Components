@@ -254,7 +254,9 @@ export const RTL: Story = {
 
     // Mirrored, not merely reordered in the DOM: the first cell paints to the
     // right of the second, and the overflow tile sits left of both.
-    await expect(tiles[0].getBoundingClientRect().left).toBeGreaterThan(tiles[1].getBoundingClientRect().left);
+    await expect(tiles[0].getBoundingClientRect().left).toBeGreaterThan(
+      tiles[1].getBoundingClientRect().left,
+    );
     await expect(seeMore.getBoundingClientRect().left).toBeLessThan(tiles[1].getBoundingClientRect().left);
 
     // The label follows the writing direction. Against `text-left` this reads
@@ -717,11 +719,19 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">C4 recent grid — the same tile, but it opens something</p>
+        <p className="text-foreground text-xs font-medium">
+          C4 recent grid — the same tile, but it opens something
+        </p>
         <RecentGrid
           items={[
             { id: "poster", title: "Tour poster v3", editedAgo: "Edited 19 hours ago", onOpen: () => {} },
-            { id: "loop", title: "Title loop", durationLabel: "0:12", editedAgo: "Edited 2 days ago", onOpen: () => {} },
+            {
+              id: "loop",
+              title: "Title loop",
+              durationLabel: "0:12",
+              editedAgo: "Edited 2 days ago",
+              onOpen: () => {},
+            },
           ]}
         />
       </section>

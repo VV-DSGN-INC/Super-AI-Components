@@ -316,7 +316,9 @@ function ExploreShell({
   const derivedMoreLikeThis = React.useMemo(() => {
     if (!openItem?.asset) return null;
     const related = items
-      .filter((item) => item.id !== openItem.id && (openItem.type === undefined || item.type === openItem.type))
+      .filter(
+        (item) => item.id !== openItem.id && (openItem.type === undefined || item.type === openItem.type),
+      )
       .slice(0, moreLikeThisCount);
     if (related.length === 0) return null;
     return <ExploreShellMoreLikeThis items={related} openLabel={openLabel} onOpen={setOpenItem} />;
@@ -330,11 +332,7 @@ function ExploreShell({
       // No data-slot override: ChoiceChips spreads ...props after its own
       // attributes, so one would erase `choice-chips` and hide that this is
       // a composed A4 (CONTINUE.md §4).
-      <ChoiceChips
-        aria-label={typeLabel}
-        value={activeType}
-        onValueChange={handleTypeChange}
-      >
+      <ChoiceChips aria-label={typeLabel} value={activeType} onValueChange={handleTypeChange}>
         {types.map((option) => (
           <ChoiceChip key={option.value} value={option.value}>
             {option.label}
@@ -416,10 +414,7 @@ function ExploreShell({
       data-slot="explore-shell"
       data-sort={activeSort}
       data-type={activeType}
-      className={cn(
-        "bg-background text-foreground flex h-full min-h-0 w-full overflow-hidden",
-        className,
-      )}
+      className={cn("bg-background text-foreground flex h-full min-h-0 w-full overflow-hidden", className)}
       {...props}
     >
       {/* B4 verbatim. Unlike B1 it is a plain flex child with no fixed
@@ -506,9 +501,4 @@ function ExploreShell({
 }
 
 export { ExploreShell };
-export type {
-  ExploreShellItem,
-  ExploreShellProps,
-  ExploreShellSortOption,
-  ExploreShellTypeOption,
-};
+export type { ExploreShellItem, ExploreShellProps, ExploreShellSortOption, ExploreShellTypeOption };

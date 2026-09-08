@@ -555,7 +555,9 @@ export const Boundary: Story = {
 
     // …and the two nav landmarks in this canvas are named apart, which is
     // what a shell rendering both has to arrange for itself.
-    const labels = Array.from(canvasElement.querySelectorAll("nav")).map((el) => el.getAttribute("aria-label"));
+    const labels = Array.from(canvasElement.querySelectorAll("nav")).map((el) =>
+      el.getAttribute("aria-label"),
+    );
     await expect(labels).toHaveLength(2);
     await expect(new Set(labels).size).toBe(2);
   },

@@ -76,12 +76,12 @@ export default function AssetLibraryDemo() {
             active={facets.includes(facet)}
             onClick={() =>
               setFacets((current) =>
-                current.includes(facet)
-                  ? current.filter((f) => f !== facet)
-                  : [...current, facet],
+                current.includes(facet) ? current.filter((f) => f !== facet) : [...current, facet],
               )
             }
-            onRemove={facets.includes(facet) ? () => setFacets((c) => c.filter((f) => f !== facet)) : undefined}
+            onRemove={
+              facets.includes(facet) ? () => setFacets((c) => c.filter((f) => f !== facet)) : undefined
+            }
           >
             {facet}
           </FilterChip>

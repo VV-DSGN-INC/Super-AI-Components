@@ -52,7 +52,10 @@ export function UnscopedUndatedGrants() {
     <div className="w-full max-w-md">
       <AutonomySelector
         defaultLevel="auto-reads"
-        grants={[{ id: "g1", tool: "Send email" }, { id: "g2", tool: "Create ticket" }]}
+        grants={[
+          { id: "g1", tool: "Send email" },
+          { id: "g2", tool: "Create ticket" },
+        ]}
         onRevoke={() => {}}
       />
     </div>

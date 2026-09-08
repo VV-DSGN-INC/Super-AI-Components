@@ -3,7 +3,12 @@ import * as React from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { ApprovalCard } from "@/registry/super-ai/approval-card";
-import { Feedback, type FeedbackProps, type FeedbackState, type FeedbackValue } from "@/registry/super-ai/feedback";
+import {
+  Feedback,
+  type FeedbackProps,
+  type FeedbackState,
+  type FeedbackValue,
+} from "@/registry/super-ai/feedback";
 import { FeedbackDocs } from "@/content/components/feedback.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
@@ -275,9 +280,9 @@ export const RTL: Story = {
     //    are on the seam and the two that should be square face outward.
     const right = getComputedStyle(up);
     const left = getComputedStyle(down);
-    await expect(
-      `outer tr=${right.borderTopRightRadius} tl=${left.borderTopLeftRadius}`,
-    ).toBe("outer tr=0px tl=0px");
+    await expect(`outer tr=${right.borderTopRightRadius} tl=${left.borderTopLeftRadius}`).toBe(
+      "outer tr=0px tl=0px",
+    );
     await expect(parseFloat(right.borderTopLeftRadius)).toBeGreaterThan(0);
     await expect(parseFloat(left.borderTopRightRadius)).toBeGreaterThan(0);
 
@@ -349,7 +354,9 @@ export const ReducedMotion: Story = {
     // `motion-reduce:transition-none` was added beside them: every property
     // `transition-colors` names is a paint, and none of them can move a chip.
     const chip = within(popup).getByRole("button", { name: "Inaccurate" });
-    const transitioned = getComputedStyle(chip).transitionProperty.split(",").map((property) => property.trim());
+    const transitioned = getComputedStyle(chip)
+      .transitionProperty.split(",")
+      .map((property) => property.trim());
     await expect(
       `moves=${transitioned.filter((property) => /^(all|transform|translate|scale|rotate|width|height|inset|top|left|right|bottom|margin|padding)/.test(property)).join("|") || "none"}`,
     ).toBe("moves=none");
@@ -357,7 +364,10 @@ export const ReducedMotion: Story = {
 
     // The asymmetry in the press nudge, stated as what each thumb carries.
     const canvas = within(canvasElement);
-    await expect(canvas.getByRole("button", { name: "Not helpful" })).toHaveAttribute("aria-haspopup", "dialog");
+    await expect(canvas.getByRole("button", { name: "Not helpful" })).toHaveAttribute(
+      "aria-haspopup",
+      "dialog",
+    );
     await expect(canvas.getByRole("button", { name: "Helpful" })).not.toHaveAttribute("aria-haspopup");
 
     await userEvent.keyboard("{Escape}");
@@ -723,7 +733,12 @@ export const LongContent: Story = {
         onRate={() => {}}
         onSubmit={() => {}}
       />
-      <ControlledFeedback state="submitted" value="down" submittedLabel={LONG_CONFIRMATION} onUndo={() => {}} />
+      <ControlledFeedback
+        state="submitted"
+        value="down"
+        submittedLabel={LONG_CONFIRMATION}
+        onUndo={() => {}}
+      />
     </div>
   ),
   play: async ({ canvasElement }) => {
@@ -791,7 +806,12 @@ export const Mobile: Story = {
     <div data-testid="frame" className="w-[375px] max-w-full">
       <div className="flex flex-col items-start gap-8">
         <ControlledFeedback {...args} />
-        <ControlledFeedback state="submitted" value="down" submittedLabel={LONG_CONFIRMATION} onUndo={() => {}} />
+        <ControlledFeedback
+          state="submitted"
+          value="down"
+          submittedLabel={LONG_CONFIRMATION}
+          onUndo={() => {}}
+        />
       </div>
     </div>
   ),
@@ -801,7 +821,9 @@ export const Mobile: Story = {
 
     // The centring div, named so the next reader does not measure it by
     // accident.
-    await expect(Math.round((canvasElement.firstElementChild as HTMLElement).clientWidth)).toBeGreaterThan(375);
+    await expect(Math.round((canvasElement.firstElementChild as HTMLElement).clientWidth)).toBeGreaterThan(
+      375,
+    );
     await expect(frame.clientWidth).toBe(375);
     await expect(frame.scrollWidth).toBe(frame.clientWidth);
 
@@ -815,9 +837,13 @@ export const Mobile: Story = {
     const popup = await body.findByRole("dialog", { name: "What went wrong?" });
     const anchor = canvasElement.querySelector<HTMLElement>('[data-slot="feedback-thumb-down"]')!;
     await waitFor(() =>
-      expect(Math.abs(popup.getBoundingClientRect().left - anchor.getBoundingClientRect().left)).toBeLessThan(2),
+      expect(Math.abs(popup.getBoundingClientRect().left - anchor.getBoundingClientRect().left)).toBeLessThan(
+        2,
+      ),
     );
-    await expect(`panelFits=${popup.getBoundingClientRect().width <= frame.clientWidth}`).toBe("panelFits=true");
+    await expect(`panelFits=${popup.getBoundingClientRect().width <= frame.clientWidth}`).toBe(
+      "panelFits=true",
+    );
     await expect(popup.clientWidth).toBe(popup.scrollWidth);
 
     // The confirmation wraps rather than widening the column.
@@ -826,7 +852,9 @@ export const Mobile: Story = {
     await expect(`rowWraps=${rowBox.height / parseFloat(getComputedStyle(row).lineHeight) > 1.5}`).toBe(
       "rowWraps=true",
     );
-    await expect(`rowWithinFrame=${Math.round(rowBox.width) <= frame.clientWidth}`).toBe("rowWithinFrame=true");
+    await expect(`rowWithinFrame=${Math.round(rowBox.width) <= frame.clientWidth}`).toBe(
+      "rowWithinFrame=true",
+    );
 
     // The breakpoint the wrapper cannot move.
     await expect(getComputedStyle(within(popup).getByRole("textbox")).fontSize).toBe("14px");

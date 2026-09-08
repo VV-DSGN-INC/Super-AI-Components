@@ -10,9 +10,11 @@ and monetization UI. AI Elements gives you the conversation; this gives you the 
 npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
 ```
 
-Wave 0 ships 7 primitives (`kbd`, `cost-chip`, `date-section`, `choice-chips`, `filter-bar`,
-`field-row`, `gen-settings-bar`) and 2 pilot components (`shortcuts-sheet`, `thread-list`).
-Full catalog and roadmap: `docs/design-system/` (see below).
+**The catalog is complete: 116 of 116 items shipped**, across families A–P — primitives, chrome,
+composers, generation, results, timeline, tools, library, documents, guidance, account, trust,
+observability, thirteen page-level blocks and two data views. Eleven further items are cut on the
+record (family G and O5, per D9) and are not coming back. Plus two `registry:lib` contracts.
+Full catalog: `docs/design-system/` (see below).
 
 **Marketing wave 1** adds a second registry namespace — 15 landing-page mini-components
 (`bento-grid`, `marquee`, `terminal`, `hero-video-dialog`, `number-ticker`, `text-animate`,
@@ -35,7 +37,7 @@ pnpm build            # build the docs site
 apps/docs/scripts/consumer-test.sh   # install everything into a fresh app
 ```
 
-- **Catalog and roadmap (authoritative):** `docs/design-system/` — 99-item catalog, concept model,
+- **Catalog and roadmap (authoritative):** `docs/design-system/` — the 116-item catalog, concept model,
   per-component specs, decisions and open questions, derived from a reference board of real AI
   products. Approved 2026-08-02 (D10); supersedes §5 and §11 of the design spec.
 - Design spec: `docs/superpowers/specs/2026-06-10-super-ai-components-design.md` — current except

@@ -1,21 +1,43 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap");
+/* Self-hosted, not fonts.googleapis.com. This is a blocking gate and it should
+   not depend on the network; the docs app already self-hosts via next/font, so
+   both environments now get the family from the same kind of source.
+
+   This is load-bearing, and measured: in the CI runner image it takes the
+   Storybook suite from 11 failing files to 5. The runner has no Geist
+   installed, so before this every text measurement was taken against whatever
+   system sans fontconfig picked.
+
+   An earlier experiment installed Geist system-wide in the runner and changed
+   nothing, which briefly looked like proof that fonts were irrelevant. That
+   experiment was invalid: fontconfig-registered woff2 is not what Chromium
+   matches for a CSS font-family, so the page kept using the fallback. Only a
+   real @font-face, which is what these packages ship, actually loads it. */
+@import "@fontsource-variable/geist/index.css";
+@import "@fontsource-variable/geist-mono/index.css";
 @import "./marketing.css";
 
 @custom-variant dark (&:is(.dark *));
 
 /* The base-nova theme references these custom properties (normally injected by
    Next.js's font loader). In this Vite/Storybook context we define them so the
-   UI renders in the intended sans-serif (Geist) instead of a serif fallback. */
+   UI renders in the intended sans-serif (Geist) instead of a serif fallback.
+
+   "Geist Variable" leads, and it is not interchangeable with "Geist": the
+   @fontsource-variable packages declare the family with that exact suffix, so a
+   stack naming only "Geist" matches nothing they ship and falls through to the
+   system sans WITHOUT ANY ERROR. That silent miss is the whole failure mode this
+   self-hosting was meant to remove, so both names stay — the suffixed one for
+   what we ship, the bare one for a machine that has Geist installed. */
 :root {
   --font-sans:
-    "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    "Geist Variable", "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
     "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
   --font-geist-mono:
-    "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
-    monospace;
+    "Geist Mono Variable", "Geist Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -143,7 +165,6 @@
     @apply font-sans;
   }
 }
-
 
 /* Storybook: ensure Tailwind scans component + story sources */
 @source "./components";

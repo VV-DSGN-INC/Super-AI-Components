@@ -33,24 +33,63 @@ export const MediaPromptBarDocs: ComponentDocs = {
     "Freepik, ElevenLabs Flows, CapCut, Playground, and Runway all converge on the same shape: one prompt bar that adapts to where generation happens rather than three separate composers. The settings strip (A7) lives inside it because model, aspect ratio, and resolution changes all move the price, and the cost chip next to them is the same number quoted in E1's generation panel and E5's run button — showing a different number in D1 than at the moment of spend is the specific failure mode the spec calls out.",
   evidence: ["Freepik", "ElevenLabs Flows", "CapCut", "Playground", "Runway"],
   anatomy: [
-    { slot: "media-prompt-bar", note: "Root. Carries `data-presentation` (floating/docked/node-embedded) and `data-locked`." },
-    { slot: "media-prompt-bar-reference", note: "Optional slot above the field for D2 reference-strip — composed by the caller, not imported here." },
-    { slot: "media-prompt-bar-field", note: "Wraps the textarea and its toolbar. Absent entirely when `locked`." },
-    { slot: "media-prompt-bar-chips", note: "Optional slot inline above the textarea for D3 context-chips — composed by the caller, not imported here." },
-    { slot: "media-prompt-bar-textarea", note: "The prompt input. Carries the accessible name, visible or not." },
-    { slot: "media-prompt-bar-negative", note: "The negative-prompt row, toggled open in place below the main prompt. Never rendered when `presentation` is node-embedded." },
-    { slot: "media-prompt-bar-toolbar", note: "The row beneath the textarea: attach, negative-prompt toggle, settings, cost on the left; submit on the right." },
+    {
+      slot: "media-prompt-bar",
+      note: "Root. Carries `data-presentation` (floating/docked/node-embedded) and `data-locked`.",
+    },
+    {
+      slot: "media-prompt-bar-reference",
+      note: "Optional slot above the field for D2 reference-strip — composed by the caller, not imported here.",
+    },
+    {
+      slot: "media-prompt-bar-field",
+      note: "Wraps the textarea and its toolbar. Absent entirely when `locked`.",
+    },
+    {
+      slot: "media-prompt-bar-chips",
+      note: "Optional slot inline above the textarea for D3 context-chips — composed by the caller, not imported here.",
+    },
+    {
+      slot: "media-prompt-bar-textarea",
+      note: "The prompt input. Carries the accessible name, visible or not.",
+    },
+    {
+      slot: "media-prompt-bar-negative",
+      note: "The negative-prompt row, toggled open in place below the main prompt. Never rendered when `presentation` is node-embedded.",
+    },
+    {
+      slot: "media-prompt-bar-toolbar",
+      note: "The row beneath the textarea: attach, negative-prompt toggle, settings, cost on the left; submit on the right.",
+    },
     { slot: "media-prompt-bar-attach", note: "Icon-only attach button, inside the field." },
-    { slot: "media-prompt-bar-settings", note: "Hosts A7 gen-settings-bar. Collapsed automatically when `presentation` is floating." },
-    { slot: "media-prompt-bar-cost", note: "Cost chip (M2) — credits at the point of spend, the same number quoted in E1/E5." },
-    { slot: "media-prompt-bar-submit", note: "Send button. Replaced by media-prompt-bar-stop while generating." },
-    { slot: "media-prompt-bar-stop", note: "Replaces submit during generation — a distinct control, not a disabled submit." },
-    { slot: "media-prompt-bar-paywall", note: "Replaces media-prompt-bar-field entirely when `locked` — the gate, in place." },
+    {
+      slot: "media-prompt-bar-settings",
+      note: "Hosts A7 gen-settings-bar. Collapsed automatically when `presentation` is floating.",
+    },
+    {
+      slot: "media-prompt-bar-cost",
+      note: "Cost chip (M2) — credits at the point of spend, the same number quoted in E1/E5.",
+    },
+    {
+      slot: "media-prompt-bar-submit",
+      note: "Send button. Replaced by media-prompt-bar-stop while generating.",
+    },
+    {
+      slot: "media-prompt-bar-stop",
+      note: "Replaces submit during generation — a distinct control, not a disabled submit.",
+    },
+    {
+      slot: "media-prompt-bar-paywall",
+      note: "Replaces media-prompt-bar-field entirely when `locked` — the gate, in place.",
+    },
     { slot: "media-prompt-bar-unlock", note: "The paywall's CTA button." },
-    { slot: "media-prompt-bar-status", note: "Visually hidden live region that announces the generating state." },
+    {
+      slot: "media-prompt-bar-status",
+      note: "Visually hidden live region that announces the generating state.",
+    },
   ],
   usage:
-    "Reach for `presentation=\"floating\"` when the bar sits over a canvas with no other chrome competing for space, `\"docked\"` as the default anchored composer at the bottom of a generation workspace, and `\"node-embedded\"` inside a workflow node where the negative prompt has no room and is dropped automatically. Drive `locked` from a real plan/quota check, not from a disabled textarea. Pass `settings` as a composed A7 gen-settings-bar rather than reinventing model/aspect/resolution controls here, and keep the `cost` prop in sync with whatever `settings` currently selects — it should read the same number a user sees at the moment they actually spend it.",
+    'Reach for `presentation="floating"` when the bar sits over a canvas with no other chrome competing for space, `"docked"` as the default anchored composer at the bottom of a generation workspace, and `"node-embedded"` inside a workflow node where the negative prompt has no room and is dropped automatically. Drive `locked` from a real plan/quota check, not from a disabled textarea. Pass `settings` as a composed A7 gen-settings-bar rather than reinventing model/aspect/resolution controls here, and keep the `cost` prop in sync with whatever `settings` currently selects — it should read the same number a user sees at the moment they actually spend it.',
   dos: [
     {
       text: "Swap the input row for the paywall CTA in place when locked — the composer itself stays the gate, not a redirect to a billing page.",
@@ -76,15 +115,15 @@ export const MediaPromptBarDocs: ComponentDocs = {
       "Unlocked and idle, the `docked` bar is four tab stops plus whatever `settings` contributes: the textarea, attach, the negative-prompt toggle, then submit. `node-embedded` drops the negative toggle and is three; `floating` suppresses the settings strip, so it is the same four minus the strip's own stops.",
       "Opening the negative prompt swaps the toggle for a collapse button inside the new row and adds the negative textarea, so the count stays even but the order changes — the second field and its X now sit between the prompt and the toolbar.",
       "Enter submits and Shift+Enter breaks the line, in the main prompt only. The negative-prompt textarea binds no key handler, so Enter there inserts a newline.",
-      "There is no IME guard on the submit key. The handler checks only `event.key === \"Enter\" && !event.shiftKey`, so the Enter that commits a Japanese, Chinese or Korean composition submits the prompt mid-word. K2 `inline-generate-popup` guards this with `event.nativeEvent.isComposing`; this component does not.",
+      'There is no IME guard on the submit key. The handler checks only `event.key === "Enter" && !event.shiftKey`, so the Enter that commits a Japanese, Chinese or Korean composition submits the prompt mid-word. K2 `inline-generate-popup` guards this with `event.nativeEvent.isComposing`; this component does not.',
       "`generating` disables the textarea, attach, and both negative-prompt controls, and replaces submit with stop. Stop is the only control in the bar you can reach while a run is in flight.",
       "Submit is disabled whenever the trimmed prompt is empty, so an empty bar has one fewer reachable control than a filled one. `locked` collapses the field to two elements, only one of which — the unlock button — is focusable.",
       "Escape does nothing anywhere. It does not close the negative-prompt row and it does not stop a run.",
     ],
     screenReader: [
       "The prompt field is named twice — an sr-only `<label htmlFor>` and an `aria-label` carrying the same `label` string. `aria-label` wins, so the label element is dead weight rather than a second announcement; the two must not be allowed to drift apart.",
-      "The root carries `aria-busy` while `generating`, and `media-prompt-bar-status` is a visually hidden `role=\"status\" aria-live=\"polite\"` region announcing `generatingLabel`. It is mounted in every state holding an empty string, which is what makes the first announcement actually fire.",
-      "Nothing announces the end of a run. The region empties when `generating` goes false, and emptying a live region announces nothing — so \"Generating…\" is spoken and the finish is silent. Announce the result on the surface that renders it.",
+      'The root carries `aria-busy` while `generating`, and `media-prompt-bar-status` is a visually hidden `role="status" aria-live="polite"` region announcing `generatingLabel`. It is mounted in every state holding an empty string, which is what makes the first announcement actually fire.',
+      'Nothing announces the end of a run. The region empties when `generating` goes false, and emptying a live region announces nothing — so "Generating…" is spoken and the finish is silent. Announce the result on the surface that renders it.',
       "Attach, stop and the negative-prompt collapse are icon-only and named by `attachLabel`, `stopLabel` and `negativePromptCollapseLabel`; every glyph in the bar is `aria-hidden`. Translate those props or the buttons stay in English while the placeholder does not.",
       "The negative field has a real visible `<label>` and a matching `aria-label`, but the row holding it is a plain div with no group role — so nothing announces that the second field belongs to the first. A screen reader meets two textareas with different names, not a prompt and its negation.",
       "`locked` swaps the whole field out for the paywall with no live region on the change, so a bar that locks while someone is typing in it changes shape silently.",

@@ -38,7 +38,7 @@ export const CitationRefDocs: ComponentDocs = {
     },
   ],
   usage:
-    "Put a marker directly after the claim it supports, inside the sentence, rather than collecting markers into a bar under the paragraph — the sentence is the unit a reader wants to check. Always pass `quote` alongside `source`; the card is only worth opening if it holds the passage. Wire `onJumpToSource` to scroll your source panel to the same chunk the card quotes, so the card and the panel are two views of one location. When retrieval returns a reference you cannot resolve, pass `state=\"unresolved\"` rather than omitting the marker. For a whole answer's worth of claims, reach for `answer-block`, which places these markers per claim and reports coverage across them.",
+    'Put a marker directly after the claim it supports, inside the sentence, rather than collecting markers into a bar under the paragraph — the sentence is the unit a reader wants to check. Always pass `quote` alongside `source`; the card is only worth opening if it holds the passage. Wire `onJumpToSource` to scroll your source panel to the same chunk the card quotes, so the card and the panel are two views of one location. When retrieval returns a reference you cannot resolve, pass `state="unresolved"` rather than omitting the marker. For a whole answer\'s worth of claims, reach for `answer-block`, which places these markers per claim and reports coverage across them.',
   dos: [
     {
       text: "Pass the quoted chunk, not just the document name — the card exists so a reader can check the claim without leaving the answer.",
@@ -68,9 +68,9 @@ export const CitationRefDocs: ComponentDocs = {
       "Markers are inline, so their tab stops are interleaved with the prose. A paragraph with eight citations is eight stops between it and whatever follows, and there is no way to skip them.",
     ],
     screenReader: [
-      "A `resolved` marker's accessible name is `label` alone — usually a bare number, announced as \"1, button\". It carries no `aria-expanded`, no `aria-describedby` and no `aria-details`, so nothing tells a reader that a card exists or links the marker to it.",
+      'A `resolved` marker\'s accessible name is `label` alone — usually a bare number, announced as "1, button". It carries no `aria-expanded`, no `aria-describedby` and no `aria-details`, so nothing tells a reader that a card exists or links the marker to it.',
       "The card is a portaled popup with no `role` — the preview-card primitive sets none and adds no relationship to the trigger. `source` and `quote` are announced only if the reader happens to browse to the end of the document where the portal lands, which in practice means the quote is invisible to assistive tech even though it is the reason the component exists.",
-      "Only `unresolved` gets a written name: \"Citation 4 — source unavailable\". It interpolates `label` only when `label` is a string, so a ReactNode label produces \"Citation  — source unavailable\" with a hole where the number should be.",
+      'Only `unresolved` gets a written name: "Citation 4 — source unavailable". It interpolates `label` only when `label` is a string, so a ReactNode label produces "Citation  — source unavailable" with a hole where the number should be.',
       "`loading` announces as an ordinary button named by its label. There is no `aria-busy`, no `aria-disabled` and no live region, so a citation resolving from `loading` to `resolved` — or failing to `unresolved` — is announced as nothing.",
       "The superscript is `align-super` styling, not a `<sup>` element, so no superscript semantics reach the accessibility tree in any state.",
     ],

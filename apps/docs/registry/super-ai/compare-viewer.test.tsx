@@ -10,22 +10,15 @@ const PANES: ComparePane[] = [
 ];
 
 const numbers = (root: HTMLElement) =>
-  [...root.querySelectorAll('[data-slot="compare-viewer-pane-number"]')].map((n) =>
-    n.textContent?.trim(),
-  );
+  [...root.querySelectorAll('[data-slot="compare-viewer-pane-number"]')].map((n) => n.textContent?.trim());
 
 const labels = (root: HTMLElement) =>
-  [...root.querySelectorAll('[data-slot="compare-viewer-pane-label"]')].map((n) =>
-    n.textContent?.trim(),
-  );
+  [...root.querySelectorAll('[data-slot="compare-viewer-pane-label"]')].map((n) => n.textContent?.trim());
 
 describe("CompareViewer", () => {
   it("renders the side state", () => {
     const { container } = render(<CompareViewer panes={PANES} mode="side" />);
-    expect(container.querySelector('[data-slot="compare-viewer"]')).toHaveAttribute(
-      "data-mode",
-      "side",
-    );
+    expect(container.querySelector('[data-slot="compare-viewer"]')).toHaveAttribute("data-mode", "side");
     // Side view is the only mode with room for both captions.
     expect(labels(container)).toEqual(["Original", "Upscaled 4x"]);
     expect(numbers(container)).toEqual(["1", "2"]);
@@ -52,9 +45,7 @@ describe("CompareViewer", () => {
     // happens under jsdom, so getByRole("slider") correctly finds nothing.
     // The accessible name is the point of the assertion, and axe re-checks it
     // for real in the story gate.
-    const handle = container.querySelector(
-      '[data-slot="compare-viewer-wipe"] input[type="range"]',
-    )!;
+    const handle = container.querySelector('[data-slot="compare-viewer-wipe"] input[type="range"]')!;
     expect(handle).toHaveAttribute("aria-label", "Wipe position");
     expect(handle).toHaveAttribute("aria-valuenow", "40");
     expect(handle).toHaveAttribute("aria-valuetext", "40 percent");
@@ -62,9 +53,7 @@ describe("CompareViewer", () => {
 
   it("passes className through", () => {
     render(<CompareViewer panes={PANES} className="test-class" />);
-    expect(document.querySelector('[data-slot="compare-viewer"]')!.className).toContain(
-      "test-class",
-    );
+    expect(document.querySelector('[data-slot="compare-viewer"]')!.className).toContain("test-class");
   });
 
   // ---------------------------------------------------------------------------
@@ -76,9 +65,7 @@ describe("CompareViewer", () => {
     expect(labels(side)).toHaveLength(2);
     expect(numbers(side)).toEqual(["1", "2"]);
 
-    const { container: single } = render(
-      <CompareViewer panes={PANES} mode="single" activePaneId="a" />,
-    );
+    const { container: single } = render(<CompareViewer panes={PANES} mode="single" activePaneId="a" />);
     expect(labels(single)).toHaveLength(0);
     expect(numbers(single)).toEqual(["1"]);
 
@@ -88,18 +75,13 @@ describe("CompareViewer", () => {
   });
 
   it("preserves the wipe position across a mode change", () => {
-    const { container, rerender } = render(
-      <CompareViewer panes={PANES} mode="wipe" wipePosition={72} />,
-    );
+    const { container, rerender } = render(<CompareViewer panes={PANES} mode="wipe" wipePosition={72} />);
     expect(screen.getByTestId("pane-b").parentElement!.style.clipPath).toBe("inset(0 0 0 72%)");
 
     // Out to side view and back — the position is a prop, so nothing internal
     // resets it and the comparison you had set up survives the round trip.
     rerender(<CompareViewer panes={PANES} mode="side" wipePosition={72} />);
-    expect(container.querySelector('[data-slot="compare-viewer"]')).toHaveAttribute(
-      "data-mode",
-      "side",
-    );
+    expect(container.querySelector('[data-slot="compare-viewer"]')).toHaveAttribute("data-mode", "side");
 
     rerender(<CompareViewer panes={PANES} mode="wipe" wipePosition={72} />);
     expect(screen.getByTestId("pane-b").parentElement!.style.clipPath).toBe("inset(0 0 0 72%)");
@@ -124,12 +106,7 @@ describe("CompareViewer", () => {
   it("names every pane switcher by its label, not by its number alone", async () => {
     const onActivePaneChange = vi.fn();
     render(
-      <CompareViewer
-        panes={PANES}
-        mode="single"
-        activePaneId="a"
-        onActivePaneChange={onActivePaneChange}
-      />,
+      <CompareViewer panes={PANES} mode="single" activePaneId="a" onActivePaneChange={onActivePaneChange} />,
     );
     const group = screen.getByRole("group", { name: "Visible pane" });
     expect(within(group).getByRole("button", { name: "Show pane 1: Original" })).toHaveAttribute(
@@ -146,9 +123,7 @@ describe("CompareViewer", () => {
   });
 
   it("falls back to the first pane when activePaneId matches nothing", () => {
-    const { container } = render(
-      <CompareViewer panes={PANES} mode="single" activePaneId="does-not-exist" />,
-    );
+    const { container } = render(<CompareViewer panes={PANES} mode="single" activePaneId="does-not-exist" />);
     expect(screen.getByTestId("pane-a")).toBeInTheDocument();
     expect(numbers(container)).toEqual(["1"]);
   });

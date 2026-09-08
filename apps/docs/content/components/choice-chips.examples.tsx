@@ -79,9 +79,7 @@ export function SentinelAllChip() {
         <ChoiceChip value="image">Images</ChoiceChip>
         <ChoiceChip value="code">Code</ChoiceChip>
       </ChoiceChips>
-      <span className="text-muted-foreground text-xs">
-        Filter: {type ?? "none — showing everything"}
-      </span>
+      <span className="text-muted-foreground text-xs">Filter: {type ?? "none — showing everything"}</span>
     </div>
   );
 }

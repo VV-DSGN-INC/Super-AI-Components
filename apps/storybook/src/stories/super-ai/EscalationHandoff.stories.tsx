@@ -374,7 +374,9 @@ export const Boundary: Story = {
   render: () => (
     <div className="flex w-full max-w-lg flex-col gap-6">
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Escalation handoff — a person takes it from here</p>
+        <p className="text-foreground text-xs font-medium">
+          Escalation handoff — a person takes it from here
+        </p>
         <EscalationHandoff
           trigger="policy"
           state="preview"

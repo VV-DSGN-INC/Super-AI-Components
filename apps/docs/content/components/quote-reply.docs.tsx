@@ -1,5 +1,10 @@
 import type { ComponentDocs } from "@/lib/component-docs";
-import { AnchorIndependentOfExcerpt, OverlongExcerpt, QuoteSiblingToDraft, VagueAnchor } from "./quote-reply.examples";
+import {
+  AnchorIndependentOfExcerpt,
+  OverlongExcerpt,
+  QuoteSiblingToDraft,
+  VagueAnchor,
+} from "./quote-reply.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#d5-quote-reply.
@@ -19,10 +24,22 @@ export const QuoteReplyDocs: ComponentDocs = {
     "Claude, Notion AI, Spellbook, and Descript all let a user select something first and reply to that selection specifically, across four completely different surfaces — a document, an image, a spreadsheet, a transcript. The pattern only holds together because it's one component, not four: the excerpt is the only thing that changes shape per source, while the anchor, the source-kind glyph, and the removal control stay identical. That's what lets a quote outlive the moment it was taken — the anchor is a stable position, not a snapshot of the text, so it can still say where it pointed even after the source underneath it changes.",
   evidence: ["Claude", "Notion AI", "Spellbook", "Descript"],
   anatomy: [
-    { slot: "quote-reply", note: "Root container — one row holding the icon, the excerpt, and the remove control." },
-    { slot: "quote-reply-icon", note: "Decorative glyph naming the source kind at a glance; the label carries the same information in text." },
-    { slot: "quote-reply-excerpt", note: "The `<blockquote>` — a text excerpt for three sources, a thumbnail for image-region." },
-    { slot: "quote-reply-text", note: "The excerpt text itself, when the source isn't an image with a thumbnail." },
+    {
+      slot: "quote-reply",
+      note: "Root container — one row holding the icon, the excerpt, and the remove control.",
+    },
+    {
+      slot: "quote-reply-icon",
+      note: "Decorative glyph naming the source kind at a glance; the label carries the same information in text.",
+    },
+    {
+      slot: "quote-reply-excerpt",
+      note: "The `<blockquote>` — a text excerpt for three sources, a thumbnail for image-region.",
+    },
+    {
+      slot: "quote-reply-text",
+      note: "The excerpt text itself, when the source isn't an image with a thumbnail.",
+    },
     {
       slot: "quote-reply-anchor",
       note: "The `<cite>` line naming the source kind and the stable anchor — independent of the excerpt text.",
@@ -47,7 +64,7 @@ export const QuoteReplyDocs: ComponentDocs = {
       example: <OverlongExcerpt />,
     },
     {
-      text: "Don't hand it a vague anchor like \"here\" — the anchor is the one thing that has to survive the source being edited, so it needs to be an actual position, not a placeholder.",
+      text: 'Don\'t hand it a vague anchor like "here" — the anchor is the one thing that has to survive the source being edited, so it needs to be an actual position, not a placeholder.',
       example: <VagueAnchor />,
     },
   ],
@@ -59,9 +76,9 @@ export const QuoteReplyDocs: ComponentDocs = {
     ],
     screenReader: [
       "The root is a plain `<div>` with no role and no name. Several quotes stacked above one composer announce as loose blocks of text, with nothing grouping them and nothing saying how many are attached.",
-      "The excerpt is a `<blockquote>`, so it announces as a quote, and the `<cite>` reads straight after it as \"Text · <anchor>\" — the source word comes from `source`, the rest is whatever you passed as `anchor`.",
+      'The excerpt is a `<blockquote>`, so it announces as a quote, and the `<cite>` reads straight after it as "Text · <anchor>" — the source word comes from `source`, the rest is whatever you passed as `anchor`.',
       "`line-clamp-2` clips the excerpt visually only. The whole string stays in the accessible text, so a screen-reader user hears a full paragraph where a sighted user sees two lines and an ellipsis.",
-      "The remove button's name is `removeLabel`, which defaults to \"Remove quote\" on every instance. Three quotes above one composer give three buttons with identical names; pass `removeLabel` naming the source instead.",
+      'The remove button\'s name is `removeLabel`, which defaults to "Remove quote" on every instance. Three quotes above one composer give three buttons with identical names; pass `removeLabel` naming the source instead.',
       "The source glyph is `aria-hidden`, so which of the four sources this is gets announced only through the word in the `<cite>` line.",
       "For `image-region`, `excerpt` becomes `preview-tile`'s below-placed label and is announced as ordinary text after the image. The `thumbnail` node is yours — an `<img>` without `alt` announces as an unnamed image immediately before that caption.",
       "Nothing announces that a quote was attached or dropped. There is no live region here, so if the attachment needs confirming, put one on the composer.",
@@ -74,6 +91,6 @@ export const QuoteReplyDocs: ComponentDocs = {
   pitfalls: [
     "Four sources, one component — resist forking text-range/image-region/table-cell/timeline-range into four separate components. Only the excerpt rendering branches internally (thumbnail vs. text); the icon, the anchor line, and the removal control are identical across all four, and a fork is how one of them quietly loses the dismiss control or the anchor contract.",
     "For image-region, `excerpt` is the visible caption under the thumbnail, not just an accessibility label — leaving it as a placeholder string makes the quote unreadable at a glance even though a screen reader would still announce something.",
-    "`thumbnail` is optional on purpose: without it, an image-region quote renders through the exact same text branch as the other three sources. Don't assume the thumbnail branch always fires for `source=\"image-region\"` — design for the text fallback too.",
+    '`thumbnail` is optional on purpose: without it, an image-region quote renders through the exact same text branch as the other three sources. Don\'t assume the thumbnail branch always fires for `source="image-region"` — design for the text fallback too.',
   ],
 };

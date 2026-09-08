@@ -26,8 +26,14 @@ export const PaywallMessageDocs: ComponentDocs = {
     { slot: "paywall-message-before", note: "The agent's explanation, above the card. Required." },
     { slot: "paywall-message-card", note: "The card itself, a named region labelled by its title." },
     { slot: "paywall-message-title", note: "Which gate fired, in words, with a distinct icon per reason." },
-    { slot: "paywall-message-requirement", note: "The plan or entitlement needed, e.g. Pro. Text, never colour." },
-    { slot: "paywall-message-description", note: "Reassurance that nothing was charged, because nothing ran." },
+    {
+      slot: "paywall-message-requirement",
+      note: "The plan or entitlement needed, e.g. Pro. Text, never colour.",
+    },
+    {
+      slot: "paywall-message-description",
+      note: "Reassurance that nothing was charged, because nothing ran.",
+    },
     { slot: "paywall-message-resume", note: "The held work — the block that makes upgrading a resume." },
     { slot: "paywall-message-prompt", note: "The prompt, verbatim and at full strength. Never greyed." },
     { slot: "paywall-message-model", note: "The model that would have been used, part of the resume." },
@@ -35,7 +41,10 @@ export const PaywallMessageDocs: ComponentDocs = {
     { slot: "paywall-message-cost", note: "The price via the shared formatter, plus the derived shortfall." },
     { slot: "paywall-message-shortfall", note: "Need 900 credits, you have 120 — derived, never a prop." },
     { slot: "paywall-message-actions", note: "Upgrade, and top-up when the cost contract offers one." },
-    { slot: "paywall-message-after", note: "The follow-on: what happens next, or what the agent can do meanwhile." },
+    {
+      slot: "paywall-message-after",
+      note: "The follow-on: what happens next, or what the agent can do meanwhile.",
+    },
   ],
   usage:
     "Reach for it the moment a generation is refused for a plan reason, in the place the result would have appeared — inside the message stream, never as a modal or a toast. Pass the prompt as a plain string rather than formatted output: it is what `onUpgrade` hands back so the caller can re-run the exact work. Pick `state` for the gate that actually fired (`locked-model`, `quota-exhausted` or `feature-locked`), and leave affordability alone — wrap the surface in `CostProvider` and the shortfall line derives itself from the balance and the estimate, so this card cannot disagree with the run button about the same job. Titles, descriptions and the CTA label all have per-state defaults; override them only when your product's wording is genuinely different.",

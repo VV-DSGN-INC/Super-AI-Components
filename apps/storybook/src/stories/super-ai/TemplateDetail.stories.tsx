@@ -757,7 +757,6 @@ export const LongContent: Story = {
     ],
   },
   play: async () => {
-    const popup = popupOf();
     const clipped = (el: HTMLElement) => el.scrollWidth > el.clientWidth;
     const lines = (el: HTMLElement) =>
       Math.round(el.scrollHeight / parseFloat(getComputedStyle(el).lineHeight));

@@ -56,9 +56,7 @@ export function CollapseDrivesThePanel() {
         onOpenChange={setOpen}
         // Collapsed, the action slot carries the one signal that survives:
         // a section hiding live filters must not read as an empty one.
-        action={
-          open ? undefined : <span className="text-foreground text-xs font-medium">2 selected</span>
-        }
+        action={open ? undefined : <span className="text-foreground text-xs font-medium">2 selected</span>}
       />
       {open ? (
         <ul className="text-muted-foreground space-y-1 text-sm">

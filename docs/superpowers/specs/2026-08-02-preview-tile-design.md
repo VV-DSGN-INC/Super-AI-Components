@@ -5,12 +5,12 @@
 **Resolves:** Q5 in [`docs/design-system/decisions.md`](../../design-system/decisions.md)
 **Wave:** 1 (first of primitives A8–A12)
 
-| | |
-| --- | --- |
-| Scope | One primitive: `preview-tile`. Catalog corrections to its consumer list. |
-| Registry | `super-ai` namespace, `registry/super-ai/preview-tile.tsx` |
-| Base | Tailwind `aspect-*` utilities; no new npm or registry dependencies |
-| Testing | One co-located `preview-tile.test.tsx`, per repo convention |
+|          |                                                                          |
+| -------- | ------------------------------------------------------------------------ |
+| Scope    | One primitive: `preview-tile`. Catalog corrections to its consumer list. |
+| Registry | `super-ai` namespace, `registry/super-ai/preview-tile.tsx`               |
+| Base     | Tailwind `aspect-*` utilities; no new npm or registry dependencies       |
+| Testing  | One co-located `preview-tile.test.tsx`, per repo convention              |
 
 ---
 
@@ -27,19 +27,19 @@ That premise was audited before designing, and it was partly wrong. See §2.
 `concept-model.md:45` lists eleven consumers of A8. Checking each against its own entry in
 `component-specs.md`:
 
-| # | Consumer | What its own spec declares | Real consumer? |
-| --- | --- | --- | --- |
-| E4 | `preset-grid` | **"Built on: A8"** | Yes |
-| H5 | `frame-strip` | **"Built on: A8"** | Yes |
-| I1 | `tool-panel` | **"Built on: A12, A8"** | Yes |
-| F1 | `result-card` | Base: Card, Aspect-ratio — but *"Card geometry is identical in all states… so grids never reflow when a result resolves"* | Yes — restates A8's contract without naming it |
-| C4 | `recent-grid` | Base: Card, Aspect-ratio — *"card height fixed regardless"* | Yes — same contract, label below rather than overlaid |
-| F2 | `generation-grid` | "Built on: F1 + A3" | Transitively, through F1 |
-| C3 | `feature-card-row` | *"Cards are **A9** in a card layout"* | No — entity-row, not preview-tile |
-| E2 | `model-picker` | Base: Select, Popover, Card | No — model cards carry badges and hardware notes, not previews |
-| J4 | `artifact-grid` | Base: Card — *"**Excerpt** is the load-bearing field"* | No — text-first, no thumbnail |
-| J3 | `explore-gallery` | *"**Masonry, not a grid.** Community feeds are browsed for surprise; equal-height rows suppress it"* | No — contradicts A8's fixed frame |
-| J6 | `template-detail` | Base: Dialog, Carousel | No — a modal, not a tile |
+| #   | Consumer           | What its own spec declares                                                                                                | Real consumer?                                                 |
+| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| E4  | `preset-grid`      | **"Built on: A8"**                                                                                                        | Yes                                                            |
+| H5  | `frame-strip`      | **"Built on: A8"**                                                                                                        | Yes                                                            |
+| I1  | `tool-panel`       | **"Built on: A12, A8"**                                                                                                   | Yes                                                            |
+| F1  | `result-card`      | Base: Card, Aspect-ratio — but _"Card geometry is identical in all states… so grids never reflow when a result resolves"_ | Yes — restates A8's contract without naming it                 |
+| C4  | `recent-grid`      | Base: Card, Aspect-ratio — _"card height fixed regardless"_                                                               | Yes — same contract, label below rather than overlaid          |
+| F2  | `generation-grid`  | "Built on: F1 + A3"                                                                                                       | Transitively, through F1                                       |
+| C3  | `feature-card-row` | _"Cards are **A9** in a card layout"_                                                                                     | No — entity-row, not preview-tile                              |
+| E2  | `model-picker`     | Base: Select, Popover, Card                                                                                               | No — model cards carry badges and hardware notes, not previews |
+| J4  | `artifact-grid`    | Base: Card — _"**Excerpt** is the load-bearing field"_                                                                    | No — text-first, no thumbnail                                  |
+| J3  | `explore-gallery`  | _"**Masonry, not a grid.** Community feeds are browsed for surprise; equal-height rows suppress it"_                      | No — contradicts A8's fixed frame                              |
+| J6  | `template-detail`  | Base: Dialog, Carousel                                                                                                    | No — a modal, not a tile                                       |
 
 **Real fan-out: five direct consumers plus one transitive, not eleven.**
 
@@ -52,7 +52,7 @@ first. The claim that needed correcting is the size of the blast radius, not the
 
 ## 3. Q5 resolved: one primitive
 
-Q5 asks whether one API genuinely covers *image, video, colour swatch, text excerpt and 3D model*, or
+Q5 asks whether one API genuinely covers _image, video, colour swatch, text excerpt and 3D model_, or
 whether it is two primitives sharing a name.
 
 Two entries on that content list do not survive the audit:
@@ -78,25 +78,25 @@ type PreviewTileAspect = "square" | "video" | "portrait" | "wide";
 type PreviewTileState = "default" | "loading" | "locked" | "failed";
 
 interface PreviewTileProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
-  aspect?: PreviewTileAspect;          // default "square"
+  aspect?: PreviewTileAspect; // default "square"
   label?: React.ReactNode;
-  labelPlacement?: "overlay" | "below" | "none";  // default "overlay"
+  labelPlacement?: "overlay" | "below" | "none"; // default "overlay"
   badge?: React.ReactNode;
-  state?: PreviewTileState;            // default "default"
+  state?: PreviewTileState; // default "default"
   selected?: boolean;
   onSelect?: () => void;
-  action?: React.ReactNode;            // rendered inside locked / failed content
+  action?: React.ReactNode; // rendered inside locked / failed content
 }
 ```
 
 Aspect presets resolve to fixed ratios:
 
-| Preset | Ratio | Tailwind | Observed in |
-| --- | --- | --- | --- |
-| `square` | 1 / 1 | `aspect-square` | preset grids, style/palette pickers (default) |
-| `video` | 16 / 9 | `aspect-video` | frame strips, video results |
-| `portrait` | 3 / 4 | `aspect-[3/4]` | avatar and character tiles |
-| `wide` | 21 / 9 | `aspect-[21/9]` | banner and cover thumbnails |
+| Preset     | Ratio  | Tailwind        | Observed in                                   |
+| ---------- | ------ | --------------- | --------------------------------------------- |
+| `square`   | 1 / 1  | `aspect-square` | preset grids, style/palette pickers (default) |
+| `video`    | 16 / 9 | `aspect-video`  | frame strips, video results                   |
+| `portrait` | 3 / 4  | `aspect-[3/4]`  | avatar and character tiles                    |
+| `wide`     | 21 / 9 | `aspect-[21/9]` | banner and cover thumbnails                   |
 
 ### 4.1 Content is opaque
 
@@ -107,12 +107,12 @@ primitive" answer in §3.
 
 ### 4.2 States replace content, never the frame
 
-| State | Content slot renders | Frame · label · badge |
-| --- | --- | --- |
-| `default` | `children` | unchanged |
-| `loading` | pulse skeleton (`animate-pulse bg-muted`) | unchanged |
-| `locked` | `children` retained under a scrim + `action` overlaid | unchanged |
-| `failed` | failure treatment + `action` | unchanged |
+| State     | Content slot renders                                  | Frame · label · badge |
+| --------- | ----------------------------------------------------- | --------------------- |
+| `default` | `children`                                            | unchanged             |
+| `loading` | pulse skeleton (`animate-pulse bg-muted`)             | unchanged             |
+| `locked`  | `children` retained under a scrim + `action` overlaid | unchanged             |
+| `failed`  | failure treatment + `action`                          | unchanged             |
 
 `locked` deliberately retains `children` rather than replacing them. F1 requires that locked shows
 the shape of what would have been made before the CTA; replacing the content would produce exactly
@@ -121,8 +121,8 @@ the empty box with a padlock that F1 forbids.
 The frame's box is identical in all four. This is the whole reason the aspect is fixed: a grid of
 tiles must not reflow when one result resolves, fails, or begins loading.
 
-F1 `result-card` adds a requirement this design honours: *"`locked` shows the shape of what would have
-been made, then the CTA — never an empty box with a padlock."* The `action` slot exists so the CTA
+F1 `result-card` adds a requirement this design honours: _"`locked` shows the shape of what would have
+been made, then the CTA — never an empty box with a padlock."_ The `action` slot exists so the CTA
 lives inside the frame rather than displacing it.
 
 ### 4.3 Selection is a ring, never a border
@@ -130,16 +130,16 @@ lives inside the frame rather than displacing it.
 Rendered with `ring-2 ring-ring ring-offset-2`. A ring is a box-shadow and contributes no layout box;
 a border adds 2px per side and reflows the grid on every selection change.
 
-This is the shared mechanism behind two separately-stated consumer requirements — E4's *"the grid
-never reflows when expanded"* and H5's *"active item is ringed, not bordered, so the strip does not
-shift when selection moves."*
+This is the shared mechanism behind two separately-stated consumer requirements — E4's _"the grid
+never reflows when expanded"_ and H5's _"active item is ringed, not bordered, so the strip does not
+shift when selection moves."_
 
 ### 4.4 `labelPlacement`
 
 The one genuine divergence between real consumers:
 
-- `overlay` — label sits on the thumbnail. E4: *"Labels overlay the thumbnail rather than sitting
-  below it, so a dense grid stays a grid."* Default.
+- `overlay` — label sits on the thumbnail. E4: _"Labels overlay the thumbnail rather than sitting
+  below it, so a dense grid stays a grid."_ Default.
 - `below` — label sits under the frame. C4 `recent-grid`: thumbnail · title · edited-ago.
 - `none` — H5 frame strips, where the frame is the whole component.
 

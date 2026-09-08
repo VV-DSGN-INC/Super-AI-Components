@@ -9,10 +9,7 @@ describe("ResetAffordance", () => {
     const states = ["modified", "default", "keyframed"] as const;
     for (const state of states) {
       const { unmount } = render(<ResetAffordance state={state} onReset={() => {}} />);
-      expect(document.querySelector('[data-slot="reset-affordance"]')).toHaveAttribute(
-        "data-state",
-        state,
-      );
+      expect(document.querySelector('[data-slot="reset-affordance"]')).toHaveAttribute("data-state", state);
       unmount();
     }
   });

@@ -80,17 +80,9 @@ const styles = ["Cinematic", "Anime", "Watercolor", "3D Render", "Cyberpunk", "P
 
 export const MultiSelectChips: Story = {
   render: () => {
-    const [selected, setSelected] = React.useState<string[]>([
-      "Cinematic",
-      "Cyberpunk",
-    ]);
+    const [selected, setSelected] = React.useState<string[]>(["Cinematic", "Cyberpunk"]);
     return (
-      <Combobox<string, true>
-        items={styles}
-        multiple
-        value={selected}
-        onValueChange={setSelected}
-      >
+      <Combobox<string, true> items={styles} multiple value={selected} onValueChange={setSelected}>
         <ComboboxChips className="w-72">
           {selected.map((style) => (
             <ComboboxChip key={style}>{style}</ComboboxChip>

@@ -4,7 +4,7 @@
 
 Retrofit this repo onto the `ds-architecture` governance model: every design rule becomes
 one typed record from which the detector, the docs, and the audit skill all derive; every
-rule no script can run is *declared* unchecked instead of being silent; and the two
+rule no script can run is _declared_ unchecked instead of being silent; and the two
 ratchets the repo already states in prose become machine-enforced. CI keeps its exact
 eleven-step shape throughout.
 
@@ -88,14 +88,14 @@ packages/ds-rules/
 
 ### Local records (`src/local.ts`)
 
-| id | rule | method | severity | notes |
-|---|---|---|---|---|
-| TOK-1 | raw hex colour | `heuristic` | blocker | pattern `#[0-9a-fA-F]{3,8}\b`; the GH-1234 issue-ref false positive is exactly what the schema's required `falsePositives` field exists to hold, so the method is honestly `heuristic` — gate semantics identical to today (blocker severity still fails) |
-| TOK-2 | raw `oklch(` | `grep` | blocker | |
-| TOK-3 | Tailwind palette class | `grep` | blocker | the existing prefix×palette regex, unchanged |
-| TOK-4 | muted fg + muted bg in one class string | `heuristic` | blocker | pre-filter pattern `text-muted-foreground`; refined by `findSingleStringViolations` |
-| TOK-5 | muted fg/bg split across cva base×variant | `heuristic` | blocker | same pre-filter; refined by `findCvaViolations` |
-| TOK-6 | muted text in a child under a composed muted surface | `rendered` | blocker | **structurally unrunnable by the detector** — lands in `unchecked` every run with its discharge named: `pnpm test:stories` (the Storybook axe gate) |
+| id    | rule                                                 | method      | severity | notes                                                                                                                                                                                                                                                     |
+| ----- | ---------------------------------------------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TOK-1 | raw hex colour                                       | `heuristic` | blocker  | pattern `#[0-9a-fA-F]{3,8}\b`; the GH-1234 issue-ref false positive is exactly what the schema's required `falsePositives` field exists to hold, so the method is honestly `heuristic` — gate semantics identical to today (blocker severity still fails) |
+| TOK-2 | raw `oklch(`                                         | `grep`      | blocker  |                                                                                                                                                                                                                                                           |
+| TOK-3 | Tailwind palette class                               | `grep`      | blocker  | the existing prefix×palette regex, unchanged                                                                                                                                                                                                              |
+| TOK-4 | muted fg + muted bg in one class string              | `heuristic` | blocker  | pre-filter pattern `text-muted-foreground`; refined by `findSingleStringViolations`                                                                                                                                                                       |
+| TOK-5 | muted fg/bg split across cva base×variant            | `heuristic` | blocker  | same pre-filter; refined by `findCvaViolations`                                                                                                                                                                                                           |
+| TOK-6 | muted text in a child under a composed muted surface | `rendered`  | blocker  | **structurally unrunnable by the detector** — lands in `unchecked` every run with its discharge named: `pnpm test:stories` (the Storybook axe gate)                                                                                                       |
 
 TOK-4/5 keep the harvested schema unforked: `heuristic` already means "pattern with known
 false positives", and the structural functions refine the pre-filter hits. A test asserts
@@ -137,7 +137,7 @@ list lives in `apps/storybook/vitest.config.ts` (directory globs for vendored
 `stories/ui/**` and `stories/ai-elements/**` plus three legacy mount-crash names), it
 holds **zero super-ai entries** since the A8 retrofit, and check:contract's G3 already
 asserts it agrees with `CONTRAST_EXEMPT_FILES` — but G3 only parses super-ai entries,
-and nothing today fails when someone *adds* an exclusion. The ratchet therefore keeps
+and nothing today fails when someone _adds_ an exclusion. The ratchet therefore keeps
 G3 untouched and adds what's missing: a committed `a11y-exclusions.baseline.json`
 pinning the raw exclude entries, a test (in `apps/docs`, which already reads that config
 file for G3) failing when the live list is not a subset of the baseline, and a
@@ -147,7 +147,7 @@ hand-editing the JSON in a reviewed commit — the friction is the point.
 **cssVars liveness.** New vitest in `apps/docs`: for every shipped manifest item, every
 CSS variable its registry source writes — `var(--x)`, Tailwind arbitrary forms
 (`bg-[var(--x)]`, `[--x:…]`, `text-(--x)`) — must resolve to (a) the stock shadcn set
-*derived from the docs app's own stylesheet*, (b) the item's declared `cssVars`, or (c)
+_derived from the docs app's own stylesheet_, (b) the item's declared `cssVars`, or (c)
 `cssVars` of its transitive `consumes`. Reverse direction too: a declared `cssVars` key
 nobody writes is dead weight. This closes the manifest's own documented hole ("omitting
 it silently ships a colourless component"). The first run is expected red; findings are
@@ -185,7 +185,7 @@ independently of it.
 - `tools/ds-architecture/` vendors the archive's checker **runtime only** — `scripts/`,
   `src/`, `stages/`, `LADDER.md`, `package.json` — with one correction found while
   verifying the archive: `@types/node` added to devDependencies (its typecheck fails
-  without it). `MANUAL.md`/`DESIGN.md` are *not* vendored: the rule book lives in one
+  without it). `MANUAL.md`/`DESIGN.md` are _not_ vendored: the rule book lives in one
   copy, and theirs is the archive.
 - A regenerated `VENDOR.md` stamp records source, date, the two inherited open questions
   (§2), and the known archive erratum (its ARCHIVE.md counts the starter kit as 17 files
@@ -194,7 +194,7 @@ independently of it.
   `stages/00-architecture-map/reference/ds-architecture.config.example.json`: role
   `component-library`, specs at `docs/design-system/`, instructions `CLAUDE.md`, done
   command `pnpm lint && pnpm typecheck && pnpm check:tokens && pnpm check:contract &&
-  pnpm test` (the local gate prefix; full CI adds build, smoke, stories, consumer test).
+pnpm test` (the local gate prefix; full CI adds build, smoke, stories, consumer test).
 - Root script `check:ladder` → `node tools/ds-architecture/scripts/conformance.mjs .`.
   **Informational, not a CI step** — only stage 00 is scoreable today, and CI must not
   grow a step that proves little.
@@ -207,7 +207,7 @@ fail; run commands bare when the exit status matters (a pipe reports the pipe).
 
 **Parity test:** one temporary test runs today's `check-tokens.mjs` and the new
 `rulecheck.mjs` against the real tree and asserts identical finding sets. It exists to
-make the swap commit provable, and it is deleted *in the same commit* that deletes the
+make the swap commit provable, and it is deleted _in the same commit_ that deletes the
 old script — a permanent parity test against a deleted script is how dead code survives.
 
 **Rollout — five small PRs, in order:**

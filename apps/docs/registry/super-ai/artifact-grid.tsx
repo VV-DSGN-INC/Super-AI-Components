@@ -49,8 +49,7 @@ const ARTIFACT_TYPE_LABELS: Record<string, string> = {
 
 function artifactTypeLabel(type: string): string {
   return (
-    ARTIFACT_TYPE_LABELS[type] ??
-    type.replace(/[-_]+/g, " ").replace(/^\p{Ll}/u, (c) => c.toUpperCase())
+    ARTIFACT_TYPE_LABELS[type] ?? type.replace(/[-_]+/g, " ").replace(/^\p{Ll}/u, (c) => c.toUpperCase())
   );
 }
 

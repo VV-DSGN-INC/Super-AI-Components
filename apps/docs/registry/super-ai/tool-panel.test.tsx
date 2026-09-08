@@ -39,7 +39,14 @@ const CURATED: ToolPanelSection[] = [
 describe("ToolPanel", () => {
   it("renders the search state", async () => {
     const onSearchChange = vi.fn();
-    render(<ToolPanel sections={SHAPES} searchable searchLabel="Search elements" onSearchChange={onSearchChange} />);
+    render(
+      <ToolPanel
+        sections={SHAPES}
+        searchable
+        searchLabel="Search elements"
+        onSearchChange={onSearchChange}
+      />,
+    );
 
     const search = screen.getByRole("searchbox", { name: "Search elements" });
     await userEvent.type(search, "ci");
@@ -92,7 +99,9 @@ describe("ToolPanel", () => {
     const render1 = vi.fn(() => <p>Effect controls</p>);
     render(
       <ToolPanel
-        sections={[{ id: "effects", title: "Effects", collapsible: true, defaultOpen: false, render: render1 }]}
+        sections={[
+          { id: "effects", title: "Effects", collapsible: true, defaultOpen: false, render: render1 },
+        ]}
       />,
     );
 

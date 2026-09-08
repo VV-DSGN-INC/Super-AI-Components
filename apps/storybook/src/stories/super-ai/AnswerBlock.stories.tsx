@@ -121,7 +121,9 @@ export const CitationUnresolved: Story = {
       {
         id: "continuous",
         text: "The first four weeks must be taken continuously, within 12 months of the birth or placement.",
-        citations: [{ id: "continuous-1", label: "2", source: "employee-handbook-2026.pdf", state: "unresolved" }],
+        citations: [
+          { id: "continuous-1", label: "2", source: "employee-handbook-2026.pdf", state: "unresolved" },
+        ],
       },
     ],
   },
@@ -200,7 +202,9 @@ export const ReducedMotion: Story = {
       {
         id: "continuous",
         text: "The first four weeks must be taken continuously, within 12 months of the birth or placement.",
-        citations: [{ id: "continuous-1", label: "2", source: "employee-handbook-2026.pdf", state: "loading" }],
+        citations: [
+          { id: "continuous-1", label: "2", source: "employee-handbook-2026.pdf", state: "loading" },
+        ],
       },
     ],
   },
@@ -221,7 +225,9 @@ export const ReducedMotion: Story = {
 export const KeyboardOrder: Story = {
   args: { claims: CITED_CLAIMS },
   play: async ({ canvasElement }) => {
-    const markers = Array.from(canvasElement.querySelectorAll<HTMLButtonElement>('[data-slot="citation-ref"]'));
+    const markers = Array.from(
+      canvasElement.querySelectorAll<HTMLButtonElement>('[data-slot="citation-ref"]'),
+    );
 
     await expect(markers).toHaveLength(3);
     await expect(markers.map((m) => m.textContent)).toEqual(["1", "2", "3"]);
@@ -256,7 +262,8 @@ export const LongContent: Story = {
             id: "eligibility-1",
             label: "1",
             source: "employee-handbook-2026.pdf",
-            quote: "Grandfathered entitlements persist until the end of the leave year in which they were accrued.",
+            quote:
+              "Grandfathered entitlements persist until the end of the leave year in which they were accrued.",
           },
         ],
       },
@@ -314,7 +321,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Answer block — the whole answer&rsquo;s coverage</p>
+        <p className="text-foreground text-xs font-medium">
+          Answer block — the whole answer&rsquo;s coverage
+        </p>
         <AnswerBlock claims={PARTIAL_CLAIMS} retrievedUnused={3} />
       </section>
 

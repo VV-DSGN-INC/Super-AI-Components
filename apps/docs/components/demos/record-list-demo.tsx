@@ -36,7 +36,13 @@ const INITIAL: RecordListItem[] = [
   {
     id: "3",
     title: "Invoice parser",
-    apps: [{ name: "Stripe" }, { name: "Xero" }, { name: "Dropbox" }, { name: "Airtable" }, { name: "Slack" }],
+    apps: [
+      { name: "Stripe" },
+      { name: "Xero" },
+      { name: "Dropbox" },
+      { name: "Airtable" },
+      { name: "Slack" },
+    ],
     lastRun: "Running since 12:04",
     runState: "running",
     enabled: true,

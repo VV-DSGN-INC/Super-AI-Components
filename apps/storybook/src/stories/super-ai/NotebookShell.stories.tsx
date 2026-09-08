@@ -6,7 +6,7 @@ import { expect, fn, userEvent, waitFor } from "storybook/test";
 import { Button } from "@/components/ui/button";
 import { NotebookShellDocs } from "@/content/components/notebook-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
-import { hasVisibleFocusRing, settledFocusRing } from "@/lib/focus-ring";
+import { settledFocusRing } from "@/lib/focus-ring";
 import { DocsShell } from "@/registry/super-ai/docs-shell";
 import { NotebookShell, type NotebookShellProps } from "@/registry/super-ai/notebook-shell";
 
@@ -223,9 +223,7 @@ export const ArrowsClearTheRow: Story = {
   args: FULL_ARGS,
   play: async ({ canvasElement }) => {
     const row = canvasElement.querySelector<HTMLElement>('[data-slot="feature-card-row"]')!;
-    const prev = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="feature-card-row-previous"]',
-    )!;
+    const prev = canvasElement.querySelector<HTMLElement>('[data-slot="feature-card-row-previous"]')!;
     const next = canvasElement.querySelector<HTMLElement>('[data-slot="feature-card-row-next"]')!;
     const pane = canvasElement.querySelector<HTMLElement>('[data-region="studio-outputs"]')!;
 
@@ -528,8 +526,7 @@ export const KeyboardOrder: Story = {
     // its own when the control is caller-supplied — so a bare button is
     // identified by its text instead.
     const label = (el: Element) => {
-      const slot =
-        el.getAttribute("data-region") ?? el.getAttribute("data-slot") ?? el.tagName.toLowerCase();
+      const slot = el.getAttribute("data-region") ?? el.getAttribute("data-slot") ?? el.tagName.toLowerCase();
       return slot === "button" ? `button:${(el.textContent ?? "").trim()}` : slot;
     };
     const liveStops = () =>
@@ -602,15 +599,14 @@ export const KeyboardOrder: Story = {
     // user arrived, Previous is the live one by the time they reach it.
     const arrow = (slot: string) =>
       shell.querySelector<HTMLButtonElement>(`[data-slot="feature-card-row-${slot}"]`)!;
-    await expect(
-      `previous ${arrow("previous").disabled} · next ${arrow("next").disabled}`,
-    ).toBe("previous false · next true");
+    await expect(`previous ${arrow("previous").disabled} · next ${arrow("next").disabled}`).toBe(
+      "previous false · next true",
+    );
 
     // Focus left the shell rather than wrapping: nothing here traps it.
     await expect(shell.contains(document.activeElement)).toBe(false);
   },
 };
-
 
 const PINNED_QUESTION = "Which clause caps the renewal uplift?";
 
@@ -798,16 +794,12 @@ export const LongContent: Story = {
           {
             id: "c1",
             text: LONG_CLAIM,
-            citations: [
-              { id: "x1", label: "1", sourceId: "q3-report", quote: LONG_CLAIM },
-            ],
+            citations: [{ id: "x1", label: "1", sourceId: "q3-report", quote: LONG_CLAIM }],
           },
         ],
       },
     ],
-    outputs: [
-      { id: "o1", state: "done", aspect: "video", label: LONG_OUTPUT_LABEL, badge: "Audio" },
-    ],
+    outputs: [{ id: "o1", state: "done", aspect: "video", label: LONG_OUTPUT_LABEL, badge: "Audio" }],
   },
   play: async ({ canvasElement }) => {
     const q = (selector: string) => canvasElement.querySelector<HTMLElement>(selector)!;
@@ -1071,9 +1063,7 @@ export const CitationJump: Story = {
   args: { ...FULL_ARGS, onJumpToSource: fn() },
   play: async ({ args, canvasElement }) => {
     const marker = canvasElement.querySelectorAll<HTMLButtonElement>('[data-slot="citation-ref"]')[1];
-    const status = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="notebook-shell-jump-status"]',
-    )!;
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="notebook-shell-jump-status"]')!;
     await expect(status.textContent).toBe("");
 
     const scrolled: Element[] = [];

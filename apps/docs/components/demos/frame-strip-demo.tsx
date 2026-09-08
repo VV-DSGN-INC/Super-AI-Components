@@ -9,7 +9,11 @@ const FRAMES: FrameStripItem[] = ["00:00:00", "00:00:04", "00:00:08", "00:00:12"
     id: `f${index + 1}`,
     label: timecode,
     thumbnail: (
-      <img src={`https://placehold.co/320x180?text=${index + 1}`} alt="" className="h-full w-full object-cover" />
+      <img
+        src={`https://placehold.co/320x180?text=${index + 1}`}
+        alt=""
+        className="h-full w-full object-cover"
+      />
     ),
   }),
 );

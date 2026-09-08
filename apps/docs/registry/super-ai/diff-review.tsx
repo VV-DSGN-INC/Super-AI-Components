@@ -209,17 +209,11 @@ function DiffReview({
                   </div>
 
                   {status !== "pending" ? (
-                    <span
-                      data-slot="diff-review-resolution"
-                      className="text-foreground shrink-0 text-xs"
-                    >
+                    <span data-slot="diff-review-resolution" className="text-foreground shrink-0 text-xs">
                       {RESOLUTION_TEXT[status]}
                     </span>
                   ) : hasPerChangeVerbs ? (
-                    <span
-                      data-slot="diff-review-change-verbs"
-                      className="flex shrink-0 items-center gap-1"
-                    >
+                    <span data-slot="diff-review-change-verbs" className="flex shrink-0 items-center gap-1">
                       {onAccept ? (
                         <Button
                           data-slot="diff-review-accept"
@@ -317,13 +311,7 @@ function DiffReview({
  * and on screen they differ by decoration shape — underline vs. strike-through
  * — so the distinction survives greyscale.
  */
-function DiffSegmentView({
-  segment,
-  status,
-}: {
-  segment: DiffSegment;
-  status: DiffChangeStatus;
-}) {
+function DiffSegmentView({ segment, status }: { segment: DiffSegment; status: DiffChangeStatus }) {
   if (segment.kind === "unchanged") {
     return (
       <span data-slot="diff-review-segment" data-kind="unchanged">

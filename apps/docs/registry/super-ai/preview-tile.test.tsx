@@ -91,12 +91,7 @@ describe("PreviewTile", () => {
 
   it("renders the action slot in locked and failed, and keeps label and badge in every state", () => {
     const locked = render(
-      <PreviewTile
-        state="locked"
-        label="Tile"
-        badge={<span>PRO</span>}
-        action={<button>Upgrade</button>}
-      />,
+      <PreviewTile state="locked" label="Tile" badge={<span>PRO</span>} action={<button>Upgrade</button>} />,
     );
     expect(screen.getByRole("button", { name: "Upgrade" })).toBeInTheDocument();
     expect(screen.getByText("Tile")).toBeInTheDocument();
@@ -139,9 +134,7 @@ describe("PreviewTile", () => {
         <PreviewTile label="Two" labelPlacement="below" onSelect={() => {}} />
       </>,
     );
-    const ids = Array.from(document.querySelectorAll('[data-slot="preview-tile-label"]')).map(
-      (el) => el.id,
-    );
+    const ids = Array.from(document.querySelectorAll('[data-slot="preview-tile-label"]')).map((el) => el.id);
     expect(new Set(ids).size).toBe(2);
     expect(ids.every(Boolean)).toBe(true);
   });

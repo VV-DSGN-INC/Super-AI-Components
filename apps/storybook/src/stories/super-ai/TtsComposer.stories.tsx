@@ -127,7 +127,13 @@ export const PerSegmentRegenerate: Story = {
 export const WholeScriptPlay: Story = {
   args: {
     segments: [
-      { id: "s1", text: "Welcome back to Signal Boost.", voice: "Bella — Warm", status: "ready", durationLabel: "0:03" },
+      {
+        id: "s1",
+        text: "Welcome back to Signal Boost.",
+        voice: "Bella — Warm",
+        status: "ready",
+        durationLabel: "0:03",
+      },
       {
         id: "s2",
         text: "Today we're talking about accessibility in design systems.",
@@ -216,8 +222,24 @@ const NARRATION: TtsComposerProps["segments"] = [
 export const RTL: Story = {
   args: {
     segments: [
-      { id: "s1", text: "افتح المشروع الذي تريد سرده.", voice: "Nova", emotion: "Warm", speed: 1.4, status: "ready", durationLabel: "0:04", regenerateCost: 2 },
-      { id: "s2", text: "كل سطر تضيفه يصبح مقطعًا مستقلًا.", voice: "Nova", emotion: "Neutral", status: "idle", regenerateCost: 2 },
+      {
+        id: "s1",
+        text: "افتح المشروع الذي تريد سرده.",
+        voice: "Nova",
+        emotion: "Warm",
+        speed: 1.4,
+        status: "ready",
+        durationLabel: "0:04",
+        regenerateCost: 2,
+      },
+      {
+        id: "s2",
+        text: "كل سطر تضيفه يصبح مقطعًا مستقلًا.",
+        voice: "Nova",
+        emotion: "Neutral",
+        status: "idle",
+        regenerateCost: 2,
+      },
     ],
     selectedSegmentId: "s1",
     scriptDurationLabel: "0:09",
@@ -253,7 +275,9 @@ export const RTL: Story = {
     // number it would sit to the right of the first letter; it does not.
     const timesSign = xOf(text.length - 1, text.length);
     const firstLetter = xOf(0, 1);
-    await expect(`× left of the description: ${timesSign < firstLetter}`).toBe("× left of the description: true");
+    await expect(`× left of the description: ${timesSign < firstLetter}`).toBe(
+      "× left of the description: true",
+    );
   },
 };
 
@@ -437,7 +461,10 @@ export const KeyboardOrder: Story = {
       ["Voice for Segment 1", () => canvas.getByRole("combobox", { name: "Voice for Segment 1" })],
       ["Emotion for Segment 1", () => canvas.getByRole("combobox", { name: "Emotion for Segment 1" })],
       ["Speed for Segment 1", () => canvas.getByRole("slider", { name: "Speed for Segment 1" })],
-      ["Speed for Segment 1 value", () => canvas.getByRole("spinbutton", { name: "Speed for Segment 1 value" })],
+      [
+        "Speed for Segment 1 value",
+        () => canvas.getByRole("spinbutton", { name: "Speed for Segment 1 value" }),
+      ],
       ["Reset speed for Segment 1", () => canvas.getByRole("button", { name: "Reset speed for Segment 1" })],
       ["Select Segment 2", () => canvas.getByRole("button", { name: "Select Segment 2" })],
       // Play Segment 2 is `idle`, so it is disabled and not a stop.
@@ -446,7 +473,10 @@ export const KeyboardOrder: Story = {
       ["Voice for Segment 2", () => canvas.getByRole("combobox", { name: "Voice for Segment 2" })],
       ["Emotion for Segment 2", () => canvas.getByRole("combobox", { name: "Emotion for Segment 2" })],
       ["Speed for Segment 2", () => canvas.getByRole("slider", { name: "Speed for Segment 2" })],
-      ["Speed for Segment 2 value", () => canvas.getByRole("spinbutton", { name: "Speed for Segment 2 value" })],
+      [
+        "Speed for Segment 2 value",
+        () => canvas.getByRole("spinbutton", { name: "Speed for Segment 2 value" }),
+      ],
       // Reset speed for Segment 2 is at 1, so it is disabled and not a stop.
     ];
 
@@ -473,13 +503,16 @@ export const KeyboardOrder: Story = {
       // Settle on departure: wait for focus to leave the stop it was on, so
       // every tab is provably one move rather than a stale read.
       await waitFor(() => {
-        if (document.activeElement === previous) throw new Error(`focus has not left ${name}'s predecessor yet`);
+        if (document.activeElement === previous)
+          throw new Error(`focus has not left ${name}'s predecessor yet`);
       });
       const expected = find();
       await expect(`stop ${i} is ${document.activeElement === expected ? name : "something else"}`).toBe(
         `stop ${i} is ${name}`,
       );
-      await expect(`${name} focusVisible=${expected.matches(":focus-visible")}`).toBe(`${name} focusVisible=true`);
+      await expect(`${name} focusVisible=${expected.matches(":focus-visible")}`).toBe(
+        `${name} focusVisible=true`,
+      );
 
       // The slider thumb is the one stop with no ring. Recorded above, not
       // pinned in either direction: it is measured below instead.
@@ -497,10 +530,14 @@ export const KeyboardOrder: Story = {
       // Focusing a script field expands its own segment and collapses the
       // one before it — the tab order rewriting itself mid-walk.
       if (name === "Segment 1 script text") {
-        await waitFor(() => expect(canvas.getByRole("group", { name: "Segment 1 settings" })).toBeInTheDocument());
+        await waitFor(() =>
+          expect(canvas.getByRole("group", { name: "Segment 1 settings" })).toBeInTheDocument(),
+        );
       }
       if (name === "Segment 2 script text") {
-        await waitFor(() => expect(canvas.getByRole("group", { name: "Segment 2 settings" })).toBeInTheDocument());
+        await waitFor(() =>
+          expect(canvas.getByRole("group", { name: "Segment 2 settings" })).toBeInTheDocument(),
+        );
         await expect(canvas.queryByRole("group", { name: "Segment 1 settings" })).toBeNull();
       }
     }
@@ -514,9 +551,9 @@ export const KeyboardOrder: Story = {
       "focused read: true resting read: true",
     );
     await expect(`thumb focused: ${thumbFocused}`).toBe(`thumb focused: ${thumbResting}`);
-    await expect(`thumb ring slots transparent: ${thumbFocused.startsWith("rgba(0, 0, 0, 0) 0px 0px 0px 0px")}`).toBe(
-      "thumb ring slots transparent: true",
-    );
+    await expect(
+      `thumb ring slots transparent: ${thumbFocused.startsWith("rgba(0, 0, 0, 0) 0px 0px 0px 0px")}`,
+    ).toBe("thumb ring slots transparent: true");
 
     // Disabled controls are present and out of the sequence, not absent.
     await expect(canvas.getByRole("button", { name: "Play Segment 2" })).toBeDisabled();
@@ -565,8 +602,14 @@ export const Controlled: Story = {
 
     // Selection: reported, not applied.
     await userEvent.click(canvas.getByRole("button", { name: "Select Segment 1" }));
-    await expect(canvas.getByRole("button", { name: "Select Segment 1" })).toHaveAttribute("aria-pressed", "false");
-    await expect(canvas.getByRole("button", { name: "Select Segment 2" })).toHaveAttribute("aria-pressed", "true");
+    await expect(canvas.getByRole("button", { name: "Select Segment 1" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
+    await expect(canvas.getByRole("button", { name: "Select Segment 2" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
     await expect(canvas.getByRole("group", { name: "Segment 2 settings" })).toBeInTheDocument();
     await expect(canvas.queryByRole("group", { name: "Segment 1 settings" })).toBeNull();
     await expect(log()).toHaveTextContent("select:s1");
@@ -581,16 +624,25 @@ export const Controlled: Story = {
 
     // Whole-script transport: no payload, and the button keeps its label.
     await userEvent.click(canvas.getByRole("button", { name: "Play script" }));
-    await expect(canvas.getByRole("button", { name: "Play script" })).toHaveAttribute("aria-pressed", "false");
+    await expect(canvas.getByRole("button", { name: "Play script" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
     await expect(log()).toHaveTextContent("playScript");
 
     // Per-segment playback: an id, and the row keeps its Play label.
     await userEvent.click(canvas.getByRole("button", { name: "Play Segment 1" }));
-    await expect(canvas.getByRole("button", { name: "Play Segment 1" })).toHaveAttribute("aria-pressed", "false");
+    await expect(canvas.getByRole("button", { name: "Play Segment 1" })).toHaveAttribute(
+      "aria-pressed",
+      "false",
+    );
     await expect(log()).toHaveTextContent("play:s1");
 
     // Four re-renders later, nothing has drifted.
-    await expect(canvas.getByRole("button", { name: "Select Segment 2" })).toHaveAttribute("aria-pressed", "true");
+    await expect(canvas.getByRole("button", { name: "Select Segment 2" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
     await expect(canvas.getByRole("textbox", { name: "Segment 1 script text" })).toHaveValue(before);
   },
 };
@@ -656,7 +708,9 @@ export const EmptyLabel: Story = {
     await expect(within(settings).getByText("Voice")).toBeInTheDocument();
 
     // Two focusable controls left in the whole inspector, plus the reset.
-    const focusable = settings.querySelectorAll('input, button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+    const focusable = settings.querySelectorAll(
+      'input, button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
     await expect(Array.from(focusable).map((el) => el.getAttribute("aria-label"))).toEqual([
       "Speed for Segment 1",
       "Speed for Segment 1 value",
@@ -717,7 +771,9 @@ export const LongContent: Story = {
 
     // The field grew past its floor rather than scrolling inside it.
     const field = canvas.getByRole("textbox", { name: "Segment 1 script text" });
-    await expect(`textarea grew past min-h-16: ${field.clientHeight > 64}`).toBe("textarea grew past min-h-16: true");
+    await expect(`textarea grew past min-h-16: ${field.clientHeight > 64}`).toBe(
+      "textarea grew past min-h-16: true",
+    );
     await expect(`textarea scrolls internally: ${field.scrollHeight > field.clientHeight + 1}`).toBe(
       "textarea scrolls internally: false",
     );
@@ -782,7 +838,9 @@ export const Mobile: Story = {
     );
 
     // Every tap target clears WCAG 2.2's 24×24 floor: `icon-sm` is 28×28.
-    const actions = canvasElement.querySelectorAll<HTMLElement>('[data-slot="tts-composer-segment-actions"] button');
+    const actions = canvasElement.querySelectorAll<HTMLElement>(
+      '[data-slot="tts-composer-segment-actions"] button',
+    );
     const undersized = Array.from(actions).filter(
       (el) => el.getBoundingClientRect().width < 24 || el.getBoundingClientRect().height < 24,
     );
@@ -833,7 +891,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Generation queue — the work, cancelled or retried</p>
+        <p className="text-foreground text-xs font-medium">
+          Generation queue — the work, cancelled or retried
+        </p>
         <GenerationQueue
           heading="Rendering 3 segments"
           items={[

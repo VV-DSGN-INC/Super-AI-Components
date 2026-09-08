@@ -116,7 +116,11 @@ export function ComponentDocsView({ docs }: { docs: ComponentDocs }) {
         {hasA11y(docs.accessibility) ? (
           <dl className="space-y-4 rounded-lg border p-4">
             <A11yGroup label="Keyboard" slot="docs-a11y-keyboard" items={docs.accessibility.keyboard} />
-            <A11yGroup label="Screen reader" slot="docs-a11y-screen-reader" items={docs.accessibility.screenReader} />
+            <A11yGroup
+              label="Screen reader"
+              slot="docs-a11y-screen-reader"
+              items={docs.accessibility.screenReader}
+            />
             <A11yGroup label="Focus" slot="docs-a11y-focus" items={docs.accessibility.focus} />
           </dl>
         ) : (

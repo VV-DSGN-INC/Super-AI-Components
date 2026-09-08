@@ -57,9 +57,7 @@ describe("ArtifactShell", () => {
 
   it("passes className through", () => {
     render(<ArtifactShell className="test-class" />);
-    expect(document.querySelector('[data-slot="artifact-shell"]')!.className).toContain(
-      "test-class",
-    );
+    expect(document.querySelector('[data-slot="artifact-shell"]')!.className).toContain("test-class");
   });
 
   // The spec's Regions line reads "sidebar · header + filter · search · artifact
@@ -114,7 +112,9 @@ describe("ArtifactShell", () => {
     render(<ArtifactShell groups={GROUPS} />);
     const badges = [...document.querySelectorAll('[data-slot="artifact-grid-type"]')];
     const markdownBadge = badges.find((badge) => badge.getAttribute("data-artifact-type") === "markdown")!;
-    const markdownFacet = document.querySelector('[data-artifact-type="markdown"][data-slot="filter-chip-toggle"]')!;
+    const markdownFacet = document.querySelector(
+      '[data-artifact-type="markdown"][data-slot="filter-chip-toggle"]',
+    )!;
     expect(markdownBadge.textContent).toBe("Markdown");
     expect(markdownFacet.textContent).toContain("Markdown");
     // …and the facet's count is the number of cards carrying that badge.
@@ -131,9 +131,7 @@ describe("ArtifactShell", () => {
 
   it("reports the active facet to a controlled owner", async () => {
     const onActiveTypeChange = vi.fn();
-    render(
-      <ArtifactShell groups={GROUPS} activeType={null} onActiveTypeChange={onActiveTypeChange} />,
-    );
+    render(<ArtifactShell groups={GROUPS} activeType={null} onActiveTypeChange={onActiveTypeChange} />);
     await userEvent.click(screen.getByRole("button", { name: /^Markdown/ }));
     expect(onActiveTypeChange).toHaveBeenCalledWith("markdown");
   });
@@ -143,9 +141,7 @@ describe("ArtifactShell", () => {
   // the chips go.
   it("suppresses the facets when every artifact shares a type", () => {
     const { container } = render(
-      <ArtifactShell
-        groups={[{ id: "today", label: "Today", sessions: [GROUPS[1].sessions[0]] }]}
-      />,
+      <ArtifactShell groups={[{ id: "today", label: "Today", sessions: [GROUPS[1].sessions[0]] }]} />,
     );
     expect(container.querySelector('[data-region="header"]')).not.toBeNull();
     expect(container.querySelectorAll('[data-slot="filter-chip"]')).toHaveLength(0);
@@ -225,9 +221,7 @@ describe("ArtifactShell", () => {
   });
 
   it("composes B1 for the sidebar rather than rendering its own", () => {
-    const { container } = render(
-      <ArtifactShell nav={<nav aria-label="Library">Collections</nav>} />,
-    );
+    const { container } = render(<ArtifactShell nav={<nav aria-label="Library">Collections</nav>} />);
     const sidebar = container.querySelector('[data-region="sidebar"]')!;
     expect(sidebar.querySelector('[data-slot="app-sidebar"]')).not.toBeNull();
     expect(sidebar.querySelector('[data-slot="app-sidebar-nav"]')).not.toBeNull();

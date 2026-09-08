@@ -46,17 +46,13 @@ export default function StemMixerDemo() {
   // is actually playing, sampling a level per stem and handing it back down.
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setLevels(
-        Object.fromEntries(INITIAL_STEMS.map((stem) => [stem.id, 20 + Math.random() * 70])),
-      );
+      setLevels(Object.fromEntries(INITIAL_STEMS.map((stem) => [stem.id, 20 + Math.random() * 70])));
     }, 700);
     return () => clearInterval(interval);
   }, []);
 
   const patch = (stemId: string, next: Partial<Stem>) =>
-    setStems((current) =>
-      current.map((stem) => (stem.id === stemId ? { ...stem, ...next } : stem)),
-    );
+    setStems((current) => current.map((stem) => (stem.id === stemId ? { ...stem, ...next } : stem)));
 
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4">
@@ -83,9 +79,7 @@ export default function StemMixerDemo() {
         // The whole resulting set arrives already resolved against soloMode —
         // applying it wholesale is the only correct way to consume it.
         onSoloChange={(_stemId, soloedIds) =>
-          setStems((current) =>
-            current.map((stem) => ({ ...stem, soloed: soloedIds.includes(stem.id) })),
-          )
+          setStems((current) => current.map((stem) => ({ ...stem, soloed: soloedIds.includes(stem.id) })))
         }
         onVolumeChange={(stemId, volume) => patch(stemId, { volume })}
         onPanChange={(stemId, pan) => patch(stemId, { pan })}

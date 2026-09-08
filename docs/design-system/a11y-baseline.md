@@ -23,14 +23,14 @@ observing that `pnpm test:stories` still exited 0. Fixing it took two changes,
 not one:
 
 - `apps/storybook/.storybook/preview.tsx`: `parameters: { a11y: { test:
-  "error" } }`.
+"error" } }`.
 - `apps/storybook/.storybook/vitest.setup.ts`: the manual
   `setProjectAnnotations([preview])` never included addon-a11y's own preview
   module, so its `afterEach` hook (the thing that actually runs axe and
   throws) was never part of the composed project annotations. Fixed by
   running Storybook's own migration for this exact gap:
   `pnpm exec storybook automigrate addon-a11y-addon-test --yes --skip-doctor
-  --config-dir .storybook --skip-install`, which added
+--config-dir .storybook --skip-install`, which added
   `import * as a11yAddonAnnotations from "@storybook/addon-a11y/preview"` and
   included it in `setProjectAnnotations([...])`.
 
@@ -49,34 +49,34 @@ This was not new breakage — these violations existed before this task; they
 were simply never asserted. Violations by axe rule (a file can trip more than
 one):
 
-| Rule | Count |
-| --- | --- |
-| color-contrast | 35 |
-| button-name | 20 |
-| label | 18 |
-| nested-interactive | 7 |
-| scrollable-region-focusable | 4 |
-| aria-required-children | 4 |
-| aria-toggle-field-name | 4 |
-| aria-hidden-focus | 4 |
-| select-name | 3 |
-| aria-allowed-attr | 3 |
-| aria-valid-attr-value | 1 |
+| Rule                        | Count |
+| --------------------------- | ----- |
+| color-contrast              | 35    |
+| button-name                 | 20    |
+| label                       | 18    |
+| nested-interactive          | 7     |
+| scrollable-region-focusable | 4     |
+| aria-required-children      | 4     |
+| aria-toggle-field-name      | 4     |
+| aria-hidden-focus           | 4     |
+| select-name                 | 3     |
+| aria-allowed-attr           | 3     |
+| aria-valid-attr-value       | 1     |
 
-Plus 3 stories that fail to *mount* at all under a real browser (not a11y
+Plus 3 stories that fail to _mount_ at all under a real browser (not a11y
 findings — component/story runtime crashes):
 
 - `stories/ai-elements/Context.stories.tsx` — `Cannot read properties of
-  undefined (reading 'reasoningTokens')`; the story's mock `usage` prop is
+undefined (reading 'reasoningTokens')`; the story's mock `usage` prop is
   shaped flat, the component reads `usage.outputTokenDetails.reasoningTokens`.
 - `stories/ui/DropdownMenu.stories.tsx` — Base UI: `MenuGroupContext is
-  missing`.
+missing`.
 - `stories/ui/MessageScroller.stories.tsx` — `useMessageScroller must be used
-  within a MessageScroller`.
+within a MessageScroller`.
 
 ## Where the violations live
 
-**`stories/ui/**` (shadcn) and `stories/ai-elements/**` (AI Elements ports)**
+**`stories/ui/**`(shadcn) and`stories/ai-elements/**` (AI Elements ports)**
 — the large majority of both the mount crashes and the a11y violations.
 These are vendored upstream components this repo displays but does not
 author or publish. Fixing their axe violations means diverging from
@@ -95,7 +95,7 @@ These three are already flagged `contractExempt: true` in
 the wave's spec explicitly excludes from retrofit). This is the same
 exemption expressed in a second place, not a new one.
 
-**`stories/marketing/**`** — no violations found; fully enforced.
+**`stories/marketing/**`\*\* — no violations found; fully enforced.
 
 ## What the gate enforces today
 
@@ -128,7 +128,7 @@ they aren't.
 - `HeroOmnibox` (`Idle`/`Focused`/`Generating`) — `color-contrast`, this
   pairing. `CostChip`, embedded in the omnibox toolbar via
   `apps/docs/registry/super-ai/cost-chip.tsx`, sets `bg-muted
-  text-muted-foreground` at `text-xs` on `<span data-slot="cost-chip">`. Axe
+text-muted-foreground` at `text-xs` on `<span data-slot="cost-chip">`. Axe
   measured **4.34:1** (foreground `#737373`, background `#f5f5f5`, 12px
   normal weight) against a **4.5:1** requirement.
 - `ModalityRail` (`Active`/`Overflow`/`With Badge`/`Bottom Pinned`) —
@@ -151,19 +151,19 @@ they aren't.
 in this token set (light mode) — so "muted-on-muted" and "muted-on-accent"
 and "muted-on-secondary" are the identical failure, not three different ones:
 
-| Foreground | Background | Ratio | Passes 4.5:1? |
-| --- | --- | --- | --- |
-| `text-muted-foreground` (`#737373`) | `bg-muted` / `bg-accent` / `bg-secondary` (`#f5f5f5`) | 4.34–4.35:1 | No |
-| `text-muted-foreground` (`#737373`) | `bg-muted/50` over `bg-background` (`~#fafafa`) | ~4.54:1 | Barely — 0.04 of margin |
-| `text-foreground` (`#0a0a0a`) | `bg-muted` (`#f5f5f5`) | ~18:1 | Yes, wide margin |
-| `text-accent-foreground` / `text-secondary-foreground` (`#171717`) | `bg-accent` / `bg-secondary` (`#f5f5f5`) | ~16.4:1 | Yes, wide margin |
+| Foreground                                                         | Background                                            | Ratio       | Passes 4.5:1?           |
+| ------------------------------------------------------------------ | ----------------------------------------------------- | ----------- | ----------------------- |
+| `text-muted-foreground` (`#737373`)                                | `bg-muted` / `bg-accent` / `bg-secondary` (`#f5f5f5`) | 4.34–4.35:1 | No                      |
+| `text-muted-foreground` (`#737373`)                                | `bg-muted/50` over `bg-background` (`~#fafafa`)       | ~4.54:1     | Barely — 0.04 of margin |
+| `text-foreground` (`#0a0a0a`)                                      | `bg-muted` (`#f5f5f5`)                                | ~18:1       | Yes, wide margin        |
+| `text-accent-foreground` / `text-secondary-foreground` (`#171717`) | `bg-accent` / `bg-secondary` (`#f5f5f5`)              | ~16.4:1     | Yes, wide margin        |
 
 Verified with the actual light-mode token values in `apps/docs/app/globals.css`
 (`--muted-foreground: oklch(0.556 0 0)`, `--muted: oklch(0.97 0 0)`, etc.),
 converted oklch → sRGB and run through the WCAG contrast formula — the
 `#737373`/`#f5f5f5`/4.34 result matches what axe itself reported. Regardless
 of which same-lightness surface token is used, `text-muted-foreground` alone
-never reaches 4.5:1 as *foreground* text on it. `bg-muted/50` only clears the
+never reaches 4.5:1 as _foreground_ text on it. `bg-muted/50` only clears the
 bar by blending toward a lighter ancestor background (`bg-background`) —
 fragile, and the exact number moves with whatever sits behind it.
 
@@ -182,7 +182,7 @@ fragile, and the exact number moves with whatever sits behind it.
 3. `cost-chip.tsx`, `entity-row.tsx` (already `contractExempt`, see above) —
    confirmed by inspection to be this exact pairing, not a different
    contrast bug: `EntityRow`'s `selected` state sets `bg-accent
-   text-accent-foreground` on the row, but the icon and description spans
+text-accent-foreground` on the row, but the icon and description spans
    keep `text-muted-foreground` instead of switching to
    `text-accent-foreground`, landing back on the same 4.34:1 failure against
    `bg-accent` (which shares `bg-muted`'s lightness). `PreviewTile`, the
@@ -218,7 +218,7 @@ fragile, and the exact number moves with whatever sits behind it.
      `className="text-foreground"` override at the call site can't reach it.
      Fixed with an arbitrary-variant call-site override instead —
      `model-picker.tsx`'s `ENTITY_ROW_SELECTED_DESCRIPTION_FIX =
-     "data-[state=on]:[&_[data-slot=entity-row-description]]:text-accent-foreground"`
+"data-[state=on]:[&_[data-slot=entity-row-description]]:text-accent-foreground"`
      — retinting only that descendant, and only while the row itself carries
      `EntityRow`'s own `data-state="on"`, so an unselected row's muted
      description is untouched. Applied at both `ModelPicker` call sites that
@@ -236,10 +236,10 @@ fragile, and the exact number moves with whatever sits behind it.
    mechanical floor, not just a check against today's browser-measured
    pass/fail, all four were fixed rather than exempted:
    - `kbd.tsx` — `<kbd>`'s own `bg-muted text-muted-foreground` → `bg-muted
-     text-foreground`.
+text-foreground`.
    - `sidebar-nav.tsx` — the `sidebar-nav-count` badge's `bg-muted
-     text-muted-foreground tabular-nums` → `bg-muted text-foreground
-     tabular-nums`.
+text-muted-foreground tabular-nums` → `bg-muted text-foreground
+tabular-nums`.
    - `gen-settings-bar.tsx` — the toolbar's `bg-muted/50 text-muted-foreground`
      → `bg-muted/50 text-foreground` (this also retires the `~4.54:1`,
      0.04-margin fragility the previous audit called out — `text-foreground`
@@ -269,7 +269,7 @@ fragile, and the exact number moves with whatever sits behind it.
    This is the argument for fixing A2 at source before family O's twelve
    remaining shells are built: each of them composes these primitives, and
    the list above is what "fix it later" costs per wave. `grep -rn 'CostChip'
-   apps/docs/registry/super-ai/` finds all six.
+apps/docs/registry/super-ai/` finds all six.
 
 ### The destructive-tint pairing: `text-destructive` on `bg-destructive/10`
 
@@ -283,7 +283,7 @@ A second, distinct contrast failure landed in the same round, in
 
 This is not the muted-on-muted pairing above — `--destructive` is a
 saturated red, not the same lightness family as `--muted`/`--accent`/
-`--secondary` — but it's the same *shape* of bug: a vendored, non-`super-ai`
+`--secondary` — but it's the same _shape_ of bug: a vendored, non-`super-ai`
 primitive's default styling only clears contrast in isolation, and this
 token set has no `--destructive-foreground` variable defined at all (checked
 `apps/docs/app/globals.css` — only `--destructive` exists, light and dark), so
@@ -317,7 +317,7 @@ Contrast math: for two fully opaque colors, contrast ratio is symmetric in
 which one is foreground vs. background — swapping `text-destructive` (fg) /
 `bg-destructive/10`-over-white (bg, effectively `~#fde6e7`) for
 `bg-destructive` (bg) / `text-background` (fg, pure white) changes the
-*pairing* from a translucent tint blended toward white to the same
+_pairing_ from a translucent tint blended toward white to the same
 fully-saturated destructive red against pure white either way — which is why
 it clears the identical `~4.77:1` regardless of which role each token plays,
 comfortably over 4.5:1 and, unlike `bg-muted/50`, not dependent on whatever
@@ -348,7 +348,7 @@ One more instance worth naming even though it isn't a static pairing: several
 menu/list rows (e.g. `workspace-switcher.tsx`'s trailing "plan" text,
 rendered inside a highlightable `DropdownMenuRadioItem`) carry
 `text-muted-foreground` trailing text that doesn't repaint when the row's
-*hover/highlighted* background becomes `bg-accent`. Axe only evaluates the
+_hover/highlighted_ background becomes `bg-accent`. Axe only evaluates the
 DOM at rest, so hover-only instances of this exact failure are structurally
 invisible to a static story scan — a gap in what this gate can catch, not
 evidence the pairing is safe there.
@@ -359,7 +359,7 @@ evidence the pairing is safe there.
 `bg-secondary`, at any text size, on the same element or the same visual
 state — they're the same lightness value in this token set and the pairing
 measures 4.34:1, under the 4.5:1 normal-text minimum.** Keep the muted
-*background* for hierarchy if that's the intent; pair it with
+_background_ for hierarchy if that's the intent; pair it with
 `text-foreground` (matches the surface's own background, ~18:1) or with that
 surface's own foreground token (`text-accent-foreground` on `bg-accent`,
 `text-secondary-foreground` on `bg-secondary`, ~16:1) instead. `bg-muted/50`
@@ -378,7 +378,7 @@ recurrence — every fix above landed only after a browser already caught it in
 CI. `packages/ds-rules/rulecheck.mjs` (the existing static token-contract
 gate, previously just raw-hex/`oklch()`/palette-class checks) now also flags
 a bare (unprefixed by a variant like `hover:`/`dark:`) `text-muted-foreground`
-appearing in the *same quoted class-list string* as a bare `bg-muted`,
+appearing in the _same quoted class-list string_ as a bare `bg-muted`,
 `bg-accent`, or `bg-secondary` (opacity variants like `bg-muted/50`
 included) — catching the single-element shape of this failure statically,
 before anyone runs a browser.
@@ -407,7 +407,7 @@ clean.` Both runs are in this task's report.
 
 **Known limitation, stated in the script's own comment so it doesn't get
 lost:** this rule cannot catch, and does not attempt to catch, the
-*cross-component* case — muted text inside a child whose ancestor (a
+_cross-component_ case — muted text inside a child whose ancestor (a
 different element, or an entirely different component, e.g. `EntityRow`'s
 selected row vs. its own description span) sets the muted background. Every
 instance of this pairing that has actually shipped broken, across all five
@@ -428,7 +428,7 @@ image content). `contractExempt: true` in the manifest is **unchanged** for all
 three: that flag governs the story-state and documentation contracts, not this
 one, and unwinding it is a separate retrofit (the field has since been deleted — D20).
 
-Method was red-first: the exemptions were removed *before* any fix, and
+Method was red-first: the exemptions were removed _before_ any fix, and
 `pnpm test:stories` was run to watch both files fail with the axe rule named.
 Two files failed, four violations.
 
@@ -458,7 +458,7 @@ markup:
 ### `EntityRow` — two causes, only one of them predicted
 
 **Cause 1, the documented pairing.** The selected row paints `bg-accent`; its
-description keeps `text-muted-foreground` → 4.34:1. But so does the *`trailing`*
+description keeps `text-muted-foreground` → 4.34:1. But so does the _`trailing`_
 node, which is caller markup (the demo passes
 `<span className="text-muted-foreground text-xs">`), and no slot-level fix can
 reach that.
@@ -492,7 +492,7 @@ the symptom fix, and would not have reached 4.5:1 anyway.
 
 **Coupled-by-coincidence warning.** `check:contract`'s G3 gate asserts that
 `CONTRAST_EXEMPT_FILES` (`packages/ds-rules/src/token-rules.mjs`) and this
-file's a11y exclusion list are the same *set* of names — true today only
+file's a11y exclusion list are the same _set_ of names — true today only
 because both happen to contain exactly `preview-tile.tsx`, and for different
 reasons: it's contrast-exempt for a `text-destructive` defect (unrelated to
 this document's `text-muted-foreground`/`bg-muted` pairing) and a11y-excluded
@@ -506,7 +506,7 @@ reason.
 ## The M-family fixes (2026-08-11, family O round)
 
 Building family O's twelve shells put three monetization components on a
-storybook a11y gate for the first time *in composition*, and each failed. All
+storybook a11y gate for the first time _in composition_, and each failed. All
 three are fixed at source rather than exempted — the list may only shrink — and
 none of the twelve shells carries a call-site compensation for them.
 
@@ -531,7 +531,7 @@ pill is `bg-muted`, and the `empty` state painted `text-destructive` on it:
 4.37:1. `low` was `text-warning` on the same fill, which is lighter still and
 was simply not covered by a story yet. **Neither token can reach 4.5:1 as
 foreground on a near-white fill at any size**, so no text-colour change was
-available. The state now colours the *surface* — `bg-destructive text-background`
+available. The state now colours the _surface_ — `bg-destructive text-background`
 and `bg-warning text-warning-foreground` — and the ring stroke follows the
 surface's foreground rather than its own tint. Its "Top up" control, muted text
 on that same muted pill, now inherits the pill's foreground and carries hover as
@@ -551,15 +551,15 @@ layer needed. Five of the twelve shells reached for it independently, each for
 the same structural reason — **they paint a surface, and the muted text on it
 belongs to a composed child they cannot reach with `className`**:
 
-| Shell | Surface it paints | What it could not reach |
-| --- | --- | --- |
-| `studio-shell` | canvas backdrop | composed canvas content |
-| `docs-shell` | announcement strip | anything dropped in the strip |
+| Shell              | Surface it paints         | What it could not reach           |
+| ------------------ | ------------------------- | --------------------------------- |
+| `studio-shell`     | canvas backdrop           | composed canvas content           |
+| `docs-shell`       | announcement strip        | anything dropped in the strip     |
 | `generation-shell` | E1's `bg-muted/50` footer | E5's shortfall and locked reasons |
-| `auth-shell` | marketing panel | L6's panel content |
-| `home-shell` | — (deleted, see above) | M2's "Top up" |
+| `auth-shell`       | marketing panel           | L6's panel content                |
+| `home-shell`       | — (deleted, see above)    | M2's "Top up"                     |
 
-One of them verified *why* it works, which is worth recording because it is not
+One of them verified _why_ it works, which is worth recording because it is not
 universal: `globals.css` uses `@theme inline`, so `text-muted-foreground`
 compiles to `var(--muted-foreground)` and responds to a cascade override. Under
 a non-inline `@theme` the rebind would compile to a literal colour and silently
@@ -605,16 +605,16 @@ text-warning-foreground` on the control's own `bg-muted` track — precisely
 because `text-warning` on that track fell under 4.5:1. Under the gate that
 badge has no background of its own and inherits the track's foreground, so the
 run that certified the fix never rendered it. M2 `credits-indicator`'s `low`
-state is the same shape. Where the token *does* resolve, in the docs app,
+state is the same shape. Where the token _does_ resolve, in the docs app,
 `text-warning` (`oklch(0.76 0.16 70)`) against `--background` measures
 **~2.2:1** against the 4.5:1 minimum — which is the reason both fixes moved
 the colour onto the surface in the first place.
 
 **Affected, by how they carry the token:**
 
-| How they carry it | Components |
-| --- | --- |
-| Declare `cssVars: WARNING_CSS_VARS` in the manifest | M2 `credits-indicator`, M3 `quota-meter`, M4 `pricing-table`, N2 `trust-dialog`, N6 `usage-dashboard`, N7 `env-status` |
+| How they carry it                                       | Components                                                                                                                                                    |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Declare `cssVars: WARNING_CSS_VARS` in the manifest     | M2 `credits-indicator`, M3 `quota-meter`, M4 `pricing-table`, N2 `trust-dialog`, N6 `usage-dashboard`, N7 `env-status`                                        |
 | Paint with warning classes and declare **no** `cssVars` | M6 `rate-limit-banner` (`border-warning/40 bg-warning/5`), P1 `data-views` via `data-views-shared.tsx` (`text-warning`, `bg-warning text-warning-foreground`) |
 
 The second row is a separate, worse bug in the same token: a consumer who runs
@@ -624,7 +624,7 @@ Tailwind emits nothing for them too — the same silent colourlessness the
 
 **Deliberately not fixed here.** Adding `--warning` to the Storybook
 stylesheet is a one-line change that would turn several components red at
-once, and *which* value it should take — matching the docs app, or a darker
+once, and _which_ value it should take — matching the docs app, or a darker
 one chosen to clear 4.5:1 as foreground — is a design decision, not a
 mechanical one. Recorded rather than patched, per the rule that a gate is
 never quieted to get a run green. Tracked in `CONTINUE.md` §8.

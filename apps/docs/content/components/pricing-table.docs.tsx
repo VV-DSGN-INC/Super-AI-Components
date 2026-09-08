@@ -40,7 +40,10 @@ export const PricingTableDocs: ComponentDocs = {
     },
     { slot: "pricing-table-plan", note: "One plan card. Carries data-highlighted and data-current." },
     { slot: "pricing-table-current", note: "The pin marking the plan the account is already on." },
-    { slot: "pricing-table-price", note: "The per-month price, with a billed-yearly qualifier under the yearly period." },
+    {
+      slot: "pricing-table-price",
+      note: "The per-month price, with a billed-yearly qualifier under the yearly period.",
+    },
     { slot: "pricing-table-cta", note: "The plan's action button; disabled on the current plan." },
     {
       slot: "pricing-table-feature-group",
@@ -48,7 +51,10 @@ export const PricingTableDocs: ComponentDocs = {
     },
     { slot: "pricing-table-addons", note: "The add-on container, a bordered list rather than a card grid." },
     { slot: "pricing-table-addon", note: "One add-on row: name, price, and a switch." },
-    { slot: "pricing-table-addon-switch", note: "The add-on's on/off control, always fully controlled by you." },
+    {
+      slot: "pricing-table-addon-switch",
+      note: "The add-on's on/off control, always fully controlled by you.",
+    },
   ],
   usage:
     "Reach for it on a dedicated pricing or upgrade page where someone is choosing between tiers deliberately. Pass `plans` with both a `monthly` and a `yearly` per-month figure — the yearly one is the annualised rate, and the saving badge is computed from the gap. Leave `period` off to let the component manage the toggle itself; pass `period` with `onPeriodChange` when the choice needs to persist or be shared with a checkout step. Mark the account's existing tier with `current` so its button reads as a state rather than an offer, and put anything metered or optional in `addOns` instead of inventing a fourth plan. When the user is not choosing but has been stopped mid-task, use `paywall-message` instead — it holds the blocked work open, which this component cannot.",

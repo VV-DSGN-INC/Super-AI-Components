@@ -2,7 +2,9 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { SourcePanel, type SourcePanelSource } from "./source-panel";
 
-const source = (overrides: Partial<SourcePanelSource> & Pick<SourcePanelSource, "stage">): SourcePanelSource => ({
+const source = (
+  overrides: Partial<SourcePanelSource> & Pick<SourcePanelSource, "stage">,
+): SourcePanelSource => ({
   id: "1",
   name: "Q3-report.pdf",
   meta: "PDF · 2.4 MB",

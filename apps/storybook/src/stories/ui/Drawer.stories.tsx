@@ -31,9 +31,7 @@ export const Default: Story = {
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>Render settings</DrawerTitle>
-          <DrawerDescription>
-            Tune the parameters for your next Aurora-XL generation.
-          </DrawerDescription>
+          <DrawerDescription>Tune the parameters for your next Aurora-XL generation.</DrawerDescription>
         </DrawerHeader>
         <div className="flex flex-col gap-3 px-4">
           <label className="text-sm">

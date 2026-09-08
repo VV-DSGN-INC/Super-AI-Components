@@ -39,18 +39,14 @@ export const Default: Story = {
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Generation settings</SheetTitle>
-          <SheetDescription>
-            Configure how Nova responds in this conversation.
-          </SheetDescription>
+          <SheetDescription>Configure how Nova responds in this conversation.</SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-5 px-4">
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <Label className="text-sm">Temperature</Label>
-              <span className="text-xs tabular-nums text-muted-foreground">
-                0.7
-              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">0.7</span>
             </div>
             <Slider defaultValue={[0.7]} min={0} max={2} step={0.1} />
           </div>
@@ -58,9 +54,7 @@ export const Default: Story = {
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <Label className="text-sm">Max output tokens</Label>
-              <span className="text-xs tabular-nums text-muted-foreground">
-                2,048
-              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">2,048</span>
             </div>
             <Slider defaultValue={[2048]} min={256} max={8192} step={256} />
           </div>
@@ -68,9 +62,7 @@ export const Default: Story = {
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <Label className="text-sm">Top P</Label>
-              <span className="text-xs tabular-nums text-muted-foreground">
-                0.95
-              </span>
+              <span className="text-xs tabular-nums text-muted-foreground">0.95</span>
             </div>
             <Slider defaultValue={[0.95]} min={0} max={1} step={0.05} />
           </div>
@@ -99,16 +91,12 @@ export const LeftFilters: Story = {
       <SheetContent side="left">
         <SheetHeader>
           <SheetTitle>Filter renders</SheetTitle>
-          <SheetDescription>
-            Narrow your image library by model and style.
-          </SheetDescription>
+          <SheetDescription>Narrow your image library by model and style.</SheetDescription>
         </SheetHeader>
 
         <div className="flex flex-col gap-4 px-4 text-sm">
           <div className="flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">
-              Model
-            </span>
+            <span className="text-xs font-medium text-muted-foreground">Model</span>
             {["Nova Image XL", "Nova Canvas", "Nova Vision"].map((m) => (
               <label key={m} className="flex items-center gap-2">
                 <input type="checkbox" defaultChecked={m !== "Nova Vision"} />
@@ -117,9 +105,7 @@ export const LeftFilters: Story = {
             ))}
           </div>
           <div className="flex flex-col gap-2">
-            <span className="text-xs font-medium text-muted-foreground">
-              Style
-            </span>
+            <span className="text-xs font-medium text-muted-foreground">Style</span>
             {["Photoreal", "Illustration", "3D render", "Anime"].map((s) => (
               <label key={s} className="flex items-center gap-2">
                 <input type="checkbox" defaultChecked={s === "Photoreal"} />
@@ -149,21 +135,15 @@ export const Controlled: Story = {
             <SheetContent>
               <SheetHeader>
                 <SheetTitle>Workspace settings</SheetTitle>
-                <SheetDescription>
-                  Controlled open state from outside the sheet.
-                </SheetDescription>
+                <SheetDescription>Controlled open state from outside the sheet.</SheetDescription>
               </SheetHeader>
-              <div className="px-4 text-sm text-muted-foreground">
-                Credits remaining: 1,240 / 5,000
-              </div>
+              <div className="px-4 text-sm text-muted-foreground">Credits remaining: 1,240 / 5,000</div>
               <SheetFooter>
                 <Button onClick={() => setOpen(false)}>Done</Button>
               </SheetFooter>
             </SheetContent>
           </Sheet>
-          <p className="text-xs text-muted-foreground">
-            State: {open ? "open" : "closed"}
-          </p>
+          <p className="text-xs text-muted-foreground">State: {open ? "open" : "closed"}</p>
         </div>
       );
     }

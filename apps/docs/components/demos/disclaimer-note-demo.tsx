@@ -17,10 +17,7 @@ export default function DisclaimerNoteDemo() {
         <p className="text-muted-foreground text-xs font-medium">In card</p>
         <div className="rounded-lg border">
           <div className="p-3 text-sm">Generated summary of the uploaded report.</div>
-          <DisclaimerNote
-            variant="in-card"
-            link={{ label: "Learn how sources are used", href: "#" }}
-          />
+          <DisclaimerNote variant="in-card" link={{ label: "Learn how sources are used", href: "#" }} />
         </div>
       </div>
 

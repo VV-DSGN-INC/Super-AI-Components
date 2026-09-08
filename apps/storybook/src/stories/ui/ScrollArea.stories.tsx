@@ -35,10 +35,7 @@ export const Default: Story = {
           Generation history
         </div>
         {history.map((item, i) => (
-          <div
-            key={i}
-            className="flex items-center gap-3 border-t px-3 py-2.5 first:border-t-0"
-          >
+          <div key={i} className="flex items-center gap-3 border-t px-3 py-2.5 first:border-t-0">
             <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-muted">
               <ImageIcon className="size-4 text-muted-foreground" />
             </div>
@@ -48,9 +45,7 @@ export const Default: Story = {
                 {item.model} · {item.time}
               </p>
             </div>
-            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
-              {item.credits} cr
-            </span>
+            <span className="shrink-0 text-xs tabular-nums text-muted-foreground">{item.credits} cr</span>
           </div>
         ))}
       </div>

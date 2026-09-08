@@ -6,14 +6,7 @@ import * as React from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/registry/super-ai/empty-state";
@@ -329,7 +322,10 @@ function AssetLibrary({
         <label htmlFor={searchId} className="sr-only">
           {searchPlaceholder}
         </label>
-        <Search aria-hidden className="text-foreground/60 pointer-events-none absolute top-1/2 start-2.5 size-4 -translate-y-1/2" />
+        <Search
+          aria-hidden
+          className="text-foreground/60 pointer-events-none absolute top-1/2 start-2.5 size-4 -translate-y-1/2"
+        />
         <Input
           id={searchId}
           type="search"
@@ -401,10 +397,7 @@ function AssetLibrary({
         // filter that emptied the list has to remain reachable.
         <div data-slot="asset-library-empty">{emptyNode}</div>
       ) : view === "grid" ? (
-        <ul
-          data-slot="asset-library-grid"
-          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"
-        >
+        <ul data-slot="asset-library-grid" className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {ordered.map((item) => (
             <AssetTile
               key={item.id}
@@ -475,9 +468,7 @@ function AssetLibrary({
                 <TableCell className="text-end">
                   {/* Selection mode owns the row; the overflow menu stands down
                       rather than competing with the checkbox. */}
-                  {!selectionMode && rowActions ? (
-                    <RowOverflow item={item} rowActions={rowActions} />
-                  ) : null}
+                  {!selectionMode && rowActions ? <RowOverflow item={item} rowActions={rowActions} /> : null}
                 </TableCell>
               </TableRow>
             ))}
@@ -531,11 +522,7 @@ function AssetTile({
 
       <div className="flex min-w-0 items-center gap-2">
         {selectionMode ? (
-          <Checkbox
-            checked={selected}
-            onCheckedChange={onToggle}
-            aria-label={`Select ${item.name}`}
-          />
+          <Checkbox checked={selected} onCheckedChange={onToggle} aria-label={`Select ${item.name}`} />
         ) : null}
         <span className="min-w-0 flex-1 text-sm">
           <AssetName item={item} onOpen={onOpen} showGlyph={false} />

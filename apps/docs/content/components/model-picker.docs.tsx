@@ -25,14 +25,35 @@ export const ModelPickerDocs: ComponentDocs = {
   evidence: ["ElevenLabs Flows", "Freepik", "Tripo", "Playground"],
   anatomy: [
     { slot: "model-picker", note: "Root wrapper; carries `data-presentation` for the active container." },
-    { slot: "model-picker-group", note: "One task-signature group — a heading plus its models, in every presentation." },
-    { slot: "model-picker-trigger", note: "The control that opens the list, in `dropdown` and `node-inline`. Its accessible name always includes the current selection." },
-    { slot: "model-picker-content", note: "The popup/listbox surface holding the grouped rows, in `dropdown` and `node-inline`." },
+    {
+      slot: "model-picker-group",
+      note: "One task-signature group — a heading plus its models, in every presentation.",
+    },
+    {
+      slot: "model-picker-trigger",
+      note: "The control that opens the list, in `dropdown` and `node-inline`. Its accessible name always includes the current selection.",
+    },
+    {
+      slot: "model-picker-content",
+      note: "The popup/listbox surface holding the grouped rows, in `dropdown` and `node-inline`.",
+    },
     { slot: "model-picker-cards", note: "The Card wrapping a group's rows in `expanded-cards`." },
-    { slot: "model-picker-item", note: "One model row inside `dropdown`'s listbox — a non-interactive entity-row, since Select's own option element is already interactive." },
-    { slot: "model-picker-badges", note: "The shared badge row — runtime, capabilities, price — identical across all three presentations." },
-    { slot: "model-picker-runtime-badge", note: "Local vs. cloud, with the hardware requirement folded into the badge's own text for local models." },
-    { slot: "model-picker-capability-badge", note: "One badge per declared capability (resolution, audio, etc.)." },
+    {
+      slot: "model-picker-item",
+      note: "One model row inside `dropdown`'s listbox — a non-interactive entity-row, since Select's own option element is already interactive.",
+    },
+    {
+      slot: "model-picker-badges",
+      note: "The shared badge row — runtime, capabilities, price — identical across all three presentations.",
+    },
+    {
+      slot: "model-picker-runtime-badge",
+      note: "Local vs. cloud, with the hardware requirement folded into the badge's own text for local models.",
+    },
+    {
+      slot: "model-picker-capability-badge",
+      note: "One badge per declared capability (resolution, audio, etc.).",
+    },
   ],
   usage:
     "Reach for `dropdown` wherever a compact control needs to sit in a toolbar or composer alongside other settings; `expanded-cards` when model choice is the primary decision on a screen and there's room to show every badge at a glance; `node-inline` when the picker has to fit inside a canvas or workflow node without dominating it. Pass the same `models` array — with a `group` field for task signature — to any of the three; switching `presentation` never changes the data shape. Treat it as controlled: `selectedId` and `onSelect` are yours to own, same convention as workspace-switcher.",
@@ -65,12 +86,12 @@ export const ModelPickerDocs: ComponentDocs = {
       "The badges are never focusable. Runtime, capabilities and cost are read-only text in all three presentations.",
     ],
     screenReader: [
-      "The trigger's accessible name is `\"{label}: {selected name}\"` — \"Model: Veo 3.1\" — falling back to the placeholder when nothing is selected, so the current choice is announced without opening anything. It is set with `aria-label`, which replaces the trigger's visible text rather than adding to it.",
+      'The trigger\'s accessible name is `"{label}: {selected name}"` — "Model: Veo 3.1" — falling back to the placeholder when nothing is selected, so the current choice is announced without opening anything. It is set with `aria-label`, which replaces the trigger\'s visible text rather than adding to it.',
       "In `dropdown` the task signatures are real `SelectGroup`s with a `SelectLabel`, so the grouping is announced. In `expanded-cards` and `node-inline` the heading is A12 `section-header`, whose title renders as a `<span>` — the grouping is visual there and announces as nothing.",
       "In `expanded-cards` and `node-inline` a row is `entity-row`'s button branch, so it announces as a toggle button with `aria-pressed`, not as an option in a list. There is no listbox/option pairing and no `aria-activedescendant`: three models are three independent toggle buttons that happen to be mutually exclusive by convention.",
       "A row's name is the whole row read out — title, description, then every badge. That is deliberate, because runtime is a real decision and not a footnote, but a model with four capabilities announces a long name every time it is passed.",
       "`node-inline`'s popup is `role=\"dialog\"` with no accessible name. The vendored `PopoverContent` supplies none, this call site passes none, and there is no title inside for it to borrow — so it announces as an unnamed dialog and would fail axe's `aria-dialog-name` rule the moment a story opened it. `dropdown` and `expanded-cards` do not have this problem.",
-      "The runtime badge always carries its own text — \"Cloud\", or \"Local · 16GB VRAM\" — with the icon `aria-hidden`. Nothing about local versus cloud is signalled by colour or by glyph alone.",
+      'The runtime badge always carries its own text — "Cloud", or "Local · 16GB VRAM" — with the icon `aria-hidden`. Nothing about local versus cloud is signalled by colour or by glyph alone.',
       "Choosing a model announces the selection and nothing else. If the settings strip below rewrites itself in response, the live region belongs there.",
     ],
     focus: [

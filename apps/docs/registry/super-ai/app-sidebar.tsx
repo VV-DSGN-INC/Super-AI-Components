@@ -36,7 +36,15 @@ interface AppSidebarProps extends Omit<React.ComponentProps<typeof Sidebar>, "ch
   footer?: React.ReactNode;
 }
 
-function AppSidebar({ switcher, nav, promo, footer, collapsible = "icon", className, ...props }: AppSidebarProps) {
+function AppSidebar({
+  switcher,
+  nav,
+  promo,
+  footer,
+  collapsible = "icon",
+  className,
+  ...props
+}: AppSidebarProps) {
   return (
     <Sidebar data-slot="app-sidebar" collapsible={collapsible} className={cn(className)} {...props}>
       {switcher ? (

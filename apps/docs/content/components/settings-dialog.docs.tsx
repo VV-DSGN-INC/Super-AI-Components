@@ -67,7 +67,10 @@ export const SettingsDialogDocs: ComponentDocs = {
       slot: "settings-dialog-row",
       note: "The row grid: text column, control column. Identical in both variants.",
     },
-    { slot: "settings-dialog-row-text", note: "The name-and-description column; the setting's name inside doubles as the control's accessible name." },
+    {
+      slot: "settings-dialog-row-text",
+      note: "The name-and-description column; the setting's name inside doubles as the control's accessible name.",
+    },
     {
       slot: "settings-dialog-row-description",
       note: "What flipping the control actually costs you. Required.",

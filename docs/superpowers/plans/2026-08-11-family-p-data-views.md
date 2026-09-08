@@ -20,7 +20,7 @@
 - **Every catalog component needs five artifacts:** `registry/super-ai/<name>.tsx`, `registry/super-ai/<name>.test.tsx`, `components/demos/<name>-demo.tsx`, `content/components/<name>.docs.tsx`, `../storybook/src/stories/super-ai/<Pascal>.stories.tsx`.
 - **`.docs.tsx` must contain:** `whatItIs` (quoted string ≥10 chars), `whyItMatters` (≥10 chars), `dos: [{`, `donts: [{`, `pitfalls: ["`. The contract gate regexes these literally.
 - **Story files must export one `export const <StatePascal>` per `states` entry** in the manifest row.
-- **Commit style:** conventional commits, lowercase subject, body explains *why*. End every commit message with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
+- **Commit style:** conventional commits, lowercase subject, body explains _why_. End every commit message with `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>`.
 
 ---
 
@@ -28,27 +28,27 @@
 
 **Wave 1 (evidence only):**
 
-| File | Responsibility |
-|---|---|
+| File                                           | Responsibility                                                               |
+| ---------------------------------------------- | ---------------------------------------------------------------------------- |
 | `docs/design-system/records-board-analysis.md` | Desk-research D1 evidence for the records pattern, every claim source-linked |
-| `docs/design-system/decisions.md` | Gains D18 — provisional, following D16's form |
+| `docs/design-system/decisions.md`              | Gains D18 — provisional, following D16's form                                |
 
 **Wave 2 infrastructure:**
 
-| File | Responsibility |
-|---|---|
-| `apps/docs/lib/manifest-types.ts` | `FamilyId` gains `"P"`; `ManifestItem` gains optional `files` |
-| `apps/docs/scripts/gen-registry.mts` | Emits `i.files` when present, else today's single-file path |
-| `apps/docs/scripts/check-contract.mts` | Orphan check learns about declared extra files |
-| `docs/design-system/catalog.md` | Family P section + Totals row |
+| File                                   | Responsibility                                                |
+| -------------------------------------- | ------------------------------------------------------------- |
+| `apps/docs/lib/manifest-types.ts`      | `FamilyId` gains `"P"`; `ManifestItem` gains optional `files` |
+| `apps/docs/scripts/gen-registry.mts`   | Emits `i.files` when present, else today's single-file path   |
+| `apps/docs/scripts/check-contract.mts` | Orphan check learns about declared extra files                |
+| `docs/design-system/catalog.md`        | Family P section + Totals row                                 |
 
 **Wave 2 items:**
 
-| Item | Source of truth to port from |
-|---|---|
-| `use-view-mode` (lib) | `src/lib/use-persisted-preference.ts`, `use-view-mode.ts`, `use-detail-mode.ts`, `view-mode-defaults.ts`, `detail-mode-defaults.ts` |
-| `data-views` (P1) | `src/components/ui/{data-views,kanban-view,kanban-column,table-view,feed-view,calendar-view,timeline-view,view-switcher}.tsx`, `src/lib/{data-views,group-tone,date-range,pack-rows}.ts` |
-| `detail-view-shell` (P2) | `src/components/ui/{detail-view-shell,detail-tabs,detail-fields}.tsx`, `src/lib/use-container-width.ts` |
+| Item                     | Source of truth to port from                                                                                                                                                             |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `use-view-mode` (lib)    | `src/lib/use-persisted-preference.ts`, `use-view-mode.ts`, `use-detail-mode.ts`, `view-mode-defaults.ts`, `detail-mode-defaults.ts`                                                      |
+| `data-views` (P1)        | `src/components/ui/{data-views,kanban-view,kanban-column,table-view,feed-view,calendar-view,timeline-view,view-switcher}.tsx`, `src/lib/{data-views,group-tone,date-range,pack-rows}.ts` |
+| `detail-view-shell` (P2) | `src/components/ui/{detail-view-shell,detail-tabs,detail-fields}.tsx`, `src/lib/use-container-width.ts`                                                                                  |
 
 ---
 
@@ -57,10 +57,12 @@
 This is a **gate**. If Step 4's finding is that fewer than three unrelated products offer a user-selectable multi-view switch, stop the plan, report the finding, and do not start Task 2.
 
 **Files:**
+
 - Create: `docs/design-system/records-board-analysis.md`
 - Modify: `docs/design-system/decisions.md` (append D18)
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: the D1 justification every later task depends on. D18's ID is referenced by the manifest rows in Tasks 4 and 5 via `specAnchor`-adjacent prose, and by `catalog.md`'s family P section.
 
@@ -103,7 +105,7 @@ Count the unrelated products in which a user-selectable multi-view switch appear
 - **3 or more** → the gate passes. Continue.
 - **Fewer than 3** → **stop the plan.** Write the finding into the document, append D18 recording the failure, commit, and report that family P is not justified and the work folds into O10's internals.
 
-Also evaluate question 3 separately. If products overwhelmingly *couple* the two axes, note it in D18 as a threat to the spec's central claim; it does not stop the plan, but it must be recorded.
+Also evaluate question 3 separately. If products overwhelmingly _couple_ the two axes, note it in D18 as a threat to the spec's central claim; it does not stop the plan, but it must be recorded.
 
 - [ ] **Step 5: Append D18**
 
@@ -137,12 +139,14 @@ MSG
 Infrastructure only — no components. Ends green with family P declared and empty.
 
 **Files:**
+
 - Modify: `apps/docs/lib/manifest-types.ts`
 - Modify: `apps/docs/scripts/gen-registry.mts:242-251`
 - Modify: `apps/docs/scripts/check-contract.mts:210-216`
 - Modify: `docs/design-system/catalog.md` (family P section + Totals row)
 
 **Interfaces:**
+
 - Consumes: D18 from Task 1.
 - Produces: `FamilyId` accepting `"P"`; `ManifestItem.files?: RegistryFile[]` where `RegistryFile = { path: string; type: string; target: string }`; a `declaredFiles` set in the contract gate. Tasks 4 and 5 rely on all three.
 
@@ -204,14 +208,21 @@ In `apps/docs/scripts/check-contract.mts`, the orphan loop at line 210 flags any
 // so they are not orphans. Without this, every part of a multi-file item
 // (P1 `data-views` ships six view shells) reads as a stray file.
 const declaredFiles = new Set(
-  manifest.flatMap((i) => i.files ?? []).map((f) => f.path.split("/").pop()!.replace(/\.tsx$/, "")),
+  manifest
+    .flatMap((i) => i.files ?? [])
+    .map((f) =>
+      f.path
+        .split("/")
+        .pop()!
+        .replace(/\.tsx$/, ""),
+    ),
 );
 ```
 
 then change the orphan condition from `if (!names.has(name))` to:
 
 ```ts
-  if (!names.has(name) && !declaredFiles.has(name)) errors.push(`orphan: ${file} has no manifest entry`);
+if (!names.has(name) && !declaredFiles.has(name)) errors.push(`orphan: ${file} has no manifest entry`);
 ```
 
 - [ ] **Step 5: Add family P to catalog.md**
@@ -232,8 +243,8 @@ or the O block count changes because family P exists.
 Its evidence is [`records-board-analysis.md`](records-board-analysis.md) and
 D18, both **provisional** — desk research, not a collected board.
 
-| # | Name | Purpose | Key states / variants | shadcn base |
-|---|------|---------|-----------------------|-------------|
+| #   | Name | Purpose | Key states / variants | shadcn base |
+| --- | ---- | ------- | --------------------- | ----------- |
 ```
 
 Then add a row to the `## Totals` table immediately after the `O — Blocks (L4)` row:
@@ -292,11 +303,13 @@ MSG
 Smallest item, no dependencies, proves the `registry:lib` path before the components need it.
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/use-view-mode.tsx`
 - Create: `apps/docs/registry/super-ai/use-view-mode.test.tsx`
 - Modify: `apps/docs/lib/lib.manifest.ts`
 
 **Interfaces:**
+
 - Consumes: nothing from earlier tasks.
 - Produces: `usePersistedPreference<T extends string>(key: string, fallback: T, isValid: (v: unknown) => v is T): [T, (v: T) => void]`; `useViewMode(section: ViewSection, options?: { timeCapable?: boolean }): [ViewMode, (m: ViewMode) => void, readonly ViewMode[]]`; `useDetailMode(entity: string): [DetailMode, (m: DetailMode) => void]`; types `ViewMode`, `ViewSection`, `DetailMode`. Tasks 4 and 5 import `ViewMode` and `DetailMode` from here.
 
@@ -384,6 +397,7 @@ MSG
 The first multi-file item. Seven files, one manifest row.
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/data-views.tsx` (entry point)
 - Create: `apps/docs/registry/super-ai/{kanban-view,kanban-column,table-view,feed-view,calendar-view,timeline-view}.tsx`
 - Create: `apps/docs/registry/super-ai/data-views.test.tsx`
@@ -393,6 +407,7 @@ The first multi-file item. Seven files, one manifest row.
 - Modify: `apps/docs/lib/catalog.manifest.ts`, `docs/design-system/catalog.md`
 
 **Interfaces:**
+
 - Consumes: `ViewMode` from Task 3's `use-view-mode`; `files` support from Task 2.
 - Produces: `DataViews<T extends ViewItem>(props: DataViewsProps<T>)`; types `ViewItem` (`{ id: string }`), `ViewGroup<T>` (`{ id, label, tone?, match }`), `ColumnDef<T>` (`{ id, header, cell, width?, align? }`), `GroupTone` (`"neutral" | "info" | "warning" | "success"`), `TimeCapability<T>` (`{ getDateRange, renderChip }`). Task 5 does not depend on these.
 
@@ -569,6 +584,7 @@ MSG
 ## Task 5: P2 `detail-view-shell`
 
 **Files:**
+
 - Create: `apps/docs/registry/super-ai/detail-view-shell.tsx`
 - Create: `apps/docs/registry/super-ai/{detail-tabs,detail-fields,use-container-width}.tsx`
 - Create: `apps/docs/registry/super-ai/detail-view-shell.test.tsx`
@@ -578,6 +594,7 @@ MSG
 - Modify: `apps/docs/lib/catalog.manifest.ts`, `docs/design-system/catalog.md`, `docs/design-system/component-specs.md`
 
 **Interfaces:**
+
 - Consumes: `DetailMode` from Task 3's `use-view-mode`; `files` support from Task 2.
 - Produces: `DetailViewShell(props: DetailViewShellProps)` where `DetailViewShellProps = { open: boolean; onOpenChange: (open: boolean) => void; mode: DetailMode; header: ReactNode; attributes: ReactNode; conversation?: DetailChannel[]; collapse?: "tabs" | "stack"; ariaLabel?: string; className?: string }`.
 
@@ -615,7 +632,7 @@ Expected: PASS, including the no-ResizeObserver case (the hook must stay narrow 
 
 - [ ] **Step 5: Write the demo, docs and stories**
 
-Same shape as Task 4 Step 6. The pitfall worth documenting: collapse is driven by *measured container width*, not viewport — a consumer who tests only by resizing the browser will not see the two-column form inside a narrow sheet.
+Same shape as Task 4 Step 6. The pitfall worth documenting: collapse is driven by _measured container width_, not viewport — a consumer who tests only by resizing the browser will not see the two-column form inside a narrow sheet.
 
 The stories file is where level-2 tabs actually get exercised: the running app has one channel, so the multi-channel case exists only here and in the tests. Say so in the story description rather than inventing product fixtures.
 
@@ -686,9 +703,11 @@ MSG
 ## Task 6: Full-gate run, CONTINUE.md pointer, and PR
 
 **Files:**
+
 - Modify: `docs/CONTINUE.md`
 
 **Interfaces:**
+
 - Consumes: everything.
 - Produces: a PR.
 

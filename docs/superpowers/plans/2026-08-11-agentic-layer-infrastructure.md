@@ -23,28 +23,28 @@
 
 ## File Structure
 
-| File | Responsibility |
-| --- | --- |
-| `apps/docs/scripts/lib/token-rules.mjs` | **Create.** Pure, dependency-free token-contract predicates. No `fs`, so it stays typecheck-safe and unit-testable |
-| `apps/docs/scripts/lib/token-rules.d.mts` | **Create.** Hand-written types for the above, so `.test.ts` imports typecheck |
-| `apps/docs/scripts/lib/token-rules.test.ts` | **Create.** Unit tests for the predicates |
-| `apps/docs/scripts/check-tokens.mjs` | **Modify.** Delegates to `token-rules.mjs`; gains `cva` awareness and a widened glob |
-| `apps/docs/scripts/lib/scaffold-templates.ts:3` | **Modify.** Export the existing `pascal` helper so the contract gate can build the registry-component name set |
-| `apps/docs/scripts/lib/contract-rules.ts` | **Create.** Pure predicates for G2/G3/G4, unit-testable without running the gate |
-| `apps/docs/scripts/lib/contract-rules.test.ts` | **Create.** Unit tests for the above |
-| `apps/docs/scripts/check-contract.mts` | **Modify.** Calls the three new predicates; no new CI step |
-| `apps/docs/vitest.setup.ts` | **Modify.** Adds the `getAnimations` shim next to the `ResizeObserver` stub |
-| `.claude/settings.json` | **Create.** Five hooks |
-| `.claude/skills/gate-run/SKILL.md` | **Create.** Eleven `ci.yml` steps in order |
-| `.claude/skills/build-component/SKILL.md` | **Create.** The §3 loop |
-| `.claude/skills/integrate-batch/SKILL.md` | **Create.** The §3.5 reconciliation |
-| `.claude/agents/component-builder.md` | **Create.** Fan-out agent, restricted tools |
-| `.claude/agents/retrofit-builder.md` | **Create.** Narrower variant for the 25 |
-| `apps/docs/scripts/reconcile-deps.mts` | **Create.** CONTINUE.md §3.5's shell loop as a script |
-| `apps/docs/lib/test-utils.ts` | **Create.** `expectAccessibleName` — G5's helper. In `lib/`, never `registry/super-ai/`, because the registry is the published product |
-| `apps/docs/lib/test-utils.test.tsx` | **Create.** Pins the sr-only fusion case |
-| `docs/design-system/component-build-brief.md` | **Modify.** One bullet pointing builders at the helper |
-| `docs/design-system/vendored-token-findings.md` | **Create.** Triage of what the widened token glob surfaces in vendored `ui/` |
+| File                                            | Responsibility                                                                                                                         |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/docs/scripts/lib/token-rules.mjs`         | **Create.** Pure, dependency-free token-contract predicates. No `fs`, so it stays typecheck-safe and unit-testable                     |
+| `apps/docs/scripts/lib/token-rules.d.mts`       | **Create.** Hand-written types for the above, so `.test.ts` imports typecheck                                                          |
+| `apps/docs/scripts/lib/token-rules.test.ts`     | **Create.** Unit tests for the predicates                                                                                              |
+| `apps/docs/scripts/check-tokens.mjs`            | **Modify.** Delegates to `token-rules.mjs`; gains `cva` awareness and a widened glob                                                   |
+| `apps/docs/scripts/lib/scaffold-templates.ts:3` | **Modify.** Export the existing `pascal` helper so the contract gate can build the registry-component name set                         |
+| `apps/docs/scripts/lib/contract-rules.ts`       | **Create.** Pure predicates for G2/G3/G4, unit-testable without running the gate                                                       |
+| `apps/docs/scripts/lib/contract-rules.test.ts`  | **Create.** Unit tests for the above                                                                                                   |
+| `apps/docs/scripts/check-contract.mts`          | **Modify.** Calls the three new predicates; no new CI step                                                                             |
+| `apps/docs/vitest.setup.ts`                     | **Modify.** Adds the `getAnimations` shim next to the `ResizeObserver` stub                                                            |
+| `.claude/settings.json`                         | **Create.** Five hooks                                                                                                                 |
+| `.claude/skills/gate-run/SKILL.md`              | **Create.** Eleven `ci.yml` steps in order                                                                                             |
+| `.claude/skills/build-component/SKILL.md`       | **Create.** The §3 loop                                                                                                                |
+| `.claude/skills/integrate-batch/SKILL.md`       | **Create.** The §3.5 reconciliation                                                                                                    |
+| `.claude/agents/component-builder.md`           | **Create.** Fan-out agent, restricted tools                                                                                            |
+| `.claude/agents/retrofit-builder.md`            | **Create.** Narrower variant for the 25                                                                                                |
+| `apps/docs/scripts/reconcile-deps.mts`          | **Create.** CONTINUE.md §3.5's shell loop as a script                                                                                  |
+| `apps/docs/lib/test-utils.ts`                   | **Create.** `expectAccessibleName` — G5's helper. In `lib/`, never `registry/super-ai/`, because the registry is the published product |
+| `apps/docs/lib/test-utils.test.tsx`             | **Create.** Pins the sr-only fusion case                                                                                               |
+| `docs/design-system/component-build-brief.md`   | **Modify.** One bullet pointing builders at the helper                                                                                 |
+| `docs/design-system/vendored-token-findings.md` | **Create.** Triage of what the widened token glob surfaces in vendored `ui/`                                                           |
 
 ---
 
@@ -52,7 +52,7 @@
 
 **Do not implement this task.** Attempted 2026-08-11 and reverted; the work is now Task 13, with the scope its first attempt revealed.
 
-The shim itself is two lines and correct. What the attempt found is that it is not a two-line *change*: Base UI branches on whether `Element.prototype.getAnimations` exists, so defining it moves every overlay in the library — popups, dialogs, tab panels — onto the async exit-animation path at once. Five shipped components' tests broke together, and the failure count varied between runs (4, then 5), which means at least one of them is genuinely racing rather than deterministically async.
+The shim itself is two lines and correct. What the attempt found is that it is not a two-line _change_: Base UI branches on whether `Element.prototype.getAnimations` exists, so defining it moves every overlay in the library — popups, dialogs, tab panels — onto the async exit-animation path at once. Five shipped components' tests broke together, and the failure count varied between runs (4, then 5), which means at least one of them is genuinely racing rather than deterministically async.
 
 Attempt-1 diff preserved at `.superpowers/sdd/2026-08-11-agentic-layer-infrastructure/g6-attempt-1.diff`.
 
@@ -63,12 +63,14 @@ Tasks 2–12 do not depend on the shim, so they proceed on a clean base: `pnpm v
 `check-tokens.mjs` today is one script with its predicates inline, so nothing about it is unit-testable and Task 3 would have to be verified by running the whole gate. Extract first, behaviour unchanged, with tests pinning the current behaviour — including the two subtleties the existing comments protect.
 
 **Files:**
+
 - Create: `apps/docs/scripts/lib/token-rules.mjs`
 - Create: `apps/docs/scripts/lib/token-rules.d.mts`
 - Create: `apps/docs/scripts/lib/token-rules.test.ts`
 - Modify: `apps/docs/scripts/check-tokens.mjs:52-79`
 
 **Interfaces:**
+
 - Consumes: nothing
 - Produces:
   - `MUTED_FG: string`
@@ -128,7 +130,7 @@ Expected: FAIL — `Failed to resolve import "./token-rules.mjs"`.
 
 - [ ] **Step 3: Create the module**
 
-Create `apps/docs/scripts/lib/token-rules.mjs`. This is a straight lift of `check-tokens.mjs:52-79`; the comments there explain *why* each subtlety exists and must move with the code:
+Create `apps/docs/scripts/lib/token-rules.mjs`. This is a straight lift of `check-tokens.mjs:52-79`; the comments there explain _why_ each subtlety exists and must move with the code:
 
 ```js
 // Pure token-contract predicates. Deliberately free of `node:fs` — check-tokens
@@ -249,15 +251,17 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 
 `components/ui/tabs.tsx:19` puts `text-muted-foreground` in `tabsListVariants`' base string and `bg-muted` in its `default` variant. The gate written specifically to catch this pairing cannot see it, because it tests one quoted segment at a time. CONTINUE.md §4 records this as unresolved.
 
-**The rule is deliberately narrow: pair the base string with each variant value string *individually*.** Do not union every string in the call. Two values of the same variant group are mutually exclusive, and merging them would resurrect exactly the ternary false-positive Task 2's third test pins.
+**The rule is deliberately narrow: pair the base string with each variant value string _individually_.** Do not union every string in the call. Two values of the same variant group are mutually exclusive, and merging them would resurrect exactly the ternary false-positive Task 2's third test pins.
 
 **Files:**
+
 - Modify: `apps/docs/scripts/lib/token-rules.mjs`
 - Modify: `apps/docs/scripts/lib/token-rules.d.mts`
 - Modify: `apps/docs/scripts/lib/token-rules.test.ts`
 - Modify: `apps/docs/scripts/check-tokens.mjs`
 
 **Interfaces:**
+
 - Consumes: `MUTED_FG`, `MUTED_BG_RE`, `isExempt` from Task 2
 - Produces:
   - `extractCvaCalls(source: string): { body: string; index: number }[]`
@@ -336,7 +340,8 @@ describe("findCvaViolations", () => {
     const arrayBase = `cva(["p-2"], { variants: { v: { a: "text-muted-foreground", b: "bg-muted" } } })`;
     expect(findCvaViolations("x.tsx", arrayBase)).toEqual([]);
 
-    const templateBase = "cva(`p-2 ${x}`, { variants: { v: { a: \"text-muted-foreground\", b: \"bg-muted\" } } })";
+    const templateBase =
+      'cva(`p-2 ${x}`, { variants: { v: { a: "text-muted-foreground", b: "bg-muted" } } })';
     expect(findCvaViolations("x.tsx", templateBase)).toEqual([]);
   });
 
@@ -495,10 +500,10 @@ import { findCvaViolations, findSingleStringViolations } from "./lib/token-rules
 and add directly below the existing `findSingleStringViolations` loop:
 
 ```js
-  for (const message of findCvaViolations(file, source)) {
-    violations++;
-    console.error(message);
-  }
+for (const message of findCvaViolations(file, source)) {
+  violations++;
+  console.error(message);
+}
 ```
 
 - [ ] **Step 7: Verify the gate still passes on the current glob**
@@ -545,10 +550,12 @@ The `cva` rule alone does not catch the real bug, because `check-tokens.mjs:3` g
 **The spec commits to reporting, not fixing, whatever else falls out** (§8.1). Diverging from vendored upstream is an open question this task does not settle.
 
 **Files:**
+
 - Modify: `apps/docs/scripts/check-tokens.mjs:3`
 - Create: `docs/design-system/vendored-token-findings.md`
 
 **Interfaces:**
+
 - Consumes: `findCvaViolations`, `findSingleStringViolations` from Task 3
 - Produces: a findings document; no behavioural interface
 
@@ -605,14 +612,14 @@ const isVendored = (f) => f.startsWith("components/ui/");
 Then, at each of the three reporting sites (the `PATTERNS` loop, the `findSingleStringViolations` loop, and the `findCvaViolations` loop), branch:
 
 ```js
-    if (isVendored(file)) {
-      warnings++;
-      warnedFiles.add(file);
-      console.warn(`WARN ${message}`);
-    } else {
-      violations++;
-      console.error(message);
-    }
+if (isVendored(file)) {
+  warnings++;
+  warnedFiles.add(file);
+  console.warn(`WARN ${message}`);
+} else {
+  violations++;
+  console.error(message);
+}
 ```
 
 Declare `let warnings = 0;` and `const warnedFiles = new Set();` beside `let violations = 0;`, and extend the closing summary:
@@ -665,19 +672,21 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 
 ### Task 5: G2 — `data-slot` erasure
 
-Every component here spreads `...props` *after* its own attributes, so a `data-slot` passed from a call site silently replaces the component's own and every test or style keyed to it misses. `DateSection`, `CostChip`, `StatReadout` and `EntityRow` have each been erased this way — three of them in a single batch.
+Every component here spreads `...props` _after_ its own attributes, so a `data-slot` passed from a call site silently replaces the component's own and every test or style keyed to it misses. `DateSection`, `CostChip`, `StatReadout` and `EntityRow` have each been erased this way — three of them in a single batch.
 
 Passing `data-slot` to a **vendored `ui/` primitive** stays legal: that is house idiom (`result-card` on `Card`, `frame-strip` on `Carousel`, `tool-panel` on `Tabs`) and nothing keys on those values. The gate encodes CONTINUE.md §4's refined rule exactly.
 
 This lives in `check-contract.mts`, not `check-tokens.mjs`, because it needs `MANIFEST` — and that keeps `ci.yml` at eleven steps.
 
 **Files:**
+
 - Modify: `apps/docs/scripts/lib/scaffold-templates.ts:3`
 - Create: `apps/docs/scripts/lib/contract-rules.ts`
 - Create: `apps/docs/scripts/lib/contract-rules.test.ts`
 - Modify: `apps/docs/scripts/check-contract.mts`
 
 **Interfaces:**
+
 - Consumes: `MANIFEST` from `apps/docs/lib/catalog.manifest`, `pascal` from `scaffold-templates`
 - Produces: `findSlotErasures(file: string, source: string, registryComponents: Set<string>): string[]`
 
@@ -793,11 +802,7 @@ Create `apps/docs/scripts/lib/contract-rules.ts`:
  * seen. That under-reports. Under-reporting is what a gate should do when it
  * cannot parse — a false positive forces someone to contort working code.
  */
-export function findSlotErasures(
-  file: string,
-  source: string,
-  registryComponents: Set<string>,
-): string[] {
+export function findSlotErasures(file: string, source: string, registryComponents: Set<string>): string[] {
   const found: string[] = [];
   for (const m of source.matchAll(/<([A-Z][A-Za-z0-9]*)\b([^<>]*)/g)) {
     const [, tag, attrs] = m;
@@ -850,17 +855,17 @@ cd apps/docs && pnpm check:contract
 
 **It did not pass — and the outcome is now part of this task.** The gate reported seven real erasures on its first run:
 
-| Call site | Composed component | Overriding slot | Referenced by |
-| --- | --- | --- | --- |
-| `thread-list.tsx:33` | `DateSection` | `thread-list-section` | nothing |
-| `generation-panel.tsx:209` | `PreviewTile` | expression form — inspect | — |
-| `voice-clone-recorder.tsx:190` | `DisclaimerNote` | `voice-clone-recorder-disclaimer` | its own docs `anatomy` |
-| `frame-strip.tsx:141` | `PreviewTile` | expression form — inspect | — |
-| `template-detail.tsx:354` | `FieldRow` | `template-detail-option` | its own docs `anatomy` |
-| `task-tray.tsx:102` | `EntityRow` | `task-tray-task` | its own test |
-| `explore-shell.tsx:330` | `ChoiceChips` | `explore-shell-types` | nothing |
+| Call site                      | Composed component | Overriding slot                   | Referenced by          |
+| ------------------------------ | ------------------ | --------------------------------- | ---------------------- |
+| `thread-list.tsx:33`           | `DateSection`      | `thread-list-section`             | nothing                |
+| `generation-panel.tsx:209`     | `PreviewTile`      | expression form — inspect         | —                      |
+| `voice-clone-recorder.tsx:190` | `DisclaimerNote`   | `voice-clone-recorder-disclaimer` | its own docs `anatomy` |
+| `frame-strip.tsx:141`          | `PreviewTile`      | expression form — inspect         | —                      |
+| `template-detail.tsx:354`      | `FieldRow`         | `template-detail-option`          | its own docs `anatomy` |
+| `task-tray.tsx:102`            | `EntityRow`        | `task-tray-task`                  | its own test           |
+| `explore-shell.tsx:330`        | `ChoiceChips`      | `explore-shell-types`             | nothing                |
 
-Three are *documented* — the overriding slot appears in the component's own guidance `anatomy`, so a builder deliberately re-labelled a composed primitive and wrote the new name down as public API. That is not the silent erasure §4 describes.
+Three are _documented_ — the overriding slot appears in the component's own guidance `anatomy`, so a builder deliberately re-labelled a composed primitive and wrote the new name down as public API. That is not the silent erasure §4 describes.
 
 **Ruling: fix all seven; the gate enforces.** The harm the rule guards against still occurs regardless of intent — a consumer styling `[data-slot="date-section"]` gets nothing on a `ThreadListSection`, because the composed primitive's identity is gone from the DOM. Let the composed component keep its slot; that is also what makes the composition visible.
 
@@ -896,11 +901,13 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 Two exemption lists exist for one component, in two files, with no link between them: `CONTRAST_EXEMPT_FILES = ["preview-tile.tsx"]` (now in `token-rules.mjs`) and `"**/stories/super-ai/PreviewTile.stories.tsx"` in `apps/storybook/vitest.config.ts`. Both are governed by "may only shrink, never grow", and nothing asserts they agree or that either has held.
 
 **Files:**
+
 - Modify: `apps/docs/scripts/lib/contract-rules.ts`
 - Modify: `apps/docs/scripts/lib/contract-rules.test.ts`
 - Modify: `apps/docs/scripts/check-contract.mts`
 
 **Interfaces:**
+
 - Consumes: `pascal` from `scaffold-templates`
 - Produces: `parseStorybookExclusions(source: string): string[]` and `compareExemptionLists(contrast: string[], stories: string[]): string[]`
 
@@ -943,7 +950,13 @@ describe("parseStorybookExclusions", () => {
   });
 
   it("strips a multi-line block comment without eating the entry after it", () => {
-    const src = [`/*`, `  a long`, `  explanation`, `*/`, `"**/stories/super-ai/PreviewTile.stories.tsx",`].join("\n");
+    const src = [
+      `/*`,
+      `  a long`,
+      `  explanation`,
+      `*/`,
+      `"**/stories/super-ai/PreviewTile.stories.tsx",`,
+    ].join("\n");
     expect(parseStorybookExclusions(src)).toEqual(["PreviewTile"]);
   });
 
@@ -1123,9 +1136,7 @@ Extend the `contract-rules` import to include `compareExemptionLists` and `parse
 ```ts
 // G3 — the contrast exemption list and the a11y exclusion list must agree.
 const storybookConfig = readFileSync("../storybook/vitest.config.ts", "utf8");
-errors.push(
-  ...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)),
-);
+errors.push(...compareExemptionLists(CONTRAST_EXEMPT_FILES, parseStorybookExclusions(storybookConfig)));
 ```
 
 - [ ] **Step 6: Run the gate**
@@ -1156,11 +1167,13 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 `statePascal("meta")` is `Meta`, which collides with `import type { Meta } from "@storybook/react"` in every generated story. `record-list` had to alias it. The gate greps for `export const Meta`, which is present either way, so it passed throughout. `Default` and `Story` collide the same way.
 
 **Files:**
+
 - Modify: `apps/docs/scripts/lib/contract-rules.ts`
 - Modify: `apps/docs/scripts/lib/contract-rules.test.ts`
 - Modify: `apps/docs/scripts/check-contract.mts`
 
 **Interfaces:**
+
 - Consumes: `statePascal` from `scaffold-templates`
 - Produces: `findReservedStateNames(name: string, states: string[]): string[]`
 
@@ -1249,8 +1262,8 @@ Expected: PASS, 14 tests total in this file.
 Add `findReservedStateNames` to the `contract-rules` import, then inside the existing per-item manifest loop — **before** the `contractExempt` early-`continue` at line 112, so the 25 legacy items are checked too — add:
 
 ```ts
-  // G4 — a state whose Pascal form collides with the story file's own imports.
-  errors.push(...findReservedStateNames(item.name, item.states));
+// G4 — a state whose Pascal form collides with the story file's own imports.
+errors.push(...findReservedStateNames(item.name, item.states));
 ```
 
 - [ ] **Step 6: Run the gate**
@@ -1265,7 +1278,7 @@ The expectation that legacy items would fail was wrong, and the reason is worth 
 
 - [ ] **Step 6a: Rename `record-list`'s `meta` state**
 
-This is the exact case the gate was built for. `record-list` ships today by aliasing its *import* (`import type { Meta as StorybookMeta }`) so its `export const Meta` can coexist — a workaround for a name that should never have been declared.
+This is the exact case the gate was built for. `record-list` ships today by aliasing its _import_ (`import type { Meta as StorybookMeta }`) so its `export const Meta` can coexist — a workaround for a name that should never have been declared.
 
 Rename the state to **`"metadata"`** (`statePascal` → `Metadata`, not reserved):
 
@@ -1295,12 +1308,14 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 Five hooks in a checked-in `.claude/settings.json`. Git-write denial is deliberately **not** here — hooks apply session-wide and cannot distinguish a subagent from the integrator, and the integrator must commit. That denial lives in Task 9's agent definitions, where it is precise.
 
 **Files:**
+
 - Create: `.claude/settings.json`
 - Create: `.claude/hooks/deny-dangerous-bash.sh`
 - Create: `.claude/hooks/check-tokens-on-edit.sh`
 - Create: `.claude/hooks/session-baselines.sh`
 
 **Interfaces:**
+
 - Consumes: nothing
 - Produces: hook enforcement for every session in this repo
 
@@ -1445,13 +1460,17 @@ Create `.claude/settings.json`:
     "PreToolUse": [
       {
         "matcher": "Bash",
-        "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/deny-dangerous-bash.sh" }]
+        "hooks": [
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/deny-dangerous-bash.sh" }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "hooks": [{ "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-tokens-on-edit.sh" }]
+        "hooks": [
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/check-tokens-on-edit.sh" }
+        ]
       }
     ],
     "SessionStart": [
@@ -1481,13 +1500,15 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 
 ### Task 9: Agents
 
-The `component-builder` prompt is deliberately thin — it *points at* `component-build-brief.md` rather than restating it, honouring the repo's own no-second-copy rule (§3.4). Its value over a pasted prompt is tool configuration, which converts three prose rules into impossibilities.
+The `component-builder` prompt is deliberately thin — it _points at_ `component-build-brief.md` rather than restating it, honouring the repo's own no-second-copy rule (§3.4). Its value over a pasted prompt is tool configuration, which converts three prose rules into impossibilities.
 
 **Files:**
+
 - Create: `.claude/agents/component-builder.md`
 - Create: `.claude/agents/retrofit-builder.md`
 
 **Interfaces:**
+
 - Consumes: hooks from Task 8 (they apply to subagents too)
 - Produces: two `subagent_type` values usable from the Agent tool and from Task 10's skills
 
@@ -1607,7 +1628,7 @@ Record that as the open question it is rather than guessing.
 
 **Measured, not theorised.** Both agents registered successfully mid-session (no restart needed for registration — skills and agents both hot-load). Dispatched, each reported its available tools as **`Read`, `Grep`, `Glob` only**. `Edit`, `Write` and `Bash` were absent despite `tools:` declaring all six. A component builder that cannot write files is worse than no agent, because the next fan-out dispatches it and gets nothing.
 
-The likely cause is malformed permission patterns. Claude Code's documented form is a **colon-wildcard** — `Bash(git commit:*)` — and the first attempt used a space (`Bash(git commit *)`). Path-scoped `Edit(<glob>)` in the *deny* position is also unverified. A malformed pattern plausibly causes the whole tool to be dropped rather than scoped.
+The likely cause is malformed permission patterns. Claude Code's documented form is a **colon-wildcard** — `Bash(git commit:*)` — and the first attempt used a space (`Bash(git commit *)`). Path-scoped `Edit(<glob>)` in the _deny_ position is also unverified. A malformed pattern plausibly causes the whole tool to be dropped rather than scoped.
 
 **This could not be isolated in-session:** editing an already-registered definition has no effect — removing `disallowedTools` entirely still yielded three tools, because the definition is cached at registration. Only a restart re-reads it.
 
@@ -1650,7 +1671,7 @@ verbatim outcome of each without working around it:
 3. A `Read` of `docs/design-system/component-build-brief.md` — must succeed.
 
 **Until this runs, treat every `disallowedTools` entry as unverified.** The
-changelog introduces that field as "frontmatter support for *plugin-shipped*
+changelog introduces that field as "frontmatter support for _plugin-shipped_
 agents"; these are project-level, and whether it is honoured there is not
 established. The prose prohibitions in both agent bodies are the backstop in
 the meantime, and they are exactly the kind of rule this plan exists to stop
@@ -1671,10 +1692,12 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 The highest value-per-line item in this plan. CONTINUE.md §1 records the Playwright smoke gate going unrun for an entire phase because a hand-written gate list omitted it — and because GitHub Actions stops at the first failure, its absence also hid the Storybook a11y gate and the consumer install test, the two that verify the phase's most novel work.
 
 **Files:**
+
 - Create: `.claude/skills/gate-run/SKILL.md`
 - Create: `.claude/skills/gate-run/run-gates.sh`
 
 **Interfaces:**
+
 - Consumes: `ci.yml`'s eleven steps
 - Produces: a `gate-run` skill invocable by name
 
@@ -1725,7 +1748,7 @@ printf '\nAll gates green.\n'
 
 Create `.claude/skills/gate-run/SKILL.md`:
 
-```markdown
+````markdown
 ---
 name: gate-run
 description: Run every CI gate locally in ci.yml's exact order. Use before claiming a batch is done, before opening a PR, or whenever you need to know whether this tree is actually green.
@@ -1736,6 +1759,7 @@ description: Run every CI gate locally in ci.yml's exact order. Use before claim
 ```bash
 .claude/skills/gate-run/run-gates.sh
 ```
+````
 
 Eleven steps, in `.github/workflows/ci.yml`'s order. It stops at the first
 failure, as CI does.
@@ -1769,13 +1793,14 @@ a11y-shaped if Playwright's browsers are missing:
 ```bash
 cd apps/storybook && pnpm exec playwright install chromium
 ```
-```
+
+````
 
 - [ ] **Step 3: Run it**
 
 ```bash
 .claude/skills/gate-run/run-gates.sh
-```
+````
 
 Expected: all eleven green. This is also the integration check for Tasks 1–7 — every gate change so far must survive a full run.
 
@@ -1796,11 +1821,13 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 ### Task 11: `build-component` and `integrate-batch` skills
 
 **Files:**
+
 - Create: `apps/docs/scripts/reconcile-deps.mts`
 - Create: `.claude/skills/build-component/SKILL.md`
 - Create: `.claude/skills/integrate-batch/SKILL.md`
 
 **Interfaces:**
+
 - Consumes: the agents from Task 9, the `gate-run` skill from Task 10
 - Produces: `pnpm reconcile:deps` in `apps/docs/package.json`
 
@@ -1855,10 +1882,14 @@ for (const item of items) {
     drift++;
     console.log(`${item.name}`);
     if (diff(realShadcn, declaredShadcn)) {
-      console.log(`  shadcn   declared ${JSON.stringify(declaredShadcn)} · real ${JSON.stringify(realShadcn)}`);
+      console.log(
+        `  shadcn   declared ${JSON.stringify(declaredShadcn)} · real ${JSON.stringify(realShadcn)}`,
+      );
     }
     if (diff(realConsumes, declaredConsumes)) {
-      console.log(`  consumes declared ${JSON.stringify(declaredConsumes)} · real ${JSON.stringify(realConsumes)}`);
+      console.log(
+        `  consumes declared ${JSON.stringify(declaredConsumes)} · real ${JSON.stringify(realConsumes)}`,
+      );
     }
   }
 }
@@ -1896,7 +1927,7 @@ cd apps/docs && pnpm reconcile:deps
 - **`field-row` declares `reset-affordance` without importing it.** The only mention is a comment describing what its trailing slot normally holds. Shipping the slot's usual occupant alongside it is a defensible convenience, not stale data.
 - **`suggestion-chips` declares `scroll-area` without importing it.** C2 vendors AI Elements' `suggestion.tsx`, which is what needs it. The script reads only the component file, so an external item's own dependency is invisible to it.
 
-Neither is a manifest error. If a *third* kind of drift appears, that one is worth investigating.
+Neither is a manifest error. If a _third_ kind of drift appears, that one is worth investigating.
 
 - [ ] **Step 3a: Fix `connection-manager` — a real shipping bug this script found**
 
@@ -1911,7 +1942,7 @@ connection-manager
 
 Two gates that should have caught it did not, and both reasons are worth recording:
 
-- **`check:contract` cannot see it by construction.** It asserts the manifest agrees with what `gen-registry` emits — but both derive from the same manifest, so they agree with each other while both being wrong about reality. Only a check against *real imports* sees it.
+- **`check:contract` cannot see it by construction.** It asserts the manifest agrees with what `gen-registry` emits — but both derive from the same manifest, so they agree with each other while both being wrong about reality. Only a check against _real imports_ sees it.
 - **`consumer-test.sh` masks it.** It installs the entire registry, so `entity-row` arrives anyway as its own top-level item and the build succeeds. A per-item dependency gap is invisible to a whole-registry install. That is a real coverage limitation in one of the three gates CLAUDE.md names as protecting downstream users.
 
 The fix, authorised as **the second and last manifest write in this plan**:
@@ -1928,7 +1959,7 @@ The `consumer-test.sh` coverage hole is **not** fixed here — it changes a down
 
 Create `.claude/skills/build-component/SKILL.md`:
 
-```markdown
+````markdown
 ---
 name: build-component
 description: Build a batch of registry components end to end — manifest prep, scaffold, parallel fan-out, integration, gates. Use when adding components to the super-ai catalog or retrofitting existing ones.
@@ -1959,6 +1990,7 @@ Three naming traps, all of which have bitten:
 ```bash
 cd apps/docs && pnpm new:component <name>
 ```
+````
 
 Five files per item, with deliberately failing tests.
 
@@ -1987,7 +2019,7 @@ Two things that have gone wrong anyway:
   `main` rather than your integration branch, so it will not carry your manifest
   prep. Twelve agents once all reported "the five files were not scaffolded".
 - **Take your own port and browser tab.** A sibling worktree's dev server on the
-  same port will serve *its* build while your preview reports success.
+  same port will serve _its_ build while your preview reports success.
 
 ## 4. Integrate
 
@@ -1996,7 +2028,8 @@ Use the `integrate-batch` skill.
 ## 5. Gates
 
 Use the `gate-run` skill. Never hand-write a gate list.
-```
+
+````
 
 - [ ] **Step 5: Write `integrate-batch`**
 
@@ -2016,7 +2049,7 @@ You do this centrally. Agents never touch the manifest.
 
 ```bash
 cd apps/docs && pnpm reconcile:deps <name> <name> ...
-```
+````
 
 Omit the names to check the whole catalog. It prints `declared` vs `real` for
 `shadcn` and `consumes`.
@@ -2057,7 +2090,8 @@ git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com
 ```
 
 GitHub rejects the default email for this account.
-```
+
+````
 
 - [ ] **Step 6: Verify the skills load**
 
@@ -2070,7 +2104,7 @@ git add .claude/skills/build-component/ .claude/skills/integrate-batch/ \
         apps/docs/scripts/reconcile-deps.mts apps/docs/package.json
 git -c user.name="weeeha" -c user.email="1083934+weeeha@users.noreply.github.com" \
   commit -m "feat(claude): add build-component and integrate-batch skills"
-```
+````
 
 ---
 
@@ -2083,6 +2117,7 @@ Independent of Tasks 1–11; can be done at any point.
 **Spec §6 G5 decides deliberately against a static gate.** A detector for "element with visible text plus an `sr-only` sibling" fires on every legitimate use of the pattern, and a noisy gate gets excluded or ignored — the failure mode this whole plan exists to avoid. This ships a test helper and a brief entry instead, and the spec records it as the weaker option.
 
 **Files:**
+
 - Create: `apps/docs/lib/test-utils.ts`
 - Create: `apps/docs/lib/test-utils.test.tsx`
 - Modify: `docs/design-system/component-build-brief.md`
@@ -2090,6 +2125,7 @@ Independent of Tasks 1–11; can be done at any point.
 **Location matters and is not negotiable.** This helper does **not** go under `registry/super-ai/` — that directory is the published product, installed verbatim by `npx shadcn add`, and a test helper must never be installable. `apps/docs/lib/` is already covered by `vitest.config.ts`'s `lib/**/*.test.{ts,tsx}` include and by the `@/` alias, so component tests import it as `@/lib/test-utils`.
 
 **Interfaces:**
+
 - Consumes: `@testing-library/dom`'s `computeAccessibleName` via `dom-accessibility-api` (already present transitively through `@testing-library/jest-dom`)
 - Produces: `expectAccessibleName(el: Element, expected: string): void`
 
@@ -2118,9 +2154,7 @@ describe("expectAccessibleName", () => {
         <span className="sr-only"> point at 3s</span>
       </button>,
     );
-    expect(() => expectAccessibleName(screen.getByRole("button"), "In point at 3s")).toThrow(
-      /Inpoint at 3s/,
-    );
+    expect(() => expectAccessibleName(screen.getByRole("button"), "In point at 3s")).toThrow(/Inpoint at 3s/);
   });
 });
 ```
@@ -2196,7 +2230,7 @@ In `docs/design-system/component-build-brief.md`, under "## Accessibility is a b
   **"Inpoint at 3s"** — accname concatenates name-from-content chunks with
   whitespace trimmed and no separator. Two components shipped this on the same
   afternoon. Either set an outright `aria-label`, or mark the visual half
-  `aria-hidden` and put the *complete* phrase in the sr-only span. Assert it
+  `aria-hidden` and put the _complete_ phrase in the sr-only span. Assert it
   with `expectAccessibleName` from `@/lib/test-utils`, not with
   `toHaveTextContent` — text content will not show you the bug.
 ```
@@ -2224,11 +2258,13 @@ Do this **last**, and only after Tasks 2–12 are green. It is independent of al
 - **The failure count varied between runs — 4, then 5.** That is the open question this task must answer, and it must be answered before any assertion is rewritten.
 
 **Files:**
+
 - Modify: `apps/docs/vitest.setup.ts`
 - Modify: up to five test files named above
 - Modify: `docs/CONTINUE.md` (§4 traps)
 
 **Interfaces:**
+
 - Consumes: nothing
 - Produces: `Element.prototype.getAnimations` in every `apps/docs` jsdom test
 

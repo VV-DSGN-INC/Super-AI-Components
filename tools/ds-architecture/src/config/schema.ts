@@ -1,13 +1,13 @@
-import { z } from "zod"
+import { z } from "zod";
 
 /** Closed rather than open: an open set lets a core rule name a role no target
  *  defines, and a rule scoped to nothing reports clean. Adding a role is a
  *  schema change, which is exactly the friction it deserves. */
-export const SCOPE_ROLES = ["components", "styles", "stories", "docs", "app"] as const
-export const PROFILES = ["tokens-only", "component-library", "app-consumer"] as const
-export const ADOPTIONS = ["greenfield", "retrofit"] as const
+export const SCOPE_ROLES = ["components", "styles", "stories", "docs", "app"] as const;
+export const PROFILES = ["tokens-only", "component-library", "app-consumer"] as const;
+export const ADOPTIONS = ["greenfield", "retrofit"] as const;
 
-const globList = z.array(z.string().min(1)).min(1)
+const globList = z.array(z.string().min(1)).min(1);
 
 export const configSchema = z
   .object({
@@ -33,7 +33,7 @@ export const configSchema = z
             attribute: z.string().regex(/^data-[a-z][a-z0-9-]*$/),
             values: z.array(z.string().min(1)).min(1),
           })
-          .strict()
+          .strict(),
       )
       .min(1),
     commands: z
@@ -45,14 +45,14 @@ export const configSchema = z
       .strict(),
     vendored: z.record(z.string(), z.string()).default({}),
   })
-  .strict()
+  .strict();
 
-export type DsConfig = z.infer<typeof configSchema>
+export type DsConfig = z.infer<typeof configSchema>;
 
 /** `+ 1` per axis because the UNSET state on each axis is a real cell that
  *  ships — two axes of two values is nine cells, not four. */
 export function cellCount(axes: DsConfig["axes"]): number {
-  return axes.reduce((n, axis) => n * (axis.values.length + 1), 1)
+  return axes.reduce((n, axis) => n * (axis.values.length + 1), 1);
 }
 
 /** Hand-written rather than generated from zod: the emitted subset is small and
@@ -114,5 +114,5 @@ export function toJsonSchema() {
       },
       vendored: { type: "object", additionalProperties: { type: "string" } },
     },
-  }
+  };
 }

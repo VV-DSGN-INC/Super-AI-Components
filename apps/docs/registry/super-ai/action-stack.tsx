@@ -151,12 +151,7 @@ function ActionStack({
   }
 
   return (
-    <div
-      data-slot="action-stack"
-      data-presentation="menu"
-      className={cn(className)}
-      {...props}
-    >
+    <div data-slot="action-stack" data-presentation="menu" className={cn(className)} {...props}>
       <DropdownMenu>
         <DropdownMenuTrigger
           data-slot="action-stack-trigger"

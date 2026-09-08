@@ -80,9 +80,7 @@ export function BareUpgradeCard() {
 export function PromptDiscarded() {
   return (
     <div className="flex w-full max-w-md flex-col gap-3">
-      <p className="text-sm leading-relaxed">
-        That model is not on your plan, so I could not run it.
-      </p>
+      <p className="text-sm leading-relaxed">That model is not on your plan, so I could not run it.</p>
       <Card>
         <CardHeader>
           <CardTitle>Upgrade to continue</CardTitle>

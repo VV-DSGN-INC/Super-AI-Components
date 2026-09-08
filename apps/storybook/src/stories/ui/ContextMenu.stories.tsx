@@ -17,12 +17,7 @@ import {
   ContextMenuSubContent,
   ContextMenuSubTrigger,
 } from "@/components/ui/context-menu";
-import {
-  CopyIcon,
-  DownloadIcon,
-  Trash2Icon,
-  SparklesIcon,
-} from "lucide-react";
+import { CopyIcon, DownloadIcon, Trash2Icon, SparklesIcon } from "lucide-react";
 
 const meta: Meta<typeof ContextMenu> = {
   title: "shadcn/ui/Context Menu",
@@ -71,10 +66,7 @@ export const Default: Story = {
             </ContextMenuSub>
           </ContextMenuGroup>
           <ContextMenuSeparator />
-          <ContextMenuCheckboxItem
-            checked={favorite}
-            onCheckedChange={setFavorite}
-          >
+          <ContextMenuCheckboxItem checked={favorite} onCheckedChange={setFavorite}>
             Add to favorites
           </ContextMenuCheckboxItem>
           <ContextMenuSeparator />

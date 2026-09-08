@@ -19,7 +19,7 @@ export const Default: Story = {
   render: () => {
     function PromptInput() {
       const [prompt, setPrompt] = React.useState(
-        "A serene Japanese garden in early autumn, koi pond reflecting maple leaves, soft morning fog, shot on 50mm, shallow depth of field, photorealistic"
+        "A serene Japanese garden in early autumn, koi pond reflecting maple leaves, soft morning fog, shot on 50mm, shallow depth of field, photorealistic",
       );
 
       return (
@@ -51,19 +51,13 @@ export const NegativePrompt: Story = {
   render: () => {
     function NegativeInput() {
       const [neg, setNeg] = React.useState(
-        "blurry, low resolution, extra fingers, watermark, text, oversaturated"
+        "blurry, low resolution, extra fingers, watermark, text, oversaturated",
       );
       return (
         <div className="w-[440px] space-y-2">
           <label className="text-sm font-medium">Negative prompt</label>
-          <Textarea
-            value={neg}
-            onChange={(e) => setNeg(e.target.value)}
-            className="min-h-20"
-          />
-          <p className="text-xs text-muted-foreground">
-            Tokens the model should actively avoid.
-          </p>
+          <Textarea value={neg} onChange={(e) => setNeg(e.target.value)} className="min-h-20" />
+          <p className="text-xs text-muted-foreground">Tokens the model should actively avoid.</p>
         </div>
       );
     }

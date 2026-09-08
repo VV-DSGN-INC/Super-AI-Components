@@ -4,7 +4,14 @@ import { Clock } from "lucide-react";
 import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
-import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { cn } from "@/lib/utils";
 import { PreviewTile } from "@/registry/super-ai/preview-tile";
 
@@ -60,7 +67,13 @@ function RecentGridActions({ actions, className }: { actions: React.ReactNode; c
   );
 }
 
-function RecentGridDurationBadge({ durationLabel, className }: { durationLabel?: string; className?: string }) {
+function RecentGridDurationBadge({
+  durationLabel,
+  className,
+}: {
+  durationLabel?: string;
+  className?: string;
+}) {
   if (!durationLabel) return null;
   return (
     <Badge data-slot="recent-grid-duration" variant="secondary" className={cn("text-[0.65rem]", className)}>

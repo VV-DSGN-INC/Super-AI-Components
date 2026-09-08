@@ -26,9 +26,7 @@ const SHAPE_ACTIONS = [action("fill", "Fill", <Palette />), action("text", "Add 
 const MEDIA_ACTIONS = [action("trim", "Trim", <Scissors />), action("volume", "Volume", <Volume2 />)];
 
 /** Twelve — deliberately past the spec's ceiling of eight. */
-const TWELVE_ACTIONS = Array.from({ length: 12 }, (_, i) =>
-  action(`a${i}`, `Action ${i}`, <Wand2 />),
-);
+const TWELVE_ACTIONS = Array.from({ length: 12 }, (_, i) => action(`a${i}`, `Action ${i}`, <Wand2 />));
 
 function toolbar() {
   return screen.getByRole("toolbar");
@@ -65,7 +63,12 @@ describe("ContextToolbar", () => {
 
   it("renders the shape state and lets a caller name the toolbar itself", () => {
     render(
-      <ContextToolbar selection="shape" label="Rectangle actions" actions={SHAPE_ACTIONS} onAction={vi.fn()} />,
+      <ContextToolbar
+        selection="shape"
+        label="Rectangle actions"
+        actions={SHAPE_ACTIONS}
+        onAction={vi.fn()}
+      />,
     );
 
     const bar = toolbar();
@@ -75,9 +78,7 @@ describe("ContextToolbar", () => {
   });
 
   it("renders the media state below the selection and opens its menus away from it", () => {
-    render(
-      <ContextToolbar selection="media" placement="below" actions={MEDIA_ACTIONS} onAction={vi.fn()} />,
-    );
+    render(<ContextToolbar selection="media" placement="below" actions={MEDIA_ACTIONS} onAction={vi.fn()} />);
 
     const bar = toolbar();
     expect(bar).toHaveAttribute("data-selection", "media");

@@ -27,7 +27,7 @@ const ICON_TITLE_DESC: FeatureCardRowItem[] = [
     id: "auto-edit",
     icon: <Scissors className="size-4" aria-hidden />,
     title: "Remove filler words",
-    description: "Cut silences and \"um\"s from a raw recording automatically.",
+    description: 'Cut silences and "um"s from a raw recording automatically.',
     onSelect: () => {},
   },
 ];
@@ -49,7 +49,10 @@ const WITH_THUMBNAIL: FeatureCardRowItem[] = [
   },
   {
     id: "captions",
-    thumbnail: { src: "https://placehold.co/320x180?text=Captions", alt: "Preview of auto-generated captions" },
+    thumbnail: {
+      src: "https://placehold.co/320x180?text=Captions",
+      alt: "Preview of auto-generated captions",
+    },
     title: "Auto-generate captions",
     description: "Burned-in or downloadable, in over 30 languages.",
     onSelect: () => {},
@@ -85,7 +88,13 @@ const meta: Meta<typeof FeatureCardRow> = {
   title: "Super AI/Feature Card Row",
   component: FeatureCardRow,
   parameters: { layout: "centered", docs: { page: componentDocsPage(FeatureCardRowDocs) } },
-  decorators: [(Story) => <div className="w-[36rem]"><Story /></div>],
+  decorators: [
+    (Story) => (
+      <div className="w-[36rem]">
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;
@@ -326,7 +335,8 @@ export const LongContent: Story = {
         id: "highlights",
         icon: <Sparkles className="size-4" aria-hidden />,
         title: "Turn a long recording into a highlight reel",
-        description: "Finds the moments most likely to be quoted and cuts them into a reel you can post as-is.",
+        description:
+          "Finds the moments most likely to be quoted and cuts them into a reel you can post as-is.",
         onSelect: () => {},
       },
       {
@@ -416,14 +426,26 @@ export const Boundary: Story = {
         <p className="text-foreground text-xs font-medium">Recent grid — what the user already made</p>
         <RecentGrid
           items={[
-            { id: "trailer", title: "Q3 Launch Trailer", durationLabel: "12:04", editedAgo: "Edited 19 hours ago" },
-            { id: "explainer", title: "Brand Explainer", durationLabel: "3:41", editedAgo: "Edited 2 days ago" },
+            {
+              id: "trailer",
+              title: "Q3 Launch Trailer",
+              durationLabel: "12:04",
+              editedAgo: "Edited 19 hours ago",
+            },
+            {
+              id: "explainer",
+              title: "Brand Explainer",
+              durationLabel: "3:41",
+              editedAgo: "Edited 2 days ago",
+            },
           ]}
         />
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Recommendation card — what the system thinks you should do next</p>
+        <p className="text-foreground text-xs font-medium">
+          Recommendation card — what the system thinks you should do next
+        </p>
         <RecommendationCard
           icon={<Sparkles aria-hidden />}
           title="Turn this week's takes into a highlight reel"

@@ -5,11 +5,7 @@ import {
   ConversationEmptyState,
   ConversationScrollButton,
 } from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { MessageSquareIcon } from "lucide-react";
 
 const meta: Meta<typeof Conversation> = {
@@ -28,8 +24,7 @@ export const Default: Story = {
         <ConversationContent>
           <Message from="user">
             <MessageContent>
-              Help me make a 20-second marketing video for our new analytics
-              dashboard.
+              Help me make a 20-second marketing video for our new analytics dashboard.
             </MessageContent>
           </Message>
           <Message from="assistant">

@@ -93,9 +93,9 @@ export const FrameAccurate: Story = {
 
     // The load-bearing rule: frame-accurate appends, so the three shared
     // buttons are still the first three, in the same order.
-    const order = Array.from(
-      canvasElement.querySelectorAll("button[data-slot^='transport-controls-']"),
-    ).map((button) => button.getAttribute("data-slot"));
+    const order = Array.from(canvasElement.querySelectorAll("button[data-slot^='transport-controls-']")).map(
+      (button) => button.getAttribute("data-slot"),
+    );
     await expect(order.slice(0, 3)).toEqual([
       "transport-controls-skip-back",
       "transport-controls-play",
@@ -160,9 +160,7 @@ export const RTL: Story = {
     const markOut = canvas.getByRole("button", { name: "Mark out point" });
 
     // 1. The row mirrors. The first DOM child paints right of the last.
-    await expect(skipBack.getBoundingClientRect().left).toBeGreaterThan(
-      markOut.getBoundingClientRect().left,
-    );
+    await expect(skipBack.getBoundingClientRect().left).toBeGreaterThan(markOut.getBoundingClientRect().left);
     // …so the left-pointing glyph now sits to the right of the right-pointing
     // one. Nothing in the component reverses the icons to match.
     await expect(skipBack.getBoundingClientRect().left).toBeGreaterThan(
@@ -579,8 +577,7 @@ export const LongContent: Story = {
     duration: 10800,
     fps: 25,
     speed: 1,
-    "aria-label":
-      "Transport controls — interview cut 3, 25fps ProRes master, awaiting client review pass",
+    "aria-label": "Transport controls — interview cut 3, 25fps ProRes master, awaiting client review pass",
     onPlayPause: () => {},
     onSeek: () => {},
     onStepFrame: () => {},
@@ -593,28 +590,47 @@ export const LongContent: Story = {
     const field = canvas.getByRole("textbox", { name: /elapsed/i }) as HTMLInputElement;
     await expect(field).toHaveValue("02:47:42:00");
 
-    // Fixed width, unbounded value: the timecode does not fit, and the field
-    // scrolls rather than growing, truncating, or offering a title.
-    // Eleven characters is the whole format, not a long instance of it, so
-    // this overflow is the frame-accurate variant's permanent condition.
+    // Fixed width, unbounded value: the field scrolls rather than growing,
+    // truncating, or offering a title. Eleven characters is the whole format,
+    // not a long instance of it, so this is the frame-accurate variant's
+    // permanent condition.
+    //
+    // The width is `w-28`, a class, so it is pinned. Whether eleven monospace
+    // glyphs spill past it or exactly fill it is NOT: the text is font-derived
+    // and the margin is under a pixel — macOS overflows, the Linux runner lands
+    // at scrollWidth 110 against clientWidth 110 and the old
+    // `toBeGreaterThan` went red on a tie. Per D21 the portable claims are the
+    // ones below; the spill itself is recorded here rather than asserted.
     await expect(field.value).toHaveLength(11);
-    await expect(field.scrollWidth).toBeGreaterThan(field.clientWidth);
+    await expect(getComputedStyle(field).width).toBe("112px");
+    await expect(field.scrollWidth).toBeGreaterThanOrEqual(field.clientWidth);
     await expect(field).not.toHaveAttribute("title");
 
     // Which end is clipped follows the caret. At rest the head is visible and
     // the tail is cut; with the caret at the end it is the other way round.
+    //
+    // There is only an end to follow where the value actually overflows, and
+    // that is the sub-pixel question above: macOS spills, the Linux runner lands
+    // exactly at the field's width with nothing to scroll. So the resting state
+    // is asserted everywhere and the caret behaviour where it is observable —
+    // rather than asserting a scroll that a tie makes impossible.
     await expect(field.scrollLeft).toBe(0);
     field.focus();
     field.setSelectionRange(field.value.length, field.value.length);
-    await expect(field.scrollLeft).toBeGreaterThan(0);
+    if (field.scrollWidth > field.clientWidth) {
+      await expect(field.scrollLeft).toBeGreaterThan(0);
+    } else {
+      // Nothing to scroll: then the field must still not have grown to fit it,
+      // which is the half of the claim that does not depend on the font.
+      await expect(getComputedStyle(field).width).toBe("112px");
+      await expect(field.scrollLeft).toBe(0);
+    }
     field.blur();
 
     // The total sits in a `ButtonGroupText`, which has no width of its own, so
     // the same 11 characters are fully legible there. Only the editable half
     // clips, which is the half someone has to read back after typing.
-    const total = canvasElement.querySelector<HTMLElement>(
-      '[data-slot="transport-controls-duration"]',
-    )!;
+    const total = canvasElement.querySelector<HTMLElement>('[data-slot="transport-controls-duration"]')!;
     await expect(total).toHaveTextContent("03:00:00:00");
     await expect(total.scrollWidth).toBeLessThanOrEqual(total.clientWidth + 1);
 
@@ -759,12 +775,7 @@ export const Boundary: Story = {
         <p className="text-foreground text-xs font-medium">
           J7 track list — a play control per row, named for its row
         </p>
-        <TrackList
-          tracks={AUDITION_TRACKS}
-          label="Draft stems"
-          playingId={null}
-          onPlayToggle={() => {}}
-        />
+        <TrackList tracks={AUDITION_TRACKS} label="Draft stems" playingId={null} onPlayToggle={() => {}} />
       </section>
     </div>
   ),

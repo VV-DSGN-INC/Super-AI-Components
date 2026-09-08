@@ -25,7 +25,10 @@ export const FilterBarDocs: ComponentDocs = {
     "Filtering has a scale ladder, and this is its first rung. CapCut, Claude Artifacts and Canva all put a handful of facets in a chip row above the content rather than behind a menu, because applied filters have to stay visible — the most expensive moment in any library is a user staring at an empty grid without seeing the facet that emptied it. Midjourney Organize is what the top of the ladder looks like: once facets need counts, groups and their own overflow, the row stops being enough and J2 `filter-panel` takes over. Choosing the rung is the design decision this component exists to make explicit.",
   evidence: ["CapCut", "Claude Artifacts", "Canva", "Midjourney Organize"],
   anatomy: [
-    { slot: "filter-bar", note: "The row. A wrapping flex container with a gap — no scroll, no overflow logic." },
+    {
+      slot: "filter-bar",
+      note: "The row. A wrapping flex container with a gap — no scroll, no overflow logic.",
+    },
     {
       slot: "filter-chip",
       note: "The pill wrapper around one facet. Carries data-state on/off and takes the chip's className.",
@@ -42,7 +45,10 @@ export const FilterBarDocs: ComponentDocs = {
       slot: "add-filter-chip",
       note: "The dashed add-a-facet chip. Names itself 'Add <children>' for assistive tech.",
     },
-    { slot: "filters-button", note: "The escape hatch to the full filter panel. Labelled 'Filters' by default." },
+    {
+      slot: "filters-button",
+      note: "The escape hatch to the full filter panel. Labelled 'Filters' by default.",
+    },
   ],
   usage:
     "Reach for it above a library, grid or list that has a handful of facets — roughly six is the ceiling, past which J2 `filter-panel` is the right answer. Compose the row yourself: place one `FilterChip` per facet, pass `active` from your own state, and treat `onClick` and `onRemove` as intent rather than as the value changing. Add `onRemove` to the facets that are currently applied and leave it off the ones that are merely on offer — that is the difference between a row of toggles and a row of applied filters, and it also decides how many tab stops the row has. Finish with an `AddFilterChip` for facets that are not on screen, and a `FiltersButton` wired to the panel.",
@@ -79,8 +85,8 @@ export const FilterBarDocs: ComponentDocs = {
     ],
     screenReader: [
       "The toggle carries `aria-pressed`, so it announces as a toggle button that is pressed or not pressed — not as a selected option. A single-select category row will still announce as a set of independent toggles.",
-      "The remove button's name is built as \"Remove <label> filter\" from `typeof children === \"string\"`. Any non-string child drops the label and every X in the row announces identically as \"Remove filter\".",
-      "`AddFilterChip` names itself \"Add <children>\", falling back to the generic \"Add filter\" when its child is not a string.",
+      'The remove button\'s name is built as "Remove <label> filter" from `typeof children === "string"`. Any non-string child drops the label and every X in the row announces identically as "Remove filter".',
+      '`AddFilterChip` names itself "Add <children>", falling back to the generic "Add filter" when its child is not a string.',
       "Both icons are `aria-hidden`, so neither the X nor the sliders glyph contributes to an announced name.",
       "Nothing here announces the result of a filter change. The bar owns no live region, so put one on the content it filters or the new result count is silent.",
     ],
@@ -91,9 +97,9 @@ export const FilterBarDocs: ComponentDocs = {
   },
   pitfalls: [
     "FilterChip splits your props two ways: `className` styles the outer pill, and everything else — id, onClick, disabled, aria-* — spreads onto the inner toggle button. A ref or a data attribute you expect on the pill lands on the toggle instead.",
-    "The remove button's accessible name is built from `typeof children === \"string\"`. Any non-string child — a wrapped span, an icon beside the text, a number — silently degrades it to the generic \"Remove filter\", which is the one bug in this component a visual review cannot catch.",
+    'The remove button\'s accessible name is built from `typeof children === "string"`. Any non-string child — a wrapped span, an icon beside the text, a number — silently degrades it to the generic "Remove filter", which is the one bug in this component a visual review cannot catch.',
     "`disabled` spreads onto the toggle button but never reaches the remove button, which is built from `onRemove` alone. A disabled applied chip is therefore still deletable by mouse and by keyboard.",
-    "There is no overflow affordance and no maxVisible: the spec's \"+3\" collapse is not implemented, and the bar has no scroll container either. However many chips you render is how many lines the row takes, which at 375px is the whole screen — count them yourself before you hand them over.",
+    'There is no overflow affordance and no maxVisible: the spec\'s "+3" collapse is not implemented, and the bar has no scroll container either. However many chips you render is how many lines the row takes, which at 375px is the whole screen — count them yourself before you hand them over.',
     "Nothing here enforces a selection rule. Each chip is an independent toggle with its own aria-pressed, so a single-select category row (the shape O2 `artifact-shell` uses) is something your handler enforces, not something the bar provides.",
   ],
 };

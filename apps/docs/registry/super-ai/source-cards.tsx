@@ -83,10 +83,7 @@ function SourceCards({
                 // `text-muted-foreground`, which no slot-level override here
                 // could reach. `--foreground` and not `--accent-foreground`,
                 // because the latter still blends to ~4.1:1 under the dimming.
-                className={cn(
-                  "py-3",
-                  !source.used && "opacity-60 [--muted-foreground:var(--foreground)]",
-                )}
+                className={cn("py-3", !source.used && "opacity-60 [--muted-foreground:var(--foreground)]")}
               >
                 <CardContent className="flex items-start gap-2 px-3">
                   <FileText className="text-muted-foreground mt-0.5 size-4 shrink-0" />

@@ -1,11 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import {
-  Tool,
-  ToolContent,
-  ToolHeader,
-  ToolInput,
-  ToolOutput,
-} from "@/components/ai-elements/tool";
+import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 
 const meta: Meta<typeof Tool> = {
   title: "AI Elements/Tool",
@@ -58,10 +52,7 @@ export const Errored: Story = {
               durationSeconds: 20,
             }}
           />
-          <ToolOutput
-            errorText="Render failed: 4K output requires the Pro plan."
-            output={undefined}
-          />
+          <ToolOutput errorText="Render failed: 4K output requires the Pro plan." output={undefined} />
         </ToolContent>
       </Tool>
     </div>

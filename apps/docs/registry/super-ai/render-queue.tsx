@@ -6,14 +6,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { formatCost, type Cost } from "@/registry/super-ai/cost";
 
@@ -90,14 +83,7 @@ function formatSpec(spec: RenderJobSpec): string {
     .join(" · ");
 }
 
-function RenderQueue({
-  jobs,
-  onRetry,
-  onCancel,
-  onDownload,
-  className,
-  ...props
-}: RenderQueueProps) {
+function RenderQueue({ jobs, onRetry, onCancel, onDownload, className, ...props }: RenderQueueProps) {
   return (
     <div data-slot="render-queue" className={cn("w-full", className)} {...props}>
       <Table>

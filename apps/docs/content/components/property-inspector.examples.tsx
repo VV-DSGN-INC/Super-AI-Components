@@ -28,7 +28,9 @@ export function GoodTwoScopes() {
                 <PropertyRow label="Width" state="modified" onReset={() => {}}>
                   {(id) => <UnitInput id={id} unit="px" defaultValue={480} />}
                 </PropertyRow>
-                <PropertyRow label="Height">{(id) => <UnitInput id={id} unit="px" defaultValue={64} />}</PropertyRow>
+                <PropertyRow label="Height">
+                  {(id) => <UnitInput id={id} unit="px" defaultValue={64} />}
+                </PropertyRow>
               </>
             ),
           },
@@ -54,8 +56,12 @@ export function BadRowWithoutReset() {
             // single drifted value costs you every other value in the section.
             content: (
               <>
-                <FieldRow label="Width">{(id) => <UnitInput id={id} unit="px" defaultValue={480} />}</FieldRow>
-                <FieldRow label="Height">{(id) => <UnitInput id={id} unit="px" defaultValue={64} />}</FieldRow>
+                <FieldRow label="Width">
+                  {(id) => <UnitInput id={id} unit="px" defaultValue={480} />}
+                </FieldRow>
+                <FieldRow label="Height">
+                  {(id) => <UnitInput id={id} unit="px" defaultValue={64} />}
+                </FieldRow>
               </>
             ),
           },
@@ -71,7 +77,9 @@ export function GoodUsefulEmpty() {
       emptyDescription="Select an object on the canvas to edit its properties."
       emptyContent={
         <>
-          <PropertyRow label="Canvas">{(id) => <UnitInput id={id} unit="px" defaultValue={1920} />}</PropertyRow>
+          <PropertyRow label="Canvas">
+            {(id) => <UnitInput id={id} unit="px" defaultValue={1920} />}
+          </PropertyRow>
           <PropertyRow label="Grid">{(id) => <UnitInput id={id} unit="px" defaultValue={8} />}</PropertyRow>
         </>
       }

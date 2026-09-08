@@ -11,9 +11,8 @@ import { componentDocsPage } from "@/lib/component-docs-page";
 
 const DETAIL = (
   <p>
-    Revenue grew 14% quarter over quarter, driven mostly by the self-serve tier. Churn held flat at
-    2.1%. The one number worth flagging is support volume, which rose 30% against a headcount that
-    did not move.
+    Revenue grew 14% quarter over quarter, driven mostly by the self-serve tier. Churn held flat at 2.1%. The
+    one number worth flagging is support volume, which rose 30% against a headcount that did not move.
   </p>
 );
 
@@ -164,9 +163,7 @@ export const RTL: Story = {
     // right edge and the last at the left, so reading order survives.
     const confirm = pending.getByRole("button", { name: "Confirm" });
     const skip = pending.getByRole("button", { name: "Skip" });
-    await expect(confirm.getBoundingClientRect().left).toBeGreaterThan(
-      skip.getBoundingClientRect().left,
-    );
+    await expect(confirm.getBoundingClientRect().left).toBeGreaterThan(skip.getBoundingClientRect().left);
 
     // The resolution row flips with it — the outcome wording leads and Undo
     // trails, rather than Undo jumping to the reading start.
@@ -175,9 +172,7 @@ export const RTL: Story = {
       resolved.querySelector<HTMLElement>('[data-slot="approval-card-resolution"]')!,
     ).getByText("Confirmed");
     const undo = within(resolved).getByRole("button", { name: "Undo" });
-    await expect(outcome.getBoundingClientRect().left).toBeGreaterThan(
-      undo.getBoundingClientRect().left,
-    );
+    await expect(outcome.getBoundingClientRect().left).toBeGreaterThan(undo.getBoundingClientRect().left);
   },
 };
 
@@ -368,8 +363,7 @@ export const Controlled: Story = {
   render: () => <ControlledShell />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const detailIsOpen = () =>
-      canvasElement.querySelector('[data-slot="approval-card-detail"]') !== null;
+    const detailIsOpen = () => canvasElement.querySelector('[data-slot="approval-card-detail"]') !== null;
 
     await expect(detailIsOpen()).toBe(false);
 
@@ -518,12 +512,10 @@ export const EmptyLabel: Story = {
     // 3. An empty title leaves the status line as the card's only voice, and
     //    it says the same sentence every other pending card says.
     const untitled = canvas.getByTestId("no-title");
-    await expect(
-      untitled.querySelector('[data-slot="approval-card-title"]')!.textContent,
-    ).toBe("");
-    await expect(
-      untitled.querySelector('[data-slot="approval-card-status"]')!.textContent,
-    ).toBe("Awaiting your decision");
+    await expect(untitled.querySelector('[data-slot="approval-card-title"]')!.textContent).toBe("");
+    await expect(untitled.querySelector('[data-slot="approval-card-status"]')!.textContent).toBe(
+      "Awaiting your decision",
+    );
   },
 };
 
@@ -625,9 +617,7 @@ export const Mobile: Story = {
 
     // …and, more usefully, nothing is clipped by the card's overflow-hidden:
     // all four verbs sit inside its box, Skip included.
-    await expect(verbs.getBoundingClientRect().right).toBeLessThanOrEqual(
-      card.getBoundingClientRect().right,
-    );
+    await expect(verbs.getBoundingClientRect().right).toBeLessThanOrEqual(card.getBoundingClientRect().right);
     await expect(verbs.querySelectorAll("button")).toHaveLength(4);
 
     // Opening the fold changes the height and nothing else.
@@ -697,8 +687,8 @@ export const Boundary: Story = {
           onDiscard={() => {}}
         >
           <p>
-            Revenue grew 14% quarter over quarter, driven mostly by the self-serve tier. Churn held
-            flat at 2.1%.
+            Revenue grew 14% quarter over quarter, driven mostly by the self-serve tier. Churn held flat at
+            2.1%.
           </p>
         </AiDocBlock>
       </section>

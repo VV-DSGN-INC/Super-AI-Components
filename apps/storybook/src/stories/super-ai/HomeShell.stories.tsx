@@ -551,9 +551,7 @@ export const Controlled: Story = {
   render: () => <ControlledHost />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const composer = canvasElement.querySelector<HTMLTextAreaElement>(
-      '[data-slot="hero-omnibox-textarea"]',
-    )!;
+    const composer = canvasElement.querySelector<HTMLTextAreaElement>('[data-slot="hero-omnibox-textarea"]')!;
     await expect(composer).toHaveValue("Storyboard the Northwind teaser");
     const passBefore = Number(canvas.getByTestId("render-pass").textContent);
 
@@ -563,9 +561,7 @@ export const Controlled: Story = {
 
     // 2. The callback fired with the payload a host needs to apply it — the
     //    chip's exact text, not an id and not a diff.
-    await expect(canvas.getByTestId("requested")).toHaveTextContent(
-      "Clean up the audio on this interview",
-    );
+    await expect(canvas.getByTestId("requested")).toHaveTextContent("Clean up the audio on this interview");
 
     // 3. That report re-rendered the host with an unchanged `promptValue`, and
     //    the shell held. The counter is what makes "held" mean something.
@@ -583,9 +579,7 @@ export const Controlled: Story = {
     // holds both entrances, and the keystroke is still reported.
     await userEvent.type(composer, "!");
     await expect(composer).toHaveValue("Clean up the audio on this interview");
-    await expect(canvas.getByTestId("requested")).toHaveTextContent(
-      "Clean up the audio on this interview!",
-    );
+    await expect(canvas.getByTestId("requested")).toHaveTextContent("Clean up the audio on this interview!");
   },
 };
 
@@ -837,9 +831,7 @@ export const Boundary: Story = {
     // 3. The starter chip fills rather than submits: the composer takes the
     //    text and the page does not change underneath it.
     const canvas = within(canvasElement);
-    const composer = canvasElement.querySelector<HTMLTextAreaElement>(
-      '[data-slot="hero-omnibox-textarea"]',
-    )!;
+    const composer = canvasElement.querySelector<HTMLTextAreaElement>('[data-slot="hero-omnibox-textarea"]')!;
     await expect(composer).toHaveValue("");
     await userEvent.click(canvas.getByRole("button", { name: "Draft a launch announcement" }));
     await expect(composer).toHaveValue("Draft a launch announcement");

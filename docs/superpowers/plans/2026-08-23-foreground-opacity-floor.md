@@ -24,27 +24,29 @@
 
 ## File Structure
 
-| File | Responsibility |
-| --- | --- |
-| `packages/ds-rules/src/local.ts` | **Modify.** TOK-8 appended to `LOCAL_RULES`. |
-| `packages/ds-rules/__fixtures__/TOK-8/bad/case.tsx` | **Create.** Known-bad: below-floor, wrong-colour, stroke, arbitrary-alpha forms. |
-| `packages/ds-rules/__fixtures__/TOK-8/good/case.tsx` | **Create.** Known-good: the three pinned steps, a variant prefix, the `text-sm/6` size shorthand. |
-| `packages/ds-rules/rules/local.json` | **Regenerate** via `pnpm rules:emit` (drift-gated). |
-| `apps/docs/registry/super-ai/calendar-view.tsx:235` | **Modify.** History comment rephrased off the utility form (GH-1234 precedent). |
-| `apps/docs/content/components/generation-wizard.docs.tsx:100` | **Modify.** Pitfall states the measured floor. |
-| `apps/docs/content/components/onboarding-wizard.docs.tsx:104` | **Modify.** Same floor, same numbers. |
+| File                                                          | Responsibility                                                                                    |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `packages/ds-rules/src/local.ts`                              | **Modify.** TOK-8 appended to `LOCAL_RULES`.                                                      |
+| `packages/ds-rules/__fixtures__/TOK-8/bad/case.tsx`           | **Create.** Known-bad: below-floor, wrong-colour, stroke, arbitrary-alpha forms.                  |
+| `packages/ds-rules/__fixtures__/TOK-8/good/case.tsx`          | **Create.** Known-good: the three pinned steps, a variant prefix, the `text-sm/6` size shorthand. |
+| `packages/ds-rules/rules/local.json`                          | **Regenerate** via `pnpm rules:emit` (drift-gated).                                               |
+| `apps/docs/registry/super-ai/calendar-view.tsx:235`           | **Modify.** History comment rephrased off the utility form (GH-1234 precedent).                   |
+| `apps/docs/content/components/generation-wizard.docs.tsx:100` | **Modify.** Pitfall states the measured floor.                                                    |
+| `apps/docs/content/components/onboarding-wizard.docs.tsx:104` | **Modify.** Same floor, same numbers.                                                             |
 
 ---
 
 ### Task 1: The TOK-8 record, its fixtures, and the tree made clean for it
 
 **Files:**
+
 - Modify: `packages/ds-rules/src/local.ts` (append to `LOCAL_RULES`)
 - Create: `packages/ds-rules/__fixtures__/TOK-8/bad/case.tsx`, `.../good/case.tsx`
 - Regenerate: `packages/ds-rules/rules/local.json`
 - Modify: `apps/docs/registry/super-ai/calendar-view.tsx:235`
 
 **Interfaces:**
+
 - Consumes: `catalogGrep` and the `Rule` type already in `local.ts`.
 - Produces: rule id `TOK-8` in the emitted `rules/local.json`, which `rulecheck.mjs` and the fixture harness pick up with no further wiring.
 
@@ -94,7 +96,9 @@ export const Bad = () => (
 export const Good = () => (
   <div>
     <p className="text-foreground/60">the floor</p>
-    <a className="hover:text-foreground/70 text-sm/6">pinned step under a variant; size-with-leading shorthand</a>
+    <a className="hover:text-foreground/70 text-sm/6">
+      pinned step under a variant; size-with-leading shorthand
+    </a>
     <span className="text-foreground/80 text-muted-foreground">top pinned step; flat muted text</span>
   </div>
 );
@@ -128,11 +132,13 @@ git commit -m "feat(ds-rules): TOK-8 pins foreground composites to the measured 
 ### Task 2: Prove the gate on the real tree, then align the two pitfalls
 
 **Files:**
+
 - Temporarily modify (reverted): `apps/docs/registry/super-ai/promo-card.tsx`
 - Modify: `apps/docs/content/components/generation-wizard.docs.tsx:100`
 - Modify: `apps/docs/content/components/onboarding-wizard.docs.tsx:104`
 
 **Interfaces:**
+
 - Consumes: TOK-8 from Task 1 via `pnpm check:tokens`.
 - Produces: nothing later tasks import; the deliverable is a proven gate and consistent published guidance.
 
@@ -147,11 +153,11 @@ Expected: exit 1, naming `promo-card.tsx`, id `TOK-8`.
 
 - [ ] **Step 3: Align the generation-wizard pitfall**
 
-In `generation-wizard.docs.tsx:100`, replace the tail `` use `text-foreground` or `text-foreground/60`+ instead, as the component's own header text and step captions do. `` with `` use `text-foreground` or a pinned foreground step instead, as the component's own header text and step captions do — `text-foreground/60` is the measured floor (TOK-8): `/50` reads 3.7:1 in light mode. ``
+In `generation-wizard.docs.tsx:100`, replace the tail ``use `text-foreground` or `text-foreground/60`+ instead, as the component's own header text and step captions do.`` with ``use `text-foreground` or a pinned foreground step instead, as the component's own header text and step captions do — `text-foreground/60` is the measured floor (TOK-8): `/50` reads 3.7:1 in light mode.``
 
 - [ ] **Step 4: Align the onboarding-wizard pitfall**
 
-In `onboarding-wizard.docs.tsx:104`, replace the tail `` use `text-foreground` or `text-foreground/70`, as the demo pane does. `` with `` use `text-foreground` or a pinned foreground step (`text-foreground/60` floor, TOK-8), as the demo pane's `/70` does. ``
+In `onboarding-wizard.docs.tsx:104`, replace the tail ``use `text-foreground` or `text-foreground/70`, as the demo pane does.`` with ``use `text-foreground` or a pinned foreground step (`text-foreground/60` floor, TOK-8), as the demo pane's `/70` does.``
 
 - [ ] **Step 5: Commit**
 

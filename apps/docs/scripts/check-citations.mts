@@ -62,24 +62,35 @@ function main() {
       const reachableSlot = (span: string) => {
         const regionClaim = span.match(/^data-region="([a-z0-9-]+)"$/);
         if (regionClaim) return slots.regions.has(regionClaim[1]);
-        return slots.literals.has(span) || slots.prefixes.some((p) => span.startsWith(p)) || composedNames.has(span);
+        return (
+          slots.literals.has(span) ||
+          slots.prefixes.some((p) => span.startsWith(p)) ||
+          composedNames.has(span)
+        );
       };
-      const reachable = (span: string) => reachableSlot(span) || catalogNames.has(span) || ownStates.has(span);
+      const reachable = (span: string) =>
+        reachableSlot(span) || catalogNames.has(span) || ownStates.has(span);
 
       for (const { path: fieldPath, span } of extractCitations(docs)) {
         const kind = classifySpan(span);
         if (kind === "allowed" || kind === "ignored") continue;
         citations++;
         if (kind === "utility" && !reach.includes(span))
-          errors.push(`${item.name} ${fieldPath}: \`${span}\` not in reachable source (own + ${reachFiles.length - 1} composed files)`);
+          errors.push(
+            `${item.name} ${fieldPath}: \`${span}\` not in reachable source (own + ${reachFiles.length - 1} composed files)`,
+          );
         if (kind === "name" && !reachable(span))
-          errors.push(`${item.name} ${fieldPath}: \`${span}\` matches no data-slot, slot prefix, or composed component`);
+          errors.push(
+            `${item.name} ${fieldPath}: \`${span}\` matches no data-slot, slot prefix, or composed component`,
+          );
       }
 
       const anatomy = (docs as { anatomy?: { slot?: string }[] }).anatomy ?? [];
       anatomy.forEach((a, i) => {
         if (a.slot && !reachableSlot(a.slot))
-          errors.push(`${item.name} anatomy[${i}].slot: "${a.slot}" matches no data-slot, slot prefix, or composed component`);
+          errors.push(
+            `${item.name} anatomy[${i}].slot: "${a.slot}" matches no data-slot, slot prefix, or composed component`,
+          );
       });
     }
 

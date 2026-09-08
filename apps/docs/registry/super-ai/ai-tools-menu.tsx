@@ -184,9 +184,7 @@ function SelectionHeader({ selection }: { selection: ToolSelection }) {
       // read twice.
       aria-hidden
     >
-      {selection.icon ? (
-        <span className="text-muted-foreground shrink-0">{selection.icon}</span>
-      ) : null}
+      {selection.icon ? <span className="text-muted-foreground shrink-0">{selection.icon}</span> : null}
       <span className="flex min-w-0 flex-col">
         <span className="text-muted-foreground text-[11px] tracking-wide uppercase">
           {selection.type ? `Selected ${selection.type}` : "Selected"}
@@ -252,11 +250,7 @@ function AiToolsMenu({
             {/* The rule. Drawn between every group, which is what guarantees
                 the destructive group — sorted last — always sits below one. */}
             {index > 0 || selection ? (
-              <div
-                data-slot="ai-tools-menu-rule"
-                role="separator"
-                className="bg-border my-1 h-px w-full"
-              />
+              <div data-slot="ai-tools-menu-rule" role="separator" className="bg-border my-1 h-px w-full" />
             ) : null}
             <div
               data-slot="ai-tools-menu-group"
@@ -290,11 +284,7 @@ function AiToolsMenu({
           // `render` rather than children, so the caller's own button becomes
           // the trigger instead of being wrapped in a second one.
           render={
-            React.isValidElement(trigger) ? (
-              trigger
-            ) : (
-              <button type="button">{trigger ?? "AI tools"}</button>
-            )
+            React.isValidElement(trigger) ? trigger : <button type="button">{trigger ?? "AI tools"}</button>
           }
         />
         <DropdownMenuContent
@@ -347,11 +337,7 @@ function AiToolsMenu({
                       // a sole signal in any case.
                       className="p-0 focus:bg-transparent"
                     >
-                      <ToolRow
-                        action={action}
-                        destructive={group.destructive}
-                        interactive={false}
-                      />
+                      <ToolRow action={action} destructive={group.destructive} interactive={false} />
                     </DropdownMenuItem>
                   );
                 })}

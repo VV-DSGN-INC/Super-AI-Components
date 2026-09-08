@@ -26,18 +26,33 @@ export const VoiceCloneRecorderDocs: ComponentDocs = {
   evidence: [],
   anatomy: [
     { slot: "voice-clone-recorder", note: "Root wrapper; carries the current state as data-state." },
-    { slot: "voice-clone-recorder-script", note: "The line(s) to read aloud — always real text, never an image." },
+    {
+      slot: "voice-clone-recorder-script",
+      note: "The line(s) to read aloud — always real text, never an image.",
+    },
     { slot: "voice-clone-recorder-start", note: "Begins recording from the prompt-script state." },
     {
       slot: "voice-clone-recorder-status",
       note: "Announced 'Recording' text (role=status) — the actual signal, not the dot beside it.",
     },
-    { slot: "voice-clone-recorder-meter", note: "The level meter: a progressbar plus its own numeric text label." },
+    {
+      slot: "voice-clone-recorder-meter",
+      note: "The level meter: a progressbar plus its own numeric text label.",
+    },
     { slot: "voice-clone-recorder-stop", note: "Ends recording and moves to retake." },
     { slot: "voice-clone-recorder-playback", note: "Take review: an audio player and/or a text summary." },
-    { slot: "voice-clone-recorder-retake", note: "Discards the take and returns to recording. Text-labelled, not icon-only." },
-    { slot: "voice-clone-recorder-accept", note: "Moves from retake into the consent gate. Carries no clone payload." },
-    { slot: "voice-clone-recorder-consent", note: "The consent dialog itself — an AlertDialog, not inline content." },
+    {
+      slot: "voice-clone-recorder-retake",
+      note: "Discards the take and returns to recording. Text-labelled, not icon-only.",
+    },
+    {
+      slot: "voice-clone-recorder-accept",
+      note: "Moves from retake into the consent gate. Carries no clone payload.",
+    },
+    {
+      slot: "voice-clone-recorder-consent",
+      note: "The consent dialog itself — an AlertDialog, not inline content.",
+    },
     {
       slot: "voice-clone-recorder-consent-checkbox",
       note: "Starts unchecked every time; there is no prop to pre-check it.",
@@ -46,10 +61,13 @@ export const VoiceCloneRecorderDocs: ComponentDocs = {
       slot: "voice-clone-recorder-consent-confirm",
       note: "The only control that can fire onConsent, and only once the checkbox is checked.",
     },
-    { slot: "disclaimer-note", note: "A composed N3 disclaimer-note (its own slot, not renamed) — the permanent risk footnote, left unrestyled." },
+    {
+      slot: "disclaimer-note",
+      note: "A composed N3 disclaimer-note (its own slot, not renamed) — the permanent risk footnote, left unrestyled.",
+    },
   ],
   usage:
-    "Reach for it anywhere a product records a voice sample for cloning — never build a bare mic-and-upload widget for this instead, since that's exactly the shape that lets consent get skipped. Drive `state` from the consumer the same way `feedback` and `promo-card` do: this component only renders the state it's given, and never calls getUserMedia itself. Feed it `level` (0–100) and `elapsedLabel` from your own audio analysis while state is \"level-metering\"; hand it `takeUrl`/`takeSummary` once you have a take for \"retake\". Wire `onAcceptTake` to move into \"consent-capture\" — never to a save or clone call directly — and treat `onConsent` as the only trigger for anything that actually creates or updates a voice model.",
+    'Reach for it anywhere a product records a voice sample for cloning — never build a bare mic-and-upload widget for this instead, since that\'s exactly the shape that lets consent get skipped. Drive `state` from the consumer the same way `feedback` and `promo-card` do: this component only renders the state it\'s given, and never calls getUserMedia itself. Feed it `level` (0–100) and `elapsedLabel` from your own audio analysis while state is "level-metering"; hand it `takeUrl`/`takeSummary` once you have a take for "retake". Wire `onAcceptTake` to move into "consent-capture" — never to a save or clone call directly — and treat `onConsent` as the only trigger for anything that actually creates or updates a voice model.',
   dos: [
     {
       text: "Leave the confirm button gated behind the checkbox — it starts disabled and unchecked on every visit to consent-capture, with no prop that pre-checks it.",
@@ -62,7 +80,7 @@ export const VoiceCloneRecorderDocs: ComponentDocs = {
   ],
   donts: [
     {
-      text: "Don't wire \"Use this take\" straight into a clone/save call — route it through consent-capture, every time, with no bypass for trusted users or internal tools.",
+      text: 'Don\'t wire "Use this take" straight into a clone/save call — route it through consent-capture, every time, with no bypass for trusted users or internal tools.',
       example: <SkipStraightToClone />,
     },
     {
@@ -80,14 +98,14 @@ export const VoiceCloneRecorderDocs: ComponentDocs = {
       "There is no `disabled` prop. The one disabled control in the component is the confirm button, and its state is derived from the checkbox alone.",
     ],
     screenReader: [
-      "The level meter is a named `progressbar` — \"Input level\" from `ProgressLabel`, with `aria-valuenow` tracking the clamped `level` — but it carries no live region. Its value is announced only when a reader goes looking for it, so the meter's whole job, confirming the mic is picking up sound, is silent.",
-      "\"Recording\" sits in a `role=\"status\"` region, but that region is mounted at the same instant as its text, because changing `state` swaps the entire subtree. A live region inserted together with its content is unreliably announced, so entering `level-metering` may in practice announce nothing. The same applies to the visually hidden \"Recording stopped. Review your take before continuing.\" in `retake`.",
+      'The level meter is a named `progressbar` — "Input level" from `ProgressLabel`, with `aria-valuenow` tracking the clamped `level` — but it carries no live region. Its value is announced only when a reader goes looking for it, so the meter\'s whole job, confirming the mic is picking up sound, is silent.',
+      '"Recording" sits in a `role="status"` region, but that region is mounted at the same instant as its text, because changing `state` swaps the entire subtree. A live region inserted together with its content is unreliably announced, so entering `level-metering` may in practice announce nothing. The same applies to the visually hidden "Recording stopped. Review your take before continuing." in `retake`.',
       "`elapsedLabel` sits outside the live region on purpose and is therefore never announced — it is visible text only.",
       "The pulsing dot is `aria-hidden`, as are the mic, pause, rotate and shield glyphs, so no control's name is built from an icon.",
-      "In the consent dialog the title and description are wired to the `alertdialog` as its name and description. The checkbox's name is the whole sentence in its wrapping `<label>`, and `speakerName` is what turns \"this person\" into a name — omit it and every consent string degrades to \"this person\", which is exactly the vagueness the dialog exists to avoid.",
+      'In the consent dialog the title and description are wired to the `alertdialog` as its name and description. The checkbox\'s name is the whole sentence in its wrapping `<label>`, and `speakerName` is what turns "this person" into a name — omit it and every consent string degrades to "this person", which is exactly the vagueness the dialog exists to avoid.',
       "The disabled confirm button states no reason. It has no `aria-describedby` pointing back at the checkbox, so a reader who tabs past it hears an unavailable button and has to work out why for themselves.",
       "`takeUrl` renders a bare `<audio controls>` with no accessible name and no caption track, so it announces as a generic audio player; `takeSummary` is a nearby `<p>` that is not associated with it.",
-      "`script` is always real text rather than an image, so it is readable and copyable, and the array form announces \"Line 2 of 5\" before the line itself.",
+      '`script` is always real text rather than an image, so it is readable and copyable, and the array form announces "Line 2 of 5" before the line itself.',
     ],
     focus: [
       "Every state change unmounts the control that was just used. Activating Start unmounts Start, so focus falls to `<body>` and the next Tab restarts from the top of the page — Stop does not receive it. The same happens at Stop, at Retake and at Use this take. Move focus yourself in the handler that changes `state`.",
@@ -99,7 +117,7 @@ export const VoiceCloneRecorderDocs: ComponentDocs = {
   pitfalls: [
     "Treating `onAcceptTake` as a green light to clone. It only means the speaker liked their take — it carries no payload and is not a substitute for `onConsent`, which is the one callback tied to an explicit, checked box.",
     "Building a settings-page or admin toggle that marks a voice as 'pre-consented' so the recording flow can skip straight past consent-capture next time. That's the exact pattern D12 restored this component to prevent — consent belongs to the recording, not to a flag on an account.",
-    "Forgetting that `onStopRecording` has to hand a real take back via `takeUrl` or `takeSummary` before moving to \"retake\" — otherwise the review screen has nothing to play or describe.",
+    'Forgetting that `onStopRecording` has to hand a real take back via `takeUrl` or `takeSummary` before moving to "retake" — otherwise the review screen has nothing to play or describe.',
     "Writing generic consent copy ('I agree to the terms') instead of naming the speaker and the specific action. The default checkbox label names both on purpose; a vague override defeats the reason this is a dialog and not a terms link.",
   ],
 };

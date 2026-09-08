@@ -221,14 +221,10 @@ export const RTL: Story = {
     const generate = canvas.getByRole("button", { name: "Generate" });
 
     // The stage heading leads at the right, its chevron trails at the left.
-    await expect(heading.getBoundingClientRect().left).toBeGreaterThan(
-      chevron.getBoundingClientRect().left,
-    );
+    await expect(heading.getBoundingClientRect().left).toBeGreaterThan(chevron.getBoundingClientRect().left);
 
     // The footer mirrors with it: price first, then the button that spends it.
-    await expect(cost.getBoundingClientRect().left).toBeGreaterThan(
-      generate.getBoundingClientRect().left,
-    );
+    await expect(cost.getBoundingClientRect().left).toBeGreaterThan(generate.getBoundingClientRect().left);
 
     // Stops here. The remove badge's side is A8's to fix — see the description.
   },
@@ -346,10 +342,7 @@ export const KeyboardOrder: Story = {
     // The collapsed stage kept its trigger and lost its contents outright.
     const triggers = bySlot("generation-panel-section-trigger");
     await expect(triggers).toHaveLength(4);
-    await expect(canvas.getByRole("button", { name: "Settings" })).toHaveAttribute(
-      "aria-expanded",
-      "false",
-    );
+    await expect(canvas.getByRole("button", { name: "Settings" })).toHaveAttribute("aria-expanded", "false");
     await expect(bySlot("gen-settings-item")).toHaveLength(0);
     await expect(canvas.queryByRole("button", { name: "16:9" })).not.toBeInTheDocument();
 
@@ -691,9 +684,7 @@ export const Mobile: Story = {
 
     // Nothing scrolls sideways at 375px, and the grid keeps three columns.
     await expect(viewport.scrollWidth).toBeLessThanOrEqual(viewport.clientWidth);
-    await expect(tile.getBoundingClientRect().width).toBeLessThan(
-      viewport.getBoundingClientRect().width / 3,
-    );
+    await expect(tile.getBoundingClientRect().width).toBeLessThan(viewport.getBoundingClientRect().width / 3);
 
     // Given a height, the body is the scroller and the footer is the floor.
     await expect(body.scrollHeight).toBeGreaterThan(body.clientHeight);

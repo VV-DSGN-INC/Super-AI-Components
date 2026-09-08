@@ -1,10 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import {
-  NativeSelect,
-  NativeSelectOption,
-  NativeSelectOptGroup,
-} from "@/components/ui/native-select";
+import { NativeSelect, NativeSelectOption, NativeSelectOptGroup } from "@/components/ui/native-select";
 
 const meta: Meta<typeof NativeSelect> = {
   title: "shadcn/ui/Native Select",
@@ -20,11 +16,7 @@ export const Default: Story = {
     return (
       <div className="flex flex-col gap-2">
         <label className="text-sm font-medium">Image model</label>
-        <NativeSelect
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          className="w-56"
-        >
+        <NativeSelect value={model} onChange={(e) => setModel(e.target.value)} className="w-56">
           <NativeSelectOption value="gpt-image-1">GPT Image 1</NativeSelectOption>
           <NativeSelectOption value="dalle-3">DALL-E 3</NativeSelectOption>
           <NativeSelectOption value="flux-pro">Flux Pro</NativeSelectOption>
@@ -41,11 +33,7 @@ export const Small: Story = {
   render: () => {
     const [ratio, setRatio] = React.useState("16:9");
     return (
-      <NativeSelect
-        size="sm"
-        value={ratio}
-        onChange={(e) => setRatio(e.target.value)}
-      >
+      <NativeSelect size="sm" value={ratio} onChange={(e) => setRatio(e.target.value)}>
         <NativeSelectOption value="1:1">Square 1:1</NativeSelectOption>
         <NativeSelectOption value="16:9">Wide 16:9</NativeSelectOption>
         <NativeSelectOption value="9:16">Portrait 9:16</NativeSelectOption>
@@ -59,11 +47,7 @@ export const Grouped: Story = {
   render: () => {
     const [model, setModel] = React.useState("kling-1.6");
     return (
-      <NativeSelect
-        value={model}
-        onChange={(e) => setModel(e.target.value)}
-        className="w-60"
-      >
+      <NativeSelect value={model} onChange={(e) => setModel(e.target.value)} className="w-60">
         <NativeSelectOptGroup label="Image">
           <NativeSelectOption value="flux-pro">Flux Pro</NativeSelectOption>
           <NativeSelectOption value="dalle-3">DALL-E 3</NativeSelectOption>

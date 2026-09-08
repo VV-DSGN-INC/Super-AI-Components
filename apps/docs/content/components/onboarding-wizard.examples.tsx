@@ -53,7 +53,9 @@ const SPLIT_STEPS: OnboardingWizardStep[] = [
     panel: (
       <div className="flex flex-col gap-1">
         <p className="text-foreground text-sm font-medium">Teams ship 3x faster with a brand kit</p>
-        <p className="text-foreground/70 text-xs">Shared across the workspace, picked up by every template.</p>
+        <p className="text-foreground/70 text-xs">
+          Shared across the workspace, picked up by every template.
+        </p>
       </div>
     ),
   },
@@ -68,10 +70,7 @@ export function SurveyThatChangesNothing() {
   // reads the answer, so the only thing the step reliably produces is drop-off
   // between the splash screen and the product.
   return (
-    <div
-      aria-hidden
-      className="w-full max-w-md rounded-lg border border-dashed p-4 text-sm"
-    >
+    <div aria-hidden className="w-full max-w-md rounded-lg border border-dashed p-4 text-sm">
       <p className="text-foreground font-medium">How did you hear about us?</p>
       <ul className="text-foreground/70 mt-2 flex flex-col gap-1 text-xs">
         <li>A friend</li>

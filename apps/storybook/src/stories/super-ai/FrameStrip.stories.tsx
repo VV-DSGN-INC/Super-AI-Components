@@ -14,23 +14,35 @@ const FRAMES: FrameStripItem[] = ["00:00:00", "00:00:04", "00:00:08", "00:00:12"
     id: `f${index + 1}`,
     label: timecode,
     thumbnail: (
-      <img src={`https://placehold.co/320x180?text=${index + 1}`} alt="" className="h-full w-full object-cover" />
+      <img
+        src={`https://placehold.co/320x180?text=${index + 1}`}
+        alt=""
+        className="h-full w-full object-cover"
+      />
     ),
   }),
 );
 
-const PAGES: FrameStripItem[] = ["1. Title", "2. Problem", "3. Approach", "4. Results"].map((label, index) => ({
-  id: `p${index + 1}`,
-  label,
-  thumbnail: (
-    <img src={`https://placehold.co/320x180?text=${index + 1}`} alt="" className="h-full w-full object-cover" />
-  ),
-}));
+const PAGES: FrameStripItem[] = ["1. Title", "2. Problem", "3. Approach", "4. Results"].map(
+  (label, index) => ({
+    id: `p${index + 1}`,
+    label,
+    thumbnail: (
+      <img
+        src={`https://placehold.co/320x180?text=${index + 1}`}
+        alt=""
+        className="h-full w-full object-cover"
+      />
+    ),
+  }),
+);
 
 const ARTBOARDS: FrameStripItem[] = ["Hero", "Pricing", "Footer"].map((label, index) => ({
   id: `a${index + 1}`,
   label,
-  thumbnail: <img src={`https://placehold.co/320x320?text=${label}`} alt="" className="h-full w-full object-cover" />,
+  thumbnail: (
+    <img src={`https://placehold.co/320x320?text=${label}`} alt="" className="h-full w-full object-cover" />
+  ),
 }));
 
 const meta: Meta<typeof FrameStrip> = {
@@ -279,7 +291,9 @@ export const RTL: Story = {
     // what makes "Move 00:00:00 left" move a frame to the right.
     const cellLefts = (testId: string) =>
       Array.from(
-        canvasElement.querySelectorAll<HTMLElement>(`[data-testid="${testId}"] [data-slot="frame-strip-item"]`),
+        canvasElement.querySelectorAll<HTMLElement>(
+          `[data-testid="${testId}"] [data-slot="frame-strip-item"]`,
+        ),
       ).map((cell) => cell.getBoundingClientRect().left);
     const ltrCells = cellLefts("ltr");
     const rtlCells = cellLefts("rtl");
@@ -411,7 +425,9 @@ export const KeyboardOrder: Story = {
     await expect(canvas.getByRole("button", { name: "Next slide" })).toBeDisabled();
 
     // Two, three, two: the ends lose the move they cannot make.
-    const moves = Array.from(canvasElement.querySelectorAll<HTMLButtonElement>('[data-slot="frame-strip-move"]'));
+    const moves = Array.from(
+      canvasElement.querySelectorAll<HTMLButtonElement>('[data-slot="frame-strip-move"]'),
+    );
     await expect(moves).toHaveLength(6);
     await expect(moves[0]).toBeDisabled();
     await expect(moves[moves.length - 1]).toBeDisabled();
@@ -535,7 +551,8 @@ export const Controlled: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const current = () =>
-      canvasElement.querySelector<HTMLElement>('[data-slot="frame-strip-frame"][aria-current="true"]')?.textContent;
+      canvasElement.querySelector<HTMLElement>('[data-slot="frame-strip-frame"][aria-current="true"]')
+        ?.textContent;
 
     await expect(current()).toBe("00:00:00");
 
@@ -649,18 +666,24 @@ export const LongContent: Story = {
       {
         id: "a1",
         label: "Hero — full-bleed opening panel with the product shot and the primary call to action",
-        thumbnail: <img src="https://placehold.co/320x320?text=Hero" alt="" className="h-full w-full object-cover" />,
+        thumbnail: (
+          <img src="https://placehold.co/320x320?text=Hero" alt="" className="h-full w-full object-cover" />
+        ),
       },
       ...ARTBOARDS.slice(1),
       {
         id: "a4",
         label: "Changelog",
-        thumbnail: <img src="https://placehold.co/320x320?text=4" alt="" className="h-full w-full object-cover" />,
+        thumbnail: (
+          <img src="https://placehold.co/320x320?text=4" alt="" className="h-full w-full object-cover" />
+        ),
       },
       {
         id: "a5",
         label: "Footer alt",
-        thumbnail: <img src="https://placehold.co/320x320?text=5" alt="" className="h-full w-full object-cover" />,
+        thumbnail: (
+          <img src="https://placehold.co/320x320?text=5" alt="" className="h-full w-full object-cover" />
+        ),
       },
     ],
     defaultValue: "a1",
@@ -773,7 +796,9 @@ export const Boundary: Story = {
       </section>
 
       <section className="flex flex-col gap-2">
-        <p className="text-foreground text-xs font-medium">Reference strip — typed inputs to the next generation</p>
+        <p className="text-foreground text-xs font-medium">
+          Reference strip — typed inputs to the next generation
+        </p>
         <ReferenceStrip
           items={[
             {

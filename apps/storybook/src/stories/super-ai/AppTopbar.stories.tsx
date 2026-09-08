@@ -105,11 +105,7 @@ export const SavedState: Story = {
  * `EditorContext`.
  * ---------------------------------------------------------------------- */
 
-const CRUMBS = [
-  { label: "Projects", href: "#" },
-  { label: "Marketing", href: "#" },
-  { label: "Q3 Roadmap" },
-];
+const CRUMBS = [{ label: "Projects", href: "#" }, { label: "Marketing", href: "#" }, { label: "Q3 Roadmap" }];
 
 /**
  * B8 `account-menu` needs a host for its theme/background pair, so the
@@ -237,9 +233,7 @@ export const RTL: Story = {
     // silently.
     await expect(leading).not.toBeNull();
     await expect(trailing).not.toBeNull();
-    await expect(
-      leading!.getBoundingClientRect().left > trailing!.getBoundingClientRect().left,
-    ).toBe(true);
+    await expect(leading!.getBoundingClientRect().left > trailing!.getBoundingClientRect().left).toBe(true);
   },
 };
 
@@ -309,9 +303,7 @@ export const KeyboardOrder: Story = {
     }
 
     // Derived from the DOM, not hardcoded: whatever is actually reachable.
-    const stops = Array.from(
-      bar.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"),
-    );
+    const stops = Array.from(bar.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"));
     await expect(stops.length).toBeGreaterThan(0);
 
     const nameOf = (el: Element | null) =>
@@ -324,12 +316,8 @@ export const KeyboardOrder: Story = {
       await userEvent.tab();
       const focused = document.activeElement as HTMLElement;
 
-      await expect(`${nameOf(focused)} inBar=${bar.contains(focused)}`).toBe(
-        `${nameOf(focused)} inBar=true`,
-      );
-      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(
-        `${nameOf(focused)} repeat=false`,
-      );
+      await expect(`${nameOf(focused)} inBar=${bar.contains(focused)}`).toBe(`${nameOf(focused)} inBar=true`);
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
 
       // Every stop is visibly focused, not merely focusable.
       await expect(`${nameOf(focused)} focusVisible=${focused.matches(":focus-visible")}`).toBe(

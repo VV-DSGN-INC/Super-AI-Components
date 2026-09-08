@@ -5,7 +5,13 @@ import * as React from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 import { PreviewTile, type PreviewTileAspect, type PreviewTileState } from "@/registry/super-ai/preview-tile";
 
@@ -180,7 +186,11 @@ function FrameStripSlide({
       // layout that selection can move.
       className="group/frame basis-32 py-1 pr-1 sm:basis-36"
     >
-      <div data-slot="frame-strip-item" data-active={active ? "true" : "false"} className="flex flex-col gap-1.5">
+      <div
+        data-slot="frame-strip-item"
+        data-active={active ? "true" : "false"}
+        className="flex flex-col gap-1.5"
+      >
         {variant === "select" ? (
           <button
             type="button"

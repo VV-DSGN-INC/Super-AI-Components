@@ -135,9 +135,7 @@ describe("SettingsShell", () => {
 
   it("selects a section through B3's own row control", async () => {
     const onSectionChange = vi.fn();
-    const { container } = render(
-      <SettingsShell sections={SECTIONS} onSectionChange={onSectionChange} />,
-    );
+    const { container } = render(<SettingsShell sections={SECTIONS} onSectionChange={onSectionChange} />);
     const nav = region(container, "grouped-nav");
     await userEvent.click(within(nav).getByRole("link", { name: /^MCP/ }));
     expect(onSectionChange).toHaveBeenCalledWith("mcp");
@@ -212,19 +210,14 @@ describe("SettingsShell", () => {
 
   it("composes M4 on the section where the upgrade happens", () => {
     const { container } = render(<SettingsShell sections={SECTIONS} sectionId="plans" />);
-    expect(
-      region(container, "setting-sections").querySelector('[data-slot="pricing-table"]'),
-    ).not.toBeNull();
+    expect(region(container, "setting-sections").querySelector('[data-slot="pricing-table"]')).not.toBeNull();
   });
 
   it("composes M3 in the nav column, in its own sidebar variant", () => {
     const { container } = render(<SettingsShell sections={SECTIONS} usage={USAGE} />);
     const meter = region(container, "grouped-nav").querySelector('[data-slot="quota-meter"]')!;
     expect(meter).not.toBeNull();
-    expect(within(meter as HTMLElement).getByRole("progressbar")).toHaveAttribute(
-      "aria-valuenow",
-      "820",
-    );
+    expect(within(meter as HTMLElement).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "820");
   });
 
   it("renders B8 beside the breadcrumb", () => {
@@ -264,9 +257,7 @@ describe("SettingsShell", () => {
     const code = region(container, "code-block");
     expect(code.querySelector('[data-slot="settings-shell-code"]')!.textContent).toContain("mcpServers");
     // Named for what it copies, not "Copy" — and focusable, because it scrolls.
-    expect(
-      within(code).getByRole("button", { name: "Copy MCP server configuration" }),
-    ).toBeInTheDocument();
+    expect(within(code).getByRole("button", { name: "Copy MCP server configuration" })).toBeInTheDocument();
     expect(code.querySelector('[data-slot="settings-shell-code"]')).toHaveAttribute("tabindex", "0");
   });
 
@@ -275,9 +266,7 @@ describe("SettingsShell", () => {
   it("falls to L1 in both the nav and the section column when there is nothing configured", () => {
     const { container } = render(<SettingsShell />);
     expect(region(container, "grouped-nav").querySelector('[data-slot="empty-state"]')).not.toBeNull();
-    expect(
-      region(container, "setting-sections").querySelector('[data-slot="empty-state"]'),
-    ).not.toBeNull();
+    expect(region(container, "setting-sections").querySelector('[data-slot="empty-state"]')).not.toBeNull();
     // Still five regions, still a usable search field.
     for (const name of REGIONS) expect(region(container, name)).not.toBeNull();
   });

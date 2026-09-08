@@ -10,43 +10,43 @@ C3 `feature-card-row` · C4 `recent-grid` · C5 `recommendation-card` · O1 `hom
 B6 `thread-list` shipped in Wave 0. Twelve components plus the first block — the first `registry:block`
 the pipeline has ever emitted.
 
-| | |
-| --- | --- |
-| Scope | 12 components, 1 block, 1 additive primitive retrofit (A9), registry-pipeline extension for blocks |
-| Registry | `super-ai` namespace; `registry/super-ai/*.tsx`, block at `registry/super-ai/home-shell.tsx` |
-| Base | shadcn base-nova (sidebar, avatar, badge, breadcrumb, button-group, card, toggle-group, tooltip, radio-group, textarea, collapsible, item) + `@ai-elements/suggestion` for C2 |
-| Testing | One co-located `*.test.tsx` per item, per repo convention |
+|          |                                                                                                                                                                               |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scope    | 12 components, 1 block, 1 additive primitive retrofit (A9), registry-pipeline extension for blocks                                                                            |
+| Registry | `super-ai` namespace; `registry/super-ai/*.tsx`, block at `registry/super-ai/home-shell.tsx`                                                                                  |
+| Base     | shadcn base-nova (sidebar, avatar, badge, breadcrumb, button-group, card, toggle-group, tooltip, radio-group, textarea, collapsible, item) + `@ai-elements/suggestion` for C2 |
+| Testing  | One co-located `*.test.tsx` per item, per repo convention                                                                                                                     |
 
 ---
 
 ## 1. Consumer audit (D13)
 
-Method per **D13**: *"The table in concept-model.md is a derived summary, not a source of truth. The
-per-component entries in component-specs.md are authoritative."* Every fan-out claim touching families
+Method per **D13**: _"The table in concept-model.md is a derived summary, not a source of truth. The
+per-component entries in component-specs.md are authoritative."_ Every fan-out claim touching families
 B and C was checked against the consuming component's own entry.
 
 ### 1.1 The five claims the fan-out table makes about B and C
 
-| Claimed in `concept-model.md` §2 | What the consumer's own entry says | Verdict |
-| --- | --- | --- |
-| A9 `entity-row` → **B2** `workspace-switcher` | *"a checked list, or A9 rows with descriptions"* | ✅ confirmed |
-| A9 `entity-row` → **C3** `feature-card-row` | *"Cards are A9 in a card layout — the same four slots, stacked vertically"* | ✅ confirmed — **but see §1.3** |
-| A12 `section-header` → **B3** `sidebar-nav` | *"Section labels are A12 at its smallest size, not a bespoke caption style"* | ✅ confirmed |
-| A12 `section-header` → **C3** `feature-card-row` | C3's entry never mentions A12 | ❌ **undeclared** |
-| A8 `preview-tile` → **C4** `recent-grid` | **"Built on: A8"** | ✅ confirmed |
+| Claimed in `concept-model.md` §2                 | What the consumer's own entry says                                           | Verdict                         |
+| ------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------- |
+| A9 `entity-row` → **B2** `workspace-switcher`    | _"a checked list, or A9 rows with descriptions"_                             | ✅ confirmed                    |
+| A9 `entity-row` → **C3** `feature-card-row`      | _"Cards are A9 in a card layout — the same four slots, stacked vertically"_  | ✅ confirmed — **but see §1.3** |
+| A12 `section-header` → **B3** `sidebar-nav`      | _"Section labels are A12 at its smallest size, not a bespoke caption style"_ | ✅ confirmed                    |
+| A12 `section-header` → **C3** `feature-card-row` | C3's entry never mentions A12                                                | ❌ **undeclared**               |
+| A8 `preview-tile` → **C4** `recent-grid`         | **"Built on: A8"**                                                           | ✅ confirmed                    |
 
 A12's C3 claim is the fourth in the list of five A12 consumers the D13 audit already flagged as
-unproven (*"of the listed consumers only I1 and B3 declare A12"*). Wave 2 is the first wave where one
+unproven (_"of the listed consumers only I1 and B3 declare A12"_). Wave 2 is the first wave where one
 of those five actually gets built, and C3's entry settles it: **C3 is not an A12 consumer.** Whatever
 section header sits above a feature card row belongs to O1's composition, not to C3's internals.
 
 ### 1.2 A sixth consumer the table cannot show, because the primitive has no row
 
-**B8 `account-menu` declares A1 `kbd`:** *"Shortcut hints use A1. A row that has a shortcut must show
-it, or the shortcut is never learned."*
+**B8 `account-menu` declares A1 `kbd`:** _"Shortcut hints use A1. A row that has a shortcut must show
+it, or the shortcut is never learned."_
 
 `concept-model.md` §2 has **no row for A1** — and none for A4 `choice-chips` or A5 `filter-bar`
-either. The table carries 9 rows for 12 primitives. D13 recorded A11 as *"had no row at all"*; that
+either. The table carries 9 rows for 12 primitives. D13 recorded A11 as _"had no row at all"_; that
 was not a one-off. Three primitives are still missing, and one of them (A1) has two provable
 consumers today: **L5 `shortcuts-sheet`** (shipped — `gen-registry.mts` already declares
 `registryDependencies: ["dialog", self("kbd")]`) and **B8 `account-menu`**.
@@ -63,8 +63,8 @@ C3's claim on A9 is confirmed by declaration, and then contradicted by the shipp
 "flex min-h-14 w-full items-center gap-3 rounded-lg px-3 py-2 text-left"
 ```
 
-That is a horizontal row with a fixed 56px minimum height. C3 needs *"the same four slots, **stacked
-vertically**"*. The shipped A9 has no vertical presentation, and no prop that would produce one.
+That is a horizontal row with a fixed 56px minimum height. C3 needs _"the same four slots, **stacked
+vertically**"_. The shipped A9 has no vertical presentation, and no prop that would produce one.
 
 This is the same class of defect D13 found on A6 `field-row` — a component shipped without a
 capability its own consumer's spec requires — caught before it ships this time rather than after.
@@ -81,8 +81,8 @@ A9 rows would be half again as tall as the sidebar shipped in Wave 0, immediatel
 
 ### 1.5 C5 `recommendation-card` — the tension D13 left open, re-checked
 
-D13 removed C5 from A9's fan-out (*"`recommendation-card` never declared it"*). Re-read against its
-own entry, C5 says *"a one-line row in the feed, and a modal explaining inputs and steps"*. A one-line
+D13 removed C5 from A9's fan-out (_"`recommendation-card` never declared it"_). Re-read against its
+own entry, C5 says _"a one-line row in the feed, and a modal explaining inputs and steps"_. A one-line
 row is A9-shaped. It is still not declared, and it carries an app-icon cluster and two competing
 actions that A9's single `trailing` slot does not model.
 
@@ -91,57 +91,57 @@ sentence.
 
 ### 1.6 Layer-model violations in the source specs
 
-The layer model states L3 components *"Never depend on each other"*. Four Wave-2 entries describe
+The layer model states L3 components _"Never depend on each other"_. Four Wave-2 entries describe
 exactly that:
 
-| Entry | The sentence | The L3 components it names |
-| --- | --- | --- |
-| B1 `app-sidebar` | *"Owns arrangement (switcher, nav, promo, footer), not sidebar mechanics."* | B2, B3, B5, B8 |
-| C1 `hero-omnibox` | *"Credits sit at the point of spend (M2), never buried in billing."* | M2 |
-| C1 `hero-omnibox` | *"Attach, model select and mode chip live inside the field… Same slot arrangement as D1."* | D4, D1 |
-| O1 `home-shell` | **"Filled by:"** nine components | B1, B7, C1–C5, M2, L1 |
+| Entry             | The sentence                                                                               | The L3 components it names |
+| ----------------- | ------------------------------------------------------------------------------------------ | -------------------------- |
+| B1 `app-sidebar`  | _"Owns arrangement (switcher, nav, promo, footer), not sidebar mechanics."_                | B2, B3, B5, B8             |
+| C1 `hero-omnibox` | _"Credits sit at the point of spend (M2), never buried in billing."_                       | M2                         |
+| C1 `hero-omnibox` | _"Attach, model select and mode chip live inside the field… Same slot arrangement as D1."_ | D4, D1                     |
+| O1 `home-shell`   | **"Filled by:"** nine components                                                           | B1, B7, C1–C5, M2, L1      |
 
-These are not contradictions to resolve away — they are the *point* of a shell. But they only stay
+These are not contradictions to resolve away — they are the _point_ of a shell. But they only stay
 legal one way: **shells accept regions as `React.ReactNode` props and never import another L3
 component.** O1 (L4) may compose anything; B1 and C1 (L3) may not. This is the single most
 load-bearing architectural rule in Wave 2, and §5 gives it a test in every shell-shaped component.
 
 ### 1.7 O1 `home-shell` — three internal inconsistencies
 
-1. **The region list is short.** `block-specs.md` O1 lists five regions — *"sidebar · topbar · hero
-   omnibox · feature cards · recents grid"* — then names nine filling components and an invariant
-   order with five *content* stages: *"composer → starters → features → recents → inspiration"*.
+1. **The region list is short.** `block-specs.md` O1 lists five regions — _"sidebar · topbar · hero
+   omnibox · feature cards · recents grid"_ — then names nine filling components and an invariant
+   order with five _content_ stages: _"composer → starters → features → recents → inspiration"_.
    Starters (C2) and inspiration (C5) appear in the order and in the filled-by list but not in the
    regions. **The real region count is seven** (§4.13).
 2. **Two of the nine filling components do not exist and are not due until Waves 9 and 10.** M2
    `credits-indicator` (Wave 10, family M) and L1 `empty-state` (Wave 9, family L). O1 cannot be
    "filled by" them in Wave 2.
-3. **A direct contradiction about the empty day-one page.** O1: *"The whole page is C4's empty state
-   on day one."* C4: *"The empty state is an in-grid tile, **not a page takeover**."* Flagged, not
+3. **A direct contradiction about the empty day-one page.** O1: _"The whole page is C4's empty state
+   on day one."_ C4: _"The empty state is an in-grid tile, **not a page takeover**."_ Flagged, not
    silently resolved. The reading that satisfies both: on day one the shell renders in full — hero,
-   starters, features — and the recents *region* shows C4's in-grid empty tile. O1's sentence is about
+   starters, features — and the recents _region_ shows C4's in-grid empty tile. O1's sentence is about
    which surface dominates a new user's attention, not about replacing the page. **This needs Nick's
    confirmation before O1 is built**, because the other reading (a page-level takeover) would make L1
    a Wave-2 blocker.
 
 ### 1.8 Two contract rows that do not match the components beneath them
 
-- **Cost** — binds *"B D E F G M"*, yet A2 `cost-chip`'s fan-out row contains no B item, and no B
-  entry declares A2. B's binding is *placement-level*: B5 `promo-card`'s quota-warning flavour and
+- **Cost** — binds _"B D E F G M"_, yet A2 `cost-chip`'s fan-out row contains no B item, and no B
+  entry declares A2. B's binding is _placement-level_: B5 `promo-card`'s quota-warning flavour and
   B3's tier badges. Real, but not a composition. Worth stating so nobody wires A2 into the sidebar to
   satisfy a table.
-- **Cost** also omits **C**, while C1 declares *"Credits sit at the point of spend (M2)"*. Family C
+- **Cost** also omits **C**, while C1 declares _"Credits sit at the point of spend (M2)"_. Family C
   hosts a cost placement and is not listed as bound by the contract.
-- **Empty** — binds *"B C D F G I J K L N O"*, and L1 `empty-state` ships in **Wave 9**. Wave 2 must
-  therefore ship empty *slots*, not empty *states*, or the Empty contract gets retrofitted twice. See
+- **Empty** — binds _"B C D F G I J K L N O"_, and L1 `empty-state` ships in **Wave 9**. Wave 2 must
+  therefore ship empty _slots_, not empty _states_, or the Empty contract gets retrofitted twice. See
   §4 — B1, B3, C3 and C4 each take an `empty` slot now, which L1 fills later without an API change.
 
 ### 1.9 A shipped primitive that is incomplete against its own spec
 
 Not a Wave-2 deliverable, reported because the audit surfaced it and B6 is the consumer.
 
-A3 `date-section`'s entry states: *"The header is sticky within its scroll container"* and *"Count and
-collapse are optional slots; the four consumers each use a different combination."* The shipped
+A3 `date-section`'s entry states: _"The header is sticky within its scroll container"_ and _"Count and
+collapse are optional slots; the four consumers each use a different combination."_ The shipped
 `registry/super-ai/date-section.tsx` is 32 lines and has **no count, no collapse and no sticky
 positioning** — only a `label`. Same class as the A6/A11 finding in D13.
 
@@ -166,27 +166,27 @@ and compile in `apps/storybook/src/components/ui/` under the same `base-nova` st
 `@base-ui/react ^1.5.0` — so this is a copy between workspaces, not a port.
 
 **One exception: `carousel` pulls `embla-carousel-react`.** C3's catalog row names Carousel as a base,
-but C3's own rule is about the *affordance*: *"Horizontal scroll needs a visible next affordance;
-trackpad-only scroll hides half the content."* That is satisfiable with scroll-snap and two buttons.
+but C3's own rule is about the _affordance_: _"Horizontal scroll needs a visible next affordance;
+trackpad-only scroll hides half the content."_ That is satisfiable with scroll-snap and two buttons.
 **Recommendation: build C3 without Carousel** and keep the super-ai tier at its current single npm
 dependency (`lucide-react`). Flagged as a decision, not taken unilaterally — see §6.
 
 ### 1.11 Audit summary
 
-| # | Finding | Severity |
-| --- | --- | --- |
-| 1 | A12 → C3 disproved; C3 declares A9 only | doc fix |
-| 2 | A1, A4, A5 have **no fan-out row at all**; A1's is provable today (L5 + B8) | doc fix, extends D13 |
-| 3 | Shipped A9 cannot render C3's declared vertical card | **blocks C3** |
-| 4 | A9's 56px row height mechanically disqualifies it from B3 | confirms D13 |
-| 5 | Four L3 entries describe L3→L3 dependencies | architectural — §1.6 |
-| 6 | O1's regions (5) ≠ its filled-by (9) ≠ its content order (5) | doc fix |
-| 7 | O1 names M2 (Wave 10) and L1 (Wave 9) as fillers | scope — slots |
-| 8 | O1 vs C4 contradict each other on the empty page | **needs a decision** |
-| 9 | Cost contract binds B with no A2 consumer; omits C, which has a placement | doc fix |
-| 10 | Empty contract binds B and C; L1 is Wave 9 | slot convention |
-| 11 | A3 shipped without count / collapse / sticky | deferred to Wave 4 |
-| 12 | `gen-registry.mts` cannot emit `registry:block` | **blocks O1** |
+| #   | Finding                                                                     | Severity             |
+| --- | --------------------------------------------------------------------------- | -------------------- |
+| 1   | A12 → C3 disproved; C3 declares A9 only                                     | doc fix              |
+| 2   | A1, A4, A5 have **no fan-out row at all**; A1's is provable today (L5 + B8) | doc fix, extends D13 |
+| 3   | Shipped A9 cannot render C3's declared vertical card                        | **blocks C3**        |
+| 4   | A9's 56px row height mechanically disqualifies it from B3                   | confirms D13         |
+| 5   | Four L3 entries describe L3→L3 dependencies                                 | architectural — §1.6 |
+| 6   | O1's regions (5) ≠ its filled-by (9) ≠ its content order (5)                | doc fix              |
+| 7   | O1 names M2 (Wave 10) and L1 (Wave 9) as fillers                            | scope — slots        |
+| 8   | O1 vs C4 contradict each other on the empty page                            | **needs a decision** |
+| 9   | Cost contract binds B with no A2 consumer; omits C, which has a placement   | doc fix              |
+| 10  | Empty contract binds B and C; L1 is Wave 9                                  | slot convention      |
+| 11  | A3 shipped without count / collapse / sticky                                | deferred to Wave 4   |
+| 12  | `gen-registry.mts` cannot emit `registry:block`                             | **blocks O1**        |
 
 ## 2. Build order
 
@@ -196,8 +196,8 @@ Forced by §1, not by family order.
    until it lands, and it is ten lines. First.
 2. **B1 `app-sidebar`** — no dependencies, and it establishes the slot contract (§1.6) that four later
    items copy. Building it first means the rule is demonstrated rather than described.
-3. **B3 `sidebar-nav`** — consumes A12 at `size="sm"`, which Wave 1 built *for this component*
-   (*"sm = B3's section labels"*). Fills B1's `nav` slot.
+3. **B3 `sidebar-nav`** — consumes A12 at `size="sm"`, which Wave 1 built _for this component_
+   (_"sm = B3's section labels"_). Fills B1's `nav` slot.
 4. **B2 `workspace-switcher`** — consumes A9. Fills B1's `switcher` slot.
 5. **B5 `promo-card`** — fills B1's `promo` slot; carries the Cost contract's only ambient placement.
 6. **B8 `account-menu`** — consumes A1. Fills B1's `footer` slot. **B1 is now demonstrably complete**,
@@ -228,25 +228,25 @@ Two Wave-1 conventions apply throughout and are not restated per component:
 - **Button semantics only when interactive.** An `onSelect`-style prop makes the element a `<button>`
   with `aria-pressed`; without it, a `<div>` outside the tab order.
 - **Two explicit branches, never a dynamic tag,** wherever a button-only prop such as `disabled` is
-  involved — `entity-row.tsx` line 69 records why: *"a union element type cannot be checked against
-  div props."*
+  involved — `entity-row.tsx` line 69 records why: _"a union element type cannot be checked against
+  div props."_
 
 ### 3.1 A9 retrofit — `layout`
 
 ```tsx
 interface EntityRowProps /* … unchanged … */ {
-  layout?: "row" | "card";   // default "row" — exactly what ships today
+  layout?: "row" | "card"; // default "row" — exactly what ships today
 }
 ```
 
 `row` is the current horizontal grid at `min-h-14`. `card` stacks the same four slots vertically:
 icon, then title, then description, with `trailing` pinned to the bottom edge. **The four slots and
-their names do not change** — that is what C3's *"the same four slots, stacked vertically"* asserts,
+their names do not change** — that is what C3's _"the same four slots, stacked vertically"_ asserts,
 and what makes this a presentation prop rather than a second component.
 
 Additive and safe for the same reason the A6 `reset` retrofit was: shadcn registries copy code into
-the consumer's app, so *"a registry change never affects an already-installed component — only new
-installs see it"* (D13).
+the consumer's app, so _"a registry change never affects an already-installed component — only new
+installs see it"_ (D13).
 
 ### 3.2 B1 `app-sidebar`
 
@@ -254,23 +254,23 @@ installs see it"* (D13).
 type AppSidebarWidth = "expanded" | "icon-rail" | "mobile-drawer";
 
 interface AppSidebarProps extends React.ComponentProps<"div"> {
-  width?: AppSidebarWidth;        // default "expanded"
-  switcher?: React.ReactNode;     // B2
-  nav?: React.ReactNode;          // B3 — or B4 in the studio shell
-  content?: React.ReactNode;      // B6 thread-list, or any scrollable body
-  promo?: React.ReactNode;        // B5
-  footer?: React.ReactNode;       // B8
-  empty?: React.ReactNode;        // Empty contract; L1 fills this in Wave 9
+  width?: AppSidebarWidth; // default "expanded"
+  switcher?: React.ReactNode; // B2
+  nav?: React.ReactNode; // B3 — or B4 in the studio shell
+  content?: React.ReactNode; // B6 thread-list, or any scrollable body
+  promo?: React.ReactNode; // B5
+  footer?: React.ReactNode; // B8
+  empty?: React.ReactNode; // Empty contract; L1 fills this in Wave 9
 }
 ```
 
-Every slot is optional, because *"the docs shell uses switcher + nav only; the studio shell swaps nav
-for B4."* No slot is typed to a component — B1 imports nothing from family B (§1.6).
+Every slot is optional, because _"the docs shell uses switcher + nav only; the studio shell swaps nav
+for B4."_ No slot is typed to a component — B1 imports nothing from family B (§1.6).
 
-*"Three widths are one component, not three,"* so `width` maps onto the shadcn Sidebar's own
+_"Three widths are one component, not three,"_ so `width` maps onto the shadcn Sidebar's own
 mechanics rather than forking markup: `expanded` → default, `icon-rail` → `collapsible="icon"` in its
-collapsed state, `mobile-drawer` → the Sheet presentation. B1 *"owns arrangement… not sidebar
-mechanics"* — the scroll behaviour, the rail collapse and the mobile breakpoint all stay in L0.
+collapsed state, `mobile-drawer` → the Sheet presentation. B1 _"owns arrangement… not sidebar
+mechanics"_ — the scroll behaviour, the rail collapse and the mobile breakpoint all stay in L0.
 
 `content` scrolls; `promo` and `footer` are pinned below it. That ordering is B1's entire contribution
 and is the thing worth asserting.
@@ -283,15 +283,15 @@ interface SidebarNavItem {
   label: React.ReactNode;
   icon?: React.ReactNode;
   href?: string;
-  trailing?: React.ReactNode;   // count · tier badge · unread dot · running spinner · external-link
+  trailing?: React.ReactNode; // count · tier badge · unread dot · running spinner · external-link
   disabled?: boolean;
 }
 
 interface SidebarNavSection {
   id: string;
-  label?: React.ReactNode;      // rendered by A12 size="sm"; omit for an unlabelled group
+  label?: React.ReactNode; // rendered by A12 size="sm"; omit for an unlabelled group
   items: SidebarNavItem[];
-  pinned?: boolean;             // bottom-pinned group — never scrolls with the middle
+  pinned?: boolean; // bottom-pinned group — never scrolls with the middle
 }
 
 interface SidebarNavProps extends Omit<React.ComponentProps<"nav">, "onSelect"> {
@@ -308,11 +308,11 @@ bespoke caption style, per B3's own rule.
 `trailing` is one opaque slot covering all five listed variants. Five props would let two of them be
 passed at once, which the sidebar has no room to render.
 
-**Active state is a filled row (`bg-accent`), never a left border** — *"borders break when the sidebar
-collapses."* This is the same reasoning as A8's ring-not-border rule, and it is testable.
+**Active state is a filled row (`bg-accent`), never a left border** — _"borders break when the sidebar
+collapses."_ This is the same reasoning as A8's ring-not-border rule, and it is testable.
 
-`pinned` comes from the catalog table's B3 row (*"pinned group"*) rather than from the authoritative
-entry; recorded so the provenance is clear. It is a property of the *section*, not of an item — a
+`pinned` comes from the catalog table's B3 row (_"pinned group"_) rather than from the authoritative
+entry; recorded so the provenance is clear. It is a property of the _section_, not of an item — a
 pinned group is a separate list, which is what stops the scrollable middle from swallowing it.
 
 ### 3.4 B2 `workspace-switcher`
@@ -321,29 +321,29 @@ pinned group is a separate list, which is what stops the scrollable middle from 
 interface Workspace {
   id: string;
   name: string;
-  description?: React.ReactNode;  // presence of any description flips the flavour
+  description?: React.ReactNode; // presence of any description flips the flavour
   icon?: React.ReactNode;
-  plan?: React.ReactNode;         // the badge shown on the trigger for the current workspace
+  plan?: React.ReactNode; // the badge shown on the trigger for the current workspace
 }
 
 interface WorkspaceSwitcherProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   workspaces: Workspace[];
   value?: string;
   onSelect?: (id: string) => void;
-  createLabel?: React.ReactNode;  // default "Create workspace"
-  onCreate?: () => void;          // omitted → no create row and no rule above it
+  createLabel?: React.ReactNode; // default "Create workspace"
+  onCreate?: () => void; // omitted → no create row and no rule above it
 }
 ```
 
-*"Two flavours from one component: a checked list, or A9 rows with descriptions."* The flavour is
+_"Two flavours from one component: a checked list, or A9 rows with descriptions."_ The flavour is
 **derived from the data** — if any workspace carries a `description`, every entry renders as an
 `EntityRow`; otherwise as a checked menu item. A `variant` prop would let a caller ask for a checked
 list while supplying descriptions, and then drop them.
 
-The trigger renders name + `plan` because *"that plan badge is the cheapest upgrade prompt in the
-shell."*
+The trigger renders name + `plan` because _"that plan badge is the cheapest upgrade prompt in the
+shell."_
 
-*"Creation is always last, below a rule — never a plus icon competing with the trigger."* So `onCreate`
+_"Creation is always last, below a rule — never a plus icon competing with the trigger."_ So `onCreate`
 produces a trailing `Separator` + row, and there is deliberately no trigger-adjacent add affordance in
 the API at all. The rule is enforced by the absence of a prop.
 
@@ -353,25 +353,25 @@ the API at all. The rule is enforced by the absence of a prop.
 type PromoCardFlavour = "upgrade" | "invite" | "update" | "quota";
 
 interface PromoCardProps extends React.ComponentProps<"div"> {
-  flavour?: PromoCardFlavour;   // default "upgrade"
+  flavour?: PromoCardFlavour; // default "upgrade"
   title: React.ReactNode;
   description?: React.ReactNode;
-  art?: React.ReactNode;        // optional in all four
+  art?: React.ReactNode; // optional in all four
   action?: React.ReactNode;
-  dismissed?: boolean;          // controlled — the component holds no dismissal state
-  onDismiss?: () => void;       // omitted → no dismiss control renders
+  dismissed?: boolean; // controlled — the component holds no dismissal state
+  onDismiss?: () => void; // omitted → no dismiss control renders
 }
 ```
 
-*"Always dismissible, and dismissal must persist. A CTA that returns every session reads as a bug."*
+_"Always dismissible, and dismissal must persist. A CTA that returns every session reads as a bug."_
 
 A copied component cannot own persistence, and internal `useState` dismissal is precisely the bug that
 sentence describes — hidden for a session, back on reload. **B5 therefore holds no dismissal state at
 all.** `dismissed` is the only truth; when true the component renders `null`. Persistence is the
 consumer's, and the docs page must say so. This is the rare case where refusing to make a prop
-uncontrolled *is* the design rule.
+uncontrolled _is_ the design rule.
 
-*"Four flavours, one component"* — `flavour` changes emphasis and default iconography, never the slot
+_"Four flavours, one component"_ — `flavour` changes emphasis and default iconography, never the slot
 structure.
 
 ### 3.6 B8 `account-menu`
@@ -383,12 +383,12 @@ interface AccountMenuItem {
   id: string;
   label: React.ReactNode;
   icon?: React.ReactNode;
-  shortcut?: string[];          // SEMANTIC keys — ["mod", "K"] — handed to A1, never glyphs
+  shortcut?: string[]; // SEMANTIC keys — ["mod", "K"] — handed to A1, never glyphs
   onSelect?: () => void;
 }
 
 interface AccountMenuProps {
-  trigger?: React.ReactNode;    // defaults to the avatar
+  trigger?: React.ReactNode; // defaults to the avatar
   name: React.ReactNode;
   email?: React.ReactNode;
   avatar?: React.ReactNode;
@@ -405,42 +405,42 @@ interface AccountMenuProps {
 }
 ```
 
-*"Identity block on top, sign-out last, separated by rules. Conventional order; do not reinvent it."*
+_"Identity block on top, sign-out last, separated by rules. Conventional order; do not reinvent it."_
 The order is fixed by the component; `items` fills only the middle block. There is no prop that can
 move sign-out.
 
-*"Appearance is a nested submenu, not a dialog."* Rendered as a `DropdownMenuSub` containing a
-`RadioGroup` for `theme` and the `backgrounds` swatches. *"Theme is changed often and should not cost a
-modal."*
+_"Appearance is a nested submenu, not a dialog."_ Rendered as a `DropdownMenuSub` containing a
+`RadioGroup` for `theme` and the `backgrounds` swatches. _"Theme is changed often and should not cost a
+modal."_
 
 `shortcut` is `string[]` of **semantic** keys, not a display string, because A1's own rule is
-*"callers pass semantic keys (`mod`), and the chip renders ⌘ on macOS, Ctrl elsewhere. Never pass
-glyphs in."* The array type is what makes passing `"⌘K"` awkward — the API discourages the misuse
+_"callers pass semantic keys (`mod`), and the chip renders ⌘ on macOS, Ctrl elsewhere. Never pass
+glyphs in."_ The array type is what makes passing `"⌘K"` awkward — the API discourages the misuse
 rather than documenting against it.
 
 ### 3.7 B7 `app-topbar`
 
 ```tsx
 interface AppTopbarProps extends React.ComponentProps<"header"> {
-  context?: "document" | "editor";  // default "document"
+  context?: "document" | "editor"; // default "document"
   breadcrumb?: React.ReactNode;
   title?: React.ReactNode;
-  privacy?: React.ReactNode;        // the privacy chip
-  savedState?: React.ReactNode;     // TEXT: "Last saved 5 days ago"
-  leading?: React.ReactNode;        // editor context: zoom + history
-  actions?: React.ReactNode;        // trailing button-group
+  privacy?: React.ReactNode; // the privacy chip
+  savedState?: React.ReactNode; // TEXT: "Last saved 5 days ago"
+  leading?: React.ReactNode; // editor context: zoom + history
+  actions?: React.ReactNode; // trailing button-group
 }
 ```
 
-*"One component, two configurations. Document context leads with breadcrumb + privacy; editor context
-leads with zoom + history."* `context` reorders the leading region; it does not fork the markup, and
+_"One component, two configurations. Document context leads with breadcrumb + privacy; editor context
+leads with zoom + history."_ `context` reorders the leading region; it does not fork the markup, and
 `actions` stays trailing in both.
 
-*"Saved-state is text, not an icon. 'Last saved 5 days ago' answers a question a cloud glyph only
-raises."* The prop is `React.ReactNode` for formatting freedom, but the component never substitutes an
+_"Saved-state is text, not an icon. 'Last saved 5 days ago' answers a question a cloud glyph only
+raises."_ The prop is `React.ReactNode` for formatting freedom, but the component never substitutes an
 icon of its own, and the test asserts the text reaches the accessible output.
 
-*"Absorbs the spec's `chat-header` — a chat title bar is this with fewer slots filled."* So there is no
+_"Absorbs the spec's `chat-header` — a chat title bar is this with fewer slots filled."_ So there is no
 chat variant: `title` + `actions` **is** the chat header. Any prop that made that a mode would
 re-create the component D8 deleted.
 
@@ -449,32 +449,32 @@ re-create the component D8 deleted.
 ```tsx
 interface ModalityRailItem {
   id: string;
-  icon: React.ReactNode;        // required — the rail is icon-over-label
-  label: React.ReactNode;       // required — always rendered, never icon-only
-  badge?: React.ReactNode;      // "New" dot, crown / Pro mark
+  icon: React.ReactNode; // required — the rail is icon-over-label
+  label: React.ReactNode; // required — always rendered, never icon-only
+  badge?: React.ReactNode; // "New" dot, crown / Pro mark
   disabled?: boolean;
 }
 
 interface ModalityRailProps extends Omit<React.ComponentProps<"nav">, "onSelect"> {
   items: ModalityRailItem[];
-  pinned?: ModalityRailItem[];  // settings · plugins · help
+  pinned?: ModalityRailItem[]; // settings · plugins · help
   value?: string;
   onSelect?: (id: string) => void;
-  maxVisible?: number;          // default 10; the remainder go behind the overflow chevron
+  maxVisible?: number; // default 10; the remainder go behind the overflow chevron
 }
 ```
 
-Both `icon` and `label` are required: *"icon over label"* is the rail's identity, and an icon-only rail
+Both `icon` and `label` are required: _"icon over label"_ is the rail's identity, and an icon-only rail
 is B1's `icon-rail` width, which is a different component.
 
-*"Bottom-pinned items (settings, plugins, help) are a separate group so the scrollable middle never
-swallows them."* Modelled as a **second array**, not a flag on an item — a flag permits interleaving,
+_"Bottom-pinned items (settings, plugins, help) are a separate group so the scrollable middle never
+swallows them."_ Modelled as a **second array**, not a flag on an item — a flag permits interleaving,
 and interleaving is the failure the sentence describes.
 
-*"Eight to fourteen items… with an overflow chevron rather than a scrollbar in a 92px column."*
+_"Eight to fourteen items… with an overflow chevron rather than a scrollbar in a 92px column."_
 `maxVisible` produces the chevron; there is no scroll mode.
 
-`badge` is *"where products advertise features you have not bought"* — the rail's paywall placement,
+`badge` is _"where products advertise features you have not bought"_ — the rail's paywall placement,
 alongside B3's tier badges and B5's ambient card.
 
 ### 3.9 C1 `hero-omnibox`
@@ -483,30 +483,30 @@ alongside B3's tier badges and B5's ambient card.
 type HeroOmniboxState = "idle" | "focused" | "generating" | "locked";
 
 interface HeroOmniboxProps extends Omit<React.ComponentProps<"div">, "onSubmit"> {
-  heading?: React.ReactNode;        // "What can I help you with?"
+  heading?: React.ReactNode; // "What can I help you with?"
   placeholder?: string;
   value?: string;
   onValueChange?: (value: string) => void;
-  state?: HeroOmniboxState;         // default "idle"
-  mode?: React.ReactNode;           // D4 mode-tabs — a slot, never an import
+  state?: HeroOmniboxState; // default "idle"
+  mode?: React.ReactNode; // D4 mode-tabs — a slot, never an import
   attach?: React.ReactNode;
   model?: React.ReactNode;
-  credits?: React.ReactNode;        // M2 — a slot, never an import
-  lockedAction?: React.ReactNode;   // replaces the textarea in place when locked
+  credits?: React.ReactNode; // M2 — a slot, never an import
+  lockedAction?: React.ReactNode; // replaces the textarea in place when locked
   onSubmit?: (value: string) => void;
-  footer?: React.ReactNode;         // C2 sits below the card
+  footer?: React.ReactNode; // C2 sits below the card
 }
 ```
 
-*"The whole card is the control."* The card is one `focus-within` region; clicking anywhere in it
+_"The whole card is the control."_ The card is one `focus-within` region; clicking anywhere in it
 focuses the textarea. This is why `heading` is inside the component rather than beside it.
 
-*"`locked` swaps the textarea for a paywall CTA **in place** — the composer is the gate."* In place
+_"`locked` swaps the textarea for a paywall CTA **in place** — the composer is the gate."_ In place
 means the card's box does not change: same padding, same height, same width across all four states.
 This is A8's states-replace-content-never-the-frame discipline applied to a composer, and it is the
 assertion the tests exist to protect.
 
-*"Attach, model select and mode chip live inside the field, not above it."* Those three slots render as
+_"Attach, model select and mode chip live inside the field, not above it."_ Those three slots render as
 DOM descendants of `data-slot="hero-omnibox-field"`. Their position is not a styling choice, so the
 test asserts containment rather than appearance.
 
@@ -527,23 +527,23 @@ interface SuggestionChipsProps extends Omit<React.ComponentProps<"div">, "onSele
   }[];
   onSelect?: (label: string, id: string) => void;
   maxVisible?: number;
-  moreHref?: string;              // overflow resolves to a LINK
-  moreLabel?: React.ReactNode;    // default "See all"
+  moreHref?: string; // overflow resolves to a LINK
+  moreLabel?: React.ReactNode; // default "See all"
 }
 ```
 
-*"Composes rather than reimplements — the cleanest example of the L1 boundary in the catalog."* C2
+_"Composes rather than reimplements — the cleanest example of the L1 boundary in the catalog."_ C2
 wraps `Suggestions` + `Suggestion` from `@ai-elements/suggestion` and adds only the icon/thumbnail
 slots and the overflow rule. The chip itself is never re-drawn. Declared as a cross-registry
-`registryDependency` per the design spec: *"Cross-registry dependencies reference AI Elements item URLs
-so the shadcn CLI resolves the full chain."*
+`registryDependency` per the design spec: _"Cross-registry dependencies reference AI Elements item URLs
+so the shadcn CLI resolves the full chain."_
 
-*"Chips are prompts, not filters. Clicking fills the composer; it never navigates or submits."* Hence
+_"Chips are prompts, not filters. Clicking fills the composer; it never navigates or submits."_ Hence
 `onSelect(label, id)` — label first, because the label is the payload the composer receives. There is
 no `onSubmit`, deliberately.
 
-*"Overflow resolves to a link, because a half-visible chip reads as a layout bug."* Note this is the
-**opposite** of A5 `filter-bar`, which *"collapses to a count (`+3`)"*. The divergence is deliberate:
+_"Overflow resolves to a link, because a half-visible chip reads as a layout bug."_ Note this is the
+**opposite** of A5 `filter-bar`, which _"collapses to a count (`+3`)"_. The divergence is deliberate:
 applied filters must stay countable because they change what you are looking at; starters are
 disposable.
 
@@ -567,12 +567,12 @@ interface FeatureCardRowProps extends Omit<React.ComponentProps<"div">, "onSelec
 ```
 
 Each card renders as `<EntityRow layout="card" />` (§3.1). The prop names deliberately mirror A9's
-slots, because *"the same four slots"* is the claim being implemented.
+slots, because _"the same four slots"_ is the claim being implemented.
 
-*"'Start from scratch' and 'Popular features' are one component with different content."* There is no
+_"'Start from scratch' and 'Popular features' are one component with different content."_ There is no
 `variant` prop — the difference is the array.
 
-*"Horizontal scroll needs a visible next affordance; trackpad-only scroll hides half the content."*
+_"Horizontal scroll needs a visible next affordance; trackpad-only scroll hides half the content."_
 Implemented with scroll-snap plus explicit prev/next buttons that appear only when the row overflows.
 **Recommended without `Carousel`**, avoiding an `embla-carousel-react` dependency for a rule about an
 affordance (§1.10, §6).
@@ -582,33 +582,33 @@ affordance (§1.10, §6).
 ```tsx
 interface RecentItem {
   id: string;
-  title: React.ReactNode;         // the only required field
+  title: React.ReactNode; // the only required field
   thumbnail?: React.ReactNode;
-  editedAgo?: React.ReactNode;    // "Edited 19 hours ago" — formatted by the caller
-  duration?: React.ReactNode;     // rendered in A8's badge slot
-  actions?: React.ReactNode;      // hover actions
+  editedAgo?: React.ReactNode; // "Edited 19 hours ago" — formatted by the caller
+  duration?: React.ReactNode; // rendered in A8's badge slot
+  actions?: React.ReactNode; // hover actions
 }
 
 interface RecentGridProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   items: RecentItem[];
   onSelect?: (id: string) => void;
-  aspect?: "square" | "video" | "portrait" | "wide";  // passed to A8; default "video"
-  emptyTile?: React.ReactNode;    // an in-grid tile, never a page takeover
+  aspect?: "square" | "video" | "portrait" | "wide"; // passed to A8; default "video"
+  emptyTile?: React.ReactNode; // an in-grid tile, never a page takeover
 }
 ```
 
 **Built on A8** with `labelPlacement="below"` — the placement A8's spec added specifically for C4
-(*"`below` — label sits under the frame. C4 `recent-grid`: thumbnail · title · edited-ago"*).
+(_"`below` — label sits under the frame. C4 `recent-grid`: thumbnail · title · edited-ago"_).
 
-*"All optional except the title; card height fixed regardless."* A8 already guarantees the frame; the
+_"All optional except the title; card height fixed regardless."_ A8 already guarantees the frame; the
 below-frame meta block is C4's own and must **reserve its line even when `editedAgo` is absent**, or a
 mixed grid goes ragged. That is C4's version of A9's row-height rule and the load-bearing assertion.
 
-`editedAgo` is caller-formatted. *"'Edited 19 hours ago' beats a timestamp"* is a copy rule, not a
+`editedAgo` is caller-formatted. _"'Edited 19 hours ago' beats a timestamp"_ is a copy rule, not a
 formatting engine — the super-ai tier ships no date library and relative time is a locale concern.
 
 `emptyTile` renders inside the grid when `items` is empty. Deliberately not named `empty`, so the
-distinction C4 draws — *"an in-grid tile, not a page takeover"* — is visible at the call site.
+distinction C4 draws — _"an in-grid tile, not a page takeover"_ — is visible at the call site.
 
 ### 3.13 C5 `recommendation-card`
 
@@ -620,25 +620,25 @@ interface RecommendationStep {
 
 interface RecommendationCardProps extends React.ComponentProps<"div"> {
   title: React.ReactNode;
-  summary?: React.ReactNode;      // the one-line feed row
-  apps?: React.ReactNode;         // input / app icons
-  steps?: RecommendationStep[];   // numbered, rendered as <ol>
-  open?: boolean;                 // the detail modal
+  summary?: React.ReactNode; // the one-line feed row
+  apps?: React.ReactNode; // input / app icons
+  steps?: RecommendationStep[]; // numbered, rendered as <ol>
+  open?: boolean; // the detail modal
   onOpenChange?: (open: boolean) => void;
   onTry?: () => void;
-  onSave?: () => void;            // save-for-later — the middle option
+  onSave?: () => void; // save-for-later — the middle option
   onDismiss?: () => void;
 }
 ```
 
-*"Two levels: a one-line row in the feed, and a modal explaining inputs and steps before you commit."*
+_"Two levels: a one-line row in the feed, and a modal explaining inputs and steps before you commit."_
 One component, two levels — the row is always rendered and `open` reveals the Dialog.
 
-*"'How it works' is numbered steps, not prose. A recommendation you cannot audit is an instruction you
-should not follow."* `steps` is an array of structured steps rendered as an `<ol>`. **The type is the
+_"'How it works' is numbered steps, not prose. A recommendation you cannot audit is an instruction you
+should not follow."_ `steps` is an array of structured steps rendered as an `<ol>`. **The type is the
 enforcement** — there is no prop that accepts a paragraph.
 
-*"Save-for-later matters as much as Try it — dismissal without a middle option trains dismissal."* So
+_"Save-for-later matters as much as Try it — dismissal without a middle option trains dismissal."_ So
 `onSave` and `onTry` render as equal-weight actions, and the docs mark `onSave` as strongly
 recommended rather than optional-in-spirit.
 
@@ -646,13 +646,13 @@ recommended rather than optional-in-spirit.
 
 ```tsx
 interface HomeShellProps extends React.ComponentProps<"div"> {
-  sidebar?: React.ReactNode;      // B1
-  topbar?: React.ReactNode;       // B7
-  omnibox: React.ReactNode;       // C1 — required
-  starters?: React.ReactNode;     // C2
-  features?: React.ReactNode;     // C3
-  recents?: React.ReactNode;      // C4
-  inspiration?: React.ReactNode;  // C5
+  sidebar?: React.ReactNode; // B1
+  topbar?: React.ReactNode; // B7
+  omnibox: React.ReactNode; // C1 — required
+  starters?: React.ReactNode; // C2
+  features?: React.ReactNode; // C3
+  recents?: React.ReactNode; // C4
+  inspiration?: React.ReactNode; // C5
 }
 ```
 
@@ -661,11 +661,11 @@ lists but omitted from its regions line.
 
 Two rules make this a block rather than a `<div>` with props:
 
-1. **`omnibox` is the only required region.** *"The hero omnibox is above the fold and is the only
-   emphasised element on the page. Everything else is a path back into existing work."* A home shell
+1. **`omnibox` is the only required region.** _"The hero omnibox is above the fold and is the only
+   emphasised element on the page. Everything else is a path back into existing work."_ A home shell
    without a composer is not this archetype.
-2. **The main column's order is owned by the block.** *"Order is invariant across all five reference
-   products: composer → starters → features → recents → inspiration."* Callers supply content per
+2. **The main column's order is owned by the block.** _"Order is invariant across all five reference
+   products: composer → starters → features → recents → inspiration."_ Callers supply content per
    region and **cannot reorder it** — there is no `order` prop and no `children` passthrough for the
    main column. This invariance is the entire finding O1 encodes.
 
@@ -754,8 +754,8 @@ One co-located test per item. Load-bearing assertions only — each protects a r
 `block-specs.md`
 
 - O1 — regions list corrected to seven; M2 and L1 marked as participants reached through host slots
-  rather than as regions; and the *"whole page is C4's empty state"* sentence reconciled with C4's
-  *"not a page takeover"* (§1.7, item 3).
+  rather than as regions; and the _"whole page is C4's empty state"_ sentence reconciled with C4's
+  _"not a page takeover"_ (§1.7, item 3).
 
 `decisions.md`
 

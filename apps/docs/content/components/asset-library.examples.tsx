@@ -36,14 +36,7 @@ export function FoldersAndFilesInOneTable() {
 
 /** DO — one overflow menu per row, revealed on hover and on focus. */
 export function RowActionsInAnOverflowMenu() {
-  return (
-    <AssetLibrary
-      title="Assets"
-      items={MIXED.slice(1)}
-      onOpen={() => {}}
-      rowActions={menu}
-    />
-  );
+  return <AssetLibrary title="Assets" items={MIXED.slice(1)} onOpen={() => {}} rowActions={menu} />;
 }
 
 /** DO — selection mode swaps the menu for checkboxes and reveals the bulk bar. */
@@ -84,10 +77,7 @@ export function ClickableRowWithControlsInside() {
         <tbody>
           <tr className="border-b">
             <td className="p-0">
-              <button
-                type="button"
-                className="text-foreground flex w-full items-center gap-3 p-2 text-left"
-              >
+              <button type="button" className="text-foreground flex w-full items-center gap-3 p-2 text-left">
                 <input type="checkbox" aria-label="Select Brand kit.png" />
                 <span className="flex-1 font-medium">Brand kit.png</span>
                 <span className="rounded-md border px-2 py-0.5 text-xs">Actions</span>

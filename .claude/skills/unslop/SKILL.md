@@ -95,24 +95,24 @@ animates outside genuine, state-bound progress indicators).
 Never fix by bare deletion — slop is a **faked decision**. Find the job the
 decoration was doing and do it with the system's device:
 
-| Violation | Substitute |
-|---|---|
-| Gradient fill/text | Flat token; emphasis via size/weight/position; one accent word max |
-| Glass/glow/orbs | Delete layer; separate via spacing → hairline → tint → card |
-| Colored/new shadow | Project elevation token; focus → focus ring; attention → hierarchy |
-| Raw hex/px | The project's token (match by usage); none fits → propose it, don't inline |
-| Off-scale value | Snap to the project's nearest scale step |
-| New font/size/weight | Nearest declared style; emphasis = weight step, not new size |
-| Emoji/icon leak | Project icon set at its sizes, or nothing |
-| Loops/scroll FX | Bind to real state change or render static; named transitions, ease-out |
-| Copy register | Verb + object; unprovable adjective/number → delete the claim |
-| Chart defaults | Project palette, plain line, linear/step, add unit, direct labels |
-| Contrast fail | Move UP the text ramp or lighten surface — never one-off darker hex |
-| Nested cards | Dissolve inner boundaries down the ladder, keep content |
-| 3-card reflex/stat strip | Rank content; dominant cell for the answering item, rest → row/table |
-| Happy-path only | Empty = sentence + creating action; loading = matched skeleton; error = cause + retry |
-| 375px fails | Mobile-first bases, `dvh`, padded hit areas, kebab menus, table strategy |
-| Duplicate component | Delete new one; extend existing via its variant props |
-| Ratchet growth | Converge onto existing steps; new steps enter via the token system only |
+| Violation                | Substitute                                                                            |
+| ------------------------ | ------------------------------------------------------------------------------------- |
+| Gradient fill/text       | Flat token; emphasis via size/weight/position; one accent word max                    |
+| Glass/glow/orbs          | Delete layer; separate via spacing → hairline → tint → card                           |
+| Colored/new shadow       | Project elevation token; focus → focus ring; attention → hierarchy                    |
+| Raw hex/px               | The project's token (match by usage); none fits → propose it, don't inline            |
+| Off-scale value          | Snap to the project's nearest scale step                                              |
+| New font/size/weight     | Nearest declared style; emphasis = weight step, not new size                          |
+| Emoji/icon leak          | Project icon set at its sizes, or nothing                                             |
+| Loops/scroll FX          | Bind to real state change or render static; named transitions, ease-out               |
+| Copy register            | Verb + object; unprovable adjective/number → delete the claim                         |
+| Chart defaults           | Project palette, plain line, linear/step, add unit, direct labels                     |
+| Contrast fail            | Move UP the text ramp or lighten surface — never one-off darker hex                   |
+| Nested cards             | Dissolve inner boundaries down the ladder, keep content                               |
+| 3-card reflex/stat strip | Rank content; dominant cell for the answering item, rest → row/table                  |
+| Happy-path only          | Empty = sentence + creating action; loading = matched skeleton; error = cause + retry |
+| 375px fails              | Mobile-first bases, `dvh`, padded hit areas, kebab menus, table strategy              |
+| Duplicate component      | Delete new one; extend existing via its variant props                                 |
+| Ratchet growth           | Converge onto existing steps; new steps enter via the token system only               |
 
 Report as: violation → rule area → fix applied. Re-run Phase 2 until clean.

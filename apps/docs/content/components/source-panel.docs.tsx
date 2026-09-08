@@ -23,15 +23,36 @@ export const SourcePanelDocs: ComponentDocs = {
   evidence: ["NotebookLM", "Lovable", "Claude projects"],
   anatomy: [
     { slot: "source-panel", note: "Root wrapper around the header and the list of sources." },
-    { slot: "source-panel-header", note: "Heading and the caller-supplied panel action, shown when either is present." },
+    {
+      slot: "source-panel-header",
+      note: "Heading and the caller-supplied panel action, shown when either is present.",
+    },
     { slot: "source-panel-heading", note: "The panel label, e.g. Sources." },
     { slot: "source-panel-items", note: "The list of sources, in the order they were added." },
-    { slot: "source-panel-item", note: "One source. Carries data-stage, so the pipeline position is queryable, not just visible." },
-    { slot: "source-panel-stage", note: "The stage name as visible text — present in all five states, in the same place." },
-    { slot: "source-panel-item-progress", note: "Indeterminate progressbar plus a step counter, only while a source is in flight." },
-    { slot: "source-panel-item-stats", note: "Chunk count and any extra metadata on a ready source, rendered through stat-readout." },
-    { slot: "source-panel-retry", note: "Per-row Retry, named after that source. Only rendered on a failed row." },
-    { slot: "source-panel-item-status", note: "Visually hidden role=status text announcing that row's stage transitions." },
+    {
+      slot: "source-panel-item",
+      note: "One source. Carries data-stage, so the pipeline position is queryable, not just visible.",
+    },
+    {
+      slot: "source-panel-stage",
+      note: "The stage name as visible text — present in all five states, in the same place.",
+    },
+    {
+      slot: "source-panel-item-progress",
+      note: "Indeterminate progressbar plus a step counter, only while a source is in flight.",
+    },
+    {
+      slot: "source-panel-item-stats",
+      note: "Chunk count and any extra metadata on a ready source, rendered through stat-readout.",
+    },
+    {
+      slot: "source-panel-retry",
+      note: "Per-row Retry, named after that source. Only rendered on a failed row.",
+    },
+    {
+      slot: "source-panel-item-status",
+      note: "Visually hidden role=status text announcing that row's stage transitions.",
+    },
     { slot: "source-panel-empty", note: "Wraps the empty-state shown when there are no sources at all." },
   ],
   usage:
@@ -65,11 +86,11 @@ export const SourcePanelDocs: ComponentDocs = {
     ],
     screenReader: [
       "The stage is announced from visible text in every one of the five states, because `source-panel-stage` renders the same badge for `ready` and `failed` as it does for the three in-flight stages. Colour and icon shape are redundant with it, never a substitute — which is what makes the panel legible when the bar is switched off.",
-      "Each row carries its own visually hidden `role=\"status\"` region reading, for example, \"Q3-report.pdf: Chunking, step 2 of 3\" — so a parsing → chunking → ready transition is announced without the user going looking. On a `failed` row the `errorMessage` is folded into the same string, and on a `ready` row the chunk count is.",
+      'Each row carries its own visually hidden `role="status"` region reading, for example, "Q3-report.pdf: Chunking, step 2 of 3" — so a parsing → chunking → ready transition is announced without the user going looking. On a `failed` row the `errorMessage` is folded into the same string, and on a `ready` row the chunk count is.',
       "That is one live region per row. Moving four sources through the pipeline at once produces four independent announcements, and re-pushing the same stage from a polling loop re-announces it, because the region fires on text change rather than on a real transition.",
-      "The in-flight bar is a real `role=\"progressbar\"` with no `aria-valuenow` — genuinely indeterminate, not a fake percentage — and it is named per source and per stage (\"Q3-report.pdf: Chunking\"). Four in-flight rows are four distinguishable bars rather than four announcements of \"Loading\".",
+      'The in-flight bar is a real `role="progressbar"` with no `aria-valuenow` — genuinely indeterminate, not a fake percentage — and it is named per source and per stage ("Q3-report.pdf: Chunking"). Four in-flight rows are four distinguishable bars rather than four announcements of "Loading".',
       "Retry's accessible name comes from `retryLabel`, which defaults to `Retry ${source.name}`. Overriding it with a constant is the one change that turns a usable panel into a list of identically-named buttons, so keep the source name in whatever you pass.",
-      "A ready row's chunk count arrives through `stat-readout` as a `<dl>`, so it reads as \"Chunks, 128\" rather than as two loose numbers. Every stage icon is `aria-hidden`, so none of them contributes to a name.",
+      'A ready row\'s chunk count arrives through `stat-readout` as a `<dl>`, so it reads as "Chunks, 128" rather than as two loose numbers. Every stage icon is `aria-hidden`, so none of them contributes to a name.',
       "The panel heading is a `<p>`, not a heading element. It is not in the document outline and cannot be jumped to by heading navigation — if this panel needs to be reachable that way, wrap it in your own heading.",
     ],
     focus: [
