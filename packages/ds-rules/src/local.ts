@@ -158,4 +158,16 @@ export const LOCAL_RULES: Rule[] = [
     fix: "Snap to the nearest scale step; a value the scale genuinely lacks is a proposal for the token system, not an inline literal.",
     why: "Off-scale values are the quiet ratchet. Was anti-slop Part 4's LAY-4 grep; retired to judgment method because its false-positive rate is structural — declared unchecked beats silently dropped.",
   },
+  {
+    id: "LAY-2",
+    title: "No numeric arbitrary radius in registry sources",
+    severity: "blocker",
+    detect: {
+      method: "grep",
+      pattern: "\\brounded(?:-[a-z]{1,2})?-\\[\\d",
+      ...catalogGrep,
+    },
+    fix: "Snap to a scale step. rounded-xs (Tailwind's 2px, which shadcn's theme leaves untouched) for hairline marks; rounded-sm/md/lg for surfaces, so the consumer's radius setting reaches them. rounded-[inherit] stays legal: it defers to the parent.",
+    why: "A consumer picks a radius on the create page and every shadcn surface follows it; a literal pixel radius is the one corner that does not. LAY-1 is judgment and never mechanised this case (preset-harness design §3.7).",
+  },
 ];

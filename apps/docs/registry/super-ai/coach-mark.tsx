@@ -253,7 +253,7 @@ function CoachMark({
           data-slot="coach-mark-arrow"
           className="data-[side=bottom]:-top-1 data-[side=left]:-right-1 data-[side=right]:-left-1 data-[side=top]:-bottom-1"
         >
-          <span className="bg-popover ring-foreground/10 block size-2.5 rotate-45 rounded-[2px] ring-1" />
+          <span className="bg-popover ring-foreground/10 block size-2.5 rotate-45 rounded-xs ring-1" />
         </PopoverPrimitive.Arrow>
 
         <PopoverHeader data-slot="coach-mark-header">

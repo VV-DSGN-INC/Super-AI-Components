@@ -181,7 +181,7 @@ function TimeRulerPlayhead({ time, zoom, label, className, style, ...props }: Ti
           crossed by clip artwork. */}
       <span
         aria-hidden="true"
-        className="bg-primary absolute top-0 left-1/2 size-2 -translate-x-1/2 rotate-45 rounded-[1px]"
+        className="bg-primary absolute top-0 left-1/2 size-2 -translate-x-1/2 rotate-45 rounded-xs"
       />
       {label ? (
         <span
@@ -372,7 +372,7 @@ function TimeRuler({
                 index={index}
                 getAriaLabel={() => name}
                 getAriaValueText={(_formatted, value) => readout(value)}
-                className="border-primary bg-background ring-ring/50 pointer-events-auto relative block h-4 w-2 shrink-0 rounded-[2px] border-2 select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3"
+                className="border-primary bg-background ring-ring/50 pointer-events-auto relative block h-4 w-2 shrink-0 rounded-xs border-2 select-none after:absolute after:-inset-2 hover:ring-3 focus-visible:ring-3 focus-visible:outline-hidden active:ring-3"
               />
             ))}
           </SliderPrimitive.Control>
