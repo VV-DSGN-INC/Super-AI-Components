@@ -20,6 +20,7 @@ import {
   compareExemptionLists,
   findReservedStateNames,
   findSlotErasures,
+  missingGuidanceFields,
   parseStorybookExclusions,
 } from "./lib/contract-rules";
 import { deriveExtras } from "./lib/registry-extras";
@@ -111,6 +112,16 @@ for (const item of manifest) {
   // G4 — a state whose Pascal form collides with the story file's own imports.
   errors.push(...findReservedStateNames(item.name, item.states));
 
+  // Guidance content is checked for every item, blocks included. This used to
+  // sit below the block branch's `continue`, which exempted all thirteen
+  // shells from it and is why block-build-brief.md called their guidance "on
+  // your honour". The rule itself is unchanged; only its reach is.
+  const docsPath = fileFor.docs(item.name);
+  if (existsSync(docsPath)) {
+    for (const label of missingGuidanceFields(readFileSync(docsPath, "utf8")))
+      errors.push(`${item.name}: docs module is missing ${label}`);
+  }
+
   if (item.layer === "block") {
     checked++;
 
@@ -171,40 +182,6 @@ for (const item of manifest) {
       if (!exportRe.test(story))
         errors.push(`${item.name}: story file has no export for state "${state}" (expected "${exportName}")`);
     }
-  }
-
-  const docsPath = fileFor.docs(item.name);
-  if (existsSync(docsPath)) {
-    const docs = readFileSync(docsPath, "utf8");
-    // `(?:[^"\\]|\\.)` rather than `[^"]` so an escaped quote inside the prose
-    // doesn't terminate the match early. Guidance is prose and routinely
-    // quotes things; the naive form rejected a fully-written whatItIs whose
-    // only sin was containing \"Recommended for you\".
-    //
-    // Both quote styles are accepted for the same reason, one level up:
-    // Prettier picks whichever delimiter needs fewer escapes, so a guidance
-    // string that itself contains a straight double quote comes out
-    // single-quoted. Matching only `"…"` failed N5 run-inspector's whatItIs —
-    // fully written, correctly formatted, and rejected purely for quoting
-    // `"the run failed"` inside itself.
-    const quoted = (field: string) =>
-      new RegExp(`${field}:\\s*(?:"(?:[^"\\\\]|\\\\.){10,}"|'(?:[^'\\\\]|\\\\.){10,}')`);
-    const required: [RegExp, string][] = [
-      [quoted("whatItIs"), "whatItIs"],
-      [quoted("whyItMatters"), "whyItMatters"],
-      [/dos:\s*\[\s*\{/, "at least one do"],
-      [/donts:\s*\[\s*\{/, "at least one don't"],
-      [/pitfalls:\s*\[\s*["']/, "at least one pitfall"],
-      // Both arms are required, not just the block, because the failure this
-      // catches is a half-filled one: `keyboard` is the easy arm to write from
-      // reading the component, and `screenReader` — the arm describing what is
-      // actually announced — is the one that gets left as `[]`.
-      [/accessibility:\s*\{/, "an accessibility block"],
-      [/keyboard:\s*\[\s*["']/, "at least one keyboard note"],
-      [/screenReader:\s*\[\s*["']/, "at least one screen reader note"],
-    ];
-    for (const [re, label] of required)
-      if (!re.test(docs)) errors.push(`${item.name}: docs module is missing ${label}`);
   }
 }
 

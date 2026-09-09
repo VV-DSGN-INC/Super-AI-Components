@@ -247,3 +247,43 @@ export function anchorErrors(
   }
   return errors;
 }
+
+/**
+ * The guidance-content contract for a `<name>.docs.tsx` module, as a pure
+ * function over the source so it can be tested without a manifest or a disk.
+ *
+ * Lifted out of `check-contract.mts` when blocks were brought under the same
+ * contract: the check used to sit after the block branch's `continue`, so all
+ * thirteen shells were exempt from it and `block-build-brief.md` had to say
+ * their guidance was "on your honour".
+ *
+ * `(?:[^"\\]|\\.)` rather than `[^"]` so an escaped quote inside the prose
+ * doesn't terminate the match early. Guidance is prose and routinely quotes
+ * things; the naive form rejected a fully-written whatItIs whose only sin was
+ * containing \"Recommended for you\".
+ *
+ * Both quote styles are accepted for the same reason, one level up: Prettier
+ * picks whichever delimiter needs fewer escapes, so a guidance string that
+ * itself contains a straight double quote comes out single-quoted. Matching
+ * only `"…"` failed N5 run-inspector's whatItIs — fully written, correctly
+ * formatted, and rejected purely for quoting `"the run failed"` inside itself.
+ */
+export function missingGuidanceFields(docs: string): string[] {
+  const quoted = (field: string) =>
+    new RegExp(`${field}:\\s*(?:"(?:[^"\\\\]|\\\\.){10,}"|'(?:[^'\\\\]|\\\\.){10,}')`);
+  const required: [RegExp, string][] = [
+    [quoted("whatItIs"), "whatItIs"],
+    [quoted("whyItMatters"), "whyItMatters"],
+    [/dos:\s*\[\s*\{/, "at least one do"],
+    [/donts:\s*\[\s*\{/, "at least one don't"],
+    [/pitfalls:\s*\[\s*["']/, "at least one pitfall"],
+    // Both arms are required, not just the block, because the failure this
+    // catches is a half-filled one: `keyboard` is the easy arm to write from
+    // reading the component, and `screenReader` — the arm describing what is
+    // actually announced — is the one that gets left as `[]`.
+    [/accessibility:\s*\{/, "an accessibility block"],
+    [/keyboard:\s*\[\s*["']/, "at least one keyboard note"],
+    [/screenReader:\s*\[\s*["']/, "at least one screen reader note"],
+  ];
+  return required.filter(([re]) => !re.test(docs)).map(([, label]) => label);
+}

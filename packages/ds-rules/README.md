@@ -17,7 +17,7 @@ never gate; findings under `apps/docs/components/ui/` demote to warnings
 
 | piece | origin | local changes |
 |---|---|---|
-| `src/schema.ts` | ds-architecture starter kit (pegbo-inc/design-system-rebuild) | `TOK` added to RULE_ID_PATTERN |
+| `src/schema.ts` | ds-architecture starter kit (upstream-design-system) | `TOK` added to RULE_ID_PATTERN |
 | `src/core.ts` | same, harvested | scopes repointed; ICO-2 fix → lucide-react; 3 triage edits (COL-1/STA-3 exempts, CPY-2 severity), reasoned inline |
 | `src/local.ts` | this repo (check-tokens.mjs, token-rules.mjs, a11y-baseline.md, anti-slop.md) | — |
 | `rulecheck.mjs` | same starter kit | seven divergences, numbered in its header |

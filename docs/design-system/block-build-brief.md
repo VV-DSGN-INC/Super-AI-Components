@@ -118,14 +118,17 @@ red the moment O2 flipped to `shipped`. **Task 5 fixed it once, for all blocks**
 non-empty `consumes` and **empty** `states`. Twelve agents patching that shared file concurrently is
 a merge disaster. If it goes red for you, something else is wrong: report it.
 
-## Your guidance is on your honour
+## Your guidance is gated, like everyone else's
 
-`check-contract.mts:155` `continue`s out of the block branch **before** the docs-guidance content
-assertions at `:180-193`. Blocks are checked for the _existence_ of
+It was not, until 2026-09-08. `check-contract.mts` used to `continue` out of the block branch
+**before** the docs-guidance content assertions, so blocks were checked for the _existence_ of
 `content/components/<name>.docs.tsx` and nothing about what is in it — a stub module with empty
-`whyItMatters`, `dos`, `donts` and `pitfalls` ships green.
+`whyItMatters`, `dos`, `donts` and `pitfalls` shipped green. The check now runs above that branch,
+as `missingGuidanceFields` in `lib/contract-rules.ts`, and applies to every item. All thirteen
+shells passed it unchanged on the day it was turned on, which is the evidence that the honour
+system had held.
 
-Fill it as if the gate checked, to `component-build-brief.md`'s §Guidance standard. `anatomy` is your
+Fill it to `component-build-brief.md`'s §Guidance standard. `anatomy` is your
 `data-region` list plus your own `data-slot`s, and **every pitfall should be something you actually
 hit** — the composed-component gaps, the overrides you had to write, the thing that looked configured
 but was not. `chat-shell.docs.tsx` has seven, all real. That is the bar.

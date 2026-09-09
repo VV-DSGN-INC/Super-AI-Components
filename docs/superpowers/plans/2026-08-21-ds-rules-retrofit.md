@@ -985,15 +985,15 @@ The harvested file holds ten records: COL-1, COL-6, ICO-2, MOT-1, MOT-2, CPY-1, 
    scope: ["apps/docs/registry/super-ai", "apps/docs/registry/marketing"],
    ```
    Core rules deliberately exclude `components/ui` — vendored shadcn is only in scope for the TOK token rules.
-2. **ICO-2's `fix`** (names pegbo's icon adapter) becomes:
+2. **ICO-2's `fix`** (names the upstream icon adapter) becomes:
    ```ts
    fix: "Use lucide-react at the size the component already imports (16/20/24), or drop the glyph — emoji live only inside user-generated content, never in chrome.",
    ```
    The ban itself is untouched.
 3. Update the file header comment's first line to name this repo and the provenance:
    ```ts
-   /** Harvested from ds-architecture starter-kit 02-rules/core.ts (pegbo-inc/
-    *  design-system-rebuild via the 2026-08-21 archive). Scopes repointed to
+   /** Harvested from ds-architecture starter-kit 02-rules/core.ts (
+    *  upstream-design-system via the 2026-08-21 archive). Scopes repointed to
     *  this repo's registry; ICO-2's fix repointed to lucide-react. Everything
     *  else is verbatim — improve upstream, not here. */
    ```
@@ -1151,7 +1151,7 @@ never gate; findings under `apps/docs/components/ui/` demote to warnings
 
 | piece                 | origin                                                                        | local changes                              |
 | --------------------- | ----------------------------------------------------------------------------- | ------------------------------------------ |
-| `src/schema.ts`       | ds-architecture starter kit (pegbo-inc/design-system-rebuild)                 | `TOK` added to RULE_ID_PATTERN             |
+| `src/schema.ts`       | ds-architecture starter kit (upstream-design-system)                          | `TOK` added to RULE_ID_PATTERN             |
 | `src/core.ts`         | same, harvested                                                               | scopes repointed; ICO-2 fix → lucide-react |
 | `src/local.ts`        | this repo (check-tokens.mjs, token-rules.mjs, a11y-baseline.md, anti-slop.md) | —                                          |
 | `rulecheck.mjs`       | same starter kit                                                              | five divergences, numbered in its header   |
@@ -1786,7 +1786,7 @@ In `tools/ds-architecture/package.json` devDependencies add `"@types/node": "^22
 ```markdown
 # Vendored: ds-architecture conformance checker
 
-- **Source:** `pegbo-inc/design-system-rebuild` (PR #115 there), via the local
+- **Source:** `upstream-design-system` (PR #115 there), via the local
   archive `ds-architecture-archive-2026-08-21.zip`; archive stamp
   `design-spec@1d7cf45 (2026-08-21)`.
 - **Vendored here:** 2026-08-22, runtime only (scripts/, src/, stages/,

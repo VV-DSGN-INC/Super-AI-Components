@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - **Wave 0 must be green on GitHub first.** Deploying from a red `main` ships what the Linux gate never verified, and the consumer install test is the step currently hidden behind the failure.
-- **This wave needs the `weeeha` GitHub account and cannot be delegated to an agent.** The only account in `gh auth` is `nickvpegbo`, which has `push: false` on this repo. Re-authentication is interactive.
+- **This wave needs the `weeeha` GitHub account and cannot be delegated to an agent.** The only account in `gh auth` is a work account, which has `push: false` on this repo. Re-authentication is interactive.
 - Deploys are manual, from `apps/docs`. **Nothing ships on merge** — `ci.yml` only verifies.
 - Nick's standing rule: never push to production without an explicit go. Confirm the target repo and branch out loud before deploying.
 - This repo is under **VV-DSGN-INC**, not `weeeha`. Several sibling design repos live under `weeeha` and the two have been confused before.

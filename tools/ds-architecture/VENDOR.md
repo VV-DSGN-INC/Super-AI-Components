@@ -1,6 +1,6 @@
 # Vendored: ds-architecture conformance checker
 
-- **Source:** `pegbo-inc/design-system-rebuild` (PR #115 there), via the local
+- **Source:** `upstream-design-system` (PR #115 there), via the local
   archive `ds-architecture-archive-2026-08-21.zip`; archive stamp
   `design-spec@1d7cf45 (2026-08-21)`.
 - **Vendored here:** 2026-08-22, runtime only (scripts/, src/, stages/,

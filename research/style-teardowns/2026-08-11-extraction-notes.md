@@ -50,7 +50,7 @@
 - **Inputs**: h40, radius 8px, transparent bg on gray field wrapper, pad 12px left.
 - **Gaps**: 4, 8, 2, 12, 24. Nav rows h30.
 
-## 5. Monday.com — AI Notetaker view (pegbo-group.monday.com)
+## 5. Monday.com — AI Notetaker view (monday.com)
 
 - **Font**: Figtree (rounded geometric sans). Body 15px/22.5 w400 (1.5 ratio); 14px/22, 16px/22 also common; headings 24/30 w500, 18/24 w500; light w300 on some CTAs.
 - **Colors**: white-dominant. Text rgb(50,51,56) #323338 primary, rgb(103,104,121) #676879 secondary (cool blue-gray). Brand blue rgb(0,115,234) #0073ea (buttons/links/selected tab), lighter blue rgb(0,133,255), pale blue selection rgb(204,229,255), page tint rgb(246,247,251); green accent rgb(0,200,117) #00c875.
@@ -71,7 +71,7 @@
 - **Gaps**: 16 dominant (26), 8, 4, 12, 2. Most generous spacing of the set.
 - CSS vars: none exposed (compiled CSS-in-JS).
 
-## 7. Linear (linear.app — Pegbo 2.0 MVP initiative)
+## 7. Linear (linear.app — 2.0 MVP initiative)
 
 - **Font**: Inter Variable / SF Pro Display. Doc content 16/24 w400; UI chrome 13px & 12px w500 (lh normal); **15px/24 w450** (36 uses — weight 450 again); headings 19/28 w600. Exposed tokens: --font-size-small .8125rem (13), regular .9375rem (15), large 1.125rem (18).
 - **Colors**: ALL lch, hue 282 (barely-cool blue-violet cast at chroma 0–1.25). Exposed: --color-bg-primary lch(97.94)≈#f9f9fa (their own --bg-base-color-light:#f9f9fa), sidebar #efeff0, content panel white; text primary lch(9.79)≈#19191b, secondary lch(19.59)≈#2f3035, tertiary lch(39.18)≈#5c5d63, quaternary lch(64.64)≈#9b9ca4. Borders: primary lch(95.24)≈#f0f0f1, secondary lch(88.49)≈#dedee1, tertiary lch(84.44). 0.5px hairline borders. Chart pink lch(40 60 340) + teal accents.
