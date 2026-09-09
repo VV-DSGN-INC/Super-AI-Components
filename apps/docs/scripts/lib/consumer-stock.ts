@@ -43,4 +43,7 @@ export const CONSUMER_STOCK_COLORS = [
 /** Custom properties a consumer's stylesheet is guaranteed to declare: the
  *  colour roles above as `--<role>`, plus `--radius`. Fonts are not listed
  *  because no registry source references a font family (design §2.1). */
-export const CONSUMER_STOCK_VARS: readonly string[] = [...CONSUMER_STOCK_COLORS.map((c) => `--${c}`), "--radius"];
+export const CONSUMER_STOCK_VARS: readonly string[] = [
+  ...CONSUMER_STOCK_COLORS.map((c) => `--${c}`),
+  "--radius",
+];

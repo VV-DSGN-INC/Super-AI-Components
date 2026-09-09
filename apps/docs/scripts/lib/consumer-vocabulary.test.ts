@@ -80,9 +80,10 @@ describe("consumer vocabulary (TOK-9)", () => {
         for (const v of vocabularyViolations(reads, allowed)) failures.push(`${file}:${v.line} ${v.name}`);
       }
     }
-    expect(failures, "names a consumer's shadcn init will not declare (ship them via cssVars on the item)").toEqual(
-      [],
-    );
+    expect(
+      failures,
+      "names a consumer's shadcn init will not declare (ship them via cssVars on the item)",
+    ).toEqual([]);
   });
 
   it("every marketing item reads only stock names or the shared block it ships", () => {
