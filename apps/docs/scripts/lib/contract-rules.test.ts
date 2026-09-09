@@ -5,6 +5,7 @@ import {
   compareExemptionLists,
   findReservedStateNames,
   findSlotErasures,
+  missingGuidanceFields,
   parseStorybookExclusions,
 } from "./contract-rules";
 
@@ -187,5 +188,37 @@ describe("anchorErrors", () => {
   it("reports an anchor whose file does not exist", () => {
     const errors = anchorErrors([item("kbd", "missing.md#a1-kbd")], () => undefined);
     expect(errors[0]).toContain("missing.md");
+  });
+});
+
+describe("missingGuidanceFields", () => {
+  const FULL = `export const Docs: ComponentDocs = {
+  whatItIs: "The avatar-plus-name control that opens the workspace list.",
+  whyItMatters: "First element in every sidebar on the reference board.",
+  dos: [{ text: "Put creation last." }],
+  donts: [{ text: "Don't add a plus icon." }],
+  accessibility: {
+    keyboard: ["One tab stop."],
+    screenReader: ["Announces the current workspace."],
+  },
+  pitfalls: ["Two flavours, one component."],
+};`;
+
+  it("passes a fully written guidance module", () => {
+    expect(missingGuidanceFields(FULL)).toEqual([]);
+  });
+
+  it("names the field that is missing", () => {
+    expect(missingGuidanceFields(FULL.replace(/pitfalls: \[[^\]]*\]/, "pitfalls: []"))).toEqual([
+      "at least one pitfall",
+    ]);
+  });
+
+  it("accepts single-quoted prose, which prettier produces when the text quotes something", () => {
+    const single = FULL.replace(
+      /whatItIs: "[^"]*"/,
+      `whatItIs: 'The control that announces "the run failed" to the reader.'`,
+    );
+    expect(missingGuidanceFields(single)).toEqual([]);
   });
 });
