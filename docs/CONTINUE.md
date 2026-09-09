@@ -163,6 +163,31 @@ Recorded because both predictions held:
   dev server, and its preview reported success while serving another worktree's
   build, so its new routes 404'd with no error anywhere. **If you hand-verify in
   a parallel worktree, take your own port and your own browser tab.**
+
+  **Storybook now cooperates with that rule instead of fighting it.**
+  `apps/storybook`'s `dev` script resolves its port as
+  `${STORYBOOK_PORT:-${PORT:-6007}}` and passes `--exact-port`, so a busy port is
+  an immediate exit instead of a hang. It used to be `-p 6007` with no
+  `--exact-port`, which blocked on an interactive _"Port 6007 is not available.
+  Would you like to run Storybook on port 6008 instead?"_ prompt — fine in a
+  terminal, and under a non-TTY launcher a prompt nobody can answer and a server
+  that never becomes ready. Two consequences worth knowing:
+
+  - **`.claude/launch.json` needs no port of its own.** A launcher with
+    `autoPort: true` injects the port it picked as `PORT` in the child
+    environment (measured, not assumed). That is why `next dev` always honoured
+    `autoPort` and Storybook never did — `next dev` reads `PORT` and the
+    Storybook CLI does not. Reading `PORT` in the script is the whole fix; the
+    launch config is unchanged.
+  - **`--exact-port` exits `255` and prints nothing** but the version banner. So a
+    bare `ELIFECYCLE ... exit code 255` from `pnpm --filter storybook dev` means
+    the port is taken, not that Storybook is broken.
+
+  Precedence is CLI argument, then `STORYBOOK_PORT`, then `PORT`, then `6007` —
+  `pnpm --filter storybook dev -p 6018` still wins over everything, because npm
+  appends extra arguments to the end of the script string and the last `-p` is
+  the one Commander keeps.
+
 - **The retrofit was worth doing first.** Twelve shells composed those
   primitives; had `cost-chip` still carried its default, the compensation list
   would have grown rather than gone to zero.
