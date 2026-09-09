@@ -15,7 +15,9 @@ const FIXTURES = "packages/ds-rules/__fixtures__";
  *  record at the fixture directory — the pattern/method under test is real,
  *  only `scope` is redirected. */
 describe("every rule against its fixtures", () => {
-  const rules = loadRules().filter((r) => r.detect.method !== "rendered" && r.detect.method !== "judgment");
+  const rules = loadRules().filter(
+    (r) => r.detect.method !== "rendered" && r.detect.method !== "judgment" && r.detect.method !== "delegated",
+  );
 
   for (const rule of rules) {
     const at = (kind: string) => ({ ...rule, detect: { ...rule.detect, scope: [`${FIXTURES}/${rule.id}/${kind}`] } });
@@ -56,7 +58,7 @@ describe("CLI contract", () => {
     // the CLI at that one-off rules dir via the DS_RULES_DIR test seam.
     const dir = fileURLToPath(new URL("./__control__/", import.meta.url));
     const rules = loadRules().map((r) =>
-      r.detect.method === "rendered" || r.detect.method === "judgment"
+      r.detect.method === "rendered" || r.detect.method === "judgment" || r.detect.method === "delegated"
         ? r
         : { ...r, detect: { ...r.detect, scope: [FIXTURES] } },
     );

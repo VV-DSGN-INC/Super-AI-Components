@@ -29,11 +29,22 @@ describe("rule records", () => {
   it("every grep/heuristic rule has a known-bad and a known-good fixture", async () => {
     const { existsSync } = await import("node:fs");
     for (const rule of all()) {
-      if (rule.detect.method === "rendered" || rule.detect.method === "judgment") continue;
+      if (rule.detect.method === "rendered" || rule.detect.method === "judgment" || rule.detect.method === "delegated") continue;
       for (const kind of ["bad", "good"]) {
         const dir = new URL(`../__fixtures__/${rule.id}/${kind}/`, import.meta.url);
         expect(existsSync(dir), `${rule.id} missing __fixtures__/${rule.id}/${kind}/`).toBe(true);
       }
+    }
+  });
+
+  it("every delegated rule names a gate file that exists", async () => {
+    const { existsSync } = await import("node:fs");
+    const { fileURLToPath } = await import("node:url");
+    const delegated = all().filter((r) => r.detect.method === "delegated");
+    for (const rule of delegated) {
+      const d = rule.detect as { method: "delegated"; gate: string };
+      const abs = fileURLToPath(new URL(`../../../${d.gate}`, import.meta.url));
+      expect(existsSync(abs), `${rule.id} delegates to ${d.gate}, which does not exist`).toBe(true);
     }
   });
 });

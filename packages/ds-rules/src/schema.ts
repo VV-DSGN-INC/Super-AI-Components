@@ -15,7 +15,7 @@ import { z } from "zod"
 
 /** Bumped when the record shape changes. Vendored copies (me:unslop) print
  *  this so a stale copy is visible in the transcript instead of silent. */
-export const CATALOGUE_VERSION = 1
+export const CATALOGUE_VERSION = 2
 
 export const RULE_ID_PATTERN = /^(COL|TYP|LAY|CMP|ICO|MOT|CPY|CHT|STA|SYS|TOK)-\d+$/
 
@@ -59,11 +59,23 @@ const judgmentDetect = z.object({
   how: z.string().min(1),
 })
 
+const delegatedDetect = z.object({
+  method: z.literal("delegated"),
+  /** Repo-relative path of the test file whose assertions are this rule's
+   *  teeth. Exists because a detector that needs TypeScript (the manifest)
+   *  cannot run inside the dependency-free rulecheck; records.test.ts asserts
+   *  the file is there, so a rule cannot delegate into a void. */
+  gate: z.string().min(1),
+  /** What the gate checks, printed on every run's unchecked line. */
+  how: z.string().min(1),
+})
+
 export const detectSchema = z.discriminatedUnion("method", [
   grepDetect,
   heuristicDetect,
   renderedDetect,
   judgmentDetect,
+  delegatedDetect,
 ])
 
 export const ruleSchema = z.object({

@@ -99,8 +99,8 @@ export function scan(rules, files, root = REPO_ROOT) {
   for (const rule of rules) {
     const d = rule.detect;
 
-    if (d.method === "rendered" || d.method === "judgment") {
-      unchecked.push({ id: rule.id, reason: d.method, how: d.how });
+    if (d.method === "rendered" || d.method === "judgment" || d.method === "delegated") {
+      unchecked.push({ id: rule.id, reason: d.method, how: d.how, ...(d.gate ? { gate: d.gate } : {}) });
       continue;
     }
 
@@ -198,7 +198,7 @@ function main(argv) {
       process.stdout.write(`${tag}${v.file}:${v.line}  ${v.id} [${v.severity}]  ${v.snippet}\n    fix: ${v.fix}\n`);
     }
     for (const u of report.unchecked) {
-      if (u.how) process.stdout.write(`unchecked ${u.id} (${u.reason}): ${u.how}\n`);
+      if (u.how) process.stdout.write(`unchecked ${u.id} (${u.reason}${u.gate ? `: ${u.gate}` : ""}): ${u.how}\n`);
     }
     const ids = report.unchecked.map((u) => `${u.id}(${u.reason})`).join(" ");
     process.stdout.write(`\n${report.violations.length} violation(s). unchecked: ${ids || "none"}\n`);
