@@ -15,6 +15,7 @@ export default defineConfig({
       "components/**/*.test.{ts,tsx}",
       "content/**/*.test.{ts,tsx}",
       "scripts/**/*.test.{ts,tsx}",
+      "harness/**/*.test.{ts,tsx}",
     ],
     css: false,
   },

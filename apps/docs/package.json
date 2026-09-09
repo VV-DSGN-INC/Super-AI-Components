@@ -41,6 +41,7 @@
     "use-stick-to-bottom": "^1.1.6"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
