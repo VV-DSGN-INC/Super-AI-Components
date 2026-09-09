@@ -1,16 +1,16 @@
 import { existsSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 import { CATALOG_ITEMS } from "../lib/catalog";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
+import { harnessDir } from "./baseline";
 
 export interface HarnessItem {
   name: string;
   kind: "super-ai" | "marketing";
 }
 
-const demoFor = (name: string) =>
-  fileURLToPath(new URL(`../components/demos/${name}-demo.tsx`, import.meta.url));
+const demoFor = (name: string) => path.resolve(harnessDir(), "..", "components", "demos", `${name}-demo.tsx`);
 
 /** Every item the docs app can demo. Lib items (cost, initials, use-view-mode)
  *  have no demo and nothing to render; they are installed but not visited. */
