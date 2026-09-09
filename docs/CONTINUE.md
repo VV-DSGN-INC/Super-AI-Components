@@ -594,6 +594,10 @@ pre-existing.
 
 ---
 
+**Turbo restores only declared outputs.** `build:registry` declared
+`public/r/**` and not `registry.json`, so a cache hit left `consumer-test.sh`
+with zero items. Any file a later step reads must be in the task's `outputs`.
+
 ## 5. Open decisions — these need a human, don't guess
 
 1. **RESOLVED — C2 `suggestion-chips` shipped via a cross-registry dependency.**

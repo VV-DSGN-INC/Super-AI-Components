@@ -148,4 +148,57 @@ The default config encodes to `b0`.
 
 ## 5. Findings from the first run
 
-_Filled in by the plan's last task._
+Measured 2026-09-09 on the branch, every count from `harness/baseline.json` and
+the run logs. Axe scope: WCAG 2.x A/AA, per §3.6.
+
+| row                               | init and build | baselined, light | baselined, dark | rules that fired                                         |
+| --------------------------------- | -------------- | ---------------- | --------------- | -------------------------------------------------------- |
+| `default`                         | pass           | 10               | 12              | color-contrast, target-size, scrollable-region-focusable |
+| `radix-violet-large`              | build fails    | not reached      | not reached     | six items import Base-UI-only exports from `ui/progress` |
+| `vega-stone-emerald-tabler-small` | pass           | 10               | 18              | the same three; dark color-contrast on 12 items, not 6   |
+
+**The default row, which the old test called green, carries 22 findings.**
+Target-size on the track-lane trim handles and the filter-chip remove buttons
+(both themes), a scrollable table region with no tab stop in timeline-shell
+(both), and colour contrast on four items in light and six in dark. Dark had
+never been audited by anything; the Storybook gate runs light only.
+
+**The Radix question, measured.** The 14 direct `@base-ui/react` imports
+compiled beside Radix without a complaint. What broke is the shadcn _style_
+API: `generation-queue`, `render-queue`, `result-card`, `onboarding-wizard`
+and `voice-clone-recorder` import `ProgressLabel`, and `run-button` imports
+`ProgressTrack` and `ProgressIndicator`, from the consumer's `ui/progress`.
+The Base UI style file exports all five parts; the Radix style file exports
+`Progress` alone, so Turbopack fails with fourteen "Export … doesn't exist in
+target module" errors. Two answers exist and the registry has not chosen:
+declare Base UI a requirement on the install page, or have those six compose
+only what both styles export. Until then the row carries a dated
+`knownFailure` in `presets.ts`, runs by hand, and is left out of the matrix by
+the mirror test. Whether the type-check phase would find further style
+differences is unknown: compilation failed first.
+
+**The icon question, measured.** The Tabler row installed `@tabler/icons-react`
+for the consumer's own ui files beside the registry's `lucide-react`, and
+built. The screenshots examined (`filter-bar`, `gen-settings-bar` in light,
+`workspace-switcher` in dark) show registry glyphs only; a page where a
+consumer ui part draws an icon beside a registry glyph was not verified in
+this run, so the mixed-set claim stays a hypothesis.
+
+**What the emerald theme does in dark.** The visible failure is the plan badge
+in `workspace-switcher`: dim emerald on near-black, in
+`harness/out/vega-stone-emerald-tabler-small/dark/workspace-switcher.png`.
+Six more items fail dark contrast under emerald than under neutral, so accent
+colour is a real axis for contrast, not only for taste.
+
+**Two things the CLI taught the harness.**
+
+- The init endpoint enforces a pairing the create page applies silently: a
+  neutral chart palette must follow the base colour ("Chart color \"neutral\"
+  is not available for base color \"stone\"", HTTP 400). `configFor` now derives
+  it the way the page does, and the Vega row's code became `bJfF7mxU`, the
+  page's own.
+- The scaffold runs `shadcn@latest`, which resolved to 4.20.0, while the repo
+  pins 4.11.0 for `shadcn build` and the encoder. Both decode the three codes
+  to identical values today. The round-trip test pins only the repo's version;
+  the harness run is what checks the server side, and a future skew will show
+  there as an init failure naming the code.

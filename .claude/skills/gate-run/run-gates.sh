@@ -35,4 +35,14 @@ run "storybook a11y" pnpm --filter storybook test:stories
 
 run "consumer install" apps/docs/scripts/consumer-test.sh
 
+# The presets job: every non-default row, derived from the record rather than
+# listed here, so this mirror cannot drift from apps/docs/harness/presets.ts.
+# PRESET_ROWS="radix-violet-large" narrows it while iterating; the full loop is
+# the gate.
+for row in ${PRESET_ROWS:-$(cd apps/docs && pnpm exec tsx harness/preset-code.mts --list | grep -v "^default$")}; do
+  run "preset harness: $row" apps/docs/scripts/consumer-test.sh "$row"
+done
+printf '\n=== preset rows deferred with a written reason (not gates; run by hand) ===\n'
+(cd apps/docs && pnpm exec tsx harness/preset-code.mts --known-failures)
+
 printf '\nAll gates green.\n'

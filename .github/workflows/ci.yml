@@ -37,3 +37,37 @@ jobs:
           pnpm --filter storybook test:stories
       - name: Consumer install test
         run: apps/docs/scripts/consumer-test.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: preset-harness-default
+          path: apps/docs/harness/out/default
+          if-no-files-found: ignore
+
+  presets:
+    # The registry's promise is "plug into whatever theme you have"; verify
+    # proves the default preset, these rows prove the axes a consumer can move
+    # on ui.shadcn.com/create. Rows: apps/docs/harness/presets.ts, and
+    # presets.test.ts fails if this list drifts from it.
+    needs: verify
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        row: [vega-stone-emerald-tabler-small]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.1.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter docs exec playwright install --with-deps chromium
+      - name: Preset harness (${{ matrix.row }})
+        run: apps/docs/scripts/consumer-test.sh ${{ matrix.row }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: preset-harness-${{ matrix.row }}
+          path: apps/docs/harness/out/${{ matrix.row }}
+          if-no-files-found: ignore

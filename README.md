@@ -34,7 +34,7 @@ pnpm test             # vitest behavior tests
 pnpm check:tokens     # token-contract lint (shadcn CSS variables only)
 pnpm build:registry   # emit public/r/*.json
 pnpm build            # build the docs site
-apps/docs/scripts/consumer-test.sh   # install everything into a fresh app
+apps/docs/scripts/consumer-test.sh [row]   # install everything into a fresh app on a preset, render every demo under axe
 ```
 
 - **Catalog and roadmap (authoritative):** `docs/design-system/` — the 116-item catalog, concept model,

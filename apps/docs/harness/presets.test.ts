@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 import {
   PRESET_BASES,
@@ -12,7 +12,7 @@ import {
 } from "shadcn/preset";
 import { describe, expect, it } from "vitest";
 
-import { HARNESS_ROWS, codeFor, configFor, rowById } from "./presets";
+import { ACTIVE_ROWS, HARNESS_ROWS, codeFor, configFor, rowById } from "./presets";
 
 describe("preset rows", () => {
   it("ids are unique and filesystem-safe", () => {
@@ -55,19 +55,27 @@ describe("preset rows", () => {
   });
 
   it("ci.yml's presets matrix is exactly the non-default rows (a hand-written mirror that drifts is a gate that never runs)", () => {
-    const ci = readFileSync(
-      fileURLToPath(new URL("../../../.github/workflows/ci.yml", import.meta.url)),
-      "utf8",
-    );
+    // cwd-relative like every other docs test (vitest rewrites import.meta.url
+    // to a non-file URL): vitest runs from apps/docs.
+    const ci = readFileSync(path.resolve(process.cwd(), "../../.github/workflows/ci.yml"), "utf8");
     const m = ci.match(/row:\s*\[([^\]]+)\]/);
     expect(m, "no `row: [...]` matrix in ci.yml").not.toBeNull();
     const inCi = m![1]
       .split(",")
       .map((s) => s.trim())
       .sort();
-    const expected = HARNESS_ROWS.map((r) => r.id)
+    const expected = ACTIVE_ROWS.map((r) => r.id)
       .filter((id) => id !== "default")
       .sort();
     expect(inCi).toEqual(expected);
+  });
+
+  it("a deferred row carries a dated reason long enough to be one, and the default row is never deferred", () => {
+    for (const row of HARNESS_ROWS) {
+      if (!row.knownFailure) continue;
+      expect(row.id).not.toBe("default");
+      expect(row.knownFailure.since).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(row.knownFailure.reason.length, `${row.id} reason`).toBeGreaterThan(80);
+    }
   });
 });

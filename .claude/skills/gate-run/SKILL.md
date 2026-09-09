@@ -9,8 +9,9 @@ description: Run every CI gate locally in ci.yml's exact order. Use before claim
 .claude/skills/gate-run/run-gates.sh
 ```
 
-Eleven steps, in `.github/workflows/ci.yml`'s order. It stops at the first
-failure, as CI does.
+Twelve steps, in `.github/workflows/ci.yml`'s order, then one preset-harness
+run per non-default row (the `presets` job). It stops at the first failure, as
+CI does.
 
 ## Why the order is the point
 
@@ -31,6 +32,10 @@ this becomes exactly the kind of unfaithful gate list the line above warns
 against.
 
 ## Before you trust a green run
+
+- **The preset rows scaffold a fresh app each.** Three to five minutes per row.
+  `PRESET_ROWS="radix-violet-large" .claude/skills/gate-run/run-gates.sh`
+  narrows the loop while you iterate; the unnarrowed run is the gate.
 
 - **`next start` serves the prebuilt output.** Editing source without rebuilding
   tests a stale app, and the Playwright smoke gate will pass against it. This

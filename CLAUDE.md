@@ -80,7 +80,7 @@ Everything routes through turbo from the repo root:
 | `pnpm check:ladder`                | ds-architecture conformance, not in CI      |
 | `./scripts/linux-gate.sh`          | **the Storybook gate in the CI image**      |
 
-Per-workspace: `cd apps/docs && pnpm new:component <name>` scaffolds the five files · `cd apps/docs && pnpm exec playwright test` is the smoke gate (rebuild first) · `cd apps/storybook && pnpm test:stories` is the axe a11y gate · `apps/docs/scripts/consumer-test.sh` installs everything into a fresh app.
+Per-workspace: `cd apps/docs && pnpm new:component <name>` scaffolds the five files · `cd apps/docs && pnpm exec playwright test` is the smoke gate (rebuild first) · `cd apps/storybook && pnpm test:stories` is the axe a11y gate · `apps/docs/scripts/consumer-test.sh [row]` installs everything into a fresh app on a shadcn preset and renders every demo under axe, light and dark (rows: `apps/docs/harness/presets.ts`; `default` when omitted).
 
 Use `pnpm`, not npm — the lockfile is `pnpm-lock.yaml` and CI installs with `--frozen-lockfile`.
 
@@ -117,6 +117,8 @@ in the PR body, and say which schema it assumes.
 `install --frozen-lockfile` → `lint` → `format:check` → `typecheck` → `check:tokens` → `check:contract` → `test` → `build:registry` → `build` → **Playwright smoke** → **Storybook a11y + interaction** → **consumer install test**
 
 Twelve steps. The last three are the ones that actually exercise the product, and they are last — so any earlier failure hides them entirely. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
+
+A second job, `presets`, runs after `verify`: a matrix of the non-default preset rows (Radix base, a coloured theme, a second style, Tabler icons, moved radii), each scaffolding a consumer on that preset and running the same render-and-axe pass. Screenshots upload as artifacts named `preset-harness-<row>`. Axe findings live in `apps/docs/harness/baseline.json`, which may only shrink. A row that measured an undecided failure carries a dated `knownFailure` reason in `presets.ts` and is left out of the matrix by a test-pinned rule; removing the field is the act of deciding. Design: `docs/superpowers/specs/2026-09-09-preset-harness-design.md`.
 
 `format:check` joined the list on 2026-09-07, when the tree was made
 prettier-clean. The bash hook used to deny a repo-wide format on the grounds
