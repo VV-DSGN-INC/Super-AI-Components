@@ -10,7 +10,7 @@
 > ladder; when prose and record disagree, the record wins and this file has
 > drifted.
 
-**Date:** 2026-08-11 · **Method:** 12 parallel research lenses, ~40 practitioner sources, ~110 catalogued indicators — each with a _mechanical_ detection rule. Origin: the `pegbo-inc/design-system-rebuild` anti-slop spec; this is the project-agnostic edition. The runnable companion is the `unslop` skill (`.claude/skills/unslop/`).
+**Date:** 2026-08-11 · **Method:** 12 parallel research lenses, ~40 practitioner sources, ~110 catalogued indicators — each with a _mechanical_ detection rule. Origin: the `upstream-design-system` anti-slop spec; this is the project-agnostic edition. The runnable companion is the `unslop` skill (`.claude/skills/unslop/`).
 
 **How to use in this repo:** the taxonomy (Part 2), audit (Part 4), and fix ladder are universal. The rules (Part 3) are written against "the project's declared system" — bind them to THIS repo's tokens, scales, and contracts, which always win over the generic phrasing.
 
@@ -276,7 +276,7 @@ A failing check is never fixed by bare deletion. Slop is a **faked decision**: t
 
 - **Skill:** `.claude/skills/unslop/SKILL.md` — auto-discovered by Claude Code in this repo; invoke before building UI and again before "done".
 - **CLAUDE.md / AGENTS.md:** points here; keep it a pointer, not a copy.
-- **Origin:** full research with the worked @weeeha/ui ruleset lives in `pegbo-inc/design-system-rebuild` → `docs/superpowers/specs/2026-08-11-anti-slop-rules.md`; improvements should flow back there.
+- **Origin:** full research with the worked @weeeha/ui ruleset lives in `upstream-design-system` → `docs/superpowers/specs/2026-08-11-anti-slop-rules.md`; improvements should flow back there.
 
 ---
 

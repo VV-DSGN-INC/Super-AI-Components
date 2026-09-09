@@ -1,6 +1,6 @@
 # Product style & token research — deep extraction
 
-**What this is.** A measured teardown of ten SaaS products' visual systems — color tokens, numeric tokens (radius, spacing, type, borders, shadows, control sizes), dark-mode value pairs, and token _naming_ conventions — captured live from each product's running UI, not eyeballed from screenshots. Purpose: give Pegbo concrete, paste-able value sets (`[data-theme="try-*"]` blocks below, keyed to our `globals.css` semantic token names) to test overall visual directions against our own product, plus naming precedent for evolving `tokens.ts`.
+**What this is.** A measured teardown of ten SaaS products' visual systems — color tokens, numeric tokens (radius, spacing, type, borders, shadows, control sizes), dark-mode value pairs, and token _naming_ conventions — captured live from each product's running UI, not eyeballed from screenshots. Purpose: give us concrete, paste-able value sets (`[data-theme="try-*"]` blocks below, keyed to our `globals.css` semantic token names) to test overall visual directions against our own product, plus naming precedent for evolving `tokens.ts`.
 
 **Companion artifacts:**
 
@@ -427,7 +427,7 @@ The boldest flip: warm olive canvas becomes **near-black `#080808`**, and panels
 2. **Hover/selected is an alpha overlay, not a token color** — black 4–5% at OpenAI, Claude, Twenty. Matches our "recipes, not tokens" rule.
 3. **Nobody uses real elevation on light UI.** Four of six ship effectively zero shadows; Pipedrive's card shadow is 5% alpha. Separation = bg tint + hairline.
 4. **One accent doing real work.** Every product has exactly one interactive color; extra colors are demoted to chips/pastel data colors (Claude's model cards, Twenty's tags).
-5. **Warm gray = "paper/notes" products (Claude, Evernote); cool/neutral gray = "tool" products.** Temperature is doing brand work, matching our pegbo-warm vs pegbo-emerald axis.
+5. **Warm gray = "paper/notes" products (Claude, Evernote); cool/neutral gray = "tool" products.** Temperature is doing brand work, matching our warm vs emerald axis.
 6. **Weight replaces size at small scales.** Twenty (13px everywhere, w500 emphasis), Pipedrive (w450 base) and Linear (13px w500 chrome, 15px w450 lists) prove a 2-size UI scale works if weight carries hierarchy. The **half-step weight 450** appears independently at Pipedrive and Linear — it reads denser without reading bold.
 7. **Radius encodes density**: Monday 4px enterprise-square → Pipedrive/Evernote 6 → Claude/Twenty/Linear 8 → OpenAI 10 casual → Intercom pill. Card radius ≈ control radius + 4 (or ×1.5) in every product — same relationship as our 7/13/19 scale.
 8. **The floating-panel frame** (Twenty, Intercom, Linear-lite): tinted canvas + white content panels lifted by a 1px ring and whisper shadow, 12–16px panel radius. It replaces both borders and elevation as the primary structure device.

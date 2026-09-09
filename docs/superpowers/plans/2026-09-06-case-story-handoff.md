@@ -21,7 +21,7 @@ six things the program left open on purpose.
   `claude/component-stories-specs-b80050` points at the same commit. To undo the
   merge: `git branch -f main b420c5a`.
 - **Pushing is blocked on credentials, not on the work.** The only account in
-  `gh auth` is `nickvpegbo`, which has `push: false` on this repo
+  `gh auth` is a work account, which has `push: false` on this repo
   (`gh api repos/VV-DSGN-INC/Super-AI-Components --jq .permissions`). `weeeha`
   is no longer stored, so `gh auth switch` does not help. Re-auth is interactive.
   **Do not try to work around this.**

@@ -44,7 +44,7 @@ Captured from `pnpm check:tokens` after widening the glob (exit 0, warn-only):
   can resolve because a composite takes its value from whatever sits behind
   it. Decorative rather than read, so no AA bar applies; the finding is that
   the value is invisible to the token system. The sibling
-  `design-system-rebuild` hit this exact line in its own vendored chart (its
+  `upstream-design-system` hit this exact line in its own vendored chart (its
   opacity spec's inventory records it as "stroke 1") and chose substitution to
   a flat token; here it stays reported-not-fixed per this file's scope.
   Unconditional className — same default-path reasoning as (c).

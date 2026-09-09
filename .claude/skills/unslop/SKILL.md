@@ -15,7 +15,7 @@ generations). Counter all four: decide once in the project's system, ban the
 named defaults, require provenance, audit with counts — not vibes.
 
 Origin research (12 lenses, ~110 indicators, ~40 sources):
-`design-system-rebuild/docs/superpowers/specs/2026-08-11-anti-slop-rules.md`.
+`upstream-design-system/docs/superpowers/specs/2026-08-11-anti-slop-rules.md`.
 
 ## Phase 0 — This repo's bindings
 
