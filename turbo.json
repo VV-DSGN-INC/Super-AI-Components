@@ -15,7 +15,7 @@
     "check:tokens": {},
     "check:contract": {},
     "build:registry": {
-      "outputs": ["public/r/**"],
+      "outputs": ["public/r/**", "registry.json"],
       "env": ["REGISTRY_URL"]
     }
   }
