@@ -170,4 +170,16 @@ export const LOCAL_RULES: Rule[] = [
     fix: "Snap to a scale step. rounded-xs (Tailwind's 2px, which shadcn's theme leaves untouched) for hairline marks; rounded-sm/md/lg for surfaces, so the consumer's radius setting reaches them. rounded-[inherit] stays legal: it defers to the parent.",
     why: "A consumer picks a radius on the create page and every shadcn surface follows it; a literal pixel radius is the one corner that does not. LAY-1 is judgment and never mechanised this case (preset-harness design §3.7).",
   },
+  {
+    id: "TOK-9",
+    title: "Registry sources read only stock shadcn colour names or names their item ships",
+    severity: "blocker",
+    detect: {
+      method: "delegated",
+      gate: "apps/docs/scripts/lib/consumer-vocabulary.test.ts",
+      how: "Every colour-utility stem and var(--x) read that resolves against the docs stylesheet must be stock shadcn (CONSUMER_STOCK_COLORS) or a cssVars key of the item, transitively through consumes. Needs the manifest, so it runs under pnpm test, not here.",
+    },
+    fix: "Ship the name with the item (cssVars on its manifest entry, the WARNING_CSS_VARS shape), or use the stock role it stands in for.",
+    why: "Tailwind v4 emits nothing for an undefined utility. A name the docs app declares and a consumer's shadcn init does not ships a colourless component with a green build; cssvars-liveness resolves against the docs stylesheet and cannot see it (preset-harness design §1, §3.7).",
+  },
 ];

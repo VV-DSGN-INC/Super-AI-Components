@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 import { MANIFEST } from "../../lib/catalog.manifest"; // match check-contract.mts's exact import
+import { colorReads } from "./consumer-vocabulary";
 import { stripComments } from "./contract-rules";
 
 /** Liveness, both directions (spec §5). Forward: every CSS variable a shipped
@@ -77,7 +78,16 @@ function computeFailures(): string[] {
       // `--warning-foreground` appears. Comment-stripped: a `--key` mentioned
       // only in a comment (not live code) is not a read either.
       const keyRe = new RegExp(`${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\w-])`);
-      const referenced = sources.some((s) => keyRe.test(stripComments(s)));
+      let referenced = sources.some((s) => keyRe.test(stripComments(s)));
+      // A `theme` key `color-<stem>` is read through Tailwind's utilities
+      // (`bg-<stem>`, `text-<stem>/60`), never by its own name, so the literal
+      // test above called every WARNING_CSS_VARS carrier unread and each one
+      // sat in the baseline as a permanent false positive. Resolve the stem
+      // the way TOK-9 does (consumer-vocabulary.ts).
+      if (!referenced && key.startsWith("color-")) {
+        const stem = key.slice("color-".length);
+        referenced = sources.some((s) => colorReads(stripComments(s), new Set([stem])).length > 0);
+      }
       if (!referenced) out.push(`${item.name}:${key} (declared in cssVars, read by nothing)`);
     }
   }

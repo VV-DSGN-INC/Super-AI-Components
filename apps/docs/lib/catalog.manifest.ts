@@ -1657,6 +1657,10 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["your-limit", "provider-capacity", "live-countdown", "notify-me"],
     specAnchor: "component-specs.md#m6-rate-limit-banner",
+    // The banner frame paints border-warning/40 and bg-warning/5. Found by the
+    // TOK-9 consumer-vocabulary gate on its first run (2026-09-09): without
+    // this a consumer installed a colourless frame with a green build.
+    cssVars: WARNING_CSS_VARS,
   },
   {
     id: "M7",
@@ -2253,6 +2257,9 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["kanban", "table", "feed", "calendar", "timeline", "group-tone"],
     specAnchor: "component-specs.md#p1-data-views",
+    // data-views-shared.tsx paints the warning tone (text-warning, bg-warning
+    // text-warning-foreground). Found by the TOK-9 gate on its first run.
+    cssVars: WARNING_CSS_VARS,
     // The six view shells are imported by data-views.tsx and by nothing else,
     // so D3 leaves them nowhere to be but this item's own files. See D18.
     files: [
