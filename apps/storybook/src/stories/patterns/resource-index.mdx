@@ -1,0 +1,245 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import DataViewsDemo from "@/components/demos/data-views-demo";
+import DateSectionDemo from "@/components/demos/date-section-demo";
+import FilterBarDemo from "@/components/demos/filter-bar-demo";
+import FilterPanelDemo from "@/components/demos/filter-panel-demo";
+import RecordListDemo from "@/components/demos/record-list-demo";
+import ThreadListDemo from "@/components/demos/thread-list-demo";
+
+<Meta title="Patterns/Resource index" />
+
+# Resource index
+
+The screen that says what exists. An index lets a reader reach the record they came for, and this
+registry answers it with five views behind one switcher rather than three separate components:
+`data-views` renders list, kanban, table, calendar and timeline from one `items` array, and
+`use-view-mode` holds which one is showing. The choice between them is the reader's, stored per
+section, which is why the pattern is mostly about what the app decides for them: which views are
+offered at all, how the collection is narrowed, and what groups it.
+
+## Use it when
+
+- A region lists many records of one kind, each with a name and a place to go.
+- The reader came to find one of them, or to see how many there are.
+- The collection outgrows the screen, so it needs narrowing, grouping, or both.
+
+Do not use it when the answer is one of these instead:
+
+- **One record.** That is **Patterns → Resource details**.
+- **A list you choose from to fill a field.** `select`, `combobox` and `command` exist to be chosen
+  from and close when you pick. **Patterns → Forms & wizards** owns them.
+- **A route rather than a record.** `app-sidebar`, `sidebar-nav` and `breadcrumb` move a reader
+  through the app; **Foundations → Navigation** owns them.
+- **A summary of the collection.** `stat-readout` and `quota-meter` report a number.
+  **Patterns → Status & feedback** owns them.
+- **A conversation.** `thread-list` looks like an index and is one, but the panes it opens are
+  **Patterns → AI conversation**'s.
+- **Nothing to list.** `empty-state` and the Empty contract in `docs/design-system/concept-model.md`
+  section 4 cover that, and **Content → Empty states** owns the words.
+
+## The index, live
+
+Four units make up the pattern here: the switcher over the collection, the narrowing controls, the
+grouper, and the records themselves.
+
+<Example>
+  <DataViewsDemo />
+</Example>
+
+Five modes, one array. `use-view-mode.tsx` line 24 declares `ViewMode` as `list`, `kanban`, `table`,
+`calendar` and `timeline`, and line 27 fixes that as both the switcher's order and its arrow-key
+order, with the two time views last. Line 30 marks `calendar` and `timeline` as the views that need a
+date per item, and `availableViewModes` at line 43 drops them when a section has no date accessor,
+because offering a view that can only render empty is worse than not offering it. The default at line
+32 is `kanban`.
+
+Each view earns its own keyboard and screen-reader treatment, and the reasons are recorded at the
+sites. `table-view.tsx` line 28 writes `role="grid"` rather than shipping a plain table, so a row can
+be a legal focus target and carry `aria-selected`; line 21 derives `interactive` from whether
+`onItemClick` was passed, so a read-only table advertises no tab stop that does nothing.
+`kanban-view.tsx` line 20 makes the board a `section` with `tabIndex` 0 and the name "Board columns",
+because a horizontally scrolling container that cannot take focus leaves a keyboard user stranded at
+the second column. `feed-view.tsx` line 33 paints its sticky group header `text-foreground` on
+`bg-muted/60` rather than `text-muted-foreground`, which is the 4.34:1 pairing
+`docs/design-system/a11y-baseline.md` records and `TOK-4` bans.
+
+### Narrowing: chips, then a rail
+
+<Example className="flex flex-col gap-6">
+  <FilterBarDemo />
+  <div className="max-w-xs">
+    <FilterPanelDemo />
+  </div>
+</Example>
+
+Two components, one ladder. `filter-bar.tsx` is 98 lines and exports four symbols: `FilterBar`,
+`FilterChip`, `AddFilterChip` and `FiltersButton`. `filter-panel.tsx` is 507 lines, and its own header
+comment states the escalation: the bar handles a handful of chips, and past roughly six facets a
+surface moves to the rail. The rail's rules are enforced rather than left to the call site, `count` is
+a required field on every facet and part of the checkbox's accessible name, and a facet whose count is
+zero renders disabled, still shows its zero, and carries an sr-only "no matches". The dead end is
+stated before the click and stated in text, never by dimming alone.
+
+Both components pay the muted-on-muted tax explicitly. `filter-bar.tsx` line 32 rebinds
+`--muted-foreground` to `var(--secondary-foreground)` on an active chip, because the chip paints
+`bg-secondary` and the remove button inside it carries its own `text-muted-foreground` that a
+slot-level override cannot reach. That rebind-on-the-painting-element move is the house fix for
+`TOK-6`, and the same line appears in `cost-chip.tsx` line 25 and `gen-settings-bar.tsx` line 33.
+
+### Date is the grouper
+
+<Example>
+  <DateSectionDemo />
+</Example>
+
+`date-section.tsx` is 31 lines and does one thing: a `role="group"` whose `aria-labelledby` points at
+a label id from `React.useId()`, so the grouping is programmatic rather than a heading a reader has to
+infer from position. The design spec section 4, under Finding and sharing, records date as the
+universal grouper across threads, generations and inboxes. `thread-list` uses the same shape for
+conversations, and `feed-view` builds its own sticky variant when the grouping comes from a `groups`
+array rather than from the page.
+
+<Example className="flex flex-wrap items-start gap-6">
+  <ThreadListDemo />
+</Example>
+
+### Rows that carry state
+
+<Example>
+  <RecordListDemo />
+</Example>
+
+`record-list.tsx` is the index shape for records that **run**, and its header comment carries three
+rules worth repeating on a page like this. The enable toggle is the primary control and sits in the
+row rather than behind the overflow menu or on a detail page. The app-icon cluster is data rather than
+decoration, so the marks are `aria-hidden` and the app names carry the meaning, which is what makes a
+screen reader get what a glance gets. Last-run and draft state belong in the subtitle rather than in a
+separate column.
+
+Two shells assemble these parts into a whole screen, and neither renders honestly in a docs column
+because both are `h-full` against their host: `library-shell.tsx` line 349 and `records-shell.tsx`
+line 285. They are live, at their own size, at
+[Super AI → Library Shell](?path=/docs/super-ai-library-shell--docs) and
+[Super AI → Records Shell](?path=/docs/super-ai-records-shell--docs).
+
+## Who chooses the view
+
+The switcher is the reader's control, and that is the decision this repo has already made rather than
+one each screen re-takes. `use-view-mode.tsx` line 48 keys the preference as
+`super-ai.view-mode.<section>` in `localStorage`, so a reader's choice survives a reload and is scoped
+per section rather than per app. The app's remaining job is to decide which views a section may offer,
+by supplying a date accessor or not.
+
+The hook's docblock carries a constraint worth reading before wiring it. A given storage key must be
+owned by exactly one hook instance, because `storage` events do not fire in the tab that wrote the
+value, so two instances sharing a key drift silently. That is the stated reason `data-views` and
+`detail-view-shell` both take their mode as a prop instead of calling the hook themselves.
+
+The record axis is separate and never consults the collection axis. `DetailMode` at line 62 is
+`popup`, `overlay` or `fullscreen`, keyed per entity, so a section can be a table whose rows open in a
+popup while another is a board opening into an overlay. **Patterns → Resource details** owns what
+happens inside each of the three.
+
+## Key decisions
+
+- **One collection, one items array.** `data-views` takes `items` once and switches presentation over
+  it; `asset-library.tsx` makes the same call for folders and files, which share one table and one set
+  of columns because a separate folder pane forces a reader to think about storage. A second array for
+  a second view is how two views start disagreeing.
+- **Offer only the views that can render.** `availableViewModes` is the mechanism, and the rule behind
+  it is that an empty calendar teaches a reader the section is broken.
+- **The narrowing control is picked by facet count.** Chips to about six, then the rail. Neither is a
+  new component, and inventing a third is not the fix.
+- **Every facet states its count, including zero.** A filter that will return nothing says so first,
+  and says it in text and in a programmatic disabled state.
+- **A row is a target, not a toolbar.** `asset-library.tsx` exposes exactly one action control per
+  row, an overflow menu trigger revealed on hover and on focus-within. **Patterns → Actions and
+  confirmation** decides what goes in it.
+- **Group by date unless the data has a better spine.** It is the one grouper that works on threads,
+  generations and inboxes alike.
+- **The view preference belongs to the reader, per section.** Do not reset it on navigation, and do
+  not let two components own one storage key.
+
+The one variable below is how a row reports the state of the thing it lists.
+
+<DoDont
+  doExample={
+    <div className="flex flex-col gap-1 text-sm">
+      <span className="font-medium">Lead sync</span>
+      <span className="text-muted-foreground text-xs">Last run failed, auth expired</span>
+    </div>
+  }
+  doCaption="the state is a phrase in the subtitle, where record-list.tsx puts it. It survives a screenshot, a screen reader and a reader who cannot separate the two tints below."
+  dontExample={
+    <div className="border-destructive/40 bg-destructive/10 text-foreground flex flex-col gap-1 rounded-md border p-2 text-sm">
+      <span className="font-medium">Lead sync</span>
+      <span className="text-xs opacity-70">Ran 2 h ago</span>
+    </div>
+  }
+  dontCaption="the same row tinted instead. Colour with no label names nothing, CPY-1 asks the label to say the thing, and the row already spends its background on hover and selection."
+/>
+
+## Rules
+
+- An index lists records that already exist. A list you pick from to fill a field is a picker and
+  closes when you choose; a list that moves you through the app is navigation. Neither is this pattern.
+- One `items` array per collection. `data-views` switches presentation over it and never takes a
+  second source per view.
+- Only offer the time views when the section supplies a date per item. `availableViewModes` in
+  `use-view-mode.tsx` line 43 is the check, and it exists so no reader meets an empty calendar.
+- Keep the view order `list`, `kanban`, `table`, `calendar`, `timeline`, per `VIEW_MODE_VALUES` in
+  `use-view-mode.tsx` line 27. It is the arrow-key order as well as the visual one.
+- One owner per preference key. `usePersistedPreference` does not receive `storage` events from its
+  own tab, so a second instance on the same key drifts. Thread the value down as a prop, the way
+  `data-views` and `detail-view-shell` do.
+- A table whose rows do nothing takes no tab stop. `table-view.tsx` line 21 derives that from
+  `onItemClick`, so passing a handler is what turns rows into focus targets, `role="grid"` cells and
+  `aria-selected` state.
+- A scroll container takes focus and a name. `kanban-view.tsx` line 20 is a `section` with `tabIndex`
+  0 and `aria-label="Board columns"`, because a bare `div` is `role="generic"` and ARIA prohibits a
+  name on it.
+- Never write `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`, in one class
+  string or split across elements. `TOK-4`, `TOK-5` and `TOK-6` are the rules, `check:tokens` enforces
+  them over registry sources, and the cross-element case is the one a lint cannot see, so a component
+  that paints its own muted surface rebinds `--muted-foreground` on that surface. `filter-bar.tsx`
+  line 32 is the shipped precedent.
+- Filter chips to about six facets, then the rail. `filter-panel.tsx` states the threshold in its own
+  header comment.
+- Every facet carries a count, and the count is part of the checkbox's accessible name. A zero-count
+  facet renders disabled, keeps its zero visible, and carries an sr-only "no matches".
+- A record's enable toggle stays in the row. `record-list.tsx` puts it there deliberately, one
+  keystroke from the list rather than behind a menu.
+- Icon clusters are `aria-hidden` and the names beside them carry the meaning. A cluster that only
+  exists as marks tells a screen reader nothing.
+- Row actions live in one overflow menu per row. **Patterns → Actions & confirmation** owns what is
+  in it and which entries are destructive.
+- The empty collection empties the records region and leaves the narrowing controls standing, so the
+  filter that emptied it stays reachable. Every panel, list, grid and pane ships an empty state, per
+  the Empty contract in `docs/design-system/concept-model.md` section 4.
+- A record's own view is **Patterns → Resource details**. The index hands it off rather than growing
+  into it.
+
+## Content notes
+
+A collection names itself once, at the top, and counts itself as a numeral however small. The count is
+the collection's until a filter applies, then the filtered count, which is the number
+**Content → Empty states** needs when the region comes back empty.
+
+Group labels are the shortest true thing: "Today", "Yesterday", "In review". `date-section-demo`
+ships the first two and `data-views-demo` groups by bucket, and neither adds a word the reader can see
+from the rows themselves.
+
+Filter chip labels are the facet's own name, singular, sentence case, no count in the label:
+`filter-bar-demo` ships "Genre", "Instrument", "Mood" and an add-chip reading "Owner". The count lives
+beside the facet in the rail, where `filter-panel.tsx` requires it, rather than in the chip.
+
+A row's subtitle carries state as words. `record-list-demo` writes "Last run 4 min ago", "Running
+since 12:04" and "Last run failed, auth expired" rather than colouring the row, because colour with no
+label names nothing. **Patterns → Status & feedback** owns which surface reports a record's state,
+and `CPY-1` requires the label to say the thing.
+
+This page owns how a collection is presented, narrowed and grouped. **Content → Empty states** owns
+what the region says when it holds nothing, **Patterns → Actions & confirmation** owns what a row's
+menu can do, and **Patterns → Resource details** owns what happens once the reader picks one.

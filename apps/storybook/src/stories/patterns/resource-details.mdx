@@ -1,0 +1,231 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import AssetDetailDemo from "@/components/demos/asset-detail-demo";
+import DetailViewShellDemo from "@/components/demos/detail-view-shell-demo";
+import TemplateDetailDemo from "@/components/demos/template-detail-demo";
+
+<Meta title="Patterns/Resource details" />
+
+# Resource details
+
+One record's home. The index answered which one; this answers what now. In this registry the frame is
+`detail-view-shell`, and its first decision is not layout at all: a record opens as a **popup**, an
+**overlay** or a **fullscreen** route, and the three differ in what stays usable behind them. Inside
+that frame the record splits into what it **is**, in a left column of fields, and what **happened** to
+it, in a right column of channels. Both collapse by measured width rather than by viewport.
+
+## Use it when
+
+- One record has a name, a state, and more facts than a row can carry.
+- A reader arrived from **Patterns → Resource index**, or from a link, to do something to that record.
+- The record's facts fall into groups a reader works through separately.
+
+Do not use it when the answer is one of these instead:
+
+- **Many records.** **Patterns → Resource index** owns the five views and the narrowing over them.
+- **The form is the task.** Once a reader came to fill fields rather than read them,
+  **Patterns → Forms & wizards** owns the view.
+- **A decision about the record.** `trust-dialog` and `permission-prompt` stop the page to ask, and
+  **Patterns → Actions & confirmation** owns what they ask.
+- **A conversation about the record.** `chat-shell` and the AI Elements ports are
+  **Patterns → AI conversation**'s.
+- **A record that failed to load, or holds nothing yet.** **Content → Error messages** and
+  **Content → Empty states** own both, and the Empty contract in
+  `docs/design-system/concept-model.md` section 4 makes the second one non-optional.
+
+## The detail view, live
+
+One record, three ways of opening it. Switch modes in the demo and watch what happens to the
+collection behind the panel.
+
+<Example>
+  <DetailViewShellDemo />
+</Example>
+
+The three modes are declared in `use-view-mode.tsx` line 62 as `DetailMode`, and the file's own
+comment names what each one is for: popup is a centred dialog over a dimmed collection, overlay is a
+right-side panel with the collection still live behind it, and fullscreen is a real route, which is
+the only mode that owns a URL. The default at line 71 is `overlay`, chosen because it is the only mode
+that demonstrates content swapping when a second record is opened.
+
+`detail-view-shell.tsx` line 15 states the restraint that makes one shell serve every entity: it owns
+no routing, so the page decides when a mode change means navigating. That is why the shell takes
+`mode` as a prop rather than calling `useDetailMode` itself, which is also the single-owner rule
+**Patterns → Resource index** records for the collection axis.
+
+Overlay geometry is the part worth reading before overriding it. Line 88 caps the expanded panel at
+`w-[min(65vw,100vw_-_540px)]`, and the comment above it shows the arithmetic: the reservation keeps
+roughly 300px of live collection at 1280px and 1512px, rising to 432px at 1920px. The stated reason is
+that overlay only earns its keep while the board behind stays usable, and the previous
+`min-w-[1100px]` did the opposite, leaving about 180px of board on a laptop, which is fullscreen with
+extra steps. Below roughly 1180px the file says popup or fullscreen is the honest mode.
+
+### Fields on the left, channels on the right
+
+`detail-view-shell.tsx` line 44 sets `TWO_COLUMN_THRESHOLD` to 720, with the comment that two columns
+need roughly 320px each plus gutters. `detail-fields.tsx` line 20 sets its own threshold to 460,
+because that is the nested collapse: the pane-level one turns two columns into one, and this one turns
+two label and value pairs per row into one. The file measures itself rather than taking a size prop,
+so a caller cannot forget to thread it, and it stays a `dl` in both layouts because the collapse is
+presentation and the term-to-definition relationship is not.
+
+`detail-tabs.tsx` is one tablist serving both tab levels, level 1 switching panes when the container
+is too narrow for two columns and level 2 switching channels inside the conversation. Its line 72
+folds a channel's count into the accessible name, `Activity, 3` rather than `Activity`, with the
+comment that a coloured badge is invisible to a screen reader. Keyboard behaviour is roving tabindex,
+matching the view switcher, so the shell has one keyboard idiom rather than a third.
+
+### Provenance is part of the record
+
+<Example>
+  <AssetDetailDemo />
+</Example>
+
+`asset-detail.tsx` line 17 states the point: the highlighted span is the point, prompts are editable
+material rather than a caption. A lightbox that shows the prompt as a caption treats the sentence that
+produced the image as trivia. Its params render through `stat-readout`, the same grid `run-inspector`
+uses, so provenance looks identical wherever it appears, and seed and sampler are copyable because
+they are what make a result reproducible.
+
+That is the Provenance contract in `docs/design-system/concept-model.md` section 4 doing its job:
+prompt, model, seed, params and cost travel with every asset, and any surface showing an asset can
+render them. The design spec section 4 calls it the recipe-card pattern.
+
+### A detail view that commits
+
+<Example>
+  <TemplateDetailDemo />
+</Example>
+
+`template-detail.tsx` line 32 makes options part of the commit: the primary action emits
+`onUseTemplate({ templateId, options })`, so a modal that commits a bare id has only opened a second
+configuration step. Line 38 is the other half. The component is handed a `templates` pool and renders
+whichever member is current, rather than one template plus a list of related ids, so picking a related
+tile changes `templateId` and nothing else. `open` is untouched, which means the modal structurally
+cannot close on the way to the next template.
+
+## Popup, overlay, or fullscreen
+
+One axis: what does the reader need behind the panel?
+
+- **`popup`** is the centred dialog. `POPUP_HEIGHT` at line 46 is `h-[min(888px,90vh)]`, collapsed
+  width `sm:max-w-[1200px]` and expanded `sm:max-w-[1534px]`. The collection dims. Use it when the
+  record is the whole task for the next minute and the list behind it is only context.
+- **`overlay`** is the right-side panel at `inset-y-2 end-2 h-auto rounded-lg`, line 66. The
+  collection stays interactive, which is the reason for the width arithmetic above. Use it when the
+  reader is working down a list and opening records one after another.
+- **`fullscreen`** is a real route, and the only mode that owns a URL. Use it when the record must be
+  linkable, survive a refresh, or hold more than a panel can.
+
+The shell branches on `mode` and renders what it is told, so the three are one component rather than
+three. What is not automatic is the routing: `open` is ignored in fullscreen, where the route is the
+open state, so a page that offers fullscreen wires navigation itself.
+
+## Key decisions
+
+- **The record says who it is once.** The `header` slot carries the name and the state. No field row
+  and no channel repeats it. A pane that has to say the name again wanted to be its own view.
+- **Left is what it is, right is what happened.** `attributes` and `conversation` are separate props
+  precisely so the split cannot blur. A one-column detail view omits `conversation` rather than
+  folding activity into the fields.
+- **Collapse on the panel's own width, never the viewport.** Both thresholds are measured against the
+  element, 720 for the pane and 460 for the field pairs, because an overlay 640px wide inside a 1920px
+  window is narrow whatever the viewport says.
+- **The count goes in the name, not only in the badge.** `detail-tabs.tsx` line 72 is the mechanism,
+  and the reason is that a badge is invisible to a screen reader.
+- **Provenance travels with the asset.** Prompt, model, seed and params render through `stat-readout`
+  wherever the asset appears, so two surfaces cannot show two versions of one recipe.
+- **Options are configured before commit.** A detail view that commits an id and re-reads options
+  afterwards has split one decision in two.
+- **The shell owns no routing.** A mode change is the page's to act on, which is the single restraint
+  that lets one shell serve every entity.
+
+The one variable below is whether a channel's count reaches the accessible name.
+
+<DoDont
+  doExample={
+    <button
+      type="button"
+      aria-label="Comments, 2"
+      className="border-primary text-foreground -mb-px border-b-2 px-2 py-2 text-sm font-medium"
+    >
+      <span>Comments</span>{" "}
+      <span className="bg-muted ms-1.5 rounded px-1 text-xs tabular-nums opacity-70">2</span>
+    </button>
+  }
+  doCaption="the count is folded into aria-label, so the tab announces Comments, 2. This is detail-tabs.tsx line 72 verbatim in shape."
+  dontExample={
+    <button
+      type="button"
+      className="border-primary text-foreground -mb-px border-b-2 px-2 py-2 text-sm font-medium"
+    >
+      <span>Comments</span>{" "}
+      <span className="bg-muted ms-1.5 rounded px-1 text-xs tabular-nums opacity-70">2</span>
+    </button>
+  }
+  dontCaption="the same tab with the badge left out of the name. It looks identical and announces Comments 2 only by accident of text order, and a badge rendered as an icon or a dot would announce nothing at all."
+/>
+
+## Rules
+
+- One record per view, and it states its identity once in `header`. Never repeat the name inside
+  `attributes` or a channel.
+- Pick the mode by what must stay usable behind the panel: popup dims the collection, overlay keeps it
+  live, fullscreen replaces it. Only fullscreen owns a URL, so anything that must be linked or survive
+  a refresh takes it.
+- Do not widen the overlay past what `detail-view-shell.tsx` line 88 allows. The
+  `min(65vw, 100vw - 540px)` cap exists so roughly 300px of collection stays visible on a laptop; a
+  fixed minimum wider than that is fullscreen with extra steps.
+- Below roughly 1180px, offer popup or fullscreen rather than a three-column overlay. The floor stops
+  the collapse from turning into nonsense, and the file says so at its own site.
+- Let the components measure themselves. `detail-view-shell` collapses at 720 and `detail-fields` at
+  460, both against their own element. Do not thread a viewport breakpoint through either.
+- Keep `detail-fields` a `dl` in both layouts. The single-column form is a presentation change, and the
+  term-to-definition relationship is not.
+- Fold a channel's count into the tab's accessible name, per `detail-tabs.tsx` line 72. A badge alone
+  is invisible to a screen reader.
+- Use one tablist for both tab levels. A second implementation of the same control drifts, which is
+  the reason `detail-tabs.tsx` line 23 gives for serving both.
+- Roving tabindex on the tabs, matching the view switcher, so the shell has one keyboard idiom.
+- Render provenance through `stat-readout`, not a bespoke grid. Prompt, model, seed, sampler and cost
+  travel with the asset, per the Provenance contract in `docs/design-system/concept-model.md`
+  section 4, and seed and sampler are copyable because reproducibility depends on them.
+- Treat the prompt as material rather than a caption. `asset-detail` highlights a span and feeds it
+  into remix; a read-only prompt line hides the one editable thing on the screen.
+- Commit the configured object. `onUseTemplate({ templateId, options })` is the shape; emitting a bare
+  id makes the host re-read state the component already had.
+- Never close a detail view on the way to a related record. `template-detail` leaves `open` untouched
+  when `templateId` changes, which is what makes "more like this" structurally unable to dead-end.
+- The shell owns no routing. A mode change is the page's to act on, and `open` is ignored in
+  fullscreen because the route is the open state.
+- Never write `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`. `TOK-4`, `TOK-5`
+  and `TOK-6` are the rules; the field label in `detail-fields.tsx` line 54 sits on the pane
+  background, which is why it can be muted there.
+- The record that failed to load is **Content → Error messages**'; the pane holding nothing is
+  **Content → Empty states**'; a destructive action on the record is **Patterns → Actions and
+  confirmation**'s. This page hands all three off.
+
+## Content notes
+
+The header string is the record's name, not the page's title. `detail-view-shell-demo` writes "Draft
+the migration plan", and the demo's `ariaLabel` repeats it so the panel announces the record it holds
+rather than "dialog".
+
+A field label names a slot and takes no terminal period: "Owner", "Status", "Due", "Repository",
+"Branch". A value is whatever the record holds, formatted once, and `stat-readout` renders an em dash
+for a missing one rather than leaving a blank cell, which is why "Guidance" with no value still
+occupies a row in `asset-detail-demo`.
+
+Channel labels are nouns naming a place, and the count beside one is a numeral however small:
+"Comments" with 2, "Activity" with 3. Sentence case, no terminal period, short enough that a narrow
+panel does not have to wrap the tablist.
+
+Prompt text is shown as the reader wrote it, including its own punctuation, because it is the material
+being edited. Do not sentence-case a prompt, trim it to a caption length, or paraphrase it in the
+detail view.
+
+This page owns how one record's frame is chosen and arranged. **Patterns → Resource index** owns
+getting the reader here, **Patterns → Forms & wizards** owns the view once editing is the task,
+**Patterns → Status & feedback** owns which surface reports the record's state, and
+**Patterns → Actions & confirmation** owns what happens when the reader acts on it.

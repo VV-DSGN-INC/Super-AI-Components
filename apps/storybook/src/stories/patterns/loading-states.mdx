@@ -1,0 +1,279 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Loader } from "@/components/ai-elements/loader";
+import { Progress, ProgressLabel } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
+import RenderQueueDemo from "@/components/demos/render-queue-demo";
+import ResultCardDemo from "@/components/demos/result-card-demo";
+
+<Meta title="Patterns/Loading states" />
+
+# Loading states
+
+A wait is drawn in the box the result will occupy, at the size the result will take, and it is
+over the moment something replaces it. The vocabulary comes from the state contract in
+`docs/superpowers/specs/2026-06-10-super-ai-components-design.md` section 6, exported as
+`GenerationState` from `apps/docs/registry/super-ai/cost.tsx` line 159: `queued` and `streaming`
+are the two waiting names, and `done`, `failed` and `locked` are the three ways out. This page
+decides where the wait goes on a screen, how many indicators a screen may show at once, and what
+lands in the frame when the wait ends. **Foundations → Motion** decides which instrument reports
+it, and **Foundations → States** owns the vocabulary.
+
+## Use it when
+
+- A region is fetching what it will show: a card, a list, a table, a chart.
+- A generation has been started and its result has not arrived.
+- A batch of jobs is working through a queue and each row is at a different point.
+- A control has been pressed and its consequence has not come back.
+
+Do not use it when the answer is one of these instead:
+
+- **The wait is over and nothing came.** That is a zero state, and **Content → Empty states** owns
+  all three species, including the one where the request failed.
+- **The wait is over and it failed.** **Content → Error messages** owns what the failure says and
+  which surface carries it.
+- **A standing fact about a thing.** **Patterns → Status & feedback** sorts the surfaces that
+  report a state that holds rather than a state that resolves.
+- **A page-level condition.** A session that expired or a redirect ends the page rather than
+  pausing a region, and no loading instrument covers it.
+
+## The waits, live
+
+### One result
+
+<Example>
+  <ResultCardDemo />
+</Example>
+
+`result-card.tsx` lines 20 to 23 state the property this demo exists to show: the box is identical
+in all six states. Step the card through the cycle and nothing around it moves. Everything that
+varies is inside `preview-tile`'s fixed-aspect frame, absolutely positioned over it, or in a
+footer whose height is reserved unconditionally, so a grid of these never reflows as results land.
+
+The mapping underneath is worth reading before you add a state anywhere else. Lines 47 to 54 send
+the card's six names onto `preview-tile`'s four, with both `queued` and `streaming` collapsing
+into the tile's single `loading`. The comment above the map gives the reason: four of the tile's
+consumers can never enter `streaming`, so a narrower component should not grow a state it cannot
+paint differently. Map at the boundary, and name only what you can draw.
+
+Two of the six are not waits at all. `failed` puts the retry inside the frame, which the prop
+comment at line 83 explains as an association problem: a toast loses which result it was about.
+Lines 110 to 115 explain why the control moves inside rather than sitting on the frame, since a
+frame that is itself a button would nest one interactive element in another and fail axe outright.
+
+### A queue of results
+
+<Example>
+  <RenderQueueDemo />
+</Example>
+
+`render-queue.tsx` line 32 names four job states, `queued`, `streaming`, `done` and `failed`, one
+per row, and the header comment at lines 20 to 29 gives three rules that all come from the same
+place: a queue has to be auditable before it charges you. The output spec is a column rather than
+a tooltip. Preview and export are separate stages with different economics, so the stage is
+visible per row. And a failed row keeps its spec and offers retry in place, because a failure that
+drops the settings makes the reader rebuild the job to try again.
+
+`generation-queue.tsx` is the same shape for generations rather than exports, live at
+[Super AI → Generation Queue](?path=/docs/super-ai-generation-queue--docs). Its header comment at
+lines 24 to 26 records the rule a batch UI usually gets wrong: batch progress and per-slot
+progress are different numbers, and both are needed. Line 115 is the small move worth copying, a
+`queued` row whose icon is an `aria-hidden` `Skeleton` rather than a static glyph, because a
+queued slot has nothing to measure yet and a reserved shape says so.
+
+### The four instruments
+
+<Example className="flex flex-wrap items-start gap-10">
+  <div className="flex w-52 flex-col gap-3">
+    <div className="flex flex-col gap-2" aria-busy="true">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+    <p className="text-muted-foreground text-xs">
+      {
+        "Skeleton: animate-pulse on bg-muted, sized to the lines that are coming. No role, no label, no announcement of its own."
+      }
+    </p>
+  </div>
+  <div className="flex w-52 flex-col gap-3">
+    <div className="flex items-center gap-2">
+      <Spinner />
+      <span className="text-sm">Encoding main cut</span>
+    </div>
+    <p className="text-muted-foreground text-xs">
+      {
+        'Spinner: a lucide Loader2Icon at size-4, carrying role="status" and the name Loading. The visible word beside it says what is being waited on.'
+      }
+    </p>
+  </div>
+  <div className="flex w-52 flex-col gap-3">
+    <Progress value={62}>
+      <ProgressLabel>Encoding main cut</ProgressLabel>
+    </Progress>
+    <p className="text-muted-foreground text-xs">
+      {
+        'Progress: the Base UI root supplies role="progressbar" and a formatted valuetext, so the percentage is never carried by bar width alone.'
+      }
+    </p>
+  </div>
+  <div className="flex w-52 flex-col gap-3">
+    <div className="flex items-center gap-2">
+      <Loader />
+      <span className="text-sm">Drafting a reply</span>
+    </div>
+    <p className="text-muted-foreground text-xs">
+      {
+        "Loader: the AI Elements spinner, ten spokes stepping from full opacity down to 0.1. It has a title element and no role, so it names itself without announcing."
+      }
+    </p>
+  </div>
+</Example>
+
+Two facts about these four change how you reach for them.
+
+**The primitives are barely used directly.** `apps/storybook/src/components/ui/skeleton.tsx` is
+imported by exactly one registry source, `generation-queue.tsx` line 9 (measured 2026-09-09), and
+no registry source imports `ui/spinner.tsx` at all. Registry components spin a bare lucide
+`Loader2` beside their own visible word instead, which **Foundations → Motion** counts across 13
+files. The primitives are still the reference for what a wait announces, which is why they are
+drawn here.
+
+**Shimmer is documented and unused.** The design spec's section 6 describes the state contract's
+shared conventions as "shimmer while streaming", and `Shimmer` exists here only as the vendored
+port at `apps/storybook/src/components/ai-elements/shimmer.tsx`, imported by nothing in the
+registry. It also carries no reduced-motion branch: it animates through `motion/react` with
+`repeat: Number.POSITIVE_INFINITY`, where the CSS-driven loops around it pair every `animate-*`
+with `motion-reduce:animate-none`. Treat the spec's wording as historical, and reach for the
+placeholder and glyph loops the registry actually uses.
+
+## Which level is waiting
+
+Decide the level first, then let **Foundations → Motion** pick the instrument. The levels differ
+by what the reader can still do while the wait runs.
+
+- **A region.** One card, list, table or chart is fetching inside a page that is otherwise live.
+  The region draws placeholders at its own final size, on a container marked `aria-busy="true"`.
+- **An item in a list.** Each row is at its own point, so each row carries its own state and its
+  own retry. Both queues do this, one state per row rather than one for the list.
+- **A control.** The reader pressed something and the consequence has not returned. The control
+  keeps its label and reports busy on itself; `run-button.tsx` line 112 sets `aria-busy` on the
+  wrapper while `estimating` or `running`, and **Foundations → States** covers the live region
+  that goes with it.
+- **A stream.** A reply is arriving token by token. The transcript announces the arrival, so the
+  indicator beside it stays quiet. **Patterns → AI conversation** owns that surface.
+
+`aria-busy` appears in six registry sources, measured 2026-09-09: `ai-doc-block.tsx`,
+`explore-gallery.tsx`, `hero-omnibox.tsx`, `media-prompt-bar.tsx`, `run-button.tsx` and
+`selection-toolbar.tsx`. Mark the subtree that is settling, and leave the point announcement to
+whichever instrument owns one.
+
+The one variable below is how many indicators report a single fetch.
+
+<DoDont
+  doExample={
+    <div className="border-border flex w-56 flex-col gap-3 rounded-lg border p-4" aria-busy="true">
+      <Skeleton className="h-4 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+  }
+  doCaption="one region, one indicator. The placeholders already occupy the lines that are coming, and aria-busy on the container is the whole announcement."
+  dontExample={
+    <div className="border-border flex w-56 flex-col gap-3 rounded-lg border p-4" aria-busy="true">
+      <div className="flex items-center gap-2">
+        <Spinner />
+        <span className="text-sm">Loading</span>
+      </div>
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+  }
+  dontCaption='a spinner reporting the wait the placeholders already report, and its role="status" sitting inside a subtree that is already marked busy. Two signals for one fetch, and a bare Loading names nothing.'
+/>
+
+## When the wait ends
+
+Three exits, and all three land in the frame the wait held.
+
+- **Data.** The result replaces the placeholder in place. Nothing fades in and nothing slides: the
+  `animate-pulse` stops because the element is gone, and the content appears where its shape
+  already was. `result-card`'s `done` state is the reference.
+- **Nothing.** The region is empty for a real reason and says which. `empty-state.tsx` is the
+  component and **Content → Empty states** owns the words for "nothing yet" and "nothing matched".
+- **Failure.** The request failed, and the failure renders where the result would have been, with
+  the way out inside the same frame. `result-card` at `failed`, a queue row at `failed`, a
+  `run-button` at `failed`. **Content → Error messages** owns what each of them says.
+
+Nothing in this registry reports the end of a wait in a toast. That is design principle 6 of the
+specification's section 4, and **Content → Error messages** records the grep behind it.
+
+## Key decisions
+
+- **The frame is fixed before the fetch.** The region's minimum height is the height the result
+  will take, whichever instrument it shows. `result-card`'s reserved footer and
+  `preview-tile`'s fixed aspect ratio are how that is achieved rather than asserted.
+- **Level first, instrument second.** Region, row, control or stream, then whatever
+  **Foundations → Motion** says reports that level.
+- **One indicator per wait.** A page placeholder and a region placeholder never stack, a spinner
+  never sits inside a skeleton, and a control that is already reporting does not also get a
+  banner.
+- **`aria-busy` on the subtree, a role on the point.** A skeleton announces nothing and should
+  not; a `Spinner` announces itself; a `Progress` root carries its own valuetext.
+- **A row owns its own state and its own retry.** Both queues resolve per item, because one failed
+  export should not restart three healthy ones.
+- **Batch progress and per-item progress are different numbers.** Show both where both exist, per
+  `generation-queue.tsx` lines 24 to 26.
+- **A queued item shows a reserved shape, not a static glyph.** There is nothing to measure yet,
+  and a placeholder says exactly that.
+- **The retry lives inside the frame.** A failure reported anywhere else loses which result it was
+  about.
+
+## Rules
+
+- Draw the wait where the result lands, at the result's size, and set the region's minimum height
+  before the fetch.
+- Pick the level, then the instrument. Placeholders for a region or a row, a spinning glyph beside
+  a word for a control, `Progress` only where a real proportion exists.
+- Show one indicator per wait. Never a nested placeholder and spinner, and never a control's own
+  busy state plus a second report of the same action.
+- Mark the settling subtree `aria-busy="true"`. Leave `Spinner`'s `role="status"` as the point
+  announcement and add no live region of your own inside it.
+- Never put a number beside an indeterminate indicator. `Progress` reports a `value`; a spinner
+  does not get a percentage.
+- Pair every `animate-*` with `motion-reduce:animate-none`, and give the row a visible word so the
+  state survives when the motion stops. `render-queue.tsx` lines 72 to 74 is the shipped example,
+  with "Rendering" beside the glyph for that reason.
+- Keep a component's state union to what it can paint differently, and map at the boundary the way
+  `result-card.tsx` lines 47 to 54 maps six names onto four.
+- Resolve per item wherever items fail independently, and keep the failed row's own settings so a
+  retry re-runs the same job.
+- Render the failure inline with the retry in the same frame. A toast loses the association, and
+  no registry component uses one.
+- Never write `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`. A placeholder
+  is `bg-muted`, so any label you put beside it is measured against that ground. `TOK-4`, `TOK-5`
+  and `TOK-6` are the rules.
+- Add no artificial delay before an indicator appears. Nothing here ships a threshold, and a
+  reserved frame costs nothing when the fetch is fast.
+
+## Content notes
+
+Name what is being waited on. "Encoding main cut", "Generating 4 images", "Rendering slides". A
+bare "Loading" adds nothing the instrument did not already say, and it is the only thing a screen
+reader gets from `Spinner`'s own label.
+
+State labels are sentence case and single words where the state is a single fact:
+`render-queue.tsx` lines 62 to 67 ships "Queued", "Rendering", "Done" and "Failed", and
+`result-card.tsx` lines 57 to 62 ships "Not started", "Queued", "Generating" and "Result ready".
+Reach for one of those before inventing a synonym.
+
+A failed wait is written the way **Content → Error messages** writes any failure: what happened,
+then the verb the reader can act on. "Encoder ran out of memory" beside a Retry, not "Something
+went wrong".
+
+This page owns where a wait is drawn and how it ends. **Foundations → Motion** owns which
+instrument moves and how it behaves under reduced motion, **Foundations → States** owns the state
+vocabulary, **Content → Empty states** owns the frame with nothing in it, and **Patterns → Status
+& feedback** owns the surfaces that report a fact rather than a wait.

@@ -1,0 +1,365 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Conversation, ConversationContent } from "@/components/ai-elements/conversation";
+import { Message, MessageContent } from "@/components/ai-elements/message";
+import { AnswerBlock } from "@/registry/super-ai/answer-block";
+import { CitationRef } from "@/registry/super-ai/citation-ref";
+import { ContextChip, ContextChips } from "@/registry/super-ai/context-chips";
+import ApprovalCardDemo from "@/components/demos/approval-card-demo";
+import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
+import ContextChipsDemo from "@/components/demos/context-chips-demo";
+import ModelPickerDemo from "@/components/demos/model-picker-demo";
+import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
+import SourceCardsDemo from "@/components/demos/source-cards-demo";
+import SuggestionChipsDemo from "@/components/demos/suggestion-chips-demo";
+
+<Meta title="Patterns/AI conversation" />
+
+# AI conversation
+
+A conversation surface is a stream of turns and a composer, and this repo hand-rolls neither.
+`chat-shell.tsx` lines 6 and 7 import AI Elements' `Conversation` and `Message`, and everything
+around them is a catalog component with its own props and its own accessibility contract. Three
+registry sources reach into `apps/storybook/src/components/ai-elements/` at all (measured
+2026-09-10): `chat-shell.tsx` and `notebook-shell.tsx` take `conversation` and `message`,
+`suggestion-chips.tsx` takes `suggestion`. This page owns what goes into a turn, what the reader
+attaches before sending one, and what happens when the model stops and asks. **Foundations → App
+structure** owns the shell those parts sit in, and **Patterns → Actions & confirmation** owns the
+gates in depth.
+
+## Use it when
+
+- The product's main verb is asking, and the answer arrives as prose rather than as a rendered
+  asset.
+- The reader's selection, files and mentions are the prompt, so the composer has to hold references
+  as well as text.
+- An answer has to be checkable against documents, claim by claim.
+- The model can act on the world, so some turns are requests for permission rather than replies.
+
+Do not use it when the answer is one of these instead:
+
+- **The result is an asset.** A generation with a preview, a queue and a retry belongs to
+  **Patterns → Loading states**, whatever surface started it.
+- **The wait itself.** Where the wait is drawn, and how many indicators one wait may show, is that
+  same page.
+- **A single confirmation.** Cost before commit, the four approval verbs and the permission dialog
+  are all specified at **Patterns → Actions & confirmation**; this page only places them in a
+  stream.
+- **A standing fact.** A provider that stopped answering or a quota nearly spent rides the thing it
+  is about, per **Patterns → Status & feedback**.
+
+## The conversation, live
+
+### The stream, and one turn
+
+<Example className="p-0">
+  <div className="h-[26rem] w-full">
+    <Conversation>
+      <ConversationContent
+        scrollClassName="h-full overflow-y-auto"
+        className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6"
+      >
+        <Message from="user">
+          <MessageContent>
+            Does out-of-network imaging need prior authorization on the PPO Gold plan?
+          </MessageContent>
+        </Message>
+        <Message from="assistant">
+          <MessageContent>
+            <AnswerBlock
+              retrievedUnused={2}
+              claims={[
+                {
+                  id: "c1",
+                  text: "Out-of-network imaging requires prior authorization.",
+                  citations: [
+                    {
+                      id: "c1a",
+                      label: "1",
+                      source: "Benefits policy 2026 · §4.2",
+                      quote: "Imaging performed outside the network requires prior authorization.",
+                    },
+                  ],
+                },
+                {
+                  id: "c2",
+                  text: "Emergency scans are exempt from that requirement.",
+                  citations: [
+                    {
+                      id: "c2a",
+                      label: "2",
+                      source: "Benefits policy 2026 · §4.3",
+                      quote: "…except in emergencies.",
+                    },
+                  ],
+                },
+                { id: "c3", text: "Most requests are approved within two business days." },
+              ]}
+            />
+          </MessageContent>
+        </Message>
+      </ConversationContent>
+    </Conversation>
+  </div>
+</Example>
+
+`conversation.tsx` line 17 puts `role="log"` on the stream, which is the announcement the whole
+surface rests on, and line 14 leaves the root at `overflow-y-hidden`. Scrolling is the caller's
+job: `chat-shell.tsx` lines 100 to 110 records that `ConversationContent` inserts its own scroll
+element and sets no overflow on it, so a stream without a `scrollClassName` grows rather than
+scrolls. The example above passes the same two classes `chat-shell` does for that reason. Because
+the class handle lands on an element the caller does not otherwise own, the tab stop and the
+accessible name have to sit on `Conversation` itself, which is what `chat-shell.tsx` lines 385 to
+390 do with `aria-label` and `tabIndex`.
+
+A turn is `Message` plus `MessageContent`. `message.tsx` lines 17 to 26 set an `is-user` or
+`is-assistant` class from the `from` prop, and lines 30 to 41 hang every visual decision off it:
+a user turn gets a `bg-secondary` bubble with its own padding and radius, an assistant turn gets
+plain `text-foreground` and no container at all. The asymmetry is the point, since the assistant's
+turn is the one that carries structure inside it.
+
+What goes inside is the caller's decision. `chat-shell.tsx` lines 225 to 234 record that the shell
+deliberately skips AI Elements' markdown renderer and takes a `ReactNode`, so a host that renders
+its own markdown is not fighting a renderer it did not choose. Lines 246 to 248 gate the per-turn
+rating to assistant turns, since there is nothing to rate about your own message.
+
+### What comes back, claim by claim
+
+The block in the stream above is `answer-block`, and it is built around one decision recorded at
+`answer-block.tsx` line 16: citations attach to the claim, not to the answer. Everything else
+follows from that.
+
+- Coverage is computed, not passed. `coverageOf` at lines 30 to 36 returns `cited`,
+  `partially-cited` or `uncited`, and line 33 is explicit that partial coverage must not read as
+  full coverage.
+- A gap is stated in words. Lines 88 and 89 ship the two warning strings, one for an answer with no
+  sources at all and one for an answer where some claims are unmarked.
+- The unused count is shown, not hidden. Lines 96 to 101 render how many retrieved sources went
+  into nothing, on the reasoning at lines 93 to 95 that this is how a reader notices the model
+  ignored the relevant document.
+- Streaming order is claim then citation. Line 60 holds the last claim's markers back while
+  `streaming` is set, because a marker that arrives before the text it supports reads as a load
+  failure.
+
+The markers themselves are `citation-ref`. Line 8 gives it three states, `resolved`, `loading` and
+`unresolved`. Line 59 returns the bare marker for the two that are not resolved, so only a resolved
+citation opens a hovercard. A `loading` marker pulses through `animate-pulse motion-reduce:animate-none`
+at line 49. An `unresolved` one still renders, still says it is unresolved, and carries its own
+`aria-label`, since a citation that quietly disappears is how a document stops being checkable. The
+hovercard carries the quoted chunk and not only the document title, on the prop comment at line 15:
+a citation that only names a document is not verifiable.
+
+Hover marker 1 in the example above and read the quote. Then read **Foundations → States** for the
+vocabulary these state names come from.
+
+The panel that answers "which documents were even considered" is `source-cards`.
+
+<Example>
+  <SourceCardsDemo />
+</Example>
+
+### What the reader attaches
+
+<Example className="flex flex-col gap-8">
+  <ContextChipsDemo />
+  <QuoteReplyDemo />
+</Example>
+
+`context-chips.tsx` line 32 names four reference kinds, `file`, `selection`, `url` and `mention`,
+and `unresolved` sits across all four as a separate axis rather than as a fifth kind. A chip whose
+target moved says so four ways at once: the icon swaps to a warning glyph, the border goes dashed,
+the label is struck through, and line 73 appends the literal word `unresolved`. The remove control
+changes its own name to match at line 77, so the two chips are distinguishable by name and not only
+by look. Overflow is a real control with a counted name at line 102 rather than a clipped row.
+
+`quote-reply.tsx` line 25 names four capture sources, `text-range`, `image-region`, `table-cell`
+and `timeline-range`, and they are one component rather than four because only the excerpt branches.
+The load-bearing prop is `anchor`, documented at lines 44 to 51: the excerpt is what the reader
+sees, the anchor is what the quote resolves against after the source is edited. Line 96 renders the
+anchor in a `cite` element beside the kind label, so a quote always says where it came from.
+
+### What starts the next turn
+
+<Example>
+  <SuggestionChipsDemo />
+</Example>
+
+`suggestion-chips.tsx` line 26 fixes the behaviour: a chip fills the composer and never submits or
+navigates. The vendored `Suggestion` underneath is already `type="button"`, so a chip inside a form
+cannot trigger it. Overflow resolves to a real link, and line 92 makes `href` required rather than
+optional, because a "see more" that goes nowhere is decoration. Line 119 derives the link's classes
+from `buttonVariants` with the same variant and size a chip renders with, so the two never drift.
+Click a chip above and watch the composer line change.
+
+### Which model is answering
+
+<Example>
+  <ModelPickerDemo />
+</Example>
+
+`model-picker.tsx` line 50 gives one component three containers, `dropdown`, `expanded-cards` and
+`node-inline`, with the same rows in each. Line 58 groups models by task signature and never
+alphabetically, so the list answers "what am I trying to do" before it answers "what is this
+called". Lines 99 to 111 put runtime on a badge with the hardware requirement inside its own text,
+never a colour-only dot and never a tooltip aside. Line 136 builds the trigger's accessible name
+from the label and the current model together, so a screen reader hears which model is selected
+without opening the control.
+
+Lines 78 to 87 are worth reading before you compose a selected row anywhere. A selected row paints
+`bg-accent`, and the description inside it kept `text-muted-foreground`, which measures 4.34:1 and
+fails AA. The fix retints only that descendant, only while the row is selected. That pairing is the
+recurring failure in this system, and `TOK-4`, `TOK-5` and `TOK-6` in
+`packages/ds-rules/rules/local.json` are the rules that catch it in a class string.
+
+## The composer assembles the context
+
+The design specification's section 4 states the principle this whole family exists for: the composer
+is a context-assembly surface, where selections become quotes, entities become chips and mentions
+resolve to references. `chat-shell` implements that literally. Its composer region at lines 431 to
+462 is `media-prompt-bar` in its docked presentation, with `context-chips` passed into the
+`contextChips` slot, `mode-tabs` into `settings`, and `disclaimer-note` under the whole thing. The
+chips prop is documented at line 195 as references attached to the next message, which is what makes
+removing one a real edit rather than deleting a word.
+
+Two consequences are worth stating.
+
+**No registry source imports `prompt-input`.** All 23 AI Elements ports are available at
+`apps/storybook/src/components/ai-elements/`, and `prompt-input.tsx` is the largest of them, but the
+catalog's own composer is `media-prompt-bar` (measured 2026-09-10). Reach for `PromptInput` when you
+want the vendored attachment handling and its submit-status button; reach for `media-prompt-bar` when
+you want the catalog's locked state, cost line and reference strip. Do not run both in one composer.
+
+**A shell can suppress an affordance it does not need.** `chat-shell.tsx` line 98 hides the
+composer's negative-prompt toggle with `display: none`, which takes it out of the tab order as well
+as out of sight, and the comment says to delete the class the moment the composer grows a real
+opt-out. Copy the note along with the technique.
+
+The one variable below is how attached context is rendered.
+
+<DoDont
+  doExample={
+    <ContextChips>
+      <ContextChip kind="file" label="brand-guide.pdf" onRemove={() => {}} />
+      <ContextChip kind="selection" label="lines 12-40" onRemove={() => {}} />
+      <ContextChip kind="file" label="brief.pdf" unresolved onRemove={() => {}} />
+    </ContextChips>
+  }
+  doCaption="every reference is its own chip with its own remove control, and the one that no longer resolves says so in a word as well as a border. Removing a chip removes what the next message sends."
+  dontExample={<p className="text-sm">Using brand-guide.pdf, lines 12-40 and brief.pdf as context.</p>}
+  dontCaption="a sentence naming the same three references. Nothing here can be removed, nothing reports that brief.pdf has gone missing, and the reader cannot tell what the next message will actually carry."
+/>
+
+## When the model asks
+
+Some turns are requests. Three surfaces cover them, and which one you reach for depends on what is
+being decided.
+
+<Example>
+  <ApprovalCardDemo />
+</Example>
+
+**An artifact needs a decision.** `approval-card` is the Approval contract's only implementation in
+the catalog, so it sets the shape the rest of the families inherit. Lines 43 to 48 fix the four
+verbs and their order, Confirm then Edit then Regenerate then Skip, in the component rather than at
+the call site, so a caller who passes two handlers still gets them in the house order. Confirm and
+Skip end the interaction; Edit and Regenerate hand the reader back to the artifact. Line 92 keeps
+Undo on screen for eight seconds after a resolution, since the two terminal verbs would otherwise be
+irreversible. Detail stays behind an explicit expand and is absent from the DOM until then. This card
+belongs in the stream, as the turn that is waiting on you.
+
+**A side effect needs permission.** `permission-prompt` is an `AlertDialog` and renders through a
+portal with a backdrop, so it cannot be shown honestly inside a docs column. It is live at its own
+size at [Super AI → Permission Prompt](?path=/docs/super-ai-permission-prompt--docs). Its four verbs
+are defaulted at lines 118 to 121, Allow once, Always allow, Deny and Edit first. It interrupts
+rather than joining the stream, on the reasoning that a consequential call has already been composed
+and is paused. **Patterns → Actions & confirmation** carries the three rules its tests pin.
+
+<Example>
+  <AutonomySelectorDemo />
+</Example>
+
+**A standing grant needs reviewing.** `permission-prompt` emits the Always allow choice and stops
+there, and `autonomy-selector` is where the resulting grant becomes visible and revocable. Line 12
+gives three levels, `ask`, `auto-reads` and `full`, and lines 43 to 50 pair each with a sentence
+naming its blast radius rather than a label alone. Denials render as their own list beside the
+grants, because deny wins outright and takes no exceptions. A product that can create a permanent
+permission and cannot show the ones already granted is a one-way door, which is why these two ship
+together.
+
+## Key decisions
+
+- **Compose the stream, do not rebuild it.** `Conversation` and `Message` come from AI Elements
+  through a cross-registry dependency, and three registry sources use them rather than forking a
+  bubble.
+- **Pass `scrollClassName`, or the stream does not scroll.** The element that is supposed to scroll
+  is created by the vendored component and left at `overflow: visible`.
+- **Name the stream and give it a tab stop on `Conversation` itself.** The inner scroll element is
+  not addressable for anything else.
+- **Citations attach to claims.** An answer-level source list cannot say which sentence came from
+  where, and coverage cannot be computed from it.
+- **Show the gap.** Unsourced claims and unused retrieved sources are both rendered, because a thin
+  answer that looks complete is the failure this family exists to prevent.
+- **A broken reference stays visible.** Both `citation-ref` and `context-chips` render an unresolved
+  target in a state that says so, rather than dropping it.
+- **The anchor outlives the excerpt.** A quote resolves against a stable position, so an edit to the
+  source does not silently re-point it.
+- **Chips fill the composer; they never send.** Suggestion chips are prompts, and overflow is a real
+  link.
+- **Group models by what they do.** Task signature first, with runtime and hardware in badge text.
+- **The four approval verbs are the component's property.** Order is fixed once, so the muscle memory
+  holds across every approval surface.
+- **Grant and revoke ship together.** Always allow only emits a choice; the review surface is where
+  it becomes safe.
+
+## Rules
+
+- Compose `Conversation`, `ConversationContent`, `Message` and `MessageContent` from
+  `@/components/ai-elements/*` rather than writing a stream. Pass `scrollClassName`, and put
+  `aria-label` and `tabIndex` on `Conversation`.
+- Let `from` drive the turn's appearance. Never restyle a user turn into an assistant turn or paint
+  a bubble by hand.
+- Attach every citation to the claim it supports, and let the coverage state be computed from the
+  claims rather than passed in.
+- Render an unresolved citation or an unresolved chip. Never drop one, and never signal it by colour
+  alone: `context-chips` uses an icon swap, a dashed border, a strikethrough and the word together.
+- Hold a streaming claim's markers back until the claim itself has settled.
+- Keep the quote's anchor independent of its excerpt, and render the anchor.
+- Wire a suggestion chip's `onSelect` to fill the composer. Never to submit and never to navigate.
+- Give an overflow control a real destination and a counted accessible name.
+- Build a picker trigger's accessible name from the label and the current value together, and put
+  runtime, hardware and price in badge text.
+- Put the approval card in the stream and the permission dialog over it. A permission gate that
+  scrolls away is not a gate.
+- Never let a surface write a standing grant without a surface that lists and revokes them.
+- Never write `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`. A selected row
+  and a user turn are both composed grounds, and `model-picker.tsx` lines 78 to 87 is what the fix
+  costs after the fact. `TOK-4`, `TOK-5` and `TOK-6` are the rules.
+- Check a vendored AI Elements port before you extend it. `check:tokens` scopes `TOK-3` to
+  `apps/docs/registry/super-ai`, `apps/docs/registry/marketing` and `apps/docs/components/ui`
+  (`packages/ds-rules/rules/local.json`), so the palette classes in `tool.tsx` lines 45 to 50 are
+  outside the gate rather than approved by it.
+
+## Content notes
+
+Write the assistant's turn as an answer, then let the markers carry the evidence. The two coverage
+warnings are already written and shipped, and they are the register to match: plain, specific about
+what is missing, and no apology.
+
+Reference labels are the thing itself. `brand-guide.pdf`, `lines 12-40`, `@teammate`, `Q3 Budget!C12`,
+`0:42-0:51`. A chip that reads "attached file" has thrown away the only information it had.
+
+Suggestion chips are verbs. "Summarize this document", "Draft a reply", "Continue from last
+template". Sentence case, no trailing punctuation, and one action each. `CPY-1` is the rule that a
+generic label is not a label.
+
+The four approval verbs and the four permission verbs are fixed strings, not synonyms to reword per
+product. Confirm, Edit, Regenerate, Skip. Allow once, Always allow, Deny, Edit first.
+
+The disclaimer under a composer defaults to "AI can make mistakes. Check important info."
+(`disclaimer-note.tsx` line 15). Override it with something true about your product rather than
+deleting it.
+
+**Content → Voice & principles** owns the register, **Content → Error messages** owns what a failed
+turn says, **Foundations → Inclusive design** owns the gate every one of these examples has to pass,
+and **Foundations → App structure** owns the shell this whole page sits inside.
