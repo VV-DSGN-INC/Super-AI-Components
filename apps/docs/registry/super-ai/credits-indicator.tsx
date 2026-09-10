@@ -108,10 +108,10 @@ function CreditsIndicator({
           data-slot="credits-indicator-top-up"
           // Inherits the pill's foreground instead of setting `text-muted-foreground`:
           // muted text on this pill's own `bg-muted` is the 4.34:1 pairing, and on the
-          // solid alarm surfaces it would be wrong twice over. The border-l already
+          // solid alarm surfaces it would be wrong twice over. The border-s already
           // separates it from the balance, so hover is carried by an underline rather
           // than by a colour change that would have to be re-solved per surface.
-          className="focus-visible:ring-ring border-border -mr-1 rounded-full border-l pl-1.5 underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:outline-none"
+          className="focus-visible:ring-ring border-border -me-1 rounded-full border-s ps-1.5 underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:outline-none"
         >
           Top up
         </button>

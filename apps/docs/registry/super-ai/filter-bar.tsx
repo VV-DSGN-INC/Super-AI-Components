@@ -39,7 +39,7 @@ function FilterChip({ active = false, onRemove, className, children, ...props }:
         data-slot="filter-chip-toggle"
         className={cn(
           "hover:bg-accent inline-flex items-center gap-1 rounded-full px-3 py-1",
-          onRemove && "pr-1",
+          onRemove && "pe-1",
         )}
         {...props}
       >
@@ -51,7 +51,7 @@ function FilterChip({ active = false, onRemove, className, children, ...props }:
           aria-label={`Remove ${label} filter`.replace(/\s+/g, " ").trim()}
           data-slot="filter-chip-remove"
           onClick={onRemove}
-          className="hover:text-foreground text-muted-foreground focus-visible:ring-ring mr-1 rounded-full p-0.5 focus-visible:ring-2 focus-visible:outline-none"
+          className="hover:text-foreground text-muted-foreground focus-visible:ring-ring me-1 rounded-full p-0.5 focus-visible:ring-2 focus-visible:outline-none"
         >
           <X aria-hidden className="size-3" />
         </button>

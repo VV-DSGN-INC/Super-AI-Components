@@ -92,7 +92,7 @@ function SafetyBlock({
               data-slot="safety-block-fragment"
               aria-hidden={sensitive && !revealed ? true : undefined}
               className={cn(
-                "border-border border-l-2 pl-2 text-xs italic",
+                "border-border border-s-2 ps-2 text-xs italic",
                 sensitive && !revealed && "blur-xs select-none",
               )}
             >

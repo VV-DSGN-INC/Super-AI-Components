@@ -352,6 +352,15 @@ They are independent: each writes only its own five files (plus an optional
   bury them. Several of this system's best decisions came from a builder saying
   "the spec is ambiguous here and I chose X".
 
+The fan-out now has a runnable form. `.claude/workflows/rtl-logical-sweep.js`
+is the §8 logical-direction sweep as a Claude Code workflow — scope, one swap
+agent per file, a skeptic per file that reads the diff and tries to refute it,
+one repair round, then revert — invoked as `/rtl-logical-sweep`, with the
+do-not-swap table in code rather than in a prompt. That is the shape the next
+component fan-out should take: a schema on every agent's return, a verifier on
+the edge before anything lands, plain code for the plumbing. The builder's
+return contract for it is `.claude/skills/build-component/report.schema.json`.
+
 Concurrency caps around 10–16; more than that just queues.
 
 ### 3.5 Integrate — you do this centrally
@@ -817,11 +826,13 @@ the `weeeha` GitHub account. Nothing in this round has shipped to production.
 >
 > **Still open here:** the vendored sidebar's RTL mirroring, the tooltip that eats
 > an Escape, the notebook chat pane's scroll container (a dependency limit — see
-> below), roving tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar`,
-> and the logical-direction sweep across 32 files. The last two were deliberately
-> **not** attempted at the end of a long session: a roving tabIndex has RTL,
-> wrapping and disabled-item edge cases, and half-shipping a keyboard pattern into
-> a published registry is worse than leaving it recorded.
+> below), and roving tabIndex in `choice-chips` / `preset-grid` /
+> `gen-settings-bar`. The roving tabIndex was deliberately **not** attempted at
+> the end of a long session: it has RTL, wrapping and disabled-item edge cases,
+> and half-shipping a keyboard pattern into a published registry is worse than
+> leaving it recorded. **The logical-direction sweep landed on 2026-09-10**, run
+> as the `rtl-logical-sweep` workflow (§3.4); what it found is in the
+> logical-properties entry below.
 >
 > Two duplicates are recorded as **deliberate, not debt**:
 > `usePrefersReducedMotion`'s four copies are all in `registry/marketing`, where
@@ -980,8 +991,24 @@ that is where the backlog lives.
   other registry components compose it, so it is the single highest-leverage
   site in the table.
 
-  The remaining sites are a **scoped sweep**, not a research question. Verified
-  present as listed, 2026-08-15:
+  **The sweep landed on 2026-09-10** — 17 files, every swap judged by a skeptic
+  agent against the diff before it stayed (`.claude/workflows/rtl-logical-sweep.js`).
+  The skeptics found a **third class of not-byte-identical change**, and it is
+  the one to remember: **a physical token whose job is to displace a vendored
+  primitive's own physical class through `cn()` must stay physical.**
+  `feature-card-row`'s `left-2` / `right-2` on `CarouselPrevious` / `CarouselNext`
+  only win because tailwind-merge puts them in the same group as the vendored
+  `-left-12` / `-right-12`; `start-2` is a different group, so after the swap
+  both classes survive and LTR changes. Measured: `twMerge("-left-12 start-2")`
+  keeps both. Same shape in `template-detail`'s `left-1` / `right-1` and
+  `feature-card-row`'s `-ml-4` against `CarouselContent`'s own `-ml-4`. Those
+  stay physical, and `notebook-shell` stays physical with `feature-card-row`
+  because its `[&_[data-slot=feature-card-row-*]]` overrides are coupled to the
+  row's classes — both change together or neither does. The workflow carries
+  all three rules in code and in the skeptic's checklist.
+
+  The sites the original table listed, verified present 2026-08-15, all landed
+  or had already been swapped by an earlier wave:
 
   | component                   | site            | swap                                                                            |
   | --------------------------- | --------------- | ------------------------------------------------------------------------------- |

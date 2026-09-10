@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Builder report",
+  "description": "What one fan-out builder returns to the integrator. Judgment calls and composition gaps are the two things the integrator actually reads, so they are required, and each carries its reason. Pass this as the `schema` of a workflow agent() call, or quote it in an Agent-tool prompt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["component", "status", "filesWritten", "judgmentCalls", "compositionGaps"],
+  "properties": {
+    "component": {
+      "type": "string",
+      "description": "catalog id and kebab name, e.g. \"K6 citation-ref\""
+    },
+    "status": {
+      "type": "string",
+      "enum": ["built", "blocked"],
+      "description": "built = the five files exist and the builder's own checks pass; blocked = stopped, see blockers"
+    },
+    "filesWritten": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "repo-relative paths; a builder writes only its own five files plus an optional .examples.tsx"
+    },
+    "judgmentCalls": {
+      "type": "array",
+      "description": "every place the spec was ambiguous and the builder chose; flag, do not bury",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["where", "chose", "because"],
+        "properties": {
+          "where": { "type": "string", "description": "spec anchor or file:line" },
+          "chose": { "type": "string" },
+          "because": { "type": "string" },
+          "alternative": {
+            "type": "string",
+            "description": "what was not chosen, if it is still worth a look"
+          }
+        }
+      }
+    },
+    "compositionGaps": {
+      "type": "array",
+      "description": "a composed component that did not fit; report the gap, never fork or reimplement (block-build-brief.md)",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["composed", "gap", "workaround"],
+        "properties": {
+          "composed": { "type": "string", "description": "the registry item that did not fit" },
+          "gap": { "type": "string", "description": "what it could not do" },
+          "workaround": {
+            "type": "string",
+            "description": "labelled sibling, documented override, or \"none, left as is\""
+          }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "only when status is blocked"
+    }
+  }
+}

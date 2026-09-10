@@ -38,7 +38,7 @@ function Terminal({ title = "bash", className, children, ...props }: TerminalPro
         <span className="bg-muted-foreground/40 size-2.5 rounded-full" aria-hidden="true" />
         <span className="bg-muted-foreground/40 size-2.5 rounded-full" aria-hidden="true" />
         <span className="bg-muted-foreground/40 size-2.5 rounded-full" aria-hidden="true" />
-        <span className="text-muted-foreground ml-2 text-xs">{title}</span>
+        <span className="text-muted-foreground ms-2 text-xs">{title}</span>
       </div>
       <pre data-slot="terminal-body" className="overflow-x-auto p-4 font-mono text-sm">
         <code className="grid gap-1">{children}</code>

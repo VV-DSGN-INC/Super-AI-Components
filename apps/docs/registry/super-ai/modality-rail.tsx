@@ -90,7 +90,7 @@ function ModalityRailButton({
               "text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring relative flex rounded-lg focus-visible:ring-2 focus-visible:outline-none",
               layout === "stacked"
                 ? "w-full flex-col items-center gap-1 px-2 py-2.5 text-center"
-                : "w-full items-center gap-2 px-2 py-1.5 text-left",
+                : "w-full items-center gap-2 px-2 py-1.5 text-start",
             )}
           />
         }

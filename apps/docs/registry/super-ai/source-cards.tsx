@@ -94,7 +94,7 @@ function SourceCards({
                         <button
                           type="button"
                           onClick={source.onOpen}
-                          className="focus-visible:ring-ring truncate text-left text-sm font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
+                          className="focus-visible:ring-ring truncate text-start text-sm font-medium hover:underline focus-visible:ring-2 focus-visible:outline-none"
                         >
                           {source.title}
                         </button>

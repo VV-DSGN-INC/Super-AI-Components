@@ -67,7 +67,7 @@ function FeatureCard({ item }: { item: FeatureCardRowItem }) {
         // Same four EntityRow slots as any other row consumer — only the
         // axis flips (row -> column) and the row-menu chrome (rounded
         // highlight, min-height reservation) gives way to card padding.
-        className="h-full min-h-0 flex-1 flex-col items-start gap-2 rounded-none p-4 text-left"
+        className="h-full min-h-0 flex-1 flex-col items-start gap-2 rounded-none p-4 text-start"
       />
     </Card>
   );

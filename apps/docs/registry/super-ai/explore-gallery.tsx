@@ -194,7 +194,7 @@ function ExploreGalleryTile({
         <Badge
           data-slot="explore-gallery-item-type"
           variant="secondary"
-          className="pointer-events-none absolute top-2 left-2"
+          className="pointer-events-none absolute top-2 start-2"
         >
           {badgeLabel}
         </Badge>
@@ -206,7 +206,7 @@ function ExploreGalleryTile({
           // opacity-0, never `hidden`: the controls stay mounted and in the
           // tab order, and group-focus-within brings them back into view the
           // moment anything inside the tile takes focus.
-          className="absolute top-2 right-2 flex items-center gap-1 opacity-0 transition-opacity group-focus-within/explore-item:opacity-100 group-hover/explore-item:opacity-100 pointer-coarse:opacity-100"
+          className="absolute top-2 end-2 flex items-center gap-1 opacity-0 transition-opacity group-focus-within/explore-item:opacity-100 group-hover/explore-item:opacity-100 pointer-coarse:opacity-100"
         >
           {item.prompt ? (
             <Button

@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import type { TableViewProps, ViewItem } from "@/registry/super-ai/data-views-shared";
 
-const ALIGN = { left: "text-left", right: "text-right", center: "text-center" } as const;
+const ALIGN = { left: "text-start", right: "text-end", center: "text-center" } as const;
 
 /* The table is a `role="grid"`, not a static table, because its rows are the
    clickable surface. A grid keeps the tabular structure a screen reader needs
