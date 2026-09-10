@@ -1,0 +1,153 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import ArtifactGridDemo from "@/components/demos/artifact-grid-demo";
+
+<Meta title="Foundations/Layout & spacing" />
+
+# Layout & spacing
+
+Radius comes from one variable, spacing comes from a short list of Tailwind steps, and a component
+that lays itself out in columns keys them off its own width rather than the viewport. Counts on
+this page were taken 2026-09-09 from the 129 non-test sources under
+`apps/docs/registry/super-ai/`.
+
+## Radius derives from one variable
+
+`--radius: 0.625rem` at `apps/storybook/src/index.css` line 112 is the only radius value written
+down. The `@theme inline` block at lines 79 to 85 derives seven steps from it as multiples: `sm`
+0.6, `md` 0.8, `lg` 1, `xl` 1.4, `2xl` 1.8, `3xl` 2.2, `4xl` 2.6. At a 16px root those read 6, 8,
+10, 14, 18, 22 and 26 pixels. Retuning corners across the whole kit is one edit.
+
+What the registry reaches for, by occurrence:
+
+- `rounded-full` 73
+- `rounded-lg` 67
+- `rounded-md` 27
+- `rounded-sm` 11
+- `rounded-xl` 5
+- `rounded-2xl` 4
+- `rounded-none` 3
+
+Reading the largest users, the choice tracks what kind of thing the element is. `rounded-full` is a
+pill or a circle: `cost-chip`'s chip, `suggestion-chips`' pill, `quota-meter`'s progress track.
+`rounded-lg` is a container holding other things: `entity-row`'s row, `empty-state`'s panel,
+`preview-tile`'s frame. `rounded-md` and `rounded-sm` are the smaller steps for a control or a mark
+inside one of those, such as the 20px thumbnail at `suggestion-chips.tsx` line 74.
+
+## The bare `rounded` utility is not on that ladder
+
+27 occurrences in code across 15 files, and they behave differently from the seven steps above.
+Compiled against this repo's own
+Tailwind 4.3.2 and this theme, `rounded` emits a literal `border-radius: 0.25rem` and does not read
+`--radius` at all, while `rounded-sm` emits `calc(var(--radius) * 0.6)`. So `rounded` is 4px and
+`rounded-sm` is 6px, and only one of them moves when `--radius` changes.
+
+<DoDont
+  doExample={
+    <div className="bg-muted text-foreground rounded-sm p-3 text-xs">
+      <span>rounded-sm, derived from --radius, currently 6px</span>
+    </div>
+  }
+  doCaption="A named step from the theme scale. Retuning --radius moves it with everything else."
+  dontExample={
+    <div className="bg-muted text-foreground rounded p-3 text-xs">
+      <span>rounded, a literal 0.25rem that ignores --radius</span>
+    </div>
+  }
+  dontCaption="The bare utility compiles to a fixed 4px. It survives a theme retune unchanged, which is the quiet way a scale stops being one."
+/>
+
+Nothing fails a gate over it today, and 27 sites are not a sweep this page is calling for. It is
+worth knowing before adding the twenty-eighth.
+
+## Space is a short list of steps
+
+Most-used values, by occurrence across the 129 sources:
+
+- Gaps: `gap-2` 186, `gap-1` 85, `gap-3` 80, `gap-1.5` 57, `gap-4` 43
+- Horizontal padding: `px-3` 42, `px-2` 39, `px-4` 21, `px-1.5` 15
+- Vertical padding: `py-1` 28, `py-1.5` 25, `py-2` 21, `py-3` 7
+- Uniform padding: `p-3` 24, `p-2` 23, `p-4` 13
+
+Two readings. The kit lives between 4px and 16px, which follows from a type scale that is almost
+entirely 12px and 14px. And horizontal padding usually runs above vertical on the same element:
+grepping the class strings that set both, the four most common pairs are `px-3 py-2` (12),
+`px-2 py-1.5` (8), `px-2 py-1` (8) and `px-2 py-0.5` (6). That asymmetry is what keeps a chip or a
+row reading as a line rather than a box, and it is why `p-3` on a control looks wrong beside its
+neighbours.
+
+<Example className="flex flex-wrap items-center gap-2">
+  <span className="bg-muted text-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
+    <span>px-2 py-0.5, a chip</span>
+  </span>
+  <span className="bg-muted text-foreground inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm">
+    <span>px-3 py-1.5, a control</span>
+  </span>
+  <span className="border-border text-foreground inline-flex items-center gap-2 rounded-lg border p-3 text-sm">
+    <span>p-3, a container</span>
+  </span>
+</Example>
+
+## A component sizes itself against its own width
+
+Decision D19, `docs/design-system/decisions.md`, dated 2026-08-18. A component that lays itself out
+in columns keys them off its own width, never the viewport, because the defect it fixes is a
+container-versus-viewport confusion and no viewport value can address one. The example that forced
+it: a grid shipped with viewport breakpoints, and every shell that placed it beside a sidebar
+carried a hand-written descendant override to shift each breakpoint up a step.
+
+Measured 2026-09-09, two registry sources have converted, `artifact-grid.tsx` and `recent-grid.tsx`.
+Both use the same shape and the same two thresholds.
+
+<Example>
+  <ArtifactGridDemo />
+</Example>
+
+The live grid above is `artifact-grid`, rendered through its demo from
+`apps/docs/components/demos/artifact-grid-demo.tsx`. Drag the docs pane narrower and its columns
+change on the panel's width, with no viewport breakpoint involved.
+
+Two things the decision record says any adopter has to copy, both of which cost a shipped attempt
+first.
+
+- **Two elements, never one.** A container query never resolves against the element that
+  establishes the container. `artifact-grid.tsx` line 368 is a plain wrapper carrying only
+  `@container`, and the queried classes sit on the grid one level down at line 371. One element
+  carrying both compiles clean and never fires, at any width.
+- **Arbitrary thresholds, not the named rungs.** Tailwind's container rungs and its breakpoints
+  share step names and are different scales: `--container-md` is 28rem while `--breakpoint-sm` is
+  40rem. Reaching for the same-named rung shipped a real regression at ordinary laptop widths. Both
+  files use `@[40rem]` and `@[64rem]`, which reproduce the old `sm` and `lg` thresholds exactly.
+
+This is not a sweep. Existing viewport breakpoints stay until a component is found to be wrong
+beside a narrower parent.
+
+## Arbitrary pixel values are read work, not a grep
+
+`LAY-1` in `packages/ds-rules/rules/local.json` covers values like `w-[13.5rem]` or `gap-[11px]`
+that duplicate a scale step or invent an off-scale one. Its severity is review and its method is
+judgment, so it appears in the unchecked list on every run of `packages/ds-rules/rulecheck.mjs`
+rather than silently not running. The record says why: a grep here is structurally
+false-positive-prone, because container-query thresholds and computed track sizes are legitimate
+arbitrary values, and a declared gap beats a dropped one.
+
+The fix the record names is to snap to the nearest step, and to treat a value the scale genuinely
+lacks as a proposal for the token system rather than an inline literal. The same position is the
+value ratchet in `docs/design-system/anti-slop.md`: a change never grows the count of distinct
+radii, shadows, font sizes or spacing steps.
+
+## Rules
+
+- Pick a radius by what the element is. Pill for chips and avatars, `lg` for containers, `md` for
+  controls inside them.
+- Change `--radius` rather than a step. All seven derive from it, and the bare `rounded` utility
+  does not.
+- Stay on the scale for spacing. The kit runs 4px to 16px, and horizontal padding runs one step
+  above vertical on the same element.
+- Columns key off the component's own width. Two elements, a wrapper carrying `@container` and a
+  queried descendant, with arbitrary thresholds rather than the named rungs.
+- An arbitrary value is a proposal, not a shortcut. `LAY-1` is read on the diff, so nothing stops
+  you except review.
+
+The values behind every step are on **Foundations → Design Tokens**. What sits inside these
+containers is on **Foundations → Color** and **Foundations → Typography**.
