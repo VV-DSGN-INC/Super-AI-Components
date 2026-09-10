@@ -1,0 +1,195 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import { TokenTable } from "../_shared/token-table";
+
+<Meta title="Foundations/Design Tokens" />
+
+# Design Tokens
+
+The theme is the stock shadcn variable set, unmodified. Every swatch on this page is drawn live
+from `apps/storybook/src/index.css` through `var(--token)`, so the stylesheet stays the only copy
+of any value and this page cannot drift from it.
+
+## Where the values live
+
+One file, two blocks. Measured 2026-09-09: `:root` (lines 88 to 121) declares 31 colour tokens
+plus `--radius`, and `.dark` (lines 123 to 155) redeclares the same 31 colour tokens and does not
+touch `--radius`. The name sets are identical, so no colour token can be defined in one theme and
+missing in the other, and the corner radius does not change when the theme flips.
+
+Above them, an `@theme inline` block (lines 44 to 86) maps each variable onto a Tailwind utility
+namespace, which is what turns `--card` into `bg-card`. A variable declared without that mapping
+compiles to no utility at all and fails silently; see the `--warning` section at the end of this
+page for what that costs.
+
+## Surfaces
+
+Six surface tokens, and in light mode they resolve to two values. `--background`, `--card` and
+`--popover` are all `oklch(1 0 0)`; `--secondary`, `--muted` and `--accent` are all
+`oklch(0.97 0 0)`, joined there by `--sidebar-accent`. Dark mode separates the page from the raised
+surfaces, `--background` at `0.145` under `--card` and `--popover` at `0.205`, with the three muted
+tokens at `0.269`.
+
+<TokenTable tokens={["--background", "--card", "--popover", "--muted", "--accent", "--secondary"]} />
+
+What that means when composing is on **Foundations → Color**: in light mode a card reads by its
+border rather than by its fill, and three of these tokens are interchangeable as a ground.
+
+## Foregrounds
+
+Each surface has a paired foreground, and the pairs are what a component should reach for. In light
+mode `--foreground`, `--card-foreground` and `--popover-foreground` share `oklch(0.145 0 0)`;
+`--secondary-foreground` and `--accent-foreground` share `oklch(0.205 0 0)`. `--muted-foreground`
+sits apart at `oklch(0.556 0 0)`, and that gap is the origin of the contrast failure this repo
+keeps hitting.
+
+<TokenTable
+  tokens={[
+    "--foreground",
+    "--card-foreground",
+    "--popover-foreground",
+    "--muted-foreground",
+    "--accent-foreground",
+    "--secondary-foreground",
+  ]}
+/>
+
+## Primary, destructive, and the edges
+
+`--primary` is a neutral in both themes, near-black in light and near-white in dark, so it inverts
+with the ground. `--destructive` is one of only three declarations in the whole file that carry any
+chroma. `--border` and `--input` are a flat grey in light and a white alpha in dark
+(`oklch(1 0 0 / 10%)` and `/ 15%`), which is why an edge in dark mode reads against whatever it
+sits on rather than as a fixed grey.
+
+<TokenTable
+  tokens={["--primary", "--primary-foreground", "--destructive", "--border", "--input", "--ring"]}
+/>
+
+## The chart set is five neutral greys
+
+Measured 2026-09-09: `--chart-1` through `--chart-5` are `0.87`, `0.556`, `0.439`, `0.371` and
+`0.269` lightness at zero chroma, and the `.dark` block repeats those five values unchanged. The
+chart palette is the one family in this theme that does not respond to the theme at all.
+
+<TokenTable tokens={["--chart-1", "--chart-2", "--chart-3", "--chart-4", "--chart-5"]} />
+
+Two of the five collide with other roles. `--chart-2` equals `--muted-foreground` in light and
+equals `--ring` in dark; `--chart-5` equals `--muted`, `--accent` and `--secondary` in dark. A
+series drawn at those steps sits on a value the chrome around it is also using, so separation has
+to come from the mark, not the hue. **Foundations → Data Visualization** carries `CHT-1` and
+`CHT-3` and what follows from an all-neutral chart set.
+
+## The sidebar carries its own eight
+
+The sidebar set duplicates the surface, foreground, primary, border and ring roles under its own
+names so a sidebar can be re-skinned without touching the page. Seven of the eight are neutral. The
+exception is `--sidebar-primary` in dark mode, `oklch(0.488 0.243 264.376)`, a saturated blue at
+hue 264 with no counterpart in the light block, where the same token is `oklch(0.205 0 0)`. That is
+stock shadcn, carried as-is, and it is worth knowing before assuming the theme is neutral
+everywhere.
+
+<TokenTable
+  tokens={[
+    "--sidebar",
+    "--sidebar-foreground",
+    "--sidebar-primary",
+    "--sidebar-primary-foreground",
+    "--sidebar-accent",
+    "--sidebar-accent-foreground",
+    "--sidebar-border",
+    "--sidebar-ring",
+  ]}
+/>
+
+## Radius derives from one variable
+
+`--radius: 0.625rem` (line 112) is the only radius value written down. The seven steps in
+`@theme inline` are multiples of it: `sm` at 0.6, `md` at 0.8, `lg` at 1, `xl` at 1.4, `2xl` at
+1.8, `3xl` at 2.2 and `4xl` at 2.6. At a 16px root that reads 6, 8, 10, 14, 18, 22 and 26 pixels.
+Change the one variable and all seven move together.
+
+<Example className="flex flex-wrap items-end gap-4">
+  <div className="bg-muted text-foreground flex size-16 items-end justify-center rounded-sm p-1 text-xs">
+    <span>sm</span>
+  </div>
+  <div className="bg-muted text-foreground flex size-16 items-end justify-center rounded-md p-1 text-xs">
+    <span>md</span>
+  </div>
+  <div className="bg-muted text-foreground flex size-16 items-end justify-center rounded-lg p-1 text-xs">
+    <span>lg</span>
+  </div>
+  <div className="bg-muted text-foreground flex size-16 items-end justify-center rounded-xl p-1 text-xs">
+    <span>xl</span>
+  </div>
+  <div className="bg-muted text-foreground flex size-16 items-end justify-center rounded-2xl p-1 text-xs">
+    <span>2xl</span>
+  </div>
+</Example>
+
+Which step means what, and the one utility that is not on this ladder, are on **Foundations →
+Layout and spacing**.
+
+## Two font stacks, and the suffix that has to be exact
+
+`--font-sans` leads with `"Geist Variable"` and then `"Geist"`; `--font-geist-mono` leads with
+`"Geist Mono Variable"` then `"Geist Mono"` (lines 34 to 42). Both are self-hosted through
+`@fontsource-variable` imports rather than fetched at runtime, because the a11y gate is blocking
+and should not depend on the network.
+
+The suffix decides whether the family loads at all, and the comment at lines 24 to 33 says why. The `@fontsource-variable`
+packages declare the family with the `Variable` suffix, so a stack naming only `"Geist"` matches
+nothing they ship and falls through to the system sans with no error anywhere. `--font-heading` is
+mapped to `--font-sans`, so `font-heading` and `font-sans` are the same family here.
+
+## The token rules, and what enforces them
+
+Ten records live in `packages/ds-rules/rules/local.json`. `pnpm check:tokens` runs
+`packages/ds-rules/rulecheck.mjs --severity blocker` over the whole record set, local and core
+together. The pattern-based rules below all scope to `apps/docs/registry/super-ai`,
+`apps/docs/registry/marketing` and `apps/docs/components/ui`; the two non-pattern rules declare no
+scope at all, which is the point of them.
+
+- `TOK-1` No raw hex colours in registry sources. Blocker. Write `GH-1234` rather than a hash for
+  an issue reference, or the number reads as a colour.
+- `TOK-2` No raw `oklch()` in registry sources. Blocker. Colour literals belong in this stylesheet
+  and nowhere else.
+- `TOK-3` No Tailwind palette classes in registry sources. Blocker. A palette class hardcodes a hue
+  the theme cannot remap.
+- `TOK-4` No muted text paired with a muted background in one class string. Blocker.
+- `TOK-5` No muted text and background split across a `cva()` base and a variant value. Blocker.
+- `TOK-6` No muted text under a composed muted surface. Blocker, and declared unchecked by the
+  static run: the checker for it is the Storybook axe gate.
+- `TOK-7` No raw `rgb()`, `rgba()` or `hsl()` in registry sources. Blocker.
+- `TOK-8` Foreground composites only from foreground, only at the measured steps. Blocker. The live
+  set is `text-foreground/60`, `/70` and `/80`, and it may only shrink.
+- `ICO-1` Only `lucide-react` ships icons in registry sources. Blocker.
+- `LAY-1` Arbitrary pixel values duplicate or bypass the scale. Review severity, judgment method,
+  so it is declared unchecked on every run rather than quietly not running.
+
+Measured 2026-09-09: `node packages/ds-rules/rulecheck.mjs --severity blocker` reports zero blocker
+findings. The full-severity run prints 17 warnings and names `TOK-6` and `LAY-1` as unchecked.
+
+## The hole: `--warning` is undefined here
+
+`apps/docs/app/globals.css` defines `--warning` and `--warning-foreground` in both themes plus
+their `@theme inline` mappings. `apps/storybook/src/index.css` defines none of them, confirmed
+2026-09-09 by name search across both blocks.
+
+Tailwind emits nothing for an undefined theme key and does not complain, so every `bg-warning`,
+`text-warning` and `border-warning` in the registry reaches the DOM here and paints nothing. Axe
+then measures the inherited colour, which means the warning pairing has never been measured under
+this gate and a green warning story proves nothing about the state it is named for. Recorded rather
+than patched, because which value it should take is a design decision. Full account:
+`docs/design-system/a11y-baseline.md` §Gate hole.
+
+## Rules
+
+- Style with the shadcn variables and nothing else. `TOK-1`, `TOK-2`, `TOK-3` and `TOK-7` fail the
+  build on a literal.
+- Pair a surface with its own foreground. The muted pair is the exception and it is measured on
+  **Foundations → Color**.
+- Change `--radius` rather than any single step; all seven derive from it.
+- Do not add a variable without an `@theme inline` mapping. An unmapped variable is a class that
+  compiles to nothing.
+- A green story on a warning surface is not evidence. Check whether the token exists here first.

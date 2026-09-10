@@ -1,0 +1,249 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
+import AppTopbarDemo from "@/components/demos/app-topbar-demo";
+import ModalityRailDemo from "@/components/demos/modality-rail-demo";
+import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
+import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+<Meta title="Foundations/Navigation" />
+
+# Navigation
+
+Seven components in this registry move a person between places: `app-sidebar`, `sidebar-nav`,
+`app-topbar`, `mode-tabs`, `detail-tabs`, `modality-rail` and `workspace-switcher`. Each answers a
+different shape of structure. This page maps structure to component, states the one mark that says
+where you are, and reports what a 375px viewport actually does. Every number below was measured in
+this repo on 2026-09-09 from the file it names.
+
+## Structure picks the component
+
+Read the structure first, then pick. The registry sources are under
+`apps/docs/registry/super-ai/`.
+
+- An application top level, six to thirty destinations: `app-sidebar` holding a `sidebar-nav`.
+- One page inside that top level, with a path and a document identity: `app-topbar`.
+- Sibling views of the same content, two to five of them: `mode-tabs`.
+- Channels inside one record, or the pane switch a narrow container forces: `detail-tabs`.
+- A family of tools inside an editor, eight to fourteen of them: `modality-rail`.
+- The tenant the whole app is currently pointed at: `workspace-switcher`.
+
+Nothing here navigates a collection. A list of records is a pattern rather than a navigation
+component, and it is decided in **Patterns → Resource index**.
+
+## The top level is a sidebar with three widths
+
+`app-sidebar.tsx` owns arrangement and nothing else: four optional slots, `switcher`, `nav`,
+`promo` and `footer`, stacked in that order (lines 28 to 37). Each takes a plain node, so the same
+shell holds `sidebar-nav` on a docs product and `thread-list` on a chat product without a variant
+prop.
+
+The widths belong to the vendored `Sidebar` primitive, not to this component:
+`apps/storybook/src/components/ui/sidebar.tsx` declares `16rem` expanded, `3rem` at icon-rail width
+and `18rem` for the mobile drawer (lines 18 to 20), with `Cmd` or `Ctrl` plus `b` toggling it (line
+21 and line 87). `app-sidebar` defaults `collapsible` to `icon` (line 44) and hides the promo slot
+at rail width (line 62), because a promo card has no useful rendering at 3rem.
+
+<Example>
+  <AppSidebarDemo />
+</Example>
+
+## The page row is one topbar in two configurations
+
+`app-topbar.tsx` takes a `context` of `document` or `editor` (line 41). Document context leads with
+a breadcrumb and a privacy chip; editor context leads with zoom and history controls. Both take
+`title`, `savedLabel` and an `actions` slot, and the file records that a chat title bar is this
+component with fewer slots filled rather than a second component (lines 23 to 27).
+
+Two of its props are text-first on purpose. `privacy` always renders its label, and the icon is
+optional beside it (line 35). `savedLabel` is rendered verbatim, because a cloud glyph raises the
+question the string answers (line 50).
+
+<Example>
+  <AppTopbarDemo />
+</Example>
+
+## Sibling views are a toggle group, channels are a tablist
+
+These look alike and are different controls.
+
+`mode-tabs` renders a `ToggleGroup`, so its items are buttons that report `aria-pressed`, asserted
+at `apps/storybook/src/stories/super-ai/ModeTabs.stories.tsx` line 356. It accepts two to five
+modes and its own doc comment sends anything past five to a select (line 24). The `with-tooltip`
+variant is icon-only visually and still ships the label as `sr-only` button content, so the tooltip
+is a sighted-user hint layered over a real accessible name rather than the only source of it (lines
+29 to 36).
+
+`detail-tabs` renders a real `role="tablist"` with roving tabindex, one tablist serving both tab
+levels: the pane switch a narrow container forces, and the channel switch inside a record (lines 22
+to 31). A count is folded into the accessible name rather than left in a badge, so `Activity`
+announces as `Activity, 3` (line 72). It renders live inside **Super AI → Detail View Shell**.
+
+<Example>
+  <ModeTabsDemo />
+</Example>
+
+## A tool family gets a vertical rail
+
+`modality-rail.tsx` takes `items`, a separate `pinned` group that must survive however much the
+middle grows (lines 32 to 38), and a `maxVisible` count past which the remainder collapses behind an
+overflow control rather than a scrollbar (line 40). Its `new` and `pro` badges carry a
+visually-hidden name of their own appended outside the aria-hidden icon wrapper, so the badge
+survives into the button name (lines 22 to 27 and 45 to 51).
+
+The rail selects which tool panel is shown and never changes the canvas.
+`docs/design-system/block-specs.md` records that separation as what keeps the studio shell legible.
+
+<Example>
+  <ModalityRailDemo />
+</Example>
+
+## The tenant sits above the nav, never inside it
+
+`workspace-switcher.tsx` is a trigger plus a menu, placed in the sidebar `switcher` slot. Two
+behaviours are worth knowing before you use it: a `description` on any one workspace switches the
+whole list into entity-row mode (line 32), and creation appears only when `onCreate` is passed, never
+as a plus sign on the trigger (line 42).
+
+<Example>
+  <WorkspaceSwitcherDemo />
+</Example>
+
+## Where the registry stops, the shadcn primitives continue
+
+There is no breadcrumb and no pagination component in `apps/docs/registry/super-ai/`. Both are
+already answered by the 60 shadcn ports in `apps/storybook/src/components/ui/`, and `app-topbar`
+composes the breadcrumb one rather than reimplementing it. Use the primitives directly for a path
+above a detail screen and for a long collection.
+
+<Example className="flex flex-col gap-6">
+  <Breadcrumb>
+    <BreadcrumbList>
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">Projects</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbLink href="#">Northwind</BreadcrumbLink>
+      </BreadcrumbItem>
+      <BreadcrumbSeparator />
+      <BreadcrumbItem>
+        <BreadcrumbPage>Brand audit</BreadcrumbPage>
+      </BreadcrumbItem>
+    </BreadcrumbList>
+  </Breadcrumb>
+  <Pagination>
+    <PaginationContent>
+      <PaginationItem>
+        <PaginationPrevious href="#" />
+      </PaginationItem>
+      <PaginationItem>
+        <PaginationLink href="#">1</PaginationLink>
+      </PaginationItem>
+      <PaginationItem>
+        <PaginationLink href="#" isActive>
+          2
+        </PaginationLink>
+      </PaginationItem>
+      <PaginationItem>
+        <PaginationLink href="#">3</PaginationLink>
+      </PaginationItem>
+      <PaginationItem>
+        <PaginationNext href="#" />
+      </PaginationItem>
+    </PaginationContent>
+  </Pagination>
+</Example>
+
+## One mark for the current place
+
+The mark says what kind of current this is, and the registry is consistent about which one it uses.
+
+- `aria-current="page"` when the item is a destination. Four sites, three files: `sidebar-nav.tsx`
+  lines 136 and 150, `thread-list.tsx` line 127, `docs-shell.tsx` line 233. The two vendored
+  primitives agree: `breadcrumb.tsx` line 53 and `pagination.tsx` line 43.
+- `aria-current="true"` when the item is a position inside one view rather than somewhere else to
+  go. Seven sites, seven files: `calendar-view.tsx` 278, `feed-view.tsx` 50, `filter-panel.tsx` 441,
+  `frame-strip.tsx` 201, `template-detail.tsx` 307, `timeline-view.tsx` 271, `transcript-editor.tsx` 328.
+- `aria-current="step"` once, for a wizard: `generation-wizard.tsx` line 178.
+- `aria-selected` on a tab, because a tablist has its own state: `detail-tabs.tsx` line 69.
+
+How the mark paints is a separate decision, made in **Foundations → States**. The one paint rule
+that belongs here is the shape of a selected nav row. `sidebar-nav.tsx` fills the row and rebinds
+`--muted-foreground` inside it rather than drawing a left border, and records why at lines 57 to 70:
+a border is a per-side decoration that a 3rem rail has no room to render, and a filled row also
+carries the icon, the running spinner and the external glyph, which each own their own foreground
+class.
+
+<DoDont
+  doExample={
+    <div className="w-52 space-y-1">
+      <span className="bg-accent text-accent-foreground block rounded-md px-2 py-1.5 text-sm font-medium">
+        {"Library"}
+      </span>
+      <span className="text-muted-foreground block rounded-md px-2 py-1.5 text-sm">Inbox</span>
+    </div>
+  }
+  doCaption="Fill the row. The surface survives collapse to a 3rem rail, and rebinding the row's foreground reaches every glyph a consumer composes into it."
+  dontExample={
+    <div className="w-52 space-y-1">
+      <span className="border-primary text-foreground block border-l-2 px-2 py-1.5 text-sm font-medium">
+        {"Library"}
+      </span>
+      <span className="text-muted-foreground block px-2 py-1.5 text-sm">Inbox</span>
+    </div>
+  }
+  dontCaption="A left border is a per-side decoration. It disappears at rail width and it styles nothing inside the row."
+/>
+
+## What survives at 375px
+
+Both narrow cases are measured in the story files, and neither result is the one a reader would
+guess.
+
+The sidebar drawer does not arrive from a narrow container. `useIsMobile` reads
+`matchMedia("(max-width: 767px)")` against the real viewport
+(`apps/storybook/src/hooks/use-mobile.ts` lines 3 and 9), so a 375px wrapper renders the desktop
+sidebar at desktop width. The drawer panel is also positioned against the viewport, which is why
+`AppSidebar.stories.tsx` records at lines 406 to 424 that a preview pane cannot rehearse it. Resize
+the canvas to see it.
+
+The topbar has no breakpoint at all, and the outcome is decided by two classes: the leading group is
+`min-w-0 flex-1` and the trailing group is `shrink-0`, so the trailing side wins every contest.
+`AppTopbar.stories.tsx` lines 576 to 604 report the measurement at 375px: the trailing group takes
+235 of the 375, the leading group is left with 104, the privacy chip alone is 58, and the roughly 34
+that remain for the path are its two chevrons. All three crumbs render at zero width, so the bar
+names who can see the document and not which document it is. The cut is `truncate`, which is
+`overflow: hidden`, so every crumb keeps its accessible name, its href and its place in the tab
+order.
+
+## Rules
+
+- Pick by structure, and pick once. A second component doing the same job in a second screen is the
+  drift this list exists to stop.
+- Mark the current place with `aria-current`, and pick the value by kind: `page` for a destination,
+  `true` for a position, `step` in a wizard.
+- An icon-only navigation control ships a real accessible name. A tooltip is an addition to that
+  name, never a replacement for it. Rule `ICO-1` and the accessible-name findings in
+  `docs/design-system/a11y-baseline.md`.
+- A selected nav row is a filled surface, not an edge, so it still reads at 3rem.
+- Never hide a control at a narrow width with `display: none` when `truncate` will do. Hiding
+  removes it from the tab order; truncation does not.
+- Compose the vendored breadcrumb and pagination rather than adding registry copies of them.

@@ -1,0 +1,283 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import ActionStackDemo from "@/components/demos/action-stack-demo";
+import ApprovalCardDemo from "@/components/demos/approval-card-demo";
+import CostChipDemo from "@/components/demos/cost-chip-demo";
+import RunButtonDemo from "@/components/demos/run-button-demo";
+import SelectionToolbarDemo from "@/components/demos/selection-toolbar-demo";
+import TrustDialogDemo from "@/components/demos/trust-dialog-demo";
+
+<Meta title="Patterns/Actions & confirmation" />
+
+# Actions & confirmation
+
+Every control that changes something answers two questions before it is drawn: **what does it cost**,
+and **who has to agree before it runs**. In a conventional product the second question only appears in
+front of destruction. Here it appears in front of spend, in front of a side effect the model wants to
+take, and in front of running someone else's code, and each of those has a component in this registry
+that has already settled the shape. Two contracts in
+`docs/design-system/concept-model.md` section 4 carry the weight: **Cost**, three forms of one number,
+and **Approval**, four verbs in a fixed order.
+
+## Use it when
+
+- A control spends credits, or runs a model, and the reader should know the price before pressing it.
+- A model proposes something and a human has to accept, change, or refuse it.
+- An agent is about to take a side effect outside the conversation.
+- Something the reader did not write is about to run on their behalf.
+- A finished result can be handed to another tool, and each hop costs money.
+
+Do not use it when the answer is one of these instead:
+
+- **A control that acts on release.** A filter, a view mode, a sort. **Patterns → Resource index** owns
+  the bar they sit on.
+- **Values being entered.** **Patterns → Forms & wizards** owns the rows and the footer that commits
+  them.
+- **What the interface says afterwards.** **Patterns → Status & feedback** picks the surface that
+  reports the result, and **Content → Error messages** owns it when the result is a failure.
+- **The conversation the approval sits inside.** **Patterns → AI conversation** owns the thread; this
+  page owns the card in it.
+
+## The actions, live
+
+### Cost, before the commit
+
+<Example className="flex flex-col gap-6">
+  <CostChipDemo />
+  <RunButtonDemo />
+</Example>
+
+The Cost contract states three forms of one number: a chip per action (`cost-chip`), a line before a
+commit (`run-button`), and a ring at app level (`credits-indicator`, listed as M2 in
+`docs/design-system/catalog.md`). The design spec section 4, under Money, is the source: credits
+surface at the point of spend rather than in a billing page, and cost confirmation precedes commit,
+phrased beside the button that spends.
+
+`cost.tsx` is where the number stops being able to disagree with itself. Line 34 types `CostStatus` as
+`estimate`, `estimating`, `confirmed` or `unavailable`, which is estimate quality rather than
+affordability. Affordability is derived: `ResolvedCost` at line 54 carries `insufficient` and
+`shortfall` with the comment that they are never passed in, so two surfaces cannot disagree. The
+provider is optional and props always win, so a component works installed on its own.
+
+`run-button.tsx` line 20 declares seven states: `idle`, `estimating`, `running`, `done`, `failed`,
+`insufficient-credits` and `locked`. Two of those replace the control rather than restyling it. Line
+116 swaps in the shortfall path when credits are short, and line 126 swaps in the lock, which is the
+design spec's gate at the point of creation: the control that would have spent becomes the paywall.
+The cost chip itself shows only in `idle`, `done` and `failed`, per line 106, because a price beside a
+run in progress is a number the reader can no longer act on.
+
+### Approval, four verbs
+
+<Example>
+  <ApprovalCardDemo />
+</Example>
+
+`approval-card.tsx` line 21 states the first rule: four verbs, always in the same order, Confirm, Edit,
+Regenerate, Skip. Line 43 is the constant that enforces it, iterated as written, which is what makes
+the ordering a property of the component rather than of the call site. A caller who passes only
+`onSkip` and `onConfirm` still gets Confirm before Skip, so the muscle memory holds across every
+approval surface in the product. Line 211 gives Confirm `variant="default"` and every other verb
+`outline`.
+
+Two of the four are terminal and two are not. The constant marks Confirm and Skip `terminal: true`;
+Edit and Regenerate hand the reader back to the artifact and resolve nothing on their own, which is
+why the states at line 32 are `pending`, `submitting` and `resolved` rather than a boolean.
+
+Line 25 is the rule that makes the card worth having: detail is truncated behind an explicit expand,
+never auto-expanded and never silently elided, because approving what you could not read is exactly
+what this component exists to prevent. Line 118 keeps Undo for a window after a resolution, since
+Confirm and Skip would otherwise be irreversible.
+
+### Permission, before a side effect
+
+`permission-prompt.tsx` line 26 names its four verbs: Allow once, Always allow, Deny, Edit first. It is
+built on `AlertDialog` and renders through a portal with a backdrop, so it covers whatever is behind
+it and cannot be shown honestly inside a docs column. It is live, at its own size, at
+[Super AI → Permission Prompt](?path=/docs/super-ai-permission-prompt--docs).
+
+Three of its rules are pinned by tests and worth stating here. Edit first carries equal visual weight
+with Allow once, the same button variant and size, direct siblings in the same actions row, on the
+reasoning at line 33 that Deny throws the agent's work away and restarts the loop while Edit first
+keeps it and puts the human in the loop productively. Arguments are hidden rather than summarised until
+explicitly expanded, and line 41 is precise about the mechanism: the raw values are absent from the
+DOM, not merely clipped. Always allow only emits the choice; writing the standing rule is the host's
+job. Deny is modelled as the dialog's own close path, so pressing Escape and pressing Deny land in the
+same place.
+
+### Trust, before running someone else's content
+
+<Example>
+  <TrustDialogDemo />
+</Example>
+
+`trust-dialog.tsx` line 34 explains the base: an `AlertDialog` rather than a dismissible `Dialog`,
+because closing on an outside click would defeat a safety gate. Line 40 is the component's whole reason
+to exist, Continue stays disabled until the checkbox is ticked. Line 45 puts the preview above the
+warning unconditionally, so a reader sees the thing before being told about it. Line 49 puts the
+account picker inside the Continue control rather than beside it, so choosing where something runs is
+part of the same press that runs it. Open the demo above and try Continue before ticking the box.
+
+### Handoff, and where credits vanish
+
+<Example className="flex flex-col gap-8">
+  <ActionStackDemo />
+  <SelectionToolbarDemo />
+</Example>
+
+`action-stack.tsx` line 23 quotes the category's signature interaction from the design spec section 4:
+cross-tool handoff, Extend then Upscale then Use in Lip sync. Line 25 states the consequence, each hop
+costs money and chaining is where credits vanish fastest, so every row carries its own price through
+`cost-chip` at line 80. A stack that shows the actions without the prices is how someone spends a
+month's credits in four clicks. Locked rows swap their icon for a lock and say why, rather than being
+hidden or dimmed into ambiguity.
+
+`selection-toolbar.tsx` is the same idea attached to a selection rather than a result. Line 32 calls it
+the menu on selected text, and line 37 makes it a vocabulary over `context-toolbar` rather than a
+second toolbar: the eight-action ceiling, the AI entry pinned at index 0 and never eligible for
+overflow, the roving focus, all of them reached through the shared component's own props. The design
+spec section 4 records why it exists at all: AI actions attach to objects, not just chats, and the
+selection is the prompt context.
+
+## When something has to stop the page
+
+One axis, and it is not how dangerous the action sounds. Ask **what a wrong press costs and whether the
+reader can get it back**, then pick the surface that already holds that answer.
+
+- **Nothing stops.** The act is reversible and cheap. Run it and report it, and let
+  **Patterns → Status & feedback** pick the surface that does the reporting.
+- **A price beside the control.** The act spends. `run-button` carries the cost and the shortfall in
+  the same control, so the number is where the press is. Nothing is blocked; the reader is informed at
+  the moment of spend.
+- **An inline card, in the flow.** A model proposed something. `approval-card` sits where the artifact
+  is, keeps the page usable around it, and offers the four verbs. This is the common case in an agent
+  product, and it is deliberately not a modal, because a proposal is not an emergency.
+- **A modal that cannot be dismissed by clicking away.** A side effect leaves the product
+  (`permission-prompt`), or code the reader did not write is about to run (`trust-dialog`). Both are
+  `AlertDialog`, and both add a second gate: hidden arguments that must be expanded, or a checkbox that
+  must be ticked.
+
+The gradient is worth holding on to. Every step up costs the reader attention, and a product that
+interrupts for everything has taught its readers to press through the one interruption that mattered.
+
+## Key decisions
+
+- **The number has one source.** `cost.tsx` derives `insufficient` and `shortfall` rather than
+  accepting them, so a chip and a button cannot disagree about whether an action is affordable.
+- **Price sits where the press is.** Not in a billing page, not in a tooltip. The chip rides the
+  action; the line rides the commit; the ring rides the app.
+- **A shortfall replaces the control, it does not disable it.** `run-button`'s
+  `insufficient-credits` state swaps in the shortfall and a route to top up, so the reader is told what
+  is wrong and handed the fix in one place.
+- **A lock is a state, not a page.** The paywall appears where creation would have happened, per the
+  design spec section 4.
+- **Four verbs, one order, everywhere.** Confirm, Edit, Regenerate, Skip. Not the order the handlers
+  were passed in, and never a fifth verb bolted on.
+- **Edit and Regenerate are not decisions.** They hand the artifact back. Only Confirm and Skip resolve,
+  which is why Undo exists for a window afterwards.
+- **Nothing is approved that could not be read.** Detail and arguments stay collapsed until explicitly
+  expanded, and in `permission-prompt` they are absent from the DOM until then.
+- **A safety gate cannot be dismissed by clicking away.** `AlertDialog`, not `Dialog`, for both the
+  permission prompt and the trust dialog.
+- **Every chainable action carries its price.** Chaining is where credits vanish fastest, so a handoff
+  menu without prices is the component failing at its one job.
+- **A locked row says why.** It keeps its place, swaps to a lock, and states the reason. Hiding it
+  leaves the reader wondering what the product can do.
+
+The one variable below is what a confirmation's buttons name.
+
+<DoDont
+  doExample={
+    <div className="flex flex-col gap-3">
+      <p className="text-sm">Send email to finance@acme.com</p>
+      <div className="flex flex-wrap gap-2">
+        <span className="border-input rounded-md border px-3 py-1.5 text-sm">Edit first</span>
+        <span className="border-input rounded-md border px-3 py-1.5 text-sm">Allow once</span>
+        <span className="border-input rounded-md border px-3 py-1.5 text-sm">Deny</span>
+      </div>
+    </div>
+  }
+  doCaption="each button names its own outcome, and Edit first sits beside Allow once at equal weight. These are permission-prompt.tsx's own defaults, lines 119 to 122."
+  dontExample={
+    <div className="flex flex-col gap-3">
+      <p className="text-sm">Send email to finance@acme.com</p>
+      <div className="flex flex-wrap gap-2">
+        <span className="border-input rounded-md border px-3 py-1.5 text-sm">Cancel</span>
+        <span className="bg-primary text-primary-foreground rounded-md px-3 py-1.5 text-sm">OK</span>
+      </div>
+    </div>
+  }
+  dontCaption="the same gate answered by two words that carry nothing. The reader has to hold the question in their head to know which one sends, and the third option, changing the message before it goes, has disappeared."
+/>
+
+## Rules
+
+- Derive affordability, never pass it. `cost.tsx` computes `insufficient` and `shortfall` in one place
+  so two surfaces cannot disagree, and the provider is optional because props always win.
+- Show the price at the point of spend, in one of the three contracted forms: chip per action, line
+  before commit, ring at app level. Do not invent a fourth.
+- Do not show a price the reader can no longer act on. `run-button.tsx` line 106 renders the cost chip
+  in `idle`, `done` and `failed` only.
+- A credit shortfall replaces the control with the shortfall and a way to top up. Never disable the
+  button and leave the reader to work out why.
+- A plan gate replaces the control with the lock and its reason, at the point of creation. It is a
+  state on the control, not a separate page.
+- Expose Confirm, Edit, Regenerate and Skip in that order on any artifact approval surface, per the
+  Approval contract in `docs/design-system/concept-model.md` section 4. The component fixes the order;
+  do not reorder at the call site.
+- Style Confirm `default` and the other three `outline`. One primary per card.
+- Treat Edit and Regenerate as non-terminal. They resolve nothing, so a card that closes on them has
+  lost the artifact the reader asked to change.
+- Keep Undo available for a window after Confirm or Skip. Both are terminal, and without the window
+  they are irreversible.
+- Never auto-expand detail, and never elide it silently. Approving what you could not read is the
+  failure the card exists to prevent.
+- Keep an agent's raw arguments out of the DOM until the reader expands them. Clipping them visually is
+  not the same guarantee.
+- Give Edit first the same variant and size as Allow once, as direct siblings in one row. Deny throws
+  the work away; edit-first keeps it, so the two are not ranked apart.
+- Let Always allow emit only the choice. The standing rule is the host's to write, and a component that
+  writes it has taken a decision it cannot see the consequences of.
+- Use `AlertDialog` for any gate, so an outside click cannot dismiss it. `Dialog` is for a form.
+- Keep Continue disabled until the trust checkbox is ticked, and render the preview above the warning
+  so the reader sees the content before the caution about it.
+- Put the account picker inside the Continue control. Where something runs is part of the press that
+  runs it.
+- Price every row in a handoff stack. `action-stack.tsx` renders `cost-chip` per action, because
+  chaining is where credits vanish fastest.
+- Keep locked actions visible, with a lock and a stated reason. `action-stack.tsx` line 107 swaps the
+  icon and line 117 renders the reason as text.
+- Reach for the shared toolbar rather than a second one. `selection-toolbar` is `context-toolbar` with
+  a writing vocabulary: eight actions, the AI entry at index 0 and never in overflow.
+- Never write `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`, and never
+  `text-destructive` on a `bg-destructive/NN` tint, which measures 4.0:1 against a 4.5:1 requirement.
+  `TOK-4`, `TOK-5` and `TOK-6` are the rules; `cost-chip.tsx` line 25 is the shipped fix.
+- What the interface says once an action has run is **Patterns → Status & feedback**'s, or
+  **Content → Error messages**' when it failed. This page stops at the press.
+
+## Content notes
+
+An action label is a verb and its object, and it says the thing rather than gesturing at it: "Extend",
+"Upscale", "Use in Lip sync", "Buy credits", "Allow once", "Edit first". `CPY-1` is the rule and
+`check:rules` reports it; a generic "OK", "Submit" or "Continue" beside a real choice is the failure it
+names.
+
+A confirmation's buttons name outcomes rather than answers, and each one is legible without re-reading
+the question. `permission-prompt` ships four such labels; `approval-card` ships four verbs. Neither
+uses Yes or No, and neither should be given them.
+
+A cost is a numeral with its unit, formatted once by `cost.tsx` and rendered by `cost-chip`: "17
+credits", "900 credits/min". The shortfall reads as a comparison the reader can act on, which is the
+shape the design spec section 4 records, need against have, beside the control that spends.
+
+A locked row states the gate in the row: "Available on Studio", "Video generation is a Pro feature."
+It names the tier rather than saying "unavailable", because the reader's next question is what would
+make it available.
+
+A permission prompt's `reason` explains why the agent wants to act now, in one sentence, with the
+specifics that let a reader judge it. The demo's reason names both the trigger and the precedent it is
+relying on, which is the shape to copy: enough to check, short enough to read before pressing.
+
+This page owns how an action is priced, ranked and gated. **Patterns → Forms & wizards** owns the
+values that reach it, **Patterns → Status & feedback** owns what the interface reports once it has run,
+and **Content → Voice & principles** owns how every label on this page sounds.

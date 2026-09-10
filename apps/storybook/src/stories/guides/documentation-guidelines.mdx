@@ -1,0 +1,132 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Documentation Guidelines" />
+
+# Documentation Guidelines
+
+Documentation here renders from the source it describes, and part of it is gated: a script fails the
+build when a required field is empty or a claim cites a class the component does not carry. This
+page covers the two surfaces a contributor writes, what each one owes, and the traps in the
+pipelines behind them. Everything below was read out of this repo on 2026-09-09.
+
+## There are two surfaces, and they hold different things
+
+- **Per-component guidance modules**, at `apps/docs/content/components/<name>.docs.tsx`. 116 of
+  them, one per shipped catalog item. Plain data, typed `ComponentDocs`. This is where a
+  component's own decisions live.
+- **These guidance pages**, MDX under `apps/storybook/src/stories/`. Guides cover how the registry
+  is used and maintained, Foundations how it looks and behaves, Content how it speaks, Patterns
+  how it composes. A page here never restates a per-component module.
+
+The contracts themselves are the third thing, and neither surface copies them: they live in one
+copy each under `docs/design-system/`, and a page cites the path.
+
+## A guidance module has nine fields, and the gate floors six
+
+`apps/docs/lib/component-docs.ts` declares the shape: `whatItIs`, `whyItMatters`, `evidence`,
+`anatomy`, `usage`, `dos`, `donts`, `accessibility` and `pitfalls`. The `accessibility` block has
+two required arms, `keyboard` and `screenReader`, and one optional arm, `focus`, omitted only when
+nothing moves focus.
+
+`check-contract.mts` (via `missingGuidanceFields` in `apps/docs/scripts/lib/contract-rules.ts`,
+lines 271 to 289) fails the build unless a module carries all of these. `evidence`, `anatomy` and
+`usage` are not floored here, so they are on the author:
+
+- `whatItIs` and `whyItMatters`, each at least 10 characters of quoted prose
+- at least one entry in `dos`
+- at least one entry in `donts`
+- at least one entry in `pitfalls`
+- an `accessibility` block, with at least one `keyboard` note **and** at least one `screenReader`
+  note
+
+Both accessibility arms are named separately on purpose. The failure the gate catches is a
+half-filled block: `keyboard` is the arm you can write by reading the component, and
+`screenReader`, the arm describing what is actually announced, is the one that gets left empty.
+`docs/design-system/component-build-brief.md` §Guidance asks for more than the floor, including at
+least two `dos` and two `donts` each with a live example, and at least two `pitfalls`.
+
+## The citation gate reads claim-position fields
+
+`apps/docs/scripts/check-citations.mts` runs as the second script inside `pnpm check:contract`. It
+imports each docs module as data and walks typed fields rather than pattern-matching text, then
+refuses any utility class or slot name a claim cites that the component's own reachable source does
+not carry. Reachable means the component file, its extra files, the items it `consumes` and the
+shadcn primitives it imports.
+
+Six field groups are in claim position: `whatItIs`, `whyItMatters`, `usage`, each `anatomy` note,
+each `dos` text, and every `keyboard` and `screenReader` note
+(`apps/docs/scripts/lib/citation-scan.ts`, `CLAIM_PATHS`, lines 109 to 142). `donts` and
+`pitfalls` are exempt, because their job is to name what must not be written. Anatomy slots have a
+stricter test than the rest: they must exist in the composition graph, as a real `data-slot` or, for
+a shell, a real `data-region`.
+
+## The server and client boundary breaks the build in two directions
+
+A docs module is read by a Server Component, so:
+
+- **No `"use client"` in the docs module.** Marking it client turns its exports into opaque client
+  references and the server read breaks.
+- **No JSX carrying event handlers in the docs module.** Those cannot serialise across the
+  boundary and break the static export.
+- **Interactive examples go in `apps/docs/content/components/<name>.examples.tsx`**, marked
+  `"use client"`, exporting zero-prop named components.
+
+Both halves have broken the build before, which is why they are in
+`docs/design-system/component-build-brief.md` §Guidance and again in `docs/CONTINUE.md` §4.
+
+One more lint trap in the same files: `react/no-unescaped-entities` is an **error** in this repo,
+not a warning, and it has broken the lint gate in consecutive batches. Any literal apostrophe or
+quote mark in a JSX text node has to be escaped. Prose inside a string prop, which is where most
+of a docs module lives, is unaffected.
+
+## These MDX pages follow one skeleton
+
+- `import` lines first, then `<Meta title="Section/Name" />`, then an H1, then one paragraph of
+  prose, then `##` headings. A page that opens with an example instead of a sentence gives an
+  indexer nothing to read.
+- **Every `##` heading is a claim the page makes.** A heading that says only "Overview" wastes the
+  one line a reader scans.
+- Foundations and Content pages end with `## Rules`. Pattern pages follow a fixed order:
+  definition, `## Use it when`, the thing live, a decision section, `## Key decisions`, `## Rules`,
+  `## Content notes`.
+- Sidebar order is pinned by `storySort.order` in `apps/storybook/.storybook/preview.tsx`. A new
+  page's name goes into its section's array or the page falls to the bottom of that section.
+
+## Examples come from two helpers, and both take a caption
+
+`apps/storybook/src/stories/_shared/doc-blocks.tsx` exports exactly two:
+
+- **`Example`** frames a live example in the kit's surface tokens and font. MDX-inline JSX bypasses
+  the preview decorator that frames stories, so without the frame an example sits on the docs
+  page's own background and breaks in dark mode.
+- **`DoDont`** requires both captions. A pair with no stated reason is decoration. Change one
+  variable between the two sides so the caption can name the difference.
+
+Examples render the real registry components, or a zero-prop demo from
+`apps/docs/components/demos/`, and say so in the caption when a demo stands in. There are no source
+blocks on these pages: a source block means keeping a second copy of the example as a string, which
+drifts. Per-component code lives in the component's story.
+
+## Three traps in this MDX pipeline
+
+- **No pipe tables.** `.storybook/main.ts` registers `@storybook/addon-docs` with no remark plugin
+  configuration, so a GFM table is not guaranteed to render as one. Write a bullet mapping instead:
+  a bold lead, then the description. Every list on these pages is that shape.
+- **Loose multi-line text as a JSX child gets wrapped in a paragraph** by the MDX compiler, inside
+  buttons, spans and titles. Keep text on its tag's line or wrap it in a `span`. Only a `div`
+  inside a `p` warns; the rest fail quietly.
+- **A bare angle bracket or brace in prose is parsed as JSX or as an expression.** Put the token in
+  backticks or write the word.
+
+## Copy rules that apply to both surfaces
+
+- **Demo content is something this system could really emit**: prompts, filenames, model names,
+  error strings. No invented company names and no fabricated metrics
+  (`docs/design-system/story-conventions.md`, Rules).
+- **A claim about the registry carries the date it was measured**, and a count names the file it
+  was counted from.
+- **`CPY-1` and `CPY-2` apply to example copy too**: say the thing rather than shipping a generic
+  call to action, and keep the banned marketing register out. `CPY-1` is a blocker, `CPY-2` a
+  warning, both in `packages/ds-rules/rules/core.json`.
+- **Strings are English** (`docs/design-system/decisions.md` D22). See **Content → Inclusive
+  writing** for what that implies for a consumer.

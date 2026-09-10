@@ -1,0 +1,109 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Kbd, KbdGroup } from "@/registry/super-ai/kbd";
+
+import { Example } from "../_shared/doc-blocks";
+
+<Meta title="Guides/Getting Started" />
+
+# Getting Started
+
+This repository publishes a shadcn registry. A consumer installs one item at a time with the shadcn
+CLI, and the files land in their own repository as source they can read and edit, which is why the
+install itself is a gate here. This page walks the path the consumer install test in CI walks,
+written for a person. Every count on it was measured in this repo on 2026-09-09.
+
+## One item installs at a time, by URL
+
+```bash
+npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
+```
+
+Each item is addressed as `/r/<name>.json` against the registry's base URL, which
+`apps/docs/scripts/gen-registry.mts` sets to `https://super-ai-components.vercel.app`. There is no
+barrel and no npm install step for the components themselves. What you install is what the CLI
+writes into your tree.
+
+Three namespaces answer that URL today, counted from
+`apps/docs/lib/catalog.manifest.ts` and `apps/docs/lib/lib.manifest.ts`:
+
+- **116 shipped catalog items**, the AI-application components. Eleven further manifest entries
+  carry `status: "cut"` and emit nothing.
+- **15 marketing items**, the landing-page set, from `apps/docs/registry/marketing/`.
+- **3 `registry:lib` contracts**, which are shared types rather than components: `cost`,
+  `use-view-mode` and `initials`.
+
+## What lands in the consumer, and where
+
+The target paths are fixed by the registry builder, not by the consumer's choice:
+
+- **Catalog items** land at `components/super-ai/<name>.tsx`
+  (`apps/docs/scripts/gen-registry.mts` line 23).
+- **Marketing items** land at `components/marketing/<name>.tsx` (line 57).
+- **Lib contracts** land at `lib/cost.tsx`, `lib/use-view-mode.tsx` and `lib/initials.tsx`, each
+  path declared on its own entry in `apps/docs/lib/lib.manifest.ts`.
+- **Composed items arrive with the item that needs them.** `registryDependencies` is derived from
+  real imports, so installing one shell pulls the components it composes.
+
+Two things beyond `.tsx` files also install, and both are easy to miss because Tailwind fails
+silently when they are absent:
+
+- **Marketing keyframes and the `--marketing-*` palette variables** are written into the
+  stylesheet shadcn already manages, `app/globals.css` in a fresh Next app.
+- **The `--warning` and `--warning-foreground` pair, plus its `@theme` mapping**, ships with the
+  six manifest items that paint a near-limit or over-limit state
+  (`cssVars: WARNING_CSS_VARS` appears 6 times in `apps/docs/lib/catalog.manifest.ts`; the block
+  itself is lines 22 to 29). Tailwind v4 emits no CSS for an undefined utility instead of
+  failing, so a missing `--warning` would ship a colourless state and still build green.
+
+`apps/docs/scripts/consumer-test.sh` is what proves all of that: it scaffolds a fresh Next app,
+derives the item list from `registry.json`, installs every one of them, greps the consumer's own
+stylesheet for `.marketing-dot-fade`, `--marketing-rainbow-1`, `--warning` and `--color-warning`,
+then writes a page importing four components and builds it. It is the last step in CI.
+
+## Two workbenches run from one repo root
+
+`pnpm install` at the root, with the pinned `pnpm@11.1.0`. Then:
+
+- `pnpm dev` starts every workspace through turbo.
+- `pnpm --filter storybook dev` starts this Storybook alone, on port **6007**
+  (`apps/storybook/package.json`: `storybook dev -p 6007 --no-open`).
+- `pnpm --filter docs dev` starts the docs site, a Next 16.2.9 app.
+
+Use `pnpm`, never npm: the lockfile is `pnpm-lock.yaml` and CI installs with `--frozen-lockfile`.
+
+## A component's guidance is written once and rendered twice
+
+Each catalog item carries a guidance module at
+`apps/docs/content/components/<name>.docs.tsx`, typed as `ComponentDocs`
+(`apps/docs/lib/component-docs.ts`). There are 116 of them, one per shipped item.
+
+The docs site route `apps/docs/app/components/[name]/page.tsx` renders that module through
+`ComponentDocsView`, and every super-ai story's **Docs** tab renders the same module through the
+same component, by way of `apps/storybook/src/lib/component-docs-page.tsx`. So the two surfaces
+cannot describe a component differently: there is one module and one renderer. See
+**Guides → Documentation Guidelines** for what a module has to contain.
+
+## The smallest item, live
+
+`kbd` is the first catalog entry and the shortest way to see the install working. This is the real
+registry component, rendered here:
+
+<Example>
+  <KbdGroup>
+    <Kbd>⌘</Kbd>
+    <Kbd>⇧</Kbd>
+    <Kbd>Z</Kbd>
+  </KbdGroup>
+</Example>
+
+Its keycap fill is `bg-muted` with `text-foreground`, and the comment in
+`apps/docs/registry/super-ai/kbd.tsx` says why: `bg-muted` with `text-muted-foreground` measures
+4.34:1 against a 4.5:1 minimum in this token set. **Foundations → Color** carries that pairing in
+full.
+
+## Before you call a change done
+
+The gates are the definition, and they run in one order. `.github/workflows/ci.yml` is the source
+of truth for that order; **Guides → Contributing** lists the twelve steps and what each one
+protects. A green build is not a working page: open it.

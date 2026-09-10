@@ -1,0 +1,296 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
+import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
+import EnvStatusDemo from "@/components/demos/env-status-demo";
+import FeedbackDemo from "@/components/demos/feedback-demo";
+import QuotaMeterDemo from "@/components/demos/quota-meter-demo";
+import RateLimitBannerDemo from "@/components/demos/rate-limit-banner-demo";
+import TaskTrayDemo from "@/components/demos/task-tray-demo";
+
+<Meta title="Patterns/Status & feedback" />
+
+# Status & feedback
+
+Status is what the interface says about something the reader did not just do: a provider that
+stopped answering, a quota nearly spent, a limit that will clear in two minutes, a job still
+running in another tab. One question sorts every surface below. **Is this a standing fact about a
+thing, or an event that has already finished?** A fact rides the thing it is about and stays true
+until it is not. An event passes. This registry answers that question one way almost everywhere,
+and the evidence is a grep: no source under `apps/docs/registry/super-ai/` imports sonner or calls
+`toast()` (measured 2026-09-09). Every status this repo ships is drawn in place.
+
+## Use it when
+
+- A dependency the product runs on changed state, and the reader can do something about it.
+- A budget is being spent and the useful moment is before it runs out.
+- A constraint is holding the reader up and time will clear it on its own.
+- Work the reader started is running somewhere they are not looking.
+- A result is finished and the product wants the reader's judgment on it.
+
+Do not use it when the answer is one of these instead:
+
+- **A wait with a result coming.** **Patterns → Loading states** owns where the wait is drawn and
+  which instrument reports it.
+- **A region with nothing in it.** **Content → Empty states** owns all three species, including
+  the one where the request failed.
+- **A failure.** **Content → Error messages** already maps every failure to its surface, and that
+  mapping wins over the question above.
+- **The price of a control, or a gate in front of it.** **Patterns → Actions & confirmation** owns
+  cost, approval and permission.
+- **A row reporting its own state inside a list.** **Patterns → Resource index** owns the row.
+
+## The surfaces, live
+
+### A dependency, with its remedy
+
+<Example>
+  <EnvStatusDemo />
+</Example>
+
+`env-status.tsx` line 49 declares four states, `ok`, `degraded`, `key-invalid` and `not-running`,
+and the header comment at lines 19 to 25 gives the reason there are four rather than one red dot:
+each has a different remedy. `degraded` means wait. `key-invalid` means go fix a credential.
+`not-running` means start something locally. `STATE_CONDITIONS` at lines 82 to 99 pairs every
+state with both halves, the condition and the remedy, and both render as visible sentences at
+lines 185 and 188. The status icon is `aria-hidden` at line 165 and the badge carries the state as
+a word at lines 169 to 175, which is the file's second rule stated at lines 26 to 31: never status
+by colour alone. The whole block is `role="status"` at line 184, so a host polling reachability
+announces the change rather than repainting silently.
+
+One thing this Storybook cannot show you. `degraded` paints `border-warning/40` and
+`text-warning` at lines 119 and 126, and `apps/storybook/src/index.css` declares no `--warning` at
+all, so Tailwind emits no rule and those classes do nothing here. The docs app defines the token
+and Storybook does not, which `docs/design-system/a11y-baseline.md` records under its gate-hole
+section: warning surfaces render unpainted under the axe run and have therefore never been
+measured. The words still carry the state, which is exactly why the file writes them.
+
+### A budget, before it runs out
+
+<Example className="flex flex-col gap-8">
+  <QuotaMeterDemo />
+  <CreditsIndicatorDemo />
+</Example>
+
+Both components split their range at the same place and for the same reason. `quota-meter.tsx`
+line 5 names `normal`, `near-limit` and `over-limit`, and the comment at lines 28 to 32 says why
+`near-limit` is a state rather than a shade: the useful moment is before zero.
+`credits-indicator.tsx` line 7 makes the same three-way split as `normal`, `low` and `empty`, with
+the same note at lines 24 to 25.
+
+Two decisions inside them are worth copying. `quota-meter.tsx` line 63 keeps one row per resource
+and never an aggregate, because an aggregate hides the one you are about to hit, and line 68
+clamps the bar while leaving the numbers honest, so an over-limit row still reports the real
+overage. `credits-indicator.tsx` lines 29 to 34 puts the alarm on the surface rather than the
+text: `text-destructive` on the pill's own `bg-muted` measures 4.37:1 against a 4.5:1 minimum, so
+`empty` goes solid instead. That is the same move `docs/design-system/a11y-baseline.md` prescribes
+for the destructive-tint pairing, and the reason `TOK-4` exists.
+
+### A constraint that time will clear
+
+<Example>
+  <RateLimitBannerDemo />
+</Example>
+
+`rate-limit-banner.tsx` line 44 has two causes, `your-limit` and `provider-capacity`, and the
+`COPY` table at line 51 is fixed per cause and deliberately not overridable by prop. The header
+comment at lines 46 to 50 says why: if the caller could pass the title, the distinction would
+erode back into one generic string. Your plan's cap and the provider's weather are different
+facts, and each body line names which thing is not wrong.
+
+Three more properties follow from the surface persisting. The countdown is a prop, not a timer:
+lines 24 to 28 record that the host owns the clock, so the banner cannot desync from the reset the
+host actually knows about, and can be server-rendered. The root is `role="note"` at line 179
+rather than the `role="alert"` the vendored `Alert` defaults to, because an assertive region
+wrapping a value that changes every second would interrupt a screen reader once a second forever.
+And the announcement is throttled by content rather than by a timer: `countdownAnnouncement` at
+lines 116 to 123 buckets the remaining time into minutes or hours, so the `sr-only` polite region
+at line 258 speaks at most once a minute while the visible clock at lines 209 to 215 ticks on.
+
+Where there is no estimate, line 222 says so and offers the opt-in, rather than writing "try again
+later" and asking the reader to poll.
+
+### Work that is happening elsewhere
+
+<Example>
+  <TaskTrayDemo />
+</Example>
+
+`task-tray.tsx` line 18 names four statuses, `running`, `needs-input`, `done` and `failed`, and
+line 59 sorts them in an order that is an argument rather than an alphabet: `needs-input` first,
+`failed` second, `running` and `done` last. The comment at lines 56 to 58 makes the case. A
+background task blocked on an approval is invisible work that has silently stopped, and it is the
+only row the reader must act on; a failure is over but is still news; running and done are
+reporting. Line 34 offers cancel for anything still live, because work you cannot stop burns
+budget and trust.
+
+This is the same fact-versus-event split at list scale. The tray holds facts about jobs, so it
+stays available behind its trigger; nothing about it expires.
+
+### Asking the reader
+
+<Example>
+  <FeedbackDemo />
+</Example>
+
+`feedback.tsx` line 25 declares `idle`, `rating` and `submitted`, and the asymmetry between the
+two thumbs is the component. A thumbs-up submits on the first click at line 127. A thumbs-down
+opens the reason popover, whose three preset chips at line 85 are `Inaccurate`, `Unhelpful` and
+`Unclear`, and whose free text is optional at line 136. Undo is always rendered in `submitted`,
+per the prop comment at lines 67 to 68: feedback that cannot be retracted is feedback people will
+not give. The submitted row is `role="status"` with `aria-live="polite"` at lines 258 and 259, so
+the transition is announced rather than silently swapped in, and `aria-pressed` at lines 165 and
+179 carries the selection, with a background at line 144 as a second, non-colour cue.
+
+### The note that never leaves
+
+<Example>
+  <DisclaimerNoteDemo />
+</Example>
+
+`disclaimer-note.tsx` is the limit case of a standing fact: it has no `dismissed` state and no
+close button, and lines 25 to 28 say that is the spec rather than an omission. A disclaimer
+permanent enough to be trusted cannot be dismissible, so it stays mounted for the lifetime of the
+output it qualifies. Lines 35 to 39 record the other decision: the text is `text-foreground`, not
+`text-muted-foreground`, because the note lands on whatever surface it is dropped into and the
+muted pairing fails against three of them. Quietness comes from size and a de-emphasised icon.
+
+## A fact or an event
+
+Two sub-questions decide the surface, and the second one is where this registry differs from most.
+
+**Is it about a thing or about a moment?** A thing's state travels with it and renders wherever
+the thing renders: a provider row, a quota row, a credit pill, a tray row. A moment has no thing
+to ride, so it needs a surface of its own.
+
+**Does it persist or pass?** Every status surface in this registry persists. The one primitive
+that passes is `sonner`, vendored at `apps/storybook/src/components/ui/sonner.tsx` and live at
+[shadcn/ui → Sonner](?path=/docs/shadcn-ui-sonner--docs). Nothing in the registry mounts it, which
+is a deliberate reading of the design spec's principle 6 in section 4: failure is a first-class
+state rendered inline where the result would have been, never only a toast. **Content → Error
+messages** states the same finding from the failure side.
+
+That leaves a narrow, real job for a toast in a consuming app: an event that finished somewhere
+the reader was not looking, that needs no action, and that nothing on the page can carry. Before
+reaching for it, check the thing the news is about. If the thing is on screen, the news belongs on
+the thing.
+
+## How loudly it announces
+
+Announcement is part of the choice, not a styling afterthought, and this registry spreads its
+surfaces across the ladder on purpose.
+
+- `role="alert"` interrupts. The vendored `Alert` sets it by default, which is why
+  `rate-limit-banner.tsx` line 179 overrides it back to `note` rather than inheriting it.
+- `role="status"` waits its turn. `env-status.tsx` line 184 and `feedback.tsx` line 257 both take
+  it, for a state that changes after mount.
+- `role="note"` announces nothing on arrival and is read when the reader reaches it.
+- A badge, a bar or a pill carries no role at all. `quota-meter.tsx` line 92 is the exception that
+  proves the shape: its track is `role="progressbar"` named by the row's own visible label through
+  `aria-labelledby` at line 93, added because every track was otherwise announcing as an unnamed
+  progressbar.
+
+Pick the surface whose interruption matches the news, then let the words carry the rest.
+
+The one variable below is whether the condition is stated.
+
+<DoDont
+  doExample={
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium">Replicate</span>
+        <span className="bg-destructive text-background rounded-full px-2 py-0.5 text-xs font-medium">
+          {"Key invalid"}
+        </span>
+      </div>
+      <p className="text-sm">The provider answered and rejected this request&apos;s credentials.</p>
+      <p className="text-muted-foreground text-xs">Replace the key for this provider in Connections.</p>
+    </div>
+  }
+  doCaption="the state is a word and the remedy is a sentence, both visible text. env-status.tsx lines 82 to 99 pair every state with both halves, and line 148 is where the badge goes solid so the word stays legible on its own fill."
+  dontExample={
+    <div className="flex items-center gap-2">
+      <span aria-hidden className="bg-destructive size-2 rounded-full" />
+      <span className="text-sm font-medium">Replicate</span>
+    </div>
+  }
+  dontCaption="the same failure carried by hue alone. Nothing says which of the three failures it is, so nothing says what would fix it, and a reader who cannot see the colour gets a provider name and no news."
+/>
+
+## Key decisions
+
+- **A standing fact rides the thing it is about.** If it is still true after any announcement
+  would have gone, it belongs on the row, the pill or the meter.
+- **Two failures with different remedies are two states.** `env-status` splits three failure
+  states apart rather than collapsing them, because the remedy is the part the reader needs.
+- **The alarm colours the surface, not the text.** `credits-indicator.tsx` lines 29 to 34 and
+  `env-status.tsx` lines 138 to 150 both go solid rather than tinting a foreground, on measured
+  contrast.
+- **The useful state is the one before the limit.** Both budget components carry a middle state
+  for that reason, and `quota-meter` keeps one row per resource so the aggregate cannot hide it.
+- **The host owns the clock.** `rate-limit-banner` and `quota-meter` both take a preformatted or
+  per-tick value rather than running a timer, so the surface cannot drift from the real reset.
+- **A live region's content is what gets throttled, not its timer.** A coarse phrase that changes
+  once a minute is the fix for a ticking countdown, per `rate-limit-banner.tsx` lines 110 to 115.
+- **Fixed copy is a feature where a distinction matters.** `rate-limit-banner`'s two titles are
+  not props, so a caller cannot flatten the two causes into one string.
+- **Anything the reader must act on stays put.** The tray sorts `needs-input` first for the same
+  reason nothing here is a toast.
+
+## Rules
+
+- Sort every message by two questions: thing or moment, persists or passes. A thing's state
+  renders on the thing.
+- Never carry a state by colour alone. Every state gets a word in visible text, outside
+  `aria-hidden`, as `env-status.tsx` lines 27 to 31 require.
+- Give every failure state its own remedy sentence. A state with no stated next step is a dead
+  end, which is the argument for four `env-status` states rather than two.
+- Split a range at the moment before it runs out, not at zero. `near-limit` and `low` are their
+  own states, not shades of normal.
+- Report one resource per row. An aggregate hides the one the reader is about to hit.
+- Clamp the bar, never the number. An over-limit row still reports the real overage.
+- Put an alarm on the surface, never on the foreground. `text-destructive` on `bg-muted` measures
+  4.37:1 against a 4.5:1 minimum, and `text-warning` is lighter still.
+- Never write `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`. `TOK-4`,
+  `TOK-5` and `TOK-6` are the rules and `check:tokens` reports them.
+- Accept the countdown as a prop and hold no timer. The host knows the real reset; a self-ticking
+  component desyncs from it and cannot be server-rendered.
+- Keep a per-second value out of the live region. Announce a bucketed phrase instead, and leave
+  the visible clock outside any live region.
+- Match the role to the news: `role="alert"` for something that must interrupt, `role="status"`
+  for a state that changed after mount, `role="note"` for a standing condition, no role for a
+  badge. Override the vendored default when the surface persists.
+- Name every progress track from its own visible label with `aria-labelledby`, rather than
+  duplicating the text into an `aria-label` that can drift.
+- Keep a retraction on anything the reader submitted. `feedback` renders Undo in `submitted`
+  unconditionally.
+- Do not add a dismiss control to a standing disclaimer. If the message is worth showing it stays
+  for the lifetime of the output it qualifies.
+- Do not reach for a toast because a surface is missing. Nothing in this registry uses one, and a
+  fact spent on a moment leaves the thing it was about saying nothing.
+- When the news is a failure, **Content → Error messages** picks the surface. This page does not
+  re-decide it.
+
+## Content notes
+
+Tense follows the surface, because the surface already made a claim about time. A standing state
+reads in the present: "Degraded. Requests are succeeding, but answering slower than usual."
+A remedy reads as an instruction with a verb the reader can act on: "Replace the key for this
+provider in Connections." A limit that will clear names the wait rather than the reader's
+patience: "Resets in", "Estimated wait", and where there is no estimate, "No reset time reported
+yet."
+
+Nothing on this page blames the reader for a constraint. `rate-limit-banner.tsx`'s two body lines
+exist to say which thing is not wrong, at lines 67 and 77, because a busy model reading as "you
+did something" is the failure the component was written to prevent.
+
+Say the number when there is one. `quota-meter` renders used against limit with the unit, and
+`credits-indicator` renders the balance with its unit, both `tabular-nums` so a changing value
+does not jitter. **Content → Voice & principles** owns that rule and **Content → Writing
+mechanics** owns the marks.
+
+This page owns which surface carries a fact or an event. **Patterns → Loading states** owns the
+wait before the fact exists, **Content → Error messages** owns what a failure says, **Content →
+Empty states** owns a region with nothing in it, and **Foundations → States** owns the state
+vocabulary every one of these surfaces draws from.

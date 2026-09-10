@@ -1,0 +1,133 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example } from "../_shared/doc-blocks";
+import ChatShellDemo from "@/components/demos/chat-shell-demo";
+import HomeShellDemo from "@/components/demos/home-shell-demo";
+
+<Meta title="Foundations/App structure" />
+
+# App structure
+
+An application built on this registry does not invent its frame. Fourteen layout archetypes were
+derived from the reference board and written down as family O in
+`docs/design-system/block-specs.md`; thirteen of them ship as block components, and picking one is
+the first structural decision a consumer makes. Everything below was measured in this repo on
+2026-09-09.
+
+## Thirteen shells, and one kept as a record
+
+`block-specs.md` line 3 states the count: fourteen archetypes, thirteen active since O5
+`flow-shell` was cut on 2026-07-31 by decision D9 in `docs/design-system/decisions.md`. The cut
+entry stays in the document, marked, so the reasoning survives rather than the code.
+
+The thirteen exist in `apps/docs/registry/super-ai/` as `*-shell.tsx` files, each with a
+zero-prop demo under `apps/docs/components/demos/`. A fourteenth shell file lives beside them,
+`detail-view-shell.tsx`, which is family P2 rather than a block, and is covered in
+**Patterns → Resource details**.
+
+## Pick the shell by what the app is for
+
+Regions come from each archetype's own `Regions:` line in `block-specs.md`.
+
+- `home-shell` (O1), the launcher: sidebar, topbar, hero omnibox, feature cards, recents grid.
+- `chat-shell` (O2), a chat or agent workspace: sidebar with a task list, topbar, message stream,
+  artifact cards, composer.
+- `studio-shell` (O3), a creative editor: modality rail, topbar, tool panel, canvas, inspector, page
+  strip. Six regions, corrected against the wireframes on 2026-08-08.
+- `timeline-shell` (O4), a timeline-dominant editor and a declared variant of O3: the bottom dock is
+  a ruler with tracks instead of a page strip.
+- `generation-shell` (O6), a single-purpose tool: config panel, cost and Generate, topbar, result
+  canvas.
+- `library-shell` (O7), a personal archive: facet rail, header with search, dense grid.
+- `explore-shell` (O8), a community gallery: rail, docked prompt bar, sort tabs with type pills,
+  masonry feed.
+- `artifact-shell` (O9), an artifact index: sidebar, header with filter, search, artifact card grid.
+- `records-shell` (O10), a list of runnable projects: sidebar, header with create, filter and sort,
+  record rows.
+- `docs-shell` (O11), documentation: icon rail, doc nav, announcement strip, content column.
+- `settings-shell` (O12), full-page settings: search with grouped nav, breadcrumb, info callout,
+  setting sections, code block.
+- `notebook-shell` (O13), three panes of sources, chat and outputs.
+- `auth-shell` (O14), sign in and sign up: marketing panel, provider rows, email fallback, legal
+  footer.
+
+Two of the pairs look interchangeable and are not. O7 stores objects and O10 runs them, so O10 puts
+the enable toggle in the row and the run status in the subtitle. O7 is scanned and O8 is browsed,
+which is why O7 is a dense faceted grid and O8 is a masonry feed. Both distinctions are recorded at
+those entries in `block-specs.md`.
+
+## A shell owns arrangement and nothing else
+
+Every region of a block is filled by an already-shipped component that keeps its own props, state
+model and accessibility contract. `chat-shell.tsx` lines 22 to 52 names the four sentences from the
+spec that drive its layout, including the one that puts artifacts inside the stream rather than in a
+panel beside it, and the one that makes the paywall the last turn of the conversation rather than an
+interstitial over it.
+
+The stream itself is not a registry component. It composes AI Elements `Conversation` and `Message`
+through a cross-registry dependency, so `shadcn add chat-shell` resolves them upstream instead of
+this repo forking them.
+
+<Example className="p-2">
+  <ChatShellDemo />
+</Example>
+
+## The launcher is the shell most new users see empty
+
+`home-shell` puts the omnibox above the fold as the only emphasised element, and the order of the
+rest is invariant across the five reference products the archetype was drawn from: composer,
+starters, features, recents, inspiration. The entry also records that on day one the whole page is
+the recents grid's empty state, which is the version most new users actually meet.
+
+<Example className="p-2">
+  <HomeShellDemo />
+</Example>
+
+Both demos above are the shipped registry blocks. A shell is `h-full`, so every block demo bounds it
+at `h-[42rem]`, which `docs/design-system/block-build-brief.md` line 28 prescribes and all fourteen
+shell demos follow. One thing a docs column cannot show: the sidebar reads the browser viewport
+through `matchMedia` rather than its container, so this column renders the desktop arrangement
+whatever its own width is. **Foundations → Navigation** has the measurement.
+
+## A shell has to render inside a box it does not own
+
+The vendored `Sidebar` desktop container is `fixed inset-y-0 h-svh`, which is correct when a shell
+owns the whole viewport and wrong in a docs preview, a Storybook canvas or an app region. The
+five shells that compose `app-sidebar` carry the same two classes for it (`artifact-shell`,
+`chat-shell`, `docs-shell`, `home-shell`, `records-shell`), documented at `chat-shell.tsx` lines 55
+to 84:
+
+- `[contain:layout]` on the shell root, which makes it the containing block for its fixed
+  descendants, so the sidebar stops pinning itself to the browser edge.
+- `[&_[data-slot=app-sidebar]]:h-full`, because containment redirects where the fixed box is
+  anchored and does not change where `h-svh` takes its height from. Without it the sidebar overhangs
+  any shell shorter than the window and everything it bottom-anchors falls below the visible edge,
+  clipped rather than hidden, so those controls stay in the tab order while invisible.
+
+The override sits in the shell rather than in the primitive, because `apps/storybook/src/components/ui`
+is vendored and stays byte-identical to upstream.
+
+## Every block ships an Empty story and a Responsive story
+
+`docs/design-system/block-build-brief.md` line 29 makes both mandatory, with `layout: "fullscreen"`
+and a full-height decorator, on the reasoning that a block is a page rather than a centred box. The
+brief's line 46 records that `check-contract.mts` asserts both exports, so this is gated rather than
+conventional, and `pnpm check:contract` is where it fails. Measured 2026-09-09: 13 of 13 block story
+files under `apps/storybook/src/stories/super-ai/` export both.
+
+The `Empty` mandate is argued at lines 60 to 62 of the same brief. Three archetypes said
+independently that the empty state is the view most users actually see, and writing O2 surfaced that
+one shell needed three independent empty affordances, in the sidebar, the stream and the artifact
+region.
+
+## Rules
+
+- Pick an archetype from family O before composing a screen. A new frame needs a new entry in
+  `block-specs.md` first, with the products it was observed in.
+- A block arranges; it does not restyle what it arranges. If a region needs a change, the change
+  belongs to the component filling it.
+- A shell must render correctly inside a bounded box. Any fixed or viewport-sized descendant is
+  contained and re-sized at the shell root.
+- Ship `Empty` and `Responsive` stories with the block, per `block-build-brief.md`.
+- Do not patch `apps/storybook/src/components/ui` to make a shell fit. Those files stay identical to
+  upstream, and the override goes in the shell.

@@ -1,0 +1,160 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import CostChipDemo from "@/components/demos/cost-chip-demo";
+
+<Meta title="Foundations/Color" />
+
+# Color
+
+This theme is neutral to an unusual degree, and that is measurable rather than a matter of taste.
+Everything a component reaches for is a grey, so hierarchy has to come from lightness, edges and
+placement. The page below says which greys, which pairs are safe, and which pair has failed the
+accessibility gate five separate rounds.
+
+## Only three declarations carry any colour
+
+Measured 2026-09-09 across both blocks of `apps/storybook/src/index.css`: of the 62 colour
+declarations, 59 carry zero chroma, two of those as a white alpha (the dark `--border` and
+`--input`). The three exceptions are `--destructive` in light (`oklch(0.577 0.245 27.325)`),
+`--destructive` in dark (`oklch(0.704 0.191 22.216)`), and `--sidebar-primary` in dark
+(`oklch(0.488 0.243 264.376)`, a saturated blue at hue 264, whose light counterpart is a neutral).
+
+So there is no accent hue in this theme. `--primary` is near-black in light and near-white in dark,
+and it inverts with the ground rather than sitting on a hue. Anything that looks coloured in a
+composition is either destructive, that one sidebar token, or a `--marketing-*` property.
+
+## Surfaces: six tokens, two values
+
+In light mode `--background`, `--card` and `--popover` are all pure white, and `--muted`,
+`--accent` and `--secondary` are all `oklch(0.97 0 0)`. A fourth token joins the second group,
+`--sidebar-accent`, so four names resolve to one value.
+
+<Example className="bg-background">
+  <div className="border-border rounded-xl border p-4">
+    <p className="text-foreground text-sm font-medium">
+      <span>bg-card, and in light mode its fill matches the page</span>
+    </p>
+    <div className="bg-muted mt-3 rounded-lg p-3">
+      <p className="text-foreground text-sm">
+        <span>bg-muted, the only visible step down in this theme</span>
+      </p>
+      <div className="bg-accent mt-2 rounded-md p-2">
+        <p className="text-foreground text-xs">
+          <span>bg-accent, the same value as bg-muted and bg-secondary</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</Example>
+
+Two things follow. A card reads by its border in light mode, not by its fill, so removing the
+border removes the card. And nesting muted inside muted inside secondary buys nothing, because all
+three are one value. Dark mode does separate the page from the raised surfaces, `0.145` under
+`0.205`, with the muted group at `0.269`.
+
+## Text has two tiers here
+
+`--foreground` and `--muted-foreground`, and that is the whole content palette. Card and popover
+foregrounds resolve to the same value as `--foreground` in both themes, so they are the same tier
+under different names.
+
+<Example>
+  <p className="text-foreground text-sm">
+    <span>text-foreground, the content itself</span>
+  </p>
+  <p className="text-muted-foreground mt-1 text-sm">
+    <span>text-muted-foreground, timestamps, counts, supporting detail</span>
+  </p>
+</Example>
+
+There is no third tier to reach for, and inventing one with an opacity composite is what `TOK-8`
+exists to stop. Quiet text derives from the foreground token at a pinned step, `text-foreground/60`,
+`/70` or `/80`, and that set may only shrink; a new step is a rule change carrying a new
+measurement.
+
+## The pairing that keeps failing
+
+`text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary` measures 4.34:1 in light mode
+against a 4.5:1 minimum, because the foreground resolves to `#737373` and all three grounds resolve
+to `#f5f5f5`. One failure with three spellings. The rule is unconditional rather than light-only:
+the same three names are one value in dark too, and the ban is what keeps a component from
+depending on which theme it is read in.
+
+<DoDont
+  doExample={<CostChipDemo />}
+  doCaption="cost-chip keeps the muted fill and pairs it with text-foreground, about 18:1. It also rebinds --muted-foreground on the wrapper so composed children inherit a safe value."
+  dontExample={
+    <span className="bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
+      <span>17 credits</span>
+    </span>
+  }
+  dontCaption="The same chip with text-muted-foreground on bg-muted: 4.34:1 against a 4.5:1 minimum, measured by axe and recorded in docs/design-system/a11y-baseline.md."
+/>
+
+Three rules cover the three shapes this takes.
+
+- `TOK-4` catches the pairing inside one quoted class string, statically, before a browser runs.
+- `TOK-5` catches it split across a `cva()` base and a variant value, which is how
+  `components/ui/tabs.tsx` shipped it.
+- `TOK-6` is the cross-component shape, muted text in a child under an ancestor's muted background.
+  Every instance that actually shipped broken was this shape, no static rule can see it, and the
+  record declares itself unchecked and names `pnpm test:stories` as its checker.
+
+The fix that reaches a composed child is a rebind on the element painting the surface,
+`[--muted-foreground:var(--accent-foreground)]`, rather than restyling somebody else's slot.
+`bg-muted/50` is not a fix: it only clears the bar by blending toward whatever sits behind it, and
+the number moves with that background.
+
+## Destructive goes solid, never a tint
+
+`text-destructive` on a translucent `bg-destructive/NN` measures 4.0:1 alone and worse once tints
+compound. Use `bg-destructive text-background`, which inverts against the saturated fill in both
+themes and clears the bar in both: computed from the shipped values, 4.76:1 in light and 6.84:1 in
+dark. This token set defines no `--destructive-foreground`, so that is not an option here. The
+solid pairing is what `promo-card.tsx` and `generation-queue.tsx` both landed on.
+
+<Example className="flex flex-wrap items-center gap-2">
+  <span className="bg-destructive text-background inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium">
+    <span>Failed</span>
+  </span>
+  <span className="text-destructive text-xs">
+    <span>text-destructive on the page ground is a different pairing, and it passes</span>
+  </span>
+</Example>
+
+## No gradients, and violet has nowhere to go
+
+`COL-1` is a blocker: no `bg-gradient-*`, no `bg-clip-text`, no `backdrop-blur` in product UI. Flat
+is the position, and a gradient is emphasis standing in for hierarchy. Two files are exempt by
+name in the record.
+
+`COL-6` is a warning that permits indigo, violet and purple only as `chart-4`. Worth knowing before
+reading that as a licence: measured 2026-09-09, `--chart-4` in this theme is `oklch(0.371 0 0)`, a
+neutral grey in both modes. The rule's one sanctioned channel currently carries no hue, so in
+practice it reads as a flat ban.
+
+## Marketing palettes live outside the theme
+
+The 15 marketing items are the one place saturated colour ships, and it is scoped away from the
+product tokens. `apps/storybook/src/marketing.css` declares 13 `--marketing-*` custom properties in
+`:root` and overrides 11 of them in `.dark`: five rainbow steps, four aurora steps, two beam
+endpoints, and pulse and ripple colours that point at `--primary`.
+
+A consumer installing a marketing item gets those properties written into their stylesheet by the
+registry and can retune them without touching the product theme. Nothing in `super-ai` reads them.
+
+## Rules
+
+- Pair a surface with its own foreground. `text-foreground` on `bg-muted` is about 18:1;
+  `text-accent-foreground` on `bg-accent` is about 16:1.
+- Never `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`, at any size, in any
+  state, including inside a component you are composing.
+- Reach for a composed child with a variable rebind on the surface, never by restyling its slot.
+- Destructive fills go solid. A translucent destructive tint under destructive text fails.
+- Quiet text is `text-foreground` at `/60`, `/70` or `/80`. Any other composite is a `TOK-8`
+  finding.
+- Colour is never the only signal. The a11y gate has caught state conveyed by colour alone before;
+  see **Foundations → Inclusive design**.
+
+Live values and the full token inventory are on **Foundations → Design Tokens**. The contrast
+audit that produced every number here is `docs/design-system/a11y-baseline.md`.

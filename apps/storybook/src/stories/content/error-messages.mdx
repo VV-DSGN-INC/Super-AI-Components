@@ -1,0 +1,156 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import EnvStatusDemo from "@/components/demos/env-status-demo";
+import GenerationQueueDemo from "@/components/demos/generation-queue-demo";
+import SafetyBlockDemo from "@/components/demos/safety-block-demo";
+
+<Meta title="Content/Error messages" />
+
+# Error messages
+
+An error message gets the reader moving again. It says what happened, why when the cause changes
+what they do, and the way out. If you cannot write the way out, the message is not finished. This
+page is about the words; where the message goes is settled by the design principle in
+`docs/superpowers/specs/2026-06-10-super-ai-components-design.md` §4, item 6 under the generation
+lifecycle, which puts failure inline where the result would have been. Counts below were taken on
+2026-09-09 across the 129 component files in `apps/docs/registry/super-ai/`.
+
+## The failure lands where the result would have been
+
+Every component that can fail paints the failure in place. The measurement that proves it is a
+negative one: zero registry components call a toast, and two carry a comment saying why:
+`rate-limit-banner.tsx:29` records that the constraint outlives any toast, and `result-card.tsx:83`
+records that a retry in a toast loses its association with the thing that failed.
+
+<Example>
+  <GenerationQueueDemo />
+</Example>
+
+The fourth row above failed. Its title, its parameters and its position in the queue all survive,
+the error message replaces the description, and the retry sits on the row. `generation-queue.tsx`
+line 188 is the swap: when the state is failed and an error message exists, the message takes the
+description slot rather than being appended to it. Six files carry an `onRetry` prop of this shape:
+`generation-queue`, `notebook-shell`, `render-queue`, `result-card`, `source-panel`,
+`timeline-shell`.
+
+`source-panel.tsx` goes one step further and refuses a panel-level retry outright, at lines 42 to
+45 and again at line 143. One source failing to embed says nothing about the other four, and a
+panel-wide retry re-ingests all of them.
+
+## The formula, in a shipped component
+
+<Example>
+  <EnvStatusDemo />
+</Example>
+
+Every row above renders two sentences that are always both present.
+`env-status.tsx:82` to `:99` pairs a `label`, which is what happened and why, with a `remedy`, which
+is what to do. Read the four remedies together and the shape is obvious: "Nothing to do here." for
+the healthy row, a wait for the degraded one, a place to go for the invalid key, a command for the
+runtime that is not up.
+
+Two of them are worth reading closely, because they are the same failure to a careless eye.
+`connection-manager.tsx` splits them at lines 109 to 129. A rejected key gets "Generate a new key
+and replace this one", plus the reason retrying will not help. A provider that never answered gets
+the opposite instruction, keep the key, check the status page, test again. Collapsing those two
+into one "Connection error" sends half the readers to replace a credential that was never the
+problem.
+
+<DoDont
+  doExample={
+    <div className="text-sm">
+      <p className="font-medium">Provider unreachable. The request got no answer at all.</p>
+      <p className="text-muted-foreground mt-1 text-xs">
+        {
+          "Keep the saved key, it was not rejected and replacing it will not help. Check the provider's status page and test again shortly."
+        }
+      </p>
+    </div>
+  }
+  doCaption="connection-manager.tsx's unreachable condition and remedy, close to verbatim. It names the cause and rules out the wrong fix."
+  dontExample={
+    <div className="text-sm">
+      <p className="font-medium">Connection error</p>
+      <p className="text-muted-foreground mt-1 text-xs">Something went wrong. Please try again.</p>
+    </div>
+  }
+  dontCaption="written for this page. Same failure, no cause and no remedy, so the reader guesses and the most likely guess is to replace a key that was working."
+/>
+
+## A refusal is an error with a source
+
+<Example>
+  <SafetyBlockDemo />
+</Example>
+
+`safety-block.tsx` treats a policy refusal as its own shape rather than a generic error, and three
+of its choices are copy decisions. The `policy` prop is required, because a block with no named
+source is indistinguishable from a bug. The `alternatives` prop carries the compliant path, so the
+refusal always has an exit. And the two variants are worded apart at lines 28 to 37: a request that
+never left says one thing, a response that ran and is being withheld says another.
+
+The styling carries a rule too. That component must read as the system speaking rather than the
+assistant, so it wears a border and a system glyph. It also rebinds a CSS variable rather than
+restyling a slot, and the comment at lines 58 to 72 explains why: the composed description inherits
+`text-muted-foreground`, which measured 4.33:1 against the tinted destructive surface. See
+`docs/design-system/a11y-baseline.md`.
+
+## Where the failure colour goes
+
+Red is not automatic. `preview-tile.tsx:116` to `:133` paints its failed overlay in
+`text-foreground` and records the measurement in the comment at line 120: destructive text on that tile's
+`bg-muted` frame measures 4.34:1 against a 4.5:1 minimum, which is the recurring pairing failure
+`docs/design-system/a11y-baseline.md` names. Both real consumers, `result-card.tsx:129` and
+`frame-strip.tsx:162`, had already overridden the colour back at the call site.
+
+`env-status.tsx` lines 138 to 149 record the same trade for a badge: the vendored destructive badge
+measures 4.0:1, so the failing row goes solid instead. `generation-queue.tsx` and
+`tts-composer.tsx` use the same fix. Where a caller wants the failure coloured, the colour goes on
+an icon, where the threshold is lower and meaning never rides on hue alone.
+
+For the pairings themselves, see **Foundations → Color** and rules `TOK-4`, `TOK-5` and `TOK-6` in
+`packages/ds-rules/rules/local.json`.
+
+## Which surface
+
+- **One item in a list failed.** The row keeps its place, the message replaces its description, the
+  retry sits on the row. `generation-queue`, `render-queue`, `source-panel`.
+- **The single result failed.** `result-card` at its failed state, with the retry inside the frame.
+  `result-card.tsx:110` to `:121` explains why the action moves inside: an interactive tile
+  wrapping an interactive control fails axe outright.
+- **The run failed before it produced anything.** `run-button` at its failed state. The message
+  renders in a live region at `run-button.tsx:231`, and the trigger points at it with
+  `aria-describedby` from line 197.
+- **A dependency is unhealthy.** `env-status`, one condition and one remedy per provider.
+- **A credential is wrong or a provider is silent.** `connection-manager`, which keeps those two
+  cases apart.
+- **The model refused on policy.** `safety-block`, with the policy named and an alternative given.
+- **The plan or the balance blocked it.** `paywall-message`. That is a gate rather than a fault, so
+  it says nothing was charged and holds the prompt. **Content → Voice & principles** has the copy.
+- **A limit blocked it and time will clear it.** `rate-limit-banner`, with the countdown.
+- **A whole collection failed to load.** Nothing ships this today. See **Content → Empty states**,
+  which owns the shape and borrows this page's wording.
+
+## Rules
+
+- Every error answers what happened, why when the cause changes the remedy, and the way out, in
+  that order. Hold the message until the way out exists.
+- The failure renders where the result would have been. A toast alone loses the association, which
+  is why zero registry components use one.
+- The remedy is a verb the reader can act on. Where retrying cannot work, say so and name the thing
+  that can, as `connection-manager.tsx`'s unreachable remedy does.
+- Two failures with different remedies get different words. A rejected credential and a silent
+  provider are the worked example.
+- Say the limit or the number when one exists. **Content → Voice & principles** owns that rule.
+- No "oops", no bare "something went wrong", no exclamation marks. The reader is already stuck.
+- Retry is per item wherever items fail independently. `source-panel.tsx:42` to `:45` records the
+  reasoning; a panel-wide retry re-ingests four healthy sources to fix one.
+- Name the failing thing inside the control's accessible name. `source-panel.tsx:264` builds
+  "Retry" plus the source name for exactly this.
+- Failure colour is a measured decision. `text-destructive` on `bg-muted` is 4.34:1 and fails; put
+  the colour on an icon or go solid, and never let hue be the only carrier.
+- No error codes or log links ship today. When one arrives it goes behind the message, never
+  instead of it.
+
+This page owns what a failure says. **Content → Empty states** owns what a region with nothing in
+it says, and the two meet at a collection that failed to load.

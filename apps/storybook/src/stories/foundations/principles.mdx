@@ -1,0 +1,107 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import CostChipDemo from "@/components/demos/cost-chip-demo";
+
+<Meta title="Foundations/Principles" />
+
+# Principles
+
+Ten positions this repo has already taken, each one written down somewhere under `docs/` and most
+of them enforced by something that runs in CI. They are here because a reader composing these
+components into an application will hit all ten, and because a page that restates a contract goes
+stale while a page that cites one does not.
+
+## 1. The registry is the product
+
+What ships is a shadcn registry a consumer installs item by item, and the source lands in their
+app. `README.md` records the catalog as 116 of 116 items shipped, plus a second namespace of 15
+marketing items. The workbench you are reading exists to show that output; it is not the artifact.
+
+Two consequences a consumer feels directly. Upstream changes reach new installs only, never a
+running app, which is what makes composing against a fast-moving upstream safe
+(`docs/design-system/concept-model.md` §1). And every decision below has to survive being copied
+into a codebase nobody here controls.
+
+## 2. Primitives, contracts, automated checks
+
+The chosen consistency approach, named in `docs/superpowers/specs/2026-06-10-super-ai-components-design.md`
+§6: consumers copy readable code, and consistency comes from structure and CI rather than from
+abstraction. There is no wrapper layer holding the system together.
+
+Seven contracts cross the families (`docs/design-system/concept-model.md` §4). The Cost contract is
+the shortest to show: one number in three forms, a chip per action, a line before commit, a ring at
+app level. The chip is `cost-chip`.
+
+<Example className="flex justify-center">
+  <CostChipDemo />
+</Example>
+
+## 3. A component earns its place in three unrelated products
+
+Decision D1, `docs/design-system/decisions.md`. Registry status requires the pattern to appear in
+three or more unrelated products on the reference board. One product makes it a demo. This is the
+test that holds the catalog at its current size while whole families were added.
+
+## 4. Compose before you build, and promote upward
+
+Decision D3, same file. L3 components never import each other. If two of them need the same piece,
+the piece moves up to L2 rather than sideways. The rule produced five primitives that had been
+hiding inside leaf components.
+
+The layer order is L0 shadcn primitives, L1 AI Elements, L2 the Super AI primitives, L3 the
+components, L4 the blocks (`concept-model.md` §1). Depend downward only.
+
+## 5. Every story this repo owns is an accessibility test
+
+`pnpm test:stories` runs axe over the stories in `stories/super-ai/**` and `stories/marketing/**`
+in real Chromium, and fails CI. Vendored ports are excluded by directory and nothing this repo
+authored is excluded by name. The full audit that decided this is
+`docs/design-system/a11y-baseline.md` §What the gate enforces today.
+
+## 6. Guidance ships with the component
+
+Each item carries a `<name>.docs.tsx` module with required fields, including at least two dos and
+two donts with live examples, and an `accessibility` block whose `keyboard` and `screenReader` arms
+are both checked. `docs/design-system/component-build-brief.md` §Guidance is the contract, and
+`apps/docs/scripts/check-citations.mts` is the gate. A component without its guidance is not done.
+
+## 7. One gate list, and the CI file is the copy that counts
+
+`.github/workflows/ci.yml` runs, in order: `pnpm lint`, `format:check`, `typecheck`,
+`check:tokens`, `check:contract`, `test`, `build:registry`, `build`, a Playwright smoke, the
+Storybook a11y and interaction run, and the consumer install test
+(`apps/docs/scripts/consumer-test.sh`). Read the order there rather than from any prose copy of it,
+this page included.
+
+## 8. Exclusion lists only shrink
+
+Stated at `a11y-baseline.md` line 117 and paired across two files by `check:contract`. Measured
+2026-09-09, both lists are empty of this repo's own work: `CONTRAST_EXEMPT_FILES` in
+`packages/ds-rules/src/token-rules.mjs` line 15 is `[]`, and the exclusion block in
+`apps/storybook/vitest.config.ts` names only the vendored `stories/ui/**` and
+`stories/ai-elements/**` directories plus three mount-crash files inside them. Adding a name to
+either list to quiet a new failure is the move the rule exists to stop.
+
+## 9. A component sizes itself against its own width
+
+Decision D19. Columns key off the component's own width, never the viewport, because a grid placed
+beside a sidebar is a container problem and no viewport value can fix it. Measured 2026-09-09, two
+registry sources have converted: `artifact-grid.tsx` and `recent-grid.tsx`. The shape and the two
+thresholds are on **Foundations → Layout & spacing**.
+
+## 10. Strings ship in English, and that is a recorded decision
+
+Decision D22, dated 2026-09-07. 29 registry components hardcode `aria-label` text and 6 hardcode
+placeholders, and no component invents a labels prop. The reasoning is asymmetry: a later additive
+prop is cheap, and a prop shape published to every consumer cannot be walked back. It is revisited
+when a consumer asks or a second language ships.
+
+## Rules
+
+- Cite the contract, do not copy it. Every claim above names a file; the file is what changes.
+- A new component ships with its story and its docs module in the same change.
+- Do not add a name to an exclusion list. Fix the component, or record the decision where the list
+  is defined.
+- Read `.github/workflows/ci.yml` for the gate order before trusting any prose about it.
+- Token questions go to **Foundations → Design Tokens**; the contrast pairing that keeps failing is
+  on **Foundations → Color**.

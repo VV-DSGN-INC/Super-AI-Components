@@ -1,0 +1,181 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+<Meta title="Foundations/Theming" />
+
+# Theming
+
+A theme here is a set of CSS custom properties declared twice, once for light and once for dark, and
+nothing else. Components read semantic names only, so re-theming means editing values a consumer
+already controls rather than touching component code. This page states the axis, what a rebrand
+consists of, and the two things a theme is not allowed to break. Line numbers were read on
+2026-09-09.
+
+## One axis and one marker
+
+`apps/storybook/src/index.css` declares the axis on line 22 as a Tailwind custom variant scoped to
+`.dark`, and the dark token block on lines 123 to 155 uses the same class. `apps/docs/app/globals.css`
+line 6 declares the identical variant. There is one marker and it is the `dark` class.
+
+The `data-theme` attribute the Storybook preview decorator writes on its wrapper
+(`.storybook/preview.tsx` line 151) is not read by a selector in either stylesheet, measured by grep
+across both files. It records the toolbar choice for anyone inspecting the DOM and decides nothing.
+
+Because the marker is a class, the axis is scoped rather than global. A section inside a light page
+can declare `dark` and every token inside it resolves to the dark value. That works only if the
+section also paints a surface, since the tokens change what a colour means and not what is already
+on the page behind them.
+
+<DoDont
+  doExample={
+    <div className="dark bg-background rounded-lg p-4">
+      <p className="text-foreground text-sm font-medium">Brand audit</p>
+      <p className="text-muted-foreground mt-1 text-sm">Four sources, two open questions.</p>
+      <Button size="sm" className="mt-3">
+        Run
+      </Button>
+    </div>
+  }
+  doCaption="The dark class with a surface. Every token inside resolves to its dark value and lands on a ground that expects it."
+  dontExample={
+    <div className="dark rounded-lg p-4">
+      <p className="text-foreground text-sm font-medium">Brand audit</p>
+      <p className="text-muted-foreground mt-1 text-sm">Four sources, two open questions.</p>
+      <Button size="sm" className="mt-3">
+        Run
+      </Button>
+    </div>
+  }
+  dontCaption="The same markup without bg-background. The foregrounds flip to their dark values while the ground behind them stays light."
+/>
+
+## Storybook flips the axis; the docs site does not
+
+Two places set the class, and both are in Storybook. The story decorator toggles it on the document
+element from the `theme` toolbar global (`.storybook/preview.tsx` line 146), and
+`ThemedDocsContainer` does the same for docs-only pages like this one (line 31), because an MDX page
+has no story decorator to reach it. The container also swaps Storybook's own docs chrome, and it uses
+a layout effect so the class lands before paint rather than one frame late.
+
+The docs site has no theme switch at all, measured 2026-09-09: `apps/docs/app/layout.tsx` renders the
+html element with a font class and no theme class, `apps/docs` has no theme provider component and no
+`next-themes` dependency, and nothing in the app toggles a class on the document element. The
+`next-themes` package is declared once in the repo, at `apps/storybook/package.json` line 29, for the
+sonner port. So `apps/docs/app/globals.css` line 95 declares a `.dark` block that the docs site never
+applies, and the Storybook toolbar is currently the only thing that exercises dark.
+
+That is worth knowing in two directions. A dark-mode regression will surface in Storybook first, and
+a consumer adding a theme switch to their own app is adding the mechanism, not just the tokens.
+
+## A rebrand is two blocks of overrides
+
+The variables are the whole surface a consumer re-themes. In `apps/storybook/src/index.css`:
+
+- `:root`, lines 88 to 121, carries 32 declarations: the surface and foreground pairs, primary,
+  secondary, muted, accent and destructive, border, input and ring, five chart steps, eight sidebar
+  variables, and `--radius`.
+- `.dark`, lines 123 to 155, carries 31. The one that does not repeat is `--radius`, declared at line
+  112, because a corner radius has no light and dark value.
+- `@theme inline`, lines 44 to 86, carries 41 aliases that turn those names into Tailwind utilities:
+  31 colour names, 3 font aliases over the two self-hosted stacks, and 7 radius steps derived from
+  the single `--radius`. The alias layer keeps the utility names stable while the values move.
+
+To rebrand, override the names you want in your own `:root` and `.dark`, after the theme import. Do
+not edit component classes: no registry component contains a colour value. That is enforced rather
+than asked for, by four blocker rules run by `pnpm check:tokens` over
+`apps/docs/registry/super-ai`, `apps/docs/registry/marketing` and `apps/docs/components/ui`. They are
+`TOK-1` for raw hex, `TOK-2` for raw `oklch()`, `TOK-3` for Tailwind palette classes and `TOK-7` for
+raw `rgb()`, `rgba()` and `hsl()`. The full set is in **Foundations → Design Tokens**.
+
+<Example className="flex flex-wrap items-center gap-3">
+  <Button size="sm">Run</Button>
+  <Button size="sm" variant="secondary">
+    Save draft
+  </Button>
+  <Button size="sm" variant="outline">
+    Cancel
+  </Button>
+  <Button size="sm" variant="destructive">
+    Delete
+  </Button>
+  <Badge>Pro</Badge>
+  <Badge variant="secondary">Draft</Badge>
+</Example>
+
+Flip the Theme control in the toolbar and every element above changes without a single class
+changing. That is the test of a token layer.
+
+## The second tier is the marketing palette
+
+The design spec's token contract, at section 6 of
+`docs/superpowers/specs/2026-06-10-super-ai-components-design.md`, allows kit-scoped semantic tokens
+on the condition that they are defined once, centrally, with light and dark values. The family it
+named went out with decision D9; what remains is `--marketing-*` in
+`apps/storybook/src/marketing.css`: 13 declarations in `:root` at lines 22 to 34, and 11 in `.dark`
+at lines 37 to 47.
+
+The two that do not repeat in dark are `--marketing-pulse-color` and `--marketing-ripple-color`,
+which resolve to `var(--primary)` and so follow a rebrand without being touched. The rest are the
+rainbow, aurora and beam stops, and the file's own header at lines 10 to 20 records why they are
+literal rather than derived: this theme's chart ramp is neutral, so deriving them would render those
+effects grey. It also states the check to run after retuning them, since lightness in OKLCH does not
+predict contrast across hues, any stop used as text is measured against both `--background` values,
+3:1 at display sizes and 4.5:1 below 24px.
+
+Treat these as a second, opt-in tier. They belong to the marketing components and nothing in the
+product registry reads them.
+
+## What a theme may not do
+
+Two constraints survive any rebrand, and both are measured rather than stylistic.
+
+**Keep the foreground and surface pairs apart.** In the light values, `--muted`, `--accent` and
+`--secondary` are the same lightness, so `text-muted-foreground` on any of them is one failure rather
+than three: `docs/design-system/a11y-baseline.md` measures it at 4.34 to 4.35 to 1, under the 4.5
+minimum, and records that axe reported the same number. Three blocker rules catch it in source,
+`TOK-4` for the pairing inside one class string, `TOK-5` for a pairing split across a `cva()` base
+and a variant value, and `TOK-6` for a composed surface. If your theme moves either side of that
+pair, re-measure before shipping. The pairs are laid out in **Foundations → Color**.
+
+**Keep a composite honest.** `TOK-8` bans foreground composites outside the measured steps, because
+the ground a composite lands on decides its contrast and the gate only measures the grounds that
+stories actually render.
+
+## One token is missing from the Storybook stylesheet
+
+`--warning` is the single token this registry adds beyond stock shadcn, and it exists in one app and
+not the other. `apps/docs/app/globals.css` defines all four: `--color-warning` and
+`--color-warning-foreground` in its alias block at lines 31 and 32, and `--warning` and
+`--warning-foreground` in `:root` at lines 74 and 75 and in `.dark` at lines 113 and 114.
+`apps/storybook/src/index.css` defines none of them.
+
+Tailwind emits a utility only for a theme key that exists and says nothing about one that does not,
+so every `bg-warning`, `text-warning` and `border-warning` in the registry reaches the DOM under
+Storybook and compiles to no rule. `quota-meter.tsx` paints its `near-limit` state with `bg-warning`,
+which means the state named for the useful moment before zero has never been measured by the axe
+gate. The full account, including which components are affected and how they carry the token, is the
+gate-hole section of `docs/design-system/a11y-baseline.md`.
+
+This was recorded rather than patched on purpose. Adding the variable is one line; choosing its value
+is a design decision, and the rule in this repo is that a gate is never quieted to make a run green.
+If you are theming a consumer app, define `--warning` and `--warning-foreground` yourself in both
+blocks, and measure the pairing on the surface you put it on.
+
+## Rules
+
+- One axis, one marker: the `dark` class. Add a marker only by adding it to the custom variant and
+  both token blocks together.
+- Never write a dark value in a component. `dark:` utilities in component code are a token that is
+  missing from the theme.
+- Anything that declares `dark` also paints a surface, or its foregrounds land on the wrong ground.
+- Rebrand by overriding `:root` and `.dark` in your own stylesheet. Component classes stay untouched,
+  and `TOK-1`, `TOK-2`, `TOK-3` and `TOK-7` keep it that way.
+- Kit-scoped tokens are declared once, centrally, in both modes, and prefixed by the family that owns
+  them, the way `--marketing-*` is.
+- A theme that moves `--muted-foreground` or the muted, accent and secondary surfaces re-measures the
+  pairing before it ships. `TOK-4`, `TOK-5`, `TOK-6`.
+- Define `--warning` and `--warning-foreground` in a consumer theme. The Storybook stylesheet does
+  not, and a class with no rule behind it fails quietly.

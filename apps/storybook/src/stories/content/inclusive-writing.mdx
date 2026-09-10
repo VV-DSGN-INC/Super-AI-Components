@@ -1,0 +1,189 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
+import SourcePanelDemo from "@/components/demos/source-panel-demo";
+
+<Meta title="Content/Inclusive writing" />
+
+# Inclusive writing
+
+Write for the reader you cannot see: the one listening to the screen, the one on a phone where the
+layout has reflowed, the one who has never touched a mouse. Each rule below makes a sentence mean
+the same thing to more people, and each one is checked against what this registry ships rather than
+against a style guide. **Content → Voice & principles** already asks for plain words; this page asks
+a narrower question about the same words. Measurements were taken on 2026-09-09 across the 129
+component files in `apps/docs/registry/super-ai/`.
+
+## Any person, no pronoun
+
+<Example>
+  <AutonomySelectorDemo />
+</Example>
+
+Three autonomy levels above, each with one line saying what it lets loose
+(`autonomy-selector.tsx:43` to `:51`). The reader is addressed as "you", the system is named by what
+it does, and nothing needs a pronoun: "Nothing runs without you.", "Reads run alone. Anything that
+writes or sends still asks.", "Everything not on the deny list runs unattended." The denial list
+underneath names a constraint the same way, "Requires two people", where a lazier line would have
+said who.
+
+The registry holds that everywhere. The words `he`, `she`, `his`, `her`, `hers`, `himself` and
+`herself` appear zero times across all 129 files, in code, comments and copy alike. "The user"
+appears 37 times and every one of them is inside a comment: zero string literals contain it. Where a
+third party needs naming, name the role, as `permission-prompt` names the tool and the recipient
+rather than an actor.
+
+Where a pronoun is unavoidable, it is _they_. No singular _they_ ships yet, so that half is a rule
+going forward rather than a practice to copy.
+
+## Verbs the reader's device can answer
+
+_Select_ and _choose_ work for a mouse, a finger, a keyboard, a switch and a voice. _Click_, _tap_
+and _press_ each name hardware that half the readers do not have.
+
+Three shipped strings name a device: `generation-panel.tsx:265` ("Drag and drop, or click to
+browse"), `generation-shell.tsx:226` ("Set it up, then press Generate. Results collect here.") and
+`home-shell.tsx:261` ("Projects you pin show up here for one-click access."). That is the whole
+list, and all three are gaps rather than precedent.
+
+<DoDont
+  doExample={<p className="text-sm">Drag and drop, or choose a file</p>}
+  doCaption="one word changed. Every input can choose; only a pointer can click. Written for this page."
+  dontExample={<p className="text-sm">Drag and drop, or click to browse</p>}
+  dontCaption="generation-panel.tsx:265's shipped default. The gesture is offered as one route, which is right, and the second route then names hardware."
+/>
+
+Naming a gesture is fine when it is one route among several, which is what the shipped line above
+gets right. The failure is a gesture as the only route.
+
+## Point by name, not by position
+
+A zoomed viewport, a 375px screen and a screen reader's linear pass all put "below" somewhere else.
+Ten shipped strings across eight files point by position, mostly in shell empty states:
+`auth-shell.tsx:281`, `chat-shell.tsx:338` and `:409`, `connection-manager.tsx:134`,
+`explore-shell.tsx:407`, `notebook-shell.tsx:410` and `:491`, `studio-shell.tsx:401`,
+`timeline-shell.tsx:282`, `trust-dialog.tsx:188`.
+
+One file in the same family got it right and wrote down why. `generation-shell.tsx:224` carries a
+comment recording that the description deliberately avoids saying "on the left", because below the
+`md` breakpoint the panel sits above the canvas rather than beside it. Its neighbours
+`notebook-shell.tsx:410`, `studio-shell.tsx:401` and `timeline-shell.tsx:282` all say "on the left"
+and all three reflow the same way. That is the argument in one repo: the position is a property of
+the viewport, and the name is a property of the thing.
+
+`frame-strip.tsx:260` and `:271` are the one legitimate use, "Move [item] left" and "Move [item]
+right", where the direction is the action rather than a wayfinding pointer.
+
+## What a control's name says
+
+<Example>
+  <SourcePanelDemo />
+</Example>
+
+The last row above failed, and its retry control is the shape to copy. The visible text reads
+"Retry", while `source-panel.tsx:264` builds the accessible name as "Retry" plus the source's own
+file name, so a listener tabbing a panel with several failures hears which one each control belongs
+to. Fifty-five `aria-label` values in the registry are template literals that interpolate the object
+this way, out of 217 `aria-label` occurrences across 89 files; another 47 are plain literals and the
+rest come from props.
+
+The verb-plus-object idiom runs through the templates: "Remove [file name]"
+(`generation-panel.tsx:234`), "More actions for [record title]" (`record-list.tsx:340`),
+"Select [item name]" (`asset-library.tsx:447`), "Account menu for [user name]"
+(`account-menu.tsx:181`).
+
+Five literals fall short of it, and they are worth knowing because they are the easy mistake:
+"Undo" and "Redo" at `app-topbar.tsx:150` and `:153`, "Copy" at `stat-readout.tsx:50`, and "Model"
+twice at `hero-omnibox.tsx:195` and `:204`. The last pair is the sharpest, because
+`model-picker.tsx:73` documents the opposite rule for the same control: prefix the trigger's name
+with the model it currently holds, and never ship a static "Model" alone.
+
+Two names are rightly not verbs. A control that reports a verdict takes the verdict, and a gauge
+takes what it measures. `credits-indicator.tsx:95` names its trigger by the balance it shows plus
+what pressing it does.
+
+**Foundations → Iconography** owns the mechanics of naming an icon-only control, and
+`docs/design-system/a11y-baseline.md` records where accessible names have gone missing before.
+
+## What an image's name says
+
+Four `img` elements render in the whole registry, and all four carry an `alt`.
+
+- `account-menu.tsx:134` passes `alt=""`, and the wrapper carries `aria-hidden="true"`. The avatar
+  repeats a name that is already text beside it.
+- `feature-card-row.tsx:36` and `reference-strip.tsx:59` both type the thumbnail as an object whose
+  `alt` is required alongside `src`, so a caller cannot supply a picture and forget the words.
+- `generation-panel.tsx:244` uses the file name, which is what the reader called the thing.
+
+Three more components hand the media slot to the caller and say in the prop doc what to put there:
+`frame-strip.tsx:79` and `template-detail.tsx:68` both ask for `alt=""` because a separate label
+names the tile, and `track-list.tsx:53` says the same for cover art and adds that absent art is a
+real state rather than a broken image.
+
+## Words that travel
+
+Strings are English and hardcoded. D22 in `docs/design-system/decisions.md` settles that and gives
+the reasoning; the consequence for a consumer is what matters here. Because the source lands in
+their app, localising means editing the copied file, and no component takes a labels prop to make
+that easier. Write strings that survive a machine translation and a non-native reader on the first
+pass, because that is the only pass most of them get.
+
+Three habits, all of them already measured in the tree:
+
+- **Zero idiom-class words.** `sanity`, `crazy`, `insane`, `grandfathered`, `blacklist`,
+  `whitelist`, `master` and `dummy` appear zero times across the 129 files. Keep the count.
+- **Zero unglossed abbreviations in shipped strings.** No string uses "e.g.", "etc.", "vs." or
+  "est." Format and unit tokens (PDF, MB, fps) read the same everywhere and are a separate matter.
+- **Zero figures of speech.** "End to end", "kick off" and "reach out" all appear zero times.
+  Prefer "from start to finish", "start" and "contact".
+
+One place where the plain phrasing is doing measurable work: `rate-limit-banner.tsx` writes the same
+wait three ways. Line 87 formats a clock for the eye, line 97 spells it in words for the accessible
+name, and line 116 buckets it coarsely for the live region so the announcement holds still for a
+minute at a time. Reading a clock aloud second by second is the worst thing a countdown can do to a
+listener, and the fix was coarser words rather than a slower timer.
+
+## What the words say, by slot
+
+- **The reader.** _You_. Never "the user"; zero strings say it.
+- **A third party.** The role. _They_ only where a pronoun is unavoidable.
+- **An action in body copy.** A verb no device owns: _select_, _choose_.
+- **A place in the flow.** Its name. Never "below", "above" or "on the left".
+- **A direction that is itself the action.** The direction, as `frame-strip.tsx:260` has it.
+- **An icon-only control.** The verb plus the object's own name, interpolated.
+- **A control that reports rather than acts.** The verdict, or what a gauge measures.
+- **A decorative image.** `alt=""`, with the wrapper hidden.
+- **An image that carries meaning.** What it shows, in the sentence's terms.
+- **A file thumbnail.** The file name, as `generation-panel.tsx:244` has it.
+- **A live countdown.** Three forms: digits to look at, words to hear, coarse words to announce.
+- **A chart.** The takeaway in text beside it. **Foundations → Data Visualization** owns the rest.
+
+## Rules
+
+- Address the reader as _you_. Never "the user". Zero strings say it and 37 comments do, which is
+  the right split.
+- No gendered pronouns. The count is zero across code, comments and copy; keep it there.
+- Name a third party by role. Where a pronoun is unavoidable, it is _they_.
+- Verbs name no device. _Select_ and _choose_ cover every input. Three shipped strings break this
+  and all three are gaps.
+- A gesture is named only as one route among several.
+- Point by name, not by position. Ten strings across eight files break this;
+  `generation-shell.tsx:224` records why they are wrong, in the same family of shells.
+- An icon-only control's name is a verb plus the object's own name. Interpolate it, the way 55
+  `aria-label` templates already do.
+- Never ship a bare noun as a control's name. `model-picker.tsx:73` documents the rule that
+  `hero-omnibox.tsx:195` breaks.
+- Every image gets an `alt`. Four render in the registry and four have one. Where a component takes
+  a picture from a caller, type the `alt` as required beside the `src`.
+- Alt text says what the picture shows: a file name for a thumbnail, the empty string for
+  decoration.
+- No idiom-class words, no unglossed abbreviations, no figures of speech. All three counts are zero
+  today.
+- A number read aloud needs its own wording. `rate-limit-banner.tsx` lines 87, 97 and 116 are the
+  worked example.
+- Strings are English and hardcoded, per D22. A consumer localising edits the copied source, so
+  write for the first reading.
+
+This page owns which word reaches everyone. **Content → Voice & principles** owns how the interface
+sounds, **Content → Writing mechanics** how it is spelled, **Content → Error messages** what a
+failure says, and **Content → Empty states** what a zero state says.

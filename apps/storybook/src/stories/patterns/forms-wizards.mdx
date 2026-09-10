@@ -1,0 +1,289 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import FieldRowDemo from "@/components/demos/field-row-demo";
+import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
+import GenerationWizardDemo from "@/components/demos/generation-wizard-demo";
+import OnboardingWizardDemo from "@/components/demos/onboarding-wizard-demo";
+import ParameterPanelDemo from "@/components/demos/parameter-panel-demo";
+import SettingsDialogDemo from "@/components/demos/settings-dialog-demo";
+
+<Meta title="Patterns/Forms & wizards" />
+
+# Forms & wizards
+
+The screens where a reader puts something in. Most forms in an AI app are not sign-up forms, they are
+**parameter** forms: the values decide what a model does next, and often what it costs. That changes
+the shape of the pattern. This registry ships the row primitive (`field-row`), the panel that stacks
+rows into a parameter surface (`parameter-panel`), the compact strip that puts the same settings
+beside a prompt (`gen-settings-bar`), the settings surface (`settings-dialog`), and two wizards whose
+step machinery is deliberately shared.
+
+## Use it when
+
+- The reader arrived to enter, choose, or change values, and nothing commits until they say so.
+- The values configure a run, so the reader needs to understand what each one does to the result.
+- Editing a record outgrew its pane, which is the line **Patterns → Resource details** hands over at.
+- The work splits into decisions taken one at a time, in an order that matters.
+
+Do not use it when the answer is one of these instead:
+
+- **A control that acts on release.** A filter, a sort, a view mode. Nothing is pending, so nothing is
+  submitted. **Patterns → Resource index** owns the bar they sit on.
+- **A prompt.** `media-prompt-bar` and the AI Elements `PromptInput` port are composers with a send
+  button. **Patterns → AI conversation** owns them.
+- **A question with two answers.** `trust-dialog` and `permission-prompt` stop the page to ask, and
+  **Patterns → Actions & confirmation** owns what they ask.
+- **The commit itself, when it spends money.** `run-button` carries the cost line and the commit, and
+  **Patterns → Actions & confirmation** owns the moment.
+- **What a failure says.** **Content → Error messages** owns the words of every error here. This page
+  owns where in a form they render.
+
+## The form, live
+
+### The row
+
+<Example>
+  <FieldRowDemo />
+</Example>
+
+`field-row.tsx` is 79 lines and one grid: line 23 is `grid-cols-[6rem_1fr]`, a 96px label column and a
+control that takes the rest. Three things about it decide how everything above it behaves.
+
+The label is a real `label` with `htmlFor` pointing at an id from `React.useId()`, and the control is
+a **render prop**: `children(controlId, describedBy)`. A caller cannot forget to wire the id, because
+the id is what the function receives. When `hint` is passed the row mints a second id and hands it
+back as `describedBy`, so the hint reaches the control through `aria-describedby` rather than sitting
+near it visually. `field-row-demo` shows both forms, one row with a hint and one without.
+
+`UnitInput` is the compact numeric control this family keeps reaching for, and it is written logically
+rather than physically: line 61 uses `text-end` rather than `text-right`, and line 72 uses `pe-2`
+rather than `pr-2`, both with the comment that under `dir="rtl"` the unit suffix moves to the visual
+left and the value has to stay against it. The design spec section 4, under Selection and objects,
+records the requirement it satisfies: editor fields carry units, percent, seconds and multiplier
+suffixes in compact inputs.
+
+### The parameter panel
+
+<Example>
+  <ParameterPanelDemo />
+</Example>
+
+`parameter-panel.tsx` line 19 states the relationship: every row composes `FieldRow` for its label,
+control, hint and reset grid rather than restyling it. That is what keeps a slider row and a segmented
+row on the same 96px label column.
+
+The endpoints are the part worth copying. `parameter-panel-demo` labels the Guidance slider ends "More
+creative" and "More literal", and the Steps slider "Faster" and "More detail". The design spec section
+4, under Parameters and pickers, is explicit: parameters speak human, never raw floats, and parameters
+teach inline with one-line explanations under sliders. The demo's Guidance description does exactly
+that, and it renders as `FieldRow`'s `hint`, so it is always-visible text rather than a tooltip.
+
+Reset comes in two scopes and one component. `reset-affordance` at row scope sits in the row's `reset`
+slot, and at group scope it sits in the panel header as reset-all. `parameter-panel.tsx` line 20
+records that the group-scope version is the retrofit that gave `field-row` its `reset` slot in the
+first place.
+
+### The same settings, beside a prompt
+
+<Example>
+  <GenSettingsBarDemo />
+</Example>
+
+`gen-settings-bar.tsx` is 58 lines and a `role="toolbar"`, and the design spec section 4 opens its
+Generation section with it: the model and params settings strip is universal, one primitive embedded
+everywhere, in nodes, prompt bars and detail views. So the same values a `parameter-panel` stacks
+vertically compress into a strip when the prompt is the focus.
+
+Line 33 carries the contrast fix this repo keeps re-deriving: the bar paints `bg-muted/50` and sets
+`text-foreground` plus a rebind of `--muted-foreground` on the same element. The comment gives the
+measurement, `bg-muted/50` clears 4.5:1 by roughly 0.04 and only against that exact ancestor
+background, which is too thin to inherit. The rebind is there because a composed child that sets
+`text-muted-foreground` itself cannot be reached by a slot-level choice. `TOK-6` is the rule.
+
+One honest gap is marked in the file at line 16: arrow-key roving tabindex for the toolbar pattern is
+a TODO, and v1 ships Tab per item.
+
+### The settings surface
+
+<Example>
+  <SettingsDialogDemo />
+</Example>
+
+`settings-dialog.tsx` pins three decisions with tests, and its own header comment states them. A row
+is label plus description plus control, and `description` is a **required** string rather than an
+optional nicety, on the reasoning that a toggle with no description is a setting nobody changes. A
+destructive action renders as plain text in the control column and is not expressible as arbitrary
+JSX: `destructiveAction` takes data and the component owns the rendering, so a filled button cannot
+land beside benign toggles. Line 33 gives the second reason for that, `text-destructive` on a
+translucent `bg-destructive/NN` measures 4.0:1 against the 4.5 minimum, so the text action carries no
+tint at all. Line 119's `variant` is `dialog` or `full-page`, and the two share one row grid;
+the variant changes the frame and whether search exists, nothing below `settings-dialog-panel`.
+
+### The wizards
+
+<Example>
+  <GenerationWizardDemo />
+</Example>
+
+<Example>
+  <OnboardingWizardDemo />
+</Example>
+
+Two wizards, one step machine. `onboarding-wizard.tsx` line 18 says so outright: it is built on the
+same `steps[]` plus controlled or uncontrolled `step` plus `onStepChange` contract as
+`generation-wizard`, with Back, Skip and the primary in a footer row, because a second differently
+shaped multi-step contract in one registry is how two components that look alike start behaving
+differently.
+
+Three departures are called out at their sites, and each one is a real difference in what the flow is
+for. Skip survives onto the last step in onboarding, because an onboarding question is never a commit,
+while the generation wizard's last step spends credits, so Skip has no meaning there and
+`generation-wizard.tsx` line 243 renders it only when the step is not the last. Progress is a dot rail
+rather than a titled stepper in onboarding, because step titles like "What do you do?" do not compress
+into stepper labels and the useful fact is how many are left. And onboarding owns the answers, through
+`answers`, `defaultAnswers` and `onAnswerChange`, where the generation wizard leaves each step's fields
+to the caller.
+
+The footer labels differ by what the last press does. `generation-wizard.tsx` lines 63 to 66 default to
+"Back", "Skip", "Next" and a `finishLabel` of "Generate"; `onboarding-wizard.tsx` lines 115 to 118
+default to the same first three and a `finishLabel` of "Finish setup". Back is `outline` and disabled
+on the first step, Skip is `outline`, and the primary is `default`, one per footer.
+
+## Panel, strip, or steps
+
+The axis is what the reader is doing with the values, not how many there are.
+
+- **`parameter-panel`** when the values are the task. Full label column, hints under the controls that
+  need them, reset at both scopes. It is the surface a reader tunes.
+- **`gen-settings-bar`** when the prompt is the task and the values are context. Same settings, one
+  row, no hints. It is the surface a reader glances at and adjusts without leaving the composer.
+- **`settings-dialog`** when the values are the account's rather than the run's, and every one of them
+  needs a sentence of explanation. Its `full-page` variant is the same rows in a route.
+- **`generation-wizard`** when a sequence ends in a commit that spends something. Its last step is a
+  review, its preview pane shows what the current settings produce, and its finish label names the act.
+- **`onboarding-wizard`** when a sequence collects answers and none of them commits. Every step is
+  skippable, including the last.
+
+A form that needs both a panel and a strip has one set of values in two places. Pick the surface the
+reader is standing on and let the other read from the same state.
+
+## Key decisions
+
+- **The control gets its id from the row, never from the caller.** `field-row`'s render prop hands
+  back `controlId` and `describedBy`, so an unlabelled control is a thing you have to work at.
+- **A hint is text, not a tooltip.** It renders as `FieldRow`'s `hint` with a real id, reaching the
+  control through `aria-describedby`. Parameters teach inline, per the design spec section 4.
+- **Slider ends are words.** "More creative" and "More literal", not 0 and 20. The number can still
+  show; the ends say what moving it does.
+- **Every setting row carries a description.** `settings-dialog` types it as required, which is the
+  strongest available statement that it is not decoration.
+- **A destructive setting is text in the control column.** No filled button beside benign toggles, and
+  no `text-destructive` on a `bg-destructive/NN` tint, which measures 4.0:1.
+- **One step machine for both wizards.** New multi-step surfaces extend `steps[]` plus `step` plus
+  `onStepChange` rather than growing a third shape.
+- **Skip means something different in each wizard, and the components already encode it.** Do not add
+  Skip to a committing last step, and do not remove it from a collecting one.
+- **One primary per footer.** Back is `outline` and disabled at the start, Skip is `outline`, the
+  primary is `default` and names the act.
+- **Reset is one component at two scopes.** Row-level clears a value, group-level clears the panel.
+  Both are `reset-affordance`, not a bespoke link.
+- **Write logical properties on anything that holds a value.** `text-end` and `pe-*`, not `text-right`
+  and `pr-*`, because the unit suffix moves under `dir="rtl"`.
+
+The one variable below is where a row's explanation lives.
+
+<DoDont
+  doExample={
+    <div className="w-full max-w-xs space-y-1">
+      <div className="grid grid-cols-[6rem_1fr] items-center gap-3">
+        <span className="text-muted-foreground text-sm">Guidance</span>
+        <span className="text-sm">7</span>
+      </div>
+      <p className="text-muted-foreground text-xs">
+        {"How closely the result follows the prompt. Higher values stay literal but can look over-processed."}
+      </p>
+    </div>
+  }
+  doCaption="the explanation is always-visible text under the row, wired through aria-describedby. This is FieldRow's hint slot, and the string is parameter-panel-demo's own."
+  dontExample={
+    <div className="w-full max-w-xs">
+      <div className="grid grid-cols-[6rem_1fr] items-center gap-3">
+        <span className="text-muted-foreground text-sm">Guidance</span>
+        <span className="flex items-center gap-1.5 text-sm">
+          <span>7</span>{" "}
+          <span className="border-border text-muted-foreground inline-flex size-4 items-center justify-center rounded-full border text-[10px]">
+            {" "}
+            ?
+          </span>
+        </span>
+      </div>
+    </div>
+  }
+  dontCaption="the same row with the explanation behind a hover target. A parameter nobody can read the meaning of is a parameter nobody moves, and a hover affordance reaches no touch and no keyboard reader by default."
+/>
+
+## Rules
+
+- Every control takes its id from `FieldRow`'s render prop. `children(controlId, describedBy)` is the
+  API, and passing the ids is the caller's only job.
+- A hint is rendered text with its own id, threaded to the control as `aria-describedby`. Do not put a
+  parameter's meaning in a tooltip.
+- Slider endpoints are plain language and describe the direction, per the design spec section 4:
+  parameters speak human, never raw floats.
+- Every row in a parameter surface composes `FieldRow`. A row that restyles the grid breaks the label
+  column for every row beside it.
+- Reset is `reset-affordance`, at row scope in `FieldRow`'s `reset` slot or at group scope in the
+  panel header. Both states matter, modified and at-default.
+- A settings row is label, description and control. `description` is required; a toggle without one is
+  a setting nobody changes.
+- A destructive setting is plain text in the control column, supplied as data through
+  `destructiveAction`. Never a filled button, and never `text-destructive` on a `bg-destructive/NN`
+  tint, which measures 4.0:1 against a 4.5:1 requirement per
+  `docs/design-system/a11y-baseline.md`.
+- `dialog` and `full-page` share one row grid. The variant changes the frame and whether search exists,
+  so do not write a second row shape for the route version.
+- Never write `text-muted-foreground` on `bg-muted`, `bg-accent` or `bg-secondary`. A strip that paints
+  its own muted surface rebinds `--muted-foreground` on that element, the way `gen-settings-bar.tsx`
+  line 33 does. `TOK-4`, `TOK-5` and `TOK-6` are the rules and `check:tokens` enforces them.
+- A multi-step flow uses the shared machine: `steps[]`, controlled or uncontrolled `step`, and
+  `onStepChange`. Do not introduce a third step contract.
+- Skip appears on a committing wizard's non-last steps only, and on every step of a collecting one.
+  `generation-wizard.tsx` line 243 and `onboarding-wizard.tsx` line 184 are the two shipped answers.
+- One `default` button per footer, and it names the act: "Generate", "Finish setup". Back is `outline`
+  and disabled on the first step.
+- A committing wizard's last step reviews rather than asks. `generation-wizard-demo`'s third step reads
+  the chosen model and style back and shows the total cost.
+- The preview pane shows what the current settings produce, not a stock image. It is the cheap version
+  of the design spec's preview-before-commit economics.
+- Write logical direction properties on value-bearing controls: `text-end`, `pe-*`, `ms-*`. `UnitInput`
+  lines 61 and 72 carry the reasons at the site.
+- The commit that spends credits belongs to `run-button` and to **Patterns → Actions and
+  confirmation**, along with the cost line beside it. A wizard hands the moment over.
+- What any error says is **Content → Error messages**'. This page only says where it renders: on the
+  field that is wrong, in the step the reader is standing on.
+
+## Content notes
+
+A field label names the value and takes no terminal period: "Volume", "Speed", "Guidance", "Quality",
+"Steps", "Seed". A hint is a sentence and keeps its period, because it states something rather than
+naming a slot. `field-row-demo` and `parameter-panel-demo` are both written that way.
+
+Units are symbols in the control, not words in the label. `field-row-demo` writes "%" and "x" as the
+`unit` prop rather than "Volume (percent)". The design spec section 4 asks for percent, second and
+multiplier suffixes in compact inputs, which is what `UnitInput`'s trailing span is.
+
+Segmented options are single words in sentence case: "Draft", "Standard", "High". Wizard step titles
+are short noun phrases where they appear in a stepper ("Choose model", "Set style", "Review") and full
+questions where they do not ("What do you do?"), which is exactly the reason the onboarding wizard
+uses a dot rail instead.
+
+Settings descriptions say what the setting does and, where there is one, the consequence with a
+number: "Keep a copy of every prompt while you type, recoverable for 30 days." `CPY-1` asks the label
+to say the thing, and `CPY-2` bans the marketing register, so a description states behaviour rather
+than selling the feature.
+
+This page owns where a form lives, how its rows are built, and how a sequence is stepped.
+**Content → Error messages** owns what any failure says, **Patterns → Resource details** owns the view
+up until editing becomes the task, and **Patterns → Actions & confirmation** owns the commit at the
+end.

@@ -1,0 +1,132 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example } from "../_shared/doc-blocks";
+import KbdDemo from "@/components/demos/kbd-demo";
+
+<Meta title="Foundations/Typography" />
+
+# Typography
+
+Two families, a scale that is almost entirely two sizes, and one weight step doing nearly all the
+work. Every count on this page was taken 2026-09-09 by reading the 129 non-test sources under
+`apps/docs/registry/super-ai/`, so it describes what the registry actually ships rather than what a
+scale allows.
+
+## Two families, self-hosted, and a suffix that decides whether they load
+
+`--font-sans` and `--font-geist-mono` are declared in `apps/storybook/src/index.css` lines 34 to
+42, and both families are imported from `@fontsource-variable` rather than fetched from a font CDN.
+The reason is in the comment above them: the a11y gate is blocking, and in the CI runner image
+self-hosting took the Storybook suite from 11 failing files to 5, because the runner has no Geist
+and every text measurement had been taken against whatever the system picked.
+
+Each stack leads with the `Variable` suffix and then the bare name. The suffix is what the
+`@fontsource-variable` packages actually declare, so a stack naming only `"Geist"` matches nothing
+they ship and falls through to the system sans with no error. A third theme key,
+`--font-heading`, is mapped to `--font-sans` (line 49), so `font-heading` and `font-sans` render
+the same family.
+
+## The scale runs small, and it is really two sizes
+
+Occurrences of each size class across the 129 sources:
+
+- `text-xs` 206
+- `text-sm` 162
+- `text-base` 6
+- `text-2xl` 4
+- `text-lg` 1
+- `text-3xl` 1
+- `text-xl` 0
+
+`text-xs` and `text-sm` are 96 percent of every size class written. That is a product of what these
+components are: chips, rows, toolbars, queues and inspectors, dense chrome around a result rather
+than prose. The large steps appear only where a shell owns a page title.
+
+<Example>
+  <p className="text-foreground text-xs">
+    <span>text-xs, the default for chips, meta, counts and helper text</span>
+  </p>
+  <p className="text-foreground mt-2 text-sm">
+    <span>text-sm, the default for labels, rows and body copy in a panel</span>
+  </p>
+  <p className="text-foreground mt-2 text-base">
+    <span>text-base, six occurrences in the whole registry</span>
+  </p>
+  <p className="text-foreground mt-2 text-2xl">
+    <span>text-2xl, a page title in a shell</span>
+  </p>
+</Example>
+
+Reading consequence, and a real one at this size: `text-xs` is 12px, and 12px normal-weight text
+needs the full 4.5:1 contrast minimum. There is no large-text exemption anywhere near this scale,
+which is why the contrast pairing on **Foundations → Color** matters as much as it does.
+
+## Weight moves one step, and only one
+
+- `font-medium` 145
+- `font-semibold` 15
+- `font-normal` 5
+- `font-bold` 0
+
+Nothing in the registry is bold. Emphasis is one step from the inherited weight to `font-medium`,
+and `font-semibold` is reserved for the handful of places that need a second step. `font-normal` is
+almost always an override putting a control's label back to plain after a parent raised it.
+
+<Example>
+  <p className="text-foreground text-sm">
+    <span>Inherited weight, the body of a row</span>
+  </p>
+  <p className="text-foreground mt-1 text-sm font-medium">
+    <span>font-medium, the label of that row</span>
+  </p>
+  <p className="text-foreground mt-1 text-sm font-semibold">
+    <span>font-semibold, a section title above it</span>
+  </p>
+</Example>
+
+## Mono has four jobs, and all four are machine output
+
+`font-mono` appears 10 times in 5 sources, and each use is one of four things:
+
+- A key cap. `kbd.tsx` sets `font-mono text-xs font-medium` on the `kbd` element.
+- A machine payload printed in a preformatted block. `run-inspector.tsx` line 179 and
+  `settings-shell.tsx` line 576.
+- A tool argument, key and value. `permission-prompt.tsx` lines 218 and 219, where the key is muted
+  and the value is `text-foreground`.
+- A timecode. `transport-controls.tsx` lines 318, 334 and 375, always with `tabular-nums`.
+
+<Example className="flex justify-center">
+  <KbdDemo />
+</Example>
+
+Nothing else takes mono. A model name, a filename or a prompt is prose the user reads, and it stays
+in the sans stack.
+
+## Numbers that change get `tabular-nums`
+
+49 occurrences across 34 of the 129 sources, measured 2026-09-09. Read across those files, the
+practice is consistent: a number that updates in place gets tabular figures so its digits keep one
+width as the value changes. A timecode counting up, a credit balance, a queue position, a duration.
+
+<Example className="flex flex-col gap-1">
+  <span className="text-foreground font-mono text-sm tabular-nums">00:04:17</span>
+  <span className="text-foreground font-mono text-sm tabular-nums">00:11:08</span>
+  <span className="text-muted-foreground text-xs">
+    <span>Two timecodes, same glyph widths, no reflow between frames</span>
+  </span>
+</Example>
+
+A number that is written once and never rewritten does not need it.
+
+## Rules
+
+- Use `text-xs` and `text-sm`. Reaching past them says this element owns a page, and across 380
+  size classes the registry says it 12 times.
+- Emphasise with one weight step. `font-medium` is the step; there is no bold in this system.
+- Mono is for machine output: key caps, payloads, argument keys and values, timecodes. Prose stays
+  sans.
+- Add `tabular-nums` to any number that updates in place.
+- Do not add a size or a weight step. `LAY-1` and the value ratchet in
+  `docs/design-system/anti-slop.md` both treat a new step as a token decision rather than an inline
+  one.
+- Type at this scale has no large-text contrast exemption. Check the pair on **Foundations →
+  Color**.
