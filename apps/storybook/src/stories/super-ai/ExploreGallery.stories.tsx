@@ -193,16 +193,14 @@ export const DockedPrompt: Story = {
  * a second component, and there is likewise no API here separating the
  * chrome's direction from a label's language.
  *
- * **Recorded, not swept: the tile's two corners do not mirror.** The type
- * badge is `absolute top-2 left-2` and the action strip `absolute top-2
- * right-2`, so under RTL the badge stays on the visual left while the title
- * and author beneath it start on the right. Both participants are classes
- * and nothing else — no inline style, no JavaScript axis, no clip geometry —
- * decides that side, so it passes the F5/H3 test the sweep entry sets; it is
- * the same `right-2` → `end-2` the wave-1 agents added to that table for A8
- * `preview-tile`, here as a pair with `left-2` → `start-2`. Neither line is in
- * the table, so it is measured below and left for the sweep rather than taken
- * here.
+ * **The tile's two corners mirror, since the 2026-09-10 sweep.** The type
+ * badge is `absolute top-2 start-2` and the action strip `absolute top-2
+ * end-2`, so under RTL the badge sits on the visual right with the title and
+ * author beneath it, and the actions on the left. Both participants are
+ * classes and nothing else — no inline style, no JavaScript axis, no clip
+ * geometry — decides that side, which is what made the swap byte-identical in
+ * LTR. Before the sweep this story recorded the pair as _not_ mirroring; step
+ * 4 now pins the mirrored placement as correct.
  */
 export const RTL: Story = {
   render: (args) => (
@@ -241,16 +239,16 @@ export const RTL: Story = {
     const margins = getComputedStyle(count);
     await expect(`${margins.marginRight}/${margins.marginLeft}`).toBe("6px/0px");
 
-    // 4. The corner pair that does not mirror. The badge is nominally
-    //    top-start and the actions top-end; under RTL they are the wrong way
-    //    round, and this records it without pinning it as correct.
+    // 4. The corner pair mirrors. The badge is top-start and the actions
+    //    top-end, so under RTL the badge hugs the right edge and the actions
+    //    the left. Measured from the tile's start (right) edge.
     const badge = slot("explore-gallery-item-type").getBoundingClientRect();
     const actions = slot("explore-gallery-item-actions").getBoundingClientRect();
     const tile = tiles[0].getBoundingClientRect();
     const startSide = (r: DOMRect) => Math.round(tile.right - r.right);
     await expect(
       `badge-from-start=${startSide(badge) < 20} actions-from-start=${startSide(actions) < 20}`,
-    ).toBe("badge-from-start=false actions-from-start=true");
+    ).toBe("badge-from-start=true actions-from-start=false");
   },
 };
 

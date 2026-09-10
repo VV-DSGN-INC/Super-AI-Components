@@ -122,7 +122,7 @@ function RecentGridItemGrid({ item }: { item: RecentGridItem }) {
       >
         {thumbnail}
       </PreviewTile>
-      {actions ? <RecentGridActions actions={actions} className="absolute top-2 left-2 z-10" /> : null}
+      {actions ? <RecentGridActions actions={actions} className="absolute top-2 start-2 z-10" /> : null}
       <RecentGridEditedAgo editedAgo={editedAgo} className="mt-0.5" />
     </div>
   );

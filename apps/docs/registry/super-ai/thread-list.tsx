@@ -129,7 +129,7 @@ function ThreadListItem({
         className={cn(
           // Same rebind as the row above, for the surface hover paints.
           "hover:bg-accent hover:[--muted-foreground:var(--accent-foreground)]",
-          "flex h-9 flex-1 items-center gap-2 truncate rounded-md px-2 text-left text-sm",
+          "flex h-9 flex-1 items-center gap-2 truncate rounded-md px-2 text-start text-sm",
           active && "font-medium",
         )}
       >

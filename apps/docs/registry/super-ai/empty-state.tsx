@@ -53,7 +53,8 @@ const SIZE_ROOT: Record<EmptyStateSize, string> = {
   // reads as "a slot with nothing in it", and never demands more height than a
   // real cell would. Left-aligned because a 1/6th-width column has no room to
   // centre anything legibly.
-  "in-grid": "h-full min-h-32 items-start justify-center gap-3 rounded-lg border border-dashed p-4 text-left",
+  "in-grid":
+    "h-full min-h-32 items-start justify-center gap-3 rounded-lg border border-dashed p-4 text-start",
 };
 
 const SIZE_TITLE: Record<EmptyStateSize, string> = {
@@ -137,7 +138,7 @@ function EmptyState({
     <Empty data-slot="empty-state" data-size={size} className={cn(SIZE_ROOT[size], className)} {...props}>
       <EmptyHeader
         data-slot="empty-state-header"
-        className={cn(compact && "max-w-full items-start text-left")}
+        className={cn(compact && "max-w-full items-start text-start")}
       >
         {icon ? (
           // aria-hidden: an illustration that renders text would otherwise be

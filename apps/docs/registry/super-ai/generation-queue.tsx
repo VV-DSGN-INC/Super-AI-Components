@@ -257,7 +257,7 @@ function GenerationQueue({
                 variant="ghost"
                 size="sm"
                 data-slot="generation-queue-cancel-all"
-                className="ml-auto"
+                className="ms-auto"
                 onClick={() => onCancelAll?.(cancellableIds)}
               >
                 {cancelAllLabel}

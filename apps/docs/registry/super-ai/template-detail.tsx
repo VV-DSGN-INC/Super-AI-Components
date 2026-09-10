@@ -297,7 +297,7 @@ function TemplateDetail({
                   {previews.map((preview) => {
                     const active = preview.id === activePreview?.id;
                     return (
-                      <CarouselItem key={preview.id} className="basis-24 py-1 pr-1">
+                      <CarouselItem key={preview.id} className="basis-24 py-1 pe-1">
                         <button
                           type="button"
                           data-slot="template-detail-thumb"

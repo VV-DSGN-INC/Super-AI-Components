@@ -114,7 +114,7 @@ function PricingTable({
               // `text-destructive`-on-tint failure.
               <span
                 data-slot="pricing-table-save-badge"
-                className="bg-warning text-warning-foreground ml-1.5 rounded-full px-1.5 py-0.5 text-xs font-medium"
+                className="bg-warning text-warning-foreground ms-1.5 rounded-full px-1.5 py-0.5 text-xs font-medium"
               >
                 Save {saving}%
               </span>

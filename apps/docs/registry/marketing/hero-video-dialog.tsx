@@ -153,7 +153,7 @@ function HeroVideoDialog({
                     type="button"
                     aria-label="Close video"
                     onClick={close}
-                    className="bg-background text-foreground absolute top-2 right-2 flex size-9 cursor-pointer items-center justify-center rounded-full border sm:-top-12 sm:right-0"
+                    className="bg-background text-foreground absolute top-2 end-2 flex size-9 cursor-pointer items-center justify-center rounded-full border sm:-top-12 sm:end-0"
                   >
                     <X className="size-4" aria-hidden="true" />
                   </button>
