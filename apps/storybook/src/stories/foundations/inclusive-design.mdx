@@ -1,0 +1,196 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+
+<Meta title="Foundations/Inclusive design" />
+
+# Inclusive design
+
+Accessibility here is a merge condition rather than a review note. Every story this repo authors is
+mounted in a real browser and audited by axe on every pull request, and the failures that audit
+found are recorded with their measurements in `docs/design-system/a11y-baseline.md`. This page
+covers what the gate enforces, what it structurally cannot see, and the conventions that cover the
+gap.
+
+## The gate is axe in a real browser, and it blocks
+
+`apps/storybook/.storybook/preview.tsx` sets `a11y: { test: "error" }` as a global parameter, and
+the comment beside it records why that line exists: the addon defaults to `"todo"`, which records
+violations as warnings and asserts nothing, and under that default a story with an unlabelled
+button passed the suite outright. `pnpm test:stories` runs the suite as a single Vitest project in
+headless Chromium through `@vitest/browser-playwright`, so `color-contrast` is evaluated against
+real paint. It also mounts every story, so a component that crashes on render fails here too.
+
+Measured 2026-09-09, the blocking set is 116 story files under `apps/storybook/src/stories/super-ai`
+carrying 1377 stories, plus 15 files under `stories/marketing` carrying 15, for 1392 audited
+stories.
+
+Two exclusions, both narrow and both explained at the site. By directory,
+`apps/storybook/vitest.config.ts` drops `stories/ui/**` and `stories/ai-elements/**`: those are
+vendored upstream ports, and fixing their findings means diverging from upstream, which is a
+decision nobody has made. That file also carries the standing rule, that the list may only shrink,
+and the record of it shrinking: `cost-chip`, `entity-row` and `preview-tile` were once excluded by
+name and no super-ai story is excluded any more.
+
+The second is inside axe rather than the file list. `preview.tsx` passes
+`context: { exclude: ["[data-base-ui-focus-guard]"] }`, removing Base UI's own focus-trap spans,
+which carry `tabIndex` 0 and `aria-hidden="true"` together by design and so trip `aria-hidden-focus`
+on every story that opens a popup. The baseline records that the rule was confirmed still firing on
+a genuine violation afterwards. That selector is the exclusion, and widening it to `[aria-hidden]`
+or to a class name would switch the rule off.
+
+## What it does not look at
+
+Three gaps, and all three are the reason the conventions below exist.
+
+**It runs in one theme.** `preview.tsx` defaults the `theme` global to `"light"` and
+`vitest.config.ts` defines one project, so dark grounds are never sampled. A contrast pairing that
+fails only in dark passes the gate.
+
+**`--warning` does not resolve in Storybook.** `apps/docs/app/globals.css` declares `--warning` and
+`--warning-foreground` in both `:root` and `.dark`; `apps/storybook/src/index.css` declares neither.
+Tailwind emits no utility for an undefined theme key and does not complain, so every `bg-warning`,
+`text-warning` and `border-warning` in the registry renders unpainted in the run that gates.
+Components carrying the token are named in `a11y-baseline.md` under "Gate hole". A green warning
+story proves nothing about the state it is named for.
+
+**It never measures hover, and it only measures the grounds the stories happen to use.** That is
+the reason for the composite rule below.
+
+## The failure that keeps coming back
+
+`--muted`, `--accent` and `--secondary` resolve to the same lightness in this token set, so
+`text-muted-foreground` on any of the three is one failure wearing three names. Axe measured it at
+4.34:1 against a 4.5:1 minimum. It shipped five times before a static rule existed, and every one
+of those five was the cross-component shape: muted text in a child, muted background on an ancestor.
+
+Three rule records now cover it, each catching a different shape:
+
+- `TOK-4`, muted text and a muted background in one quoted class string.
+- `TOK-5`, the two split across a `cva()` base and a variant value, which is exactly how
+  `components/ui/tabs.tsx` shipped the pairing.
+- `TOK-6`, the cross-component shape, declared `rendered` because no static analysis can see it.
+  Its named checker is `pnpm test:stories`, and it appears in the unchecked list on every
+  `check:tokens` run rather than silently not running.
+
+The fix is on the surface, not the text: give the muted text a `bg-card` or `bg-background` ground,
+or rebind `[--muted-foreground:var(--accent-foreground)]` on the element painting the surface.
+`bg-muted/50` is not a workaround; it only clears the bar by blending toward whatever sits behind
+it. Separately, `text-destructive` on a `bg-destructive/NN` tint measures under 4.5:1 as well; go
+solid instead.
+
+A new contrast failure is a design decision. Propose a value with its ratio on every ground it
+lands on and wait. Never darken a token to turn a run green.
+
+## Composites are banned on foregrounds
+
+`text-foreground/60` looks like a lighter grey and is in fact whatever is behind it, mixed. Axe
+measures only the grounds the stories use and never measures hover, so a composite can be wrong in
+places nothing samples. `TOK-8` pins the permitted set to `text-foreground/60`, `/70` and `/80`,
+with the floor measured at 5.11:1 on every shipped surface, and fails every other foreground
+composite, `fill-*`, `stroke-*`, `placeholder-*`, `decoration-*` and `caret-*` included. The pinned
+set may only shrink; adding a step is a rule change that carries a new measurement.
+
+Edges are different and are not covered: a border or ring is measured against its own surface, so
+`border-*/50` and `ring-*/50` stay.
+
+## Focus, names and direction
+
+<Example className="flex flex-wrap items-center gap-4">
+  <Button variant="outline">Tab to me</Button>
+  <Button variant="secondary">Then to me</Button>
+  <span className="text-muted-foreground w-full text-xs">
+    {"focus-visible only: the ring arrives for the keyboard and stays away from the pointer"}
+  </span>
+</Example>
+
+Reading a ring back in a play function is the part that catches people out, and
+`apps/storybook/src/lib/focus-ring.ts` carries the four measured failure modes: a Tailwind ring
+compiles to `box-shadow` layers that are present at zero alpha and zero size while the ring is off,
+`focus-visible:outline-none` leaves `outline-width` at a used value while `outline-style` reads
+`none`, the vendored button fades its ring in over roughly 250ms, and Base UI's slider focuses a
+clipped input inside the thumb that carries the user agent's own outline. Use `settledFocusRing`,
+or take a `focusTreatmentSignature` before and after focusing where you can focus an element
+directly.
+
+Names are gated rather than linted, and they hold: all 38 icon-sized `Button` call sites in the
+registry carry one, and 172 lucide render sites carry `aria-hidden`. **Foundations → Iconography**
+has the two routes.
+
+Direction is read from the DOM. `components/ui/direction.tsx` re-exports Base UI's
+`DirectionProvider`, and the registry writes logical utilities rather than physical ones: 73 `ps-`,
+`pe-`, `ms-` and `me-` sites across 32 files, 38 `text-start` and `text-end`, and 20 logical insets.
+Sixteen files carry an inline comment naming `dir="rtl"` as the reason for the choice, which is
+where that reasoning belongs. Four places go the other way on purpose, pinning a numeric readout
+`dir="ltr"` so digits do not reorder inside an RTL page: `cost-chip`, `credits-indicator`,
+`quota-meter` and `rate-limit-banner`.
+
+<DoDont
+  doExample={
+    <div dir="rtl" className="border-border flex w-56 items-center gap-2 rounded-lg border p-2">
+      <span className="text-sm">Render queue</span>
+      <span className="text-muted-foreground ms-auto text-xs" dir="ltr">
+        {"3"}
+      </span>
+    </div>
+  }
+  doCaption="ms-auto mirrors with the reading direction, and dir=ltr on the count keeps the digits in order."
+  dontExample={
+    <div dir="rtl" className="border-border flex w-56 items-center gap-2 rounded-lg border p-2">
+      <span className="text-sm">Render queue</span>
+      <span className="text-muted-foreground ml-auto text-xs">3</span>
+    </div>
+  }
+  dontCaption="ml-auto is physical, so the count stops trailing the row and collapses against the label."
+/>
+
+## The case stories carry what the gate cannot
+
+`docs/design-system/story-conventions.md` defines eight case stories. Four of them exist for the
+gaps on this page, and each one is axe-gated from the moment it exists, because `test: "error"` is
+the default for every story. Coverage across the 116 super-ai story files, measured 2026-09-09:
+
+- `RTL` and `Mobile`, 116 of 116.
+- `KeyboardOrder`, 111 written and 5 recording a `case-skip` reason.
+- `ReducedMotion`, 66 written and 50 recording a reason.
+
+The skip line is the part with no gate behind it: `apps/docs/scripts/lib/story-coverage.ts` checks
+that a reason exists, never that it is true, and the convention records a case where a plausible
+reason was wrong and survived. The 15 marketing story files carry none of the eight.
+
+Two mechanics worth knowing before writing one. `Mobile` is a width wrapper,
+`<div className="w-[375px] max-w-full">`, and a wrapper constrains width without moving the
+breakpoint, so `sm:` and `md:` variants still apply inside it; where a layout actually swaps on a
+media query, call `page.viewport(375, 812)` from `vitest/browser` inside the play function, imported
+dynamically because the module throws when evaluated outside Browser Mode. And an `RTL` wrapper
+cannot reach a portal, so an RTL story for a dialog sets `dir` on the document instead.
+
+Reduced motion is emulated for every test rather than tested by one story:
+`vitest.config.ts` passes `reducedMotion: "reduce"` to the Playwright context. A `ReducedMotion`
+story therefore differs from its neighbour only where the component branches, which is
+**Foundations → Motion**.
+
+## Rules
+
+- Zero axe violations across `stories/super-ai/**` and `stories/marketing/**` is the merge
+  condition. A story that must demonstrate a violation opts out on that story alone, never
+  globally.
+- The exclusion list may only shrink. Adding a file to silence a new failure defeats the gate.
+- Do not widen the `[data-base-ui-focus-guard]` exclusion. Any `aria-hidden-focus` finding without
+  that exact attribute is a real violation.
+- Never pair `text-muted-foreground` with `bg-muted`, `bg-accent` or `bg-secondary`, at any size.
+  Fix it on the surface: a non-muted ground, or the `--muted-foreground` rebind on the element
+  painting the surface. `bg-muted/50` is not a workaround.
+- Never pair `text-destructive` with a `bg-destructive/NN` tint. Go solid.
+- Propose a new contrast value with its ratio on every ground it lands on, and wait for a decision.
+  Never darken a token to make a run green.
+- Quiet text is `text-foreground/60`, `/70` or `/80` and nothing else. Every other foreground
+  composite fails `TOK-8`. Edges keep their opacity.
+- Every interactive element carries an accessible name; every decorative glyph carries
+  `aria-hidden`.
+- Write logical utilities, and set direction on an ancestor rather than on the part. Pin a numeric
+  readout `dir="ltr"` where digit order matters.
+- Read a focus ring with `settledFocusRing` from `apps/storybook/src/lib/focus-ring.ts`. A
+  `box-shadow` string is not a focus ring.
+- Trust a green warning story less than the others until `--warning` resolves in the Storybook
+  stylesheet, and remember the gate samples light grounds only.

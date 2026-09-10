@@ -1,0 +1,192 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { PreviewTile } from "@/registry/super-ai/preview-tile";
+import { RunButton } from "@/registry/super-ai/run-button";
+import GenerationQueueDemo from "@/components/demos/generation-queue-demo";
+
+<Meta title="Foundations/States" />
+
+# States
+
+A generation-aware component answers one question with its body: where is the run. The design
+specification fixes the vocabulary for that answer as `idle`, `queued`, `streaming`, `done`,
+`failed` and `locked`, and calls it the state contract
+(`docs/superpowers/specs/2026-06-10-super-ai-components-design.md` section 6). This page covers how
+those states paint here, which components add names of their own, and the focus and selection
+treatments every control carries whether or not it generates anything. How a state change is timed
+is **Foundations → Motion**.
+
+## The contract names six; a control may name more
+
+The six names live in one place, `apps/docs/registry/super-ai/cost.tsx` line 159, as the exported
+`GenerationState` union. `result-card.tsx` line 38 takes that type verbatim rather than restating
+it, which is why the card is the reference rendering of the full contract.
+
+Components that own a narrower job declare their own union and say so in a header comment.
+`run-button.tsx` lines 20 to 27 names seven: `idle`, `estimating`, `running`, `done`, `failed`,
+`insufficient-credits` and `locked`. `generation-queue.tsx` line 40 names five per item: `queued`,
+`running`, `done`, `failed` and `cancel`. `preview-tile.tsx` line 8 names four: `default`,
+`loading`, `locked` and `failed`.
+
+<Example className="flex flex-wrap items-start gap-8">
+  <div className="flex flex-col gap-2">
+    <RunButton state="idle" cost={4} />
+    <span className="text-muted-foreground text-xs">idle, with the cost of the click beside it</span>
+  </div>
+  <div className="flex flex-col gap-2">
+    <RunButton state="estimating" cost={4} />
+    <span className="text-muted-foreground text-xs">
+      {"estimating, the chip gone because there is no honest number yet"}
+    </span>
+  </div>
+  <div className="flex flex-col gap-2">
+    <RunButton state="running" progress={62} />
+    <span className="text-muted-foreground text-xs">running, progress drawn behind the trigger</span>
+  </div>
+  <div className="flex flex-col gap-2">
+    <RunButton state="done" cost={4} />
+    <span className="text-muted-foreground text-xs">done, and the next run is priced again</span>
+  </div>
+</Example>
+
+Those unions are not a divergence to tidy up. `result-card.tsx` lines 47 to 54 maps its six onto
+the tile's four, sending both `queued` and `streaming` to the tile's single `loading`, and the
+comment above the map records why: a narrower component should not grow a state it cannot draw
+differently. Map at the boundary, name what you can paint.
+
+## Failure renders where the result would have been
+
+Design principle 6 in the specification is that failure is a first-class state rendered inline
+where the result would have been, never only a toast. That is what the tile does: the failed
+treatment fills the frame the picture was going to occupy, and the retry control lives inside it.
+
+<Example className="flex flex-wrap items-end gap-8">
+  <div className="w-40">
+    <PreviewTile
+      state="failed"
+      label="Rooftop garden, golden hour"
+      labelPlacement="below"
+      action={<span>Generation timed out</span>}
+    />
+  </div>
+  <div className="w-40">
+    <PreviewTile
+      state="locked"
+      label="Neon alley, rain"
+      labelPlacement="below"
+      action={<span>Upgrade to run</span>}
+    >
+      <div className="bg-secondary h-full w-full" />
+    </PreviewTile>
+  </div>
+  <span className="text-muted-foreground w-full text-xs">
+    {
+      "left, failed: the message occupies the frame. Right, locked: the child stays under a scrim, so the shape of what would have been made is still visible behind the call to action."
+    }
+  </span>
+</Example>
+
+The failure text is `text-foreground`, not `text-destructive`, and the comment at
+`preview-tile.tsx` line 119 carries the measurement: destructive on this frame's `bg-muted` reads
+4.34:1 against a 4.5:1 minimum. Colour is never the only carrier of the failure anyway, so the
+message says it. `run-button.tsx` line 232 does the same job in a line rather than a frame: a
+`role="alert"` span pointed at by the trigger's `aria-describedby`.
+
+## Locked replaces the trigger; disabled only dims it
+
+They look adjacent and they are not. Disabled says the control is unavailable and offers nothing
+else. Locked says the action exists behind a gate and offers the way through it, which is why
+`run-button.tsx` line 126 swaps the whole trigger for an unlock button plus a reason, and
+`media-prompt-bar.tsx` line 168 replaces the composer with a title, a description and a call to
+action.
+
+<DoDont
+  doExample={<RunButton state="locked" lockedReason="Video generation is on the Pro plan." />}
+  doCaption="locked replaces the trigger with the way through, and names the gate."
+  dontExample={<Button disabled>Generate</Button>}
+  dontCaption="disabled reports that nothing will happen and leaves the reader with no next move."
+/>
+
+The credits shortfall is a third case again, and `run-button` keeps it separate from both:
+`state="insufficient-credits"` renders an add-credits button beside the shortfall line, phrased
+from the same `cost` and `balance` the chip was already using.
+
+## Two focus recipes ship, and both are keyboard-only
+
+Every interactive element in the registry pairs a suppressed outline with a visible replacement,
+which is what `STA-3` requires. Measured across the 144 non-test registry sources on 2026-09-09,
+the dominant recipe is `focus-visible:ring-ring focus-visible:ring-2
+focus-visible:outline-none`, at 75, 75 and 74 sites. The second is the slider-thumb recipe,
+`border-ring ring-ring/50 hover:ring-3 focus-visible:ring-3 active:ring-3`, at 11 sites across
+`compare-viewer`, `parameter-panel`, `stem-mixer`, `time-ruler`, `tts-composer` and
+`waveform-editor`. The vendored `components/ui/button.tsx` base carries a third,
+`focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50`, so anything built on
+that button inherits it.
+
+`STA-3` carries three exemptions, and each is a case where the outline is suppressed on something
+that is not a tab stop. In `field-row.tsx` line 61 the bare input sits inside a wrapper that rings
+on its behalf with `focus-within:ring-2`. In `generation-wizard.tsx` line 208 and
+`onboarding-wizard.tsx` line 280 the suppressed element is a step heading with `tabIndex` of minus
+one, focused so a step change is announced rather than to put it in the tab order.
+
+Reading a ring back in a test is harder than it looks, and
+`apps/storybook/src/lib/focus-ring.ts` records why: a Tailwind ring compiles to composed
+`box-shadow` layers that are all present while the ring is off, at zero alpha and zero size, so a
+check against the string `none` passes on an element painting nothing. Use `settledFocusRing` from
+that module in a `KeyboardOrder` play function.
+
+## Selected is a claim about the data; focus is a claim about the cursor
+
+Selection is durable and lives on an ARIA attribute, so it survives losing focus and reaches
+assistive technology without a colour. Counted on 2026-09-09: `aria-pressed` in 19 files,
+`aria-current` in 13, `aria-checked` in 6, `aria-selected` in 4, `data-selected` in 2.
+`preview-tile.tsx` line 47 makes the choice explicit through a `selectMode` prop: `"toggle"`
+reports `aria-pressed`, and `"open"` omits it, because a tile that navigates makes no claim about
+being pressed.
+
+The two treatments stack rather than compete. `preview-tile.tsx` line 105 paints selection with
+`ring-2 ring-offset-2` and the comment beside it gives the reason a ring rather than a border: a
+ring is a `box-shadow`, contributes no layout, and so selecting a tile never reflows the grid.
+
+## Busy is announced, not only repainted
+
+A relabelled button is a repaint, and a screen reader is not reliably told. Registry components add
+a live region: `role="status"` in 34 files, `aria-live` in 14, `aria-busy` in 6, all measured
+2026-09-09. `run-button.tsx` line 239 is the pattern worth copying, an `sr-only` polite status
+region holding the running or estimating label, alongside `aria-busy` on the wrapper.
+
+The queue is the same contract at list scale, one state per row rather than one per control.
+
+<Example>
+  <div className="w-full max-w-lg">
+    <GenerationQueueDemo />
+  </div>
+  <span className="text-muted-foreground mt-3 block text-xs">
+    {
+      "generation-queue-demo from apps/docs/components/demos, standing in so the four row states are visible at once. Retry returns a failed row to queued."
+    }
+  </span>
+</Example>
+
+## Rules
+
+- Take the vocabulary from `GenerationState` in `apps/docs/registry/super-ai/cost.tsx` when a
+  component is generation-aware. Declare a narrower or wider union only when the component paints
+  those names differently, and map at the boundary the way `result-card.tsx` maps six onto four.
+- Render a failure inline, where the result would have been, and put the retry inside it. A toast
+  alone loses the association with the thing that failed.
+- Never carry a failure in colour alone, and never put `text-destructive` on the `bg-muted` frame:
+  the pairing measures 4.34:1 against a 4.5:1 minimum, recorded in
+  `docs/design-system/a11y-baseline.md`.
+- Locked and disabled are different states. Locked replaces the trigger with the way through and
+  names the gate; disabled dims a control and offers nothing. A credits shortfall is neither, and
+  gets its own branch.
+- Pair any suppressed outline with a visible `focus-visible` replacement, which is what `STA-3`
+  requires. Suppress without one only where the element is not a tab stop, and say so at the site.
+- Use `focus-visible`, never `focus`. The ring is for the keyboard.
+- Carry selection on an ARIA attribute the reader can hear, and let the focus ring stack on top of
+  it. Never spend the ring on selection, and never let selection suppress it.
+- Announce a busy transition through a live region rather than relying on a relabelled control.
+- Token names and the values behind `--ring` live in **Foundations → Design Tokens**; the contrast
+  decisions behind them are in **Foundations → Inclusive design**.

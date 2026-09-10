@@ -1,0 +1,164 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Copy, Lock, Paperclip, Plus, Trash2 } from "lucide-react";
+
+<Meta title="Foundations/Iconography" />
+
+# Iconography
+
+One drawn language covers the whole system. `lucide-react` at version 1.17.0 is the only icon
+dependency either app declares (`apps/docs/package.json` line 30, `apps/storybook/package.json`
+line 26), 88 of the 144 non-test registry sources import it, and between them they pull 122
+distinct glyphs, all measured 2026-09-09. Two rule records hold the line: `ICO-1`, only lucide
+ships icons in registry sources, and `ICO-2`, zero emoji in chrome. Both are blockers in
+`packages/ds-rules/rules/core.json` and `local.json`, and both run under `check:tokens`. Drawing a
+glyph lucide does not have is **Foundations → Icon creation**.
+
+## One library, and a rule that inverts the check
+
+`ICO-1` is written as a heuristic on import specifiers rather than a list of banned packages. Its
+own record explains the inversion: it was a four-library denylist, and a denylist only catches
+libraries somebody thought of. The pattern now matches any import path containing "icon", and
+`lucide-react` has no such substring, so the sanctioned library never trips it while an unplanned
+one does.
+
+Read the limit with it. `ICO-1` sees imports and nothing else, so a hand-drawn `<svg>` inside a
+component is invisible to it. `ICO-2` is a plain grep over the emoji code point ranges, and it
+returns nothing across the registry today.
+
+## The size comes from the container unless you argue with it
+
+Of the glyph render sites counted on 2026-09-09, 121 carry no size class at all. They take the
+size their container hands them, which is the mechanism to reach for first.
+
+`components/ui/button.tsx` line 7 sets `[&_svg:not([class*='size-'])]:size-4` in the `cva` base, so
+a bare glyph inside any button is 16px. Three size variants override it: `xs` and `icon-xs` drop
+to `size-3`, and `sm` drops to `size-3.5`. The `:not([class*='size-'])` half is what makes it
+polite: write your own `size-*` on the glyph and the container steps aside.
+
+<Example className="flex flex-wrap items-center gap-4">
+  <Button size="xs" variant="outline">
+    <Paperclip />
+    Attach
+  </Button>
+  <Button size="sm" variant="outline">
+    <Paperclip />
+    Attach
+  </Button>
+  <Button variant="outline">
+    <Paperclip />
+    Attach
+  </Button>
+  <span className="text-muted-foreground w-full text-xs">
+    {
+      "the same glyph and the same markup at three button sizes: 12px, 14px, 16px, decided by the size variant and not by the call site"
+    }
+  </span>
+</Example>
+
+Where a call site does write a size, six values are in use and they are not evenly weighted:
+`size-4` at 57 sites, `size-3.5` at 37, `size-3` at 14, `size-2.5` at 4, `size-6` at 3 and
+`size-5` once. Sixteen pixels is the working default and fourteen is the compact one.
+
+Ten pixels is the floor, and all four sites are marks inside something else rather than glyphs
+anyone reads on their own: `drawing-tools.tsx` line 427 ticks a chosen swatch,
+`modality-rail.tsx` line 61 marks a gated rail item, `trace-timeline.tsx` line 339 marks a retry,
+and `track-lane.tsx` line 286 marks a locked lane. The 24px sites are the other end,
+`asset-library.tsx` lines 515 and 517, where the glyph is standing in for a whole file rather than
+labelling a control.
+
+Pick the rung against the text beside it. An inline glyph runs level with its label or one step
+above it, never below, on the scale **Foundations → Typography** records.
+
+## Colour is inherited, and that is the whole rule
+
+lucide 1.17.0 draws every glyph with `stroke: "currentColor"` and `fill: "none"`, so the icon is
+its label's colour by construction. That is what keeps a glyph from out-saturating the text it sits
+with, without anyone having to remember.
+
+Name a colour on a glyph only when the glyph is reporting state, and take the token from the state
+rather than from taste. `COL-1` bans gradients outright, and `TOK-8` bans an opacity composite on a
+foreground, `stroke-*` and `fill-*` included, outside the pinned steps `text-foreground/60`, `/70`
+and `/80`.
+
+Stroke you can leave alone. The installed package's `defaultAttributes` are a 24 by 24 `viewBox`,
+`strokeWidth: 2` and round caps and joins, and the registry does not argue with them.
+
+## An icon alone needs a name; an icon beside a label needs hiding
+
+Both halves are enforced by the axe gate rather than by a static rule, and both hold today. Of the
+38 icon-sized `Button` call sites in the registry, all 38 carry an accessible name, by one of two
+routes: `aria-label` on the button itself, as `feature-announcement.tsx` line 180 does, or an
+`sr-only` span inside the trigger that wraps it, as `context-toolbar.tsx` line 279 does when a
+tooltip is already in play.
+
+The mirror case is just as consistent: 172 lucide render sites carry `aria-hidden`, because a glyph
+beside its own label is decoration and announcing it twice is worse than not announcing it.
+
+<DoDont
+  doExample={
+    <Button variant="outline">
+      <Trash2 aria-hidden />
+      Delete generation
+    </Button>
+  }
+  doCaption="the visible label carries the consequence and the glyph is hidden, so the control is announced once."
+  dontExample={
+    <span className="border-border text-foreground inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-sm font-medium">
+      <Trash2 className="size-4" />
+    </span>
+  }
+  dontCaption="a static facsimile of the same control with no text and no name: a reader is told only that a button exists."
+/>
+
+An icon-only control also needs something a pointer user can see. Where a tooltip is available, use
+it, and keep the `sr-only` name too: a tooltip is a hover affordance, not an accessible name.
+
+## Placement, and a padding hook nothing uses
+
+Order comes from where the glyph sits in the JSX, and the gap comes from the button size variant's
+own `gap-1` or `gap-1.5`. Lead with the object or the category, trail with direction and
+disclosure.
+
+<Example className="flex flex-wrap items-center gap-3">
+  <Button variant="outline">
+    <Plus aria-hidden />
+    Add reference
+  </Button>
+  <Button variant="outline">
+    Continue
+    <ArrowRight aria-hidden />
+  </Button>
+  <Button variant="outline">
+    <Lock aria-hidden />
+    Upgrade to run
+  </Button>
+</Example>
+
+There is an optical-padding hook already compiled and waiting: `buttonVariants` reads
+`has-data-[icon=inline-start]` and `has-data-[icon=inline-end]` on four size variants each,
+trimming the padding on the glyph's side so the inset matches the text side. No registry component
+sets `data-icon` today. It is a padding adjustment and nothing more, so adopting it changes no
+order and no spacing.
+
+## Rules
+
+- Import glyphs from `lucide-react` and nowhere else. `ICO-1` is a blocker, and it checks imports,
+  so it will not catch a hand-drawn `<svg>` you add instead.
+- No emoji anywhere in chrome: navigation, buttons, headings, labels, bullets, table cells.
+  `ICO-2` is a blocker and the registry is at zero.
+- Let the container size the glyph. Write a `size-*` only when the container's rung is wrong for
+  this one case, and land on a value already in use: 16 is the default, 14 the compact one, 12 the
+  small one, 10 the floor for a mark nobody reads on its own.
+- Match the rung to the label: level with the text or one step above, never below.
+- Leave colour inherited. Name one only on a glyph reporting state, never as decoration, and never
+  as an opacity composite on a foreground, which `TOK-8` fails.
+- Leave stroke at lucide's default of 2.
+- An icon-only control carries an accessible name, through `aria-label` on the control or an
+  `sr-only` span inside it, plus a visible hover affordance where a pointer exists.
+- A glyph beside its own label takes `aria-hidden`.
+- Lead with the object or category and trail with direction or disclosure. Order is JSX order;
+  spacing is the size variant's `gap-*`.
+- The tokens a glyph's colour resolves through are **Foundations → Design Tokens**; the naming
+  requirement is gated as described in **Foundations → Inclusive design**.

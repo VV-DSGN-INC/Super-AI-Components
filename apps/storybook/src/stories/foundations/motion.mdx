@@ -1,0 +1,176 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
+import { PreviewTile } from "@/registry/super-ai/preview-tile";
+
+<Meta title="Foundations/Motion" />
+
+# Motion
+
+Motion here is thin on purpose. There is no motion token layer, almost every transition runs at
+Tailwind's default timing, and the only decisions a component makes are which properties move and
+whether the movement stops under `prefers-reduced-motion`. Two rule records govern it, `MOT-1` and
+`MOT-2` in `packages/ds-rules/rules/core.json`, both blockers, both run by `check:tokens`. This
+page records what the registry actually does, measured 2026-09-09.
+
+## There is no motion token layer, so timing is Tailwind's default
+
+`apps/storybook/src/index.css` is 188 lines and declares no `--duration-*`, `--ease-*` or
+`--motion-*` custom property; neither does `apps/docs/app/globals.css`. A bare `transition-*`
+therefore rides Tailwind's own defaults, which in the installed tailwindcss 4.3.2 are
+`--default-transition-duration: 150ms` and a `cubic-bezier(0.4, 0, 0.2, 1)` timing function, both
+declared on lines 492 and 493 of the package's own `theme.css`.
+
+Across the 144 non-test sources under `apps/docs/registry/super-ai` and
+`apps/docs/registry/marketing` there are 52 `transition-*` utilities, and six of them name a
+duration: `duration-300` five times, in `marketing/bento-grid.tsx` lines 55, 66 and 75 and
+`marketing/hero-video-dialog.tsx` lines 121 and 124, and `duration-200` once, in
+`super-ai/detail-view-shell.tsx` line 210. That single line is also the registry's only `ease-*`
+utility, `ease-out`. Everything else is 150ms because nobody said otherwise.
+
+That is a fact to work with rather than a gap to fill by hand. Adding a bracket duration to one
+component buys a number nothing else shares. If a timing scale is wanted, it belongs in the
+stylesheet as a token, which is a decision this repo has not taken.
+
+## Name the properties, never all of them
+
+`MOT-2` fails `transition-all` and `transition: all`, and the registry has none. What it has is a
+list of named properties: `transition-colors` 24 times, `transition-transform` 9,
+`transition-opacity` 5, `transition-[box-shadow]` 5, `transition-[color,box-shadow]` 3,
+`transition-[width]` 3, and one each of `transition-[max-width]`, `transition-[background-color,width]`
+and `transition-[opacity,transform]`.
+
+The vendored `apps/storybook/src/components/ui/` ports carry 11 `transition-all` between them, and
+that is not a violation: `MOT-2`'s scope in the rule record is the two registry directories only.
+It is the same line the a11y gate draws in `apps/storybook/vitest.config.ts` and the lint config
+draws in `apps/storybook/eslint.config.mjs`, for the same reason, and it means a port's timing is
+upstream's decision rather than this system's.
+
+Name every property that actually changes. Tailwind compiles `translate-*`, `scale-*` and
+`rotate-*` to the independent `translate`, `scale` and `rotate` properties, so a hand-written list
+naming only `transform` leaves them un-transitioned and the element snaps.
+
+## A loop means progress
+
+`MOT-1` is the no-decorative-loops rule. Read its record before leaning on it: the detection is a
+grep for `animate-bounce`, so what the gate mechanically enforces is that one banned easing, and
+the general claim is read-work on the diff.
+
+What the registry does with loops is narrow. `animate-spin` appears at 18 sites across 13 files,
+every one of them a glyph beside a running item: `generation-queue`, `render-queue`, `task-tray`,
+`trace-timeline`, `approval-card`, `connection-manager`, `record-list`, `selection-toolbar`,
+`sidebar-nav`, `chat-shell`, `ai-doc-block`, `inline-generate-popup` and `tts-composer`.
+`animate-pulse` appears five times: `preview-tile`'s loading fill, `citation-ref`'s loading chip,
+`source-panel`'s indeterminate progress bar, `voice-clone-recorder`'s recording dot, and
+`marketing/typing-animation`'s cursor, which blinks in imitation of a text caret and is the one
+loop that is not progress. Nothing loops for decoration.
+
+Enter and exit animation comes from tw-animate-css 1.4.0, imported on line 2 of
+`apps/storybook/src/index.css`. Twenty-one registry files use `animate-in`, at 22 sites, with 11
+`animate-out` beside them.
+
+One thing the specification asks for and the registry does not do: section 6 describes the state
+contract's shared conventions as "shimmer while streaming". The `Shimmer` component exists here
+only as a vendored AI Elements port at
+`apps/storybook/src/components/ai-elements/shimmer.tsx`, and no registry source imports it.
+Streaming is drawn with the placeholder and glyph loops above instead. Treat the wording as
+historical, not as a component to reach for.
+
+<DoDont
+  doExample={
+    <div className="w-40">
+      <PreviewTile state="loading" label="Rooftop garden, golden hour" labelPlacement="below" />
+    </div>
+  }
+  doCaption="preview-tile's loading state fills the frame the picture will occupy, so nothing resizes when it lands."
+  dontExample={
+    <div className="border-border flex aspect-square w-40 items-center justify-center rounded-lg border">
+      <Spinner />
+    </div>
+  }
+  dontCaption="a point indicator in a region-sized hole reports activity and hides the shape of what is coming."
+/>
+
+<Example className="flex flex-wrap items-start gap-8">
+  <div className="flex w-56 flex-col gap-2">
+    <div className="flex flex-col gap-2">
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-4/5" />
+      <Skeleton className="h-4 w-2/3" />
+    </div>
+    <span className="text-muted-foreground text-xs">
+      {"Skeleton is animate-pulse on bg-muted, sized to the lines that are coming"}
+    </span>
+  </div>
+  <div className="flex w-56 flex-col gap-2">
+    <div className="flex items-center gap-2">
+      <Spinner />
+      <span className="text-sm">Rendering track</span>
+    </div>
+    <span className="text-muted-foreground text-xs">
+      {
+        'Spinner is a lucide Loader2Icon at size-4 with animate-spin, and it carries role="status" and its own name'
+      }
+    </span>
+  </div>
+</Example>
+
+## Reduced motion is per component, and it has three idioms
+
+With no token layer there is no single block that can switch motion off kit-wide, so every
+animating component opts in for itself. Fifty-one of the 144 registry sources carry at least one
+`motion-reduce:` variant, in three shapes:
+
+- `motion-reduce:animate-none` beside an `animate-*` class, 49 sites.
+- `motion-reduce:transition-none` beside a transition a reader would perceive as movement, 23
+  sites. `docs/design-system/story-conventions.md` is explicit that the qualifier matters: a
+  `transition-colors` that only crossfades text moves nothing, and suppressing it documents no
+  branch.
+- `motion-reduce:data-open:animate-none` and `motion-reduce:data-closed:animate-none`, 36 sites
+  each. This pair exists because the plain variant is inert on a Base UI popup surface: Tailwind
+  compiles both halves to one class of specificity and breaks the tie by source order, emitting the
+  plain `motion-reduce:` block before the `data-*` variants, so `animation: enter` wins. The
+  restated form sorts after its counterpart. The measurement is recorded in `story-conventions.md`
+  under the `ReducedMotion` note.
+
+Seven of the 15 marketing components make the same decision in JavaScript rather than CSS, reading
+`window.matchMedia("(prefers-reduced-motion: reduce)")` directly: `confetti`, `hero-video-dialog`,
+`number-ticker`, `ripple-button`, `terminal`, `text-animate` and `typing-animation`. They read the
+query with an explicit value rather than the bare `(prefers-reduced-motion)` form, and each carries
+a comment saying so. `apps/storybook/src/marketing.css` closes the loop for the CSS-driven ones,
+with nine `@keyframes` and seven `@media (prefers-reduced-motion: reduce)` blocks.
+
+## The gate runs with reduced motion on
+
+`apps/storybook/vitest.config.ts` configures the browser provider as
+`playwright({ contextOptions: { reducedMotion: "reduce" } })`, so every story in the axe run
+renders as a reduced-motion user's browser would. The comment there records the reason it was
+added: without it, axe sampled animated stories mid-flight and intermittently caught a transient
+sub-4.5:1 frame.
+
+That has a consequence for the `ReducedMotion` case story. Because the emulation is always on, the
+story differs from its neighbour only when the component actually branches, and `animate-spin`
+alone does not branch. Sixty-six of the 116 super-ai story files carry a `ReducedMotion` story;
+the other 50 record a `case-skip` line with a reason instead, which is what
+`apps/docs/scripts/lib/story-coverage.ts` checks for.
+
+## Rules
+
+- Do not write a bracket or numeric duration to taste. There is no scale to match it to, and 150ms
+  is what everything else runs at.
+- Name the properties that change. `transition-all` is a `MOT-2` blocker in registry sources, and
+  a list naming `transform` does not cover `translate-*`, `scale-*` or `rotate-*`.
+- A looping animation means something is in progress. Use `animate-pulse` for a placeholder whose
+  shape you know and `animate-spin` for a glyph beside a running item. Nothing loops for decoration,
+  and `animate-bounce` fails `MOT-1` outright.
+- Add the reduced-motion branch at the site, because nothing here adds it for you. Use
+  `motion-reduce:animate-none` beside a loop, `motion-reduce:transition-none` beside a transition
+  that moves something, and the restated `motion-reduce:data-open:` and `motion-reduce:data-closed:`
+  pair on a Base UI popup, where the plain variant loses on source order.
+- Do not add `motion-reduce:transition-none` to a colour crossfade to look thorough. Nothing moves,
+  so the branch documents nothing.
+- Draw the wait where the result will land. A skeleton sized to the coming content holds the frame;
+  a spinner in a region-sized hole reports activity and hides the shape.
+- The state a motion belongs to is **Foundations → States**; what a reduced-motion user is owed,
+  and how the gate checks it, is **Foundations → Inclusive design**.

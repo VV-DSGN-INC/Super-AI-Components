@@ -1,0 +1,114 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Gauge } from "lucide-react";
+import { CreditsIndicator } from "@/registry/super-ai/credits-indicator";
+
+<Meta title="Foundations/Icon creation" />
+
+# Icon creation
+
+Almost never draw one. `ICO-1` makes `lucide-react` the only icon dependency registry sources may
+import, and 122 of its glyphs are already in use here, so a mark that does not exist yet is usually
+a mark that should be a different lucide glyph. This page is about the small remaining case: a
+drawing whose geometry carries information, which lucide cannot supply because the information is
+not known until render. Choosing between existing glyphs, and sizing them, is
+**Foundations → Iconography**.
+
+## What a custom drawing has to sit beside
+
+The constraints are the installed package's, not a house invention. lucide-react 1.17.0 renders
+every glyph from one `defaultAttributes` object: a `0 0 24 24` viewBox, `fill: "none"`,
+`stroke: "currentColor"`, `strokeWidth: 2`, and `strokeLinecap` and `strokeLinejoin` both
+`"round"`. A 24-unit grid, an unfilled 2-unit stroke, round ends.
+
+Two of those are load-bearing beyond appearance. `stroke: "currentColor"` is why an icon is its
+label's colour by construction rather than by discipline, and `fill: "none"` is why a glyph never
+carries a second colour decision. Match both, whatever grid you draw on.
+
+## Three drawings ship, and none of them is a pictogram
+
+Counted across the 144 non-test registry sources on 2026-09-09, three files contain a hand-written
+`<svg>`, and none of them is a pictogram.
+
+- `super-ai/credits-indicator.tsx` line 131, a progress ring. Two concentric circles on a
+  `0 0 16 16` grid at `strokeWidth` 2.5: a track painted `stroke-border`, and an arc painted
+  `stroke="currentColor"` whose `strokeDasharray` and `strokeDashoffset` are computed from the
+  balance. The arc is the number. It is rendered `-rotate-90` so the arc starts at twelve o'clock,
+  sized `size-3.5` to sit on the same rung as a lucide glyph in the same pill, and marked
+  `aria-hidden` because the balance beside it is already the announcement.
+- `marketing/dot-pattern.tsx` line 28 and `marketing/orbiting-circles.tsx` line 44. Both are
+  surfaces rather than glyphs, a dot field and an orbit path, both `aria-hidden="true"`, and both
+  sized to their container rather than to an icon rung.
+
+Three more live in the vendored AI Elements ports this repo displays but does not author:
+`ai-elements/loader.tsx`, whose ten spokes step opacity from 1 down to 0.1 so a rotation reads as
+direction, plus `ai-elements/context.tsx` and `ai-elements/open-in-chat.tsx`.
+
+<Example className="flex flex-wrap items-center gap-6">
+  <CreditsIndicator balance={420} total={1000} form="ring" />
+  <span className="text-muted-foreground text-xs">
+    {
+      'credits-indicator with form="ring": the arc is 42 percent because the balance is, and it redraws on every value'
+    }
+  </span>
+</Example>
+
+## The test the case has to pass
+
+Ask what the drawing knows that a file cannot. A ring whose sweep is the quota, or a spinner whose
+spoke opacity is the direction of travel: the geometry is a function of the data, and no fixed
+asset can stand in. That is the whole sanctioned category.
+
+<DoDont
+  doExample={
+    <div className="flex flex-col items-start gap-2">
+      <CreditsIndicator balance={120} total={1000} form="ring" />
+      <span className="text-muted-foreground text-xs">the arc is computed from balance and total</span>
+    </div>
+  }
+  doCaption="draw it when the shape is the value: nothing lucide ships can move with the data."
+  dontExample={
+    <div className="flex flex-col items-start gap-2">
+      <div className="flex items-center gap-2">
+        <Gauge aria-hidden className="size-4" />
+        <span className="text-sm">Usage</span>
+      </div>
+      <span className="text-muted-foreground text-xs">a fixed pictogram, and lucide has one</span>
+    </div>
+  }
+  dontCaption="a static concept mark is a search of the lucide set, not a drawing job."
+/>
+
+Neither gate will stop you getting this wrong. `ICO-1` inspects import specifiers, so an inline
+`<svg>` is invisible to it, and `ICO-2` greps for emoji. The decision is read-work at review.
+
+## Before it ships
+
+- **Stroke and fill.** `stroke="currentColor"` or a semantic stroke utility such as
+  `stroke-border`; `fill="none"` unless the mark is genuinely solid. No hex and no `oklch()`, which
+  `TOK-1`, `TOK-2` and `TOK-7` fail as blockers. No opacity composite on a `stroke-*` or `fill-*`
+  outside the pinned steps, which `TOK-8` fails.
+- **Size.** Render it at the rungs the registry actually uses, 12, 14 and 16 pixels, and check the
+  stroke still reads at the smallest. Weight is a decision your grid forces: `credits-indicator`
+  draws at `strokeWidth` 2.5 on a 16-unit grid at 14 pixels, close to twice the effective line a
+  lucide glyph puts down at the same rung.
+- **Both themes.** Toggle the Theme control. A drawing that resolves through `currentColor` and
+  semantic stroke utilities follows the theme for free; a literal does not.
+- **Name or hide it.** `aria-hidden` when something beside it already says the number, a
+  `role="img"` and a name when it is the only announcement.
+- **A story.** A new drawing arrives inside a component, and that component's story is what puts
+  it in front of axe. Nothing audits a glyph on its own.
+
+## Rules
+
+- Reach for a different lucide glyph first. 122 are already in use, and `ICO-1` makes lucide the
+  only importable set.
+- Draw only when the geometry carries data or motion no fixed asset can hold. A missing concept
+  mark is not that case.
+- Match lucide's contract: unfilled, `currentColor` stroke, round caps and joins, and a stroke
+  weight that still reads at 12 pixels.
+- Never put a raw colour in the drawing. `TOK-1`, `TOK-2` and `TOK-7` are blockers, and `TOK-8`
+  bans a foreground composite on `stroke-*` and `fill-*` alike.
+- Mark it `aria-hidden` when the value is already announced beside it, and name it when it is not.
+- Neither icon rule can see an inline `<svg>`, so this decision is made at review and recorded in
+  the component.
