@@ -47,6 +47,16 @@ a11y trap applies to its shape, which prior component solved the same problem.
 `component-build-brief.md`; a second copy is how instructions drift, which is
 the reason the brief exists.
 
+### Report shape
+
+Hand each builder [`report.schema.json`](report.schema.json) as its output
+contract — the `schema` option of a workflow `agent()` call, or quoted in an
+Agent-tool prompt. It carries the component, the files written, every judgment
+call with its reason, and every composition gap as `composed` / `gap` /
+`workaround`. Judgment calls are where several of this system's best decisions
+came from, and `CONTINUE.md` §8 is built from the gaps; a fixed shape lets the
+integrator collect both in code instead of re-reading prose.
+
 ### Worktrees
 
 Give each agent its own git worktree — they otherwise share a working tree and
