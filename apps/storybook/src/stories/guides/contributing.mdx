@@ -1,0 +1,108 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Contributing" />
+
+# Contributing
+
+Work here is gated rather than reviewed into shape: a change is done when the twelve CI steps say
+so, and the last three of those exercise the product a consumer actually gets. This page is the
+standing rules from `CLAUDE.md` and `docs/CONTINUE.md`, in the order they apply, with the gate list
+taken from `.github/workflows/ci.yml` on 2026-09-09.
+
+## Confirm the repository before you push
+
+The remote is `VV-DSGN-INC/Super-AI-Components`. `CLAUDE.md` flags this in bold because sibling
+design repositories live under a different org and the two have been mixed up before. Check the
+remote, then branch: a branch per task, never a commit to `main`. Commit authorship is pinned in
+`docs/CONTINUE.md` §3.6.
+
+Use `pnpm`. The lockfile is `pnpm-lock.yaml`, the package manager is pinned to `pnpm@11.1.0` in the
+root `package.json`, and CI installs with `--frozen-lockfile`, so an npm-shaped change to the tree
+fails at step one.
+
+## Parallel work needs a worktree each
+
+`CLAUDE.md` calls parallel agents the throughput mechanism, one per component, each writing only
+its own five files. Two consequences are load-bearing:
+
+- **Give each agent its own git worktree and its own port.** They otherwise share a working tree,
+  and concurrent repo-root typechecks race on `tsbuildinfo` and check against each other's
+  half-written files. A sibling worktree's dev server on your port will serve its build while your
+  preview reports success.
+- **`git stash` is shared across worktrees.** `docs/CONTINUE.md` §4 records an agent losing work to
+  a sibling session's stash. Use a throwaway commit, or `git show HEAD:path` into a scratch file.
+
+## A component is built by a pipeline
+
+The loop is `docs/CONTINUE.md` §3. Steps 1 and 4 are done centrally by one person, and steps 2 and 3
+are per-component, which is what makes the fan-out safe:
+
+1. **Prepare the manifest centrally.** `apps/docs/lib/catalog.manifest.ts` is the single shared
+   file, and a build agent must never write it (§3.2).
+2. **Scaffold.** `cd apps/docs && pnpm new:component <name>` emits five files with deliberately
+   failing tests: the component, its test, its demo, its docs module and its story
+   (`apps/docs/scripts/lib/scaffold-templates.ts`, lines 125 to 129).
+3. **Fan out.** One agent per component, handed a pointer to
+   `docs/design-system/component-build-brief.md` rather than a paste of it, plus its spec anchor
+   and declared states.
+4. **Integrate centrally.** Reconcile declared dependencies against real imports, flip status to
+   `shipped`, regenerate wiring, then run every gate (§3.5).
+
+## The twelve gates, in the order CI runs them
+
+CI stops at the first failure, so an early red gate hides every gate behind it. That is why the
+list is written in order, and why it may not be reordered casually:
+
+1. `pnpm install --frozen-lockfile`
+2. `pnpm lint`
+3. `pnpm format:check` (joined the list 2026-09-07, when the tree was made prettier-clean)
+4. `pnpm typecheck`
+5. `pnpm check:tokens`
+6. `pnpm check:contract`
+7. `pnpm test`
+8. `pnpm build:registry`
+9. `pnpm build`
+10. **Playwright smoke**, `pnpm --filter docs exec playwright test` against the built docs site
+11. **Storybook a11y and interaction**, `pnpm --filter storybook test:stories`
+12. **Consumer install test**, `apps/docs/scripts/consumer-test.sh`
+
+Three of them are worth knowing in more detail:
+
+- **`check:tokens`** runs `packages/ds-rules/rulecheck.mjs --severity blocker`
+  (`apps/docs/package.json`). The emitted records in `packages/ds-rules/rules/` hold **20 rules
+  today: 17 at severity `blocker`, 2 at `warning` (`COL-6`, `CPY-2`) and 1 at `review` (`LAY-1`)**.
+  Only the blockers fail this step, so a `warning` finding is a conversation and not a stop.
+- **`check:contract`** is three scripts in sequence: `check-contract.mts`, then
+  `check-citations.mts`, then `reconcile-deps.mts`. The first asserts a shipped item's five
+  surfaces and its declared states; the second asserts the claims inside its guidance module.
+- **`pnpm test`** is turbo across the workspaces: the docs Vitest suite, which carries the
+  contract-rule and story-coverage tests, and `packages/ds-rules`' own fixture suite. The
+  Storybook workspace declares no `test` script; its suite is step 11.
+
+## A red consumer install test is a shipping bug
+
+`CLAUDE.md` states it plainly: a component that looks right in Storybook but breaks on
+`shadcn add` has failed. Step 12 scaffolds a fresh Next app, installs every item derived from
+`registry.json`, asserts the marketing keyframes, the `--marketing-*` variables and the `--warning`
+pair reached the consumer's stylesheet, then builds a page that imports four components. Treat it
+as a defect in the registry, never as a CI flake, and never silence a step to go green.
+
+Run `pnpm build:registry` after touching any registry source. A stale registry is invisible
+locally and broken for consumers.
+
+## Two things that fail for reasons the error will not name
+
+- **Clear the Storybook cache before `test:stories` after adding components.**
+  `rm -rf node_modules/.cache/storybook` first. Vite's dependency optimiser invalidates mid-run and
+  produces a wall of failures that read as a11y errors but say
+  `Failed to fetch dynamically imported module`.
+- **Write `GH-1234`, not `#1234`, in registry comments.** The token gate reads a bare `#` followed
+  by hex digits as a colour. This is the checker's one documented limitation.
+
+## Where new work is written down
+
+Design specs live in `docs/superpowers/specs/` and implementation plans in
+`docs/superpowers/plans/`, one dated file per initiative. The contracts themselves live in
+`docs/design-system/`, in one copy each, and `CLAUDE.md` exists to point at them rather than to
+restate them. A rule added to a doc but not to a record in `packages/ds-rules/` is not enforced by
+anything.

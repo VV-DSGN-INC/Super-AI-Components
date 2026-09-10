@@ -1,0 +1,119 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Browser Support" />
+
+# Browser Support
+
+There is no declared support floor in this repository, and saying so is more useful than inventing
+one. What follows is what the code actually uses, what a machine actually checks, and where the gap
+between those two is. Every claim was measured here on 2026-09-09.
+
+## No browserslist is declared anywhere
+
+A search across every `package.json`, config file and dotfile in the tree finds no `browserslist`
+field and no `.browserslistrc`. `apps/docs/next.config.ts` declares no options at all. So nothing
+in this repository states a minimum browser version, and no build step is targeting one.
+
+What the floor actually is, then, is whatever Tailwind emits. Both workspaces pin
+`tailwindcss` at `4.3.2`, and the generated CSS leans on native cascade layers and registered
+custom properties for core utilities rather than only for opt-in ones. There is no fallback
+stylesheet and no legacy build. A consumer who must reach older engines is outside what this
+registry tests or claims, and their own bundler decides the JavaScript floor.
+
+## Every automated check runs in one engine
+
+Two Playwright suites gate this repo, and both are Chromium:
+
+- **The docs smoke test.** `apps/docs/playwright.config.ts` declares no `projects`, so it runs
+  Playwright's default browser against the built docs site on port 3100. CI installs only
+  `chromium`.
+- **The Storybook a11y and interaction suite.** `apps/storybook/vitest.config.ts` sets
+  `instances: [{ browser: "chromium" }]`, headless. CI installs only `chromium` here too.
+
+Playwright resolves to `1.60.0` in `pnpm-lock.yaml`, and `scripts/linux-gate.sh` pins its container
+image to that exact version, refusing to run when the two drift. Node is pinned to 24 by `.nvmrc`
+and by the CI workflow.
+
+Safari and Firefox are checked by a person or not at all. That is the honest shape of it: one
+engine proves the paint, and the other two are a manual pass before a change is called done.
+
+## Reduced motion is the condition every test runs under
+
+`apps/storybook/vitest.config.ts` line 45 passes `reducedMotion: "reduce"` as a Playwright browser
+context option, so **every** Storybook test runs as a reduced-motion user's browser renders. The
+comment there records why: without it, axe runs mid-animation on any story that animates on mount
+and intermittently catches a transient sub-4.5:1 frame. Emulating the media feature fixes the whole
+flake class rather than one story, and it is a real accessibility posture rather than a test trick.
+
+The components are written to answer it. Measured across the registry sources:
+
+- **48 of the super-ai component files** carry a `motion-reduce:` variant or a
+  `prefers-reduced-motion` check.
+- **9 of the 15 marketing components** do the same, and `apps/docs/app/marketing.css` carries 7
+  `prefers-reduced-motion` blocks of its own.
+
+`MOT-1` and `MOT-2` in `packages/ds-rules/rules/core.json` are the blockers behind that: motion only
+on state change with no infinite loops outside genuine progress indicators, and named transition
+properties rather than `transition-all`. **Foundations → Motion** covers what the registry does with
+them.
+
+## Container queries are the default for a component's own layout
+
+`docs/design-system/decisions.md` D19 settled this on 2026-08-18: a component that lays itself out
+in columns keys them off its own width, never the viewport. Tailwind 4 ships container queries in
+core, so there is no dependency to add, and no support decision was taken separately from Tailwind's
+own floor.
+
+Two registry components use `@container` today, `artifact-grid` and `recent-grid`. D19 records two
+things that both broke on the first try and that any further adopter needs:
+
+- **The two-element shape.** A container query cannot match on the element that establishes the
+  container. The wrapper carries `@container` and the queried classes sit on a descendant, one
+  level down. One element carrying both compiles without error and never fires, at any width.
+- **Arbitrary values, not the named rungs.** Tailwind's container rungs are a different scale from
+  its breakpoints despite sharing step names, so both files use `@[40rem]` and `@[64rem]` to
+  reproduce the viewport thresholds they replaced.
+
+## What else the code reaches for, and what it does not
+
+Measured across `apps/docs/registry/super-ai/` and `apps/docs/registry/marketing/`:
+
+- **`backdrop-filter`**: 2 files, `preview-tile` and `hero-video-dialog`, both without a `supports-`
+  guard. An engine without it gets a flat translucent scrim instead of a blurred one, which is a
+  degradation rather than a break, but it is undeclared and worth knowing.
+- **The independent `translate` property**: 7 files. Tailwind 4 compiles `translate-*` to
+  `translate` rather than to `transform`, so a hand-written transition list has to name it.
+  40 registry files use a `transition-` utility, 11 of them with an explicit property list in
+  brackets.
+
+Not used anywhere in registry sources: `:has()`, `color-mix()`, `field-sizing`, `@starting-style`,
+`text-wrap`, anchor positioning and `inset-ring`, all measured at zero. Eight of the vendored
+`components/ui/` ports do use `has-[...]` variants, which is upstream shadcn's code rather than
+this repo's. Adding one of these to a registry component is a decision about the floor, not a
+styling choice.
+
+## Fonts are self-hosted, and it changed the results
+
+`apps/storybook/src/index.css` imports `@fontsource-variable/geist` and
+`@fontsource-variable/geist-mono` rather than reaching for a font CDN, and the comment above those
+imports records the measurement: in the CI runner image it took the Storybook suite from 11 failing
+files to 5. A blocking gate should not depend on the network, and text measurement against whatever
+sans the runner happens to pick is not a measurement of this system.
+
+One trap comes with it. `"Geist Variable"` leads the `--font-sans` stack and is not interchangeable
+with `"Geist"`: the fontsource packages declare the family with that exact suffix, so a stack naming
+only `"Geist"` matches nothing they ship and falls through to the system sans with no error at all.
+Both names stay in the stack. See **Foundations → Typography**.
+
+## Geometry does not travel, and the gate proves it
+
+`docs/design-system/decisions.md` D21 is the rule a story author needs before pinning a number. A
+computed style a class sets, a width a class fixes, or a viewport the test itself moved are the
+component's own declarations read back, and pinning them is the point. Anything the browser derives
+from text, and anything a scrollbar participates in, is not pinnable: at the merge of one pull
+request eleven story files failed on CI and none failed locally, and three machines produced three
+answers for the same three measurements.
+
+`scripts/linux-gate.sh` runs the Storybook suite in the image CI uses, for exactly this reason. On
+Apple silicon it reproduces the failure class rather than the runner's exact numbers, so it is a
+fast pre-push check and not a substitute for CI.

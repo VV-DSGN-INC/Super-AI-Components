@@ -1,0 +1,138 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Guides/Component Lifecycle" />
+
+# Component Lifecycle
+
+A component enters the registry as a manifest row, ships five files in one commit, and is held to a
+contract that a script can check. Some of what follows is enforced by a gate and some is a
+convention a human has to keep. This page keeps the two apart, because mistaking one for the other
+is how a system stops being trustworthy. Measured in this repo on 2026-09-09.
+
+## Status is a manifest field with four legal values
+
+`ManifestStatus` in `apps/docs/lib/manifest-types.ts` line 21 is
+`planned`, `building`, `shipped` or `cut`. Counted from `apps/docs/lib/catalog.manifest.ts` today:
+**116 shipped, 11 cut, and nothing planned or building**. The catalog is closed and there is no
+next batch, so the lifecycle below is what a change to an existing component walks, not a queue.
+
+A `building` item gets exactly one assertion from the contract gate: it may not be shadowed by an
+orphan file under a name absent from the manifest. Everything else in this page applies at
+`shipped`.
+
+The 116 split by layer as **12 primitives, 91 components and 13 blocks**. Three further
+`registry:lib` contracts sit outside the catalog in `apps/docs/lib/lib.manifest.ts`, deliberately
+typed separately: a contract has no family, no states, no demo and no docs page, so counting it as
+a catalog item would corrupt the per-family reconciliation.
+
+## Shipped means five files exist, and the gate names each one
+
+`apps/docs/scripts/check-contract.mts` resolves five paths per shipped item:
+
+- `registry/super-ai/<name>.tsx`, the component
+- `registry/super-ai/<name>.test.tsx`, its behaviour test
+- `components/demos/<name>-demo.tsx`, the zero-prop demo both docs surfaces render
+- `content/components/<name>.docs.tsx`, the guidance module
+- `../storybook/src/stories/super-ai/<Pascal>.stories.tsx`, the story
+
+Those counts hold on disk right now: 116 docs modules, 116 super-ai story files, 119 registry test
+files (116 items plus the 3 lib contracts), and 131 demos (116 catalog plus 15 marketing).
+
+The same gate asserts the `consumes` graph resolves to other shipped items, and that the
+registry-derivable fields match what `deriveExtras()` produces, which is the same function the
+registry build calls. A manifest row that lies about its dependencies fails here rather than in a
+consumer's app.
+
+## The story is the state contract, and extra exports are legal
+
+For a component, every declared state in the manifest must have a story export whose name is the
+Pascal form of that state. The direction matters: the gate asserts declared states are a **subset**
+of story exports, never the reverse. So a case story cannot break the contract gate and needs no
+manifest entry.
+
+Blocks are checked differently, because a shell is a layout rather than a state machine
+(`check-contract.mts` lines 125 to 163):
+
+- a non-empty `consumes` list, which is the assertion that catches a shell reimplementing its parts
+  instead of composing them
+- a non-empty `regions` list, and a real `data-region="<id>"` in the source for each declared region
+- two mandatory story exports, `Empty` and `Responsive`
+
+One naming trap survives the gate. A state named `default` becomes the export `Default`, and
+`check-contract.mts` would accept it: what actually keeps it out is the scaffolder, which never
+emits one, pinned by `new-component.test.ts`. Use a meaningful state name.
+
+## Case stories are gated as a ratchet, and the baseline is empty
+
+`docs/design-system/story-conventions.md` names eight cases, listed in
+`apps/docs/scripts/lib/story-coverage.ts` lines 21 to 30: `RTL`, `ReducedMotion`, `KeyboardOrder`,
+`Controlled`, `EmptyLabel`, `LongContent`, `Mobile` and `Boundary`. Write only the ones that are
+true for the component; a story written to complete the set reads as coverage and proves nothing.
+
+`apps/docs/scripts/lib/story-coverage.test.ts` derives two kinds of obligation from the manifest
+and compares the unmet set against a committed baseline:
+
+- **case**: each of the eight names, per shipped item. 116 items, so **928 obligations**. Met by an
+  export of that name, or by a `case-skip` comment line naming the story and giving a non-empty
+  reason. Silence is what fails, because silence cannot be told from an oversight.
+- **described**: every declared state's export carries a JSDoc block above it. The 116 shipped items
+  declare **450 states between them**, so 450 obligations. A story with no description is a
+  screenshot.
+
+`apps/docs/scripts/lib/story-coverage.baseline.json` is `[]` today. All 1378 obligations are met,
+and the ratchet fails in both directions: a newly unmet obligation is a regression, and a resolved
+entry left in the baseline has to be locked in with `pnpm story-coverage:baseline`, which refuses
+to grow the file.
+
+## No exemption flag remains
+
+`contractExempt` was a boolean that quietly waived contract assertions. `docs/design-system/decisions.md`
+D20 deleted it on 2026-08-22, after the retrofit drove it to zero users, and the field is gone from
+`manifest-types.ts` along with its branches in the contract gate. What replaces it is explicit,
+ratcheted exemption lists that carry a reason and may only shrink. A legacy import now gets a
+reviewed baseline entry, not a flag.
+
+## Accessibility is a merge gate over what this repo publishes
+
+Every story under `stories/super-ai/` and `stories/marketing/` is mounted in Playwright's Chromium
+and audited by axe, with `parameters.a11y.test` set to `"error"` in
+`apps/storybook/.storybook/preview.tsx` so a violation actually throws. The exclusion list is
+`test.exclude` in `apps/storybook/vitest.config.ts`, and reading it is the point: the two vendored
+directories, `stories/ui/` and `stories/ai-elements/`, are excluded wholesale as upstream ports this
+repo did not author, and **no super-ai story is excluded any more**. Three named files that
+predated the gate have since been retrofitted and removed from the list.
+
+That list may only shrink. Adding a file to silence a new failure defeats the gate, and
+`docs/design-system/a11y-baseline.md` is where its history and the recurring failure are recorded.
+See **Foundations → Inclusive design**.
+
+## What is enforced mechanically
+
+- Five files per shipped item, a story export per declared state, `Empty` and `Responsive` per block.
+- Every case obligation and every state description, ratcheted against an empty baseline.
+- A guidance module with both accessibility arms filled, and no claim citing a class or slot its
+  component does not carry.
+- The 17 `blocker` rules in `packages/ds-rules/rules/`, over registry sources.
+- Zero axe violations across super-ai and marketing stories.
+- The registry installs into a fresh app and that app builds.
+
+## What is not
+
+- **The reason on a `case-skip` line.** The gate checks that a reason exists, never that it is
+  true. `story-conventions.md` records a component that carried a plausible, wrong skip reason and
+  survived. Write a reason a reader can check: a grep you ran, a property you read back.
+- **Anything below `blocker` severity.** `check:tokens` runs with `--severity blocker`, so `COL-6`
+  and `CPY-2` at `warning` and `LAY-1` at `review` report and never stop a merge.
+- **The prose in a guidance module beyond its citations.** The citation gate proves a cited class
+  or slot exists; nothing proves the sentence around it is right.
+- **Any browser but Chromium.** See **Guides → Browser Support**.
+- **Visual regression.** Nothing in the repo compares renderings between commits.
+
+## How a change moves
+
+1. Branch. Prepare the manifest row centrally, then scaffold with `pnpm new:component <name>`.
+2. Write the five files. The story ships in the same commit as the component.
+3. Reconcile dependencies against real imports, flip status to `shipped`, regenerate wiring.
+4. Run the twelve CI steps in order (**Guides → Contributing**), clearing the Storybook cache
+   before `test:stories`.
+5. Open the pull request. CI runs the same twelve steps, and stops at the first red one.
