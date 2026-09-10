@@ -1,0 +1,186 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+
+import { Example, DoDont } from "../_shared/doc-blocks";
+import UsageDashboardDemo from "@/components/demos/usage-dashboard-demo";
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+
+export const generations = [
+  { day: "Mon", images: 86, videos: 12 },
+  { day: "Tue", images: 124, videos: 18 },
+  { day: "Wed", images: 98, videos: 9 },
+  { day: "Thu", images: 152, videos: 24 },
+  { day: "Fri", images: 210, videos: 31 },
+  { day: "Sat", images: 178, videos: 27 },
+  { day: "Sun", images: 96, videos: 14 },
+];
+
+export const generationsConfig = {
+  images: { label: "Images", color: "var(--color-chart-3)" },
+  videos: { label: "Videos", color: "var(--color-chart-1)" },
+};
+
+<Meta title="Foundations/Data Visualization" />
+
+# Data Visualization
+
+This theme ships a five-step chart palette with no colour in it, which decides more about charting
+here than any form rule would. This page reports what actually draws data in the registry, what the
+palette measures, and the two chart rules that gate. Every value below was read from this repo on
+2026-09-09. The numbers inside the examples are sample data.
+
+## Five components draw data, and one of them uses a chart library
+
+Measured by grep over `apps/docs/registry/`: `usage-dashboard.tsx` is the only registry source that
+imports `recharts` (line 5) or the shadcn chart port at `@/components/ui/chart` (line 8). The others
+draw with layout and text.
+
+- `usage-dashboard`, a period selector driving a summary row and a per-model breakdown. The
+  breakdown carries a bar chart.
+- `quota-meter`, proportion bars built from elements rather than marks, with three states. It treats
+  `near-limit` as a state of its own because the useful moment is before zero, and `over-limit` as a
+  third, because a plan you have already exceeded is not one you are about to exceed
+  (`quota-meter.tsx` lines 29 to 31).
+- `credits-indicator`, the one hand-drawn glyph in this group: a single ring. Its `total` prop is
+  required for the ring form, because a ring with no denominator is a circle (line 11).
+- `trace-timeline`, a waterfall whose bars are positioned by start time on a shared axis rather than
+  stacked. Overlapping spans keep their overlap, since hiding the collision is the failure a
+  waterfall exists to prevent, and a retry is a new row rather than a replacement
+  (`trace-timeline.tsx` lines 32 to 41).
+- `stat-readout`, a definition list with no marks at all. An absent value renders a dash rather than
+  a blank cell, so the absence reads as deliberate (line 36).
+
+Reach for the chart port when the shape of a series is the point. Reach for the other four when a
+figure, a proportion or an ordering is the point, and skip the library.
+
+## The palette is five greys, and it is the same in both themes
+
+`apps/storybook/src/index.css` declares `--chart-1` through `--chart-5` twice, at lines 107 to 111 in
+`:root` and lines 142 to 146 in `.dark`, and the two blocks are identical. All five sit at chroma 0,
+so they are neutral: lightness 0.87, 0.556, 0.439, 0.371 and 0.269, from `--chart-1` down to
+`--chart-5`. The `@theme inline` block aliases them to `--color-chart-1` through `--color-chart-5`
+at lines 58 to 62, which is what a Tailwind class or a `var()` in chart config reads.
+
+Two consequences follow from the same file, and both are worth checking before you assign a series.
+
+- The ramp does not invert between themes, so a step that reads as the emphasised series on a light
+  page reads as the quiet one on a dark page. `--chart-1` at lightness 0.87 is near the light page
+  background (1.0) and far from the dark one (0.145).
+- The bottom of the ramp crowds the dark surfaces. `--chart-5` at 0.269 is the same lightness as
+  dark `--muted`, `--accent` and `--secondary`, and sits a short step above dark `--card` at 0.205.
+  A five-series chart on a dark card loses its darkest series into the card.
+
+Three or four series is what this palette supports comfortably. Past that, split the chart.
+
+## Emphasis is a decision, and nothing checks it
+
+`CHT-1` in `packages/ds-rules/rules/core.json` carries the convention in its own fix text: the
+series answering the question the card asks gets emphasis, and the context series go grey. No script
+can tell which series that is, so the rule detects the palette and leaves the emphasis to the author.
+With a neutral ramp, emphasis has to come from something other than hue: the position of the series
+in the ramp, the ordering of the marks, or the sentence beside the chart.
+
+## A chart is flat, and gridded on one axis
+
+The two chart rules both gate. Both live in `core.json`, both are blockers, and `pnpm check:tokens`
+runs them at blocker severity over `apps/docs/registry/super-ai` and `apps/docs/registry/marketing`.
+
+- `CHT-1`, chart colors are `chart-1` to `chart-5`, never library defaults. It greps for the recharts
+  default palette, which the record calls the clearest single tell of an unguided chart.
+- `CHT-3`, flat marks and hairline gridlines, never the recharts dash default. It greps for the
+  library default dash pattern.
+
+`COL-1` reaches charts too, at blocker severity: no gradient fills, no glow, no third dimension.
+
+<Example>
+  <ChartContainer config={generationsConfig} className="h-56 w-full">
+    <BarChart data={generations}>
+      <CartesianGrid vertical={false} />
+      <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
+      <ChartTooltip content={<ChartTooltipContent />} />
+      <ChartLegend content={<ChartLegendContent />} />
+      <Bar dataKey="images" fill="var(--color-images)" radius={4} />
+      <Bar dataKey="videos" fill="var(--color-videos)" radius={4} />
+    </BarChart>
+  </ChartContainer>
+  <p className="text-muted-foreground mt-2 text-xs">
+    <span>
+      {
+        'Sample data, generation counts of the kind this system emits. The two series read the chart tokens at steps 3 and 1, and the grid is horizontal only.{" "}'
+      }
+    </span>
+  </p>
+</Example>
+
+<DoDont
+  doExample={
+    <ChartContainer config={generationsConfig} className="h-40 w-full">
+      <BarChart data={generations}>
+        <CartesianGrid vertical={false} />
+        <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
+        <Bar dataKey="images" fill="var(--color-images)" radius={4} />
+      </BarChart>
+    </ChartContainer>
+  }
+  doCaption="Solid hairline gridlines on one axis. The grid stays behind the marks and adds no texture of its own."
+  dontExample={
+    <ChartContainer config={generationsConfig} className="h-40 w-full">
+      <BarChart data={generations}>
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <XAxis dataKey="day" tickLine={false} axisLine={false} tickMargin={8} />
+        <Bar dataKey="images" fill="var(--color-images)" radius={4} />
+      </BarChart>
+    </ChartContainer>
+  }
+  dontCaption="The library dash default. It reads as a second pattern competing with the bars, and CHT-3 fails it in registry sources."
+/>
+
+## The numbers live in text beside the chart
+
+`usage-dashboard` is worth reading as the worked example, because it decided the harder half. Its
+per-model breakdown renders every figure as real table content, a `th` with `scope="row"` per model
+and spend, tokens and latency as sibling cells in the same row. The chart beside that table is
+marked `aria-hidden`, uses one fill, and turns off the recharts accessibility layer, which the file
+justifies at lines 39 to 50: the chart shows nothing the table does not already say, and recharts
+would otherwise put a focusable element inside an aria-hidden subtree, which is an axe violation by
+construction.
+
+That is the pattern to copy. A chart is a second reading of numbers that exist somewhere as text,
+and a delta sits beside the figure it belongs to rather than below it or in a tooltip, because a
+number without a direction is not actionable.
+
+<Example className="p-3">
+  <UsageDashboardDemo />
+</Example>
+
+## A chart with no data says so in the same box
+
+`usage-dashboard.tsx` line 284 branches on an empty model list and renders a sentence inside the
+same card, so the panel keeps its place instead of vanishing. That covers one of the four states a
+data panel can be in.
+
+The other two, loading and failed, are not drawn by any chart-bearing component in this registry
+today. That is a measurement rather than a recommendation: when you build a panel that fetches,
+draw the wait and the failure in the box where the chart will land, and take the shapes from
+**Patterns → Loading states** and **Content → Error messages**.
+
+## Rules
+
+- Use `--chart-1` to `--chart-5` for series colour, never a library default. Rule `CHT-1`, blocker,
+  run by `pnpm check:tokens`.
+- Gridlines are hairline, solid and on one axis. Rule `CHT-3`, blocker.
+- No gradient, glow or three-dimensional mark. Rule `COL-1`, blocker.
+- Keep a chart to three or four series in this theme. The palette is neutral and the bottom of it
+  crowds the dark surfaces.
+- Put every number the chart shows in text as well. A chart that is the only source of a figure is a
+  chart a screen reader user cannot read.
+- Draw the empty, loading and failed states in the box the chart occupies, at the chart's size.
+- Sample data is something this system could really emit: generation counts, token counts, model
+  names. No invented companies and no fabricated metrics, per
+  `docs/design-system/story-conventions.md`.
