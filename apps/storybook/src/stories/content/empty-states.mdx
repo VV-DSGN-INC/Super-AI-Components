@@ -1,0 +1,187 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Images, Search } from "lucide-react";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/registry/super-ai/empty-state";
+import EmptyStateDemo from "@/components/demos/empty-state-demo";
+
+<Meta title="Content/Empty states" />
+
+# Empty states
+
+A region with nothing in it is the one moment where every word has to carry. Three different things
+empty a region and they want three different scripts: **nothing yet**, **nothing matched**,
+**nothing loaded**. A generic "Nothing here" answers none of them, and the registry ships zero of
+those. Everything below was measured on 2026-09-09 across the 129 component files in
+`apps/docs/registry/super-ai/`.
+
+## One component, three sizes
+
+<Example>
+  <EmptyStateDemo />
+</Example>
+
+`empty-state.tsx` takes `size` as a prop rather than forking, so `page`, `panel` and `in-grid` emit
+the same slots in the same order and differ only in the frame (`SIZE_ROOT`, lines 49 to 57). The
+`in-grid` tile fills its cell and keeps the grid's columns, which is what stops an empty result set
+turning a grid into a page takeover.
+
+Fifteen registry files import it and 31 instances render across them, so a shell almost never
+writes its own empty region. Blocks have to prove they thought about this: an `Empty` story export
+is one of the four assertions the block branch of `apps/docs/scripts/check-contract.mts` makes, per
+`docs/design-system/block-build-brief.md`. Twenty-two story files under
+`apps/storybook/src/stories/super-ai/` export one today.
+
+Two API decisions are copy decisions in disguise. There is no `ctaLabel` prop, recorded at lines 26
+to 31, so nobody can reach for a generic label by default; the `action` is caller-supplied because
+the CTA has to repeat the verb of the surface the empty state is standing in for. And there is no
+illustration slot at all: the decoration on offer is one lucide glyph, rendered `aria-hidden`.
+
+## Nothing yet
+
+The title names what the region holds. The body says how the first one comes to exist. The action
+creates it, when creating is one control away.
+
+The shipped titles follow that to the letter, and they are short: "Nothing pinned yet"
+(`home-shell.tsx:260`), "No records yet" (`records-shell.tsx:453`), "Nothing on the canvas yet"
+(`studio-shell.tsx:400`), "No sources yet" (`source-panel.tsx:265`). The body underneath does the
+teaching. Most run to one sentence; five `description` props in the whole tree run to two, among
+them `records-shell.tsx:454`, which uses the second sentence to say what a record is before saying
+what appears once you make one. None runs to three, so two is the ceiling.
+
+Descriptions that describe the mechanism beat descriptions that describe the feeling.
+`source-panel.tsx:266` explains what happens to a document after it is added, which is the fact a
+first-time reader is missing.
+
+## Nothing matched
+
+A filter emptied the region, so the copy names the filter as the cause and the action undoes it.
+
+`library-shell.tsx` lines 336 to 343 is the cleanest worked example in the repo: one `EmptyState`,
+two titles and two descriptions, switched on a `narrowed` flag computed one line above from the
+facets, the search string, and the active saved search. Filtered, it reads "No matches" over "Clear
+a filter in the rail to widen the search." Unfiltered, it reads "Nothing saved yet" over a sentence
+about what gets archived there. `artifact-shell.tsx` lines 276 to 282 does the same for its result
+summary and again at line 464 for the region itself.
+
+Two details from `artifact-shell` are worth copying. Its filtered empty carries `role="status"`
+(line 463) with a comment saying that a silent disappearance is indistinguishable from a broken
+filter. And the summary line says the count, "N of M artifacts", which is the thing that separates a
+filtered list from an empty workspace.
+
+<DoDont
+  doExample={
+    <EmptyState
+      size="panel"
+      icon={<Search />}
+      title="No matches"
+      description="Clear a filter in the rail to widen the search."
+      action={
+        <Button size="sm" variant="outline">
+          Clear filters
+        </Button>
+      }
+    />
+  }
+  doCaption="library-shell.tsx's own filtered copy, with the clearing action added. The action undoes the thing that emptied the list."
+  dontExample={
+    <EmptyState
+      size="panel"
+      icon={<Images />}
+      title="No matches"
+      description="Clear a filter in the rail to widen the search."
+      action={<Button size="sm">Generate a render</Button>}
+    />
+  }
+  dontCaption="one prop changed. The reader's work is behind the filter, and this sends them off to make something new instead of showing them what they already have."
+/>
+
+## Nothing loaded
+
+A request that failed leaves an empty region too, and this is the species the registry has never
+shipped at collection scale. No `EmptyState` instance in the tree says a list failed to load, and
+none of them offers a retry. The only load failure with words on it is per item:
+`reference-strip.tsx:114` renders "Couldn't load" in the failed tile's action slot.
+
+That makes this a rule going forward. When one arrives, the words are
+**Content → Error messages**' formula sitting inside an empty state's frame: what happened in plain
+past tense, the cause when it changes the remedy, then a verb. A filtered view whose request fails
+belongs here too, because the filter had nothing to do with why the region is empty.
+
+<Example>
+  <EmptyState
+    size="panel"
+    title="Renders didn't load"
+    description="The request timed out."
+    action={
+      <Button size="sm" variant="outline">
+        Try again
+      </Button>
+    }
+  />
+</Example>
+
+Written for this page. What must never happen is a failed load wearing the first-use script: "No
+renders yet. Generate a render." on a screen where forty renders exist and the request timed out is
+a claim the reader then acts on.
+
+## The one-line empties, and the four refusals
+
+Some regions are too small for a title and a body. The registry writes those as a single sentence
+with no action, because the control that emptied the list is on screen: "No skills found."
+(`skill-menu.tsx:72`), "No generations queued." (`generation-queue.tsx:218`), "No segments yet."
+(`tts-composer.tsx:452`), "No artifacts match this type." (`artifact-grid.tsx:224`). The noun is
+whatever the reader was looking at, and the sentence closes with a period, per
+**Content → Writing mechanics**.
+
+At the other end, four surfaces all say there is nothing here for you and only one of them is an
+empty state. The `Boundary` story in `apps/storybook/src/stories/super-ai/EmptyState.stories.tsx`
+renders all four side by side with the deciding question in its description: what changes the
+outcome. Making something is `empty-state`. Paying is `paywall-message`. Waiting is
+`rate-limit-banner`. Rephrasing is `safety-block`. Where nothing the reader can do changes the
+outcome, none of the four is the right surface.
+
+## Which empty
+
+- **A region with no data yet.** `empty-state` with an icon, a title, a one-sentence body, and the
+  creating action.
+- **A filtered or searched region with no matches.** The same component, with the copy switched on
+  whether a filter is applied, as `library-shell.tsx:336` does. The action clears the filter.
+- **A filtered region whose controls are on screen.** The same, with no action at all.
+- **A small region or a picker.** One sentence, no action, no icon.
+- **A grid cell.** `size="in-grid"`, which draws a dashed tile and keeps the columns.
+- **A collection that failed to load.** `empty-state` with a retry, worded by
+  **Content → Error messages**. Nothing ships this today.
+- **A single value with no data.** Not an empty state. An em dash placeholder with an `sr-only`
+  word, per `track-list.tsx:40` and **Content → Writing mechanics**.
+- **Data still in flight.** Not an empty state either. **Patterns → Loading states** owns the wait.
+- **One item, one form or one run that failed.** **Content → Error messages**.
+
+## Rules
+
+- Three species, three scripts. Where two could apply, the failure wins: a filtered view whose
+  request fails is nothing loaded, because the filter is not the reason.
+- First use: the title names what the region holds, the body says how the first one comes to exist,
+  and the action creates it when creating is one control away.
+- No results: the copy names the filter or the search as the cause and the action undoes it. Never
+  a create action, because the reader's data is behind the filter.
+- Say the count behind the filter when it is known. `artifact-shell.tsx:276` builds "N of M" for
+  exactly this.
+- Announce a filtered empty. `artifact-shell.tsx:463` sets `role="status"` so a list emptying is
+  not silent.
+- A failed load says it failed, in past tense, and offers a retry. Never the first-use script.
+- The body is one sentence. The longest shipped description runs two, at `records-shell.tsx:454`.
+  Two is the ceiling.
+- No illustrations. `empty-state` offers one lucide glyph, rendered `aria-hidden`, and no image
+  slot. `ICO-1` and `ICO-2` in `packages/ds-rules/rules/` cover what may be drawn at all.
+- Never add a default CTA label. `empty-state.tsx` lines 26 to 31 record why the prop does not
+  exist.
+- A picker empty is one line and no action, and the noun is whatever the reader searched.
+- Loading is not empty. An empty state is a claim about what exists, so hold it until the answer is
+  known.
+- A block exports an `Empty` story. `apps/docs/scripts/check-contract.mts` asserts it.
+- Sentence case, no terminal period on the title, a period on the body, per
+  **Content → Writing mechanics**.
+
+This page owns what a zero state says. **Content → Error messages** owns what a failure says, and
+the two meet at the failed load, where an error's words sit inside an empty state's frame.

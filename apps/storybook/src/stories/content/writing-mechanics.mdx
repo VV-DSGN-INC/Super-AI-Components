@@ -1,0 +1,153 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import DisclaimerNoteDemo from "@/components/demos/disclaimer-note-demo";
+import StatReadoutDemo from "@/components/demos/stat-readout-demo";
+
+<Meta title="Content/Writing mechanics" />
+
+# Writing mechanics
+
+**Content → Voice & principles** decides how a line sounds. This page decides how it is spelled:
+case, marks, numerals, what happens when a string is longer than its box, and the words the
+registry has already settled on. Nobody notices good mechanics, which is why they have to be
+written down. Every count below was taken on 2026-09-09 over the 129 component files in
+`apps/docs/registry/super-ai/`.
+
+## Case
+
+Sentence case everywhere a person reads words. Capitals are for proper nouns and model names.
+
+The registry holds this without exception. Across every default label, title, text and placeholder,
+zero strings are in Title Case, and zero literal `aria-label` values are either. The capitals that
+do turn up mid-label are initialisms ("Ask AI", "AI tools") or product names supplied by the host,
+which is where "Claude Opus 4.5" and "Veo 3.1" come from in the demos on the pages around this one.
+
+Uppercase is a treatment applied in CSS and never typed into a string. Seven files carry the
+micro-label pattern `tracking-wide uppercase` on a section heading: `ai-tools-menu.tsx:189`,
+`detail-view-shell.tsx:183`, `filter-panel.tsx:302`, `generation-wizard.tsx:225`,
+`pricing-table.tsx:181`, `section-header.tsx:61`, `usage-dashboard.tsx:187`. The eighth
+`uppercase` in the tree is `diff-review.tsx:200`, a `first-letter:uppercase` that sentence-cases a
+value coming from data. **Foundations → Typography** owns which rung that treatment sits on.
+
+<DoDont
+  doExample={<p className="text-sm font-medium">Clear all filters</p>}
+  doCaption="filter-panel.tsx's shipped default. Sentence case, so it reads as a control rather than a heading."
+  dontExample={<p className="text-sm font-medium">Clear All Filters</p>}
+  dontCaption="the same label, Title Cased. Nothing else changed, and no string in the registry is written this way."
+/>
+
+## Punctuation
+
+The test is what the line does. A line that makes a statement closes with a period, even as a
+fragment. A line that only names something never does.
+
+The registry is measurably consistent here. Zero `title="..."` props in the registry end in a
+period, and zero `description="..."` props omit one. A title that asks keeps its question mark:
+`feedback.tsx:90` ships "Was this helpful?" and `feedback.tsx:97` ships "What went wrong?".
+
+Four defaults end in `Label` and still carry a period, because each one is a whole statement:
+`artifact-grid.tsx:224`, `chat-shell.tsx:272`, `inline-generate-popup.tsx:160`,
+`settings-shell.tsx:255`. Read the line before reaching for the suffix.
+
+<Example>
+  <DisclaimerNoteDemo />
+</Example>
+
+One mark per job, as the three lines above show. The interpunct separates two facts of equal
+weight and appears in 15 strings across 9 files, from `source-panel.tsx:124`'s quiet second line
+to `render-queue.tsx:79`'s format summary. The em dash carries an aside or a consequence, and more
+than a dozen strings use it that way, `rate-limit-banner.tsx:80` and `env-status.tsx:89` among
+them. There are zero en dashes in the registry, so a numeric range has no settled form yet; pick
+one and say which when the first range ships.
+
+The ellipsis is one character. 23 strings across 15 files write it that way, including
+`run-button.tsx:78` and `media-prompt-bar.tsx:74`. Exactly one string still spells it with three
+periods, `skill-menu.tsx:71` (`searchPlaceholder = "Search skills..."`). Fix that one on touch.
+
+## Numbers, units and the missing value
+
+<Example className="flex justify-center">
+  <StatReadoutDemo />
+</Example>
+
+Three mechanics are visible in that one component. Numerals carry counts and identifiers, so the
+seed reads as digits. `tabular-nums` locks the column so digits do not shuffle as a value updates;
+49 class occurrences across 34 files use it, and **Foundations → Typography** owns the rung.
+And a value that does not exist gets an em dash rather than a zero or a blank, because a zero is a
+measurement and a blank is a bug. That placeholder ships at `stat-readout.tsx:37`,
+`asset-library.tsx` lines 134, 136 and 465, `render-queue.tsx:153`, and `tts-composer.tsx:349`.
+`track-list.tsx:40` records the reason inline and pairs the dash with an `sr-only` word, so a
+listener hears something.
+
+Units stay attached to their number in the string that owns them: "PDF · 2.4 MB" at
+`source-panel.tsx:124`, "900 credits/min" as the rate form documented at `cost.tsx:40`.
+
+A duration gets three forms in one file, and the split is worth copying.
+`rate-limit-banner.tsx:87` formats the visible clock as digits. Line 97 spells the same wait in
+words for the accessible name, because a clock read aloud is a sequence of numbers. Line 116
+buckets it again, coarser, for the live region, so the announcement stays stable for a whole minute
+instead of re-reading every second. **Foundations → Inclusive design** owns why the third one
+exists.
+
+## Truncation
+
+Labels truncate. States and counts do not.
+
+`truncate` appears 57 times across 36 files, always on a title or a name. `line-clamp-N` appears
+exactly three times, and each one is a case where the extra lines still read:
+`artifact-grid.tsx:173` at four lines for an artifact excerpt, `quote-reply.tsx:92` at two for a
+quoted message, `source-cards.tsx:106` at two for a source snippet. `shrink-0` appears 146 times
+across 68 files, which is how the badge, the status word, and the count survive at any width while
+the label beside them gives way.
+
+Choose by shape: `truncate` where the string must stay on one line, `line-clamp-N` where the
+overflow is prose a reader would still want, and `shrink-0` on anything whose whole meaning is its
+last character.
+
+## The words already settled
+
+Reach for a shipped vocabulary before coining one. Six sets cover most of what a surface needs to
+say:
+
+- **The six generation states.** `result-card.tsx:56` to `:63`: "Not started", "Queued",
+  "Generating", "Result ready", "Generation failed", "Locked". This is the state contract from
+  `docs/superpowers/specs/2026-06-10-super-ai-components-design.md` §6 in words.
+- **The four provider states.** `env-status.tsx:75` to `:80`: "Ok", "Degraded", "Key invalid",
+  "Not running", each with its own condition sentence and remedy at lines 82 to 99.
+- **The four permission verbs.** `permission-prompt.tsx` lines 119 to 122: "Allow once",
+  "Always allow", "Deny", "Edit first".
+- **The five queue states.** `generation-queue.tsx:40`, with the label map at lines 88 to 94:
+  "Queued", "Running", "Done", "Failed", "Cancelled".
+- **The three paywall gates.** `paywall-message.tsx` lines 64 to 86, one title and one CTA each.
+- **The disclaimer.** `disclaimer-note.tsx:15` ships one default sentence and three placements. A
+  second wording for the same claim is a fork.
+
+Two habits worth copying. A state word is always visible text beside its colour, never the colour
+alone: `env-status.tsx:74` records that its badge exists so the row is readable without hue.
+And a status word never grades the reader, which is **Content → Voice & principles**' rule and the
+reason "Not helpful" at `feedback.tsx:92` is phrased about the answer.
+
+## Rules
+
+- Sentence case for every title, label, button, tab, menu item and chip. Proper nouns and model
+  names are the only capitals. Zero registry strings are Title Cased; keep it at zero.
+- Uppercase is a CSS treatment, applied by seven files as `tracking-wide uppercase`. Never type it
+  into a string.
+- No terminal period on a title or a label that only names something. A line that makes its own
+  statement closes with a period even as a fragment. A question keeps its question mark.
+- One mark per job: the interpunct for two facts of equal weight, the em dash for an aside. There
+  are no en dashes in the registry, so the first numeric range sets the convention.
+- The ellipsis is one character. `skill-menu.tsx:71` is the last string spelling it with three
+  periods.
+- A count or an identifier is a numeral. A number belonging to a phrase stays a word.
+- A column of numbers takes `tabular-nums`.
+- A missing value renders an em dash with an `sr-only` word beside it, per `track-list.tsx:40`.
+  Never a zero, never a blank.
+- Labels truncate; states, counts and badges take `shrink-0` and survive whole. `line-clamp-N` only
+  where the clipped lines were prose worth reading.
+- Reuse a settled vocabulary before writing a synonym. The six sets above are the first place to
+  look.
+- Strings are English, per D22 in `docs/design-system/decisions.md`.
+
+This page owns how the interface is written. **Content → Voice & principles** owns how it sounds:
+that page when the question is which word, this one when the question is which mark.

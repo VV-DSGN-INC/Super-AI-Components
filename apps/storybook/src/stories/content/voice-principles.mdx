@@ -1,0 +1,159 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+import { Example, DoDont } from "../_shared/doc-blocks";
+import SafetyBlockDemo from "@/components/demos/safety-block-demo";
+import RateLimitBannerDemo from "@/components/demos/rate-limit-banner-demo";
+
+<Meta title="Content/Voice & principles" />
+
+# Voice & principles
+
+The interface reports and then stops. It says what happened and what the reader can do next, in that
+order, and it never congratulates anyone for arriving. Every claim below describes copy this
+registry already ships: all of it was re-measured on 2026-09-09 across the 129 component files in
+`apps/docs/registry/super-ai/`, and the strings quoted are the defaults a consumer gets by deciding
+nothing. Two records in `packages/ds-rules/rules/core.json` carry parts of it, `CPY-1` and `CPY-2`.
+Only the first gates: `check:tokens` runs `rulecheck.mjs --severity blocker`
+(`apps/docs/package.json:12`), which filters to blocker records and so never evaluates `CPY-2` at
+all. A bare `node packages/ds-rules/rulecheck.mjs` reports it.
+
+## Front-load the verdict
+
+The first line is the outcome. Anything qualifying it goes underneath, where a reader who stopped
+at the title has already been told the thing that changes what they do.
+
+<Example>
+  <SafetyBlockDemo />
+</Example>
+
+Both titles above are `safety-block.tsx`'s own per-variant copy (lines 28 to 37). "Request blocked"
+and "Response withheld" are two different events, so they get two different words, and the body
+underneath each says which one happened to the work: one request never left, the other ran and
+produced something the reader is not getting. The policy name sits below both, because a block with
+no named source reads as a bug.
+
+`paywall-message.tsx` holds the same shape across three gates (lines 64 to 86). The titles name the
+fact: "This model is not on your plan", "You are out of credits", "This feature is not on your plan".
+All three then share one description, "The run was not started, so nothing was charged.", which is
+the sentence a reader actually needs from a paywall.
+
+## Verbs, and the object they act on
+
+A control's label is a verb plus the thing the verb touches, so the label predicts the next screen.
+That is `CPY-1`, a blocker in `packages/ds-rules/rules/core.json` enforced by `check:tokens` over
+registry sources.
+
+The defaults hold it. `workspace-switcher.tsx:80` ships "Create workspace", `feedback.tsx:99` ships
+"Send feedback", `permission-prompt.tsx` lines 119 to 122 ship "Allow once", "Always allow", "Deny"
+and "Edit first", and `paywall-message.tsx`'s three CTAs each name what upgrading buys rather than
+saying "Upgrade": "Upgrade to use this model", "Upgrade for more credits", "Upgrade to unlock it".
+
+`empty-state.tsx` makes the rule structural instead of hoping for it. Lines 26 to 31 record that the
+component has no `ctaLabel` prop on purpose, so a caller cannot reach for a generic label by
+accident; the CTA is caller-supplied because only the caller knows the verb of the surface the empty
+state is standing in for.
+
+Two defaults do fall through, and they fall through the gate as well. `CPY-1` greps for
+`Get Started|Learn More` with no case-insensitive flag, so `recommendation-card.tsx:79`
+(`commitLabel = "Get started"`) and `promo-card.tsx:178` (the `ctaLabel` fallback "Learn more") both
+pass CI while being exactly what the rule is about. Both are open gaps; copying either one forward
+spreads a label that predicts nothing.
+
+## Say the number
+
+Where a quantity exists, the copy carries it. A reader who is blocked wants to know how blocked, and
+"soon" answers nothing.
+
+<Example>
+  <RateLimitBannerDemo />
+</Example>
+
+`rate-limit-banner.tsx` renders a live countdown rather than a word, and its two causes carry
+different prefixes because they are different facts: "Resets in" for the reader's own plan limit,
+"Estimated wait" for provider capacity (lines 51 to 84). When no number is available it says so,
+"No reset time reported yet." on one branch and a matching line on the other, instead of inventing
+an estimate. The resource line in the demo above is the host's, and it counts: "Image generations ·
+50 of 50 used today".
+
+The counting habit runs through the shells. `artifact-shell.tsx` lines 276 to 282 build a summary
+that says the whole number when nothing is filtered and "N of M artifacts" when something is, which
+is what separates a filtered list from an empty one. `generation-queue`'s demo heads its queue
+"Generating 4 images". **Foundations → Data Visualization** owns what a chart does with the same
+numbers.
+
+## No cheerleading
+
+`CPY-2` in `packages/ds-rules/rules/core.json` names the banned marketing register and the vocabulary
+that carries it; read the record for the list. Its severity is `warning` for a reason the record
+states in full: this repo's gate family uses one of those words as the literal mechanism a plan
+upgrade performs, and a word-boundary pattern cannot separate that sense from the boast. So the
+register is a judgement you make, and CI will not make it for you.
+
+Praise is the other half, and it has one shipped violation. Exactly one exclamation mark reaches a
+reader from a registry default: `feedback.tsx:100`, `submittedLabel = "Thanks for the feedback!"`.
+That is the whole set, measured across all 129 files. Nothing else in the registry thanks, praises,
+or exclaims.
+
+<DoDont
+  doExample={<p className="text-sm">Feedback sent</p>}
+  doCaption="the event, in the past tense, addressed to nobody. Written for this page."
+  dontExample={<p className="text-sm">Thanks for the feedback!</p>}
+  dontCaption="feedback.tsx:100's shipped default. It praises the reader for a click and adds the registry's only exclamation mark; the reader learns nothing they did not already know."
+/>
+
+## Failures and empty regions carry more weight than the happy path
+
+A success line is glanced at once. A refusal or a dead end is read closely, because the reader is
+stuck and needs the way out. That is why the registry spends its longest strings there:
+`connection-manager.tsx` gives every one of its nine connection conditions a two-part label and a
+remedy (lines 104 to 149), and `env-status.tsx` does the same for four (lines 82 to 99).
+
+**Content → Error messages** owns what a failure says and **Content → Empty states** owns what a
+zero state says. This page owns the register both of them speak in.
+
+## Which voice, by situation
+
+- **A refusal on policy.** The event first, the named policy second, the compliant path last.
+  `safety-block.tsx`'s two variants are the shape, and its `alternatives` prop exists so a refusal
+  always has an exit.
+- **A gate that money or a plan can open.** Name the gate, say that nothing was charged, and hold
+  the work. `paywall-message.tsx` requires the prompt verbatim so upgrading resumes rather than
+  retypes.
+- **A temporary limit.** Say which constraint fired and how long it lasts.
+  `rate-limit-banner.tsx` keeps its two causes apart because sending someone to buy an upgrade when
+  the model is merely busy fixes nothing.
+- **A run in flight.** A present participle and nothing else: "Generating…" (`run-button.tsx:79`),
+  "Estimating cost…" (`run-button.tsx:78`).
+- **A completed action.** A past-tense verb phrase about the event. `result-card.tsx:56` to `:63`
+  holds the six-state set, and its success reads "Result ready" rather than a compliment.
+- **A status word.** Reuse a shipped one before coining a synonym. `env-status.tsx` lines 75 to 80
+  and `result-card.tsx` lines 56 to 63 are the two vocabularies to check first.
+- **A per-item failure.** Name what failed and put the retry beside it. `source-panel.tsx:264`
+  names the source inside the retry control's own accessible name.
+- **A disclaimer.** One sentence, no hedging around it. `disclaimer-note.tsx:15` ships
+  "AI can make mistakes. Check important info." as the default and every surface reuses it.
+- **An error.** **Content → Error messages**.
+- **An empty or zero state.** **Content → Empty states**.
+
+## Rules
+
+- The first line is the outcome. Qualifiers go under it, never inside it.
+- A label is a verb plus its object, so it predicts the next screen. `CPY-1` in
+  `packages/ds-rules/rules/core.json` is the record; its grep is case-sensitive, so sentence-case
+  generic labels are your responsibility rather than CI's.
+- Never add a `ctaLabel`-style default that makes a generic label the easy path. `empty-state.tsx`
+  omits the prop for this reason.
+- Say the number wherever one exists, and say that there is no number when there is not. Never
+  "soon", never "some".
+- No praise and no exclamation marks. One ships today, at `feedback.tsx:100`. Fix it on touch.
+- No marketing register, per `CPY-2`. That record is a warning, so `check:tokens` never evaluates
+  it and the judgement is yours; the one vocabulary item this repo uses literally is documented in
+  the record itself.
+- Two states that need different remedies get different words. A key the provider rejected and a
+  provider that never answered send the reader to different places, which is why
+  `connection-manager.tsx` writes four distinct hosted remedies instead of one.
+- Reuse a shipped status word before inventing one.
+- Strings are English and hardcoded, per D22 in `docs/design-system/decisions.md`. What that costs a
+  consumer is **Content → Inclusive writing**.
+
+This page decides how the interface sounds. **Content → Writing mechanics** decides how it is
+spelled: case, punctuation, numerals, and the words already settled.
