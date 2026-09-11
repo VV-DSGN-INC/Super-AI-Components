@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { ThreadList, ThreadListItem, ThreadListSection } from "./thread-list";
@@ -71,6 +71,25 @@ describe("ThreadList", () => {
     await userEvent.click(await screen.findByRole("menuitem", { name: "Delete" }));
     await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
     expect(h.onDelete).toHaveBeenCalledWith("t1");
+  });
+  // The row stays mounted here on purpose. A consumer that unmounts it the
+  // instant onDelete fires cannot observe the dialog at all, which is what hid
+  // this: AlertDialogAction is a plain Button, so unlike Cancel it closes
+  // nothing by itself, and `confirmingDelete` is private — no consumer could
+  // clear it from outside. The dialog stayed open over a still-live row and
+  // took the action again.
+  it("delete closes the dialog even while its row stays mounted", async () => {
+    const h = renderList();
+    await userEvent.click(screen.getByRole("button", { name: "Thread actions for Brand video script" }));
+    await userEvent.click(await screen.findByRole("menuitem", { name: "Delete" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Delete" }));
+    // Dialog first, so a regression names the defect rather than the knock-on:
+    // Base UI marks the page inert behind an open modal, so the row assertion
+    // below would fail too, just for a less obvious reason.
+    await waitFor(() => expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument());
+    expect(screen.queryByRole("button", { name: "Delete" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: ROW_NAME })).toBeInTheDocument();
+    expect(h.onDelete).toHaveBeenCalledTimes(1);
   });
   it("pin action fires onTogglePin", async () => {
     const h = renderList();

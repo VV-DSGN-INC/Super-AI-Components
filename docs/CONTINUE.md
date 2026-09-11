@@ -830,6 +830,37 @@ the `weeeha` GitHub account. Nothing in this round has shipped to production.
 > item. `EMBEDDABLE_SHELL` and `SIDEBAR_FILLS_SHELL` are two string literals; a
 > cross-item dependency costs a consumer more than thirty characters of Tailwind.
 
+> **An external architecture review (2026-09-10) raised five findings; one was
+> new and is closed here (2026-09-11).** The review was run against `fa99246`,
+> the 2026-06-30 Storybook-showcase commit, which is **458 commits behind
+> `main`** and had eighteen registry files against today's 248 — so read its
+> scale claims ("a nine-item registry") as historical. Two findings were already
+> fixed in those 458 commits: the AI SDK 7 usage fields now read
+> `outputTokenDetails.reasoningTokens` / `inputTokenDetails.cacheReadTokens`
+> (`ai-elements/context.tsx`), and the eighteen duplicated
+> `apps/storybook/src/components/super-ai/` copies are gone, with Storybook now
+> carrying a real `lint`, `typecheck`, `test:stories` and `addon-a11y`. Two were
+> already recorded here and stay open: the Base UI vs Radix consumer contract
+> (§5, "no registry mechanism expresses '…but adapted'") and the roving
+> tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar` (below).
+>
+> - **~~`thread-list`'s delete confirmation never closed~~ — fixed 2026-09-11.**
+>   `AlertDialogAction` is a plain `Button` in this Base UI adaptation, not
+>   `AlertDialogPrimitive.Action`, so unlike `AlertDialogCancel` — which wraps
+>   `AlertDialogPrimitive.Close` — it closes nothing by itself. **That shape is
+>   correct in the three sibling dialogs and wrong only here**, which is why it
+>   survived: `trust-dialog` and `permission-prompt` take `open`/`onOpenChange`
+>   and hand the lifecycle to the consumer, and `voice-clone-recorder` hardcodes
+>   `open` and lets the parent unmount it. `thread-list` alone owns
+>   `confirmingDelete` in a private `useState` that no consumer can reach, so
+>   nothing else could close it: a consumer that keeps the row mounted while it
+>   persists the delete was left with an open dialog that took the action again.
+>   The action now clears the state before dispatching. Note the regression test
+>   asserts the **dialog** first and the row second — Base UI marks the page
+>   inert behind an open modal, so the row assertion fails too, for a less
+>   obvious reason. Anything that unmounts the row on `onDelete` cannot observe
+>   this at all, which is exactly what the existing test did.
+
 The block brief's rule — **when a composed component does not fit, report it, do
 not fork it** — held for all twelve builders. Nobody reimplemented a composed
 component; every mismatch came back as a labelled sibling or a documented

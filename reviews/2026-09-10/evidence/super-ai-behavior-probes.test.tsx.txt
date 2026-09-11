@@ -1,0 +1,23 @@
+import * as React from "react";
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, it, expect, vi } from "vitest";
+import { ThreadListItem } from "/Users/nickv/ClaudeCode Projects/Super-AI-Components/apps/docs/registry/super-ai/thread-list";
+import { ChoiceChips, ChoiceChip } from "/Users/nickv/ClaudeCode Projects/Super-AI-Components/apps/docs/registry/super-ai/choice-chips";
+afterEach(cleanup);
+it("closes delete confirmation after confirmed action",async()=>{
+ const remove=vi.fn();
+ render(<ThreadListItem id="one" title="A thread" onDelete={remove} />);
+ await userEvent.click(screen.getByRole("button",{name:"Thread actions"}));
+ await userEvent.click(await screen.findByRole("menuitem",{name:"Delete"}));
+ await userEvent.click(await screen.findByRole("button",{name:"Delete"}));
+ expect(remove).toHaveBeenCalledTimes(1);
+ await waitFor(()=>expect(screen.queryByRole("alertdialog")).toBeNull());
+});
+it("moves and selects the next radio with ArrowRight",async()=>{
+ const change=vi.fn();
+ render(<ChoiceChips defaultValue="a" onValueChange={change} aria-label="Size"><ChoiceChip value="a">A</ChoiceChip><ChoiceChip value="b">B</ChoiceChip></ChoiceChips>);
+ screen.getByRole("radio",{name:"A"}).focus();
+ await userEvent.keyboard("{ArrowRight}");
+ expect(change).toHaveBeenCalledWith("b");
+});
