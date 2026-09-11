@@ -211,6 +211,20 @@ export const DeleteConfirm: Story = {
     // The assertion is also worth having on its own: choosing Delete must
     // dismiss the menu rather than stack a dialog on top of it.
     await waitFor(() => expect(body.queryByRole("menu")).toBeNull());
+
+    // Confirming closes the dialog. No `onDelete` is wired here, so the row
+    // survives the click — which is the whole point: this story is rendered
+    // exactly the way a consumer that persists the delete before removing the
+    // row would render it, and until 2026-09-11 the dialog stayed open over
+    // that live row and would take Delete again. `AlertDialogAction` is a plain
+    // Button in this Base UI adaptation, so unlike `AlertDialogCancel` it
+    // carries no Close behaviour and has to clear the state itself.
+    await userEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
+    await waitFor(() => expect(body.queryByRole("alertdialog")).toBeNull());
+    // And the row is reachable again. Assert this after the dialog, not before:
+    // Base UI marks the page inert behind an open modal, so a regression fails
+    // this line too, for a reason that points at the wrong component.
+    await expect(rowsOf(canvasElement)[0]).toBeInTheDocument();
   },
 };
 

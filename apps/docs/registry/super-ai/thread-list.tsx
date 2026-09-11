@@ -209,7 +209,16 @@ function ThreadListItem({
 
       {/* Base UI adaptation: AlertDialogAction is a Button (not AlertDialogPrimitive.Action),
           so onClick works directly. AlertDialogCancel uses AlertDialogPrimitive.Close
-          with a render= Button underneath — the wrapper accepts standard close props. */}
+          with a render= Button underneath — the wrapper accepts standard close props.
+          IMPORTANT: because the action is a plain Button, it carries none of the
+          Close behaviour Cancel gets for free — it has to clear `confirmingDelete`
+          itself. Sibling alert dialogs (`trust-dialog`, `permission-prompt`) can
+          skip this because they take `open`/`onOpenChange` and the consumer owns
+          the lifecycle; `confirmingDelete` is private here, so nothing else can
+          close it and a consumer that keeps the row mounted while it persists
+          the delete would otherwise be left with a dialog that accepts the
+          action again. Dispatch is treated as synchronous: if you need the row
+          to survive a failed delete, lift the state rather than reopening. */}
       <AlertDialog open={confirmingDelete} onOpenChange={setConfirmingDelete}>
         <AlertDialogContent className="motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none">
           <AlertDialogHeader>
@@ -220,7 +229,14 @@ function ThreadListItem({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => onDelete?.(id)}>Delete</AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => {
+                setConfirmingDelete(false);
+                onDelete?.(id);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
