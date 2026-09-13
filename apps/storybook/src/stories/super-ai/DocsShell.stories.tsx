@@ -200,6 +200,50 @@ export const AreaWithoutPages: Story = {
   args: { ...FULL_ARGS, activeAreaId: "audio", navSections: [], activePageId: undefined },
 };
 
+/**
+ * The shell at 600px tall — shorter than any viewport, which is the ordinary
+ * embedded case and the one that used to hide the rail's bottom slots.
+ *
+ * This is `HomeShell`'s `EmbeddedWithSidebarFooter` guard, for the shell that
+ * reaches the same slot under a different prop name: `railFooter` is forwarded
+ * to `AppSidebar`'s `footer`, so `SIDEBAR_FILLS_SHELL` is load-bearing here in
+ * exactly the way it is there. `Reference` above sets `railFooter` too, and its
+ * comment says the quiet part — "safe here and nowhere else", because that
+ * story's frame is viewport-tall and so cannot fail this way. This one can.
+ *
+ * The assertion is geometric rather than a class check: the footer's box has to
+ * sit inside the shell's box. A class assertion would pass against a constant
+ * deleted from the `cn()` call and left declared, which is the failure mode
+ * D21 exists for.
+ *
+ * The frame is queried by `data-testid`, not `canvasElement.firstElementChild`:
+ * the meta decorator already wraps every story in its own `h-svh` div, so the
+ * canvas's first child is that wrapper rather than this story's frame.
+ *
+ * Desktop-width only, and only there is there anything to claim. Below 768px
+ * the vendored Sidebar renders no rail until the trigger opens a sheet, and the
+ * sheet takes its height from the viewport rather than from the shell — so the
+ * class this story guards has nothing to apply to. See `Mobile`.
+ */
+export const EmbeddedWithRailFooter: Story = {
+  args: FULL_ARGS,
+  render: (args) => (
+    <div data-testid="embedded-frame" className="h-[600px] overflow-hidden">
+      <DocsShell {...args} railFooter={<button type="button">Account</button>} />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const shell = canvasElement.querySelector<HTMLElement>('[data-testid="embedded-frame"]')!;
+    const footer = canvasElement.querySelector<HTMLElement>('[data-slot="app-sidebar-footer"]')!;
+
+    const shellBox = shell.getBoundingClientRect();
+    const footerBox = footer.getBoundingClientRect();
+
+    await expect(footerBox.bottom).toBeLessThanOrEqual(shellBox.bottom + 1);
+    await expect(footerBox.height).toBeGreaterThan(0);
+  },
+};
+
 /* ----------------------------------------------------------------------
  * Case stories — the situations this shell meets in a product, as opposed to
  * the prop combinations above. See docs/design-system/story-conventions.md.
