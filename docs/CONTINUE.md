@@ -927,14 +927,28 @@ needed it to work and could not make it work.
   `SIDEBAR_FILLS_SHELL` in five shells. Note the shells' own JSDoc and docs
   pages described the mechanism correctly all along — this entry's summary is
   what misattributed it to B1.
-- **The sidebar-footer geometric assertion (Task 10) only covers `HomeShell`.**
-  `chat-shell` and `artifact-shell` forward `sidebarFooter` to `AppSidebar`'s
-  `footer` prop identically to `HomeShell` and could reuse
-  `EmbeddedWithSidebarFooter` almost verbatim. `docs-shell` forwards
-  `railFooter` to the same `footer` prop under a different prop name.
-  `records-shell` forwards no footer prop at all and would need either a
-  different anchor or a documented exemption. None of the other four shells
-  has this story yet — open follow-up.
+- **~~The sidebar-footer geometric assertion (Task 10) only covers
+  `HomeShell`~~ — closed 2026-09-13, and three of its four claims had already
+  expired.** `chat-shell` and `artifact-shell` each grew their own
+  `EmbeddedWithSidebarFooter` during the O2 wave, and `records-shell` grew
+  `EmbeddedShorterThanViewport`, which is the documented substitution this entry
+  asked for: it forwards no footer, so it anchors on the sidebar's own box
+  instead, which is strictly stronger than asserting a descendant of it. Only
+  `docs-shell` was still uncovered, and it now carries
+  `EmbeddedWithRailFooter` — the same guard reaching the same slot under the
+  prop name `railFooter`.
+
+  **The measurement that says why the story was needed.** Comment out
+  `SIDEBAR_FILLS_SHELL` in `docs-shell.tsx` and the rail footer's bottom lands at
+  900px inside a frame ending at 601px. Exactly one test fails: the new one. The
+  other fourteen `DocsShell` stories pass against the broken shell, because every
+  one of them renders in a viewport-tall frame where the bug cannot show. That is
+  the general shape — **a containment bug is invisible to any story whose frame is
+  as tall as the viewport**, so the guard has to bring its own short frame.
+
+  `Reference` in that file sets `railFooter` too, and its comment already said
+  the quiet part: "safe here and nowhere else".
+
 - **~~Carousel arrows positioned outside their own box~~ (`-left-12`/`-right-12`)
   — both named components were fixed at the call site; the open one is a third.**
   The finding stands: the vendored `Carousel` puts its arrows outside the box, so
