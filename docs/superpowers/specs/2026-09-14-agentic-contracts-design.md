@@ -4,7 +4,8 @@
 below was measured in a worktree at that commit. Where a count contradicts a
 doc, the doc is what is wrong.
 
-**Status: approved in brainstorming, not yet implemented.** Plan:
+**Status: the mechanism is implemented** (branch `claude/agentic-contracts`,
+2026-09-14); the 113 remaining contracts are the wave program of §9. Plan:
 `docs/superpowers/plans/2026-09-14-agentic-contracts.md`. Implementation is
 intended for Opus; the mechanism lands in one plan, the remaining contracts
 land in waves (§9).
@@ -427,7 +428,23 @@ baseline cannot quietly stay at three.
 
 ## 12. Acceptance
 
-The mechanism is done when, at the plan's last commit:
+**Measured 2026-09-14 on `claude/agentic-contracts`, after Task 12's gate run.**
+
+| what                            | measured                                                  |
+| ------------------------------- | --------------------------------------------------------- |
+| contracts emitted               | 116 metas, 116 published pages, 116 routing-table rows    |
+| components listed in `llms.txt` | 116                                                       |
+| contract-coverage baseline      | 113 unwritten (three controls written)                    |
+| story-coverage baseline         | 0 unmet, 0 of them variant                                |
+| `CLAUDE.md`                     | 14,244 bytes against a 14,500 ceiling                     |
+| ladder                          | `highestContiguous=00`; see item 6                        |
+| root gates (`lint` … `build`)   | nine, all green                                           |
+| Playwright smoke                | 133 passed                                                |
+| Storybook a11y in the CI image  | 1393 passed across 131 files                              |
+| consumer install test           | PASS, reporting `mode-tabs.meta.json with 1 variant axis` |
+
+Each numbered claim below was checked by hand, including the five that had to
+be made to fail first.
 
 1. `pnpm check:contract`, `pnpm test`, `pnpm build:registry`, `pnpm build`
    and the consumer install test are green from the repo root, and the
