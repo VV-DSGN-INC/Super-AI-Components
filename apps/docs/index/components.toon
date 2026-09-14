@@ -1,0 +1,117 @@
+components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
+  kbd,primitive,A,registry/super-ai/kbd.meta.json,none,shortcuts-sheet,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
+  cost-chip,primitive,A,registry/super-ai/cost-chip.meta.json,none,credits-indicator|run-button,"A small pill that prices one action: a coin icon, a number, and the unit that number is counted in."
+  date-section,primitive,A,registry/super-ai/date-section.meta.json,unwritten,unwritten,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
+  choice-chips,primitive,A,registry/super-ai/choice-chips.meta.json,unwritten,unwritten,"A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, s"
+  filter-bar,primitive,A,registry/super-ai/filter-bar.meta.json,unwritten,unwritten,"The chip-scale end of filtering: a wrapping row of facet chips, an optional add-a-facet chip, and a"
+  field-row,primitive,A,registry/super-ai/field-row.meta.json,unwritten,unwritten,"One labelled parameter on a shared column grid: a label, whatever control sets the value, and an opt"
+  gen-settings-bar,primitive,A,registry/super-ai/gen-settings-bar.meta.json,unwritten,unwritten,"The one-line strip of generation parameters that sits with the prompt — model, aspect, resolution, d"
+  preview-tile,primitive,A,registry/super-ai/preview-tile.meta.json,unwritten,unwritten,"The fixed-aspect frame every picker, grid and strip is built out of: one aspect-ratio box, a childre"
+  entity-row,primitive,A,registry/super-ai/entity-row.meta.json,unwritten,unwritten,"One line in a list of things: an optional icon, a title, an optional description, and a trailing slo"
+  stat-readout,primitive,A,registry/super-ai/stat-readout.meta.json,unwritten,unwritten,"A description list of label→value rows for the metadata hanging off a result: model, seed, sampler,"
+  reset-affordance,primitive,A,registry/super-ai/reset-affordance.meta.json,unwritten,unwritten,The small ↺ that sits at the end of an editable row and puts the value back where it started. Three
+  section-header,primitive,A,registry/super-ai/section-header.meta.json,size=default/sm,date-section,"One header row for a group of things: a title, an optional count beside it, an optional trailing act"
+  app-sidebar,component,B,registry/super-ai/app-sidebar.meta.json,unwritten,unwritten,"The assembled product sidebar: a workspace switcher, a nav list, an ambient promo card, and a footer"
+  workspace-switcher,component,B,registry/super-ai/workspace-switcher.meta.json,unwritten,unwritten,"A dropdown that shows the workspace, org, or product the user is currently in and lets them jump to"
+  sidebar-nav,component,B,registry/super-ai/sidebar-nav.meta.json,unwritten,unwritten,A sectioned nav for the primary sidebar: a flat list of icon+label rows grouped under section header
+  modality-rail,component,B,registry/super-ai/modality-rail.meta.json,none,mode-tabs|sidebar-nav,"The vertical, fixed-width tool switcher that runs down the left edge of an editor shell: one icon-ov"
+  promo-card,component,B,registry/super-ai/promo-card.meta.json,unwritten,unwritten,"A small, self-contained card that surfaces one of four pitches — upgrade to a paid plan, invite team"
+  thread-list,component,B,registry/super-ai/thread-list.meta.json,unwritten,unwritten,"The conversation sidebar: past threads bucketed by when you last touched them, each row a button tha"
+  app-topbar,component,B,registry/super-ai/app-topbar.meta.json,unwritten,unwritten,The single header that runs across the top of a shell — one component with two lead configurations.
+  account-menu,component,B,registry/super-ai/account-menu.meta.json,unwritten,unwritten,"The avatar menu in the corner of the shell: an identity block (avatar, name, email) on top, product"
+  hero-omnibox,component,C,registry/super-ai/hero-omnibox.meta.json,unwritten,unwritten,"The centred prompt that greets a user on an app's home screen — a large textarea in a card, with att"
+  suggestion-chips,component,C,registry/super-ai/suggestion-chips.meta.json,unwritten,unwritten,A horizontal row of tap-to-fill prompt chips — the empty-state or below-composer starters that turn
+  feature-card-row,component,C,registry/super-ai/feature-card-row.meta.json,unwritten,unwritten,"A horizontally scrollable row of feature cards, used for both ""Start from scratch"" prompts and ""Popu"
+  recent-grid,component,C,registry/super-ai/recent-grid.meta.json,layout=grid/list,generation-grid|artifact-grid,"A grid or list of the user's recent projects, each shown as a fixed-height thumbnail with a title, a"
+  recommendation-card,component,C,registry/super-ai/recommendation-card.meta.json,unwritten,unwritten,"A ""Recommended for you"" card with two levels: a one-line row for the feed, and a modal that lays out"
+  media-prompt-bar,component,D,registry/super-ai/media-prompt-bar.meta.json,unwritten,unwritten,"The media-gen omnibox: a prompt bar purpose-built for image, video, and audio generation. It ships i"
+  reference-strip,component,D,registry/super-ai/reference-strip.meta.json,unwritten,unwritten,"A horizontal strip of typed attachment slots that sits above a prompt — reference images, first/last"
+  context-chips,component,D,registry/super-ai/context-chips.meta.json,unwritten,unwritten,"A row of removable reference chips that sit above a prompt or composer — one per file, text selectio"
+  mode-tabs,component,D,registry/super-ai/mode-tabs.meta.json,variant=default/with-icon/with-tooltip,model-picker,A small set of mutually exclusive modes — two to five — that change how the same prompt or workspace
+  quote-reply,component,D,registry/super-ai/quote-reply.meta.json,unwritten,unwritten,"A small quoted block that attaches a selection — a text range, an image region, a table cell, or a t"
+  skill-menu,component,D,registry/super-ai/skill-menu.meta.json,unwritten,unwritten,"A two-pane, searchable menu of agent skills: a filterable list of rows on the left and a live previe"
+  slot-summary,component,D,registry/super-ai/slot-summary.meta.json,unwritten,unwritten,"The read-back an agent shows just before it acts: one row per parameter it resolved, each row carryi"
+  generation-panel,component,E,registry/super-ai/generation-panel.meta.json,unwritten,unwritten,"The left configuration column of a generation tool: upload, directions, presets, settings, then cost"
+  model-picker,component,E,registry/super-ai/model-picker.meta.json,presentation=dropdown/expanded-cards/node-inline,mode-tabs,"The control for choosing which model a generation runs on, in three container shapes for three surfa"
+  parameter-panel,component,E,registry/super-ai/parameter-panel.meta.json,unwritten,unwritten,The stack of rows a generation surface uses to expose the knobs behind a run — sliders with a live n
+  preset-grid,component,E,registry/super-ai/preset-grid.meta.json,unwritten,unwritten,"A grid of labelled thumbnail tiles a user picks a preset from directly — a visual style, a colour pa"
+  run-button,component,E,registry/super-ai/run-button.meta.json,unwritten,unwritten,"The single control that starts a generation: the trigger, its credit cost, and its progress live in"
+  generation-queue,component,E,registry/super-ai/generation-queue.meta.json,unwritten,unwritten,A list of in-flight generation slots — one row per requested result — that carries each slot from qu
+  member-gate-row,component,E,registry/super-ai/member-gate-row.meta.json,unwritten,unwritten,"A single settings row for a feature that's gated behind a plan, a trial, or nothing at all. It compo"
+  generation-wizard,component,E,registry/super-ai/generation-wizard.meta.json,unwritten,unwritten,A multi-step generate flow with three parts working together: a stepper that shows where you are and
+  tts-composer,component,E,registry/super-ai/tts-composer.meta.json,unwritten,unwritten,"A voiceover script editor built out of independently editable, independently regenerable segments —"
+  voice-clone-recorder,component,E,registry/super-ai/voice-clone-recorder.meta.json,unwritten,unwritten,A guided flow for recording the voice samples a clone is trained on: read a script aloud while a liv
+  result-card,component,F,registry/super-ai/result-card.meta.json,unwritten,unwritten,"One generated asset, wherever it appears — a fixed-aspect media frame with an optional prompt excerp"
+  generation-grid,component,F,registry/super-ai/generation-grid.meta.json,unwritten,unwritten,"The gallery a batch of results lands in — a responsive grid with three density settings, optional da"
+  asset-detail,component,F,registry/super-ai/asset-detail.meta.json,unwritten,unwritten,The lightbox for a single result: the media at full size beside a provenance rail carrying the promp
+  action-stack,component,F,registry/super-ai/action-stack.meta.json,presentation=menu/inline,ai-tools-menu,"The list of places a finished result can go next — Extend, then Upscale, then Use in Lip sync — with"
+  compare-viewer,component,F,registry/super-ai/compare-viewer.meta.json,unwritten,unwritten,"Two or more renders of the same thing, shown together in one of three modes: side by side with a dra"
+  render-queue,component,F,registry/super-ai/render-queue.meta.json,unwritten,unwritten,"A table of staged render jobs, each row carrying the output spec it will produce — format, codec, re"
+  approval-card,component,F,registry/super-ai/approval-card.meta.json,unwritten,unwritten,"A single artifact held for a human decision, with four verbs in a fixed order — Confirm, Edit, Regen"
+  transport-controls,component,H,registry/super-ai/transport-controls.meta.json,unwritten,unwritten,"The playback bar for any timeline: skip back, play/pause, skip forward, an editable elapsed/total re"
+  time-ruler,component,H,registry/super-ai/time-ruler.meta.json,unwritten,unwritten,"The measured edge of a timeline: a scale of ticks and timecodes, a draggable playhead, and an option"
+  track-lane,component,H,registry/super-ai/track-lane.meta.json,unwritten,unwritten,"One row of a timeline: a fixed-width gutter carrying the track name plus mute, solo and lock, and be"
+  transcript-editor,component,H,registry/super-ai/transcript-editor.meta.json,unwritten,unwritten,"A transcript you can cut with. Words and inline media arrive as timed tokens, a run of them is selec"
+  frame-strip,component,H,registry/super-ai/frame-strip.meta.json,unwritten,unwritten,"A horizontal strip of frames, pages or artboards, built on preview-tile. One item is active at a tim"
+  waveform-editor,component,H,registry/super-ai/waveform-editor.meta.json,unwritten,unwritten,"A sample-accurate audio editing surface: a peak strip you can zoom until one column is one sample, a"
+  stem-mixer,component,H,registry/super-ai/stem-mixer.meta.json,unwritten,unwritten,"A vertical stack of stem lanes — one per separated or generated part of a track — each with mute, so"
+  tool-panel,component,I,registry/super-ai/tool-panel.meta.json,unwritten,unwritten,"The column that sits beside the canvas in an editor: a pinned search field, a stack of curated secti"
+  property-inspector,component,I,registry/super-ai/property-inspector.meta.json,unwritten,unwritten,"The panel beside a canvas that edits whatever is selected — width, type size, blur, opacity — groupe"
+  context-toolbar,component,I,registry/super-ai/context-toolbar.meta.json,unwritten,unwritten,"The small floating bar that appears beside whatever is currently selected on a canvas, offering the"
+  ai-tools-menu,component,I,registry/super-ai/ai-tools-menu.meta.json,presentation=menu/inline,action-stack,"The AI actions that belong to a selected object — remove the background of this image, expand this f"
+  drawing-tools,component,I,registry/super-ai/drawing-tools.meta.json,unwritten,unwritten,"The drawing side of an editor canvas: a tool rail, an optional shape rail, brush controls, a colour"
+  asset-library,component,J,registry/super-ai/asset-library.meta.json,unwritten,unwritten,"The surface a product's saved work lives on: a header with its actions, a search field, a row of fil"
+  filter-panel,component,J,registry/super-ai/filter-panel.meta.json,unwritten,unwritten,"A vertical rail of collapsible checkbox groups, each facet carrying the number of results it would l"
+  explore-gallery,component,J,registry/super-ai/explore-gallery.meta.json,unwritten,unwritten,"The community feed of a creative product: a masonry wall of other people's work, an ordering control"
+  artifact-grid,component,J,registry/super-ai/artifact-grid.meta.json,unwritten,unwritten,"A grid of the documents and artifacts an assistant produced, grouped under the session that produced"
+  record-list,component,J,registry/super-ai/record-list.meta.json,unwritten,unwritten,"A table of records that run — scenarios, zaps, workflows, scheduled projects. Each row carries the a"
+  template-detail,component,J,registry/super-ai/template-detail.meta.json,unwritten,unwritten,The modal a template opens into before anyone commits to it: a large preview with a thumbnail strip
+  track-list,component,J,registry/super-ai/track-list.meta.json,unwritten,unwritten,"A table of music library rows: cover art, title and artist, tags, a row-height waveform you can audi"
+  ai-doc-block,component,K,registry/super-ai/ai-doc-block.meta.json,unwritten,unwritten,"A passage of generated prose that sits inside a document as a real node — a paragraph, a heading, a"
+  inline-generate-popup,component,K,registry/super-ai/inline-generate-popup.meta.json,unwritten,unwritten,The small prompt surface that opens where the cursor is when someone asks for writing they have not
+  diff-review,component,K,registry/super-ai/diff-review.meta.json,unwritten,unwritten,"Track changes on prose, where every change carries the reason it was made. A paragraph is one run of"
+  selection-toolbar,component,K,registry/super-ai/selection-toolbar.meta.json,unwritten,unwritten,The floating bar that appears over selected prose and offers AI writing verbs: Improve first and fil
+  source-panel,component,K,registry/super-ai/source-panel.meta.json,unwritten,unwritten,"The list of everything a retrieval-backed surface knows about — files, pages, transcripts — with eac"
+  citation-ref,component,K,registry/super-ai/citation-ref.meta.json,unwritten,unwritten,The inline marker that attaches a claim to the passage it came from — a small superscript index besi
+  answer-block,component,K,registry/super-ai/answer-block.meta.json,unwritten,unwritten,"The body of a grounded answer: a list of claims, each carrying its own inline citation markers, plus"
+  source-cards,component,K,registry/super-ai/source-cards.meta.json,unwritten,unwritten,"The retrieved set behind an answer, as a ranked list of cards. Every document the search returned ge"
+  empty-state,component,L,registry/super-ai/empty-state.meta.json,size=page/panel/in-grid,generation-queue|onboarding-wizard,"The nothing-here surface, in three sizes that share one component: a page takeover for a whole route"
+  coach-mark,component,L,registry/super-ai/coach-mark.meta.json,unwritten,unwritten,"One step of a product tour: a popover anchored to a real element, with a scrim that cuts a hole arou"
+  feature-announcement,component,L,registry/super-ai/feature-announcement.meta.json,unwritten,unwritten,The surface that tells a user something in the product changed. One component with four escalation l
+  whats-new,component,L,registry/super-ai/whats-new.meta.json,unwritten,unwritten,"A changelog browser in a dialog: a scrollable list of dated entries on the left, and the selected en"
+  shortcuts-sheet,component,L,registry/super-ai/shortcuts-sheet.meta.json,unwritten,unwritten,"A modal cheatsheet of every key binding in the app, grouped under the app's own section names. Each"
+  onboarding-wizard,component,L,registry/super-ai/onboarding-wizard.meta.json,unwritten,unwritten,"The first-run flow: one question per screen, answered with choice cards, tracked by a dot rail that"
+  settings-dialog,component,M,registry/super-ai/settings-dialog.meta.json,variant=dialog/full-page,settings-shell,A settings surface built from a section nav on the left and a panel of setting rows on the right. Ev
+  credits-indicator,component,M,registry/super-ai/credits-indicator.meta.json,unwritten,unwritten,"A small, always-on pill showing how much of the plan's allowance is left. It renders either a bare c"
+  quota-meter,component,M,registry/super-ai/quota-meter.meta.json,none,credits-indicator|usage-dashboard,"A stack of plan-usage meters, one row per metered resource, each showing what has been used against"
+  pricing-table,component,M,registry/super-ai/pricing-table.meta.json,unwritten,unwritten,"The plan comparison surface: a monthly/yearly toggle above a row of plan cards, with optional add-on"
+  paywall-message,component,M,registry/super-ai/paywall-message.meta.json,unwritten,unwritten,The turn in an assistant conversation where a run was stopped because the plan does not cover it — a
+  rate-limit-banner,component,M,registry/super-ai/rate-limit-banner.meta.json,unwritten,unwritten,"An inline banner that sits above the composer while the user cannot send, and says exactly two thing"
+  connection-manager,component,M,registry/super-ai/connection-manager.meta.json,unwritten,unwritten,The settings surface where a user connects the model providers a product will call on their behalf:
+  feedback,component,N,registry/super-ai/feedback.meta.json,unwritten,unwritten,"A thumbs-up / thumbs-down control for rating a single response, with an optional reason popover behi"
+  trust-dialog,component,N,registry/super-ai/trust-dialog.meta.json,unwritten,unwritten,"A modal gate for running content the user didn't author — a community template, a shared automation,"
+  disclaimer-note,component,N,registry/super-ai/disclaimer-note.meta.json,unwritten,unwritten,"A short, permanent note that sits next to AI-generated output and says it can be wrong. It renders i"
+  trace-timeline,component,N,registry/super-ai/trace-timeline.meta.json,unwritten,unwritten,"A waterfall view of an agent run's steps, tool calls, and LLM calls, positioned along a shared time"
+  run-inspector,component,N,registry/super-ai/run-inspector.meta.json,unwritten,unwritten,The span detail an engineer opens from a trace: the raw input and output of one step of an agent run
+  usage-dashboard,component,N,registry/super-ai/usage-dashboard.meta.json,unwritten,unwritten,"The team-facing view of what an AI product costs to run: a period selector, a row of summary figures"
+  env-status,component,N,registry/super-ai/env-status.meta.json,unwritten,unwritten,"A read-only list of the model providers a product is configured to use, each row stating in words wh"
+  permission-prompt,component,N,registry/super-ai/permission-prompt.meta.json,unwritten,unwritten,A modal gate that pauses a tool-calling agent before it does something consequential and asks a huma
+  autonomy-selector,component,N,registry/super-ai/autonomy-selector.meta.json,unwritten,unwritten,"The standing-policy surface for an agent: one coarse dial with three levels — ask every time, auto-a"
+  safety-block,component,N,registry/super-ai/safety-block.meta.json,unwritten,unwritten,A system-voiced notice that a policy stopped something. It comes in two variants because two differe
+  escalation-handoff,component,N,registry/super-ai/escalation-handoff.meta.json,unwritten,unwritten,"The card an agent shows when it is handing the conversation to a person. Its subject is the packet,"
+  task-tray,component,N,registry/super-ai/task-tray.meta.json,unwritten,unwritten,A slide-over panel listing background work that keeps running after you leave the screen that starte
+  home-shell,block,O,registry/super-ai/home-shell.meta.json,unwritten,unwritten,"The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold,"
+  chat-shell,block,O,registry/super-ai/chat-shell.meta.json,none,home-shell|studio-shell,"The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue,"
+  studio-shell,block,O,registry/super-ai/studio-shell.meta.json,unwritten,unwritten,"The page shell for a creative studio editor: a vertical modality rail on the far left, an editor top"
+  timeline-shell,block,O,registry/super-ai/timeline-shell.meta.json,unwritten,unwritten,"The page shell for a timeline-dominant editor: a tool rail on the left, a content panel beside it, a"
+  generation-shell,block,O,registry/super-ai/generation-shell.meta.json,unwritten,unwritten,"The page shell for a single-purpose AI tool: a title bar, a config column on the left, a results can"
+  library-shell,block,O,registry/super-ai/library-shell.meta.json,unwritten,unwritten,"The page shell for a personal archive: a faceted rail on the left, a header with search and the filt"
+  explore-shell,block,O,registry/super-ai/explore-shell.meta.json,unwritten,unwritten,"The page shell for a community gallery: a destination rail on the left, a prompt bar docked above th"
+  artifact-shell,block,O,registry/super-ai/artifact-shell.meta.json,unwritten,unwritten,"The page shell for an artifact or document index: a sidebar that navigates the library, a header car"
+  records-shell,block,O,registry/super-ai/records-shell.meta.json,unwritten,unwritten,"The page shell for a list of things that run: projects, scenarios, zaps, workflows. A product rail o"
+  docs-shell,block,O,registry/super-ai/docs-shell.meta.json,unwritten,unwritten,"The page shell for a documentation site: a persistent icon rail of product areas, a sectioned page n"
+  settings-shell,block,O,registry/super-ai/settings-shell.meta.json,unwritten,unwritten,"The page shell for full-page settings: a searchable grouped nav down the left, a breadcrumb across t"
+  notebook-shell,block,O,registry/super-ai/notebook-shell.meta.json,unwritten,unwritten,"The page shell for grounded generation: the documents you uploaded on the left, a conversation about"
+  auth-shell,block,O,registry/super-ai/auth-shell.meta.json,unwritten,unwritten,The page shell for signing in and signing up: a pitch pane beside a card that holds a list of identi
+  data-views,component,P,registry/super-ai/data-views.meta.json,unwritten,unwritten,"One collection rendered five ways — feed, board, table, calendar and timeline — from a single config"
+  detail-view-shell,component,P,registry/super-ai/detail-view-shell.meta.json,unwritten,unwritten,"The chrome around any record detail, in three opening modes: a centred dialog, a right-docked panel"

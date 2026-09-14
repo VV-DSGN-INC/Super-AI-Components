@@ -1,0 +1,81 @@
+# Answer Block
+
+> The body of a grounded answer: a list of claims, each carrying its own inline citation markers, plus a verdict on how much of the answer is actually sourced. It composes citation-ref for the markers themselves and adds the two things a single marker cannot express — the coverage of the answer as a whole, and the gap between what retrieval found and what the answer used.
+
+Layer: component · Family: K · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/answer-block.json` · Contract: `components/super-ai/answer-block.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/answer-block
+
+## Why it matters
+
+Every enterprise assistant that answers from documents has to answer a second question alongside the first: how much of this should you believe. Glean, NotebookLM, Ask iManage and Microsoft Copilot Studio all attach provenance at the sentence rather than the reply, because a citation bar under a paragraph tells you the paragraph came from somewhere without telling you which sentence. The part worth copying is the coverage verdict: an answer where two of five claims are sourced looks, at a glance, exactly like an answer where all five are, and the only thing standing between a user and that misreading is a component that refuses to render them the same way.
+
+## When to reach for it
+
+Give it the answer already split into claims — one claim per assertion a reader could check independently, not one per paragraph — and attach citations to the claim they support rather than to the block. Coverage is derived, never declared: pass citations where you have them and the component works out whether the answer reads as sourced, partly sourced or unsourced. While tokens are still arriving, hold `streaming` true and append claims as they complete; the component suppresses both the coverage verdict and the unused-source count until the answer settles, because a verdict on a half-written answer is wrong by construction. Pair it with source-cards when the reader needs the corpus behind the answer, and pass `retrievedUnused` so the two agree on how much went unused.
+
+## Variants
+
+Not yet recorded.
+
+## Instead use
+
+Not yet recorded.
+
+## Do
+
+- Split the answer into one claim per independently checkable assertion, so a marker points at the sentence it supports rather than the paragraph.
+- Pass retrievedUnused so the answer says out loud how much of what was retrieved it ignored.
+
+## Don't
+
+- Don't hand it one claim holding the whole answer — the marker then means the same unhelpful thing a citation bar under a paragraph means.
+- Don't drop the claims you couldn't source to make the answer read as fully cited — a partially-cited answer that renders as cited is the failure this component exists to prevent.
+
+## Anatomy
+
+- `answer-block`: Root. Carries data-coverage (cited/partially-cited/uncited) and data-streaming.
+- `answer-block-claim`: One claim paragraph, with its markers inline at the end. Carries data-settled — absent on the in-flight claim while streaming.
+- `answer-block-coverage-warning`: The verdict, rendered only when coverage isn't `cited` and only once streaming has finished.
+- `answer-block-unused`: The retrieved-but-unused count. Rendered only after streaming, and only when the count is above zero.
+
+## Accessibility
+
+**Keyboard**
+
+- The block has exactly one tab stop per citation marker and none of its own. An answer of five claims carrying nine markers is nine Tab presses, and the claim text between them is not focusable.
+- A `loading` or `unresolved` marker is still a real `<button>`, and still a tab stop, but has no `onClick` — pressing it does nothing. Only a `resolved` marker with `onJumpToSource` actually goes anywhere.
+- Focusing a resolved marker opens its hovercard, so the quoted chunk is reachable without a pointer. Nothing dismisses it from the keyboard except moving focus away; there is no Escape handler on the card.
+- There is no arrow-key movement between markers, no shortcut to the next citation, and no key that jumps from a claim to its sources.
+
+**Screen reader**
+
+- A resolved marker's accessible name is its `label` and nothing else, so it announces as "1, button" — with no word saying it is a citation. Only the `unresolved` state gets a written name, "Citation 1 — source unavailable".
+- That unresolved name is built from `typeof label === "string"`, and a numeric `label` is not a string. Passing `label={1}` rather than `label="1"` degrades every broken marker in the answer to the identical "Citation  — source unavailable".
+- The hovercard is portalled with no `aria-describedby`, no role and no other relationship back to the marker. Focus opens it visually, but the source name and the quoted chunk are never announced with the marker — a screen-reader user hears the number and nothing behind it.
+- The coverage warning is an ordinary paragraph, not an alert and not a live region. An answer that finishes streaming with nothing sourced announces nothing; the sentence is only found by reading on.
+- `data-coverage` on the root reaches styling and tests, never assistive technology. "Partially cited" is carried entirely by that warning sentence.
+- The retrieved-but-unused count is likewise plain text with no live region — the single most informative line on the surface arrives silently.
+- The warning triangle is the one icon here without `aria-hidden`, so unlike every other glyph in this registry it is not explicitly removed from the accessible tree.
+
+**Focus**
+
+- Nothing here moves focus. `onJumpToSource` scrolls your source panel; moving focus into the chunk it scrolled to is your job, and without it a keyboard user is told nothing happened.
+- Markers carry their own `focus-visible:ring-2`, so they are visible on focus even inside a consumer with no global focus style.
+- While `streaming`, the final claim renders without its markers and gains them when it settles. A marker therefore appears in the tab order behind wherever focus already is, which is harmless — but appending a claim before the previous one has its citations makes markers materialise mid-answer under a user who has already tabbed past.
+
+## Pitfalls
+
+- Coverage is computed from the claims you pass, not from a prop — a claim with an empty `citations` array counts as uncited exactly like one with the key omitted. So a retrieval step that returns an empty array on failure silently downgrades the whole answer to `partially-cited`, complete with the warning, and the only clue is a marker that never appears.
+- `streaming` suppresses the coverage warning and the unused-source count, not the citations themselves. Only the last claim in the array is treated as in-flight; every earlier one renders its markers as normal. If you append a new claim before the previous one has its citations attached, that previous claim settles uncited and the answer's coverage moves under the reader.
+- A citation with no `quote` still renders a marker, and the hovercard it opens is then empty — the reader gets a claim that looks sourced and cannot be checked. `source` alone names a document; it does not make the claim verifiable. Pass the retrieved chunk.
+- The component renders no in-flight affordance of its own. `streaming` changes what is withheld, not what is shown — there is no caret, spinner or pulse on the answer, so on a slow first token an empty AnswerBlock is indistinguishable from one that has finished with nothing to say. Supply that signal from the surrounding surface.
+
+## Composition
+
+- States: `streaming`, `cited`, `partially-cited`, `uncited`, `retrieved-unused`, `citation-unresolved`
+- Composes from this registry: citation-ref
+- shadcn primitives: none
+- npm: lucide-react
+
+## Evidence
+
+Glean, NotebookLM, iManage, Microsoft Copilot Studio

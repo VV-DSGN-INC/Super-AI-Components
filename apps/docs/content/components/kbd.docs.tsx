@@ -117,4 +117,13 @@ export const KbdDocs: ComponentDocs = {
     "This is not shadcn/ui's `kbd`, and the difference is a contrast fix: upstream pairs `text-muted-foreground` with `bg-muted`, which measures 4.34:1 against a 4.5:1 minimum, so this version uses `text-foreground` on the same fill. If you restyle the cap with a background of your own, rebind the foreground token rather than putting the muted colour back.",
     "The cap is a fixed 20px tall with no `whitespace-nowrap`. A named key like Right Arrow is fine on its own, but squeezed by a narrow row it wraps inside a box that cannot grow and the second line escapes the border. Give long keys room, or shorten the label sharing the row.",
   ],
+  variants: {
+    none: "Kbd and KbdGroup take plain DOM props and expose no axis: a keycap is one size and one style on purpose, so every shortcut in a product reads as the same product.",
+  },
+  insteadUse: [
+    {
+      component: "shortcuts-sheet",
+      when: "You are listing more than a handful of shortcuts. The sheet owns the sectioning and the dialog and composes Kbd for the keys.",
+    },
+  ],
 };

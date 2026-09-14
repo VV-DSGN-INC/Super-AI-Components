@@ -478,6 +478,47 @@ Each appears in at most one product on the reference board.
 
 ## 4. Findings that change the plan, not just the drawings
 
+### D23 · The guidance module is the contract; every other surface derives from it — 2026-09-14
+
+`ComponentDocs` in `apps/docs/lib/component-docs.ts` is the one authored source
+of a component's usage judgments. The shipped `<name>.meta.json`, the routing
+table `index/components.toon`, the published `llms` corpus and the docs page
+all derive from it, and no second authored copy of any field exists.
+
+Rejected: a fresh `.meta.json` as the source with the docs page rendering from
+it, which is the sibling repo's shape. Same end state, at the cost of migrating
+116 TSX modules into JSON and moving every live example into a side map.
+Rejected too: two sources cross-gated on their shared fields, which is exactly
+the drift arrangement the contract gate exists to end.
+
+Spec: `docs/superpowers/specs/2026-09-14-agentic-contracts-design.md`.
+
+### D24 · The contract ships beside the code, and the installed copy outranks the web — 2026-09-14
+
+Every registry item carries its `<name>.meta.json` as a second file, typed
+`registry:file` and targeted at `components/super-ai/<name>.meta.json`, so a
+consumer that installs a component has the contract next to the code it
+installed and version-locked to it. The same content is published for agents
+that have not installed anything yet, and every published page says the
+installed file wins on conflict.
+
+Rejected: publishing only, which lets an agent read a newer contract than the
+code it holds. Rejected: shipping one routing table on first install and
+keeping the per-item pages on the web, which puts the judgment where the
+version lock is not.
+
+### D25 · Silence is not a decision — 2026-09-14
+
+A contract field that can legitimately be empty carries the reason instead:
+`variants` and `insteadUse` are each either a non-empty list or
+`{ none: "<why>" }`, gated at 20 characters. An absent field means unwritten
+and sits in `contract-coverage.baseline.json`; an empty array is a schema
+failure.
+
+The one thing a gate cannot tell from oversight is silence, which is why the
+scaffolder seeds both fields with a nine-character reason: a new component is
+red until someone writes the judgment.
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is

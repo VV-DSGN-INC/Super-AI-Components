@@ -1,0 +1,29 @@
+# <system name>
+
+<One paragraph: what this is, and what the source of truth is.>
+
+## Commands
+
+Before claiming any change done: `npm run lint && npm run typecheck && npm test` — all
+three must pass.
+
+## Layout
+
+- `src/` — the library
+- `research/specs/` — dated design specs
+- `research/plans/` — implementation plans
+
+## Primitives
+
+- **Instructions** — this file, always in context.
+- **Rules** — `src/lib/rules/`, one record per rule.
+- **Skills** — `.claude/skills/`, how to judge and how to fix.
+- **Schemas** — the token name contract and the component meta schema.
+
+## Loops
+
+- **BUILD**, on a component change: scaffold, then five co-located files, then the
+  usage contract with its why, then the docs page from the same judgments.
+- **AUDIT**, on merge: the detector, the rendered passes, the schema gates.
+- **Human gate**: review approves judgment, not syntax. A rejection is not finished
+  when the instance is fixed — encode it back into a rule so it cannot recur.

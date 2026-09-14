@@ -135,4 +135,28 @@ export const SettingsDialogDocs: ComponentDocs = {
     "Reaching for A6 `field-row` for these rows. It is the right primitive for a compact inspector — a fixed narrow label with the control immediately beside it and the hint below — and the wrong one here, where the description sits under the label in a flexible text column and the control is pushed to the far edge. Two different grids that happen to share three ingredients.",
     "Assuming the search filters everything at once. It scores every section, but you still read results one panel at a time — the match counts on the nav are what tell you where the rest of them are.",
   ],
+  variants: [
+    {
+      prop: "variant",
+      default: "dialog",
+      values: [
+        {
+          value: "dialog",
+          intent:
+            "Choose dialog when settings are a brief detour from whatever the user was doing — they came in to flip a preference and expect to land back where they were, so nothing here needs a URL or a bookmark.",
+        },
+        {
+          value: "full-page",
+          intent:
+            "Choose full-page when settings are a destination in their own right — a section list long enough that people search it, or somewhere support has to be able to link a user straight into.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "settings-shell",
+      when: "You need the whole settings destination, not just the row grid — a grouped nav, a breadcrumb, an account menu and a plan story. settings-dialog's full-page variant is the rows and search; settings-shell is what composes those into that page.",
+    },
+  ],
 };

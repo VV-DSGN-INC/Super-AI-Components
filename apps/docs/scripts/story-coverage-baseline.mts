@@ -7,14 +7,16 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { pascal } from "./lib/scaffold-templates";
-import { collectUnmet, deriveObligations, nextBaseline } from "./lib/story-coverage";
+import { readMetas } from "./lib/contract-coverage";
+import { collectUnmet, coverageItemsFromMetas, deriveObligations, nextBaseline } from "./lib/story-coverage";
 
 const BASELINE = "scripts/lib/story-coverage.baseline.json";
 const storyFor = (name: string) => `../storybook/src/stories/super-ai/${pascal(name)}.stories.tsx`;
 
 const shipped = MANIFEST.filter((i) => i.status === "shipped");
-const live = collectUnmet(deriveObligations(shipped), (name) =>
-  existsSync(storyFor(name)) ? readFileSync(storyFor(name), "utf8") : null,
+const live = collectUnmet(
+  deriveObligations(coverageItemsFromMetas(shipped, readMetas("registry/super-ai"))),
+  (name) => (existsSync(storyFor(name)) ? readFileSync(storyFor(name), "utf8") : null),
 ).map((o) => o.key);
 
 const prev: string[] | null = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : null;
@@ -29,6 +31,7 @@ if (next.grown.length > 0) {
 
 writeFileSync(BASELINE, `${JSON.stringify(next.baseline, null, 2)}\n`);
 const cases = next.baseline.filter((k) => k.includes(":case:")).length;
+const variants = next.baseline.filter((k) => k.includes(":variant:")).length;
 console.log(
-  `story-coverage:baseline — wrote ${next.baseline.length} unmet obligation(s): ${cases} case, ${next.baseline.length - cases} described.`,
+  `story-coverage:baseline — wrote ${next.baseline.length} unmet obligation(s): ${cases} case, ${next.baseline.length - cases - variants} described, ${variants} variant.`,
 );

@@ -1,0 +1,10 @@
+/* One value of the THEME axis, activated by data-theme="example" on <html>.
+ *
+ * A theme owns accent slots, the chart ramp, and the radius scale.
+ * It replaces WHOLE scales, never single rungs. */
+
+[data-theme="example"] {
+  --accent: #7c3aed;
+  --radius-control: 4px;
+  --radius-card: 8px;
+}

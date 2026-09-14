@@ -111,4 +111,17 @@ export const ChatShellDocs: ComponentDocs = {
     "J4's card grid keys its columns off its own container width (D19), not the viewport, so it already reads the stream's actual width and needs no override here — the shell renders it unadorned. If you fork this region, do not reintroduce a viewport-breakpoint override on the grid; that is the defect D19 fixed.",
     "Feedback, thread selection and composer value are all controlled. Rendering the shell with `messages` that never change and a `feedback` state that never moves produces a screenshot, not a workspace — wire the callbacks before demoing it.",
   ],
+  variants: {
+    none: "A shell owns arrangement and nothing else, so it has no axis of its own: every region is filled by a component that carries its own variants. Vary the parts, never the shell.",
+  },
+  insteadUse: [
+    {
+      component: "home-shell",
+      when: "The page is an app home or launcher, leading back into work already done, rather than one running conversation. Home is where a thread is started; this shell is where one runs.",
+    },
+    {
+      component: "studio-shell",
+      when: "The work happens on a canvas with a tool panel and a properties inspector. When the editor is the page, the studio shell owns the layout and the conversation is not the spine.",
+    },
+  ],
 };

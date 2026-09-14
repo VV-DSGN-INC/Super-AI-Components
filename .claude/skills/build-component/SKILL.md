@@ -39,8 +39,10 @@ lands in a follow-up. Until then, dispatch each builder as a general-purpose
 agent pointed at `docs/design-system/component-build-brief.md`, one per
 component, in parallel. Concurrency above ~16 just queues.
 
-Give each agent **only**: its spec anchor, its declared states, and
-component-specific steering — which shipped primitive it must compose, which
+Give each agent **only**: its spec anchor, its declared states, its contract
+targets (whether it has a variant axis, and which shipped items it is most
+often confused with — you name the neighbours, the agent writes the
+judgments), and component-specific steering — which shipped primitive it must compose, which
 a11y trap applies to its shape, which prior component solved the same problem.
 
 **Do not paste the house rules into the prompt.** The agent is pointed at
@@ -74,6 +76,10 @@ Two things that have gone wrong anyway:
 ## 4. Integrate
 
 Use the `integrate-batch` skill.
+
+Then, once the batch is merged, from `apps/docs`: `pnpm contract:emit` and
+commit any residue, `pnpm contract-coverage:baseline` (it must shrink, and it
+refuses to grow), `pnpm story-coverage:baseline` (it must not grow).
 
 ## 5. Gates
 

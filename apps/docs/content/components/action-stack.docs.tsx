@@ -78,4 +78,28 @@ export const ActionStackDocs: ComponentDocs = {
     "`trigger` is used as the trigger element itself, not wrapped. Pass a real button; passing a bare string gets one supplied for you, but passing a `<div>` gives you a trigger with no button semantics.",
     "A row with no `cost` renders no chip at all rather than a zero — which is correct for genuinely free actions, and a silent bug if you simply forgot to price it.",
   ],
+  variants: [
+    {
+      prop: "presentation",
+      default: "menu",
+      values: [
+        {
+          value: "menu",
+          intent:
+            "The stack hangs off a result card and has to stay collapsed until asked for — a card showing every hop's price by default would out-compete the result it belongs to.",
+        },
+        {
+          value: "inline",
+          intent:
+            "The action list is the reason the panel exists rather than an addition to a card, so every price should already be visible instead of waiting behind a click.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "ai-tools-menu",
+      when: "The actions belong to a selected canvas object — remove the background, expand this frame — rather than to a finished result choosing where to go next. Visually the two are identical on purpose, but ai-tools-menu names the selection and groups rows by intent, which action-stack does not do.",
+    },
+  ],
 };

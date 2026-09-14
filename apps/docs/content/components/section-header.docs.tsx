@@ -93,4 +93,28 @@ export const SectionHeaderDocs: ComponentDocs = {
     "Passing `open` without `onOpenChange` makes the trigger inert: it renders, it takes focus, and clicking it changes nothing, because controlled mode never touches internal state. `defaultOpen` is also ignored the moment `open` is present.",
     'The written contract for `action` is "a link, never a button — it navigates, it does not act", and real screens keep stretching it: asset-library puts Upload and New folder buttons there, filter-panel puts inert text. Prefer a link. If you put a control there, make it one that still makes sense when the section is collapsed.',
   ],
+  variants: [
+    {
+      prop: "size",
+      default: "default",
+      values: [
+        {
+          value: "default",
+          intent:
+            "Pick this when the section is a page-level group competing with the surrounding headings and content for attention, not just with sibling rows inside one panel — a library page split into sections, a recents strip.",
+        },
+        {
+          value: "sm",
+          intent:
+            "Pick this when the section is nested inside a denser, already-subordinate surface — a filter rail, a property inspector — where the header only has to outrank the rows beneath it, not the page around it.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "date-section",
+      when: "The group is a time bucket the user reads past — Today, Yesterday, Last week — rather than a group with a count, an action, or a collapse the user acts on.",
+    },
+  ],
 };

@@ -76,6 +76,23 @@ URLS=()
 for item in "${ITEMS[@]}"; do URLS+=("http://127.0.0.1:$PORT/r/$item.json"); done
 pnpm dlx shadcn@latest add --yes --overwrite "${URLS[@]}"
 
+echo "==> Verifying the usage contract installed beside its component"
+META="components/super-ai/mode-tabs.meta.json"
+if [ ! -f "components/super-ai/mode-tabs.tsx" ]; then
+  echo "CONSUMER INSTALL TEST: FAIL — components/super-ai/mode-tabs.tsx did not install" >&2
+  exit 1
+fi
+if [ ! -f "$META" ]; then
+  echo "CONSUMER INSTALL TEST: FAIL — $META did not install (registry:file entry missing or mis-targeted)" >&2
+  exit 1
+fi
+node -e "
+const m = JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'));
+if (m.name !== 'mode-tabs') { console.error('CONSUMER INSTALL TEST: FAIL — ' + process.argv[1] + ' names ' + m.name); process.exit(1); }
+if (!Array.isArray(m.variants) || m.variants.length === 0) { console.error('CONSUMER INSTALL TEST: FAIL — ' + process.argv[1] + ' carries no variants; the control contract did not travel'); process.exit(1); }
+" "$META"
+echo "  found $META with $(node -e "console.log(JSON.parse(require('fs').readFileSync('$META','utf8')).variants.length)") variant axis"
+
 echo "==> Verifying marketing css landed in the consumer app's global stylesheet"
 GLOBAL_CSS="app/globals.css"
 if [ ! -f "$GLOBAL_CSS" ]; then

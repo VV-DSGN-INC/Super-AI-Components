@@ -1,0 +1,129 @@
+# Super AI Components
+
+> A shadcn-style registry of AI-interface components: primitives, components and blocks installed one item at a time with `npx shadcn add`, on stock shadcn tokens plus `--warning`. Code is the source of truth; every page here derives from the component's guidance module.
+
+Install one item: `npx shadcn@latest add https://super-ai-components.vercel.app/r/<name>.json`. Each item installs its component and a `<name>.meta.json` beside it.
+Retrieval order: with an item installed, read `components/super-ai/<name>.meta.json` first; it is version-locked to the installed code and its contents outrank these pages. Before installing, read the component's page below, then the full corpus if you are choosing between several.
+
+## Guides
+
+- [Full corpus](https://super-ai-components.vercel.app/llms-full.txt): every component page in one file
+
+## Components
+
+- [Kbd](https://super-ai-components.vercel.app/llms/components/kbd.md): The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op
+- [Cost Chip](https://super-ai-components.vercel.app/llms/components/cost-chip.md): A small pill that prices one action: a coin icon, a number, and the unit that number is counted in.
+- [Date Section](https://super-ai-components.vercel.app/llms/components/date-section.md): The bucket header that groups a list by when — a small label above the rows it names, wrapping them
+- [Choice Chips](https://super-ai-components.vercel.app/llms/components/choice-chips.md): A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, s
+- [Filter Bar](https://super-ai-components.vercel.app/llms/components/filter-bar.md): The chip-scale end of filtering: a wrapping row of facet chips, an optional add-a-facet chip, and a
+- [Field Row](https://super-ai-components.vercel.app/llms/components/field-row.md): One labelled parameter on a shared column grid: a label, whatever control sets the value, and an opt
+- [Gen Settings Bar](https://super-ai-components.vercel.app/llms/components/gen-settings-bar.md): The one-line strip of generation parameters that sits with the prompt — model, aspect, resolution, d
+- [Preview Tile](https://super-ai-components.vercel.app/llms/components/preview-tile.md): The fixed-aspect frame every picker, grid and strip is built out of: one aspect-ratio box, a childre
+- [Entity Row](https://super-ai-components.vercel.app/llms/components/entity-row.md): One line in a list of things: an optional icon, a title, an optional description, and a trailing slo
+- [Stat Readout](https://super-ai-components.vercel.app/llms/components/stat-readout.md): A description list of label→value rows for the metadata hanging off a result: model, seed, sampler,
+- [Reset Affordance](https://super-ai-components.vercel.app/llms/components/reset-affordance.md): The small ↺ that sits at the end of an editable row and puts the value back where it started. Three
+- [Section Header](https://super-ai-components.vercel.app/llms/components/section-header.md): One header row for a group of things: a title, an optional count beside it, an optional trailing act
+- [App Sidebar](https://super-ai-components.vercel.app/llms/components/app-sidebar.md): The assembled product sidebar: a workspace switcher, a nav list, an ambient promo card, and a footer
+- [Workspace Switcher](https://super-ai-components.vercel.app/llms/components/workspace-switcher.md): A dropdown that shows the workspace, org, or product the user is currently in and lets them jump to
+- [Sidebar Nav](https://super-ai-components.vercel.app/llms/components/sidebar-nav.md): A sectioned nav for the primary sidebar: a flat list of icon+label rows grouped under section header
+- [Modality Rail](https://super-ai-components.vercel.app/llms/components/modality-rail.md): The vertical, fixed-width tool switcher that runs down the left edge of an editor shell: one icon-ov
+- [Promo Card](https://super-ai-components.vercel.app/llms/components/promo-card.md): A small, self-contained card that surfaces one of four pitches — upgrade to a paid plan, invite team
+- [Thread List](https://super-ai-components.vercel.app/llms/components/thread-list.md): The conversation sidebar: past threads bucketed by when you last touched them, each row a button tha
+- [App Topbar](https://super-ai-components.vercel.app/llms/components/app-topbar.md): The single header that runs across the top of a shell — one component with two lead configurations.
+- [Account Menu](https://super-ai-components.vercel.app/llms/components/account-menu.md): The avatar menu in the corner of the shell: an identity block (avatar, name, email) on top, product
+- [Hero Omnibox](https://super-ai-components.vercel.app/llms/components/hero-omnibox.md): The centred prompt that greets a user on an app's home screen — a large textarea in a card, with att
+- [Suggestion Chips](https://super-ai-components.vercel.app/llms/components/suggestion-chips.md): A horizontal row of tap-to-fill prompt chips — the empty-state or below-composer starters that turn
+- [Feature Card Row](https://super-ai-components.vercel.app/llms/components/feature-card-row.md): A horizontally scrollable row of feature cards, used for both "Start from scratch" prompts and "Popu
+- [Recent Grid](https://super-ai-components.vercel.app/llms/components/recent-grid.md): A grid or list of the user's recent projects, each shown as a fixed-height thumbnail with a title, a
+- [Recommendation Card](https://super-ai-components.vercel.app/llms/components/recommendation-card.md): A "Recommended for you" card with two levels: a one-line row for the feed, and a modal that lays out
+- [Media Prompt Bar](https://super-ai-components.vercel.app/llms/components/media-prompt-bar.md): The media-gen omnibox: a prompt bar purpose-built for image, video, and audio generation. It ships i
+- [Reference Strip](https://super-ai-components.vercel.app/llms/components/reference-strip.md): A horizontal strip of typed attachment slots that sits above a prompt — reference images, first/last
+- [Context Chips](https://super-ai-components.vercel.app/llms/components/context-chips.md): A row of removable reference chips that sit above a prompt or composer — one per file, text selectio
+- [Mode Tabs](https://super-ai-components.vercel.app/llms/components/mode-tabs.md): A small set of mutually exclusive modes — two to five — that change how the same prompt or workspace
+- [Quote Reply](https://super-ai-components.vercel.app/llms/components/quote-reply.md): A small quoted block that attaches a selection — a text range, an image region, a table cell, or a t
+- [Skill Menu](https://super-ai-components.vercel.app/llms/components/skill-menu.md): A two-pane, searchable menu of agent skills: a filterable list of rows on the left and a live previe
+- [Slot Summary](https://super-ai-components.vercel.app/llms/components/slot-summary.md): The read-back an agent shows just before it acts: one row per parameter it resolved, each row carryi
+- [Generation Panel](https://super-ai-components.vercel.app/llms/components/generation-panel.md): The left configuration column of a generation tool: upload, directions, presets, settings, then cost
+- [Model Picker](https://super-ai-components.vercel.app/llms/components/model-picker.md): The control for choosing which model a generation runs on, in three container shapes for three surfa
+- [Parameter Panel](https://super-ai-components.vercel.app/llms/components/parameter-panel.md): The stack of rows a generation surface uses to expose the knobs behind a run — sliders with a live n
+- [Preset Grid](https://super-ai-components.vercel.app/llms/components/preset-grid.md): A grid of labelled thumbnail tiles a user picks a preset from directly — a visual style, a colour pa
+- [Run Button](https://super-ai-components.vercel.app/llms/components/run-button.md): The single control that starts a generation: the trigger, its credit cost, and its progress live in
+- [Generation Queue](https://super-ai-components.vercel.app/llms/components/generation-queue.md): A list of in-flight generation slots — one row per requested result — that carries each slot from qu
+- [Member Gate Row](https://super-ai-components.vercel.app/llms/components/member-gate-row.md): A single settings row for a feature that's gated behind a plan, a trial, or nothing at all. It compo
+- [Generation Wizard](https://super-ai-components.vercel.app/llms/components/generation-wizard.md): A multi-step generate flow with three parts working together: a stepper that shows where you are and
+- [Tts Composer](https://super-ai-components.vercel.app/llms/components/tts-composer.md): A voiceover script editor built out of independently editable, independently regenerable segments —
+- [Voice Clone Recorder](https://super-ai-components.vercel.app/llms/components/voice-clone-recorder.md): A guided flow for recording the voice samples a clone is trained on: read a script aloud while a liv
+- [Result Card](https://super-ai-components.vercel.app/llms/components/result-card.md): One generated asset, wherever it appears — a fixed-aspect media frame with an optional prompt excerp
+- [Generation Grid](https://super-ai-components.vercel.app/llms/components/generation-grid.md): The gallery a batch of results lands in — a responsive grid with three density settings, optional da
+- [Asset Detail](https://super-ai-components.vercel.app/llms/components/asset-detail.md): The lightbox for a single result: the media at full size beside a provenance rail carrying the promp
+- [Action Stack](https://super-ai-components.vercel.app/llms/components/action-stack.md): The list of places a finished result can go next — Extend, then Upscale, then Use in Lip sync — with
+- [Compare Viewer](https://super-ai-components.vercel.app/llms/components/compare-viewer.md): Two or more renders of the same thing, shown together in one of three modes: side by side with a dra
+- [Render Queue](https://super-ai-components.vercel.app/llms/components/render-queue.md): A table of staged render jobs, each row carrying the output spec it will produce — format, codec, re
+- [Approval Card](https://super-ai-components.vercel.app/llms/components/approval-card.md): A single artifact held for a human decision, with four verbs in a fixed order — Confirm, Edit, Regen
+- [Transport Controls](https://super-ai-components.vercel.app/llms/components/transport-controls.md): The playback bar for any timeline: skip back, play/pause, skip forward, an editable elapsed/total re
+- [Time Ruler](https://super-ai-components.vercel.app/llms/components/time-ruler.md): The measured edge of a timeline: a scale of ticks and timecodes, a draggable playhead, and an option
+- [Track Lane](https://super-ai-components.vercel.app/llms/components/track-lane.md): One row of a timeline: a fixed-width gutter carrying the track name plus mute, solo and lock, and be
+- [Transcript Editor](https://super-ai-components.vercel.app/llms/components/transcript-editor.md): A transcript you can cut with. Words and inline media arrive as timed tokens, a run of them is selec
+- [Frame Strip](https://super-ai-components.vercel.app/llms/components/frame-strip.md): A horizontal strip of frames, pages or artboards, built on preview-tile. One item is active at a tim
+- [Waveform Editor](https://super-ai-components.vercel.app/llms/components/waveform-editor.md): A sample-accurate audio editing surface: a peak strip you can zoom until one column is one sample, a
+- [Stem Mixer](https://super-ai-components.vercel.app/llms/components/stem-mixer.md): A vertical stack of stem lanes — one per separated or generated part of a track — each with mute, so
+- [Tool Panel](https://super-ai-components.vercel.app/llms/components/tool-panel.md): The column that sits beside the canvas in an editor: a pinned search field, a stack of curated secti
+- [Property Inspector](https://super-ai-components.vercel.app/llms/components/property-inspector.md): The panel beside a canvas that edits whatever is selected — width, type size, blur, opacity — groupe
+- [Context Toolbar](https://super-ai-components.vercel.app/llms/components/context-toolbar.md): The small floating bar that appears beside whatever is currently selected on a canvas, offering the
+- [Ai Tools Menu](https://super-ai-components.vercel.app/llms/components/ai-tools-menu.md): The AI actions that belong to a selected object — remove the background of this image, expand this f
+- [Drawing Tools](https://super-ai-components.vercel.app/llms/components/drawing-tools.md): The drawing side of an editor canvas: a tool rail, an optional shape rail, brush controls, a colour
+- [Asset Library](https://super-ai-components.vercel.app/llms/components/asset-library.md): The surface a product's saved work lives on: a header with its actions, a search field, a row of fil
+- [Filter Panel](https://super-ai-components.vercel.app/llms/components/filter-panel.md): A vertical rail of collapsible checkbox groups, each facet carrying the number of results it would l
+- [Explore Gallery](https://super-ai-components.vercel.app/llms/components/explore-gallery.md): The community feed of a creative product: a masonry wall of other people's work, an ordering control
+- [Artifact Grid](https://super-ai-components.vercel.app/llms/components/artifact-grid.md): A grid of the documents and artifacts an assistant produced, grouped under the session that produced
+- [Record List](https://super-ai-components.vercel.app/llms/components/record-list.md): A table of records that run — scenarios, zaps, workflows, scheduled projects. Each row carries the a
+- [Template Detail](https://super-ai-components.vercel.app/llms/components/template-detail.md): The modal a template opens into before anyone commits to it: a large preview with a thumbnail strip
+- [Track List](https://super-ai-components.vercel.app/llms/components/track-list.md): A table of music library rows: cover art, title and artist, tags, a row-height waveform you can audi
+- [Ai Doc Block](https://super-ai-components.vercel.app/llms/components/ai-doc-block.md): A passage of generated prose that sits inside a document as a real node — a paragraph, a heading, a
+- [Inline Generate Popup](https://super-ai-components.vercel.app/llms/components/inline-generate-popup.md): The small prompt surface that opens where the cursor is when someone asks for writing they have not
+- [Diff Review](https://super-ai-components.vercel.app/llms/components/diff-review.md): Track changes on prose, where every change carries the reason it was made. A paragraph is one run of
+- [Selection Toolbar](https://super-ai-components.vercel.app/llms/components/selection-toolbar.md): The floating bar that appears over selected prose and offers AI writing verbs: Improve first and fil
+- [Source Panel](https://super-ai-components.vercel.app/llms/components/source-panel.md): The list of everything a retrieval-backed surface knows about — files, pages, transcripts — with eac
+- [Citation Ref](https://super-ai-components.vercel.app/llms/components/citation-ref.md): The inline marker that attaches a claim to the passage it came from — a small superscript index besi
+- [Answer Block](https://super-ai-components.vercel.app/llms/components/answer-block.md): The body of a grounded answer: a list of claims, each carrying its own inline citation markers, plus
+- [Source Cards](https://super-ai-components.vercel.app/llms/components/source-cards.md): The retrieved set behind an answer, as a ranked list of cards. Every document the search returned ge
+- [Empty State](https://super-ai-components.vercel.app/llms/components/empty-state.md): The nothing-here surface, in three sizes that share one component: a page takeover for a whole route
+- [Coach Mark](https://super-ai-components.vercel.app/llms/components/coach-mark.md): One step of a product tour: a popover anchored to a real element, with a scrim that cuts a hole arou
+- [Feature Announcement](https://super-ai-components.vercel.app/llms/components/feature-announcement.md): The surface that tells a user something in the product changed. One component with four escalation l
+- [Whats New](https://super-ai-components.vercel.app/llms/components/whats-new.md): A changelog browser in a dialog: a scrollable list of dated entries on the left, and the selected en
+- [Shortcuts Sheet](https://super-ai-components.vercel.app/llms/components/shortcuts-sheet.md): A modal cheatsheet of every key binding in the app, grouped under the app's own section names. Each
+- [Onboarding Wizard](https://super-ai-components.vercel.app/llms/components/onboarding-wizard.md): The first-run flow: one question per screen, answered with choice cards, tracked by a dot rail that
+- [Settings Dialog](https://super-ai-components.vercel.app/llms/components/settings-dialog.md): A settings surface built from a section nav on the left and a panel of setting rows on the right. Ev
+- [Credits Indicator](https://super-ai-components.vercel.app/llms/components/credits-indicator.md): A small, always-on pill showing how much of the plan's allowance is left. It renders either a bare c
+- [Quota Meter](https://super-ai-components.vercel.app/llms/components/quota-meter.md): A stack of plan-usage meters, one row per metered resource, each showing what has been used against
+- [Pricing Table](https://super-ai-components.vercel.app/llms/components/pricing-table.md): The plan comparison surface: a monthly/yearly toggle above a row of plan cards, with optional add-on
+- [Paywall Message](https://super-ai-components.vercel.app/llms/components/paywall-message.md): The turn in an assistant conversation where a run was stopped because the plan does not cover it — a
+- [Rate Limit Banner](https://super-ai-components.vercel.app/llms/components/rate-limit-banner.md): An inline banner that sits above the composer while the user cannot send, and says exactly two thing
+- [Connection Manager](https://super-ai-components.vercel.app/llms/components/connection-manager.md): The settings surface where a user connects the model providers a product will call on their behalf:
+- [Feedback](https://super-ai-components.vercel.app/llms/components/feedback.md): A thumbs-up / thumbs-down control for rating a single response, with an optional reason popover behi
+- [Trust Dialog](https://super-ai-components.vercel.app/llms/components/trust-dialog.md): A modal gate for running content the user didn't author — a community template, a shared automation,
+- [Disclaimer Note](https://super-ai-components.vercel.app/llms/components/disclaimer-note.md): A short, permanent note that sits next to AI-generated output and says it can be wrong. It renders i
+- [Trace Timeline](https://super-ai-components.vercel.app/llms/components/trace-timeline.md): A waterfall view of an agent run's steps, tool calls, and LLM calls, positioned along a shared time
+- [Run Inspector](https://super-ai-components.vercel.app/llms/components/run-inspector.md): The span detail an engineer opens from a trace: the raw input and output of one step of an agent run
+- [Usage Dashboard](https://super-ai-components.vercel.app/llms/components/usage-dashboard.md): The team-facing view of what an AI product costs to run: a period selector, a row of summary figures
+- [Env Status](https://super-ai-components.vercel.app/llms/components/env-status.md): A read-only list of the model providers a product is configured to use, each row stating in words wh
+- [Permission Prompt](https://super-ai-components.vercel.app/llms/components/permission-prompt.md): A modal gate that pauses a tool-calling agent before it does something consequential and asks a huma
+- [Autonomy Selector](https://super-ai-components.vercel.app/llms/components/autonomy-selector.md): The standing-policy surface for an agent: one coarse dial with three levels — ask every time, auto-a
+- [Safety Block](https://super-ai-components.vercel.app/llms/components/safety-block.md): A system-voiced notice that a policy stopped something. It comes in two variants because two differe
+- [Escalation Handoff](https://super-ai-components.vercel.app/llms/components/escalation-handoff.md): The card an agent shows when it is handing the conversation to a person. Its subject is the packet,
+- [Task Tray](https://super-ai-components.vercel.app/llms/components/task-tray.md): A slide-over panel listing background work that keeps running after you leave the screen that starte
+- [Home Shell](https://super-ai-components.vercel.app/llms/components/home-shell.md): The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold,
+- [Chat Shell](https://super-ai-components.vercel.app/llms/components/chat-shell.md): The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue,
+- [Studio Shell](https://super-ai-components.vercel.app/llms/components/studio-shell.md): The page shell for a creative studio editor: a vertical modality rail on the far left, an editor top
+- [Timeline Shell](https://super-ai-components.vercel.app/llms/components/timeline-shell.md): The page shell for a timeline-dominant editor: a tool rail on the left, a content panel beside it, a
+- [Generation Shell](https://super-ai-components.vercel.app/llms/components/generation-shell.md): The page shell for a single-purpose AI tool: a title bar, a config column on the left, a results can
+- [Library Shell](https://super-ai-components.vercel.app/llms/components/library-shell.md): The page shell for a personal archive: a faceted rail on the left, a header with search and the filt
+- [Explore Shell](https://super-ai-components.vercel.app/llms/components/explore-shell.md): The page shell for a community gallery: a destination rail on the left, a prompt bar docked above th
+- [Artifact Shell](https://super-ai-components.vercel.app/llms/components/artifact-shell.md): The page shell for an artifact or document index: a sidebar that navigates the library, a header car
+- [Records Shell](https://super-ai-components.vercel.app/llms/components/records-shell.md): The page shell for a list of things that run: projects, scenarios, zaps, workflows. A product rail o
+- [Docs Shell](https://super-ai-components.vercel.app/llms/components/docs-shell.md): The page shell for a documentation site: a persistent icon rail of product areas, a sectioned page n
+- [Settings Shell](https://super-ai-components.vercel.app/llms/components/settings-shell.md): The page shell for full-page settings: a searchable grouped nav down the left, a breadcrumb across t
+- [Notebook Shell](https://super-ai-components.vercel.app/llms/components/notebook-shell.md): The page shell for grounded generation: the documents you uploaded on the left, a conversation about
+- [Auth Shell](https://super-ai-components.vercel.app/llms/components/auth-shell.md): The page shell for signing in and signing up: a pitch pane beside a card that holds a list of identi
+- [Data Views](https://super-ai-components.vercel.app/llms/components/data-views.md): One collection rendered five ways — feed, board, table, calendar and timeline — from a single config
+- [Detail View Shell](https://super-ai-components.vercel.app/llms/components/detail-view-shell.md): The chrome around any record detail, in three opening modes: a centred dialog, a right-docked panel

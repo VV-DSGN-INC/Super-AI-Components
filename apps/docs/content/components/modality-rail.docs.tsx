@@ -99,4 +99,17 @@ export const ModalityRailDocs: ComponentDocs = {
     "Marking the active tool with colour alone. `modality-rail-item` sets `aria-pressed` from the toggle-group's own state, so the active tool is programmatically discoverable even if a custom theme changes the colour treatment entirely.",
     "Reaching for the badge slot to hide features instead of advertising them — like sidebar-nav's tier badge, a 'New' dot or crown mark on a rail item is the cheapest upsell the shell has precisely because the row stays fully usable underneath it.",
   ],
+  variants: {
+    none: "`layout` is not a caller's choice: it lives on the internal rail button and is decided by where an item renders — stacked in the 92px column, row inside the overflow popover so a clipped name can read in full. The rail exposes no axis, because a rail that could be laid out two ways would stop being a fixed landmark.",
+  },
+  insteadUse: [
+    {
+      component: "mode-tabs",
+      when: "The decision is which interpretation the same input gets — Ask, Design, Build — rather than which tool acts on an unchanged canvas. This is the seam crossed most often: a rail built from Chat, Image and Video items is really a set of modes.",
+    },
+    {
+      component: "sidebar-nav",
+      when: "Picking a row replaces what is on screen rather than changing what a gesture on the current canvas does. A rail switches the tool; navigation switches the destination.",
+    },
+  ],
 };

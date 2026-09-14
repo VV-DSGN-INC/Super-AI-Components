@@ -73,4 +73,33 @@ export const ModeTabsDocs: ComponentDocs = {
     "ModeTabs doesn't clamp `modes.length` — the 2–5 range from the spec is the caller's responsibility to respect, not something the component enforces.",
     "The selected mode is a working context that the spec says must survive a reload, but ModeTabs only owns the click — persisting `value` across sessions (URL state, localStorage, a server-side setting) is the consuming app's job.",
   ],
+  variants: [
+    {
+      prop: "variant",
+      default: "default",
+      values: [
+        {
+          value: "default",
+          intent:
+            "Text-only triggers, the choice whenever the row has room: a word is the most legible label a mode can have, and nothing has to be learned.",
+        },
+        {
+          value: "with-icon",
+          intent:
+            "Icon plus visible label, once the modes have glyphs people already recognise. The icon speeds the scan; the label still carries the meaning.",
+        },
+        {
+          value: "with-tooltip",
+          intent:
+            "Icon-only triggers for tight spaces such as an embedded composer toolbar. The label ships as sr-only button content, so the tooltip is a sighted hint, never the only name.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "model-picker",
+      when: "The choice is which model the generation runs on, not how the same input is interpreted. Modes are interpretations of one input; the picker is a model list with price and capability badges.",
+    },
+  ],
 };

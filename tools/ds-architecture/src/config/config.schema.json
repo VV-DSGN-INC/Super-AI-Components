@@ -2,21 +2,41 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "additionalProperties": false,
-  "required": ["profile", "adoption", "scopeRoles", "paths", "axes", "commands"],
+  "required": [
+    "profile",
+    "adoption",
+    "scopeRoles",
+    "paths",
+    "axes",
+    "commands"
+  ],
   "properties": {
     "profile": {
       "type": "string",
-      "enum": ["tokens-only", "component-library", "app-consumer"]
+      "enum": [
+        "tokens-only",
+        "component-library",
+        "app-consumer"
+      ]
     },
     "adoption": {
       "type": "string",
-      "enum": ["greenfield", "retrofit"]
+      "enum": [
+        "greenfield",
+        "retrofit"
+      ]
     },
     "scopeRoles": {
       "type": "object",
       "additionalProperties": false,
       "propertyNames": {
-        "enum": ["components", "styles", "stories", "docs", "app"]
+        "enum": [
+          "components",
+          "styles",
+          "stories",
+          "docs",
+          "app"
+        ]
       },
       "patternProperties": {
         "^(components|styles|stories|docs|app)$": {
@@ -32,7 +52,10 @@
     "paths": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["nameContract", "styleEntry"],
+      "required": [
+        "nameContract",
+        "styleEntry"
+      ],
       "properties": {
         "nameContract": {
           "type": "string",
@@ -58,7 +81,10 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["attribute", "values"],
+        "required": [
+          "attribute",
+          "values"
+        ],
         "properties": {
           "attribute": {
             "type": "string",
@@ -78,7 +104,9 @@
     "commands": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["test"],
+      "required": [
+        "test"
+      ],
       "properties": {
         "test": {
           "type": "string",

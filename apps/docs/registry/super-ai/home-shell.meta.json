@@ -1,0 +1,132 @@
+{
+  "generated": "by `pnpm contract:emit` from content/components/home-shell.docs.tsx. Do not edit.",
+  "name": "home-shell",
+  "title": "Home Shell",
+  "layer": "block",
+  "family": "O",
+  "description": "App Home / launcher",
+  "purpose": "The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold, and beneath it the bands that lead back into work you have already done — starters, features, recents, and things worth trying. It is a block, not a component. It owns arrangement and nothing else: nine registry components fill the five regions, and each of them keeps its own props, its own state model and its own accessibility contract.",
+  "whyItMatters": "YouAI, Descript, Zapier, CapCut and Spline all open on the same page, in the same order: composer, then starters, then features, then recents, then inspiration. It is the most consistent archetype on the reference board, and the order is the archetype — so it is hard-coded here rather than offered as a prop. Two decisions follow from it. The composer is the only emphasised element on the page, which is what makes a launcher feel like an invitation rather than a dashboard; every band below it is deliberately quiet. And the whole page is the recents grid's empty state on day one, which is the version most new users actually see — so every band stays mounted when it has nothing in it, and explains the nothing, rather than collapsing into a page that teaches a new user only that the product is empty.",
+  "usage": "Reach for it when your product's front door is a prompt rather than a document list. Everything is a prop: `suggestions` fills the starter row, `features` fills the card row, `recents` fills the grid, `recommendations` fills the inspiration band, and `omnibox` is forwarded whole to C1. The composer's text is the shell's, not C1's — pass `promptValue`/`onPromptChange` to control it, and leave both off to let the shell hold it. That is deliberate: selecting a starter chip has to write into the composer, and it must never submit or navigate. Put the balance in `credits` and it renders in the title bar, which is where an app-level cost signal belongs. Give `recentsEmptyAction` the same verb as your primary action (\"New project\", not \"Get started\") — L1 has no CTA of its own precisely so that a generic one is never the path of least resistance.",
+  "evidence": [
+    "YouAI",
+    "Descript",
+    "Zapier",
+    "CapCut",
+    "Spline"
+  ],
+  "anatomy": [
+    {
+      "slot": "data-region=\"sidebar\"",
+      "note": "B1 app-sidebar around whatever nav this product has, or L1 when it has none."
+    },
+    {
+      "slot": "data-region=\"topbar\"",
+      "note": "The sidebar trigger plus B7 app-topbar, with M2 credits-indicator in its trailing slot."
+    },
+    {
+      "slot": "data-region=\"hero-omnibox\"",
+      "note": "C1 hero-omnibox, and C2 suggestion-chips directly under it — starters belong to the composer."
+    },
+    {
+      "slot": "data-region=\"feature-cards\"",
+      "note": "C3 feature-card-row, or L1 when there are no features. C3 has no empty affordance of its own."
+    },
+    {
+      "slot": "data-region=\"recents-grid\"",
+      "note": "C4 recent-grid, which owns its own in-grid empty tile — that tile is the day-one page."
+    },
+    {
+      "slot": "home-shell-inspiration",
+      "note": "C5 recommendation-card, last. A slot rather than a region: the manifest declares five."
+    },
+    {
+      "slot": "home-shell",
+      "note": "Root. Contains its own fixed descendants so the shell can be embedded."
+    },
+    {
+      "slot": "home-shell-page",
+      "note": "The scrolling column. Everything below the topbar lives here."
+    },
+    {
+      "slot": "home-shell-headline",
+      "note": "Optional page h1 above the composer."
+    },
+    {
+      "slot": "home-shell-starters",
+      "note": "The C2 chip row, inside the hero region."
+    },
+    {
+      "slot": "home-shell-recommendations",
+      "note": "The C5 card grid, inside the inspiration section."
+    }
+  ],
+  "dos": [
+    "Let a starter chip fill the composer and stop there, so the prompt can still be edited before it runs.",
+    "Keep the recents band mounted when it is empty — its own tile is the day-one page, and it is what teaches a new user the band exists."
+  ],
+  "donts": [
+    "Don't wire a chip to submit. A starter that launches a run turns a suggestion into a decision nobody made.",
+    "Don't hide a band because it has nothing in it; a region that appears from nowhere later cannot teach that it exists now."
+  ],
+  "accessibility": {
+    "keyboard": [
+      "The shell binds no keys of its own. Its tab order is the composed components in DOM order: the sidebar's contents, the sidebar trigger, the topbar's actions and credits, then the composer, the starter chips, the feature carousel, the recents tiles and the recommendation cards.",
+      "The scrolling page column has `overflow-y-auto` and deliberately no `tabIndex`. It gets away with that because C1 is inside it and is focusable in every one of its states, `locked` included, so axe's `scrollable-region-focusable` rule has a target. Reorder the column so the composer is not in it and that stops being true.",
+      "The feature carousel is a `role=\"region\"` with its own Left/Right handling plus two arrow buttons. Those arrows are two tab stops that exist whether or not the row actually overflows.",
+      "A starter chip is `type=\"button\"` on purpose, so a chip inside a form can never submit it. Enter and Space fill the composer and stop there. The overflow affordance beside the chips is a real `<a>`, so Enter follows it and Space does not."
+    ],
+    "screenReader": [
+      "Four of the five bands are `<section>` elements with an `aria-label`, which makes each a named region landmark — \"Start something new\", then the features, recents and recommendations labels. Landmark navigation is the only structural navigation this page has.",
+      "It is the only one because the band titles are not headings: A12 `section-header` renders its title as a `<span>`, so \"Popular features\" and \"Recents\" are visible text and nothing more. The page's single `h1` is `headline`, and it renders only if you pass one — omit it and the page has no heading at all.",
+      "A starter chip's accessible name is its `suggestion` string, always: the leading icon and the leading thumbnail both sit inside an `aria-hidden` span. Selecting one writes into the composer and announces nothing, so whoever pressed it gets no confirmation that anything happened.",
+      "The recents tiles are the weak point. A8 `preview-tile` renders a `below` label as a *sibling* of its frame button, and C4 uses `labelPlacement=\"below\"` in grid layout and `\"none\"` in list layout — so the button that opens a project takes its name from the thumbnail alone. Give every thumbnail real `alt` text or the band is a row of unnamed buttons.",
+      "Nothing in the shell is a live region. Filling the composer, collapsing the sidebar and paging the carousel all happen silently.",
+      "M2 `credits-indicator` announces its own text and the shell adds no wording around it, so the balance arrives with whatever name M2 gives it and nothing identifying it as an app-level cost signal."
+    ],
+    "focus": [
+      "Selecting a starter chip fills the composer and leaves focus on the chip, so the person has to Shift+Tab back into the field they just populated, past every chip that came before it. Move focus to the composer inside `onSelectSuggestion` if the chip is meant to be a shortcut rather than a stepping stone.",
+      "Nothing else in the shell moves focus. Collapsing the sidebar keeps focus on the trigger, and the carousel arrows scroll without moving it.",
+      "Focus styling is entirely the composed components'. The starter chips derive their ring from `buttonVariants`, which is what keeps the overflow link visually identical to a real chip; the recents tiles ship their own `focus-visible:ring-2`. The shell paints no focus style and adds no focusable element of its own."
+    ]
+  },
+  "pitfalls": [
+    "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a preview, a panel or an app region — if you re-wrap or restyle the root, keep that containment or the sidebar pins itself to the browser's left edge. The root also constrains that container to the shell's own height, which is what makes `sidebarPromo` and `sidebarFooter` usable in an embedded shell.",
+    "The composer's value belongs to the shell, not to C1, because a starter chip has to write into it. Passing `omnibox.value` does nothing useful — the shell overwrites it. Use `promptValue` and `onPromptChange`, or leave both off and let the shell hold the text.",
+    "B7 has no leading slot, so the sidebar trigger is a sibling of the topbar and the row, not the header, draws the bottom rule. It also means the topbar's `actions` are merged rather than replaced: the shell spreads your `topbar` first and then rebuilds `actions` as yours followed by the credits indicator. Passing `actions` and expecting the credits chip to disappear will not work — omit `credits` instead.",
+    "M2 paints a `bg-muted` pill and puts a `text-muted-foreground` \"Top up\" control inside it. That is the 4.34:1 pairing this system keeps re-discovering, in the cross-component shape the token check cannot see: the failing element is inside M2, so no `className` on the call site reaches it. The shell rebinds `--muted-foreground` on the chip instead, which the child resolves against. Keep that rebind if you restyle the topbar.",
+    "C3 has no empty affordance, so an empty feature row renders as a carousel with two dead arrows and nothing between them; the shell substitutes L1 there. C4 does have one, and the shell deliberately does not substitute — replacing C4's tile with a generic L1 would lose the grid's rhythm and the CTA slot the spec asks you to fill with your own verb.",
+    "C3 now positions its own carousel arrows inside the row's own box (`left-2`/`right-2`), so the shell renders `FeatureCardRow` unadorned and needs no gutter of its own. If you fork this region, do not reintroduce an inset for the arrows; that was a workaround for a defect C3 no longer has.",
+    "C4 now keys its columns off its own container width (D19), not the viewport, so a sidebar open beside a wide window no longer makes it over-column — the grid already sees its own narrower width. If you nest this shell inside something narrower still, no override is needed; restyling the grid rather than the wrapper is only a concern if you reintroduce a viewport-keyed breakpoint yourself.",
+    "C2's chip row is a Base UI `ScrollArea`, and its viewport schedules a timer that calls `getAnimations()` on itself. jsdom has no Web Animations API, so in a test long enough for that timer to fire it throws — after the test that triggered it has already passed. The suite goes red with every assertion green. The shim now lives in `vitest.setup.ts`, paired with `BASE_UI_ANIMATIONS_DISABLED` — defining `getAnimations` alone moves every Base UI unmount off its synchronous branch onto a microtask, which breaks any test asserting the DOM straight after a panel swap. Whether the timer fires is a function of suite length, not of what you did wrong.",
+    "C5 requires `onDismiss` and renders nothing at all once `dismissed` is true, so the inspiration band is only as durable as the state you feed back into it. Wire dismissal to something that remembers, or a card the user hid will be back on the next render."
+  ],
+  "states": [],
+  "regions": [
+    "sidebar",
+    "topbar",
+    "hero-omnibox",
+    "feature-cards",
+    "recents-grid"
+  ],
+  "consumes": [
+    "app-sidebar",
+    "app-topbar",
+    "hero-omnibox",
+    "suggestion-chips",
+    "feature-card-row",
+    "recent-grid",
+    "recommendation-card",
+    "credits-indicator",
+    "section-header",
+    "empty-state"
+  ],
+  "shadcn": [
+    "sidebar"
+  ],
+  "npm": [
+    "lucide-react"
+  ],
+  "source": "content/components/home-shell.docs.tsx",
+  "docs": "https://super-ai-components.vercel.app/components/home-shell"
+}

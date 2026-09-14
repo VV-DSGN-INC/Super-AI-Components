@@ -100,4 +100,28 @@ export const AiToolsMenuDocs: ComponentDocs = {
     "An action with no `cost` renders no chip rather than a zero — correct for genuinely free work, and a silent bug if you simply forgot to price it.",
     "This component and F4 `action-stack` share a row implementation by duplication, not by import: F4's root owns its own dropdown, so it cannot be nested once per group. Change the row here and change it there too, or lift it into a module both can import.",
   ],
+  variants: [
+    {
+      prop: "presentation",
+      default: "menu",
+      values: [
+        {
+          value: "menu",
+          intent:
+            "The actions should stay out of the way until someone deliberately opens them — hung off a context toolbar's AI entry, over a selection that changes constantly, so the surface is never competing for space it hasn't been asked for.",
+        },
+        {
+          value: "inline",
+          intent:
+            "The AI actions are the reason this part of the layout exists, not a supplement to it — a dedicated panel where every row should be visible without a click, because scanning the whole set is the point.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "action-stack",
+      when: "The rows are what to run next on a result you already produced — Extend, then Upscale, then Use in Lip sync — rather than actions that take a currently selected object as their prompt context. Pick ai-tools-menu when a selection needs to be named; pick action-stack when a finished result does.",
+    },
+  ],
 };

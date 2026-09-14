@@ -1,0 +1,127 @@
+{
+  "generated": "by `pnpm contract:emit` from content/components/approval-card.docs.tsx. Do not edit.",
+  "name": "approval-card",
+  "title": "Approval Card",
+  "layer": "component",
+  "family": "F",
+  "description": "Single-artifact approval",
+  "purpose": "A single artifact held for a human decision, with four verbs in a fixed order — Confirm, Edit, Regenerate, Skip — a summary you decide on, and detail folded behind an explicit expand. Confirm and Skip end the interaction and keep an Undo window; Edit and Regenerate hand you back to the artifact.",
+  "whyItMatters": "This is the Approval contract's only implementation in the catalog, so every other approval surface — the ones in families K and N — inherits this shape rather than inventing its own. That matters because approval is where autonomy is actually negotiated: the whole point is that a person can decline, and a person who cannot tell what they are declining has not really been asked. So the verbs never reorder themselves (muscle memory has to hold across every surface in the product), the detail is never auto-expanded and never merely clipped, and the two terminal verbs keep a window in which the decision can be taken back. Products that get this wrong ship approval UI that trains people to click Confirm without reading, which is worse than no approval step at all.",
+  "usage": "Give it a `title` that names the decision and a `summary` someone could actually decide on — not a description of the artifact. Put anything longer in `detail`; it stays collapsed until the reader asks for it. Supply only the verbs that apply: the component renders the ones with handlers and drops the rest, always in Confirm, Edit, Regenerate, Skip order. Move `state` to `submitting` while your request is in flight (every verb disables, so a decision cannot be submitted twice) and then to `resolved` with the matching `resolution`. Pass `onUndo` unless the decision genuinely cannot be reversed — the window defaults to 8 seconds and closes itself.",
+  "evidence": [
+    "Sprig AI",
+    "Zapier user-approval",
+    "OpenAI Agent Builder",
+    "Spellbook"
+  ],
+  "anatomy": [
+    {
+      "slot": "approval-card",
+      "note": "The card. Carries `data-state` for pending, submitting or resolved."
+    },
+    {
+      "slot": "approval-card-title",
+      "note": "What is being decided, in a few words."
+    },
+    {
+      "slot": "approval-card-summary",
+      "note": "The sentence the decision is made on. Full-contrast text, not secondary."
+    },
+    {
+      "slot": "approval-card-expand",
+      "note": "The explicit expand toggle, carrying aria-expanded and aria-controls."
+    },
+    {
+      "slot": "approval-card-detail",
+      "note": "The full detail. Rendered only when expanded — not clipped."
+    },
+    {
+      "slot": "approval-card-verbs",
+      "note": "The button group. Iterates a fixed list, so caller order cannot reach it."
+    },
+    {
+      "slot": "approval-card-confirm",
+      "note": "Terminal. Shows the spinner while submitting."
+    },
+    {
+      "slot": "approval-card-edit",
+      "note": "Returns you to the artifact; resolves nothing on its own."
+    },
+    {
+      "slot": "approval-card-regenerate",
+      "note": "Returns you to the artifact; resolves nothing on its own."
+    },
+    {
+      "slot": "approval-card-skip",
+      "note": "Terminal."
+    },
+    {
+      "slot": "approval-card-resolution",
+      "note": "The outcome, stated in words. Replaces the verbs once resolved."
+    },
+    {
+      "slot": "approval-card-undo",
+      "note": "Available for `undoWindowMs` after resolution, then withdrawn."
+    },
+    {
+      "slot": "approval-card-status",
+      "note": "Visually hidden live region announcing each transition."
+    }
+  ],
+  "dos": [
+    "Pass handlers in whatever order suits your code — the component fixes the verb order, so the reading order is the same on every approval surface.",
+    "Put anything longer than a sentence in `detail`, so the reader chooses to expand it rather than being asked to approve a wall of text."
+  ],
+  "donts": [
+    "Don't write a summary that describes the artifact instead of the decision — say what confirming will do.",
+    "Don't resolve without an `onUndo` unless the action really is irreversible; Confirm and Skip are terminal and a misclick is otherwise final."
+  ],
+  "accessibility": {
+    "keyboard": [
+      "Pending, the card is one tab stop per supplied verb, plus one more for the expand toggle when there is `detail`. A card with all four verbs and a detail block is five stops; a card with only `onConfirm` is one.",
+      "The verb row is a plain `role=\"group\"` with no roving tabindex, so the arrows do nothing and each verb costs a Tab.",
+      "In `submitting` every verb is `disabled`, so the pending card's tab stops drop to just the expand toggle. In `resolved` they are gone entirely and the only stop is Undo, for as long as its window lasts.",
+      "There is no Escape, no Enter-to-confirm and no shortcut for any verb. Every decision is a Tab-and-Space, which is deliberate for a step that exists to be read first.",
+      "The Undo window is wall-clock and cannot be extended, paused or dismissed from the keyboard. Someone reading the resolution with a screen reader can easily spend the default eight seconds before reaching the button, at which point it is simply gone."
+    ],
+    "screenReader": [
+      "A persistent `role=\"status\"` line is in the DOM in every state and changes with it — \"Awaiting your decision\", \"Submitting your decision\", then the resolution wording. That is what makes the transition audible rather than merely visible.",
+      "With several cards on screen those live regions are indistinguishable: each announces \"Awaiting your decision\" with no reference to which artifact, so the surface around them has to supply that.",
+      "The card is a plain `div` and the title renders as a `div` too, not a heading. There is no region, no landmark and no heading to jump between cards with — a queue of approvals is one undifferentiated run of text in browse mode.",
+      "The expand toggle carries `aria-expanded` and `aria-controls`, and its name flips between \"Show detail\" and \"Hide detail\". The detail is genuinely unmounted while collapsed, not clipped, so a screen reader cannot read past the fold — that is the point, and it means `aria-controls` points at an element that does not exist until you expand.",
+      "Every verb is named by its visible word; the icons and the submitting spinner are all `aria-hidden`. The spinner is therefore silent — only the status line says a submission is in flight.",
+      "The resolution line's tick is `aria-hidden` and the wording carries it, so \"Sent back for editing\" is a real sentence rather than a coloured state."
+    ],
+    "focus": [
+      "A decision costs focus twice. Pressing Confirm moves the card to `submitting`, which disables the button under the pointer or caret and drops focus to `<body>`; reaching `resolved` then unmounts the whole verb row. Nothing moves focus to the resolution or to Undo.",
+      "Undo is never focused when it appears, so the control with a countdown on it is the one control a keyboard user has to go looking for. Focus it yourself when you enter `resolved`.",
+      "When the window expires the Undo button unmounts. If it had focus, focus falls to `<body>` mid-task, and the status line does not change, so nothing announces that the option has gone.",
+      "All controls inherit the shared button's `focus-visible` ring; the card adds none of its own."
+    ]
+  },
+  "pitfalls": [
+    "The Undo window is wall-clock time inside the component, so it closes whether or not your backend has finished. If your undo endpoint is slow, keep `undoWindowMs` comfortably longer than the round trip or people will click Undo into a closed window.",
+    "Entering `resolved` a second time restarts the window — that is deliberate, so a re-decision gets a fresh chance — but it means holding the component in `resolved` while changing `resolution` also restarts it.",
+    "`detail` is not rendered at all while collapsed, rather than hidden with CSS. That is the point (a screen reader should not be able to read what a sighted user has not been shown), but it means anything expensive in `detail` mounts on expand, not on first render.",
+    "Only verbs with handlers appear. A card with no handlers at all renders an empty button group, which usually means the callbacks were forgotten rather than that no action was intended.",
+    "Edit and Regenerate resolve nothing on their own — they hand control back to the artifact. If you set `state=\"resolved\"` from them without actually returning the user anywhere, the card claims a decision that was never made."
+  ],
+  "states": [
+    "pending",
+    "submitting",
+    "resolved",
+    "verb-order"
+  ],
+  "regions": [],
+  "consumes": [],
+  "shadcn": [
+    "button",
+    "button-group",
+    "card"
+  ],
+  "npm": [
+    "lucide-react"
+  ],
+  "source": "content/components/approval-card.docs.tsx",
+  "docs": "https://super-ai-components.vercel.app/components/approval-card"
+}

@@ -98,4 +98,37 @@ export const EmptyStateDocs: ComponentDocs = {
     "Passing plain text as the title when the state replaces a whole route. The title renders as a div, so a page-level empty state leaves a document with no heading — pass a heading element as the title instead.",
     "Leaving the two halves of an example pair to be told apart by position or colour. Both labels are required and both render as visible text, so the direction of the transformation survives for someone who cannot see the arrow between them.",
   ],
+  variants: [
+    {
+      prop: "size",
+      default: "panel",
+      values: [
+        {
+          value: "page",
+          intent:
+            "Nothing at all has happened yet on a surface that owns the whole page — a first visit to a library or a project list. The frame is the largest of the three because there is nothing else on screen competing with it.",
+        },
+        {
+          value: "panel",
+          intent:
+            "One region of a populated screen is empty while the rest of it is not: a sidebar list, a results pane, a tab with no rows. The surrounding page still carries the orientation, so the frame only has to explain its own region.",
+        },
+        {
+          value: "in-grid",
+          intent:
+            "The empty surface has to occupy one cell of a grid that is already laid out. It draws a dashed tile filling its cell, so dropping it into a grid's empty slot leaves the column geometry untouched.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "generation-queue",
+      when: "The surface has nothing to show because a result is queued, running, or has failed, not because nothing was ever requested — generation-queue owns the per-slot queued/running/done/failed states and their skeleton and progress treatment, which an empty state has no vocabulary for.",
+    },
+    {
+      component: "onboarding-wizard",
+      when: "The surface a new account sees is actually a first-run setup flow with more than one question to answer — onboarding-wizard owns the multi-step choice-card flow and its dot-progress rail, where empty-state has only one screen and one caller-supplied CTA.",
+    },
+  ],
 };
