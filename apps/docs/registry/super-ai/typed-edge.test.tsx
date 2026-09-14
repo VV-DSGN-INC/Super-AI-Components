@@ -1,22 +1,93 @@
-import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { TypedEdge } from "./typed-edge";
+import { render } from "@testing-library/react";
+import { Position } from "@xyflow/react";
+import { edgeColorFromHandle, typedEdgeStyle, TypedEdge } from "@/registry/super-ai/typed-edge";
 
-describe("TypedEdge", () => {
-  it("renders the type-coloured state", () => {
-    expect.fail("implement the type-coloured state per docs/design-system/component-specs.md#g10-typed-edge");
+describe("typed-edge helpers", () => {
+  // Colors use the double-fallback form: var(--flow-<type>, var(--flow-text)).
+  it("derives stroke color from the source handle id", () => {
+    expect(edgeColorFromHandle("n1:video:out")).toBe("var(--flow-video, var(--flow-text))");
+    expect(edgeColorFromHandle("garbage")).toBe("var(--flow-text, var(--flow-text))");
   });
 
-  it("renders the selected state", () => {
-    expect.fail("implement the selected state per docs/design-system/component-specs.md#g10-typed-edge");
+  // stroke/strokeWidth live in the style object (inline beats React Flow's unlayered CSS).
+  it("puts stroke and strokeWidth inside the style object", () => {
+    const result = typedEdgeStyle({ sourceHandle: "n1:image:out", selected: false });
+    expect(result.style.stroke).toBe("var(--flow-image, var(--flow-text))");
+    expect(result.style.strokeWidth).toBe(1.5);
   });
 
-  it("renders the streaming state", () => {
-    expect.fail("implement the streaming state per docs/design-system/component-specs.md#g10-typed-edge");
+  it("selected edge gets strokeWidth 2.5", () => {
+    const result = typedEdgeStyle({ sourceHandle: "n1:image:out", selected: true });
+    expect(result.style.strokeWidth).toBe(2.5);
   });
 
-  it("passes className through", () => {
-    render(<TypedEdge className="test-class" />);
-    expect(document.querySelector('[data-slot="typed-edge"]')!.className).toContain("test-class");
+  it("streaming edges get the named, motion-safe dash animation", () => {
+    const result = typedEdgeStyle({ sourceHandle: "n1:image:out", streaming: true });
+    expect(result.className).toContain("motion-safe:animate-flow-dash");
+    expect(result.className).not.toContain("infinite");
+  });
+
+  it("passes className through on the path", () => {
+    const { container } = render(
+      <svg>
+        <TypedEdge
+          id="e"
+          sourceX={0}
+          sourceY={0}
+          targetX={10}
+          targetY={10}
+          sourcePosition={Position.Right}
+          targetPosition={Position.Left}
+          sourceHandleId="a:text:out"
+          source="a"
+          target="b"
+          type="typed"
+          animated={false}
+          deletable
+          selectable
+          interactionWidth={20}
+          data={{}}
+          style={{}}
+          className="test-class"
+        />
+      </svg>,
+    );
+    expect(container.querySelector("[data-slot='typed-edge']")?.getAttribute("class")).toContain(
+      "test-class",
+    );
+  });
+});
+
+describe("TypedEdge smoke test", () => {
+  it("renders data-slot, typed stroke color and strokeWidth on the path", () => {
+    const { container } = render(
+      <svg>
+        <TypedEdge
+          id="e"
+          sourceX={0}
+          sourceY={0}
+          targetX={100}
+          targetY={50}
+          sourcePosition={Position.Right}
+          targetPosition={Position.Left}
+          sourceHandleId="a:video:out"
+          selected={true}
+          data={{ streaming: true }}
+          source="n1"
+          target="n2"
+          type="typed"
+          animated={false}
+          deletable={true}
+          selectable={true}
+          interactionWidth={20}
+        />
+      </svg>,
+    );
+    const path = container.querySelector("[data-slot='typed-edge']");
+    expect(path).toBeTruthy();
+    const styleAttr = (path as SVGPathElement | null)?.getAttribute("style") ?? "";
+    expect(styleAttr).toContain("var(--flow-video, var(--flow-text))");
+    expect(styleAttr).toContain("2.5");
   });
 });
