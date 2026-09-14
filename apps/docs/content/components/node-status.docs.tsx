@@ -21,7 +21,8 @@ import type { ComponentDocs } from "@/lib/component-docs";
  * static export.
  */
 export const NodeStatusDocs: ComponentDocs = {
-  whatItIs: "The badge and ring map for the six-status contract: a dot or spinner, a label, and the class a node card paints for each status.",
+  whatItIs:
+    "The badge and ring map for the six-status contract: a dot or spinner, a label, and the class a node card paints for each status.",
   whyItMatters: "",
   evidence: [],
   anatomy: [],

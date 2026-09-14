@@ -21,7 +21,8 @@ import type { ComponentDocs } from "@/lib/component-docs";
  * static export.
  */
 export const AiNodeDocs: ComponentDocs = {
-  whatItIs: "One node card: header with status, media and body slots, a footer or floating settings menu, and the locked and failed states.",
+  whatItIs:
+    "One node card: header with status, media and body slots, a footer or floating settings menu, and the locked and failed states.",
   whyItMatters: "",
   evidence: [],
   anatomy: [],

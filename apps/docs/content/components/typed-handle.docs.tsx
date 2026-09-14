@@ -21,7 +21,8 @@ import type { ComponentDocs } from "@/lib/component-docs";
  * static export.
  */
 export const TypedHandleDocs: ComponentDocs = {
-  whatItIs: "A react-flow port that encodes its data type in the handle id, paints the type colour, and refuses connections of another type.",
+  whatItIs:
+    "A react-flow port that encodes its data type in the handle id, paints the type colour, and refuses connections of another type.",
   whyItMatters: "",
   evidence: [],
   anatomy: [],

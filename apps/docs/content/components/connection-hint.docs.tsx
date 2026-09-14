@@ -21,7 +21,8 @@ import type { ComponentDocs } from "@/lib/component-docs";
  * static export.
  */
 export const ConnectionHintDocs: ComponentDocs = {
-  whatItIs: "The mini palette shown when a connection is dropped on empty canvas, and the port chips that list what a node accepts and emits.",
+  whatItIs:
+    "The mini palette shown when a connection is dropped on empty canvas, and the port chips that list what a node accepts and emits.",
   whyItMatters: "",
   evidence: [],
   anatomy: [],

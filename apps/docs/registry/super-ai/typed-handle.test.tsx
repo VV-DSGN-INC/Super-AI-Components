@@ -20,7 +20,9 @@ describe("TypedHandle", () => {
   });
 
   it("renders the unregistered-type state", () => {
-    expect.fail("implement the unregistered-type state per docs/design-system/component-specs.md#g3-typed-handle");
+    expect.fail(
+      "implement the unregistered-type state per docs/design-system/component-specs.md#g3-typed-handle",
+    );
   });
 
   it("passes className through", () => {

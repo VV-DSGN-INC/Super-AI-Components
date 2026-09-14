@@ -21,7 +21,8 @@ import type { ComponentDocs } from "@/lib/component-docs";
  * static export.
  */
 export const TypedEdgeDocs: ComponentDocs = {
-  whatItIs: "A react-flow edge whose stroke colour derives from its source port's type, thicker when selected, dashed and moving while streaming.",
+  whatItIs:
+    "A react-flow edge whose stroke colour derives from its source port's type, thicker when selected, dashed and moving while streaming.",
   whyItMatters: "",
   evidence: [],
   anatomy: [],
