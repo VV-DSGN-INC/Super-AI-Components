@@ -198,16 +198,28 @@ function RunButton({
                 onClick={onRun}
                 className={cn("relative z-10", isRunning && "disabled:text-foreground disabled:opacity-100")}
               >
-                <span data-slot="run-button-label" className="inline-flex items-center gap-1.5">
-                  {state === "done" ? <Check aria-hidden /> : null}
-                  {state === "failed" ? <AlertCircle aria-hidden /> : null}
-                  {state === "done"
-                    ? doneLabel
-                    : state === "failed"
-                      ? failedLabel
-                      : isRunning
-                        ? runningLabel
-                        : label}
+                {/* Both labels are always in the DOM, stacked in one grid cell,
+                    so the trigger is as wide as the wider of the two in every
+                    state and never jumps when a run starts (spec: E5 width
+                    stability). The inactive one is invisible and aria-hidden,
+                    which keeps the accessible name equal to the visible text. */}
+                <span data-slot="run-button-label" className="inline-grid items-center *:[grid-area:1/1]">
+                  <span
+                    data-slot="run-button-label-idle"
+                    aria-hidden={isRunning || undefined}
+                    className={cn("inline-flex items-center gap-1.5", isRunning && "invisible")}
+                  >
+                    {state === "done" ? <Check aria-hidden /> : null}
+                    {state === "failed" ? <AlertCircle aria-hidden /> : null}
+                    {state === "done" ? doneLabel : state === "failed" ? failedLabel : label}
+                  </span>
+                  <span
+                    data-slot="run-button-label-running"
+                    aria-hidden={!isRunning || undefined}
+                    className={cn("inline-flex items-center gap-1.5", !isRunning && "invisible")}
+                  >
+                    {runningLabel}
+                  </span>
                 </span>
               </Button>
             </div>

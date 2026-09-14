@@ -762,3 +762,42 @@ export const Boundary: Story = {
     </div>
   ),
 };
+
+/**
+ * Width stability, measured. The trigger's width in idle equals its width in
+ * running, because both labels are stacked in one grid cell. The cancel
+ * button that appears beside it is a separate control and is meant to widen
+ * the group; only the trigger must hold still.
+ */
+export const RunningKeepsWidth: Story = {
+  render: function Render() {
+    const [state, setState] = React.useState<RunButtonState>("idle");
+    return (
+      <div className="flex flex-col items-start gap-3">
+        <RunButton
+          state={state}
+          cost={4}
+          onRun={() => setState("running")}
+          onCancel={() => setState("idle")}
+        />
+        <button
+          type="button"
+          data-testid="toggle"
+          className="text-xs underline"
+          onClick={() => setState((s) => (s === "idle" ? "running" : "idle"))}
+        >
+          toggle
+        </button>
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const trigger = () => canvas.getByRole("button", { name: /Generate|Generating/ });
+    const idleWidth = trigger().getBoundingClientRect().width;
+    await userEvent.click(canvas.getByTestId("toggle"));
+    await waitFor(() => expect(canvas.getByRole("button", { name: "Generating…" })).toBeInTheDocument());
+    const runningWidth = trigger().getBoundingClientRect().width;
+    await expect(Math.abs(runningWidth - idleWidth)).toBeLessThan(1);
+  },
+};

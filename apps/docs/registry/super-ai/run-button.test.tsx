@@ -139,4 +139,18 @@ describe("RunButton", () => {
     render(<RunButton className="test-class" />);
     expect(document.querySelector('[data-slot="run-button"]')!.className).toContain("test-class");
   });
+
+  it("running stacks the idle and running labels so the trigger keeps its width", () => {
+    const { rerender } = render(<RunButton state="idle" onRun={() => {}} />);
+    const label = () => document.querySelector("[data-slot=run-button-label]") as HTMLElement;
+    expect(label().querySelector("[data-slot=run-button-label-running]")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+    expect(screen.getByRole("button", { name: "Generate" })).toBeInTheDocument();
+    rerender(<RunButton state="running" onRun={() => {}} onCancel={() => {}} />);
+    expect(label().querySelector("[data-slot=run-button-label-idle]")).toHaveAttribute("aria-hidden", "true");
+    expect(label().querySelector("[data-slot=run-button-label-idle]")).toHaveClass("invisible");
+    expect(screen.getByRole("button", { name: "Generating…" })).toBeInTheDocument();
+  });
 });
