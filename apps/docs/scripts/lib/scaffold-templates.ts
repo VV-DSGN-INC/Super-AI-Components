@@ -100,6 +100,11 @@ export const ${Comp}Docs: ComponentDocs = {
     screenReader: [],
   },
   pitfalls: [],
+  // Both fields are the contract's machine half (spec 2026-09-14 §4). Replace
+  // the seed with a list, or keep { none } and write the reason: the schema
+  // gate rejects anything under 20 characters.
+  variants: { none: "unwritten" },
+  insteadUse: { none: "unwritten" },
 };
 `;
 

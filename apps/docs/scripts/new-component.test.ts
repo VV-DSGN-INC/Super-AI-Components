@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it, afterAll } from "vitest";
 
+import { MIN_REASON } from "./lib/contract-schema";
 import { renderScaffold, statePascal } from "./lib/scaffold-templates";
 import type { ManifestItem } from "../lib/manifest-types";
 
@@ -80,6 +81,16 @@ describe("renderScaffold", () => {
     expect(docs).toContain("accessibility: {");
     expect(docs).toContain("keyboard: []");
     expect(docs).toContain("screenReader: []");
+  });
+
+  // Seeded with a reason under MIN_REASON on purpose: a scaffold must fail the
+  // contract schema gate until the judgment is written, the way it already
+  // ships failing tests. "unwritten" is nine characters.
+  it("seeds the two contract fields red by construction", () => {
+    const docs = files["content/components/workspace-switcher.docs.tsx"];
+    expect(docs).toContain('variants: { none: "unwritten" }');
+    expect(docs).toContain('insteadUse: { none: "unwritten" }');
+    expect("unwritten".length).toBeLessThan(MIN_REASON);
   });
 
   // The docs module is plain data read by a Server Component, so it must
