@@ -226,6 +226,7 @@ describe("story coverage ratchet", () => {
   it("derives obligations of both kinds — a kind that derives zero is a broken rule, not a clean tree", () => {
     expect(obligations.filter((o) => o.kind === "case").length).toBeGreaterThan(0);
     expect(obligations.filter((o) => o.kind === "described").length).toBeGreaterThan(0);
+    expect(obligations.filter((o) => o.kind === "variant").length).toBeGreaterThan(0);
   });
 
   it("no obligation is newly unmet (the baseline may only shrink)", () => {

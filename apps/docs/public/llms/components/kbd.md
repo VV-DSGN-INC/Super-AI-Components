@@ -14,11 +14,11 @@ Reach for it wherever a shortcut is being shown rather than performed: the trail
 
 ## Variants
 
-Not yet recorded.
+None: Kbd and KbdGroup take plain DOM props and expose no axis: a keycap is one size and one style on purpose, so every shortcut in a product reads as the same product.
 
 ## Instead use
 
-Not yet recorded.
+- **shortcuts-sheet**: You are listing more than a handful of shortcuts. The sheet owns the sectioning and the dialog and composes Kbd for the keys.
 
 ## Do
 

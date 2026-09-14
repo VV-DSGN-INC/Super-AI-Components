@@ -14,11 +14,12 @@ Reach for it when the primary object of your product is a conversation that prod
 
 ## Variants
 
-Not yet recorded.
+None: A shell owns arrangement and nothing else, so it has no axis of its own: every region is filled by a component that carries its own variants. Vary the parts, never the shell.
 
 ## Instead use
 
-Not yet recorded.
+- **home-shell**: The page is an app home or launcher, leading back into work already done, rather than one running conversation. Home is where a thread is started; this shell is where one runs.
+- **studio-shell**: The work happens on a canvas with a tool panel and a properties inspector. When the editor is the page, the studio shell owns the layout and the conversation is not the spine.
 
 ## Do
 

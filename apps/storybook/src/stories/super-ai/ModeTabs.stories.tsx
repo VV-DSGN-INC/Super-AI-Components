@@ -52,6 +52,7 @@ const FIVE_MODES = [
  */
 export const TextOnly: Story = {
   args: {
+    variant: "default",
     modes: [
       { value: "chat", label: "Chat" },
       { value: "cowork", label: "Cowork" },

@@ -1,5 +1,5 @@
 components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
-  kbd,primitive,A,registry/super-ai/kbd.meta.json,unwritten,unwritten,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
+  kbd,primitive,A,registry/super-ai/kbd.meta.json,none,shortcuts-sheet,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
   cost-chip,primitive,A,registry/super-ai/cost-chip.meta.json,unwritten,unwritten,"A small pill that prices one action: a coin icon, a number, and the unit that number is counted in."
   date-section,primitive,A,registry/super-ai/date-section.meta.json,unwritten,unwritten,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
   choice-chips,primitive,A,registry/super-ai/choice-chips.meta.json,unwritten,unwritten,"A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, s"
@@ -27,7 +27,7 @@ components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
   media-prompt-bar,component,D,registry/super-ai/media-prompt-bar.meta.json,unwritten,unwritten,"The media-gen omnibox: a prompt bar purpose-built for image, video, and audio generation. It ships i"
   reference-strip,component,D,registry/super-ai/reference-strip.meta.json,unwritten,unwritten,"A horizontal strip of typed attachment slots that sits above a prompt — reference images, first/last"
   context-chips,component,D,registry/super-ai/context-chips.meta.json,unwritten,unwritten,"A row of removable reference chips that sit above a prompt or composer — one per file, text selectio"
-  mode-tabs,component,D,registry/super-ai/mode-tabs.meta.json,unwritten,unwritten,A small set of mutually exclusive modes — two to five — that change how the same prompt or workspace
+  mode-tabs,component,D,registry/super-ai/mode-tabs.meta.json,variant=default/with-icon/with-tooltip,model-picker,A small set of mutually exclusive modes — two to five — that change how the same prompt or workspace
   quote-reply,component,D,registry/super-ai/quote-reply.meta.json,unwritten,unwritten,"A small quoted block that attaches a selection — a text range, an image region, a table cell, or a t"
   skill-menu,component,D,registry/super-ai/skill-menu.meta.json,unwritten,unwritten,"A two-pane, searchable menu of agent skills: a filterable list of rows on the left and a live previe"
   slot-summary,component,D,registry/super-ai/slot-summary.meta.json,unwritten,unwritten,"The read-back an agent shows just before it acts: one row per parameter it resolved, each row carryi"
@@ -101,7 +101,7 @@ components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
   escalation-handoff,component,N,registry/super-ai/escalation-handoff.meta.json,unwritten,unwritten,"The card an agent shows when it is handing the conversation to a person. Its subject is the packet,"
   task-tray,component,N,registry/super-ai/task-tray.meta.json,unwritten,unwritten,A slide-over panel listing background work that keeps running after you leave the screen that starte
   home-shell,block,O,registry/super-ai/home-shell.meta.json,unwritten,unwritten,"The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold,"
-  chat-shell,block,O,registry/super-ai/chat-shell.meta.json,unwritten,unwritten,"The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue,"
+  chat-shell,block,O,registry/super-ai/chat-shell.meta.json,none,home-shell|studio-shell,"The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue,"
   studio-shell,block,O,registry/super-ai/studio-shell.meta.json,unwritten,unwritten,"The page shell for a creative studio editor: a vertical modality rail on the far left, an editor top"
   timeline-shell,block,O,registry/super-ai/timeline-shell.meta.json,unwritten,unwritten,"The page shell for a timeline-dominant editor: a tool rail on the left, a content panel beside it, a"
   generation-shell,block,O,registry/super-ai/generation-shell.meta.json,unwritten,unwritten,"The page shell for a single-purpose AI tool: a title bar, a config column on the left, a results can"

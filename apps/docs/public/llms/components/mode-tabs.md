@@ -14,11 +14,15 @@ Reach for it whenever a surface offers two to five mutually exclusive interpreta
 
 ## Variants
 
-Not yet recorded.
+### variant (default: `default`)
+
+- `default`: Text-only triggers, the choice whenever the row has room: a word is the most legible label a mode can have, and nothing has to be learned.
+- `with-icon`: Icon plus visible label, once the modes have glyphs people already recognise. The icon speeds the scan; the label still carries the meaning.
+- `with-tooltip`: Icon-only triggers for tight spaces such as an embedded composer toolbar. The label ships as sr-only button content, so the tooltip is a sighted hint, never the only name.
 
 ## Instead use
 
-Not yet recorded.
+- **model-picker**: The choice is which model the generation runs on, not how the same input is interpreted. Modes are interpretations of one input; the picker is a model list with price and capability badges.
 
 ## Do
 

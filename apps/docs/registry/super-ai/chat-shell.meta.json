@@ -47,6 +47,19 @@
       "note": "The job-queue status line under a thread that is still working."
     }
   ],
+  "variants": {
+    "none": "A shell owns arrangement and nothing else, so it has no axis of its own: every region is filled by a component that carries its own variants. Vary the parts, never the shell."
+  },
+  "insteadUse": [
+    {
+      "component": "home-shell",
+      "when": "The page is an app home or launcher, leading back into work already done, rather than one running conversation. Home is where a thread is started; this shell is where one runs."
+    },
+    {
+      "component": "studio-shell",
+      "when": "The work happens on a canvas with a tool panel and a properties inspector. When the editor is the page, the studio shell owns the layout and the conversation is not the spine."
+    }
+  ],
   "dos": [
     "Give a running job a visible label as well as a spinner, so the queue is readable without seeing motion.",
     "Keep artifacts inside the stream, attached to the conversation that produced them."

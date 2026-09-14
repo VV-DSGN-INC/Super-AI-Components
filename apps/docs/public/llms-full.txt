@@ -23,11 +23,11 @@ Reach for it wherever a shortcut is being shown rather than performed: the trail
 
 ## Variants
 
-Not yet recorded.
+None: Kbd and KbdGroup take plain DOM props and expose no axis: a keycap is one size and one style on purpose, so every shortcut in a product reads as the same product.
 
 ## Instead use
 
-Not yet recorded.
+- **shortcuts-sheet**: You are listing more than a handful of shortcuts. The sheet owns the sectioning and the dialog and composes Kbd for the keys.
 
 ## Do
 
@@ -2417,11 +2417,15 @@ Reach for it whenever a surface offers two to five mutually exclusive interpreta
 
 ## Variants
 
-Not yet recorded.
+### variant (default: `default`)
+
+- `default`: Text-only triggers, the choice whenever the row has room: a word is the most legible label a mode can have, and nothing has to be learned.
+- `with-icon`: Icon plus visible label, once the modes have glyphs people already recognise. The icon speeds the scan; the label still carries the meaning.
+- `with-tooltip`: Icon-only triggers for tight spaces such as an embedded composer toolbar. The label ships as sr-only button content, so the tooltip is a sighted hint, never the only name.
 
 ## Instead use
 
-Not yet recorded.
+- **model-picker**: The choice is which model the generation runs on, not how the same input is interpreted. Modes are interpretations of one input; the picker is a model list with price and capability badges.
 
 ## Do
 
@@ -9191,11 +9195,12 @@ Reach for it when the primary object of your product is a conversation that prod
 
 ## Variants
 
-Not yet recorded.
+None: A shell owns arrangement and nothing else, so it has no axis of its own: every region is filled by a component that carries its own variants. Vary the parts, never the shell.
 
 ## Instead use
 
-Not yet recorded.
+- **home-shell**: The page is an app home or launcher, leading back into work already done, rather than one running conversation. Home is where a thread is started; this shell is where one runs.
+- **studio-shell**: The work happens on a canvas with a tool panel and a properties inspector. When the editor is the page, the studio shell owns the layout and the conversation is not the spine.
 
 ## Do
 

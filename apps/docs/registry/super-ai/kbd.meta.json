@@ -24,6 +24,15 @@
       "note": "The inline row around a chord. Supplies the 4px gap and nothing else — the `+` or the word `then` between caps are children you write."
     }
   ],
+  "variants": {
+    "none": "Kbd and KbdGroup take plain DOM props and expose no axis: a keycap is one size and one style on purpose, so every shortcut in a product reads as the same product."
+  },
+  "insteadUse": [
+    {
+      "component": "shortcuts-sheet",
+      "when": "You are listing more than a handful of shortcuts. The sheet owns the sectioning and the dialog and composes Kbd for the keys."
+    }
+  ],
   "dos": [
     "Write the joiner explicitly and consistently — a `+` for keys held together, the word then for keys pressed in turn.",
     "Put aria-hidden on the group when the shortcut is a hint beside a control that already performs the action, and leave it announced when the keys are the content of the row."
