@@ -1,0 +1,15 @@
+/* One value of the FINISH axis, activated by data-finish="example" on <html>.
+ *
+ * IMPORT ORDER IS LOAD-BEARING. Every entry point imports finishes AFTER
+ * themes, so on any token both axes declare, the finish wins. Write that down
+ * where the imports are, or someone will reorder them.
+ *
+ * A finish owns elevation and dimensions. If it touches the radius scale it
+ * replaces every rung or none — a single-rung override is correct for at most
+ * one cell by accident. */
+
+[data-finish="example"] {
+  --elevation-card: none;
+  --elevation-popover: 0 2px 6px #0000000f;
+  --elevation-overlay: 0 4px 12px #00000014;
+}

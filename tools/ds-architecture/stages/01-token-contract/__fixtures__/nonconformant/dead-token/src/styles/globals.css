@@ -1,0 +1,14 @@
+:root {
+  --surface-primary: #ffffff;
+  --text-primary: #18181b;
+  --elevation-card: 0 1px 2px #0000000d;
+  --background: var(--surface-primary);
+  --elevation-popover: 0 4px 8px #0000000d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-text-primary: var(--text-primary);
+  --shadow-card: var(--elevation-card);
+  --shadow-popover: var(--elevation-popover);
+}

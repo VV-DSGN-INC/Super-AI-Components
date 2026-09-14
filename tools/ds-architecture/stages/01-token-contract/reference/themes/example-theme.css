@@ -1,0 +1,10 @@
+/* One value of the theme axis, activated by data-theme="example" on <html>.
+ *
+ * A theme owns accent slots, the chart ramp and the radius scale. It overrides
+ * whole scales, never single rungs — see reference/axis-scale.test.ts for why. */
+
+[data-theme="example"] {
+  --accent: #7c3aed;
+  --radius-control: 4px;
+  --radius-card: 8px;
+}

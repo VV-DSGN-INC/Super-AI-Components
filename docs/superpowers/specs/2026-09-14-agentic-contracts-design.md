@@ -346,9 +346,9 @@ This is the rebuild's `agents-size.test.ts` and
 
 `tools/ds-architecture/` is refreshed from the local `ds-architecture` repo
 (stages 00, 01 and 09 built there; the vendored copy has 00). `VENDOR.md`
-takes the new stamp. `check:ladder` stays informational and out of CI; its
-expected output after this design lands is `highestContiguous=01`, with
-`01.4c` unchecked as that stage documents. Stages 02 to 08 are unbuilt
+takes the new stamp. `check:ladder` stays informational and out of CI. Its measured output
+after the refresh is `highestContiguous=00` with five unmet claims and
+`01.4c` unchecked; see acceptance item 6. Stages 02 to 08 are unbuilt
 upstream and are not built here.
 
 ### 8.3 Skills and docs
@@ -442,7 +442,13 @@ The mechanism is done when, at the plan's last commit:
 5. `CLAUDE.md` is under its ceiling and every rule bullet names a gate or an
    `UNGATED.md` reason; raising the ceiling constant is the only way to add
    bytes, and a review can see that diff.
-6. `pnpm check:ladder` reports `highestContiguous=01`.
+6. `pnpm check:ladder` reports `highestContiguous=00`, and prints `01.2`,
+   `01.3`, `01.6`, `09.1` and `09.3` as unmet. **Amended 2026-09-14, after
+   the refresh:** this section first predicted `01`. The refreshed checker
+   measured otherwise, the claims are recorded in
+   `tools/ds-architecture/VENDOR.md` and `CONTINUE.md` §8, and closing them
+   is not part of this design. The measured number stands over the
+   predicted one.
 7. `contract-coverage.baseline.json` lists 113 items, and `pnpm
 contract-coverage:baseline` refuses to grow it.
 

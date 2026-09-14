@@ -2135,6 +2135,29 @@ before that one line.
   instruction, and `KeyboardOrder` now measures the cost: zero tabs, and one
   orphan `tabpanel` announcing as a tab panel with no tab list.
 
+### Ladder stages 01 and 09, unmet and unfixed (2026-09-14)
+
+Refreshing the vendored `ds-architecture` checker from stage 00 to the upstream
+commit that also carries stages 01 and 09 made five claims visible for the
+first time. None was fixed: the refresh was a task in the agentic-contracts
+plan, and closing a stage is separate work. `pnpm check:ladder` reports
+`highestContiguous=00` and prints all five with their fixes; the table in
+`tools/ds-architecture/VENDOR.md` says why each one fails against this
+registry rather than against the checker.
+
+Two are cheap and self-contained, and are the place to start: `09.3` wants a
+review-round budget written down, which the two sibling repos already carry
+and this one has never written; `09.1` wants the instructions file to describe
+both loops and the human gate, which lives in §3 here rather than in
+`CLAUDE.md` — a deliberate split, so closing it means deciding whether the map
+should carry a pointer or the claim should be excused.
+
+The other three are token-architecture claims (`01.2`, `01.3`, `01.6`) and are
+not cheap: this registry runs stock shadcn tokens on purpose, so a name
+contract that rosters all 72, literal-free radius aliases, and eight dead
+`--sidebar-*` tokens are three separate decisions about how far to diverge
+from stock. Do not start them without a spec.
+
 ## 9. What each wave found
 
 Moved to [`design-system/wave-history.md`](design-system/wave-history.md), which

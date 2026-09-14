@@ -1,0 +1,40 @@
+/* Layer 2 semantic tokens and Layer 3 framework aliases.
+ *
+ * Layer 3 restates NO values. An alias carrying a value is a fourth place to
+ * change a colour, and the axes cannot reach it.
+ *
+ * Replace every value below. The names are the shape; the values are yours. */
+
+:root {
+  /* Layer 2 — semantic */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f7f7f8;
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --border-default: #e4e4e7;
+  --accent: #2563eb;
+  --elevation-card: 0 1px 2px #0000000d;
+  --elevation-overlay: 0 8px 24px #00000014;
+  --radius-control: 6px;
+  --radius-card: 12px;
+
+  /* Layer 3 — framework aliases. var() only, never a literal. */
+  --background: var(--surface-primary);
+  --foreground: var(--text-primary);
+  --muted: var(--surface-secondary);
+  --border: var(--border-default);
+  --primary: var(--accent);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-text-secondary: var(--text-secondary);
+  --shadow-card: var(--elevation-card);
+  --shadow-overlay: var(--elevation-overlay);
+  --radius-control-utility: var(--radius-control);
+  --radius-card-utility: var(--radius-card);
+}
