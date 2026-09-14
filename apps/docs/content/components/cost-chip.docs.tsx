@@ -45,6 +45,10 @@ export const CostChipDocs: ComponentDocs = {
       text: 'Format the price once, upstream, and pass the result as `amount` with `unit=""` — then the chip, the run button and the paywall card cannot round the same number three different ways.',
       example: <CostChip amount="1,240 credits" unit="" />,
     },
+    {
+      text: 'State the number, even when it is zero. A free run prints "0 credits"; never swap the number for a word like free, cheap or some, because the chip is a price and a word is a claim.',
+      example: <CostChip amount={0} />,
+    },
   ],
   donts: [
     {
@@ -76,5 +80,6 @@ export const CostChipDocs: ComponentDocs = {
     'The text is interpolated as `{amount} {unit}` with no conditional, so `unit=""` leaves a trailing space in the text node. It is invisible on screen, and it fails an exact-string assertion on `"17"` — match with a regex or trim.',
     "Children render after the amount and carry no slot of their own. They inherit the chip's type size and join its accessible text, so a qualifier like `est.` becomes part of what a screen reader announces for the price — which is usually what you want, and always worth saying out loud.",
     "The chip never truncates and never shrinks. It is an inline-flex that grows to fit, so a long unit widens it, and inside a narrow container the text wraps and the full-round pill turns into a tall stadium. Keep units to the short nouns the system emits, and let the neighbour give way instead.",
+    'There is no free variant. A zero renders as "0 credits", which is deliberate: the FilmMaker run-cost spec ruled that the number is stated and never replaced by a word, and this registry keeps that rule. If a surface needs to say free, it says it beside the chip, not instead of it.',
   ],
 };
