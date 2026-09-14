@@ -101,4 +101,33 @@ describe("deriveExtras", () => {
       "https://registry.ai-sdk.dev/suggestion.json",
     ]);
   });
+
+  it("threads a manifest css block into the emitted extras verbatim", () => {
+    const item = {
+      id: "G11",
+      name: "node-status",
+      title: "Node Status",
+      description: "x",
+      family: "G",
+      layer: "component",
+      status: "shipped",
+      wave: 6,
+      base: [],
+      shadcn: [],
+      consumes: ["flow-types"],
+      npm: [],
+      states: ["idle"],
+      specAnchor: "component-specs.md#g11-node-status",
+      cssVars: { theme: { "animate-flow-dash": "flow-dash 1s linear infinite" } },
+      css: { "@keyframes flow-dash": { to: { "stroke-dashoffset": "-20" } } },
+    } as const;
+    const extras = deriveExtras([item as unknown as ManifestItem], (n) => `self:${n}`);
+    expect(extras["node-status"].css).toEqual({
+      "@keyframes flow-dash": { to: { "stroke-dashoffset": "-20" } },
+    });
+    expect(extras["node-status"].cssVars).toEqual({
+      theme: { "animate-flow-dash": "flow-dash 1s linear infinite" },
+    });
+    expect(extras["node-status"].registryDependencies).toEqual(["self:flow-types"]);
+  });
 });

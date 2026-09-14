@@ -64,6 +64,12 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --animate-flow-dash: flow-dash 1s linear infinite;
+  @keyframes flow-dash {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -101,6 +107,23 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  /* Family G. Port and edge colours keyed by data type, and the four status
+     colours node-status paints. Consumers get these as registry cssVars
+     (apps/docs/lib/flow-tokens.ts); this copy is for Storybook itself. */
+  --flow-text: var(--muted-foreground);
+  --flow-image: oklch(0.62 0.19 259.8);
+  --flow-video: oklch(0.61 0.22 292.7);
+  --flow-start-frame: oklch(0.62 0.19 259.8);
+  --flow-end-frame: oklch(0.62 0.19 259.8);
+  --flow-audio: oklch(0.65 0.24 354.3);
+  --flow-speech: oklch(0.65 0.24 354.3);
+  --flow-sound: oklch(0.65 0.24 354.3);
+  --flow-3d: oklch(0.7 0.1 70);
+  --flow-avatar: oklch(0.7 0.1 70);
+  --flow-queued: var(--muted-foreground);
+  --flow-streaming: oklch(0.62 0.19 259.8);
+  --flow-done: oklch(0.72 0.17 162.5);
+  --flow-failed: var(--destructive);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -136,6 +159,17 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --flow-image: oklch(0.71 0.16 259.8);
+  --flow-video: oklch(0.71 0.18 292.7);
+  --flow-start-frame: oklch(0.71 0.16 259.8);
+  --flow-end-frame: oklch(0.71 0.16 259.8);
+  --flow-audio: oklch(0.73 0.19 354.3);
+  --flow-speech: oklch(0.73 0.19 354.3);
+  --flow-sound: oklch(0.73 0.19 354.3);
+  --flow-3d: oklch(0.78 0.09 72);
+  --flow-avatar: oklch(0.78 0.09 72);
+  --flow-streaming: oklch(0.71 0.16 259.8);
+  --flow-done: oklch(0.77 0.15 162.5);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);

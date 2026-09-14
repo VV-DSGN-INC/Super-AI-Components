@@ -96,6 +96,16 @@ export interface ManifestItem {
    * any consumer who doesn't already define the var themselves.
    */
   cssVars?: CssVars;
+  /**
+   * Registry-level CSS this component's code depends on that is not a custom
+   * property: today only `@keyframes` blocks. Same shape as shadcn's registry
+   * item `css` field (already emitted for the marketing tier from
+   * marketing.css), threaded verbatim by deriveExtras(). A `@keyframes` can't
+   * be a `cssVars` entry, and a named Tailwind animation without its keyframes
+   * silently renders nothing, so an item that ships `--animate-*` in
+   * `cssVars.theme` ships its keyframes here.
+   */
+  css?: Record<string, Record<string, string> | string>;
 }
 
 export const shippedItems = (items: ManifestItem[]) => items.filter((i) => i.status === "shipped");

@@ -31,6 +31,7 @@ type Item = {
   registryDependencies?: string[];
   dependencies?: string[];
   cssVars?: CssVars;
+  css?: Record<string, Record<string, string> | string>;
 };
 
 const extras = deriveExtras(MANIFEST, self);
@@ -254,6 +255,7 @@ const superAiItems = items.map((i) => ({
   // emitted before this field existed.
   files: [file(i.name), ...(filesByName.get(i.name) ?? [])],
   ...(i.cssVars ? { cssVars: i.cssVars } : {}),
+  ...(i.css ? { css: i.css } : {}),
 }));
 
 // registry:lib contracts. Same source directory as the components, but they
