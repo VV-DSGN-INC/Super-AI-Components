@@ -1,0 +1,90 @@
+# Feedback
+
+> A thumbs-up / thumbs-down control for rating a single response, with an optional reason popover behind the negative thumb. It's controlled: it renders whichever of idle, rating, or submitted it's given, and the consumer wires the transitions and owns wherever the rating actually gets persisted.
+
+Layer: component · Family: N · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/feedback.json` · Contract: `components/super-ai/feedback.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/feedback
+
+## Why it matters
+
+Asymmetric friction is the whole point of the pattern: Claude's thumbs and Manus's star rating both let a positive reaction land in one click, while a negative one only asks for a reason after the fact — never before. Playground and Freepik reuse the same shape for lighter, tool-embedded feedback. Gate praise behind the same popover a complaint gets, and the positive signal all but disappears, because most people who'd have clicked one thumb won't click through a form for it.
+
+## When to reach for it
+
+Reach for it under any single AI response — a chat reply, a generated summary, a search answer — where a lightweight up/down read matters more than a detailed survey. Feed it `state` and `value` from wherever the rating actually lives; a thumbs-up should move straight to "submitted", a thumbs-down should move to "rating" so the reason ask can open. If the product already uses a 5-star scale for the same job, use that presentation instead of thumbs — the spec treats them as two skins on one component, not two components to maintain.
+
+## Variants
+
+Not yet recorded.
+
+## Instead use
+
+Not yet recorded.
+
+## Do
+
+- Let a thumbs-up submit in one click — don't route it through the same reason popover a thumbs-down gets.
+- Keep every reason chip optional and let the free-text field submit on its own — Send has to work with nothing filled in.
+
+## Don't
+
+- Don't ask for a reason on praise. Gating the positive thumb behind the same popover the negative one gets suppresses the signal you were trying to collect.
+- Don't ship a submitted confirmation with no way back — feedback that can't be retracted is feedback people stop giving.
+
+## Anatomy
+
+- `feedback`: Root wrapper around the thumbs and, once submitted, the confirmation row.
+- `feedback-thumbs`: Button-group housing both thumbs; carries the group's accessible name.
+- `feedback-thumb-up`: One-click positive control. Icon-only — the name lives in aria-label.
+- `feedback-thumb-down`: Opens the reason popover. Icon-only, same accessible-name treatment.
+- `feedback-reason`: The reason popover's content, anchored to the thumbs-down control.
+- `feedback-reason-options`: Optional preset reason chips — never required to submit.
+- `feedback-reason-chip`: One preset reason; picking it only fills the free-text field.
+- `feedback-reason-input`: Free-text reason. Always usable on its own, with or without a chip.
+- `feedback-reason-submit`: Sends the negative rating, with or without a reason attached.
+- `feedback-submitted`: Confirmation row. Announced via role=status, not just swapped in visually.
+- `feedback-undo`: Always present once submitted — the only way to retract a rating.
+
+## Accessibility
+
+**Keyboard**
+
+- Two tab stops at rest — thumbs up, then thumbs down — and both are real buttons, so Space and Enter work. In `submitted` both are `disabled` and leave the tab order, and the only stop left is Undo.
+- The `rating` popover adds five: three reason chips by default, the textarea, then Send. Escape and an outside click both close it and fire `onRatingCancel`, so the ask is never a checkpoint the user has to answer.
+- Nothing gates Send. The textarea can be empty and no chip need be picked — `onSubmit` fires either way, with `reason` simply absent from the payload.
+- The popover is opened by `state`, not by the trigger's own click. A host that sets `state="rating"` from anywhere other than the thumbs-down handler opens a popup and pulls focus into it without the user having asked for it.
+- There are no shortcuts and no arrow keys anywhere. The reason chips are plain buttons with no group navigation, so picking a preset is Tab, Tab, Space.
+
+**Screen reader**
+
+- Both thumbs are icon-only and named entirely by `aria-label` — "Helpful" and "Not helpful" by default. The glyphs are `aria-hidden`, so a caller who blanks `upLabel` or `downLabel` ships an unnamed button.
+- They announce as toggle buttons: `aria-pressed` tracks `value`, and the pressed thumb also paints a background, so the state is carried twice and never by the fill alone.
+- The pair sits in a `role="group"` named by `label` — "Was this helpful?" — which is where the question itself lives. Drop it and the two thumbs are two unexplained toggles.
+- The reason popup is a dialog named "What went wrong?" through the popover's own title wiring, so opening it announces the ask rather than dropping the user into unlabelled fields.
+- The reason chips announce as toggle buttons with `aria-pressed`, in no group and with no name of their own, so they arrive as three loose toggles between the dialog's title and its textarea.
+- The textarea's accessible name is `reasonPlaceholder`, so its name and its placeholder are the same string by construction: changing the placeholder renames the field, and there is no separate label to write.
+- The confirmation is a `role="status"` region and is the only announcement this component makes on its own. Note that the region is *inserted* rather than updated — the element mounts with its text already inside it — so assistive tech that only watches pre-existing live regions can miss it.
+- A thumbs-up submits in one click and announces nothing until `state` reaches `submitted`. A host that records the rating without advancing the state leaves the press silent.
+
+**Focus**
+
+- Sending a negative rating is the worst case here. Send closes the popover, the host moves `state` to `submitted`, and the thumbs-down the popover would restore focus to is `disabled` by that same render — so focus falls to `<body>` and the next Tab restarts from the top of the page. Move focus to the confirmation row in your `onSubmit`.
+- Undo has the same shape from the other side: pressing it returns the host to `idle`, the confirmation row unmounts with the button inside it, and focus is lost again. Send focus back to the thumbs group.
+- Escape out of the reason popover is the one clean path — focus returns to the thumbs-down button, which is still enabled in `rating`.
+- The thumbs, Send and Undo take the shadcn `Button` focus ring. The reason chips ship no `focus-visible` class of their own and fall back to the browser's default outline, which is a visibly different treatment from every other control in the popup.
+
+## Pitfalls
+
+- Firing `onSubmit` without ever moving `state` to "submitted" — the component is controlled, so a consumer that forgets this step leaves the UI stuck showing the reason popover (or nothing) even though the rating was recorded.
+- Treating the reason popover as a form that has to be filled in before it can close. Escape and outside-click both call `onRatingCancel`; wiring that back to "idle" (not ignoring it) is what keeps the ask from feeling like a checkpoint.
+- Reaching for a second component when a product wants a 5-star scale instead of thumbs — the spec treats them as two presentations of the same pattern, not two patterns.
+
+## Composition
+
+- States: `idle`, `rating`, `submitted`
+- Composes from this registry: nothing
+- shadcn primitives: button, button-group, popover, textarea
+- npm: lucide-react
+
+## Evidence
+
+Manus, Claude, Playground, Freepik

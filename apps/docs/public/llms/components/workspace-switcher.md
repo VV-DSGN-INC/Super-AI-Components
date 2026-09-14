@@ -1,0 +1,83 @@
+# Workspace Switcher
+
+> A dropdown that shows the workspace, org, or product the user is currently in and lets them jump to another one. It doubles as an avatar or logo for the current context and, when a workspace carries a description, expands each row into a full entity row instead of a bare label.
+
+Layer: component · Family: B · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/workspace-switcher.json` · Contract: `components/super-ai/workspace-switcher.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/workspace-switcher
+
+## Why it matters
+
+It's the first element in every sidebar on the reference board — Descript, CapCut, Spline, Make, and Lovable all open with it, because switching context is the one action a multi-workspace product needs available at all times. The plan badge riding on the trigger turns an otherwise passive identity control into the cheapest upgrade prompt in the shell: the user sees what they're paying for on every screen, without a dedicated banner.
+
+## When to reach for it
+
+Reach for it whenever a shell needs to represent more than one workspace, organization, or product surface and let the user switch between them — it belongs at the top of the sidebar, not buried in settings. Pass plain `{ id, name, plan }` entries for a lightweight checked list; add a `description` to any entry and the whole list renders as entity rows instead, so pick one shape for your data up front rather than mixing the two.
+
+## Variants
+
+Not yet recorded.
+
+## Instead use
+
+Not yet recorded.
+
+## Do
+
+- Keep the plan on the trigger, not just inside the open menu — it's the cheapest upgrade prompt the shell has.
+- Put creation last, below a separator, as its own row — never compete with the trigger for attention.
+
+## Don't
+
+- Don't bolt a "+" icon button onto the trigger — creation belongs inside the menu, last, below a rule.
+- Don't hide the plan badge inside the menu only — if it's not on the trigger, it isn't earning its keep as an upgrade prompt.
+
+## Anatomy
+
+- `workspace-switcher`: Root wrapper around the trigger and its menu.
+- `workspace-switcher-trigger`: The button that opens the menu; shows avatar, name, and plan.
+- `workspace-switcher-avatar`: Initials or logo, reused on the trigger and every row.
+- `workspace-switcher-trigger-name`: Current workspace name on the trigger.
+- `workspace-switcher-plan-badge`: The upgrade prompt — always on the trigger, never menu-only.
+- `workspace-switcher-item`: One workspace row: checked-list item or entity row, depending on data.
+- `workspace-switcher-separator`: Rule that separates workspaces from the creation action.
+- `workspace-switcher-create`: The 'create new workspace' action, always last.
+
+## Accessibility
+
+**Keyboard**
+
+- One tab stop, always: the trigger. The menu is a roving-focus `menu`, so five workspaces and fifty cost the same, and `onCreate` adds a menu item rather than a stop.
+- Enter, Space or Down opens the menu; arrows move between rows, typing a letter jumps to a workspace, Enter or Space picks one, and Escape closes and returns focus to the trigger. Tab while the menu is open closes it rather than moving inside it.
+- There is no `disabled` prop anywhere — not on the component and not per workspace. A workspace the user cannot enter has to be left out of `workspaces`, not disabled in place.
+- Choosing a row closes the menu, so there is no way to try options without reopening it each time.
+
+**Screen reader**
+
+- Rows are `role="menuitemradio"` carrying `aria-checked`, so the current workspace announces as checked. The tick glyph is decoration layered on that state, not the state itself.
+- The avatar is `aria-hidden` on the trigger and on every row, so initials never leak into a name — which also means a custom `icon` contributes nothing to the announcement.
+- The trigger's name is just its visible contents: "Acme Pro". Nothing says workspace, organisation or switcher, and the plan reads as part of the name. It does announce as a menu button with an expanded state, but if the surrounding context does not make its purpose obvious, pass your own `aria-label`.
+- Give any workspace a `description` and every row becomes an entity row, which folds the description and the plan into that row's own name — "Acme, Acme workspace, Pro" as one string. The plain list announces the much shorter "Acme Pro".
+- `plan` is text, so the tier survives for anyone who cannot see the badge tint. It is unlabelled text, though: "Free" and "Pro" arrive with nothing saying they are plans.
+- Nothing announces that the workspace changed. The component holds no live region — the only confirmation is the trigger's own name, which focus returns to as the menu closes.
+- An empty `workspaces` array announces the trigger as "Select workspace" and still opens a menu, which is then empty; there is no empty-state row.
+
+**Focus**
+
+- Opening moves focus into the menu. Closing — by choosing, by Escape, or by clicking away — returns it to the trigger, so nothing here strands focus on `<body>`.
+- The trigger inherits the shared `Button` focus ring. Menu rows are highlighted with a background change rather than a ring, and in entity-row mode the row renders as a non-interactive `<div>` with no focus style of its own — the highlight belongs to the menu item wrapping it.
+
+## Pitfalls
+
+- Reaching for a second list or entity-row component when workspaces gain descriptions — the `description` field already switches every row into entity-row rendering, so there's no need to hand-roll a parallel list.
+- Treating the plan badge as a colour-only signal (a bare dot). It renders as text so plan tier survives for colorblind users and screen readers alike — keep it that way in custom themes.
+- Forgetting the list is controlled: selecting a row calls `onSelect` but doesn't change context on its own. The consuming app owns `currentId` and must update it in response.
+
+## Composition
+
+- States: `workspace-list`, `multi-product`, `with-plan-badge`
+- Composes from this registry: entity-row, initials
+- shadcn primitives: dropdown-menu, button
+- npm: lucide-react
+
+## Evidence
+
+Descript, CapCut, Spline, Make, Lovable
