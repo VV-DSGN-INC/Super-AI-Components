@@ -341,12 +341,17 @@ vocabulary, shape not name (`story-conventions.md` §Manifest-shape rules).
 cd apps/docs && pnpm new:component <name>
 ```
 
-Emits five files with **deliberately failing tests**. Run it for each item.
+Emits five files with **deliberately failing tests**. Run it for each item. The
+sixth file, `registry/super-ai/<name>.meta.json`, is not scaffolded: `pnpm
+contract:emit` derives it from the docs module once the two contract fields are
+written, and the scaffold seeds those fields red (`{ none: "unwritten" }`).
 
 ### 3.4 Fan out — one agent per component, in parallel
 
 They are independent: each writes only its own five files (plus an optional
-`.examples.tsx`). No shared state, so they parallelise cleanly. Give each agent:
+`.examples.tsx`) and, after writing the docs module, runs `pnpm contract:emit`
+and commits its own `.meta.json` plus its own lines of `index/components.toon`
+and `public/llms*`. The integrator re-runs emit once after the merge. No shared state, so they parallelise cleanly. Give each agent:
 
 - A pointer to `docs/design-system/component-build-brief.md` — **do not
   re-paste the house rules into prompts.** That is how instructions drift; the
@@ -2134,6 +2139,26 @@ before that one line.
   to delete its overrides when M1 grows an opt-out is still the right
   instruction, and `KeyboardOrder` now measures the cost: zero tabs, and one
   orphan `tabpanel` announcing as a tab panel with no tab list.
+
+### Contract waves (spec `2026-09-14-agentic-contracts-design.md` §9)
+
+The mechanism landed 2026-09-14 with three control contracts, one per layer:
+`kbd` (no axis, records why), `mode-tabs` (a three-value axis) and `chat-shell`
+(a block, which varies its parts and never itself).
+`apps/docs/scripts/lib/contract-coverage.baseline.json` stands at **113**
+items whose `variants` or `insteadUse` is still unwritten, and it may only
+shrink.
+
+The remaining 113 are authored in waves of about twelve, one agent per item in
+its own worktree per §3.4. An agent appends the two fields to its docs module,
+adds a story line for any declared variant value no story renders, runs `pnpm
+contract:emit` and `pnpm test` in `apps/docs`, and commits its module, its
+story, its meta and its lines of the shared derived files. Review is for
+judgment: an intent that describes appearance rather than the decision that
+picks the value is the expected rejection. The integrator re-runs emit, then
+`pnpm contract-coverage:baseline` (must shrink by the wave's count) and `pnpm
+story-coverage:baseline` (must not grow). **A wave that would grow either
+baseline does not merge.** Append a line here as each wave lands.
 
 ### Ladder stages 01 and 09, unmet and unfixed (2026-09-14)
 

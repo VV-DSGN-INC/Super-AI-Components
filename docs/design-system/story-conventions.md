@@ -405,10 +405,12 @@ chosen.
   (`docs/superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`);
   wave status lives in `CONTINUE.md`.
 - **Gated as a ratchet since 2026-09-04.**
-  `apps/docs/scripts/lib/story-coverage.test.ts` derives two obligations per
-  item from the manifest — each of the eight names present or
-  `case-skip`-annotated, and a JSDoc description above every declared-state
-  export — and compares the unmet set with `story-coverage.baseline.json`,
+  `apps/docs/scripts/lib/story-coverage.test.ts` derives three kinds of obligation — from
+  the manifest, each of the eight names present or `case-skip`-annotated and
+  a JSDoc description above every declared-state export; from the emitted
+  contract (`registry/super-ai/<name>.meta.json`), every declared variant
+  value rendered as `prop="value"` or passed as `prop: "value"` in some
+  story — and compares the unmet set with `story-coverage.baseline.json`,
   the debt committed at adoption. Both directions fail: a newly unmet
   obligation is a regression, and a resolved one still in the baseline must
   be locked in with `pnpm story-coverage:baseline` (from `apps/docs`), which
