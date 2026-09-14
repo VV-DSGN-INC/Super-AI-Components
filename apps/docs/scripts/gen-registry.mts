@@ -22,6 +22,16 @@ const file = (name: string) => ({
   type: "registry:component",
   target: `components/super-ai/${name}.tsx`,
 });
+// The usage contract ships beside the code (spec 2026-09-14, D24). A
+// registry:file needs an explicit target; it lands wherever the component
+// lands, because both targets share the same base.
+const metaFile = (name: string) => ({
+  path: `registry/super-ai/${name}.meta.json`,
+  type: "registry:file",
+  target: `components/super-ai/${name}.meta.json`,
+});
+const contractNote = (name: string) =>
+  `Read ${name}.meta.json beside this file before placing the component: it records when to use it, which variant and why, and what to reach for instead.`;
 
 type Item = {
   name: string;
@@ -252,7 +262,8 @@ const superAiItems = items.map((i) => ({
   // The item's own file always leads, so `npx shadcn add` writes the entry
   // point before its parts. An item without extras emits exactly what it
   // emitted before this field existed.
-  files: [file(i.name), ...(filesByName.get(i.name) ?? [])],
+  files: [file(i.name), metaFile(i.name), ...(filesByName.get(i.name) ?? [])],
+  docs: contractNote(i.name),
   ...(i.cssVars ? { cssVars: i.cssVars } : {}),
 }));
 
