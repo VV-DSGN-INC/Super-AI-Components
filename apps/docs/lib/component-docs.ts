@@ -28,6 +28,35 @@ export interface DocsAccessibility {
   focus?: string[];
 }
 
+/** "Nothing" as a decision, never as silence: the reason is required and
+ *  gated at 20 characters (spec 2026-09-14, D25). */
+export interface DocsNone {
+  none: string;
+}
+
+/** One value of one variant axis, with the judgment that picks it. */
+export interface DocsVariantValue {
+  value: string;
+  /** When to pick this value: the decision, never the appearance. */
+  intent: string;
+}
+
+export interface DocsVariant {
+  /** The prop as a reader sees it, e.g. "variant", "density", "ToolHeader · state". */
+  prop: string;
+  /** Bare identifier the story-coverage gate matches on. Required when `prop` is not one. */
+  propName?: string;
+  default?: string;
+  values: DocsVariantValue[];
+}
+
+/** A component to reach for instead, and the situation that makes it the right one. */
+export interface DocsRedirect {
+  /** Registry name. Must be a shipped manifest item other than this one. */
+  component: string;
+  when: string;
+}
+
 export interface ComponentDocs {
   /** What the pattern is, in two or three sentences. */
   whatItIs: string;
@@ -49,4 +78,10 @@ export interface ComponentDocs {
   accessibility: DocsAccessibility;
   /** Things that go wrong in practice. */
   pitfalls: string[];
+  /**
+   * Machine-readable half of the contract (spec 2026-09-14 §4). Optional only
+   * until scripts/lib/contract-coverage.baseline.json is empty; then required.
+   */
+  variants?: DocsVariant[] | DocsNone;
+  insteadUse?: DocsRedirect[] | DocsNone;
 }
