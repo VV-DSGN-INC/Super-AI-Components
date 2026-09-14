@@ -86,7 +86,7 @@ contract gate exists to end.
 
 Every registry item carries its `<name>.meta.json` as a second file with
 `type: "registry:file"` and target `components/super-ai/<name>.meta.json`, so
-a consumer that installs `thread-list` has the contract next to the component
+a consumer that installs `mode-tabs` has the contract next to the component
 it describes, version-locked to the code it installed. The same content is
 published on the docs site for agents that have not installed anything yet,
 and the published page says the installed file wins on conflict.
@@ -164,29 +164,39 @@ item, written only by the emit step:
 ```jsonc
 {
   "generated": "by `pnpm contract:emit` from content/components/<name>.docs.tsx. Do not edit.",
-  "name": "thread-list",
-  "title": "Thread List",
+  "name": "mode-tabs",
+  "title": "Mode Tabs",
   "layer": "component",
-  "family": "B",
+  "family": "D",
   "description": "…", // manifest
   "purpose": "…", // whatItIs
   "whyItMatters": "…",
   "usage": "…",
   "evidence": ["…"],
   "anatomy": [{ "slot": "…", "note": "…" }],
-  "variants": [{ "prop": "…", "propName": "…", "default": "…", "values": [{ "value": "…", "intent": "…" }] }],
-  "insteadUse": [{ "component": "date-section", "when": "…" }],
+  "variants": [
+    {
+      "prop": "variant",
+      "default": "default",
+      "values": [
+        { "value": "default", "intent": "…" },
+        { "value": "with-icon", "intent": "…" },
+        { "value": "with-tooltip", "intent": "…" },
+      ],
+    },
+  ],
+  "insteadUse": [{ "component": "model-picker", "when": "…" }],
   "dos": ["…"], // text only; the live example stays on the docs page
   "donts": ["…"],
   "accessibility": { "keyboard": ["…"], "screenReader": ["…"], "focus": ["…"] },
   "pitfalls": ["…"],
-  "states": ["pinned", "inline-rename", "…"], // manifest
+  "states": ["text-only", "with-icon", "with-tooltip"], // manifest
   "regions": [], // manifest, blocks only
-  "consumes": ["date-section"], // manifest
-  "shadcn": ["button", "…"], // manifest
+  "consumes": [], // manifest
+  "shadcn": ["tabs", "tooltip"], // manifest
   "npm": ["lucide-react"], // manifest
-  "source": "content/components/thread-list.docs.tsx",
-  "docs": "https://super-ai-components.vercel.app/components/thread-list",
+  "source": "content/components/mode-tabs.docs.tsx",
+  "docs": "https://super-ai-components.vercel.app/components/mode-tabs",
 }
 ```
 
@@ -246,9 +256,10 @@ component item, `components/super-ai/<name>.meta.json` exists beside
 means the contract travelled; a red here is a shipping bug on the same footing
 as a missing `--warning`.
 
-The orphan check in `check-contract.mts` (line 209 at the measured commit)
-walks `registry/super-ai/` and must learn that `*.meta.json` is not an orphan
-`.tsx`; `reconcile:deps` reads imports from `.tsx` only and is unaffected.
+The orphan check in `check-contract.mts` (line 204 at the measured commit)
+already filters `registry/super-ai/` to `.tsx`, so a `.meta.json` beside the
+source is not an orphan, and `reconcile:deps` reads imports from `.tsx` only.
+Neither needs a change; the shipping task runs `check:contract` to prove it.
 
 Production is 97 items stale and deploys are manual (`CONTINUE.md` §7). A
 consumer sees any of this only after a deploy. The deploy is a dependency of
@@ -261,8 +272,10 @@ Every claim above has a test that fails when it stops being true. In CI order
 
 ### 7.1 Schema, in `test`
 
-`contract-emit.test.ts` validates every shipped item's module with zod before
-emitting: the nine existing fields keep their present needle rules, `variants`
+`contract-emit.test.ts` validates every shipped item's module with a
+hand-written validator (`contract-schema.ts`; zod is not a direct dependency
+of `apps/docs`, and adding one is a lockfile change this design does not
+need) before emitting: the nine existing fields keep their present needle rules, `variants`
 and `insteadUse` follow §4, every `insteadUse[].component` is a shipped
 manifest name that is not the item itself, every `propName` is a bare
 identifier and is present whenever `prop` is not one, and no two values on
@@ -349,9 +362,13 @@ the emitted meta) and §8 gets a line per wave as they land.
 ## 9. Wave protocol
 
 The plan lands the mechanism with three control contracts, one per layer:
-`kbd` (A1, primitive), `thread-list` (B6, component, six states) and
-`chat-shell` (family O, block, regions instead of states). Three is enough to prove the schema against the three shapes
-and to make every gate above fail by hand before it is trusted.
+`kbd` (A1, primitive, no axis at all, so it exercises D25), `mode-tabs` (D4,
+component, a three-value `variant` axis whose values mirror its declared
+states) and `chat-shell` (family O, block, regions instead of states). Three
+is enough to prove the schema against the three shapes and to make every gate
+above fail by hand before it is trusted. `thread-list` was the first candidate
+for the component layer and was dropped because its props are booleans
+(`active`, `pinned`, `unread`), which are states, not a variant axis.
 
 The remaining 113 are authored in waves of about twelve, by parallel Sonnet
 agents in their own worktrees per `CONTINUE.md` §3.4, each writing only its
@@ -418,8 +435,8 @@ The mechanism is done when, at the plan's last commit:
 2. Three `.meta.json` files exist, each derived; deleting one and running
    `pnpm test` fails §7.4; editing one by hand fails §7.4; blanking an
    `intent` fails §7.1; removing `variants` from a control module fails §7.2.
-3. `public/r/thread-list.json` lists two files, and a fresh consumer install
-   places `components/super-ai/thread-list.meta.json` beside the component.
+3. `public/r/mode-tabs.json` lists two files, and a fresh consumer install
+   places `components/super-ai/mode-tabs.meta.json` beside the component.
 4. `public/llms.txt` lists 116 components and the three written pages carry
    every field.
 5. `CLAUDE.md` is under its ceiling and every rule bullet names a gate or an
