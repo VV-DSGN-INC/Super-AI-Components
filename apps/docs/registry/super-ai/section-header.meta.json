@@ -37,6 +37,28 @@
       "note": "The trailing slot. shrink-0, so it keeps its full width while the title truncates around it."
     }
   ],
+  "variants": [
+    {
+      "prop": "size",
+      "default": "default",
+      "values": [
+        {
+          "value": "default",
+          "intent": "Pick this when the section is a page-level group competing with the surrounding headings and content for attention, not just with sibling rows inside one panel — a library page split into sections, a recents strip."
+        },
+        {
+          "value": "sm",
+          "intent": "Pick this when the section is nested inside a denser, already-subordinate surface — a filter rail, a property inspector — where the header only has to outrank the rows beneath it, not the page around it."
+        }
+      ]
+    }
+  ],
+  "insteadUse": [
+    {
+      "component": "date-section",
+      "when": "The group is a time bucket the user reads past — Today, Yesterday, Last week — rather than a group with a count, an action, or a collapse the user acts on."
+    }
+  ],
   "dos": [
     "Give the header an `id` and point your group wrapper at it with role=\"group\" and aria-labelledby — the header renders a div, so this is the only thing that ties the rows to their title for a screen reader.",
     "Hold `open` yourself and render the panel from the same state, so the collapse has a visible consequence — and put a signal in `action` for what the collapsed section is still doing."

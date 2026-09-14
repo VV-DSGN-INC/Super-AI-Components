@@ -24,6 +24,19 @@
       "note": "The number and its unit, pinned dir=\"ltr\" so a price keeps its digit order inside an RTL paragraph and the currency symbol or the slash in a rate does not migrate."
     }
   ],
+  "variants": {
+    "none": "A price rendered two different ways inside one product reads as two different prices, so the chip has exactly one surface and no toggle between them — the amount and its unit, printed the same way everywhere, is what lets the six other components that render this chip trust that a stated cost means the same commitment on every surface it appears on."
+  },
+  "insteadUse": [
+    {
+      "component": "credits-indicator",
+      "when": "The number is a running balance rather than the price of one action — the test already in this file's usage note: whether it would still be true with nothing selected."
+    },
+    {
+      "component": "run-button",
+      "when": "The price needs to carry a state — estimate, confirmed, or insufficient. Cost-chip has one surface and cannot paint those distinctions itself; run-button owns `state=\"insufficient-credits\"` and the shortfall it triggers."
+    }
+  ],
   "dos": [
     "Attach it to the thing it prices, in the same row, so choosing and pricing happen in one glance rather than one lookup.",
     "Format the price once, upstream, and pass the result as `amount` with `unit=\"\"` — then the chip, the run button and the paywall card cannot round the same number three different ways."

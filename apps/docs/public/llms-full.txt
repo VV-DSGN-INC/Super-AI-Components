@@ -97,11 +97,12 @@ Put it on the thing being priced — the model row, the skill in a menu, the act
 
 ## Variants
 
-Not yet recorded.
+None: A price rendered two different ways inside one product reads as two different prices, so the chip has exactly one surface and no toggle between them — the amount and its unit, printed the same way everywhere, is what lets the six other components that render this chip trust that a stated cost means the same commitment on every surface it appears on.
 
 ## Instead use
 
-Not yet recorded.
+- **credits-indicator**: The number is a running balance rather than the price of one action — the test already in this file's usage note: whether it would still be true with nothing selected.
+- **run-button**: The price needs to carry a state — estimate, confirmed, or insufficient. Cost-chip has one surface and cannot paint those distinctions itself; run-button owns `state="insufficient-credits"` and the shortfall it triggers.
 
 ## Do
 
@@ -922,11 +923,14 @@ Reach for it wherever a screen has more than one group of the same kind of thing
 
 ## Variants
 
-Not yet recorded.
+### size (default: `default`)
+
+- `default`: Pick this when the section is a page-level group competing with the surrounding headings and content for attention, not just with sibling rows inside one panel — a library page split into sections, a recents strip.
+- `sm`: Pick this when the section is nested inside a denser, already-subordinate surface — a filter rail, a property inspector — where the header only has to outrank the rows beneath it, not the page around it.
 
 ## Instead use
 
-Not yet recorded.
+- **date-section**: The group is a time bucket the user reads past — Today, Yesterday, Last week — rather than a group with a count, an action, or a collapse the user acts on.
 
 ## Do
 
@@ -1268,11 +1272,12 @@ Reach for it as the primary tool switcher in an editor shell, not a generic side
 
 ## Variants
 
-Not yet recorded.
+None: `layout` is not a caller's choice: it lives on the internal rail button and is decided by where an item renders — stacked in the 92px column, row inside the overflow popover so a clipped name can read in full. The rail exposes no axis, because a rail that could be laid out two ways would stop being a fixed landmark.
 
 ## Instead use
 
-Not yet recorded.
+- **mode-tabs**: The decision is which interpretation the same input gets — Ask, Design, Build — rather than which tool acts on an unchanged canvas. This is the seam crossed most often: a rail built from Chat, Image and Video items is really a set of modes.
+- **sidebar-nav**: Picking a row replaces what is on screen rather than changing what a gesture on the current canvas does. A rail switches the tool; navigation switches the destination.
 
 ## Do
 
@@ -1966,11 +1971,15 @@ Reach for it for any 'recent' or 'your projects' surface where each item is a th
 
 ## Variants
 
-Not yet recorded.
+### layout (default: `grid`)
+
+- `grid`: Choose grid when the reader finds their project by recognising its thumbnail faster than by reading its title — a landing view where visual recall does the scanning.
+- `list`: Choose list when the reader is comparing many projects by title, recency, or duration at once — a denser view where metadata carries more weight than the thumbnail.
 
 ## Instead use
 
-Not yet recorded.
+- **generation-grid**: The tiles are a batch of outputs from one generation run rather than projects to reopen, and need a density control instead of per-item recency text.
+- **artifact-grid**: The items are documents an assistant produced and need grouping by the session that made them, not a flat recency-ordered list of projects.
 
 ## Do
 
@@ -2840,11 +2849,15 @@ Reach for `dropdown` wherever a compact control needs to sit in a toolbar or com
 
 ## Variants
 
-Not yet recorded.
+### presentation (default: `dropdown`)
+
+- `dropdown`: Pick this when the picker has to share a toolbar or composer row with other controls — a compact trigger that only opens a listbox on demand is what keeps the row from crowding.
+- `expanded-cards`: Pick this when model choice is the primary decision on its own screen, with room to show every model's full badge set at a glance instead of hiding it behind a click.
+- `node-inline`: Pick this when the picker has to live inside a canvas or workflow node — a popover behind a small trigger fits the node's footprint without the node dominating the canvas.
 
 ## Instead use
 
-Not yet recorded.
+- **mode-tabs**: The choice is which interpretation applies to the same prompt or workspace, not which model runs the generation. Modes reinterpret one input; model-picker chooses the model that answers it.
 
 ## Do
 
@@ -3920,11 +3933,14 @@ Build the `actions` array from the asset's type — a video gets Extend and Upsc
 
 ## Variants
 
-Not yet recorded.
+### presentation (default: `menu`)
+
+- `menu`: The stack hangs off a result card and has to stay collapsed until asked for — a card showing every hop's price by default would out-compete the result it belongs to.
+- `inline`: The action list is the reason the panel exists rather than an addition to a card, so every price should already be visible instead of waiting behind a click.
 
 ## Instead use
 
-Not yet recorded.
+- **ai-tools-menu**: The actions belong to a selected canvas object — remove the background, expand this frame — rather than to a finished result choosing where to go next. Visually the two are identical on purpose, but ai-tools-menu names the selection and groups rows by intent, which action-stack does not do.
 
 ## Do
 
@@ -5239,11 +5255,14 @@ Build `groups` from the selected object's type — an image gets Remove backgrou
 
 ## Variants
 
-Not yet recorded.
+### presentation (default: `menu`)
+
+- `menu`: The actions should stay out of the way until someone deliberately opens them — hung off a context toolbar's AI entry, over a selection that changes constantly, so the surface is never competing for space it hasn't been asked for.
+- `inline`: The AI actions are the reason this part of the layout exists, not a supplement to it — a dedicated panel where every row should be visible without a click, because scanning the whole set is the point.
 
 ## Instead use
 
-Not yet recorded.
+- **action-stack**: The rows are what to run next on a result you already produced — Extend, then Upscale, then Use in Lip sync — rather than actions that take a currently selected object as their prompt context. Pick ai-tools-menu when a selection needs to be named; pick action-stack when a finished result does.
 
 ## Do
 
@@ -6835,11 +6854,16 @@ Reach for it any time a surface can legitimately have nothing in it — a route,
 
 ## Variants
 
-Not yet recorded.
+### size (default: `panel`)
+
+- `page`: Nothing at all has happened yet on a surface that owns the whole page — a first visit to a library or a project list. The frame is the largest of the three because there is nothing else on screen competing with it.
+- `panel`: One region of a populated screen is empty while the rest of it is not: a sidebar list, a results pane, a tab with no rows. The surrounding page still carries the orientation, so the frame only has to explain its own region.
+- `in-grid`: The empty surface has to occupy one cell of a grid that is already laid out. It draws a dashed tile filling its cell, so dropping it into a grid's empty slot leaves the column geometry untouched.
 
 ## Instead use
 
-Not yet recorded.
+- **generation-queue**: The surface has nothing to show because a result is queued, running, or has failed, not because nothing was ever requested — generation-queue owns the per-slot queued/running/done/failed states and their skeleton and progress treatment, which an empty state has no vocabulary for.
+- **onboarding-wizard**: The surface a new account sees is actually a first-run setup flow with more than one question to answer — onboarding-wizard owns the multi-step choice-card flow and its dot-progress rail, where empty-state has only one screen and one caller-supplied CTA.
 
 ## Do
 
@@ -7404,11 +7428,14 @@ Reach for it whenever preferences outgrow a single popover and need grouping. St
 
 ## Variants
 
-Not yet recorded.
+### variant (default: `dialog`)
+
+- `dialog`: Choose dialog when settings are a brief detour from whatever the user was doing — they came in to flip a preference and expect to land back where they were, so nothing here needs a URL or a bookmark.
+- `full-page`: Choose full-page when settings are a destination in their own right — a section list long enough that people search it, or somewhere support has to be able to link a user straight into.
 
 ## Instead use
 
-Not yet recorded.
+- **settings-shell**: You need the whole settings destination, not just the row grid — a grouped nav, a breadcrumb, an account menu and a plan story. settings-dialog's full-page variant is the rows and search; settings-shell is what composes those into that page.
 
 ## Do
 
@@ -7590,11 +7617,12 @@ Reach for it wherever a user goes to find out what their plan has left — a set
 
 ## Variants
 
-Not yet recorded.
+None: No prop selects a presentation. compact is the only shape-changing prop, and it is a density toggle (tighter gaps, no reset line), not a choice between alternatives. The three severities a row can show — normal, near-limit, over-limit — come out of quotaState(used, limit, nearLimitAt): the author never picks how alarming a row looks, the numbers passed in decide that.
 
 ## Instead use
 
-Not yet recorded.
+- **credits-indicator**: You need one always-on balance in the page chrome rather than a stack of per-resource rows — it renders a single pill or ring against one plan total, with its own normal/low/empty states and an optional Top up trigger.
+- **usage-dashboard**: The audience is whoever owns the bill rather than the end user watching their own allowance — it breaks spend and tokens down by period and by model instead of by metered resource.
 
 ## Do
 

@@ -14,11 +14,14 @@ Build the `actions` array from the asset's type — a video gets Extend and Upsc
 
 ## Variants
 
-Not yet recorded.
+### presentation (default: `menu`)
+
+- `menu`: The stack hangs off a result card and has to stay collapsed until asked for — a card showing every hop's price by default would out-compete the result it belongs to.
+- `inline`: The action list is the reason the panel exists rather than an addition to a card, so every price should already be visible instead of waiting behind a click.
 
 ## Instead use
 
-Not yet recorded.
+- **ai-tools-menu**: The actions belong to a selected canvas object — remove the background, expand this frame — rather than to a finished result choosing where to go next. Visually the two are identical on purpose, but ai-tools-menu names the selection and groups rows by intent, which action-stack does not do.
 
 ## Do
 

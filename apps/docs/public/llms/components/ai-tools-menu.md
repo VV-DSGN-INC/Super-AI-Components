@@ -14,11 +14,14 @@ Build `groups` from the selected object's type — an image gets Remove backgrou
 
 ## Variants
 
-Not yet recorded.
+### presentation (default: `menu`)
+
+- `menu`: The actions should stay out of the way until someone deliberately opens them — hung off a context toolbar's AI entry, over a selection that changes constantly, so the surface is never competing for space it hasn't been asked for.
+- `inline`: The AI actions are the reason this part of the layout exists, not a supplement to it — a dedicated panel where every row should be visible without a click, because scanning the whole set is the point.
 
 ## Instead use
 
-Not yet recorded.
+- **action-stack**: The rows are what to run next on a result you already produced — Extend, then Upscale, then Use in Lip sync — rather than actions that take a currently selected object as their prompt context. Pick ai-tools-menu when a selection needs to be named; pick action-stack when a finished result does.
 
 ## Do
 

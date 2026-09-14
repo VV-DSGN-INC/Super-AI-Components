@@ -104,4 +104,33 @@ export const ModelPickerDocs: ComponentDocs = {
     "Nesting an interactive row inside `dropdown`'s listbox. Select's own item is already the focusable `role=\"option\"` element, so rows there render entity-row without `onSelect` — passing one back in reintroduces the nested-interactive violation this component was built to avoid.",
     "Treating a plain-text settings-bar button as model selection (see A7 gen-settings-bar's own demo, which currently does this) instead of composing model-picker's `node-inline` presentation — that duplicates the picker's grouping and badges with an idiom that has neither.",
   ],
+  variants: [
+    {
+      prop: "presentation",
+      default: "dropdown",
+      values: [
+        {
+          value: "dropdown",
+          intent:
+            "Pick this when the picker has to share a toolbar or composer row with other controls — a compact trigger that only opens a listbox on demand is what keeps the row from crowding.",
+        },
+        {
+          value: "expanded-cards",
+          intent:
+            "Pick this when model choice is the primary decision on its own screen, with room to show every model's full badge set at a glance instead of hiding it behind a click.",
+        },
+        {
+          value: "node-inline",
+          intent:
+            "Pick this when the picker has to live inside a canvas or workflow node — a popover behind a small trigger fits the node's footprint without the node dominating the canvas.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "mode-tabs",
+      when: "The choice is which interpretation applies to the same prompt or workspace, not which model runs the generation. Modes reinterpret one input; model-picker chooses the model that answers it.",
+    },
+  ],
 };

@@ -14,11 +14,12 @@ Put it on the thing being priced — the model row, the skill in a menu, the act
 
 ## Variants
 
-Not yet recorded.
+None: A price rendered two different ways inside one product reads as two different prices, so the chip has exactly one surface and no toggle between them — the amount and its unit, printed the same way everywhere, is what lets the six other components that render this chip trust that a stated cost means the same commitment on every surface it appears on.
 
 ## Instead use
 
-Not yet recorded.
+- **credits-indicator**: The number is a running balance rather than the price of one action — the test already in this file's usage note: whether it would still be true with nothing selected.
+- **run-button**: The price needs to carry a state — estimate, confirmed, or insufficient. Cost-chip has one surface and cannot paint those distinctions itself; run-button owns `state="insufficient-credits"` and the shortfall it triggers.
 
 ## Do
 

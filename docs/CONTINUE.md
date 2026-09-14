@@ -2145,9 +2145,18 @@ before that one line.
 The mechanism landed 2026-09-14 with three control contracts, one per layer:
 `kbd` (no axis, records why), `mode-tabs` (a three-value axis) and `chat-shell`
 (a block, which varies its parts and never itself).
-`apps/docs/scripts/lib/contract-coverage.baseline.json` stands at **113**
+`apps/docs/scripts/lib/contract-coverage.baseline.json` stands at **103**
 items whose `variants` or `insteadUse` is still unwritten, and it may only
 shrink.
+
+**Wave 1, 2026-09-14 — ten items, baseline 113 → 103.** `action-stack`,
+`ai-tools-menu`, `modality-rail`, `recent-grid`, `section-header`,
+`settings-dialog`, `model-picker`, `cost-chip`, `quota-meter`, `empty-state`.
+Two results were overruled on review rather than accepted: `modality-rail`
+declared `layout` as an axis when it is an internal prop the caller cannot
+pass, and `empty-state` declared `{ none }` for a `size` union that is a real
+axis with story needles already in place. The wave also found a gate defect —
+see below.
 
 The remaining 113 are authored in waves of about twelve, one agent per item in
 its own worktree per §3.4. An agent appends the two fields to its docs module,

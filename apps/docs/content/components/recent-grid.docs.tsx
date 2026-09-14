@@ -108,4 +108,32 @@ export const RecentGridDocs: ComponentDocs = {
     "Building rename/delete UI as a button nested inside the thumbnail's clickable area. Hover actions render as a sibling overlay to preview-tile's trigger, not inside it — nesting an interactive action inside the tile's own button is invalid HTML and breaks focus order.",
     "Treating the duration badge as decoration only reachable by sight. It's rendered as real text on the tile, so it survives for screen readers and never depends on colour alone.",
   ],
+  variants: [
+    {
+      prop: "layout",
+      default: "grid",
+      values: [
+        {
+          value: "grid",
+          intent:
+            "Choose grid when the reader finds their project by recognising its thumbnail faster than by reading its title — a landing view where visual recall does the scanning.",
+        },
+        {
+          value: "list",
+          intent:
+            "Choose list when the reader is comparing many projects by title, recency, or duration at once — a denser view where metadata carries more weight than the thumbnail.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "generation-grid",
+      when: "The tiles are a batch of outputs from one generation run rather than projects to reopen, and need a density control instead of per-item recency text.",
+    },
+    {
+      component: "artifact-grid",
+      when: "The items are documents an assistant produced and need grouping by the session that made them, not a flat recency-ordered list of projects.",
+    },
+  ],
 };

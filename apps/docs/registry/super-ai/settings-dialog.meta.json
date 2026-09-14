@@ -92,6 +92,28 @@
       "note": "A destructive action as plain text. Never filled, never tinted."
     }
   ],
+  "variants": [
+    {
+      "prop": "variant",
+      "default": "dialog",
+      "values": [
+        {
+          "value": "dialog",
+          "intent": "Choose dialog when settings are a brief detour from whatever the user was doing — they came in to flip a preference and expect to land back where they were, so nothing here needs a URL or a bookmark."
+        },
+        {
+          "value": "full-page",
+          "intent": "Choose full-page when settings are a destination in their own right — a section list long enough that people search it, or somewhere support has to be able to link a user straight into."
+        }
+      ]
+    }
+  ],
+  "insteadUse": [
+    {
+      "component": "settings-shell",
+      "when": "You need the whole settings destination, not just the row grid — a grouped nav, a breadcrumb, an account menu and a plan story. settings-dialog's full-page variant is the rows and search; settings-shell is what composes those into that page."
+    }
+  ],
   "dos": [
     "Write a description for every row that says what changes — the label names the switch, the description says what flipping it costs.",
     "Let destructive settings render as text in the control column, in the same grid as everything else."

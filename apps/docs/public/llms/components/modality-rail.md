@@ -14,11 +14,12 @@ Reach for it as the primary tool switcher in an editor shell, not a generic side
 
 ## Variants
 
-Not yet recorded.
+None: `layout` is not a caller's choice: it lives on the internal rail button and is decided by where an item renders — stacked in the 92px column, row inside the overflow popover so a clipped name can read in full. The rail exposes no axis, because a rail that could be laid out two ways would stop being a fixed landmark.
 
 ## Instead use
 
-Not yet recorded.
+- **mode-tabs**: The decision is which interpretation the same input gets — Ask, Design, Build — rather than which tool acts on an unchanged canvas. This is the seam crossed most often: a rail built from Chat, Image and Video items is really a set of modes.
+- **sidebar-nav**: Picking a row replaces what is on screen rather than changing what a gesture on the current canvas does. A rail switches the tool; navigation switches the destination.
 
 ## Do
 

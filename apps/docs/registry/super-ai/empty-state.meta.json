@@ -49,6 +49,36 @@
       "note": "The caller's CTA and optional secondary action, in that order."
     }
   ],
+  "variants": [
+    {
+      "prop": "size",
+      "default": "panel",
+      "values": [
+        {
+          "value": "page",
+          "intent": "Nothing at all has happened yet on a surface that owns the whole page — a first visit to a library or a project list. The frame is the largest of the three because there is nothing else on screen competing with it."
+        },
+        {
+          "value": "panel",
+          "intent": "One region of a populated screen is empty while the rest of it is not: a sidebar list, a results pane, a tab with no rows. The surrounding page still carries the orientation, so the frame only has to explain its own region."
+        },
+        {
+          "value": "in-grid",
+          "intent": "The empty surface has to occupy one cell of a grid that is already laid out. It draws a dashed tile filling its cell, so dropping it into a grid's empty slot leaves the column geometry untouched."
+        }
+      ]
+    }
+  ],
+  "insteadUse": [
+    {
+      "component": "generation-queue",
+      "when": "The surface has nothing to show because a result is queued, running, or has failed, not because nothing was ever requested — generation-queue owns the per-slot queued/running/done/failed states and their skeleton and progress treatment, which an empty state has no vocabulary for."
+    },
+    {
+      "component": "onboarding-wizard",
+      "when": "The surface a new account sees is actually a first-run setup flow with more than one question to answer — onboarding-wizard owns the multi-step choice-card flow and its dot-progress rail, where empty-state has only one screen and one caller-supplied CTA."
+    }
+  ],
   "dos": [
     "Give the CTA the same verb as the primary action of the surface it replaces — an empty render panel says \"Generate a render\", not \"Get started\".",
     "Use the example pair on any generation surface: two captioned halves showing the input and what the tool turns it into."

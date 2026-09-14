@@ -177,6 +177,33 @@ describe("variant obligations", () => {
     expect(unmet).toEqual(["mode-tabs:variant:variant=default"]);
   });
 
+  it("does not accept a needle that only appears in a comment", () => {
+    const obligations = deriveObligations([
+      { name: "modality-rail", states: [], variants: [{ propName: "layout", values: ["stacked"] }] },
+    ]);
+    const jsdoc = readStoryFacts(
+      `/**\n * Renders with layout="stacked", the default.\n */\nexport const Active: Story = {};\n`,
+    );
+    expect(unmetObligations(obligations, jsdoc).map((o) => o.key)).toContain(
+      "modality-rail:variant:layout=stacked",
+    );
+    const lineComment = readStoryFacts(`// layout="stacked"\nexport const Active: Story = {};\n`);
+    expect(unmetObligations(obligations, lineComment).map((o) => o.key)).toContain(
+      "modality-rail:variant:layout=stacked",
+    );
+    const real = readStoryFacts(`export const Active: Story = { args: { layout: "stacked" } };\n`);
+    expect(unmetObligations(obligations, real).map((o) => o.key)).not.toContain(
+      "modality-rail:variant:layout=stacked",
+    );
+  });
+
+  it("keeps a needle on a line that also carries a URL", () => {
+    const facts = readStoryFacts(
+      `export const A: Story = { args: { layout: "stacked" } }; // see https://x.dev/a\n`,
+    );
+    expect(facts.source).toContain('layout: "stacked"');
+  });
+
   it("spells both needles", () => {
     expect(variantNeedles("variant", "with-icon")).toEqual(['variant="with-icon"', 'variant: "with-icon"']);
   });

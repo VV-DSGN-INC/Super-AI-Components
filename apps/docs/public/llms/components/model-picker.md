@@ -14,11 +14,15 @@ Reach for `dropdown` wherever a compact control needs to sit in a toolbar or com
 
 ## Variants
 
-Not yet recorded.
+### presentation (default: `dropdown`)
+
+- `dropdown`: Pick this when the picker has to share a toolbar or composer row with other controls — a compact trigger that only opens a listbox on demand is what keeps the row from crowding.
+- `expanded-cards`: Pick this when model choice is the primary decision on its own screen, with room to show every model's full badge set at a glance instead of hiding it behind a click.
+- `node-inline`: Pick this when the picker has to live inside a canvas or workflow node — a popover behind a small trigger fits the node's footprint without the node dominating the canvas.
 
 ## Instead use
 
-Not yet recorded.
+- **mode-tabs**: The choice is which interpretation applies to the same prompt or workspace, not which model runs the generation. Modes reinterpret one input; model-picker chooses the model that answers it.
 
 ## Do
 

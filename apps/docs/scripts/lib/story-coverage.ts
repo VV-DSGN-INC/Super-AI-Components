@@ -116,6 +116,23 @@ const EXPORT_RE = /^export const ([A-Za-z0-9_]+)\s*[:=]/;
 // with no reason after the dash is deliberately not a skip.
 const SKIP_RE = /\/\/\s*case-skip:\s*([A-Za-z0-9_]+)\s*—\s*(.*)$/;
 
+/** Block comments, and lines that are nothing but a comment. A variant needle
+ *  has to be in code the story actually renders: a wave agent satisfied one by
+ *  writing `layout="stacked"` into a JSDoc block, which is precisely the
+ *  "a word in a sentence" match `variantNeedles` exists to refuse. Only
+ *  whole-line `//` and `*` continuations are cut, never a trailing `//` — that
+ *  would swallow the rest of a line containing a URL. */
+export function stripComments(source: string): string {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .split("\n")
+    .filter((line) => {
+      const t = line.trimStart();
+      return !t.startsWith("//") && !t.startsWith("*");
+    })
+    .join("\n");
+}
+
 export function readStoryFacts(source: string): StoryFacts {
   const lines = source.split("\n");
   const exports = new Set<string>();
@@ -135,7 +152,7 @@ export function readStoryFacts(source: string): StoryFacts {
       if (reason) skips.set(skip[1], reason);
     }
   });
-  return { exports, skips, described, source };
+  return { exports, skips, described, source: stripComments(source) };
 }
 
 /** `facts === null` means the story file does not exist: everything is unmet. */

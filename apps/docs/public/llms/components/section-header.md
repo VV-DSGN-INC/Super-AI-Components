@@ -14,11 +14,14 @@ Reach for it wherever a screen has more than one group of the same kind of thing
 
 ## Variants
 
-Not yet recorded.
+### size (default: `default`)
+
+- `default`: Pick this when the section is a page-level group competing with the surrounding headings and content for attention, not just with sibling rows inside one panel — a library page split into sections, a recents strip.
+- `sm`: Pick this when the section is nested inside a denser, already-subordinate surface — a filter rail, a property inspector — where the header only has to outrank the rows beneath it, not the page around it.
 
 ## Instead use
 
-Not yet recorded.
+- **date-section**: The group is a time bucket the user reads past — Today, Yesterday, Last week — rather than a group with a count, an action, or a collapse the user acts on.
 
 ## Do
 

@@ -99,4 +99,17 @@ export const QuotaMeterDocs: ComponentDocs = {
     "The bar clamps at 100% but the numbers never do, so an over-limit row shows a full bar beside a readout like 5,240 / 5,000. That is deliberate — the real overage is the useful number — but it means bar width alone cannot tell you how far over a plan is.",
     "A resource with limit set to 0 always reads over-limit with a full bar, since there is no allowance to be within. If you mean unmetered, leave the resource out rather than passing a zero limit.",
   ],
+  variants: {
+    none: "No prop selects a presentation. compact is the only shape-changing prop, and it is a density toggle (tighter gaps, no reset line), not a choice between alternatives. The three severities a row can show — normal, near-limit, over-limit — come out of quotaState(used, limit, nearLimitAt): the author never picks how alarming a row looks, the numbers passed in decide that.",
+  },
+  insteadUse: [
+    {
+      component: "credits-indicator",
+      when: "You need one always-on balance in the page chrome rather than a stack of per-resource rows — it renders a single pill or ring against one plan total, with its own normal/low/empty states and an optional Top up trigger.",
+    },
+    {
+      component: "usage-dashboard",
+      when: "The audience is whoever owns the bill rather than the end user watching their own allowance — it breaks spend and tokens down by period and by model instead of by metered resource.",
+    },
+  ],
 };

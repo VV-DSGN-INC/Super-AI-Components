@@ -77,4 +77,17 @@ export const CostChipDocs: ComponentDocs = {
     "Children render after the amount and carry no slot of their own. They inherit the chip's type size and join its accessible text, so a qualifier like `est.` becomes part of what a screen reader announces for the price — which is usually what you want, and always worth saying out loud.",
     "The chip never truncates and never shrinks. It is an inline-flex that grows to fit, so a long unit widens it, and inside a narrow container the text wraps and the full-round pill turns into a tall stadium. Keep units to the short nouns the system emits, and let the neighbour give way instead.",
   ],
+  variants: {
+    none: "A price rendered two different ways inside one product reads as two different prices, so the chip has exactly one surface and no toggle between them — the amount and its unit, printed the same way everywhere, is what lets the six other components that render this chip trust that a stated cost means the same commitment on every surface it appears on.",
+  },
+  insteadUse: [
+    {
+      component: "credits-indicator",
+      when: "The number is a running balance rather than the price of one action — the test already in this file's usage note: whether it would still be true with nothing selected.",
+    },
+    {
+      component: "run-button",
+      when: 'The price needs to carry a state — estimate, confirmed, or insufficient. Cost-chip has one surface and cannot paint those distinctions itself; run-button owns `state="insufficient-credits"` and the shortfall it triggers.',
+    },
+  ],
 };

@@ -26,7 +26,7 @@ type Story = StoryObj<typeof SectionHeader>;
  * stack of groups.
  */
 export const Plain: Story = {
-  args: { title: "Recent projects" },
+  args: { title: "Recent projects", size: "default" },
 };
 
 /**

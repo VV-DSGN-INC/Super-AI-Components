@@ -14,11 +14,15 @@ Reach for it for any 'recent' or 'your projects' surface where each item is a th
 
 ## Variants
 
-Not yet recorded.
+### layout (default: `grid`)
+
+- `grid`: Choose grid when the reader finds their project by recognising its thumbnail faster than by reading its title — a landing view where visual recall does the scanning.
+- `list`: Choose list when the reader is comparing many projects by title, recency, or duration at once — a denser view where metadata carries more weight than the thumbnail.
 
 ## Instead use
 
-Not yet recorded.
+- **generation-grid**: The tiles are a batch of outputs from one generation run rather than projects to reopen, and need a density control instead of per-item recency text.
+- **artifact-grid**: The items are documents an assistant produced and need grouping by the session that made them, not a flat recency-ordered list of projects.
 
 ## Do
 

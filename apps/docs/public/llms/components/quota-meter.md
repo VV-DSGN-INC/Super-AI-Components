@@ -14,11 +14,12 @@ Reach for it wherever a user goes to find out what their plan has left — a set
 
 ## Variants
 
-Not yet recorded.
+None: No prop selects a presentation. compact is the only shape-changing prop, and it is a density toggle (tighter gaps, no reset line), not a choice between alternatives. The three severities a row can show — normal, near-limit, over-limit — come out of quotaState(used, limit, nearLimitAt): the author never picks how alarming a row looks, the numbers passed in decide that.
 
 ## Instead use
 
-Not yet recorded.
+- **credits-indicator**: You need one always-on balance in the page chrome rather than a stack of per-resource rows — it renders a single pill or ring against one plan total, with its own normal/low/empty states and an optional Top up trigger.
+- **usage-dashboard**: The audience is whoever owns the bill rather than the end user watching their own allowance — it breaks spend and tokens down by period and by model instead of by metered resource.
 
 ## Do
 

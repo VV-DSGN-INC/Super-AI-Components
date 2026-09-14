@@ -14,11 +14,14 @@ Reach for it whenever preferences outgrow a single popover and need grouping. St
 
 ## Variants
 
-Not yet recorded.
+### variant (default: `dialog`)
+
+- `dialog`: Choose dialog when settings are a brief detour from whatever the user was doing — they came in to flip a preference and expect to land back where they were, so nothing here needs a URL or a bookmark.
+- `full-page`: Choose full-page when settings are a destination in their own right — a section list long enough that people search it, or somewhere support has to be able to link a user straight into.
 
 ## Instead use
 
-Not yet recorded.
+- **settings-shell**: You need the whole settings destination, not just the row grid — a grouped nav, a breadcrumb, an account menu and a plan story. settings-dialog's full-page variant is the rows and search; settings-shell is what composes those into that page.
 
 ## Do
 
