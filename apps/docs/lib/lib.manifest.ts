@@ -48,6 +48,16 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     npm: [],
     target: "lib/flow-types.ts",
   },
+  {
+    name: "use-flow-runner",
+    title: "Flow runner",
+    description:
+      "Headless topological executor for a typed node graph: per-node status, a content-hash cache, cancellation, cycle detection and scoped runs. Executor-swappable; ships no UI.",
+    status: "shipped",
+    shadcn: [],
+    npm: [],
+    target: "lib/use-flow-runner.ts",
+  },
 ];
 
 export const LIB_NAMES = LIB_MANIFEST.map((i) => i.name);
