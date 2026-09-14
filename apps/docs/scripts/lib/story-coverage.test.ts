@@ -4,13 +4,18 @@ import { describe, expect, it } from "vitest";
 
 import { MANIFEST } from "../../lib/catalog.manifest"; // match check-contract.mts's exact import
 import { pascal } from "./scaffold-templates";
+import { join } from "node:path";
+
+import { readMetas } from "./contract-coverage";
 import {
   CASE_STORY_NAMES,
   collectUnmet,
+  coverageItemsFromMetas,
   deriveObligations,
   nextBaseline,
   readStoryFacts,
   unmetObligations,
+  variantNeedles,
 } from "./story-coverage";
 
 /** Story coverage, ratcheted (story-conventions.md "Scope today"; the
@@ -140,9 +145,79 @@ describe("nextBaseline", () => {
   });
 });
 
+describe("variant obligations", () => {
+  it("derives one obligation per declared value, keyed propName=value", () => {
+    const obligations = deriveObligations([
+      {
+        name: "mode-tabs",
+        states: [],
+        variants: [{ propName: "variant", values: ["default", "with-icon"] }],
+      },
+    ]);
+    expect(obligations.filter((o) => o.kind === "variant").map((o) => o.key)).toEqual([
+      "mode-tabs:variant:variant=default",
+      "mode-tabs:variant:variant=with-icon",
+    ]);
+  });
+
+  it("is met by a JSX attribute or an args entry, and by nothing looser", () => {
+    const obligations = deriveObligations([
+      {
+        name: "mode-tabs",
+        states: [],
+        variants: [{ propName: "variant", values: ["default", "with-icon", "with-tooltip"] }],
+      },
+    ]);
+    const facts = readStoryFacts(
+      `export const A: Story = { args: { variant: "with-icon" } };\nexport const B: Story = { render: () => <ModeTabs variant="with-tooltip" /> };\n// the default variant, mentioned in prose only\n`,
+    );
+    const unmet = unmetObligations(obligations, facts)
+      .filter((o) => o.kind === "variant")
+      .map((o) => o.key);
+    expect(unmet).toEqual(["mode-tabs:variant:variant=default"]);
+  });
+
+  it("spells both needles", () => {
+    expect(variantNeedles("variant", "with-icon")).toEqual(['variant="with-icon"', 'variant: "with-icon"']);
+  });
+
+  it("builds coverage items from metas, ignoring a none and an unwritten field", () => {
+    const items = coverageItemsFromMetas(
+      [
+        { name: "kbd", states: ["single"] },
+        { name: "mode-tabs", states: ["text-only"] },
+        { name: "chat-shell", states: [] },
+      ],
+      [
+        { name: "kbd", variants: { none: "no axis at all, on purpose" } },
+        {
+          name: "mode-tabs",
+          variants: [
+            {
+              prop: "ToolHeader · state",
+              propName: "variant",
+              values: [{ value: "default", intent: "x" }],
+            },
+          ],
+        },
+      ],
+    );
+    expect(items).toEqual([
+      { name: "kbd", states: ["single"], variants: [] },
+      {
+        name: "mode-tabs",
+        states: ["text-only"],
+        variants: [{ propName: "variant", values: ["default"] }],
+      },
+      { name: "chat-shell", states: [], variants: [] },
+    ]);
+  });
+});
+
 describe("story coverage ratchet", () => {
   const shipped = MANIFEST.filter((i) => i.status === "shipped");
-  const obligations = deriveObligations(shipped);
+  const metas = readMetas(join(__dirname, "../../registry/super-ai"));
+  const obligations = deriveObligations(coverageItemsFromMetas(shipped, metas));
   const readSource = (name: string) =>
     existsSync(storyFor(name)) ? readFileSync(storyFor(name), "utf8") : null;
   const unmet = collectUnmet(obligations, readSource).map((o) => o.key);

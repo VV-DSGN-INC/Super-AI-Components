@@ -16,7 +16,13 @@ import { existsSync, readFileSync } from "node:fs";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { pascal } from "./lib/scaffold-templates";
-import { collectUnmet, deriveObligations, type Obligation } from "./lib/story-coverage";
+import { readMetas } from "./lib/contract-coverage";
+import {
+  collectUnmet,
+  coverageItemsFromMetas,
+  deriveObligations,
+  type Obligation,
+} from "./lib/story-coverage";
 
 const storyFor = (name: string) => `../storybook/src/stories/super-ai/${pascal(name)}.stories.tsx`;
 
@@ -29,8 +35,9 @@ if (unknown.length > 0) {
 }
 const items = wanted.length > 0 ? shipped.filter((i) => wanted.includes(i.name)) : shipped;
 
-const unmet = collectUnmet(deriveObligations(items), (name) =>
-  existsSync(storyFor(name)) ? readFileSync(storyFor(name), "utf8") : null,
+const unmet = collectUnmet(
+  deriveObligations(coverageItemsFromMetas(items, readMetas("registry/super-ai"))),
+  (name) => (existsSync(storyFor(name)) ? readFileSync(storyFor(name), "utf8") : null),
 );
 
 const byItem = new Map<string, Obligation[]>();
@@ -45,7 +52,8 @@ for (const item of items) {
   for (const o of group) console.log(`  ${`${o.kind}:${o.target}`.padEnd(28)} ${o.why}`);
 }
 const cases = unmet.filter((o) => o.kind === "case").length;
+const variants = unmet.filter((o) => o.kind === "variant").length;
 console.log(
-  `story-coverage:report — ${items.length} item(s), ${unmet.length} unmet obligation(s): ${cases} case, ${unmet.length - cases} described.`,
+  `story-coverage:report — ${items.length} item(s), ${unmet.length} unmet obligation(s): ${cases} case, ${unmet.length - cases - variants} described, ${variants} variant.`,
 );
 if (wanted.length > 0 && unmet.length > 0) process.exit(1);

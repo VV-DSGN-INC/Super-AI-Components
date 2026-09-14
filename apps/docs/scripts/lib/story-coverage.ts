@@ -16,6 +16,8 @@
 //
 // Pure: the reader is injected, so the ratchet test and the regenerate script
 // share this exact code path and cannot disagree about what "unmet" means.
+import type { ContractMeta } from "./contract-emit";
+import { axisKey, isNone } from "./contract-schema";
 import { statePascal } from "./scaffold-templates";
 
 export const CASE_STORY_NAMES = [
@@ -30,7 +32,7 @@ export const CASE_STORY_NAMES = [
 ] as const;
 export type CaseStoryName = (typeof CASE_STORY_NAMES)[number];
 
-export type ObligationKind = "case" | "described";
+export type ObligationKind = "case" | "described" | "variant";
 
 export interface Obligation {
   /** `<item>:<kind>:<target>` — the baseline's unit. */
@@ -44,9 +46,17 @@ export interface Obligation {
 
 /** The slice of a manifest item this module reads. Structural so tests can
  *  hand it literals; blocks arrive with `states: []`. */
+export interface CoverageVariant {
+  propName: string;
+  values: string[];
+}
+
 export interface CoverageItem {
   name: string;
   states: string[];
+  /** Declared variant values, from the emitted meta. Absent or empty when the
+   *  contract is unwritten or records { none }. */
+  variants?: CoverageVariant[];
 }
 
 export function deriveObligations(items: CoverageItem[]): Obligation[] {
@@ -71,6 +81,17 @@ export function deriveObligations(items: CoverageItem[]): Obligation[] {
         why: `the "${state}" story needs a JSDoc description above its export — a story with no description is a screenshot (story-conventions.md, Rules)`,
       });
     }
+    for (const axis of item.variants ?? []) {
+      for (const value of axis.values) {
+        out.push({
+          key: `${item.name}:variant:${axis.propName}=${value}`,
+          item: item.name,
+          kind: "variant",
+          target: `${axis.propName}=${value}`,
+          why: `a story must render ${axis.propName}="${value}" (JSX) or pass ${axis.propName}: "${value}" (args) — a declared variant nobody renders is a contract nobody checked (spec 2026-09-14 §7.3)`,
+        });
+      }
+    }
   }
   return out;
 }
@@ -82,6 +103,8 @@ export interface StoryFacts {
   skips: Map<string, string>;
   /** Exports whose preceding non-blank line closes a JSDoc block. */
   described: Set<string>;
+  /** The file's text, for needle checks a line walk cannot express. */
+  source: string;
 }
 
 // Line-anchored on purpose: a commented-out export (`// export const …`) is
@@ -112,17 +135,45 @@ export function readStoryFacts(source: string): StoryFacts {
       if (reason) skips.set(skip[1], reason);
     }
   });
-  return { exports, skips, described };
+  return { exports, skips, described, source };
 }
 
 /** `facts === null` means the story file does not exist: everything is unmet. */
+/** The two spellings a story can use: a quoted attribute or an args entry,
+ *  never a word in a sentence. Derived from a bare identifier on purpose —
+ *  the sibling repo ran 57 obligations into an unsatisfiable needle by
+ *  deriving it from display prose, which is why `propName` exists. */
+export function variantNeedles(propName: string, value: string): string[] {
+  return [`${propName}="${value}"`, `${propName}: "${value}"`];
+}
+
 export function unmetObligations(obligations: Obligation[], facts: StoryFacts | null): Obligation[] {
   if (facts === null) return obligations.slice();
-  return obligations.filter((o) =>
-    o.kind === "case"
-      ? !(facts.exports.has(o.target) || facts.skips.has(o.target))
-      : !facts.described.has(o.target),
-  );
+  return obligations.filter((o) => {
+    if (o.kind === "case") return !(facts.exports.has(o.target) || facts.skips.has(o.target));
+    if (o.kind === "described") return !facts.described.has(o.target);
+    const eq = o.target.indexOf("=");
+    const propName = o.target.slice(0, eq);
+    const value = o.target.slice(eq + 1);
+    return !variantNeedles(propName, value).some((n) => facts.source.includes(n));
+  });
+}
+
+/** One code path for the ratchet test and the baseline script: variants come
+ *  from the emitted metas, which the drift gate keeps current. */
+export function coverageItemsFromMetas(
+  shipped: { name: string; states: string[] }[],
+  metas: Pick<ContractMeta, "name" | "variants">[],
+): CoverageItem[] {
+  const byName = new Map(metas.map((m) => [m.name, m]));
+  return shipped.map((i) => {
+    const v = byName.get(i.name)?.variants;
+    const variants =
+      v === undefined || isNone(v)
+        ? []
+        : v.map((axis) => ({ propName: axisKey(axis), values: axis.values.map((x) => x.value) }));
+    return { name: i.name, states: i.states, variants };
+  });
 }
 
 /** Walks every item once. `readSource` returns the story file's text, or
