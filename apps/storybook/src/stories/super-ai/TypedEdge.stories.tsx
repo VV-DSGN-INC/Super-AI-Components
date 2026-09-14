@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { Background, Handle, Position, ReactFlow, type EdgeTypes, type NodeProps } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { expect, within } from "storybook/test";
+import { expect, waitFor, within } from "storybook/test";
 
 import { handleId } from "@/registry/super-ai/flow-types";
 import { TypedEdge } from "@/registry/super-ai/typed-edge";
@@ -93,9 +93,16 @@ export const Streaming: Story = { render: () => <Canvas streaming /> };
 /** The dash animation is `motion-safe:animate-flow-dash`: under prefers-reduced-motion the edge is dashed but still. */
 export const ReducedMotion: Story = {
   render: () => <Canvas streaming />,
+  // React Flow draws edges only after it has measured both nodes, which is a
+  // frame later than the story mounting, so the path does not exist when the
+  // play function first runs. waitFor is the wait, not a loosened assertion:
+  // the class must be present once the edge is drawn.
   play: async ({ canvasElement }) => {
-    const path = canvasElement.querySelector("[data-slot=typed-edge]");
-    await expect(path?.getAttribute("class") ?? "").toContain("motion-safe:animate-flow-dash");
+    await waitFor(() => {
+      const path = canvasElement.querySelector("[data-slot=typed-edge]");
+      expect(path).not.toBeNull();
+      expect(path!.getAttribute("class") ?? "").toContain("motion-safe:animate-flow-dash");
+    });
   },
 };
 

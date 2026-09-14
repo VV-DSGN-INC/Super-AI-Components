@@ -59,6 +59,13 @@ export function TypedHandle({
       type={type}
       position={position ?? (type === "source" ? Position.Right : Position.Left)}
       isValidConnection={isValidFlowConnection}
+      // React Flow's Handle renders a bare div, and aria-label on a div with no
+      // role is prohibited (axe aria-prohibited-attr) — the name is silently
+      // dropped rather than announced. role="img" is the honest fix: the port is
+      // a non-interactive graphic that carries meaning (its type and direction),
+      // it takes no focus, and connecting is the canvas's own keyboard mode
+      // rather than anything this element does.
+      role="img"
       aria-label={`${def?.label ?? dataType} ${dir === "in" ? "input" : "output"} port`}
       data-slot="typed-handle"
       data-flow-type={dataType}

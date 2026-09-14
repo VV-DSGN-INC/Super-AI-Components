@@ -138,4 +138,17 @@ export interface LibManifestItem {
   npm: string[];
   /** Where the file lands in a consumer's app, relative to their src root. */
   target: string;
+  /**
+   * Registry-level CSS custom properties this contract owns, threaded into the
+   * emitted registry item so `npx shadcn add` installs them alongside the file.
+   *
+   * A contract can own tokens the same way a component can. `flow-types` is the
+   * first: it holds the handle-type registry, and each type's colour is looked
+   * up through that registry at runtime (`var(${def.cssVar})`), so the palette
+   * belongs to the registry rather than to any one of the components that paint
+   * with it. Declaring it here means a consumer installing any single flow
+   * component gets the whole palette once, through the contract they all
+   * consume, instead of four components each shipping a duplicate copy.
+   */
+  cssVars?: CssVars;
 }

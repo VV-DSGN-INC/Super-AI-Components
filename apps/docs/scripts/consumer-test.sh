@@ -107,6 +107,30 @@ if ! grep -qF -e "--color-warning" "$GLOBAL_CSS"; then
 fi
 echo "  found --color-warning in $GLOBAL_CSS"
 
+# Family G (D23). The ten handle-type colours ship with the `flow-types`
+# registry:lib contract, not with the components that paint them, because the
+# colour is looked up through that contract's type registry at runtime. Every
+# flow component declares flow-types as a registry dependency, so installing any
+# one of them must bring the palette. Without it every typed port and edge
+# renders the neutral fallback and nothing fails loudly.
+if ! grep -qF -e "--flow-image" "$GLOBAL_CSS"; then
+  echo "CONSUMER INSTALL TEST: FAIL — $GLOBAL_CSS is missing --flow-image (flow-types' cssVars did not install)" >&2
+  exit 1
+fi
+echo "  found --flow-image in $GLOBAL_CSS"
+if ! grep -qF -e "--flow-failed" "$GLOBAL_CSS"; then
+  echo "CONSUMER INSTALL TEST: FAIL — $GLOBAL_CSS is missing --flow-failed (node-status' cssVars did not install)" >&2
+  exit 1
+fi
+echo "  found --flow-failed in $GLOBAL_CSS"
+# The dash animation needs both halves: a named animation whose keyframes never
+# installed renders a static edge with no error.
+if ! grep -qF -e "flow-dash" "$GLOBAL_CSS"; then
+  echo "CONSUMER INSTALL TEST: FAIL — $GLOBAL_CSS is missing flow-dash (typed-edge's css keyframes did not install)" >&2
+  exit 1
+fi
+echo "  found flow-dash in $GLOBAL_CSS"
+
 echo "==> Using the components in a page"
 cat > app/page.tsx <<'EOF'
 "use client";

@@ -5,24 +5,32 @@ import { shippedItems } from "./manifest-types";
 
 describe("MANIFEST", () => {
   it("carries every catalog row, including the cut records", () => {
-    // 116 active + family G's 10 cut rows + the cut O5 `flow-shell` = 127.
+    // 125 active + family G's 4 dissolved rows = 129.
     // (107 + family G/O5 = 118 before PR #14 / D14-D17 added 7 rows: D7
     // `slot-summary`, K7 `answer-block`, K8 `source-cards`, N9
     // `autonomy-selector`, N10 `safety-block`, N11 `escalation-handoff`, N12
-    // `task-tray`. D18 then added family P's two items.)
-    expect(MANIFEST).toHaveLength(127);
+    // `task-tray`. D18 then added family P's two items, for 127. D23 then
+    // revived family G: it dropped the `useFlowRunner` row, which became the
+    // `use-flow-runner` registry:lib contract and so is no longer a catalog
+    // item, and added G10 `typed-edge`, G11 `node-status` and G12
+    // `connection-hint`, which wave 2 had built without catalog rows.)
+    expect(MANIFEST).toHaveLength(129);
   });
 
-  it("holds the A–O freeze at 114 while family P grows separately", () => {
-    // The freeze that matters is per-family, not the grand total: D18 added
+  it("holds the A–O count at 123 after D23, while family P grows separately", () => {
+    // The count that matters is per-family, not the grand total: D18 added
     // family P from the second reference board, and the catalog-completion
     // spec's ruling was that such a family is counted alongside A–O rather
     // than reopening them. Asserting the two halves separately is what keeps
-    // "the 114 is frozen" a checkable claim instead of a comment.
+    // the number a checkable claim instead of a comment.
+    //
+    // The A–O half was frozen at 114 until D23 reversed D9 and revived family
+    // G: 8 G items (5 shipped, 3 planned) plus O5 `flow-shell` restored take it
+    // to 123. The freeze framing retires with D9; the assertion stays.
     const active = MANIFEST.filter((i) => i.status !== "cut");
-    expect(active.filter((i) => i.family !== "P")).toHaveLength(114);
+    expect(active.filter((i) => i.family !== "P")).toHaveLength(123);
     expect(active.filter((i) => i.family === "P")).toHaveLength(2);
-    expect(active).toHaveLength(116);
+    expect(active).toHaveLength(125);
   });
 
   // The 14 components that shipped before Wave 1.5. They were exempt from the
@@ -134,8 +142,18 @@ describe("MANIFEST", () => {
     }
   });
 
-  it("cuts family G", () => {
-    expect(MANIFEST.filter((i) => i.family === "G").every((i) => i.status === "cut")).toBe(true);
+  it("revives family G, keeping exactly the four dissolved items cut (D23)", () => {
+    // D9 cut the whole family; D23 reversed that. The four below did not come
+    // back, because components shipped while G was cut had taken their ground:
+    // G4 `node-prompt` → D1 `media-prompt-bar` (presentation node-embedded),
+    // G5 `node-result` → F1 `result-card`, G6 `model-bar` → A7
+    // `gen-settings-bar`, G9 `node-inspector` → I2 `property-inspector`.
+    // They stay in the manifest as records. Asserting the exact set is what
+    // stops one of them being quietly rebuilt as a second implementation.
+    const g = MANIFEST.filter((i) => i.family === "G");
+    const cut = g.filter((i) => i.status === "cut").map((i) => i.name);
+    expect(cut.sort()).toEqual(["model-bar", "node-inspector", "node-prompt", "node-result"]);
+    expect(g.filter((i) => i.status !== "cut")).toHaveLength(8);
   });
 
   it("has unique names", () => {

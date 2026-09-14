@@ -4,6 +4,7 @@ import type { ComponentDocs } from "./component-docs";
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { ActionStackDocs } from "@/content/components/action-stack.docs";
 import { AiDocBlockDocs } from "@/content/components/ai-doc-block.docs";
+import { AiNodeDocs } from "@/content/components/ai-node.docs";
 import { AiToolsMenuDocs } from "@/content/components/ai-tools-menu.docs";
 import { AnswerBlockDocs } from "@/content/components/answer-block.docs";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
@@ -20,6 +21,7 @@ import { ChoiceChipsDocs } from "@/content/components/choice-chips.docs";
 import { CitationRefDocs } from "@/content/components/citation-ref.docs";
 import { CoachMarkDocs } from "@/content/components/coach-mark.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
+import { ConnectionHintDocs } from "@/content/components/connection-hint.docs";
 import { ConnectionManagerDocs } from "@/content/components/connection-manager.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
@@ -61,6 +63,7 @@ import { MemberGateRowDocs } from "@/content/components/member-gate-row.docs";
 import { ModalityRailDocs } from "@/content/components/modality-rail.docs";
 import { ModeTabsDocs } from "@/content/components/mode-tabs.docs";
 import { ModelPickerDocs } from "@/content/components/model-picker.docs";
+import { NodeStatusDocs } from "@/content/components/node-status.docs";
 import { NotebookShellDocs } from "@/content/components/notebook-shell.docs";
 import { OnboardingWizardDocs } from "@/content/components/onboarding-wizard.docs";
 import { ParameterPanelDocs } from "@/content/components/parameter-panel.docs";
@@ -112,6 +115,8 @@ import { TranscriptEditorDocs } from "@/content/components/transcript-editor.doc
 import { TransportControlsDocs } from "@/content/components/transport-controls.docs";
 import { TrustDialogDocs } from "@/content/components/trust-dialog.docs";
 import { TtsComposerDocs } from "@/content/components/tts-composer.docs";
+import { TypedEdgeDocs } from "@/content/components/typed-edge.docs";
+import { TypedHandleDocs } from "@/content/components/typed-handle.docs";
 import { UsageDashboardDocs } from "@/content/components/usage-dashboard.docs";
 import { VoiceCloneRecorderDocs } from "@/content/components/voice-clone-recorder.docs";
 import { WaveformEditorDocs } from "@/content/components/waveform-editor.docs";
@@ -122,6 +127,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "account-menu": AccountMenuDocs,
   "action-stack": ActionStackDocs,
   "ai-doc-block": AiDocBlockDocs,
+  "ai-node": AiNodeDocs,
   "ai-tools-menu": AiToolsMenuDocs,
   "answer-block": AnswerBlockDocs,
   "app-sidebar": AppSidebarDocs,
@@ -138,6 +144,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "citation-ref": CitationRefDocs,
   "coach-mark": CoachMarkDocs,
   "compare-viewer": CompareViewerDocs,
+  "connection-hint": ConnectionHintDocs,
   "connection-manager": ConnectionManagerDocs,
   "context-chips": ContextChipsDocs,
   "context-toolbar": ContextToolbarDocs,
@@ -179,6 +186,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "modality-rail": ModalityRailDocs,
   "mode-tabs": ModeTabsDocs,
   "model-picker": ModelPickerDocs,
+  "node-status": NodeStatusDocs,
   "notebook-shell": NotebookShellDocs,
   "onboarding-wizard": OnboardingWizardDocs,
   "parameter-panel": ParameterPanelDocs,
@@ -230,6 +238,8 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "transport-controls": TransportControlsDocs,
   "trust-dialog": TrustDialogDocs,
   "tts-composer": TtsComposerDocs,
+  "typed-edge": TypedEdgeDocs,
+  "typed-handle": TypedHandleDocs,
   "usage-dashboard": UsageDashboardDocs,
   "voice-clone-recorder": VoiceCloneRecorderDocs,
   "waveform-editor": WaveformEditorDocs,

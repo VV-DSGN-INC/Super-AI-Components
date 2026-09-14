@@ -120,7 +120,12 @@ export function AiNode({
           className="bg-destructive/10 text-destructive mx-3 mb-2 flex items-start gap-1.5 rounded-md px-2 py-1.5 text-xs"
         >
           <AlertCircle aria-hidden className="mt-0.5 size-3 shrink-0" />
-          <span className="line-clamp-3">{error ?? "Generation failed"}</span>
+          {/* text-foreground, not the inherited text-destructive: destructive on
+              its own 10% tint measures 4:1 against a 4.5:1 minimum (axe, 2026-09-13).
+              The banner keeps its red identity through the surface and the icon,
+              which carry no contrast requirement, while the words a reader has to
+              read clear the threshold. Same device as gen-settings-bar's. */}
+          <span className="text-foreground line-clamp-3">{error ?? "Generation failed"}</span>
         </div>
       )}
       {footer && !floating && (

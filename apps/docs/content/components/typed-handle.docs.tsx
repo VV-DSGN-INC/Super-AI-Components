@@ -38,7 +38,7 @@ export const TypedHandleDocs: ComponentDocs = {
       "The port is not a tab stop. React-flow's Handle renders a div; connecting by keyboard is react-flow's own accessibility mode on the canvas, not a per-port control.",
     ],
     screenReader: [
-      'Each port has an accessible name of the form "Image input port" or "Audio output port", built from the registered label and the direction. An unregistered type reads its raw key so the omission is audible.',
+      'The port carries role="img" and an accessible name of the form "Image input port" or "Audio output port", built from the registered label and the direction. The role is load-bearing rather than decorative: React Flow renders the handle as a bare div, and an aria-label on a div with no role is prohibited, so the name would be dropped rather than announced. An unregistered type reads its raw key, so the omission is audible.',
     ],
   },
   pitfalls: [

@@ -18,7 +18,10 @@ function Canvas({ ports, width = 320 }: { ports: Omit<TypedHandleProps, "nodeId"
       ))}
     </div>
   );
-  const nodeTypes = React.useMemo(() => ({ demo: DemoNode }), []); // eslint-disable-line react-hooks/exhaustive-deps
+  // DemoNode is redefined each render; memoising on an empty dep list pins the
+  // first one, which is what React Flow needs — it treats a changed nodeTypes
+  // identity as a full remount of every node.
+  const nodeTypes = React.useMemo(() => ({ demo: DemoNode }), []);
   const nodes: Node[] = [{ id: "n1", position: { x: 80, y: 40 }, data: {}, type: "demo" }];
   return (
     <div data-testid="frame" style={{ width }} className="h-40 overflow-hidden rounded-lg border">

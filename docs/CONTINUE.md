@@ -16,6 +16,37 @@ ledgers moved out to `design-system/wave-history.md` — see §9.
 
 ## 1. Where things stand
 
+> **2026-09-13, family G phase 1 (D23).** The spine is built, all twelve gates
+> green, on `claude/helen-component-review-fe2a7c` and **not pushed**.
+> `flow-types` and `use-flow-runner` ship as `registry:lib` contracts;
+> `node-status`, `typed-handle`, `typed-edge`, `connection-hint` and `ai-node`
+> ship as G11, G3, G10, G12 and G2. `@xyflow/react` is a dependency of exactly
+> two registry files, pinned by `registry/super-ai/flow-boundary.test.ts`.
+> Catalog 116 → 125 in scope: 5 shipped, 3 planned for phase 2, 4 dissolved into
+> E5/D1/A7/F1/I2 and kept as records.
+>
+> Three things the phase found that no per-component gate could:
+>
+> - **The type palette belongs to `flow-types`, not to the components.** Each
+>   component paints a port by looking the colour up through the handle-type
+>   registry at runtime, so declaring the palette on five components made
+>   `cssvars-liveness` fail 121 times over keys nobody statically reads. It now
+>   ships once, on the contract every flow component consumes. `LibManifestItem`
+>   gained a `cssVars` field to make that possible.
+> - **`typed-edge` string-built its var name** (`var(--flow-${type})`), so a type
+>   registered with a custom `cssVar` would have been ignored by the edge while
+>   honoured by the port. It now uses the same `getHandleType` lookup.
+> - **A11y: two real defects**, both caught only by `test:stories`. React Flow's
+>   `Handle` renders a bare div, so `aria-label` on it was prohibited and the
+>   name was dropped; the port now carries `role="img"`. And `ai-node`'s error
+>   banner put `text-destructive` on its own 10% tint, measuring 4:1 against a
+>   4.5:1 minimum.
+>
+> Next: phase 2 (`modality-node`, `flow-canvas`, `node-palette`,
+> `canvas-toolbar`, `flow-shell`) and phase 3 (13 modality presets) depend only
+> on this and run in parallel. Plan them from
+> `docs/superpowers/specs/2026-09-13-family-g-revival-design.md`.
+
 |          |                                                                                                                                                                |
 | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Repo     | `VV-DSGN-INC/Super-AI-Components`                                                                                                                              |
@@ -838,6 +869,29 @@ from before the RTL sweep and an `AlertDialogAction` that never clears
 ---
 
 ## 8. Composition gaps found by family O — the fan-out's most useful output
+
+> **Added by family G phase 1 (2026-09-13):**
+>
+> - **E5 `run-button` fits a 280px node footer — measured, not assumed.**
+>   `AiNode.stories.tsx` `RunButtonInFooter` renders E5 in the docked footer of
+>   an `sm` node and asserts the footer's `scrollWidth` does not exceed its
+>   `clientWidth`; it passes in the Storybook gate with `cost={4}`. The design
+>   spec's risk 1 is closed, and phase 2 needs no compact configuration of E5.
+>   The assertion is a real measurement, so it will fail if either component's
+>   sizing changes — that is the point of keeping it.
+> - **`useFlowRunner`'s cycle detection is unexercised.** The hook fails and
+>   excludes nodes on a dependency cycle, but none of its nine ported tests
+>   covers that path; the gap came with the code from `wave-2-flow-foundation`.
+>   Worth a test before phase 2 builds `flow-canvas` on top of it.
+> - **`component-specs.md` G1 still says "Extends `@ai-elements/canvas`"** while
+>   the manifest and the design spec describe `flow-canvas` as a thin React Flow
+>   adapter. G1 is phase 2's first item; settle the wording when it is built.
+> - **A `case-skip` reason that cannot be checked.** `TypedHandle.stories.tsx`'s
+>   `Boundary` skip cites `grep -l "Handle" registry/super-ai/*.tsx` as evidence
+>   that no other port component exists, but that command matches nine unrelated
+>   files (`TrimHandle`, `ResizableHandle`). The conclusion holds; the cited
+>   check does not demonstrate it, which is exactly what `story-conventions.md`
+>   asks skips to avoid.
 
 > **Wave 3 of the post-case-story remediation closed five of these on 2026-09-07**
 > (branch `claude/wave-3-registry-sweeps`, gates green, not pushed):

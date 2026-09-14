@@ -11,7 +11,7 @@
 // any other hand edits. After the first run this file is edited by hand and by
 // scripts/new-component.mts; nobody re-runs the generator.
 import type { CssVars, ManifestItem } from "./manifest-types";
-import { FLOW_CSS, FLOW_CSS_VARS } from "./flow-tokens";
+import { FLOW_CSS, FLOW_MOTION_CSS_VARS, FLOW_STATUS_CSS_VARS } from "./flow-tokens";
 
 // --warning is the one token this registry adds beyond stock shadcn (the rest
 // of the palette is monochrome + --destructive). Ported from main's
@@ -893,7 +893,7 @@ export const MANIFEST: ManifestItem[] = [
       "One node card: header with status, media and body slots, a footer or floating settings menu, and the locked and failed states.",
     family: "G",
     layer: "component",
-    status: "building",
+    status: "shipped",
     wave: 6,
     base: ["card"],
     shadcn: [],
@@ -901,7 +901,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["idle", "queued", "streaming", "done", "failed", "locked", "selected", "menu-floating"],
     specAnchor: "component-specs.md#g2-ai-node",
-    cssVars: FLOW_CSS_VARS,
   },
   {
     id: "G3",
@@ -911,7 +910,7 @@ export const MANIFEST: ManifestItem[] = [
       "A react-flow port that encodes its data type in the handle id, paints the type colour, and refuses connections of another type.",
     family: "G",
     layer: "component",
-    status: "building",
+    status: "shipped",
     wave: 6,
     base: [],
     shadcn: [],
@@ -919,7 +918,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["@xyflow/react"],
     states: ["input", "output", "stacked", "compatible", "unregistered-type"],
     specAnchor: "component-specs.md#g3-typed-handle",
-    cssVars: FLOW_CSS_VARS,
   },
   {
     id: "G4",
@@ -929,7 +927,7 @@ export const MANIFEST: ManifestItem[] = [
     family: "G",
     layer: "component",
     status: "cut",
-    wave: 5,
+    wave: 0,
     base: ["textarea"],
     shadcn: [],
     consumes: [],
@@ -945,7 +943,7 @@ export const MANIFEST: ManifestItem[] = [
     family: "G",
     layer: "component",
     status: "cut",
-    wave: 5,
+    wave: 0,
     base: [],
     shadcn: [],
     consumes: [],
@@ -961,7 +959,7 @@ export const MANIFEST: ManifestItem[] = [
     family: "G",
     layer: "component",
     status: "cut",
-    wave: 5,
+    wave: 0,
     base: ["button-group"],
     shadcn: [],
     consumes: [],
@@ -1010,7 +1008,7 @@ export const MANIFEST: ManifestItem[] = [
     family: "G",
     layer: "component",
     status: "cut",
-    wave: 5,
+    wave: 0,
     base: [],
     shadcn: [],
     consumes: [],
@@ -1026,7 +1024,7 @@ export const MANIFEST: ManifestItem[] = [
       "A react-flow edge whose stroke colour derives from its source port's type, thicker when selected, dashed and moving while streaming.",
     family: "G",
     layer: "component",
-    status: "building",
+    status: "shipped",
     wave: 6,
     base: [],
     shadcn: [],
@@ -1034,7 +1032,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["@xyflow/react"],
     states: ["type-coloured", "selected", "streaming"],
     specAnchor: "component-specs.md#g10-typed-edge",
-    cssVars: FLOW_CSS_VARS,
+    cssVars: FLOW_MOTION_CSS_VARS,
     css: FLOW_CSS,
   },
   {
@@ -1045,7 +1043,7 @@ export const MANIFEST: ManifestItem[] = [
       "The badge and ring map for the six-status contract: a dot or spinner, a label, and the class a node card paints for each status.",
     family: "G",
     layer: "component",
-    status: "building",
+    status: "shipped",
     wave: 6,
     base: [],
     shadcn: [],
@@ -1053,7 +1051,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["idle", "queued", "streaming", "done", "failed", "locked", "compact"],
     specAnchor: "component-specs.md#g11-node-status",
-    cssVars: FLOW_CSS_VARS,
+    cssVars: FLOW_STATUS_CSS_VARS,
   },
   {
     id: "G12",
@@ -1063,7 +1061,7 @@ export const MANIFEST: ManifestItem[] = [
       "The mini palette shown when a connection is dropped on empty canvas, and the port chips that list what a node accepts and emits.",
     family: "G",
     layer: "component",
-    status: "building",
+    status: "shipped",
     wave: 6,
     base: [],
     shadcn: [],
@@ -1071,7 +1069,6 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["with-matches", "no-matches", "chips"],
     specAnchor: "component-specs.md#g12-connection-hint",
-    cssVars: FLOW_CSS_VARS,
   },
   {
     id: "H1",

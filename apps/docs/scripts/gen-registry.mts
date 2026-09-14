@@ -275,6 +275,7 @@ const libItems = LIB_MANIFEST.filter((i) => i.status === "shipped").map((i) => (
       target: i.target,
     },
   ],
+  ...(i.cssVars ? { cssVars: i.cssVars } : {}),
 }));
 
 const allItems = [...superAiItems, ...libItems, ...marketingItems];

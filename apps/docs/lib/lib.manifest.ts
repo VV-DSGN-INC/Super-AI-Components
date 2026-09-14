@@ -5,6 +5,7 @@
 // family, no states, no demo and no docs page, and counting it as one would
 // corrupt the per-family reconciliation against catalog.md. See
 // LibManifestItem in manifest-types.ts for the full reasoning.
+import { FLOW_TYPE_CSS_VARS } from "./flow-tokens";
 import type { LibManifestItem } from "./manifest-types";
 
 export const LIB_MANIFEST: LibManifestItem[] = [
@@ -47,6 +48,7 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     shadcn: [],
     npm: [],
     target: "lib/flow-types.ts",
+    cssVars: FLOW_TYPE_CSS_VARS,
   },
   {
     name: "use-flow-runner",

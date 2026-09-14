@@ -2,7 +2,7 @@
 import { BaseEdge, getBezierPath, type Edge, type EdgeProps } from "@xyflow/react";
 
 import { cn } from "@/lib/utils";
-import { parseHandleId } from "@/registry/super-ai/flow-types";
+import { getHandleType, parseHandleId } from "@/registry/super-ai/flow-types";
 
 /**
  * Typed Edge — A react-flow edge coloured by its source port's type
@@ -11,10 +11,18 @@ import { parseHandleId } from "@/registry/super-ai/flow-types";
  * States: type-coloured · selected · streaming
  */
 
-/** Edge stroke colour for a source handle id; falls back to --flow-text so a registered-but-untokened type degrades visibly. */
+/**
+ * Edge stroke colour for a source handle id, resolved through the handle-type
+ * registry so a custom type registered with its own `cssVar` is honoured — the
+ * same lookup `typed-handle` uses to paint the port, which is what keeps a port
+ * and the edge leaving it the same colour. The outer var still falls back to
+ * `--flow-text`, so a type that is registered but whose token is undefined
+ * degrades visibly rather than drawing nothing.
+ */
 export function edgeColorFromHandle(sourceHandle?: string | null) {
   const parsed = parseHandleId(sourceHandle);
-  return `var(--flow-${parsed?.dataType ?? "text"}, var(--flow-text))`;
+  const def = parsed ? getHandleType(parsed.dataType) : undefined;
+  return `var(${def?.cssVar ?? "--flow-text"}, var(--flow-text))`;
 }
 
 // stroke/strokeWidth are inline styles on purpose: Tailwind v4 emits utilities

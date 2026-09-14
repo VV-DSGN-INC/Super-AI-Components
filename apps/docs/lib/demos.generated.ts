@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import AccountMenuDemo from "@/components/demos/account-menu-demo";
 import ActionStackDemo from "@/components/demos/action-stack-demo";
 import AiDocBlockDemo from "@/components/demos/ai-doc-block-demo";
+import AiNodeDemo from "@/components/demos/ai-node-demo";
 import AiToolsMenuDemo from "@/components/demos/ai-tools-menu-demo";
 import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
@@ -20,6 +21,7 @@ import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import CoachMarkDemo from "@/components/demos/coach-mark-demo";
 import CompareViewerDemo from "@/components/demos/compare-viewer-demo";
+import ConnectionHintDemo from "@/components/demos/connection-hint-demo";
 import ConnectionManagerDemo from "@/components/demos/connection-manager-demo";
 import ContextChipsDemo from "@/components/demos/context-chips-demo";
 import ContextToolbarDemo from "@/components/demos/context-toolbar-demo";
@@ -61,6 +63,7 @@ import MemberGateRowDemo from "@/components/demos/member-gate-row-demo";
 import ModalityRailDemo from "@/components/demos/modality-rail-demo";
 import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
 import ModelPickerDemo from "@/components/demos/model-picker-demo";
+import NodeStatusDemo from "@/components/demos/node-status-demo";
 import NotebookShellDemo from "@/components/demos/notebook-shell-demo";
 import OnboardingWizardDemo from "@/components/demos/onboarding-wizard-demo";
 import ParameterPanelDemo from "@/components/demos/parameter-panel-demo";
@@ -112,6 +115,8 @@ import TranscriptEditorDemo from "@/components/demos/transcript-editor-demo";
 import TransportControlsDemo from "@/components/demos/transport-controls-demo";
 import TrustDialogDemo from "@/components/demos/trust-dialog-demo";
 import TtsComposerDemo from "@/components/demos/tts-composer-demo";
+import TypedEdgeDemo from "@/components/demos/typed-edge-demo";
+import TypedHandleDemo from "@/components/demos/typed-handle-demo";
 import UsageDashboardDemo from "@/components/demos/usage-dashboard-demo";
 import VoiceCloneRecorderDemo from "@/components/demos/voice-clone-recorder-demo";
 import WaveformEditorDemo from "@/components/demos/waveform-editor-demo";
@@ -122,6 +127,7 @@ export const demos: Record<string, ComponentType> = {
   "account-menu": AccountMenuDemo,
   "action-stack": ActionStackDemo,
   "ai-doc-block": AiDocBlockDemo,
+  "ai-node": AiNodeDemo,
   "ai-tools-menu": AiToolsMenuDemo,
   "answer-block": AnswerBlockDemo,
   "app-sidebar": AppSidebarDemo,
@@ -138,6 +144,7 @@ export const demos: Record<string, ComponentType> = {
   "citation-ref": CitationRefDemo,
   "coach-mark": CoachMarkDemo,
   "compare-viewer": CompareViewerDemo,
+  "connection-hint": ConnectionHintDemo,
   "connection-manager": ConnectionManagerDemo,
   "context-chips": ContextChipsDemo,
   "context-toolbar": ContextToolbarDemo,
@@ -179,6 +186,7 @@ export const demos: Record<string, ComponentType> = {
   "modality-rail": ModalityRailDemo,
   "mode-tabs": ModeTabsDemo,
   "model-picker": ModelPickerDemo,
+  "node-status": NodeStatusDemo,
   "notebook-shell": NotebookShellDemo,
   "onboarding-wizard": OnboardingWizardDemo,
   "parameter-panel": ParameterPanelDemo,
@@ -230,6 +238,8 @@ export const demos: Record<string, ComponentType> = {
   "transport-controls": TransportControlsDemo,
   "trust-dialog": TrustDialogDemo,
   "tts-composer": TtsComposerDemo,
+  "typed-edge": TypedEdgeDemo,
+  "typed-handle": TypedHandleDemo,
   "usage-dashboard": UsageDashboardDemo,
   "voice-clone-recorder": VoiceCloneRecorderDemo,
   "waveform-editor": WaveformEditorDemo,
