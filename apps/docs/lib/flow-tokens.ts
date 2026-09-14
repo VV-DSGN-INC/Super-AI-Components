@@ -5,7 +5,7 @@ import type { CssVars } from "./manifest-types";
  * (the same mechanism as WARNING_CSS_VARS in catalog.manifest.ts) so `npx
  * shadcn add typed-handle` installs the scale alongside the code. Values are
  * defined once here, mirrored by hand into app/globals.css and the Storybook
- * index.css (Task 1 step 7), and asserted equal by flow-types.test.ts.
+ * index.css (Task 1 step 7), and asserted equal by flow-types.test.tsx.
  *
  * Grouping, from the FilmMaker port vocabulary (spec, Contracts): neutral for
  * text, blue for visual media, purple for anything audible, tan for identity

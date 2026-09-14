@@ -38,6 +38,16 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     npm: [],
     target: "lib/initials.tsx",
   },
+  {
+    name: "flow-types",
+    title: "Flow contracts",
+    description:
+      "Family G's shared vocabulary: the six-status contract, the ten typed-port keys, the handle-id codec that decides which ports connect, and the three node widths.",
+    status: "shipped",
+    shadcn: [],
+    npm: [],
+    target: "lib/flow-types.ts",
+  },
 ];
 
 export const LIB_NAMES = LIB_MANIFEST.map((i) => i.name);
