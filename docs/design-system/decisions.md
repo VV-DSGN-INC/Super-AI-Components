@@ -419,6 +419,34 @@ class of public API change, so those keys are documented rather than fixed.
 it needs its own spec, because the question is not whether to add a prop but
 whether labels belong per-component or in one provider.
 
+### D23 · Family G revived, six items dissolved — 2026-09-13
+
+Reverses D9. The node builder ships. Starting point, as D9 instructed:
+`wave-2-flow-foundation` at `b414ac9`, ported file by file into fresh scaffolds,
+never rebased. Design: `docs/superpowers/specs/2026-09-13-family-g-revival-design.md`.
+
+Six G items do not return because shipped components now own their ground:
+`run-button` → E5, G4 `node-prompt` → D1 (`node-embedded`), G6 `model-bar` → A7 +
+`model-picker`, G5 `node-result` → F1, G9 `node-inspector` → I2, and the FilmMaker
+`CostTooltip` → A2. F3 (model-bar vs gen-settings-bar drift) is retired for good.
+
+The catalog's family G consolidation ("the spec's 10 modality node presets become
+demo recipes on G2, not registry items") is reversed. Thirteen modality presets
+ship as registry items in phase 3, each a `ModalityDef` record over one
+`modality-node` implementation.
+
+`@xyflow/react` is confined to `typed-handle`, `typed-edge` and `flow-canvas`
+(`registry/super-ai/flow-boundary.test.ts`). `flow-types` and `use-flow-runner`
+ship as `registry:lib` contracts, the mechanism `cost` already uses, so they are
+not catalog items and every flow component reaches them through `consumes`.
+
+Phase 1 (this record) restores the family to scope at **8 G items + O5**: five
+shipped (`ai-node`, `typed-handle`, `typed-edge`, `node-status`, `connection-hint`),
+three planned for phase 2 (`flow-canvas`, `node-palette`, `canvas-toolbar`) plus
+`flow-shell`. Catalog 116 → 125 in scope. Provenance from D9 stands: some G designs
+are Helene's; the FilmMaker PR #6 surface work is Helen's; the parked engine is this
+repo's own.
+
 ---
 
 ## 2. Components dropped from the approved spec

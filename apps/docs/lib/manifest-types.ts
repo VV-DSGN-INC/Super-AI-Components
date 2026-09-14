@@ -103,9 +103,12 @@ export interface ManifestItem {
    * marketing.css), threaded verbatim by deriveExtras(). A `@keyframes` can't
    * be a `cssVars` entry, and a named Tailwind animation without its keyframes
    * silently renders nothing, so an item that ships `--animate-*` in
-   * `cssVars.theme` ships its keyframes here.
+   * `cssVars.theme` ships its keyframes here. A `@keyframes` block nests one
+   * level deeper than a flat rule (selector/percentage -> declarations), which
+   * is why the value type below allows a record of declaration blocks as well
+   * as a single one — first exercised by G10 `typed-edge`'s FLOW_CSS.
    */
-  css?: Record<string, Record<string, string> | string>;
+  css?: Record<string, Record<string, string> | Record<string, Record<string, string>>>;
 }
 
 export const shippedItems = (items: ManifestItem[]) => items.filter((i) => i.status === "shipped");

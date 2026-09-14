@@ -1,8 +1,9 @@
 # Catalog
 
-**114 active items: 12 primitives · 89 components · 13 blocks.** Family G (canvas & nodes, incl.
-the headless `useFlowRunner`) and O5 `flow-shell` were **cut 2026-07-31** — see
-[decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Eight components
+**123 active items: 12 primitives · 97 components · 14 blocks.** Family G (canvas & nodes) and
+O5 `flow-shell` were cut 2026-07-31 (D9) and **revived 2026-09-13** (D23): five G items shipped in
+phase 1, three planned, four dissolved into shipped components, and `useFlowRunner` reshaped as a
+`registry:lib` contract. Eight components
 were **restored 2026-08-02** (D12) from the gaps analysis. Per-component requirements are in
 [component-specs.md](component-specs.md) and [block-specs.md](block-specs.md).
 
@@ -104,26 +105,30 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | F6  | `render-queue`       | Staged jobs: inputs → preview → export   | per-row spec · progress · retry · cancel · download                            | Table, Progress    |
 | F7  | `approval-card`      | Single-artifact approval                 | Confirm · Edit · Regenerate · Skip; submitting; resolved with undo             | Card, Button-group |
 
-## G · Canvas & nodes — CUT 2026-07-31
+## G · Canvas & nodes — REVIVED 2026-09-13
 
-> **Cut from scope** ([decisions.md](decisions.md) D9). Not registry items; table kept as a record.
-> Working code is parked unmerged on `wave-2-flow-foundation`. Some of the designs are Helene's —
-> provenance is recorded in D9's note; it does not reopen the cut.
+> Cut 2026-07-31 ([decisions.md](decisions.md) D9), revived by D23. G4, G5, G6 and G9 are
+> **dissolved** into D1, F1, A7 and I2 and stay in the table as a record. G10 to G12 were built in
+> wave 2 and named here for the first time. `useFlowRunner` ships as a `registry:lib` contract.
+> Some of the designs are Helene's; provenance is recorded in D9 and D23.
 
-| #   | Name                          | Purpose                                                            | Key states / variants                                                           | shadcn base                   |
-| --- | ----------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------- | ----------------------------- |
-| G1  | `flow-canvas`                 | Pan/zoom surface                                                   | empty · populated · selecting · connecting · running                            | extends `@ai-elements/canvas` |
-| G2  | `ai-node`                     | One node                                                           | header + body slot + footer; idle/running/done/failed/locked; collapsed         | Card                          |
-| G3  | `typed-handle` + `typed-edge` | Ports and the lines between them                                   | valid · invalid · dangling · selected · animated-while-running · type-coloured  | — (new)                       |
-| G4  | `node-prompt`                 | Prompt field inside a node                                         | idle · generating · @-mention chips · reference thumbnails · unresolved         | Textarea                      |
-| G5  | `node-result` `NEW`           | Inline output preview in a node                                    | image · video+audio · audio · text · empty · failed                             | wraps F1                      |
-| G6  | `model-bar`                   | Node-docked A7                                                     | model select · toggles · duplicate · delete · overflow · Run split-button       | Button-group                  |
-| G7  | `node-palette`                | Add-node catalog                                                   | grouped · searchable · popover vs docked rail · drag-to-canvas · insert-on-edge | Command, Popover              |
-| G8  | `canvas-toolbar` `NEW`        | Floating tool dock + view controls                                 | select/pan/comment · add-by-type · zoom · fit · undo/redo                       | Button-group                  |
-| G9  | `node-inspector`              | Right panel for the selected node                                  | grouped form sections · schema editor · delete · empty when nothing selected    | A6, Collapsible               |
-| —   | `useFlowRunner`               | **Headless.** Topological execution, per-node status, cancellation | executor-swappable; no UI                                                       | —                             |
+| #   | Name                    | Purpose                                                            | Key states / variants                                                           | shadcn base                   |
+| --- | ----------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------- | ----------------------------- |
+| G1  | `flow-canvas`           | Pan/zoom surface                                                   | empty · populated · selecting · connecting · running                            | extends `@ai-elements/canvas` |
+| G2  | `ai-node`               | One node                                                           | header + body slot + footer; idle/running/done/failed/locked; collapsed         | Card                          |
+| G3  | `typed-handle`          | A port                                                             | input · output · stacked · compatible · unregistered-type                       | — (react-flow)                |
+| G4  | `node-prompt`           | Prompt field inside a node                                         | idle · generating · @-mention chips · reference thumbnails · unresolved         | Textarea                      |
+| G5  | `node-result` `NEW`     | Inline output preview in a node                                    | image · video+audio · audio · text · empty · failed                             | wraps F1                      |
+| G6  | `model-bar`             | Node-docked A7                                                     | model select · toggles · duplicate · delete · overflow · Run split-button       | Button-group                  |
+| G7  | `node-palette`          | Add-node catalog                                                   | grouped · searchable · popover vs docked rail · drag-to-canvas · insert-on-edge | Command, Popover              |
+| G8  | `canvas-toolbar` `NEW`  | Floating tool dock + view controls                                 | select/pan/comment · add-by-type · zoom · fit · undo/redo                       | Button-group                  |
+| G9  | `node-inspector`        | Right panel for the selected node                                  | grouped form sections · schema editor · delete · empty when nothing selected    | A6, Collapsible               |
+| —   | `useFlowRunner`         | **Headless.** Topological execution, per-node status, cancellation | executor-swappable; no UI                                                       | —                             |
+| G10 | `typed-edge` `NEW`      | The line between ports                                             | type-coloured · selected · streaming                                            | — (react-flow)                |
+| G11 | `node-status` `NEW`     | Status badge and ring map                                          | idle · queued · streaming · done · failed · locked · compact                    | —                             |
+| G12 | `connection-hint` `NEW` | Drop-on-canvas mini palette, port chips                            | with-matches · no-matches · chips                                               | —                             |
 
-**Consolidation:** the spec's 10 modality node presets become demo recipes on G2, not registry items.
+**Consolidation reversed (D23):** the modality presets ship as registry items in phase 3.
 
 ## H · Timeline & transport — 7
 
@@ -269,26 +274,26 @@ does not reach A–O's evidentiary footing until the screens are verified.
 
 ## Totals
 
-| Family                              | Count                                                                |
-| ----------------------------------- | -------------------------------------------------------------------- |
-| A — Primitives (L2)                 | 12                                                                   |
-| B — App shell & navigation          | 8                                                                    |
-| C — Home & launcher                 | 5                                                                    |
-| D — Composer & context              | 7                                                                    |
-| E — Generation & parameters         | 10                                                                   |
-| F — Results & assets                | 7                                                                    |
-| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                            |
-| H — Timeline & transport            | 7                                                                    |
-| I — Editor surfaces                 | 5                                                                    |
-| J — Library, filtering & discovery  | 7                                                                    |
-| K — Documents & knowledge           | 8                                                                    |
-| L — First-run & onboarding          | 6                                                                    |
-| M — Account, plan & monetization    | 7                                                                    |
-| N — Feedback, trust & observability | 12                                                                   |
-| **B–N subtotal (L3)**               | **89** (88 after D16, 82 before it, 74 before D12, 84 before D9)     |
-| O — Blocks (L4)                     | 13 (O5 cut)                                                          |
-| P — Records & views (v2)            | 2                                                                    |
-| **Total registry items**            | **116** (113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| Family                              | Count                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------ |
+| A — Primitives (L2)                 | 12                                                                                   |
+| B — App shell & navigation          | 8                                                                                    |
+| C — Home & launcher                 | 5                                                                                    |
+| D — Composer & context              | 7                                                                                    |
+| E — Generation & parameters         | 10                                                                                   |
+| F — Results & assets                | 7                                                                                    |
+| G — Canvas & nodes                  | 8 (5 shipped + 3 planned; ~~0 · cut (D9)~~ revived D23)                              |
+| H — Timeline & transport            | 7                                                                                    |
+| I — Editor surfaces                 | 5                                                                                    |
+| J — Library, filtering & discovery  | 7                                                                                    |
+| K — Documents & knowledge           | 8                                                                                    |
+| L — First-run & onboarding          | 6                                                                                    |
+| M — Account, plan & monetization    | 7                                                                                    |
+| N — Feedback, trust & observability | 12                                                                                   |
+| **B–N subtotal (L3)**               | **97** (89 before D23, 88 after D16, 82 before it, 74 before D12, 84 before D9)      |
+| O — Blocks (L4)                     | 14 (O5 restored by D23)                                                              |
+| P — Records & views (v2)            | 2                                                                                    |
+| **Total registry items**            | **125** (116 before D23, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

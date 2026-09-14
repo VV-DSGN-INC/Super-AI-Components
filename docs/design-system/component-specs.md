@@ -635,8 +635,9 @@ error rather than a board sample; no per-product screenshots were collected, so 
 
 # G · Canvas & nodes
 
-> **CUT 2026-07-31** ([decisions.md](decisions.md) D9). The node builder is out of scope. Specs
-> retained as a record; working code parked unmerged on `wave-2-flow-foundation`.
+> **Cut 2026-07-31 (D9), revived 2026-09-13 (D23).** Phase 1 ships G2, G3, G10, G11 and G12;
+> G1, G7 and G8 are phase 2; G4, G5, G6 and G9 are dissolved into D1, F1, A7 and I2 and kept as a
+> record. Design: `docs/superpowers/specs/2026-09-13-family-g-revival-design.md`.
 
 ## G1 `flow-canvas`
 
@@ -660,19 +661,21 @@ error rather than a board sample; no per-product screenshots were collected, so 
 
 **Evidence:** The single biggest saving in the recut — Flow Kit from 25 items to 9 + a hook.
 
-## G3 `typed-handle` + `typed-edge`
+## G3 `typed-handle`
 
-**States:** valid · invalid · dangling · selected · animated-while-running
+**Base:** react-flow `Handle` · **States:** input · output · stacked · compatible · unregistered-type
 
-- Edge colour derives from the SOURCE handle in v1. Deriving from the target would change colour
-  mid-drag.
-- Invalid connections are rejected at drag time with a visible reason, not accepted then failed at
-  run time.
-- Handle colours come from the `--flow-*` token scale, defined once centrally. Token contract.
+- The handle id is the codec `{nodeId}:{dataType}:{in|out}` from `flow-types`; validation is a
+  string compare and is not overridable per handle.
+- The port colour is `var(--flow-<type>)`. An unregistered type falls back to `--flow-text` and a
+  descriptive accessible name, so a typo is visible rather than invisible.
+- Invalid connections are rejected at drag time, not accepted then failed at run time.
 
 **Evidence:** Freepik Flows, ElevenLabs Flows, OpenAI Agent Builder.
 
 ## G4 `node-prompt`
+
+> **Dissolved (D23)** into D1 `media-prompt-bar` (presentation `node-embedded`).
 
 **Base:** Textarea
 
@@ -686,6 +689,8 @@ error rather than a board sample; no per-product screenshots were collected, so 
 
 ## G5 `node-result` `NEW`
 
+> **Dissolved (D23)** into F1 `result-card`.
+
 **Wraps:** F1
 
 - Same six states and slots as F1, minus the hover action row a canvas cannot support.
@@ -696,6 +701,8 @@ error rather than a board sample; no per-product screenshots were collected, so 
 **Evidence:** ElevenLabs Flows LLM nodes, Freepik nodes with an inline audio toggle.
 
 ## G6 `model-bar`
+
+> **Dissolved (D23)** into A7 `gen-settings-bar` + `model-picker`.
 
 **Base:** Button-group · **Is:** A7 + Run split-button
 
@@ -729,6 +736,8 @@ error rather than a board sample; no per-product screenshots were collected, so 
 
 ## G9 `node-inspector`
 
+> **Dissolved (D23)** into I2 `property-inspector`.
+
 **Base:** A6, Collapsible
 
 - Rows are A6, so this and I2 align to the same grid despite unrelated content.
@@ -737,11 +746,45 @@ error rather than a board sample; no per-product screenshots were collected, so 
 
 **Evidence:** OpenAI Agent Builder, n8n-style builders, Freepik.
 
+## G10 `typed-edge` `NEW`
+
+**Base:** react-flow `BaseEdge` · **States:** type-coloured · selected · streaming
+
+- Stroke colour derives from the SOURCE handle id. Deriving from the target would change colour
+  mid-drag.
+- `stroke` and `stroke-width` are inline styles on purpose: Tailwind v4 emits utilities inside
+  cascade layers, which lose to react-flow's unlayered stylesheet.
+- The streaming dash is the named animation `animate-flow-dash`, gated behind `motion-safe`.
+
+**Evidence:** Freepik Flows, ElevenLabs Flows.
+
+## G11 `node-status` `NEW`
+
+**States:** idle · queued · streaming · done · failed · locked · compact
+
+- The only place a `FlowStatus` becomes a glyph. `streaming` renders as "Running": copy may diverge
+  from the contract word, the union never does.
+- `statusRingClass` is the ring a node card paints per status; `idle` and `done` paint none.
+- `compact` hides the label with `sr-only` and adds a `title`, so a zoomed-out canvas keeps the
+  announcement.
+
+**Evidence:** ElevenLabs Flows, Freepik Flows status dots.
+
+## G12 `connection-hint` `NEW`
+
+**States:** with-matches · no-matches · chips
+
+- Shown when a connection is dropped on empty canvas; lists the node kinds whose inputs accept the
+  dragged type, and adds one on pick. Focus lands on the first option; Escape dismisses.
+- `PortChips` lists a node's IN and OUT types with `data-satisfied` per chip, for palettes and
+  inspectors.
+
+**Evidence:** OpenAI Agent Builder, Freepik Flows.
+
 ## `useFlowRunner` — headless hook
 
-**No UI.** Topological execution, per-node status, cancellation. Executor-swappable.
+**No UI. Ships as the `registry:lib` contract `use-flow-runner` (D23).** Topological execution, per-node status, cancellation, content-hash cache, cycle detection, scoped runs. Executor-swappable.
 
-- v1 does naive full-graph topological runs; output caching is deferred.
 - Owns execution state; G1 renders it as animated edges and G2 as status dots. The UI stays
   executor-agnostic.
 

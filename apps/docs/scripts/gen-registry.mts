@@ -31,7 +31,7 @@ type Item = {
   registryDependencies?: string[];
   dependencies?: string[];
   cssVars?: CssVars;
-  css?: Record<string, Record<string, string> | string>;
+  css?: Record<string, Record<string, string> | Record<string, Record<string, string>>>;
 };
 
 const extras = deriveExtras(MANIFEST, self);

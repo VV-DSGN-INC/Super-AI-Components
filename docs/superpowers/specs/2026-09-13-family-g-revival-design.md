@@ -22,7 +22,7 @@ Governing documents, in order: [`component-build-brief.md`](../../design-system/
   G's items** along the way. Those six do not come back; they dissolve into the
   shipped components that now own their ground. A literal reversal would ship
   duplicates, which the block brief forbids.
-- **24 new registry items**, catalog **116 → 140**: a 6-item spine ported from
+- **23 new registry items plus two `registry:lib` contracts**, catalog **116 → 139**: a 6-item spine ported from
   the parked branch, a 5-item canvas surface built new, and 13 modality presets
   that are data records over one `modality-node` implementation.
 - Three tiers with one dependency boundary: `@xyflow/react` lives only in
@@ -131,7 +131,7 @@ settings pill has no counterpart in A7. Both are absorbed as described below.
 > `@xyflow/react` is confined to `typed-handle`, `typed-edge` and
 > `flow-canvas`. No other registry item may import it.
 >
-> Catalog: 116 → 140 (12 primitives · 112 components · 14 blocks · 2 records).
+> Catalog: 116 → 139 (12 primitives · 111 components · 14 blocks · 2 records), plus two lib contracts.
 > The D9 tables are unmarked. Provenance from D9 stands: some G designs are
 > Helene's; the FilmMaker PR #6 surface work is Helen's; the parked engine is
 > this repo's own.
@@ -153,9 +153,10 @@ Tier 1 is plain React. A consumer who installs a modality node without a
 canvas pulls no react-flow. `useFlowRunner` staying in tier 1 is what keeps the
 engine testable without a renderer, and it is already true of the parked code.
 
-`flow-types.ts` and `flow-tokens.css` are shipped as registry `files` of
-`typed-handle` (the first item that needs them), not as items of their own.
-The manifest's `files` array handles it; the integrator declares it.
+`flow-types` and `use-flow-runner` ship as `registry:lib` contracts
+(`lib/lib.manifest.ts`, the mechanism `cost` uses); every flow component
+declares `consumes: ["flow-types"]`. The token scale ships as manifest
+`cssVars`, and the one keyframe as a manifest `css` block (`lib/flow-tokens.ts`).
 
 ### Contracts
 
@@ -254,14 +255,14 @@ anything. All four behaviours have tests in the parked branch that port over.
 
 ### Phase 1: spine, 6 items, ported
 
-| item              | catalog  | ported from                                 | notes                                                                                                                |
-| ----------------- | -------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `ai-node`         | G2       | parked `ai-node.tsx`                        | header · body slot · footer; composes D1 (`node-embedded`), A7, E5, F1; declares `menuPlacement: docked \| floating` |
-| `typed-handle`    | G3       | parked `typed-handle.tsx` + `port-chip.tsx` | `port-chip` (57 lines) folds in; ships `flow-types.ts` and `flow-tokens.css` as `files`                              |
-| `typed-edge`      | G3       | parked `typed-edge.tsx`                     | valid · invalid · dangling · selected · animated-while-running · type-coloured                                       |
-| `node-status`     | new      | parked `node-status.tsx`                    | renders `FlowStatus`; the only place a status becomes a glyph                                                        |
-| `connection-hint` | new      | parked `connection-hint.tsx`                | the hint while a connection is being dragged                                                                         |
-| `useFlowRunner`   | headless | parked `use-flow-runner.ts`                 | executor-swappable; no UI                                                                                            |
+| item              | catalog | ported from                                 | notes                                                                                                                |
+| ----------------- | ------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `ai-node`         | G2      | parked `ai-node.tsx`                        | header · body slot · footer; composes D1 (`node-embedded`), A7, E5, F1; declares `menuPlacement: docked \| floating` |
+| `typed-handle`    | G3      | parked `typed-handle.tsx` + `port-chip.tsx` | ships alone; `PortChips` lives in `connection-hint` so chips never pull react-flow                                   |
+| `typed-edge`      | G3      | parked `typed-edge.tsx`                     | valid · invalid · dangling · selected · animated-while-running · type-coloured                                       |
+| `node-status`     | new     | parked `node-status.tsx`                    | renders `FlowStatus`; the only place a status becomes a glyph                                                        |
+| `connection-hint` | new     | parked `connection-hint.tsx`                | the hint while a connection is being dragged, plus `PortChips`                                                       |
+| `useFlowRunner`   | lib     | parked `use-flow-runner.ts`                 | executor-swappable; no UI                                                                                            |
 
 Not ported: `media-slot`, `model-bar`, `node-prompt`, `run-button` (dissolved,
 see D23).
