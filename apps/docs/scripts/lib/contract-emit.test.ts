@@ -4,10 +4,14 @@ import { dirname, join, resolve } from "node:path";
 import { MANIFEST } from "@/lib/catalog.manifest";
 import type { ComponentDocs } from "@/lib/component-docs";
 import type { ManifestItem } from "@/lib/manifest-types";
+import type { PatternEntry } from "@/lib/patterns";
 
 import { deriveMeta, derivedFiles, renderComponentPage, renderLlmsTxt, renderToon } from "./contract-emit";
 import { validateContract } from "./contract-schema";
 import { loadDocs } from "./contract-source";
+import { derivePatternMeta } from "./pattern-emit";
+import { validatePattern } from "./pattern-schema";
+import { loadPattern, patternSlugs } from "./pattern-source";
 
 const why = "a reason long enough to pass the floor";
 const item: ManifestItem = {
@@ -140,10 +144,11 @@ describe("renderLlmsTxt", () => {
 });
 
 describe("derivedFiles", () => {
-  it("names one meta and one page per item plus the three shared files", () => {
+  it("names one meta and one page per item plus the four shared files", () => {
     const files = derivedFiles([deriveMeta(item, docs)]);
     expect([...files.keys()].sort()).toEqual([
       "index/components.toon",
+      "index/patterns.toon",
       "public/llms-full.txt",
       "public/llms.txt",
       "public/llms/components/mode-tabs.md",
@@ -184,7 +189,25 @@ describe("contract emit and drift", () => {
         "Contract schema failures. Fix the guidance module; a reason or intent under 20 characters is a placeholder.",
       ).toEqual([]);
 
-      const files = derivedFiles(metas);
+      // Patterns are loaded the same way and validated against the same shipped
+      // set, so one emit covers both halves of the corpus and one drift check
+      // gates both (spec 2026-09-15 §8, §9).
+      const entries: PatternEntry[] = await Promise.all(
+        patternSlugs().map(async (slug) => ({ slug, docs: await loadPattern(slug) })),
+      );
+      const patternErrors: string[] = [];
+      for (const { slug, docs: patternDocs } of entries) {
+        const hasDemo = existsSync(join(ROOT, `components/demos/patterns/${slug}-demo.tsx`));
+        patternErrors.push(...validatePattern(slug, patternDocs, shippedNames, hasDemo));
+      }
+      expect(
+        patternErrors,
+        "Pattern schema failures (D26). Fix the pattern module; a shipped pattern owes a composition, an unfilled one owes evidence and a reason.",
+      ).toEqual([]);
+      const metasByName = new Map(metas.map((m) => [m.name, m]));
+      const patternMetas = entries.map((e) => derivePatternMeta(e, entries, metasByName));
+
+      const files = derivedFiles(metas, patternMetas);
       if (EMIT) {
         for (const [rel, content] of files) {
           mkdirSync(dirname(join(ROOT, rel)), { recursive: true });
@@ -212,6 +235,11 @@ describe("contract emit and drift", () => {
         ...(existsSync(join(ROOT, "public/llms/components"))
           ? readdirSync(join(ROOT, "public/llms/components"))
               .map((f) => `public/llms/components/${f}`)
+              .filter((rel) => !files.has(rel))
+          : []),
+        ...(existsSync(join(ROOT, "public/llms/patterns"))
+          ? readdirSync(join(ROOT, "public/llms/patterns"))
+              .map((f) => `public/llms/patterns/${f}`)
               .filter((rel) => !files.has(rel))
           : []),
       ];

@@ -2,6 +2,9 @@ import type { ComponentDocs, DocsNone, DocsRedirect, DocsVariant } from "@/lib/c
 import type { ManifestItem } from "@/lib/manifest-types";
 
 import { axisKey, isNone } from "./contract-schema";
+import { csv, cut } from "./emit-text";
+import type { PatternMeta } from "./pattern-emit";
+import { renderPatternPage, renderPatternsIndex, renderPatternToon } from "./pattern-emit";
 
 export const DOCS_URL = "https://super-ai-components.vercel.app";
 
@@ -81,14 +84,6 @@ function redirectsCell(r: ContractMeta["insteadUse"]): string {
   if (r === undefined) return "unwritten";
   if (isNone(r)) return "none";
   return r.map((x) => x.component).join("|");
-}
-
-function cut(s: string, n: number): string {
-  return s.length <= n ? s : s.slice(0, n).trimEnd();
-}
-
-function csv(s: string): string {
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
 /** The builder agent's routing table. One line per item, manifest order. */
@@ -180,27 +175,33 @@ Install one item: \`npx shadcn@latest add ${DOCS_URL}/r/<name>.json\`. Each item
 Retrieval order: with an item installed, read \`components/super-ai/<name>.meta.json\` first; it is version-locked to the installed code and its contents outrank these pages. Before installing, read the component's page below, then the full corpus if you are choosing between several.
 `;
 
-export function renderLlmsTxt(metas: ContractMeta[]): string {
+export function renderLlmsTxt(metas: ContractMeta[], patterns: PatternMeta[] = []): string {
   const lines = metas.map(
     (m) => `- [${m.title}](${DOCS_URL}/llms/components/${m.name}.md): ${cut(m.purpose, 100)}`,
   );
-  return `${HEADER}\n## Guides\n\n- [Full corpus](${DOCS_URL}/llms-full.txt): every component page in one file\n\n## Components\n\n${lines.join("\n")}\n`;
+  // Omitted entirely when there are no patterns, so the file's bytes are
+  // unchanged until the first module lands.
+  const patternsBlock = patterns.length ? `\n${renderPatternsIndex(patterns)}` : "";
+  return `${HEADER}\n## Guides\n\n- [Full corpus](${DOCS_URL}/llms-full.txt): every component page in one file\n\n## Components\n\n${lines.join("\n")}\n${patternsBlock}`;
 }
 
-export function renderLlmsFull(metas: ContractMeta[]): string {
-  return `${HEADER}\n---\n\n${metas.map(renderComponentPage).join("\n---\n\n")}`;
+export function renderLlmsFull(metas: ContractMeta[], patterns: PatternMeta[] = []): string {
+  const pages = [...metas.map(renderComponentPage), ...patterns.map(renderPatternPage)];
+  return `${HEADER}\n---\n\n${pages.join("\n---\n\n")}`;
 }
 
 /** Every derived file, keyed by path relative to apps/docs. Manifest order in,
  *  manifest order out, so parallel regeneration touches disjoint lines. */
-export function derivedFiles(metas: ContractMeta[]): Map<string, string> {
+export function derivedFiles(metas: ContractMeta[], patterns: PatternMeta[] = []): Map<string, string> {
   const files = new Map<string, string>();
   for (const m of metas) {
     files.set(`registry/super-ai/${m.name}.meta.json`, `${JSON.stringify(m, null, 2)}\n`);
     files.set(`public/llms/components/${m.name}.md`, renderComponentPage(m));
   }
+  for (const p of patterns) files.set(`public/llms/patterns/${p.slug}.md`, renderPatternPage(p));
   files.set("index/components.toon", renderToon(metas));
-  files.set("public/llms.txt", renderLlmsTxt(metas));
-  files.set("public/llms-full.txt", renderLlmsFull(metas));
+  files.set("index/patterns.toon", renderPatternToon(patterns));
+  files.set("public/llms.txt", renderLlmsTxt(metas, patterns));
+  files.set("public/llms-full.txt", renderLlmsFull(metas, patterns));
   return files;
 }
