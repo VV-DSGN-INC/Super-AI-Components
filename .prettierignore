@@ -25,11 +25,13 @@ tools/ds-architecture/
 # bash hook used to blame, which survive formatting untouched.
 apps/docs/lib/demos.generated.ts
 apps/docs/lib/docs.generated.ts
+apps/docs/lib/patterns.generated.ts
 
 # Derived by apps/docs/scripts/lib/contract-emit.test.ts (`pnpm contract:emit`)
 # and byte-compared by the same test. The emitter owns their shape.
 apps/docs/registry/super-ai/*.meta.json
 apps/docs/index/components.toon
+apps/docs/index/patterns.toon
 apps/docs/public/llms.txt
 apps/docs/public/llms-full.txt
 apps/docs/public/llms/
