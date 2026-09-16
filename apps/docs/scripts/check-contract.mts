@@ -15,6 +15,7 @@ import { resolve } from "node:path";
 
 import { MANIFEST } from "../lib/catalog.manifest";
 import { LIB_MANIFEST } from "../lib/lib.manifest";
+import { SLUG_RE } from "../lib/pattern-docs";
 import {
   anchorErrors,
   compareExemptionLists,
@@ -207,6 +208,29 @@ for (const file of readdirSync("registry/super-ai").filter((f) => f.endsWith(".t
     .pop()!
     .replace(/\.test\.tsx$|\.tsx$/, "");
   if (!names.has(name) && !declaredFiles.has(name)) errors.push(`orphan: ${file} has no manifest entry`);
+}
+
+// Patterns (spec 2026-09-15 §9). A module is a kebab slug that exports
+// `<Pascal>Pattern: PatternDocs` (a text needle, like the docs modules above;
+// this script never imports a module), and a composition belongs to a module.
+const PATTERNS_DIR = "content/patterns";
+const PATTERN_DEMOS_DIR = "components/demos/patterns";
+const patternSlugs = existsSync(PATTERNS_DIR)
+  ? readdirSync(PATTERNS_DIR)
+      .filter((f) => f.endsWith(".pattern.tsx"))
+      .map((f) => f.replace(/\.pattern\.tsx$/, ""))
+  : [];
+for (const slug of patternSlugs) {
+  if (!SLUG_RE.test(slug)) errors.push(`pattern ${slug}: file name is not a kebab slug`);
+  const source = readFileSync(`${PATTERNS_DIR}/${slug}.pattern.tsx`, "utf8");
+  const needle = `export const ${pascal(slug)}Pattern: PatternDocs`;
+  if (!source.includes(needle)) errors.push(`pattern ${slug}: module does not contain \`${needle}\``);
+}
+const patternSet = new Set(patternSlugs);
+for (const file of existsSync(PATTERN_DEMOS_DIR) ? readdirSync(PATTERN_DEMOS_DIR) : []) {
+  if (!file.endsWith("-demo.tsx")) continue;
+  const slug = file.replace(/-demo\.tsx$/, "");
+  if (!patternSet.has(slug)) errors.push(`orphan: ${PATTERN_DEMOS_DIR}/${file} has no pattern module`);
 }
 
 // G2 — a data-slot passed to a registry component erases that component's own.

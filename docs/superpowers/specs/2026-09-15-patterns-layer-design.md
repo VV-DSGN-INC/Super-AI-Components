@@ -306,8 +306,8 @@ a registry item and does not install (§13).
 The unfilled baseline is a ratchet in the shape of `story-coverage.baseline.json`:
 regenerated only through its script, and the script only shrinks it. The set of
 unfilled patterns may lose members when a component ships and may never gain
-one silently. Adding a new unfilled pattern is a deliberate act: the author
-regenerates the baseline, and the diff shows the addition in review.
+one silently. Adding a new unfilled pattern is a deliberate act: the author adds its slug to
+the JSON by hand in the same commit, and the diff shows the hole being declared.
 
 ## 9. Gates
 
@@ -333,7 +333,8 @@ trap `CLAUDE.md` names. Steps not mentioned are untouched.
     at least one component and a demo;
   - obligation: every shipped pattern has a story titled
     `Patterns/<Stage>/<Title>`, checked the way `story-coverage.ts` checks
-    component obligations, as a fourth obligation kind, `composition`;
+    component obligations, as its own test, `pattern-stories.test.ts`, with no baseline because there is
+    no adoption-time debt;
   - drift: `patterns.generated.ts`, `index/patterns.toon` and the two `llms`
     sections match a fresh emission byte for byte;
   - ratchet: the set of unfilled slugs in the modules is a subset of the
