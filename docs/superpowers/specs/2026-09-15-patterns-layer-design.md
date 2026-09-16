@@ -50,23 +50,23 @@ follows: one source module per page, every other surface derived.
 
 ## 2. What was measured
 
-| fact                                                   | value                                                                                                                   |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| page routes under `apps/docs/app`                      | 2: `page.tsx` (`/`) and `components/[name]/page.tsx`; no component index route, no nav, `layout.tsx` is fonts and body  |
-| shipped items in `catalog.manifest.ts`                 | 116, families A to P, G cut (D9)                                                                                        |
-| guidance modules under `content/components/*.docs.tsx` | 116, one per shipped item, typed `ComponentDocs`                                                                        |
-| demos under `components/demos/*-demo.tsx`              | 131: 116 catalog plus 15 marketing items, wired by `gen-wiring.mts` into `lib/demos.generated.ts`                       |
-| what `gen-wiring.mts` emits                            | `lib/demos.generated.ts`, `lib/docs.generated.ts`                                                                       |
-| what `contract:emit` emits                             | one `.meta.json` per item, `index/components.toon`, `public/llms.txt`, `public/llms-full.txt`                           |
-| what `check:contract` runs                             | `check-contract.mts`, `check-citations.mts`, `reconcile-deps.mts`                                                       |
-| what the smoke gate asserts about `/`                  | one thing: a heading named `Super-AI-Components` is visible (`e2e/smoke.spec.ts` line 8)                                |
-| what the smoke gate asserts per component              | `[data-slot="component-page-title"]` carries the title; zero console errors; do and don't slots render                  |
-| shrink-only baselines in the repo                      | `scripts/lib/story-coverage.baseline.json`, `apps/docs/cssvars-liveness.baseline.json`, `a11y-exclusions.baseline.json` |
-| story-coverage obligations                             | three kinds (`case`, `described`, `variant`), all derived from the manifest; a pattern is not a manifest item           |
-| Storybook story location                               | `apps/storybook/src/**/*.stories.@(ts\|tsx)`, imports through the storybook workspace's own `@/` alias                  |
-| last recorded decision                                 | D25 (2026-09-14)                                                                                                        |
-| the recorded behaviour spine                           | `concept-model.md` §3: COMPOSE (D) → GENERATE (E) → RESULT (F) → LIBRARY (J), EDIT (H, I), references loop back to D    |
-| the 5 "known gaps" cited on 2026-09-01                 | not in `gaps.md`; they exist only in the shapeof.ai mapping, under shapeof.ai's names                                   |
+| fact                                                   | value                                                                                                                                                                                             |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| page routes under `apps/docs/app`                      | 3 files: `page.tsx` (`/`), `components/[name]/page.tsx`, and `components/layout.tsx`, which mounts `components/docs-nav.tsx` (a layer-grouped nav) on every `/components/*` route; `/` has no nav |
+| shipped items in `catalog.manifest.ts`                 | 116, families A to P, G cut (D9)                                                                                                                                                                  |
+| guidance modules under `content/components/*.docs.tsx` | 116, one per shipped item, typed `ComponentDocs`                                                                                                                                                  |
+| demos under `components/demos/*-demo.tsx`              | 131: 116 catalog plus 15 marketing items, wired by `gen-wiring.mts` into `lib/demos.generated.ts`                                                                                                 |
+| what `gen-wiring.mts` emits                            | `lib/demos.generated.ts`, `lib/docs.generated.ts`                                                                                                                                                 |
+| what `contract:emit` emits                             | one `.meta.json` per item, `index/components.toon`, `public/llms.txt`, `public/llms-full.txt`                                                                                                     |
+| what `check:contract` runs                             | `check-contract.mts`, `check-citations.mts`, `reconcile-deps.mts`                                                                                                                                 |
+| what the smoke gate asserts about `/`                  | one thing: a heading named `Super-AI-Components` is visible (`e2e/smoke.spec.ts` line 8)                                                                                                          |
+| what the smoke gate asserts per component              | `[data-slot="component-page-title"]` carries the title; zero console errors; do and don't slots render                                                                                            |
+| shrink-only baselines in the repo                      | `scripts/lib/story-coverage.baseline.json`, `apps/docs/cssvars-liveness.baseline.json`, `a11y-exclusions.baseline.json`                                                                           |
+| story-coverage obligations                             | three kinds (`case`, `described`, `variant`), all derived from the manifest; a pattern is not a manifest item                                                                                     |
+| Storybook story location                               | `apps/storybook/src/**/*.stories.@(ts\|tsx)`, imports through the storybook workspace's own `@/` alias                                                                                            |
+| last recorded decision                                 | D25 (2026-09-14)                                                                                                                                                                                  |
+| the recorded behaviour spine                           | `concept-model.md` §3: COMPOSE (D) → GENERATE (E) → RESULT (F) → LIBRARY (J), EDIT (H, I), references loop back to D                                                                              |
+| the 5 "known gaps" cited on 2026-09-01                 | not in `gaps.md`; they exist only in the shapeof.ai mapping, under shapeof.ai's names                                                                                                             |
 
 ## 3. Decisions
 
@@ -232,21 +232,29 @@ place of the composition, and an empty components section that says so.
 ### 6.3 `/components` is created
 
 The component index does not exist today: the only way to reach a component
-page is from `/`. Family nav on the left, A to P in catalog order, with the 15
-marketing items in a `Marketing` group at the end so they do not become
-orphans when `/` changes. Same card component as §6.1, with family in place of
-stage and no status badge.
-
-`/components/[name]` is not touched in phase 1. Phase 2 (§11) moves it onto
-the shell.
+page is from `/`. `/components` renders inside the shell (§6.4) with the
+Components area active, the doc-nav listing the families A to P in catalog
+order, and the card grid grouped by family with the 15 marketing items in a
+`Marketing` group at the end so they do not become orphans when `/` changes.
+The existing `app/components/layout.tsx` (the `DocsNav` chrome) moves to
+`app/components/[name]/layout.tsx` so it keeps wrapping the component pages
+and stops wrapping the index. That move is the only change under
+`app/components/[name]/` in phase 1; `page.tsx` there has no diff. Phase 2
+(§11) moves the component page itself onto the shell.
 
 ### 6.4 The shell and its derived parts
 
-One `DocShell` for all three routes: global nav on the left, a content column,
-a section nav on the right where the page has sections. Built from the
-registry's own shipped items where one fits (family B ships the shell and
-sidebar primitives) and reported as a gap where none does, under
-`block-build-brief.md`'s rule: compose, do not reimplement.
+One shell for `/`, `/patterns/[slug]` and `/components`: the registry's own
+`docs-shell` (O11), whose evidence line reads "a registry needs its own docs
+site, and this is that shell". Its icon rail carries two areas, Patterns and
+Components; its doc-nav carries the stages (Patterns) or the families
+(Components) as sections; its content column carries the page. It has no
+right-rail region and no slot above the title, so two of this spec's asks
+land in documented slots instead: the section nav is the doc-nav's
+`navPinned` rows, driven by the same array that renders the sections, and
+the hero is the first section of the page rather than a band above the
+title. Both are recorded as `docs-shell` gaps in `CONTINUE.md` §8
+(`block-build-brief.md`: compose, report the gap, never fork).
 
 **Section nav.** The detail page declares its sections once, as an array of
 `{ id, heading, render }`; the body and the nav both map over that array. They
@@ -262,10 +270,9 @@ patterns" section.
 ## 7. Illustration
 
 The hero is a `PreviewTabs` with the composition on the preview tab and the
-demo source on the code tab, exactly as `/components/[name]` does it. It sits
-in a framed stage at the full content-column width, above the title, which is
-the one place the pattern page's anatomy differs from the component page's:
-the picture is the argument, so it goes first.
+demo source on the code tab, exactly as `/components/[name]` does it,
+rendered as the page's first section, "Live", directly under the title and
+lede.
 
 Unfilled: a grey-box anatomy, one labelled box per `anatomy` slot, laid out in
 declaration order, in the same frame. It is generated, not drawn, and it
@@ -448,7 +455,8 @@ at one commit:
   with no addition to `a11y-exclusions.baseline.json`.
 - The twelve `ci.yml` steps are green in order, and `consumer-test.sh` is
   unchanged.
-- `/components/[name]` has no diff against `main`.
+- `app/components/[name]/page.tsx` has no diff against `main`; its layout file
+  has moved one directory down and nothing else.
 - `decisions.md` carries D26 to D29 with the dates and the one-paragraph
   reasoning above, `figma-board-map.md` carries the third board if it was
   drawn, and `CONTINUE.md` §8 records the unfilled set as the backlog it now
