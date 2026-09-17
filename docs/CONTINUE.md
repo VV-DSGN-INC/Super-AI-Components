@@ -2177,7 +2177,12 @@ check as soon as its item has both fields, so it runs
 `pnpm contract-coverage:baseline` locally and leaves the file uncommitted for
 the integrator. And agents commit only their four per-item files, not their
 lines of `components.toon` or `llms-full.txt`: ten cherry-picks of adjacent rows
-conflict, and one emit after the merge produces the same tree.
+conflict, and one emit after the merge produces the same tree. And one trap
+that bit the gate run itself: `playwright.config.ts` reuses any server already
+on port 3100 outside CI, and that server was a sibling worktree's, so the smoke
+gate reported one false red on the home page and 132 false greens on component
+pages, all against the wrong build. `run-gates.sh` now sets `CI=1` for that
+step so a held port fails loudly instead of testing someone else's tree.
 
 The remaining 93 are authored in waves of about twelve, one agent per item in
 its own worktree per §3.4. An agent appends the two fields to its docs module,
