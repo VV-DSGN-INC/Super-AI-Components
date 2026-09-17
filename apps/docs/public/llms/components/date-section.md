@@ -14,11 +14,11 @@ Reach for it whenever a list is ordered by time and long enough that a reader sc
 
 ## Variants
 
-Not yet recorded.
+None: The catalog names two variants for this slot — with/without count, and collapsible — and the shipped component implements neither: `label` and `children` are the whole prop surface beyond the standard div props. That is not a gap the docs are covering for; the Boundary story exists to make the trade visible. Adding a count or a fold here would mean the bucket wrapper starts making the same room-for-more-controls decision `section-header` already owns for every grouping, temporal or not — and four composed shells (`thread-list`, `generation-shell`, `artifact-shell`, `library-shell`) all reach for this exact wrapper precisely because it makes no such decision. A date section that grew a `count` prop would stop being the one thing every one of those shells can drop in identically.
 
 ## Instead use
 
-Not yet recorded.
+- **section-header**: The group needs a count beside its name, a trailing action, or a collapse toggle. Date-section implements none of the three — reach for section-header and accept that the rows are no longer wrapped in a `role="group"` the header owns; that trade is what the Boundary story records.
 
 ## Do
 
