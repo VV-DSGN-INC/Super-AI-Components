@@ -126,4 +126,36 @@ export const StatReadoutDocs: ComponentDocs = {
     'The value is not pinned dir="ltr", unlike the numbers in cost-chip, credits-indicator and quota-meter. Inside an RTL page a composite numeric value such as "1024 × 1024" or "12 – 48" has its parts reordered by the bidi algorithm, because the neutral between two numbers takes the paragraph direction. Wrap such values yourself until the pin lands here.',
     'Passing your own data-slot erases stat-readout. Props spread after the component\'s own attributes, so `<StatReadout data-slot="asset-detail-params" />` removes the identity every test and style keys on. This has bitten three times in this repo; let the composed component keep its slot.',
   ],
+  variants: [
+    {
+      prop: "columns",
+      default: "2",
+      values: [
+        {
+          value: "2",
+          intent:
+            "The surface is wide enough for a reader to scan a label and its value on the same line, and the readout is carrying enough rows that stacking them would push the later ones out of view — a params pane, a run inspector's metadata tab, anywhere the two-column form is the point.",
+        },
+        {
+          value: "1",
+          intent:
+            'The surface is too narrow for a label column to sit beside the value without crowding it — a sidebar rail, an inspector column — which is exactly the situation the usage note\'s "drop to columns={1}" advice is for.',
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "field-row",
+      when: "The value is editable rather than reported — field-row pairs a label with a live control, and an optional reset, on the same label/value grid this component only renders read-only.",
+    },
+    {
+      component: "slot-summary",
+      when: "A row needs to carry where its value came from and a way to correct it — slot-summary marks each row stated, inferred, defaulted or missing and ships the correction control this component has no vocabulary for.",
+    },
+    {
+      component: "quota-meter",
+      when: 'The number is measured against a limit rather than simply reported — quota-meter derives its own near-limit and over-limit states from a used/allowed pair, the "x of y" shape this component\'s own usage note already says to route elsewhere.',
+    },
+  ],
 };

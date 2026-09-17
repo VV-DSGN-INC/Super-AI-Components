@@ -39,7 +39,7 @@ const RECIPE = [
  * absent value is visibly absent rather than a blank cell.
  */
 export const LabelBesideValue: Story = {
-  args: { items: RECIPE },
+  args: { columns: 2, items: RECIPE },
 };
 
 /**

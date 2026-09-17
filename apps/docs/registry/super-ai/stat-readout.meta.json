@@ -31,6 +31,36 @@
       "note": "The copy control. Rendered only when the item sets copyable AND has a value — a missing value has nothing to copy, so the button is absent rather than inert."
     }
   ],
+  "variants": [
+    {
+      "prop": "columns",
+      "default": "2",
+      "values": [
+        {
+          "value": "2",
+          "intent": "The surface is wide enough for a reader to scan a label and its value on the same line, and the readout is carrying enough rows that stacking them would push the later ones out of view — a params pane, a run inspector's metadata tab, anywhere the two-column form is the point."
+        },
+        {
+          "value": "1",
+          "intent": "The surface is too narrow for a label column to sit beside the value without crowding it — a sidebar rail, an inspector column — which is exactly the situation the usage note's \"drop to columns={1}\" advice is for."
+        }
+      ]
+    }
+  ],
+  "insteadUse": [
+    {
+      "component": "field-row",
+      "when": "The value is editable rather than reported — field-row pairs a label with a live control, and an optional reset, on the same label/value grid this component only renders read-only."
+    },
+    {
+      "component": "slot-summary",
+      "when": "A row needs to carry where its value came from and a way to correct it — slot-summary marks each row stated, inferred, defaulted or missing and ships the correction control this component has no vocabulary for."
+    },
+    {
+      "component": "quota-meter",
+      "when": "The number is measured against a limit rather than simply reported — quota-meter derives its own near-limit and over-limit states from a used/allowed pair, the \"x of y\" shape this component's own usage note already says to route elsewhere."
+    }
+  ],
   "dos": [
     "Keep a field in the list when it exists but is unset, and let it render the em-dash — a row that says nothing is set is information; a row that was silently dropped is not.",
     "Mark the fields a result can be reproduced from as `copyable`, and pass them as plain strings — seed and sampler exist to be re-entered somewhere else."
