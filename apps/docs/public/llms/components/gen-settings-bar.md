@@ -14,11 +14,13 @@ Reach for it wherever a run is about to be launched and its parameters must stay
 
 ## Variants
 
-Not yet recorded.
+None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec sketched three presentations — inline, compact, node-docked — but none of them became a caller-chosen axis on this component: what shipped is one row of plain buttons plus a single `disabled` flag that locks them all through context. Density and shape are decided by what a caller passes as `children` and by the surface that hosts the bar — media-prompt-bar collapses its own settings slot under its own `presentation` prop, not under anything declared here — so there is no design decision left on this component for an axis to record.
 
 ## Instead use
 
-Not yet recorded.
+- **filter-bar**: The segments would narrow something already rendered on screen — a library, a result grid — rather than configure a run that has not started yet. Filter-bar owns the applied/unapplied state and the clear-all affordance this strip deliberately lacks, which is why the usage note and the strip's own `StripUsedToNarrowAList` dont both point there instead.
+- **field-row**: A parameter needs a label, a hint or a reset beside it to be understood on its own. A `GenSettingsItem` is a bare button whose entire accessible name is its children, with no slot for any of those — field-row is the labelled row a parameter graduates to once a bare value stops being self-explanatory.
+- **model-picker**: The segment being built is itself the control that changes which model runs, not a value shown beside the prompt. A `GenSettingsItem` has no value API and no grouping to offer it, which is why model-picker's own docs call out reaching for its `node-inline` presentation there instead of a plain settings-bar button.
 
 ## Do
 
