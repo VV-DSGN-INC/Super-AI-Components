@@ -172,11 +172,11 @@ Reach for it whenever a list is ordered by time and long enough that a reader sc
 
 ## Variants
 
-Not yet recorded.
+None: The catalog names two variants for this slot — with/without count, and collapsible — and the shipped component implements neither: `label` and `children` are the whole prop surface beyond the standard div props. That is not a gap the docs are covering for; the Boundary story exists to make the trade visible. Adding a count or a fold here would mean the bucket wrapper starts making the same room-for-more-controls decision `section-header` already owns for every grouping, temporal or not — and four composed shells (`thread-list`, `generation-shell`, `artifact-shell`, `library-shell`) all reach for this exact wrapper precisely because it makes no such decision. A date section that grew a `count` prop would stop being the one thing every one of those shells can drop in identically.
 
 ## Instead use
 
-Not yet recorded.
+- **section-header**: The group needs a count beside its name, a trailing action, or a collapse toggle. Date-section implements none of the three — reach for section-header and accept that the rows are no longer wrapped in a `role="group"` the header owns; that trade is what the Boundary story records.
 
 ## Do
 
@@ -249,11 +249,12 @@ Reach for it when a run has a small set of named options — under about eight �
 
 ## Variants
 
-Not yet recorded.
+None: There is no design-decision prop here — `value`, `defaultValue` and `onValueChange` are selection state, not a variant, and the only style branch in the source (`data-state`) is driven by that same state rather than chosen by a caller. The spec (A4) describes a role switch between radio and checkbox for multi-select, but that never shipped — v1 is single-select only, one radiogroup and one ring, and a caller who needs two chips lit at once or a picture-driven grid does not get there by a variant of this component. They reach past it to the two components below.
 
 ## Instead use
 
-Not yet recorded.
+- **preset-grid**: More than one option needs to be selected at once, the options are pictures rather than short labels, or there are more than about eight of them. preset-grid is the same ring-selected model built on the same preview-tile frame, with a see-more affordance and the `multiple` prop — every tile switches to a checkbox — that this component's own spec describes but never shipped.
+- **filter-bar**: The chips are filters already applied to an existing list, not options being chosen from. filter-bar's chips carry their own remove button beside the toggle and the row can start and stay empty; choice-chips always shows every option and always has exactly one selected, with no way to remove a choice once it is made.
 
 ## Do
 
@@ -330,11 +331,12 @@ Reach for it above a library, grid or list that has a handful of facets — roug
 
 ## Variants
 
-Not yet recorded.
+None: Every chip in the row renders one way — a pill, with a sibling remove button when the facet is applied — because a row that painted "applied" two different ways would ask a reader to learn which one is real. The one thing that changes a chip's shape, `onRemove`, is not a caller's design choice between surfaces; it is dictated by whether the facet is currently applied, which is state the caller already tracks, not a size or tone to pick between.
 
 ## Instead use
 
-Not yet recorded.
+- **filter-panel**: The facet list needs counts, groups, or has grown past roughly six. Filter-bar has no overflow affordance and no scroll container — it wraps and grows downward over the content it filters — while filter-panel is the faceted rail this component's own usage note points to once the row stops being enough.
+- **choice-chips**: The row is one mutually exclusive choice rather than a set of independently applied filters. Choice-chips is a real radiogroup of real radios, with the selection in the accessibility tree, while filter-bar enforces no selection rule at all and renders every chip as its own independent aria-pressed toggle.
 
 ## Do
 
@@ -415,11 +417,13 @@ Reach for it whenever a surface sets a named parameter: a generation panel, a pr
 
 ## Variants
 
-Not yet recorded.
+None: The row is one grid — label, control, reset, hint — precisely so a slider row and a switch row and a colour row are the same component and cannot drift apart. A variant prop would hand every row a second way to be a row, which is the disagreement the shared column grid exists to prevent; the only real choice is which control the render prop returns, and that is the caller's control, not a prop on this one.
 
 ## Instead use
 
-Not yet recorded.
+- **gen-settings-bar**: The controls sit shoulder to shoulder beside a composer or a Run button rather than stacked in a column. Gen-settings-bar is the same parameters as a docked strip with no label column, sized to be glanced at rather than read down.
+- **entity-row**: The left-hand text names the thing itself rather than a setting on it — you pick it or open it, you do not set it to a value. Entity-row's trailing slot can hold a switch too, which is where the two rows look most alike and are still not interchangeable.
+- **stat-readout**: The value is read-only metadata attached to a finished result — seed, sampler, model — not something the user sets. Stat-readout has no control slot, no id to hand a control, and no reset; it is a description list, not an input.
 
 ## Do
 
@@ -505,11 +509,13 @@ Reach for it wherever a run is about to be launched and its parameters must stay
 
 ## Variants
 
-Not yet recorded.
+None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec sketched three presentations — inline, compact, node-docked — but none of them became a caller-chosen axis on this component: what shipped is one row of plain buttons plus a single `disabled` flag that locks them all through context. Density and shape are decided by what a caller passes as `children` and by the surface that hosts the bar — media-prompt-bar collapses its own settings slot under its own `presentation` prop, not under anything declared here — so there is no design decision left on this component for an axis to record.
 
 ## Instead use
 
-Not yet recorded.
+- **filter-bar**: The segments would narrow something already rendered on screen — a library, a result grid — rather than configure a run that has not started yet. Filter-bar owns the applied/unapplied state and the clear-all affordance this strip deliberately lacks, which is why the usage note and the strip's own `StripUsedToNarrowAList` dont both point there instead.
+- **field-row**: A parameter needs a label, a hint or a reset beside it to be understood on its own. A `GenSettingsItem` is a bare button whose entire accessible name is its children, with no slot for any of those — field-row is the labelled row a parameter graduates to once a bare value stops being self-explanatory.
+- **model-picker**: The segment being built is itself the control that changes which model runs, not a value shown beside the prompt. A `GenSettingsItem` has no value API and no grouping to offer it, which is why model-picker's own docs call out reaching for its `node-inline` presentation there instead of a plain settings-bar button.
 
 ## Do
 
@@ -585,11 +591,28 @@ Reach for it whenever a picture needs a fixed frame in a set: a preset grid, a p
 
 ## Variants
 
-Not yet recorded.
+### aspect (default: `square`)
+
+- `square`: The content has no fixed shape of its own, or none you know yet — a style preset swatch, a reference thumbnail, an image whose real dimensions arrive only once the request returns. preset-grid, asset-library, reference-strip and library-shell all default here for exactly that reason.
+- `video`: The tile holds a clip, or a still pulled from one, and the frame itself has to read as motion before anything plays — recent-grid's project shelf, frame-strip's scrubber and template-detail's preview all pick it over the square default for that reason.
+- `portrait`: The content itself is taller than it is wide — a phone-shot upload, a poster, a portrait-orientation generation — where a square or video crop would cut the subject rather than frame it. result-card and tool-panel both forward whatever aspect their own caller hands them for exactly this reason: the shape belongs to the content, not to the frame.
+- `wide`: The content is a widescreen still or a banner, wider than the video ratio can hold without letterboxing it — a panorama, a hero export, a frame pulled from an ultra-wide source. Same pass-through as portrait: result-card and tool-panel don't commit to one shape themselves, so the caller's choice reaches the frame unchanged.
+
+### labelPlacement (default: `overlay`)
+
+- `overlay`: The tile sits inside a dense grid where every pixel of width is doing work — preset-grid's multi-column layout captions the picture on itself rather than spending a row underneath it, which is what keeps a grid of tiles reading as a grid and not a grid of captions.
+- `below`: The caption carries information a reader looks for beside the thumbnail rather than layered over it, and there is a row to spare underneath — recent-grid's project shelf, where a title has to survive being scanned at a glance without covering the art.
+- `none`: The picture is already the whole label, or the caption is supplied some other way — frame-strip's scrubber, where dozens of frames sit edge to edge and a caption on each would be noise, or a tile named through frameLabel instead of a rendered label element.
+
+### selectMode (default: `toggle`)
+
+- `toggle`: Choosing the tile is a pick among alternatives that stays on screen and can be re-picked — a preset grid, a filter, anything where aria-pressed is genuinely true of the result. This is the default, because it is what every caller got before the prop existed.
+- `open`: Choosing the tile leaves the tile behind — it opens a project or drills into a detail view rather than toggling a state that persists. recent-grid passes this for exactly that reason: aria-pressed would claim a state the tile no longer holds once the caller has navigated away.
 
 ## Instead use
 
-Not yet recorded.
+- **recent-grid**: The content is a saved project the caller already has, not a picture with nothing to say about it — recent-grid adds the duration badge, the edited-ago line and hover actions that make a project findable, on top of this same frame.
+- **result-card**: The content is one generation result with its own run lifecycle and a price attached — result-card composes this frame with the queued/streaming/done/failed states and a footer that reserves height for the cost line.
 
 ## Do
 
@@ -674,11 +697,13 @@ Reach for it for any list where each line names a thing — a skill, a model, a 
 
 ## Variants
 
-Not yet recorded.
+None: The spec's plain · selectable · with-badge · with-chevron · with-switch · disabled list names outcomes of what a caller puts in the slots, not a prop a caller sets: `icon` and `trailing` are either filled or empty, `onSelect` is either present or not, and `selected`/`disabled` are states rather than a design decision to choose between. One markup handles every combination, which is what lets sixteen components compose this row instead of each drawing its own.
 
 ## Instead use
 
-Not yet recorded.
+- **model-picker**: The row is choosing a model. `model-picker`'s `expanded-cards` and `node-inline` presentations already compose `entity-row` with task-signature grouping and the price/capability/runtime badge set — reimplementing that list with a bare `entity-row` drops the grouping and has to re-derive the badges by hand.
+- **thread-list**: The rows are conversation threads that need rename-in-place, a pin/delete menu behind hover, and date-bucket grouping. Entity-row's trailing slot has no inline-edit state and no menu affordance, so a hand-built thread row is missing all three the moment renaming is needed.
+- **record-list**: The rows are automation records where the primary control is an enable/disable switch and the subtitle has to read as one sentence about app cluster, draft state and last-run outcome. Record-list owns that whole combination as one row; assembling it from entity-row's icon, description and trailing slots re-derives the same layout without the sentence logic.
 
 ## Do
 
@@ -758,11 +783,16 @@ Reach for it wherever a result carries read-only metadata a user might need to r
 
 ## Variants
 
-Not yet recorded.
+### columns (default: `2`)
+
+- `2`: The surface is wide enough for a reader to scan a label and its value on the same line, and the readout is carrying enough rows that stacking them would push the later ones out of view — a params pane, a run inspector's metadata tab, anywhere the two-column form is the point.
+- `1`: The surface is too narrow for a label column to sit beside the value without crowding it — a sidebar rail, an inspector column — which is exactly the situation the usage note's "drop to columns={1}" advice is for.
 
 ## Instead use
 
-Not yet recorded.
+- **field-row**: The value is editable rather than reported — field-row pairs a label with a live control, and an optional reset, on the same label/value grid this component only renders read-only.
+- **slot-summary**: A row needs to carry where its value came from and a way to correct it — slot-summary marks each row stated, inferred, defaulted or missing and ships the correction control this component has no vocabulary for.
+- **quota-meter**: The number is measured against a limit rather than simply reported — quota-meter derives its own near-limit and over-limit states from a used/allowed pair, the "x of y" shape this component's own usage note already says to route elsewhere.
 
 ## Do
 
@@ -842,11 +872,15 @@ Reach for it wherever a value has a default worth returning to — a field row i
 
 ## Variants
 
-Not yet recorded.
+### scope (default: `row`)
+
+- `row`: Pick this when the reset answers for one editable value sitting inside a single field-row — the common case, and the shape the trailing `reset` slot already expects.
+- `group`: Pick this when the reset has to sit on a section header and clear every row nested beneath it at once, rather than answer for the one value beside it.
 
 ## Instead use
 
-Not yet recorded.
+- **field-row**: The caller needs the whole labelled row — label, control, unit and reset on one grid — not the reset control by itself; field-row owns that grid and already has the `reset` slot this component fills.
+- **parameter-panel**: The caller is assembling a whole stack of generation-parameter rows with one reset that clears the group from its header; parameter-panel already wires `scope="group"` into its header behind a `modified` prop, instead of the caller hand-assembling that pattern.
 
 ## Do
 
@@ -1805,11 +1839,12 @@ Reach for it above or below a composer when there's a short list of things worth
 
 ## Variants
 
-Not yet recorded.
+None: SuggestionChip carries two independent optional slots, `icon` and `thumbnail`, not a named look a caller declares — you pass whichever leading node you have, or neither, and `thumbnail` wins when both arrive. The four states the manifest lists (plain, with-icon, with-thumbnail, overflow-link) are what those presence checks produce, not a value on one prop, and `overflow-link` is a separate component, `SuggestionChipsOverflow`, appended to the row rather than a mode `SuggestionChip` switches into. There is nothing here shaped like `size` or `presentation` for a caller to choose between.
 
 ## Instead use
 
-Not yet recorded.
+- **choice-chips**: The row needs to hold a selected value — aspect ratio, batch size, quality tier — rather than fire a fill-the-composer action. Choice chips carry radio/checkbox semantics and a selected state; suggestion chips have no `value` and nothing selected, only an `onSelect` that reports what was clicked.
+- **context-chips**: The chips stand for something already attached — a file, a text selection — that the user might remove, rather than a prompt they might try. Context chips are dismissible handles on existing state; a suggestion chip can be disabled but never removed, because there is nothing attached to remove.
 
 ## Do
 

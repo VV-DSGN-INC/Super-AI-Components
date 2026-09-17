@@ -1,15 +1,15 @@
 components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
   kbd,primitive,A,registry/super-ai/kbd.meta.json,none,shortcuts-sheet,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
   cost-chip,primitive,A,registry/super-ai/cost-chip.meta.json,none,credits-indicator|run-button,"A small pill that prices one action: a coin icon, a number, and the unit that number is counted in."
-  date-section,primitive,A,registry/super-ai/date-section.meta.json,unwritten,unwritten,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
-  choice-chips,primitive,A,registry/super-ai/choice-chips.meta.json,unwritten,unwritten,"A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, s"
-  filter-bar,primitive,A,registry/super-ai/filter-bar.meta.json,unwritten,unwritten,"The chip-scale end of filtering: a wrapping row of facet chips, an optional add-a-facet chip, and a"
-  field-row,primitive,A,registry/super-ai/field-row.meta.json,unwritten,unwritten,"One labelled parameter on a shared column grid: a label, whatever control sets the value, and an opt"
-  gen-settings-bar,primitive,A,registry/super-ai/gen-settings-bar.meta.json,unwritten,unwritten,"The one-line strip of generation parameters that sits with the prompt — model, aspect, resolution, d"
-  preview-tile,primitive,A,registry/super-ai/preview-tile.meta.json,unwritten,unwritten,"The fixed-aspect frame every picker, grid and strip is built out of: one aspect-ratio box, a childre"
-  entity-row,primitive,A,registry/super-ai/entity-row.meta.json,unwritten,unwritten,"One line in a list of things: an optional icon, a title, an optional description, and a trailing slo"
-  stat-readout,primitive,A,registry/super-ai/stat-readout.meta.json,unwritten,unwritten,"A description list of label→value rows for the metadata hanging off a result: model, seed, sampler,"
-  reset-affordance,primitive,A,registry/super-ai/reset-affordance.meta.json,unwritten,unwritten,The small ↺ that sits at the end of an editable row and puts the value back where it started. Three
+  date-section,primitive,A,registry/super-ai/date-section.meta.json,none,section-header,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
+  choice-chips,primitive,A,registry/super-ai/choice-chips.meta.json,none,preset-grid|filter-bar,"A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, s"
+  filter-bar,primitive,A,registry/super-ai/filter-bar.meta.json,none,filter-panel|choice-chips,"The chip-scale end of filtering: a wrapping row of facet chips, an optional add-a-facet chip, and a"
+  field-row,primitive,A,registry/super-ai/field-row.meta.json,none,gen-settings-bar|entity-row|stat-readout,"One labelled parameter on a shared column grid: a label, whatever control sets the value, and an opt"
+  gen-settings-bar,primitive,A,registry/super-ai/gen-settings-bar.meta.json,none,filter-bar|field-row|model-picker,"The one-line strip of generation parameters that sits with the prompt — model, aspect, resolution, d"
+  preview-tile,primitive,A,registry/super-ai/preview-tile.meta.json,aspect=square/video/portrait/wide|labelPlacement=overlay/below/none|selectMode=toggle/open,recent-grid|result-card,"The fixed-aspect frame every picker, grid and strip is built out of: one aspect-ratio box, a childre"
+  entity-row,primitive,A,registry/super-ai/entity-row.meta.json,none,model-picker|thread-list|record-list,"One line in a list of things: an optional icon, a title, an optional description, and a trailing slo"
+  stat-readout,primitive,A,registry/super-ai/stat-readout.meta.json,columns=2/1,field-row|slot-summary|quota-meter,"A description list of label→value rows for the metadata hanging off a result: model, seed, sampler,"
+  reset-affordance,primitive,A,registry/super-ai/reset-affordance.meta.json,scope=row/group,field-row|parameter-panel,The small ↺ that sits at the end of an editable row and puts the value back where it started. Three
   section-header,primitive,A,registry/super-ai/section-header.meta.json,size=default/sm,date-section,"One header row for a group of things: a title, an optional count beside it, an optional trailing act"
   app-sidebar,component,B,registry/super-ai/app-sidebar.meta.json,unwritten,unwritten,"The assembled product sidebar: a workspace switcher, a nav list, an ambient promo card, and a footer"
   workspace-switcher,component,B,registry/super-ai/workspace-switcher.meta.json,unwritten,unwritten,"A dropdown that shows the workspace, org, or product the user is currently in and lets them jump to"
@@ -20,7 +20,7 @@ components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
   app-topbar,component,B,registry/super-ai/app-topbar.meta.json,unwritten,unwritten,The single header that runs across the top of a shell — one component with two lead configurations.
   account-menu,component,B,registry/super-ai/account-menu.meta.json,unwritten,unwritten,"The avatar menu in the corner of the shell: an identity block (avatar, name, email) on top, product"
   hero-omnibox,component,C,registry/super-ai/hero-omnibox.meta.json,unwritten,unwritten,"The centred prompt that greets a user on an app's home screen — a large textarea in a card, with att"
-  suggestion-chips,component,C,registry/super-ai/suggestion-chips.meta.json,unwritten,unwritten,A horizontal row of tap-to-fill prompt chips — the empty-state or below-composer starters that turn
+  suggestion-chips,component,C,registry/super-ai/suggestion-chips.meta.json,none,choice-chips|context-chips,A horizontal row of tap-to-fill prompt chips — the empty-state or below-composer starters that turn
   feature-card-row,component,C,registry/super-ai/feature-card-row.meta.json,unwritten,unwritten,"A horizontally scrollable row of feature cards, used for both ""Start from scratch"" prompts and ""Popu"
   recent-grid,component,C,registry/super-ai/recent-grid.meta.json,layout=grid/list,generation-grid|artifact-grid,"A grid or list of the user's recent projects, each shown as a fixed-height thumbnail with a title, a"
   recommendation-card,component,C,registry/super-ai/recommendation-card.meta.json,unwritten,unwritten,"A ""Recommended for you"" card with two levels: a one-line row for the feed, and a modal that lays out"
