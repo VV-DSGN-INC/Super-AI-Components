@@ -112,4 +112,79 @@ export const PreviewTileDocs: ComponentDocs = {
     "`failed` paints its own text colour — `text-foreground`, on the slot that wraps `action` — so it needs no correcting at the call site. If you inherited an override that puts the colour back, delete it rather than keeping it: `result-card` and `frame-strip` both dropped theirs when the component adopted the colour. The one colour it deliberately is not is `text-destructive`, which as body text on this frame's muted fill measures 4.34:1, under the 4.5:1 minimum — the contrast pairing this system keeps re-introducing. Put the colour on an icon inside `action` if you want the failure to read as red.",
     "`locked`, unlike `failed`, still inherits the surrounding text colour rather than painting its own, so its scrim shows your CTA in whatever colour the tile was nested in. On a surface that is not already `text-foreground` — an inverted card, a coloured panel — set the colour on what you pass to `action`.",
   ],
+  variants: [
+    {
+      prop: "aspect",
+      default: "square",
+      values: [
+        {
+          value: "square",
+          intent:
+            "The content has no fixed shape of its own, or none you know yet — a style preset swatch, a reference thumbnail, an image whose real dimensions arrive only once the request returns. preset-grid, asset-library, reference-strip and library-shell all default here for exactly that reason.",
+        },
+        {
+          value: "video",
+          intent:
+            "The tile holds a clip, or a still pulled from one, and the frame itself has to read as motion before anything plays — recent-grid's project shelf, frame-strip's scrubber and template-detail's preview all pick it over the square default for that reason.",
+        },
+        {
+          value: "portrait",
+          intent:
+            "The content itself is taller than it is wide — a phone-shot upload, a poster, a portrait-orientation generation — where a square or video crop would cut the subject rather than frame it. result-card and tool-panel both forward whatever aspect their own caller hands them for exactly this reason: the shape belongs to the content, not to the frame.",
+        },
+        {
+          value: "wide",
+          intent:
+            "The content is a widescreen still or a banner, wider than the video ratio can hold without letterboxing it — a panorama, a hero export, a frame pulled from an ultra-wide source. Same pass-through as portrait: result-card and tool-panel don't commit to one shape themselves, so the caller's choice reaches the frame unchanged.",
+        },
+      ],
+    },
+    {
+      prop: "labelPlacement",
+      default: "overlay",
+      values: [
+        {
+          value: "overlay",
+          intent:
+            "The tile sits inside a dense grid where every pixel of width is doing work — preset-grid's multi-column layout captions the picture on itself rather than spending a row underneath it, which is what keeps a grid of tiles reading as a grid and not a grid of captions.",
+        },
+        {
+          value: "below",
+          intent:
+            "The caption carries information a reader looks for beside the thumbnail rather than layered over it, and there is a row to spare underneath — recent-grid's project shelf, where a title has to survive being scanned at a glance without covering the art.",
+        },
+        {
+          value: "none",
+          intent:
+            "The picture is already the whole label, or the caption is supplied some other way — frame-strip's scrubber, where dozens of frames sit edge to edge and a caption on each would be noise, or a tile named through frameLabel instead of a rendered label element.",
+        },
+      ],
+    },
+    {
+      prop: "selectMode",
+      default: "toggle",
+      values: [
+        {
+          value: "toggle",
+          intent:
+            "Choosing the tile is a pick among alternatives that stays on screen and can be re-picked — a preset grid, a filter, anything where aria-pressed is genuinely true of the result. This is the default, because it is what every caller got before the prop existed.",
+        },
+        {
+          value: "open",
+          intent:
+            "Choosing the tile leaves the tile behind — it opens a project or drills into a detail view rather than toggling a state that persists. recent-grid passes this for exactly that reason: aria-pressed would claim a state the tile no longer holds once the caller has navigated away.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "recent-grid",
+      when: "The content is a saved project the caller already has, not a picture with nothing to say about it — recent-grid adds the duration badge, the edited-ago line and hover actions that make a project findable, on top of this same frame.",
+    },
+    {
+      component: "result-card",
+      when: "The content is one generation result with its own run lifecycle and a price attached — result-card composes this frame with the queued/streaming/done/failed states and a footer that reserves height for the cost line.",
+    },
+  ],
 };
