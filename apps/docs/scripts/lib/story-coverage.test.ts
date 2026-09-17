@@ -208,6 +208,39 @@ describe("variant obligations", () => {
     expect(variantNeedles("variant", "with-icon")).toEqual(['variant="with-icon"', 'variant: "with-icon"']);
   });
 
+  it("spells all four needles for an integer-literal value, in order", () => {
+    expect(variantNeedles("columns", "2")).toEqual([
+      'columns="2"',
+      'columns: "2"',
+      "columns={2}",
+      "columns: 2",
+    ]);
+  });
+
+  it("still spells only the two string needles for a non-numeric value", () => {
+    expect(variantNeedles("variant", "with-icon")).toEqual(['variant="with-icon"', 'variant: "with-icon"']);
+  });
+
+  it("meets an integer variant by its bare literal, digit-bounded", () => {
+    const obligations = deriveObligations([
+      { name: "stat-readout", states: [], variants: [{ propName: "columns", values: ["2"] }] },
+    ]);
+    const tooLong = readStoryFacts(`export const A: Story = { args: { columns: 20 } };\n`);
+    expect(unmetObligations(obligations, tooLong).map((o) => o.key)).toContain(
+      "stat-readout:variant:columns=2",
+    );
+    const bareArgs = readStoryFacts(`export const A: Story = { args: { columns: 2, } };\n`);
+    expect(unmetObligations(obligations, bareArgs).map((o) => o.key)).not.toContain(
+      "stat-readout:variant:columns=2",
+    );
+    const jsxExpr = readStoryFacts(
+      `export const A: Story = { render: () => <StatReadout columns={2} /> };\n`,
+    );
+    expect(unmetObligations(obligations, jsxExpr).map((o) => o.key)).not.toContain(
+      "stat-readout:variant:columns=2",
+    );
+  });
+
   it("builds coverage items from metas, ignoring a none and an unwritten field", () => {
     const items = coverageItemsFromMetas(
       [

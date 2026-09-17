@@ -298,7 +298,9 @@ three controls of §9) and ends deleted.
 `story-coverage.ts` gains a third obligation kind, `variant`: for every
 declared variant value, key `<item>:variant:<propName>=<value>`, met when any
 story file for the item contains the needle `propName="value"` or
-`propName: "value"`. A case story that exercises the value satisfies it; a
+`propName: "value"`. An integer-literal value is also met by `propName={value}`
+or `propName: value`, with a digit boundary so `2` never matches `20`. A case
+story that exercises the value satisfies it; a
 dedicated per-value story is not required and, per `story-conventions.md`, not
 wanted. Obligations derive only from modules that declare `variants`, so
 landing the mechanism adds three items' worth, each covered in the same task.

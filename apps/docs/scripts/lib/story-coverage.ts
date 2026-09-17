@@ -159,9 +159,25 @@ export function readStoryFacts(source: string): StoryFacts {
 /** The two spellings a story can use: a quoted attribute or an args entry,
  *  never a word in a sentence. Derived from a bare identifier on purpose —
  *  the sibling repo ran 57 obligations into an unsatisfiable needle by
- *  deriving it from display prose, which is why `propName` exists. */
+ *  deriving it from display prose, which is why `propName` exists. An
+ *  integer-literal value — the only spelling a numeric prop's own union
+ *  admits — is also met as a JSX expression or a bare args number,
+ *  `propName={value}` or `propName: value`, checked with a digit boundary so
+ *  `2` never matches inside `20` or `2.5`. */
 export function variantNeedles(propName: string, value: string): string[] {
-  return [`${propName}="${value}"`, `${propName}: "${value}"`];
+  const needles = [`${propName}="${value}"`, `${propName}: "${value}"`];
+  if (/^-?\d+$/.test(value)) needles.push(`${propName}={${value}}`, `${propName}: ${value}`);
+  return needles;
+}
+
+/** `source.includes` for a quoted or braced needle; for a needle ending in a
+ *  digit, a regex requiring the next character not continue the number, so
+ *  `columns: 2` is not satisfied by `columns: 20` or `columns: 2.5`. */
+export function needleFound(source: string, needle: string): boolean {
+  const last = needle[needle.length - 1];
+  if (last === '"' || last === "}") return source.includes(needle);
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`${escaped}(?![\\d.])`).test(source);
 }
 
 export function unmetObligations(obligations: Obligation[], facts: StoryFacts | null): Obligation[] {
@@ -172,7 +188,7 @@ export function unmetObligations(obligations: Obligation[], facts: StoryFacts | 
     const eq = o.target.indexOf("=");
     const propName = o.target.slice(0, eq);
     const value = o.target.slice(eq + 1);
-    return !variantNeedles(propName, value).some((n) => facts.source.includes(n));
+    return !variantNeedles(propName, value).some((n) => needleFound(facts.source, n));
   });
 }
 
