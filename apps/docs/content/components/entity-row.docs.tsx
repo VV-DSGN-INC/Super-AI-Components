@@ -93,4 +93,21 @@ export const EntityRowDocs: ComponentDocs = {
     "`disabled` produces two different renderings: an interactive row becomes a real `<button disabled>`, a non-interactive one gets `aria-disabled`. Both dim to 50% opacity, which is a visual signal only — if the reason a row is unavailable matters, say it in the description rather than relying on the dimming.",
     "The row aligns its text with `text-start`, so the title and description follow `dir` along with the flex order. Anything you pass into `trailing` is your own markup and does not: physical classes there (`ml-*`, `text-left`, a `ChevronRight` glyph) will not mirror, so reach for the logical form or flip the icon at the call site.",
   ],
+  variants: {
+    none: "The spec's plain · selectable · with-badge · with-chevron · with-switch · disabled list names outcomes of what a caller puts in the slots, not a prop a caller sets: `icon` and `trailing` are either filled or empty, `onSelect` is either present or not, and `selected`/`disabled` are states rather than a design decision to choose between. One markup handles every combination, which is what lets sixteen components compose this row instead of each drawing its own.",
+  },
+  insteadUse: [
+    {
+      component: "model-picker",
+      when: "The row is choosing a model. `model-picker`'s `expanded-cards` and `node-inline` presentations already compose `entity-row` with task-signature grouping and the price/capability/runtime badge set — reimplementing that list with a bare `entity-row` drops the grouping and has to re-derive the badges by hand.",
+    },
+    {
+      component: "thread-list",
+      when: "The rows are conversation threads that need rename-in-place, a pin/delete menu behind hover, and date-bucket grouping. Entity-row's trailing slot has no inline-edit state and no menu affordance, so a hand-built thread row is missing all three the moment renaming is needed.",
+    },
+    {
+      component: "record-list",
+      when: "The rows are automation records where the primary control is an enable/disable switch and the subtitle has to read as one sentence about app cluster, draft state and last-run outcome. Record-list owns that whole combination as one row; assembling it from entity-row's icon, description and trailing slots re-derives the same layout without the sentence logic.",
+    },
+  ],
 };
