@@ -14,11 +14,15 @@ Reach for it wherever a value has a default worth returning to — a field row i
 
 ## Variants
 
-Not yet recorded.
+### scope (default: `row`)
+
+- `row`: Pick this when the reset answers for one editable value sitting inside a single field-row — the common case, and the shape the trailing `reset` slot already expects.
+- `group`: Pick this when the reset has to sit on a section header and clear every row nested beneath it at once, rather than answer for the one value beside it.
 
 ## Instead use
 
-Not yet recorded.
+- **field-row**: The caller needs the whole labelled row — label, control, unit and reset on one grid — not the reset control by itself; field-row owns that grid and already has the `reset` slot this component fills.
+- **parameter-panel**: The caller is assembling a whole stack of generation-parameter rows with one reset that clears the group from its header; parameter-panel already wires `scope="group"` into its header behind a `modified` prop, instead of the caller hand-assembling that pattern.
 
 ## Do
 

@@ -24,6 +24,32 @@
       "note": "The collapsed form: a 6px `<span aria-hidden=\"true\">` that replaces the button entirely. Same `data-state`, but no role, no name and nothing to click."
     }
   ],
+  "variants": [
+    {
+      "prop": "scope",
+      "default": "row",
+      "values": [
+        {
+          "value": "row",
+          "intent": "Pick this when the reset answers for one editable value sitting inside a single field-row — the common case, and the shape the trailing `reset` slot already expects."
+        },
+        {
+          "value": "group",
+          "intent": "Pick this when the reset has to sit on a section header and clear every row nested beneath it at once, rather than answer for the one value beside it."
+        }
+      ]
+    }
+  ],
+  "insteadUse": [
+    {
+      "component": "field-row",
+      "when": "The caller needs the whole labelled row — label, control, unit and reset on one grid — not the reset control by itself; field-row owns that grid and already has the `reset` slot this component fills."
+    },
+    {
+      "component": "parameter-panel",
+      "when": "The caller is assembling a whole stack of generation-parameter rows with one reset that clears the group from its header; parameter-panel already wires `scope=\"group\"` into its header behind a `modified` prop, instead of the caller hand-assembling that pattern."
+    }
+  ],
   "dos": [
     "Derive `state` from the value on every render — the control has no memory of its own and will never flip itself after a click.",
     "Give each reset a `label` naming the field it belongs to, so a screen-reader user can tell eleven of them apart."
