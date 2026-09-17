@@ -14,11 +14,12 @@ Reach for it when a run has a small set of named options — under about eight �
 
 ## Variants
 
-Not yet recorded.
+None: There is no design-decision prop here — `value`, `defaultValue` and `onValueChange` are selection state, not a variant, and the only style branch in the source (`data-state`) is driven by that same state rather than chosen by a caller. The spec (A4) describes a role switch between radio and checkbox for multi-select, but that never shipped — v1 is single-select only, one radiogroup and one ring, and a caller who needs two chips lit at once or a picture-driven grid does not get there by a variant of this component. They reach past it to the two components below.
 
 ## Instead use
 
-Not yet recorded.
+- **preset-grid**: More than one option needs to be selected at once, the options are pictures rather than short labels, or there are more than about eight of them. preset-grid is the same ring-selected model built on the same preview-tile frame, with a see-more affordance and the `multiple` prop — every tile switches to a checkbox — that this component's own spec describes but never shipped.
+- **filter-bar**: The chips are filters already applied to an existing list, not options being chosen from. filter-bar's chips carry their own remove button beside the toggle and the row can start and stay empty; choice-chips always shows every option and always has exactly one selected, with no way to remove a choice once it is made.
 
 ## Do
 
