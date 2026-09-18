@@ -14,11 +14,13 @@ Reach for it whenever a surface sets a named parameter: a generation panel, a pr
 
 ## Variants
 
-Not yet recorded.
+None: The row is one grid — label, control, reset, hint — precisely so a slider row and a switch row and a colour row are the same component and cannot drift apart. A variant prop would hand every row a second way to be a row, which is the disagreement the shared column grid exists to prevent; the only real choice is which control the render prop returns, and that is the caller's control, not a prop on this one.
 
 ## Instead use
 
-Not yet recorded.
+- **gen-settings-bar**: The controls sit shoulder to shoulder beside a composer or a Run button rather than stacked in a column. Gen-settings-bar is the same parameters as a docked strip with no label column, sized to be glanced at rather than read down.
+- **entity-row**: The left-hand text names the thing itself rather than a setting on it — you pick it or open it, you do not set it to a value. Entity-row's trailing slot can hold a switch too, which is where the two rows look most alike and are still not interchangeable.
+- **stat-readout**: The value is read-only metadata attached to a finished result — seed, sampler, model — not something the user sets. Stat-readout has no control slot, no id to hand a control, and no reset; it is a description list, not an input.
 
 ## Do
 

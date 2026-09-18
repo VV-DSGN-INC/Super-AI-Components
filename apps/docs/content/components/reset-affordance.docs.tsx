@@ -82,4 +82,32 @@ export const ResetAffordanceDocs: ComponentDocs = {
     "`onReset` is a plain `() => void` and fires synchronously. There is no busy or pending affordance, so if your reset round-trips to a server, hold your own flag and pass `disabled` yourself while it is in flight.",
     "The `collapsed` branch returns before the prop spread, so anything you pass through — `id`, `title`, extra `data-*`, a click handler — is honoured on the button and silently dropped on the dot. Do not rely on a pass-through surviving the collapse.",
   ],
+  variants: [
+    {
+      prop: "scope",
+      default: "row",
+      values: [
+        {
+          value: "row",
+          intent:
+            "Pick this when the reset answers for one editable value sitting inside a single field-row — the common case, and the shape the trailing `reset` slot already expects.",
+        },
+        {
+          value: "group",
+          intent:
+            "Pick this when the reset has to sit on a section header and clear every row nested beneath it at once, rather than answer for the one value beside it.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "field-row",
+      when: "The caller needs the whole labelled row — label, control, unit and reset on one grid — not the reset control by itself; field-row owns that grid and already has the `reset` slot this component fills.",
+    },
+    {
+      component: "parameter-panel",
+      when: 'The caller is assembling a whole stack of generation-parameter rows with one reset that clears the group from its header; parameter-panel already wires `scope="group"` into its header behind a `modified` prop, instead of the caller hand-assembling that pattern.',
+    },
+  ],
 };

@@ -38,7 +38,7 @@ type Story = StoryObj<typeof ResetAffordance>;
  * turns off.
  */
 export const Modified: Story = {
-  args: { state: "modified" },
+  args: { state: "modified", scope: "row" },
 };
 
 /**

@@ -102,4 +102,17 @@ export const FilterBarDocs: ComponentDocs = {
     'There is no overflow affordance and no maxVisible: the spec\'s "+3" collapse is not implemented, and the bar has no scroll container either. However many chips you render is how many lines the row takes, which at 375px is the whole screen — count them yourself before you hand them over.',
     "Nothing here enforces a selection rule. Each chip is an independent toggle with its own aria-pressed, so a single-select category row (the shape O2 `artifact-shell` uses) is something your handler enforces, not something the bar provides.",
   ],
+  variants: {
+    none: "Every chip in the row renders one way — a pill, with a sibling remove button when the facet is applied — because a row that painted \"applied\" two different ways would ask a reader to learn which one is real. The one thing that changes a chip's shape, `onRemove`, is not a caller's design choice between surfaces; it is dictated by whether the facet is currently applied, which is state the caller already tracks, not a size or tone to pick between.",
+  },
+  insteadUse: [
+    {
+      component: "filter-panel",
+      when: "The facet list needs counts, groups, or has grown past roughly six. Filter-bar has no overflow affordance and no scroll container — it wraps and grows downward over the content it filters — while filter-panel is the faceted rail this component's own usage note points to once the row stops being enough.",
+    },
+    {
+      component: "choice-chips",
+      when: "The row is one mutually exclusive choice rather than a set of independently applied filters. Choice-chips is a real radiogroup of real radios, with the selection in the accessibility tree, while filter-bar enforces no selection rule at all and renders every chip as its own independent aria-pressed toggle.",
+    },
+  ],
 };

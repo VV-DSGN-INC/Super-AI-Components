@@ -81,4 +81,21 @@ export const GenSettingsBarDocs: ComponentDocs = {
     'Values that open with a symbol read differently right-to-left. A batch count written as "×3" starts with a bidi-neutral character, which takes the paragraph direction and swaps to the far side of the digit, so it renders as "3×" in an RTL locale. The component never sees the value and cannot fix it — wrap such a value in dir="ltr", or write it as words.',
     "The strip paints a tinted surface and sets its own foreground because muted text on a muted fill does not clear 4.5:1 in this token set. If you override `className` with a background of your own, you are changing the pairing the component solved for — rebind the token rather than restyling the segments, because composed children carry their own muted classes and a slot-level override cannot reach them.",
   ],
+  variants: {
+    none: "Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec sketched three presentations — inline, compact, node-docked — but none of them became a caller-chosen axis on this component: what shipped is one row of plain buttons plus a single `disabled` flag that locks them all through context. Density and shape are decided by what a caller passes as `children` and by the surface that hosts the bar — media-prompt-bar collapses its own settings slot under its own `presentation` prop, not under anything declared here — so there is no design decision left on this component for an axis to record.",
+  },
+  insteadUse: [
+    {
+      component: "filter-bar",
+      when: "The segments would narrow something already rendered on screen — a library, a result grid — rather than configure a run that has not started yet. Filter-bar owns the applied/unapplied state and the clear-all affordance this strip deliberately lacks, which is why the usage note and the strip's own `StripUsedToNarrowAList` dont both point there instead.",
+    },
+    {
+      component: "field-row",
+      when: "A parameter needs a label, a hint or a reset beside it to be understood on its own. A `GenSettingsItem` is a bare button whose entire accessible name is its children, with no slot for any of those — field-row is the labelled row a parameter graduates to once a bare value stops being self-explanatory.",
+    },
+    {
+      component: "model-picker",
+      when: "The segment being built is itself the control that changes which model runs, not a value shown beside the prompt. A `GenSettingsItem` has no value API and no grouping to offer it, which is why model-picker's own docs call out reaching for its `node-inline` presentation there instead of a plain settings-bar button.",
+    },
+  ],
 };

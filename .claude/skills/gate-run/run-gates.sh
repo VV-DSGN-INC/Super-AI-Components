@@ -25,7 +25,10 @@ run "check:contract" pnpm check:contract
 run "test"           pnpm test
 run "build:registry" pnpm build:registry
 run "build"          pnpm build
-run "playwright smoke" pnpm --filter docs exec playwright test
+# CI=1 so playwright.config.ts never reuses a server already on port 3100.
+# Locally that server has been a sibling worktree's, and the gate then
+# reported 132 green against the wrong build (CONTINUE.md §8, wave 2).
+run "playwright smoke" env CI=1 pnpm --filter docs exec playwright test
 
 # Not optional: Vite's dep optimiser invalidates mid-run after components are
 # added and produces a wall of fake failures that look like a11y errors but say

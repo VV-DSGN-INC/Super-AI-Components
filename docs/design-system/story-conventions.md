@@ -410,7 +410,8 @@ chosen.
   a JSDoc description above every declared-state export; from the emitted
   contract (`registry/super-ai/<name>.meta.json`), every declared variant
   value rendered as `prop="value"` or passed as `prop: "value"` in some
-  story — and compares the unmet set with `story-coverage.baseline.json`,
+  story, or, for an integer-literal value, as `prop={value}` or `prop: value`
+  — and compares the unmet set with `story-coverage.baseline.json`,
   the debt committed at adoption. Both directions fail: a newly unmet
   obligation is a regression, and a resolved one still in the baseline must
   be locked in with `pnpm story-coverage:baseline` (from `apps/docs`), which

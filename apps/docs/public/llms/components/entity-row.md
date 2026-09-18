@@ -14,11 +14,13 @@ Reach for it for any list where each line names a thing — a skill, a model, a 
 
 ## Variants
 
-Not yet recorded.
+None: The spec's plain · selectable · with-badge · with-chevron · with-switch · disabled list names outcomes of what a caller puts in the slots, not a prop a caller sets: `icon` and `trailing` are either filled or empty, `onSelect` is either present or not, and `selected`/`disabled` are states rather than a design decision to choose between. One markup handles every combination, which is what lets sixteen components compose this row instead of each drawing its own.
 
 ## Instead use
 
-Not yet recorded.
+- **model-picker**: The row is choosing a model. `model-picker`'s `expanded-cards` and `node-inline` presentations already compose `entity-row` with task-signature grouping and the price/capability/runtime badge set — reimplementing that list with a bare `entity-row` drops the grouping and has to re-derive the badges by hand.
+- **thread-list**: The rows are conversation threads that need rename-in-place, a pin/delete menu behind hover, and date-bucket grouping. Entity-row's trailing slot has no inline-edit state and no menu affordance, so a hand-built thread row is missing all three the moment renaming is needed.
+- **record-list**: The rows are automation records where the primary control is an enable/disable switch and the subtitle has to read as one sentence about app cluster, draft state and last-run outcome. Record-list owns that whole combination as one row; assembling it from entity-row's icon, description and trailing slots re-derives the same layout without the sentence logic.
 
 ## Do
 

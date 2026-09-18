@@ -14,11 +14,12 @@ Reach for it above a library, grid or list that has a handful of facets — roug
 
 ## Variants
 
-Not yet recorded.
+None: Every chip in the row renders one way — a pill, with a sibling remove button when the facet is applied — because a row that painted "applied" two different ways would ask a reader to learn which one is real. The one thing that changes a chip's shape, `onRemove`, is not a caller's design choice between surfaces; it is dictated by whether the facet is currently applied, which is state the caller already tracks, not a size or tone to pick between.
 
 ## Instead use
 
-Not yet recorded.
+- **filter-panel**: The facet list needs counts, groups, or has grown past roughly six. Filter-bar has no overflow affordance and no scroll container — it wraps and grows downward over the content it filters — while filter-panel is the faceted rail this component's own usage note points to once the row stops being enough.
+- **choice-chips**: The row is one mutually exclusive choice rather than a set of independently applied filters. Choice-chips is a real radiogroup of real radios, with the selection in the accessibility tree, while filter-bar enforces no selection rule at all and renders every chip as its own independent aria-pressed toggle.
 
 ## Do
 

@@ -350,16 +350,26 @@ function ControlledPresetGrid() {
     <div className="flex w-full flex-col gap-2">
       <div className="grid grid-cols-3 gap-3">
         <PreviewTile
+          aspect="square"
+          selectMode="toggle"
           label="Neon noir"
           selected={selected === "neon-noir"}
           onSelect={() => request("neon-noir")}
         >
           <Fill className="bg-primary" />
         </PreviewTile>
-        <PreviewTile label="Pastel" selected={selected === "pastel"} onSelect={() => request("pastel")}>
+        <PreviewTile
+          aspect="square"
+          selectMode="toggle"
+          label="Pastel"
+          selected={selected === "pastel"}
+          onSelect={() => request("pastel")}
+        >
           <Fill className="bg-secondary" />
         </PreviewTile>
         <PreviewTile
+          aspect="square"
+          selectMode="toggle"
           label="Cinematic 4K"
           selected={selected === "cinematic-4k"}
           onSelect={() => request("cinematic-4k")}
@@ -385,7 +395,10 @@ function ControlledPresetGrid() {
  * to close over the item's identity itself (`() => request(preset.id)` above).
  * The toggle-semantics half is now fixed: `selectMode="open"` drops
  * `aria-pressed` for a tile that navigates rather than toggles. This story
- * keeps the default, because a picker *is* a toggle set.
+ * passes `selectMode="toggle"` explicitly rather than leaning on the default,
+ * because a picker *is* a toggle set — the same `aspect="square"` the real
+ * `preset-grid` call site uses, for a preset swatch with no fixed shape of
+ * its own.
  */
 export const Controlled: Story = {
   render: () => <ControlledPresetGrid />,
@@ -465,14 +478,31 @@ export const EmptyLabel: Story = {
  *
  * No prop names these buttons. The frame points at the label element that was
  * already there.
+ *
+ * Both tiles also pass `selectMode="open"`, completing the pair `recent-grid`
+ * actually ships: opening a project navigates rather than toggling a pressed
+ * state, so `aria-pressed` would claim something that stops being true the
+ * moment the caller navigates away.
  */
 export const BelowLabelInteractive: Story = {
   render: () => (
     <div className="grid grid-cols-2 gap-3">
-      <PreviewTile aspect="video" label="Q3 Launch Trailer" labelPlacement="below" onSelect={() => {}}>
+      <PreviewTile
+        aspect="video"
+        label="Q3 Launch Trailer"
+        labelPlacement="below"
+        selectMode="open"
+        onSelect={() => {}}
+      >
         <Fill className="bg-primary" />
       </PreviewTile>
-      <PreviewTile aspect="video" label="Brand Explainer" labelPlacement="below" onSelect={() => {}}>
+      <PreviewTile
+        aspect="video"
+        label="Brand Explainer"
+        labelPlacement="below"
+        selectMode="open"
+        onSelect={() => {}}
+      >
         <Fill className="bg-secondary" />
       </PreviewTile>
     </div>
@@ -594,15 +624,29 @@ export const Mobile: Story = {
  * your own caption row under it is the failure mode all three of these exist
  * to prevent, because a caption the tile does not own is what makes one cell
  * taller than its neighbours.
+ *
+ * The first section also widens to three shapes on purpose, not just one.
+ * `aspect` is a caller decision the same way the caption is — `result-card`
+ * and `tool-panel` both forward whatever their own caller hands them rather
+ * than committing to one ratio — and a general library is exactly where that
+ * shows up: a phone-shot portrait next to a widescreen export next to the
+ * square generation everything defaults to, all in the same grid, because
+ * nothing about the frame cares what shape its neighbour is.
  */
 export const Boundary: Story = {
   render: () => (
     <div className="flex w-[32rem] max-w-full flex-col gap-6">
       <section className="flex flex-col gap-2">
         <p className="text-foreground text-xs font-medium">Preview tile — the frame and nothing else</p>
-        <div className="w-40">
+        <div className="grid grid-cols-3 gap-2">
           <PreviewTile aspect="video" label="Q3 Launch Trailer" labelPlacement="below" onSelect={() => {}}>
             <Fill className="bg-primary" />
+          </PreviewTile>
+          <PreviewTile aspect="portrait" label="Poster upload" labelPlacement="below" onSelect={() => {}}>
+            <Fill className="bg-secondary" />
+          </PreviewTile>
+          <PreviewTile aspect="wide" label="Hero banner" labelPlacement="below" onSelect={() => {}}>
+            <Fill className="bg-accent" />
           </PreviewTile>
         </div>
       </section>

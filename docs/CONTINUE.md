@@ -2145,7 +2145,7 @@ before that one line.
 The mechanism landed 2026-09-14 with three control contracts, one per layer:
 `kbd` (no axis, records why), `mode-tabs` (a three-value axis) and `chat-shell`
 (a block, which varies its parts and never itself).
-`apps/docs/scripts/lib/contract-coverage.baseline.json` stands at **103**
+`apps/docs/scripts/lib/contract-coverage.baseline.json` stands at **93**
 items whose `variants` or `insteadUse` is still unwritten, and it may only
 shrink.
 
@@ -2158,7 +2158,33 @@ pass, and `empty-state` declared `{ none }` for a `size` union that is a real
 axis with story needles already in place. The wave also found a gate defect —
 see below.
 
-The remaining 113 are authored in waves of about twelve, one agent per item in
+**Wave 2, 2026-09-17 — ten items, baseline 103 → 93.** `date-section`,
+`choice-chips`, `filter-bar`, `field-row`, `gen-settings-bar`, `preview-tile`,
+`entity-row`, `stat-readout`, `reset-affordance`, `suggestion-chips`: family A's
+remainder plus one from C. Seven record `{ none }` with the design reason;
+three carry real axes (`reset-affordance`'s `scope`, `preview-tile`'s `aspect`,
+`labelPlacement` and `selectMode`, and `stat-readout`'s numeric `columns`). Two
+results were overruled on review. `preview-tile` declared two of `aspect`'s
+four values because the other two had no registry caller, when `result-card`
+and `tool-panel` pass the prop straight through and a consumer's caller
+chooses — an axis declares every value of its union. `stat-readout` declared
+`{ none }` for `columns: 1 | 2` because the story needle could only spell a
+quoted string, which was a gate defect rather than a judgment: `variantNeedles`
+now also accepts an integer literal as `prop={2}` or `prop: 2`, digit-bounded so
+`2` never matches `20`, with the counter-case in its test. Two protocol notes
+for wave 3. An agent's `pnpm test` fails on the coverage ratchet's stale-entry
+check as soon as its item has both fields, so it runs
+`pnpm contract-coverage:baseline` locally and leaves the file uncommitted for
+the integrator. And agents commit only their four per-item files, not their
+lines of `components.toon` or `llms-full.txt`: ten cherry-picks of adjacent rows
+conflict, and one emit after the merge produces the same tree. And one trap
+that bit the gate run itself: `playwright.config.ts` reuses any server already
+on port 3100 outside CI, and that server was a sibling worktree's, so the smoke
+gate reported one false red on the home page and 132 false greens on component
+pages, all against the wrong build. `run-gates.sh` now sets `CI=1` for that
+step so a held port fails loudly instead of testing someone else's tree.
+
+The remaining 93 are authored in waves of about twelve, one agent per item in
 its own worktree per §3.4. An agent appends the two fields to its docs module,
 adds a story line for any declared variant value no story renders, runs `pnpm
 contract:emit` and `pnpm test` in `apps/docs`, and commits its module, its

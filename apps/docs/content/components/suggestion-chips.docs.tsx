@@ -85,4 +85,17 @@ export const SuggestionChipsDocs: ComponentDocs = {
     "SuggestionChips doesn't compute overflow for you — there's no maxVisible prop and no ResizeObserver watching the row's width. You decide how many SuggestionChips to render and append SuggestionChipsOverflow yourself, the same manual-count pattern as ContextChipOverflow.",
     "The leading icon/thumbnail is always aria-hidden — the chip's accessible name comes from `suggestion` alone. An icon-only chip with placeholder or empty suggestion text ships an unlabeled button.",
   ],
+  variants: {
+    none: "SuggestionChip carries two independent optional slots, `icon` and `thumbnail`, not a named look a caller declares — you pass whichever leading node you have, or neither, and `thumbnail` wins when both arrive. The four states the manifest lists (plain, with-icon, with-thumbnail, overflow-link) are what those presence checks produce, not a value on one prop, and `overflow-link` is a separate component, `SuggestionChipsOverflow`, appended to the row rather than a mode `SuggestionChip` switches into. There is nothing here shaped like `size` or `presentation` for a caller to choose between.",
+  },
+  insteadUse: [
+    {
+      component: "choice-chips",
+      when: "The row needs to hold a selected value — aspect ratio, batch size, quality tier — rather than fire a fill-the-composer action. Choice chips carry radio/checkbox semantics and a selected state; suggestion chips have no `value` and nothing selected, only an `onSelect` that reports what was clicked.",
+    },
+    {
+      component: "context-chips",
+      when: "The chips stand for something already attached — a file, a text selection — that the user might remove, rather than a prompt they might try. Context chips are dismissible handles on existing state; a suggestion chip can be disabled but never removed, because there is nothing attached to remove.",
+    },
+  ],
 };

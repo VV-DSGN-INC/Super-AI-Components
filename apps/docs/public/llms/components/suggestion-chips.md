@@ -14,11 +14,12 @@ Reach for it above or below a composer when there's a short list of things worth
 
 ## Variants
 
-Not yet recorded.
+None: SuggestionChip carries two independent optional slots, `icon` and `thumbnail`, not a named look a caller declares — you pass whichever leading node you have, or neither, and `thumbnail` wins when both arrive. The four states the manifest lists (plain, with-icon, with-thumbnail, overflow-link) are what those presence checks produce, not a value on one prop, and `overflow-link` is a separate component, `SuggestionChipsOverflow`, appended to the row rather than a mode `SuggestionChip` switches into. There is nothing here shaped like `size` or `presentation` for a caller to choose between.
 
 ## Instead use
 
-Not yet recorded.
+- **choice-chips**: The row needs to hold a selected value — aspect ratio, batch size, quality tier — rather than fire a fill-the-composer action. Choice chips carry radio/checkbox semantics and a selected state; suggestion chips have no `value` and nothing selected, only an `onSelect` that reports what was clicked.
+- **context-chips**: The chips stand for something already attached — a file, a text selection — that the user might remove, rather than a prompt they might try. Context chips are dismissible handles on existing state; a suggestion chip can be disabled but never removed, because there is nothing attached to remove.
 
 ## Do
 

@@ -14,11 +14,16 @@ Reach for it wherever a result carries read-only metadata a user might need to r
 
 ## Variants
 
-Not yet recorded.
+### columns (default: `2`)
+
+- `2`: The surface is wide enough for a reader to scan a label and its value on the same line, and the readout is carrying enough rows that stacking them would push the later ones out of view — a params pane, a run inspector's metadata tab, anywhere the two-column form is the point.
+- `1`: The surface is too narrow for a label column to sit beside the value without crowding it — a sidebar rail, an inspector column — which is exactly the situation the usage note's "drop to columns={1}" advice is for.
 
 ## Instead use
 
-Not yet recorded.
+- **field-row**: The value is editable rather than reported — field-row pairs a label with a live control, and an optional reset, on the same label/value grid this component only renders read-only.
+- **slot-summary**: A row needs to carry where its value came from and a way to correct it — slot-summary marks each row stated, inferred, defaulted or missing and ships the correction control this component has no vocabulary for.
+- **quota-meter**: The number is measured against a limit rather than simply reported — quota-meter derives its own near-limit and over-limit states from a used/allowed pair, the "x of y" shape this component's own usage note already says to route elsewhere.
 
 ## Do
 
