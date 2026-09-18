@@ -350,6 +350,15 @@ export const ReducedMotion: Story = {
  * place the highlighted state is put in front of axe. The call-site override in
  * `thread-list.tsx` makes it solid rather than tinted, 4.77:1 in light and
  * 6.85:1 in dark.
+ *
+ * **Opened in a background tab it looks like it is not working, and it is.**
+ * `:focus` only matches while `document.hasFocus()`, so a canvas that does not
+ * hold the window's focus paints the row at rest and the fill disappears —
+ * `document.activeElement` is still the row. The runner focuses the page, so
+ * the assertion and the axe scan both see the fill. Confirm rather than assume:
+ * drop the `className` off `thread-list.tsx`'s Delete item and this story fails
+ * on `color-contrast` while the other thirteen pass. A pin that cannot be made
+ * to fail is not pinning anything.
  */
 export const DestructiveHighlight: Story = {
   render: () => (
