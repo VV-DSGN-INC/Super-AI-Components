@@ -25,7 +25,11 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   | `01.3` | an alias points at a semantic token, never a literal            | six `--radius-*` aliases carry literals, which is how stock shadcn ships its radius scale.                                                                               |
   | `01.6` | every token reaches a consumer                                  | eight `--sidebar-*` tokens are declared and read by nothing in `registry/super-ai/**`.                                                                                   |
   | `09.1` | the instructions file describes both loops and the human gate   | `CLAUDE.md` is deliberately a map (see its own second heading); the loops live in `CONTINUE.md` §3.                                                                      |
-  | `09.3` | a review-round budget is written down                           | the sibling repos carry one; this repo has never written its own.                                                                                                        |
+
+- **`09.3` closed 2026-09-18.** The review-round budget is
+  `docs/design-system/review-rounds.md`, with a one-line pointer under
+  Conventions in `CLAUDE.md` because the probe reads only that file. Four
+  claims stay unmet, so `highestContiguous` is still **00**.
 
 - **Local changes:** `@types/node` added to devDependencies (its typecheck
   fails without it; found while verifying the archive).
