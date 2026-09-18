@@ -173,6 +173,8 @@ export interface GateRow {
   ledgers?: string[];
   /** What this gate is known not to see. Printed on the page. */
   blindSpot?: string;
+  /** True for the steps that exercise what a consumer installs. */
+  product?: true;
 }
 
 export const GATE_ROWS: GateRow[];
@@ -239,7 +241,7 @@ export type PageBlock =
   | { kind: "figure"; figure: FigureId; caption: string }
   | { kind: "gates" }
   | { kind: "derived" }
-  | { kind: "links"; items: { label: string; href: string }[] };
+  | { kind: "links"; items: { label: string; href: string; storybook?: string }[] };
 
 export interface PageSection {
   id: string;
@@ -251,6 +253,8 @@ export interface SystemPage {
   slug: "harness" | "architecture";
   title: string;
   description: string;
+  /** True until Nick has done his pass. The renderer prints a draft note. */
+  draft?: true;
   lede: string[];
   sections: PageSection[];
 }
@@ -466,3 +470,22 @@ Each is a fact to measure, with a fallback already chosen.
 - Open decision from `CLAUDE.md` (overlap with `@weeeha/ui`): these pages
   describe one repo each, so ownership does not collide. The PR body says which
   parts are portable and which schema they assume.
+
+## 11. Amendments made while planning
+
+Writing the plan meant measuring section 9's open items. Where this section and
+an earlier one disagree, this section wins. The plan carries the exact code.
+
+| #   | amendment                                                                                                                                                                               | why                                                                                                                           |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 1   | `GateRow` gains `product?: true`, and `SystemPage` gains `draft?: true`. Both are already shown in section 4                                                                            | the CI pipeline figure marks the steps that exercise the product, and unreviewed prose must be visible as a draft on the page |
+| 2   | `links` items gain `storybook?: string`. The renderer takes a `surface` and a `link` render prop and imports neither `next/link` nor anything from Storybook                            | a route path means nothing inside Storybook, and one renderer has to bundle on both surfaces                                  |
+| 3   | The figures' words live in `content/system/figures.ts`, and `pages.test.ts` scans them, the roster's sentences and the derived rows' notes as prose                                     | they are printed on a public page, so the writing rules and the no-digits rule apply to them too                              |
+| 4   | The roster and the derived rows render as responsive lists. The file names in section 4.6 stand. Two files join them: `figure-frame.tsx` and `figures.tsx`, the figure registry         | their cells hold sentences and must fit a 375px column                                                                        |
+| 5   | The blocks token check runs the real `rulecheck.mjs` CLI with `DS_RULES_DIR` pointing at copies of the rule JSON whose scope is replaced. No rule on disk changes                       | measured: `scan()` filters explicit files by `detect.scope`, so the fallback in section 9 does not apply and this is stronger |
+| 6   | The routes live in an `app/(system)/` route group with its own layout. The docs chrome moves from `app/components/layout.tsx` into `components/docs-shell.tsx`, and both layouts use it | measured: the shell is mounted for `/components/*` only                                                                       |
+| 7   | The landing page gains two links                                                                                                                                                        | measured: the sidebar is hidden below `md`, so a phone had no way in                                                          |
+| 8   | `js-yaml` types come from a local declaration, `scripts/lib/js-yaml.d.ts`                                                                                                               | measured: `@types/js-yaml` is not in the offline store                                                                        |
+| 9   | `facts.json` is listed in `.prettierignore`. Storybook gains an `@source` line for `components/system`, two aliases with matching tsconfig `paths`, and two `storySort` entries         | the house rule is that an emitter owns its file's shape, and Tailwind in Storybook does not scan the docs app on its own      |
+| 10  | `GENERATED_PATHS` and `DIGIT_ALLOWLIST` both start empty, and an entry nothing uses fails                                                                                               | the drafted prose needed neither, and a dead allowlist entry is the same rot the pages argue against                          |
+| 11  | Figure stories live in `stories/system/`. Measured: the contract gates map catalog names to `stories/super-ai/` only                                                                    | section 9's second question, answered                                                                                         |
