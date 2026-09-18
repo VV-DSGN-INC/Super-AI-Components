@@ -332,6 +332,58 @@ export const ReducedMotion: Story = {
   },
 };
 
+/**
+ * The destructive row while it is highlighted — the state no other story leaves
+ * on screen, and the reason this defect shipped.
+ *
+ * `DropdownMenuItem`'s `variant="destructive"` paints
+ * `bg-destructive/10` behind `text-destructive` on focus, which axe measures at
+ * 4.0:1 against a 4.5:1 minimum. The row is correct at rest and wrong only
+ * while highlighted, and axe scans the DOM once the play function returns — by
+ * which point every other story here has dismissed the menu. The failure was
+ * therefore structurally invisible to the gate, and reached CI only as an
+ * intermittent red when a menu happened to still be fading out as the scan
+ * began (`DeleteConfirm`, run 35377135217). `a11y-baseline.md` names this gap
+ * for `workspace-switcher`; this is an instance of it that actually bit.
+ *
+ * So this story ends with Delete still highlighted, deliberately: it is the one
+ * place the highlighted state is put in front of axe. The call-site override in
+ * `thread-list.tsx` makes it solid rather than tinted, 4.77:1 in light and
+ * 6.85:1 in dark.
+ */
+export const DestructiveHighlight: Story = {
+  render: () => (
+    <Column>
+      <ThreadList aria-label="Conversations">
+        <ThreadListSection label="Today">
+          {TODAY.slice(0, 2).map((thread) => (
+            <ThreadListItem key={thread.id} id={thread.id} title={thread.title} />
+          ))}
+        </ThreadListSection>
+      </ThreadList>
+    </Column>
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body);
+
+    await userEvent.click(actionsTrigger(rowsOf(canvasElement)[0]));
+    const del = await body.findByRole("menuitem", { name: "Delete" });
+
+    // Walked, not focused directly: the primitive keys its highlighted styling
+    // on `focus:`, and arrowing there is what a keyboard user does. The loop
+    // rather than a fixed count because whether opening by click pre-highlights
+    // the first item is the primitive's business, not this story's.
+    for (let i = 0; i < 4 && document.activeElement !== del; i += 1) {
+      await userEvent.keyboard("{ArrowDown}");
+    }
+    await expect(del).toHaveFocus();
+
+    // No menu-dismissal wait here, unlike every other story in this file. That
+    // wait is the thing that hid the bug; the scan has to see this row.
+    await expect(body.getByRole("menu")).toBeInTheDocument();
+  },
+};
+
 export const RTL: Story = {
   render: () => (
     <div dir="rtl">

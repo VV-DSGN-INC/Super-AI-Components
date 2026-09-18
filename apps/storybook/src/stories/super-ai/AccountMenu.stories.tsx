@@ -315,7 +315,9 @@ export const ReducedMotion: Story = {
  *    of `ArrowDown` visits every row exactly once and wraps to the first —
  *    Base UI's `loopFocus` default, asserted rather than assumed.
  * 3. Every row is visibly focused. The treatment is a filled row
- *    (`focus:bg-accent`, or `focus:bg-destructive/10` on sign-out), **not** a
+ *    (`focus:bg-accent`, or a solid `focus:bg-destructive` on sign-out: the
+ *    call site restates that over the primitive's `bg-destructive/10`, which
+ *    measures 4.0:1 behind `text-destructive`), **not** a
  *    ring: `DropdownMenuItem` sets `outline-hidden`, which is a *transparent*
  *    2px outline, so the exemplar's `outlineStyle !== "none"` test would pass on
  *    a completely unstyled row. The fill is the treatment, so the fill is what
