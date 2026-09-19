@@ -2326,8 +2326,11 @@ Create `apps/docs/components/system/figure-frame.tsx`:
 ```tsx
 import * as React from "react";
 
-/** Every figure on the system pages: a card surface plus a caption. Real text
- *  in DOM reading order, so a screen reader reads the figure as written. */
+/** Every figure on the system pages: a hairline above and below, then a
+ *  caption. That is the same device the roster and the derived list use, so the
+ *  page has one way of setting a block apart, and a figure never nests a box
+ *  inside a box. Real text in DOM reading order, so a screen reader reads the
+ *  figure as written. */
 export function FigureFrame({
   id,
   caption,
@@ -2339,7 +2342,7 @@ export function FigureFrame({
 }) {
   return (
     <figure data-slot="system-figure" data-figure={id} className="space-y-3">
-      <div className="bg-card text-card-foreground rounded-lg border p-4 sm:p-6">{children}</div>
+      <div className="border-y py-6">{children}</div>
       <figcaption className="text-muted-foreground text-sm">{caption}</figcaption>
     </figure>
   );
@@ -2355,16 +2358,20 @@ import { InlineProse } from "@/components/component-docs";
 import { HARNESS_PARTS } from "@/content/system/figures";
 import { resolveFacts, type SystemFacts } from "@/lib/system-page";
 
-/** The four parts of the harness, each with what this repository puts in it. */
+/** The four parts of the harness, each with what this repository puts in it.
+ *  Each cell is titled the way a roster row is: a muted number, then the name
+ *  at the medium weight. The definition is the muted line. The specifics, which
+ *  are the point, stay in the foreground colour. */
 export function HarnessParts({ facts }: { facts: SystemFacts }) {
   return (
-    <ol className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+    <ol className="grid gap-x-8 gap-y-8 sm:grid-cols-2">
       {HARNESS_PARTS.map((part, index) => (
-        <li key={part.id} className="space-y-2 border-t pt-3">
-          <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-            <span className="tabular-nums">{index + 1}</span> · {part.label}
+        <li key={part.id} className="space-y-2">
+          <p className="font-medium">
+            <span className="text-muted-foreground mr-2 tabular-nums">{index + 1}</span>
+            {part.label}
           </p>
-          <p className="font-medium">{part.job}</p>
+          <p className="text-muted-foreground text-sm leading-6">{part.job}</p>
           <ul className="space-y-1.5 text-sm leading-6">
             {part.items.map((item) => (
               <li key={item}>
@@ -2413,7 +2420,7 @@ const CODE = "bg-muted text-foreground rounded px-1 py-0.5 font-mono text-xs";
  *  two columns collapse to one on a narrow screen. */
 export function GatesTable({ rows }: { rows: GateRow[] }) {
   return (
-    <ol data-slot="system-gates" className="divide-y border-y">
+    <ol data-slot="system-gates" className="divide-y border-y wrap-anywhere">
       {rows.map((row, index) => (
         <li key={row.ciStep} className="grid gap-x-8 gap-y-2 py-4 md:grid-cols-[13rem_1fr]">
           <div className="space-y-1.5">
@@ -2477,7 +2484,7 @@ const CODE = "bg-muted text-foreground rounded px-1 py-0.5 font-mono text-xs";
 /** What is generated from what. A list, for the same reason GatesTable is. */
 export function DerivedTable({ rows }: { rows: DerivedRow[] }) {
   return (
-    <ul data-slot="system-derived" className="divide-y border-y">
+    <ul data-slot="system-derived" className="divide-y border-y wrap-anywhere">
       {rows.map((row) => (
         <li key={row.source} className="space-y-2 py-4 text-sm leading-6">
           <p>
@@ -2628,10 +2635,10 @@ export function SystemPageView({ page, facts, surface = "next", link = plainLink
   return (
     <article
       data-slot="system-page"
-      className="text-foreground mx-auto w-full max-w-3xl space-y-10 px-6 py-10 [overflow-wrap:anywhere]"
+      className="text-foreground mx-auto w-full max-w-3xl space-y-10 px-6 py-10 wrap-anywhere"
     >
       <header className="space-y-4">
-        <h1 data-slot="system-page-title" className="text-3xl font-semibold tracking-tight">
+        <h1 data-slot="system-page-title" className="text-3xl font-bold">
           {page.title}
         </h1>
         {page.draft ? (
@@ -2652,7 +2659,7 @@ export function SystemPageView({ page, facts, surface = "next", link = plainLink
           aria-labelledby={`${section.id}-heading`}
           className="space-y-4"
         >
-          <h2 id={`${section.id}-heading`} className="text-xl font-semibold tracking-tight">
+          <h2 id={`${section.id}-heading`} className="text-lg font-semibold">
             <span className="text-muted-foreground mr-2 tabular-nums">{index + 1}</span>
             {section.heading}
           </h2>
@@ -2880,7 +2887,7 @@ pnpm --filter docs exec vitest run scripts/lib/story-coverage.test.ts
 
 Expected: the six stories pass with no axe violation and no sideways scroll. `check:contract` and the story-coverage test stay green, because neither looks outside `stories/super-ai/`.
 
-If a narrow story fails on sideways scroll, the long `code` chips are the usual cause. Add `[overflow-wrap:anywhere]` to the failing list's root class string and rerun.
+If a narrow story fails on sideways scroll, the long `code` chips are the usual cause. Add `wrap-anywhere` to the failing list's root class string and rerun.
 
 If `check:contract` or story coverage objects to the new file, move it to `apps/storybook/src/system/SystemFigures.stories.tsx`, record the reason in its header comment, and rerun.
 
@@ -2987,13 +2994,14 @@ import { resolveFacts, type SystemFacts } from "@/lib/system-page";
 /** What an agent in a consumer's repository meets, in retrieval order. */
 export function ConsumerSurfaces({ facts }: { facts: SystemFacts }) {
   return (
-    <ol className="grid gap-x-8 gap-y-6 md:grid-cols-3">
+    <ol className="grid gap-x-8 gap-y-8 md:grid-cols-3">
       {CONSUMER_SURFACES.map((surface, index) => (
-        <li key={surface.id} className="space-y-2 border-t pt-3">
-          <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-            <span className="tabular-nums">{index + 1}</span> · {surface.when}
+        <li key={surface.id} className="space-y-2">
+          <p className="font-medium">
+            <span className="text-muted-foreground mr-2 tabular-nums">{index + 1}</span>
+            {surface.label}
           </p>
-          <p className="font-medium">{surface.label}</p>
+          <p className="text-muted-foreground text-sm leading-6">{surface.when}</p>
           <p className="text-sm leading-6">
             <InlineProse text={resolveFacts(surface.what, facts)} />
           </p>
@@ -3022,12 +3030,12 @@ import { resolveFacts, type SystemFacts } from "@/lib/system-page";
  *  the audit loop drawn as what it is today: absent. */
 export function Loops({ facts }: { facts: SystemFacts }) {
   return (
-    <div className="space-y-6">
-      <div className="space-y-3">
-        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">Build loop</p>
-        <ol className="grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="space-y-8">
+      <div className="space-y-4">
+        <p className="text-muted-foreground text-sm">Build loop</p>
+        <ol className="grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
           {BUILD_LOOP.map((step, index) => (
-            <li key={step.id} className="space-y-1 border-t pt-3">
+            <li key={step.id} className="space-y-1">
               <p className="font-medium">
                 <span className="text-muted-foreground mr-2 tabular-nums">{index + 1}</span>
                 {step.label}
@@ -3042,10 +3050,11 @@ export function Loops({ facts }: { facts: SystemFacts }) {
           <InlineProse text={resolveFacts(REJECTION_EDGE, facts)} />
         </p>
       </div>
-      <div className="space-y-2 rounded-md border border-dashed p-4">
-        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-          {AUDIT_LOOP.label} · {AUDIT_LOOP.status}
-        </p>
+      {/* A dashed hairline, not a dashed box: the figure frame is already the one
+          container, and a box inside it would be a card in a card. */}
+      <div className="space-y-2 border-t border-dashed pt-6">
+        <p className="text-muted-foreground text-sm">{AUDIT_LOOP.label}</p>
+        <p className="font-medium">{AUDIT_LOOP.status}</p>
         <p className="text-sm leading-6">
           <InlineProse text={resolveFacts(AUDIT_LOOP.detail, facts)} />
         </p>
