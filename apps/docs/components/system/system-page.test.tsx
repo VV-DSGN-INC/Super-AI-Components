@@ -5,6 +5,10 @@ import { FACT_KEYS, type SystemFacts, type SystemPage } from "@/lib/system-page"
 
 import { SystemPageView } from "./system-page";
 
+import { architecturePage } from "@/content/system/architecture.page";
+import facts from "@/content/system/facts.json";
+import { harnessPage } from "@/content/system/harness.page";
+
 const FACTS = Object.fromEntries(FACT_KEYS.map((key, index) => [key, index + 1])) as SystemFacts;
 
 const PAGE: SystemPage = {
@@ -74,4 +78,23 @@ describe("SystemPageView", () => {
     render(<SystemPageView page={PAGE} facts={FACTS} surface="storybook" />);
     expect(screen.getByRole("link", { name: "Elsewhere" })).toHaveAttribute("href", "?path=/docs/x--docs");
   });
+});
+
+describe("the real pages", () => {
+  for (const page of [harnessPage, architecturePage]) {
+    it(`${page.slug} renders every section and every figure`, () => {
+      const { container } = render(<SystemPageView page={page} facts={facts} />);
+      expect(container.querySelectorAll("h1")).toHaveLength(1);
+      for (const section of page.sections) {
+        expect(container.querySelector(`#${section.id}-heading`), section.id).not.toBeNull();
+      }
+      const figures = page.sections
+        .flatMap((section) => section.blocks)
+        .filter((block) => block.kind === "figure");
+      expect(container.querySelectorAll('[data-slot="system-figure"]')).toHaveLength(figures.length);
+      for (const figure of container.querySelectorAll('[data-slot="system-figure"]')) {
+        expect(figure.querySelector("figcaption")?.textContent?.length).toBeGreaterThan(0);
+      }
+    });
+  }
 });

@@ -1,10 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect } from "storybook/test";
 
+import { CiPipeline } from "@/components/system/ci-pipeline";
+import { ConsumerSurfaces } from "@/components/system/consumer-surfaces";
 import { DerivedTable } from "@/components/system/derived-table";
 import { FigureFrame } from "@/components/system/figure-frame";
 import { GatesTable } from "@/components/system/gates-table";
 import { HarnessParts } from "@/components/system/harness-parts";
+import { Loops } from "@/components/system/loops";
 import { DERIVED_ROWS } from "@/content/system/derived";
 import facts from "@/content/system/facts.json";
 import { GATE_ROWS } from "@/content/system/gates";
@@ -75,6 +78,63 @@ export const DerivedNarrow: Story = {
   render: () => (
     <Narrow>
       <DerivedTable rows={DERIVED_ROWS} />
+    </Narrow>
+  ),
+  play: noSidewaysScroll,
+};
+
+export const ConsumerSurfacesFigure: Story = {
+  render: () => (
+    <FigureFrame id="consumer-surfaces" caption="What an agent in your repository meets.">
+      <ConsumerSurfaces facts={facts} />
+    </FigureFrame>
+  ),
+};
+
+export const ConsumerSurfacesNarrow: Story = {
+  render: () => (
+    <Narrow>
+      <FigureFrame id="consumer-surfaces" caption="What an agent in your repository meets.">
+        <ConsumerSurfaces facts={facts} />
+      </FigureFrame>
+    </Narrow>
+  ),
+  play: noSidewaysScroll,
+};
+
+export const LoopsFigure: Story = {
+  render: () => (
+    <FigureFrame id="loops" caption="The build loop, and the loop that is missing.">
+      <Loops facts={facts} />
+    </FigureFrame>
+  ),
+};
+
+export const LoopsNarrow: Story = {
+  render: () => (
+    <Narrow>
+      <FigureFrame id="loops" caption="The build loop, and the loop that is missing.">
+        <Loops facts={facts} />
+      </FigureFrame>
+    </Narrow>
+  ),
+  play: noSidewaysScroll,
+};
+
+export const CiPipelineFigure: Story = {
+  render: () => (
+    <FigureFrame id="ci-pipeline" caption="The steps in the order they run.">
+      <CiPipeline facts={facts} />
+    </FigureFrame>
+  ),
+};
+
+export const CiPipelineNarrow: Story = {
+  render: () => (
+    <Narrow>
+      <FigureFrame id="ci-pipeline" caption="The steps in the order they run.">
+        <CiPipeline facts={facts} />
+      </FigureFrame>
     </Narrow>
   ),
   play: noSidewaysScroll,
