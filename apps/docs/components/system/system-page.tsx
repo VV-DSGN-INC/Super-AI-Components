@@ -108,10 +108,10 @@ export function SystemPageView({ page, facts, surface = "next", link = plainLink
   return (
     <article
       data-slot="system-page"
-      className="text-foreground mx-auto w-full max-w-3xl space-y-10 px-6 py-10 [overflow-wrap:anywhere]"
+      className="text-foreground mx-auto w-full max-w-3xl space-y-10 px-6 py-10 wrap-anywhere"
     >
       <header className="space-y-4">
-        <h1 data-slot="system-page-title" className="text-3xl font-semibold tracking-tight">
+        <h1 data-slot="system-page-title" className="text-3xl font-bold">
           {page.title}
         </h1>
         {page.draft ? (
@@ -132,7 +132,7 @@ export function SystemPageView({ page, facts, surface = "next", link = plainLink
           aria-labelledby={`${section.id}-heading`}
           className="space-y-4"
         >
-          <h2 id={`${section.id}-heading`} className="text-xl font-semibold tracking-tight">
+          <h2 id={`${section.id}-heading`} className="text-lg font-semibold">
             <span className="text-muted-foreground mr-2 tabular-nums">{index + 1}</span>
             {section.heading}
           </h2>

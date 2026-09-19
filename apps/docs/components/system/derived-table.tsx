@@ -8,7 +8,7 @@ const CODE = "bg-muted text-foreground rounded px-1 py-0.5 font-mono text-xs";
 /** What is generated from what. A list, for the same reason GatesTable is. */
 export function DerivedTable({ rows }: { rows: DerivedRow[] }) {
   return (
-    <ul data-slot="system-derived" className="divide-y border-y [overflow-wrap:anywhere]">
+    <ul data-slot="system-derived" className="divide-y border-y wrap-anywhere">
       {rows.map((row) => (
         <li key={row.source} className="space-y-2 py-4 text-sm leading-6">
           <p>

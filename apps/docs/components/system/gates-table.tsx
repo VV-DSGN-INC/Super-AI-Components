@@ -9,7 +9,7 @@ const CODE = "bg-muted text-foreground rounded px-1 py-0.5 font-mono text-xs";
  *  two columns collapse to one on a narrow screen. */
 export function GatesTable({ rows }: { rows: GateRow[] }) {
   return (
-    <ol data-slot="system-gates" className="divide-y border-y [overflow-wrap:anywhere]">
+    <ol data-slot="system-gates" className="divide-y border-y wrap-anywhere">
       {rows.map((row, index) => (
         <li key={row.ciStep} className="grid gap-x-8 gap-y-2 py-4 md:grid-cols-[13rem_1fr]">
           <div className="space-y-1.5">
