@@ -2214,9 +2214,11 @@ plan, and closing a stage is separate work. `pnpm check:ladder` reports
 `tools/ds-architecture/VENDOR.md` says why each one fails against this
 registry rather than against the checker.
 
-Two are cheap and self-contained, and are the place to start: `09.3` wants a
-review-round budget written down, which the two sibling repos already carry
-and this one has never written; `09.1` wants the instructions file to describe
+`09.3` was closed on 2026-09-18: the review-round budget is
+`docs/design-system/review-rounds.md`, with a one-line pointer under
+Conventions in `CLAUDE.md` because the probe reads only that file, so
+`pnpm check:ladder` now prints four unmet claims. One cheap claim is left:
+`09.1` wants the instructions file to describe
 both loops and the human gate, which lives in §3 here rather than in
 `CLAUDE.md` — a deliberate split, so closing it means deciding whether the map
 should carry a pointer or the claim should be excused.

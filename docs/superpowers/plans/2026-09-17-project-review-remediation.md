@@ -16,7 +16,7 @@
 - Branch per task, cut from `main`; never commit to `main`. Confirm the remote is `VV-DSGN-INC/Super-AI-Components` before any push (`git remote -v`).
 - Every task ends with the local gate mirror, `.claude/skills/gate-run/run-gates.sh`, green from the repo root. Doc-only tasks may run the subset named in the task while iterating, but the full script runs before the PR opens.
 - `pnpm format` runs before every commit that touches `.md`, `.ts`, `.tsx`, `.mts` or `.yml`; `format:check` is a CI gate. `.prettierrc.json` sets `printWidth: 110`; markdown prose is not re-wrapped (`proseWrap` is the default `preserve`).
-- `CLAUDE.md` is pinned at or under **14,500 bytes** and must stay within 2,000 bytes of that ceiling (`apps/docs/scripts/lib/claude-md.test.ts`). It is 14,244 bytes today. Only Task 5 edits it, and only by the amount the task states.
+- `CLAUDE.md` is pinned at or under **14,500 bytes** and must stay within 2,000 bytes of that ceiling (`apps/docs/scripts/lib/claude-md.test.ts`). It is 14,372 bytes since 2026-09-18-review-round-budget.md landed. In this plan only Task 5 edits it, and only by the amount the task states.
 - `apps/docs/public/llms.txt`, `public/llms-full.txt`, `public/llms/components/*.md`, `registry/super-ai/*.meta.json` and `index/components.toon` are derived. Never hand-edit them; run `pnpm contract:emit` from `apps/docs` and commit what it writes.
 - The a11y exclusion list and `story-coverage.baseline.json` may only shrink. No task here touches either.
 - Commit messages are conventional (`feat(scope): …`, `fix(scope): …`, `docs(scope): …`, `chore(scope): …`) and end with the attribution trailer this session was given.
@@ -1007,7 +1007,7 @@ git switch -c claude/ci-two-jobs
 wc -c CLAUDE.md
 ```
 
-Expected: `14244`. The ceiling is 14,500; this task may add at most 256 bytes to the file.
+Expected: `14372`. The ceiling is 14,500; this task may add at most 128 bytes to the file.
 
 - [ ] **Step 2: Rewrite ci.yml**
 
@@ -1143,7 +1143,7 @@ Then check the budget:
 wc -c CLAUDE.md
 ```
 
-Expected: `14367` (the replacement adds 123 bytes; the ceiling is 14,500). If it differs, the replacement was not applied verbatim; do not shorten any other part of the file to compensate.
+Expected: `14495` (the replacement adds 123 bytes; the ceiling is 14,500). If it differs, the replacement was not applied verbatim; do not shorten any other part of the file to compensate.
 
 - [ ] **Step 6: Validate the workflow and run the pinned tests**
 

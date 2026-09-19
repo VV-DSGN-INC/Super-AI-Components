@@ -138,6 +138,7 @@ after a format, run the format again before assuming something else is wrong.
 - Components are grouped into families and shipped in waves (`feat(wave-1.5): batch 3 — family E`). Keep a batch's components in one PR so the family reads as a set.
 - Semantic roles over presentation: prefer a correct `role`/`aria-*` on a primitive to a visually equivalent div. Past fixes in this repo have been exactly this (`pin role="note"` so a checkbox story stops reading as an open gate).
 - Branch per task; never commit to `main` directly. Deploys are manual, from `apps/docs`, and need the `weeeha` GitHub account — nothing deploys on merge.
+- Review budget: rounds 1-2 fix everything; from round 3 only a blocker holds the PR. → `docs/design-system/review-rounds.md`
 
 ## Open decisions — flag, don't silently pick
 
