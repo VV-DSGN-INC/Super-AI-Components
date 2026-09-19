@@ -2,6 +2,8 @@ import { expect, test } from "@playwright/test";
 
 import { CATALOG_ITEMS } from "../lib/catalog";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
+import { architecturePage } from "../content/system/architecture.page";
+import { harnessPage } from "../content/system/harness.page";
 
 test("home lists the catalog", async ({ page }) => {
   await page.goto("/");
@@ -44,3 +46,26 @@ test("a component with guidance renders its Do and Don't blocks", async ({ page 
   await expect(page.locator('[data-slot="docs-do"]')).toBeVisible();
   await expect(page.locator('[data-slot="docs-dont"]')).toBeVisible();
 });
+
+for (const route of [
+  { path: "/harness", title: harnessPage.title },
+  { path: "/architecture", title: architecturePage.title },
+]) {
+  test(`${route.path} renders at 375px without console errors or sideways scroll`, async ({ page }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(route.path);
+    // Targets the page's own title by data-slot, for the reasons the component
+    // test above records: role and tag locators have both been wrong here.
+    await expect(page.locator('[data-slot="system-page-title"]')).toHaveText(route.title);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+    expect(errors).toEqual([]);
+  });
+}

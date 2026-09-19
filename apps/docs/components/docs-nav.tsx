@@ -8,16 +8,25 @@ import { MARKETING_GROUPS, MARKETING_ITEMS } from "@/lib/marketing-catalog";
 
 const GROUPS = ["Primitives", "Components", "Blocks"] as const;
 
-function NavList({ items, pathname }: { items: { name: string; title: string }[]; pathname: string }) {
+const SYSTEM_LINKS = [
+  { href: "/harness", title: "Harness" },
+  { href: "/architecture", title: "Architecture" },
+];
+
+const toNavItem = (item: { name: string; title: string }) => ({
+  href: `/components/${item.name}`,
+  title: item.title,
+});
+
+function NavList({ items, pathname }: { items: { href: string; title: string }[]; pathname: string }) {
   return (
     <ul className="space-y-0.5">
       {items.map((item) => {
-        const href = `/components/${item.name}`;
-        const isActive = pathname === href;
+        const isActive = pathname === item.href;
         return (
-          <li key={item.name}>
+          <li key={item.href}>
             <Link
-              href={href}
+              href={item.href}
               className={`block rounded-md px-2 py-1.5 text-sm transition-colors ${
                 isActive
                   ? "bg-accent text-accent-foreground font-medium"
@@ -38,12 +47,21 @@ export function DocsNav() {
 
   return (
     <nav className="space-y-6">
+      <div>
+        <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
+          System
+        </p>
+        <NavList items={SYSTEM_LINKS} pathname={pathname} />
+      </div>
       {GROUPS.map((group) => (
         <div key={group}>
           <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
             {group}
           </p>
-          <NavList items={CATALOG_ITEMS.filter((i) => i.group === group)} pathname={pathname} />
+          <NavList
+            items={CATALOG_ITEMS.filter((i) => i.group === group).map(toNavItem)}
+            pathname={pathname}
+          />
         </div>
       ))}
       {MARKETING_GROUPS.map((group) => {
@@ -54,7 +72,7 @@ export function DocsNav() {
             <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
               Marketing · {group}
             </p>
-            <NavList items={items} pathname={pathname} />
+            <NavList items={items.map(toNavItem)} pathname={pathname} />
           </div>
         );
       })}

@@ -1,0 +1,11 @@
+import { Meta, Unstyled } from "@storybook/addon-docs/blocks";
+
+import { SystemPageView } from "@/components/system/system-page";
+import facts from "@/content/system/facts.json";
+import { harnessPage } from "@/content/system/harness.page";
+
+<Meta title="Harness" />
+
+<Unstyled>
+  <SystemPageView page={harnessPage} facts={facts} surface="storybook" />
+</Unstyled>

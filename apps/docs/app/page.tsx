@@ -9,6 +9,15 @@ export default function Home() {
       <p className="text-muted-foreground">
         The missing half of AI Elements — components for AI applications.
       </p>
+      <p className="text-sm">
+        <Link className="underline underline-offset-4" href="/harness">
+          Harness
+        </Link>
+        {" · "}
+        <Link className="underline underline-offset-4" href="/architecture">
+          Architecture
+        </Link>
+      </p>
       <ul className="grid grid-cols-2 gap-2">
         {CATALOG_ITEMS.map((item) => (
           <li key={item.name}>
