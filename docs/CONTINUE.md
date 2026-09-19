@@ -409,6 +409,15 @@ after adding components — Vite's dep optimiser invalidates mid-run and produce
 a wall of fake failures that look like a11y errors but say
 `Failed to fetch dynamically imported module`.
 
+**`apps/docs/content/system/facts.json` is derived too.** The Harness and
+Architecture pages print its numbers, and `system-facts.test.ts` fails when the
+tree has moved past it. Agents never emit it. The integrator runs
+`cd apps/docs && pnpm facts:emit` once per batch, after `contract:emit`. A CI
+step that is on neither `GATE_ROWS` nor `PLUMBING` in
+`apps/docs/content/system/gates.ts` fails `gates.test.ts`: say what the step is
+before it lands. That test is also the drift check between `ci.yml` and
+`run-gates.sh`, which closes carry item 3 of the 2026-09-18 pegbo transfer audit.
+
 ### 3.6 Commit, push, deploy
 
 Commit author must be `weeeha <1083934+weeeha@users.noreply.github.com>` —
