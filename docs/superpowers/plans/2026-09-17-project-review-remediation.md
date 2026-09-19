@@ -1102,7 +1102,7 @@ No `run` line changes. Confirm with `git diff --stat .claude/skills/gate-run/run
 In `.claude/skills/gate-run/SKILL.md`, replace lines 12 and 13:
 
 ```markdown
-Eleven steps, in `.github/workflows/ci.yml`'s order. It stops at the first
+Twelve steps, in `.github/workflows/ci.yml`'s order. It stops at the first
 failure, as CI does.
 ```
 

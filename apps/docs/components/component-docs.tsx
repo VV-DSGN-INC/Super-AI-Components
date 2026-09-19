@@ -30,7 +30,7 @@ function Section({ title, slot, children }: { title: string; slot: string; child
  * cross-component shape `check:tokens` cannot see. A surface that paints its
  * own background states its own foreground.
  */
-function InlineProse({ text }: { text: string }) {
+export function InlineProse({ text }: { text: string }) {
   return (
     <>
       {text.split(/`([^`]+)`/g).map((part, i) =>

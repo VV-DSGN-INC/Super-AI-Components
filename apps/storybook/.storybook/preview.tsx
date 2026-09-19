@@ -104,6 +104,8 @@ const preview: Preview = {
         // added to its array here or it falls to the bottom of its section.
         order: [
           "Overview",
+          "Harness",
+          "Architecture",
           "Guides",
           [
             "Getting Started",

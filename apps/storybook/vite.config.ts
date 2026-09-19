@@ -19,6 +19,11 @@ export default defineConfig({
         find: /^@\/components\/component-docs$/,
         replacement: resolve(__dirname, "../docs/components/component-docs.tsx"),
       },
+      {
+        find: /^@\/components\/system\/(.*)/,
+        replacement: resolve(__dirname, "../docs/components/system/$1"),
+      },
+      { find: /^@\/lib\/system-page$/, replacement: resolve(__dirname, "../docs/lib/system-page.ts") },
       { find: /^@\/(.*)/, replacement: resolve(__dirname, "./src/$1") },
       // Lightweight shims so Next.js-flavored imports resolve in a Vite/Storybook context.
       { find: "next/image", replacement: resolve(__dirname, "./src/shims/next-image.tsx") },

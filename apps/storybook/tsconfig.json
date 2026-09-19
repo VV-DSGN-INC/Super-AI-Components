@@ -20,6 +20,8 @@
       "@/content/*": ["../docs/content/*"],
       "@/lib/component-docs": ["../docs/lib/component-docs.ts"],
       "@/components/component-docs": ["../docs/components/component-docs.tsx"],
+      "@/components/system/*": ["../docs/components/system/*"],
+      "@/lib/system-page": ["../docs/lib/system-page.ts"],
       "@/*": ["./src/*"]
     }
   },
