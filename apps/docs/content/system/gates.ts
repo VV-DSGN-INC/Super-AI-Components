@@ -176,6 +176,10 @@ export const GATE_ROWS: GateRow[] = [
         file: "apps/docs/content/system/gates.test.ts",
         protects: "This roster matches the workflow and the local gate script.",
       },
+      {
+        file: "apps/docs/content/system/claims.test.ts",
+        protects: "Counts typed into prose elsewhere match the tree.",
+      },
     ],
     ledgers: [
       "apps/docs/cssvars-liveness.baseline.json",
