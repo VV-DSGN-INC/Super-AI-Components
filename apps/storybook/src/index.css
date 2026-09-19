@@ -181,6 +181,10 @@
    `bg-destructive` with no other in-workspace user) silently compiled to no
    CSS rule at all, so the class name reached the DOM but did nothing. */
 @source "../../docs/registry";
+/* ...and the system page blocks, for the same reason: they live in the docs
+   app, outside Tailwind's same-package detection, so a class used only there
+   would reach the DOM and compile to no CSS rule. */
+@source "../../docs/components/system";
 
 body {
   background-color: var(--background);
