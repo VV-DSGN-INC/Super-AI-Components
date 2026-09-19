@@ -33,3 +33,7 @@ apps/docs/index/components.toon
 apps/docs/public/llms.txt
 apps/docs/public/llms-full.txt
 apps/docs/public/llms/
+
+# Derived by apps/docs/scripts/lib/system-facts.test.ts (`pnpm facts:emit`) and
+# byte-compared by the same test. The emitter owns its shape.
+apps/docs/content/system/facts.json

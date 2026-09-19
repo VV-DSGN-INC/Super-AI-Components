@@ -15,6 +15,7 @@
     "story-coverage:baseline": "tsx scripts/story-coverage-baseline.mts",
     "story-coverage:report": "tsx scripts/story-coverage-report.mts",
     "contract:emit": "CONTRACT_EMIT=1 vitest run scripts/lib/contract-emit.test.ts",
+    "facts:emit": "FACTS_EMIT=1 vitest run scripts/lib/system-facts.test.ts",
     "contract-coverage:baseline": "tsx scripts/contract-coverage-baseline.mts",
     "gen:wiring": "tsx scripts/gen-wiring.mts",
     "new:component": "tsx scripts/new-component.mts",
