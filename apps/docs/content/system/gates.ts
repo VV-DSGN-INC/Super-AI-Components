@@ -180,6 +180,10 @@ export const GATE_ROWS: GateRow[] = [
         file: "apps/docs/content/system/claims.test.ts",
         protects: "Counts typed into prose elsewhere match the tree.",
       },
+      {
+        file: "apps/docs/content/system/pages.test.ts",
+        protects: "These pages cite real files, type no numbers and keep the writing rules.",
+      },
     ],
     ledgers: [
       "apps/docs/cssvars-liveness.baseline.json",
