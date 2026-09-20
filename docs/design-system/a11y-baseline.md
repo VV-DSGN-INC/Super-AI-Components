@@ -323,6 +323,60 @@ it clears the identical `~4.77:1` regardless of which role each token plays,
 comfortably over 4.5:1 and, unlike `bg-muted/50`, not dependent on whatever
 ancestor background the translucent tint would otherwise blend toward.
 
+### The fourth instance, and the first one that is a _state_: `DropdownMenuItem variant="destructive"`
+
+The three above are painted at rest, so a story scan sees them. This one is
+not. `components/ui/dropdown-menu.tsx` styles its destructive row as
+`data-[variant=destructive]:text-destructive` on the popover — correct, ~4.77:1
+— and then, **on focus only**, as
+`data-[variant=destructive]:focus:bg-destructive/10` behind that same
+`text-destructive`. Highlighted, it is the 4.0:1 pairing again (`#e7000b` on
+`#fde6e7`, 14px normal); at rest it is fine. `thread-list.tsx`'s `Delete` and
+`account-menu.tsx`'s sign-out both rendered it.
+
+**It reached CI as a flake, not as a red.** axe scans once a play function
+returns, and `ThreadList.stories.tsx`'s `DeleteConfirm` dismisses the menu
+before then — so the failing state is normally gone by scan time. Run
+35377135217 attempt 1 caught it only because the menu was still mounted;
+attempt 2 of the same commit passed. This is exactly the gap this document
+already names three paragraphs above, for `workspace-switcher`'s trailing plan
+text ("hover-only instances of this exact failure are structurally invisible to
+a static story scan"). It is now an instance of that gap which actually bit, and
+the reason to stop treating the gap as theoretical.
+
+Fixed the same way as the other three, going solid, with the override restated
+at both call sites rather than in the vendored primitive (the
+`cost-chip`/`entity-row`/`badge` precedent):
+
+```tsx
+const DESTRUCTIVE_ITEM_CLASS =
+  "data-[variant=destructive]:focus:bg-destructive dark:data-[variant=destructive]:focus:bg-destructive data-[variant=destructive]:focus:text-background data-[variant=destructive]:focus:[&_svg]:text-background";
+```
+
+Three things about that string are load-bearing, and all three cost something
+to work out:
+
+1. **Every modifier chain mirrors the primitive's exactly.** tailwind-merge keys
+   on the modifier _set_, so a bare `focus:bg-destructive` is a different key
+   from `data-[variant=destructive]:focus:bg-destructive/10` — both would survive
+   the merge and CSS source order would decide the winner. Restating the chain is
+   what makes it a replacement.
+2. **The `dark:` half has to be restated too.** The primitive carries its own
+   `dark:data-[variant=destructive]:focus:bg-destructive/20`, which otherwise
+   wins back in dark mode and reinstates the tint there only.
+3. **The icon has to invert with the label.** The primitive paints the row's svg
+   `text-destructive` unconditionally, which is invisible on a solid destructive
+   fill. The `[&_svg]` half is not decoration.
+
+Measured in the browser afterwards, with Storybook's own theme mechanism
+(`documentElement.classList.toggle("dark")`): light `#ffffff` on `#e7000b` =
+**4.77:1**; dark `#0a0a0a` on `#ff6467` = **6.85:1**. Label and icon both.
+
+`ThreadList.stories.tsx`'s `DestructiveHighlight` case story now ends with the
+row still highlighted, so the state is in front of axe from here on rather than
+depending on a teardown race. There is no equivalent for `account-menu` yet —
+its sign-out row is fixed but only the thread-list one is gated.
+
 ### Audit: latent instances found elsewhere in the registry — now fixed
 
 The previous round's audit (grepping `apps/docs/registry/super-ai/*.tsx` for
@@ -367,9 +421,13 @@ is not a safe workaround — it only passes by blending toward whatever's
 behind it, and moves with that background.
 
 **Separately: don't pair `text-destructive` with a translucent
-`bg-destructive/NN` tint on the same element** — measures under 4.5:1 (4.0:1
-alone, worse once tints compound, e.g. `promo-card`'s `~3.4:1`). Go solid
-instead: `bg-destructive text-background`.
+`bg-destructive/NN` tint on the same element, or in the same visual state** —
+measures under 4.5:1 (4.0:1 alone, worse once tints compound, e.g.
+`promo-card`'s `~3.4:1`). Go solid instead: `bg-destructive text-background`,
+and invert the row's icon with the label. "In the same visual state" covers the
+hover/focus form, which no story gate sees: `DropdownMenuItem`'s
+`variant="destructive"` paints the pairing on focus only, and shipped broken
+twice because of it.
 
 ### The static gate
 

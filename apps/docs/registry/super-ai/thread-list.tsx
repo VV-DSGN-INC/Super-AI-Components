@@ -25,6 +25,27 @@ import { cn } from "@/lib/utils";
 
 import { DateSection } from "./date-section";
 
+/**
+ * A destructive menu row is solid while it is highlighted, not tinted. The
+ * vendored primitive paints `data-[variant=destructive]:focus:bg-destructive/10`
+ * behind `text-destructive`, which axe measures at 4.0:1 against a 4.5:1
+ * minimum — the pairing `a11y-baseline.md` bans outright. Going solid
+ * (`bg-destructive` with `text-background`) is the substitution `ai-doc-block`,
+ * `promo-card`, `generation-queue` and `credits-indicator` already make, and it
+ * clears the threshold in both themes because `--background` always inverts
+ * against the saturated fill. The `dark:` half has to be restated too: the
+ * primitive carries its own `dark:...bg-destructive/20`, which would otherwise
+ * win back in dark mode. Every modifier chain here mirrors the primitive's
+ * exactly — tailwind-merge keys on the modifier set, so a bare `focus:` version
+ * would not replace anything and CSS order would decide the winner.
+ *
+ * The row only paints this while highlighted, and axe scans the DOM at rest, so
+ * no story gate catches the failure directly; it surfaced as an intermittent
+ * red when a menu was still fading out as the scan began.
+ */
+const DESTRUCTIVE_ITEM_CLASS =
+  "data-[variant=destructive]:focus:bg-destructive dark:data-[variant=destructive]:focus:bg-destructive data-[variant=destructive]:focus:text-background data-[variant=destructive]:focus:[&_svg]:text-background";
+
 function ThreadList({ className, ...props }: React.ComponentProps<"nav">) {
   return <nav data-slot="thread-list" className={cn("flex flex-col gap-3", className)} {...props} />;
 }
@@ -201,7 +222,11 @@ function ThreadListItem({
           </DropdownMenuItem>
           {/* Base UI adaptation: DropdownMenuItem variant prop IS supported by the
               wrapper (it maps to data-variant="destructive" for styling). */}
-          <DropdownMenuItem variant="destructive" onClick={() => setConfirmingDelete(true)}>
+          <DropdownMenuItem
+            variant="destructive"
+            className={DESTRUCTIVE_ITEM_CLASS}
+            onClick={() => setConfirmingDelete(true)}
+          >
             <Trash2 /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>

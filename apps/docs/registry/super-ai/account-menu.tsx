@@ -38,6 +38,28 @@ import { initials } from "@/registry/super-ai/initials";
  *   not the menu radio's built-in filled-background indicator.
  */
 
+/**
+ * Sign-out is the menu's destructive row, and a destructive row is solid while
+ * it is highlighted, not tinted. The vendored primitive paints
+ * `data-[variant=destructive]:focus:bg-destructive/10` behind
+ * `text-destructive`, which axe measures at 4.0:1 against a 4.5:1 minimum — the
+ * pairing `a11y-baseline.md` bans outright. Going solid (`bg-destructive` with
+ * `text-background`) is the substitution `ai-doc-block`, `promo-card`,
+ * `generation-queue` and `credits-indicator` already make, and it clears the
+ * threshold in both themes because `--background` always inverts against the
+ * saturated fill. The `dark:` half has to be restated too: the primitive
+ * carries its own `dark:...bg-destructive/20`, which would otherwise win back
+ * in dark mode. Every modifier chain here mirrors the primitive's exactly —
+ * tailwind-merge keys on the modifier set, so a bare `focus:` version would not
+ * replace anything and CSS order would decide the winner.
+ *
+ * The row only paints this while highlighted, and axe scans the DOM at rest, so
+ * no story gate catches the failure here; `thread-list`'s identical Delete row
+ * is what surfaced it, as an intermittent red in CI.
+ */
+const DESTRUCTIVE_ITEM_CLASS =
+  "data-[variant=destructive]:focus:bg-destructive dark:data-[variant=destructive]:focus:bg-destructive data-[variant=destructive]:focus:text-background data-[variant=destructive]:focus:[&_svg]:text-background";
+
 interface AccountMenuUser {
   name: string;
   email: string;
@@ -298,7 +320,12 @@ function AccountMenu({
           <DropdownMenuSeparator />
 
           {/* Sign-out last, separated by a rule — conventional order. */}
-          <DropdownMenuItem data-slot="account-menu-sign-out" variant="destructive" onClick={onSignOut}>
+          <DropdownMenuItem
+            data-slot="account-menu-sign-out"
+            variant="destructive"
+            className={DESTRUCTIVE_ITEM_CLASS}
+            onClick={onSignOut}
+          >
             <span className="flex-1">{signOutLabel}</span>
             {signOutShortcut ? <AccountMenuShortcutHint keys={signOutShortcut} /> : null}
           </DropdownMenuItem>

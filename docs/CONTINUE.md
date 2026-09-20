@@ -441,6 +441,22 @@ single-element form mechanically, but **not** the cross-component form — muted
 text inside a child whose ancestor sets the background — which is how most real
 instances shipped. Only `pnpm test:stories` catches that.
 
+**Contrast that only exists on hover/focus is invisible to every gate.** axe
+scans the DOM once a play function returns, so a pairing that is correct at rest
+and wrong while highlighted is not caught by `test:stories` either — it reaches
+CI as an intermittent red, if at all. `DropdownMenuItem variant="destructive"`
+is the worked example: correct on the popover, 4.0:1 once
+`focus:bg-destructive/10` lands behind `text-destructive`, and it surfaced only
+because one run scanned a menu that was still fading out (run 35377135217,
+`thread-list`). Adding another `waitFor` is the wrong instinct — it makes CI
+green and leaves the hover state broken for everyone. Fix the pairing (go solid,
+and invert the icon with the label), then pin the state with a case story that
+ends _with the row still highlighted_, the way
+`ThreadList.stories.tsx`'s `DestructiveHighlight` does. When you override a
+vendored primitive's state styling from a call site, restate its modifier chain
+exactly — tailwind-merge keys on the modifier set, so a bare `focus:` version
+replaces nothing and leaves source order to decide.
+
 **Guidance modules and the server/client boundary.** `<name>.docs.tsx` is read
 by a Server Component. Marking it `"use client"` breaks the server read; putting
 JSX with event handlers in it breaks the static export. Interactive examples go
