@@ -864,6 +864,11 @@ code (2): thread-list, account-menu
 
 derived corpus differs: llms.txt (404), llms-full.txt (404)
 
+The 18 identical items are the ones outside the catalog: the three lib items
+(`cost`, `initials`, `use-view-mode`) and the fifteen marketing items, none of
+which carries a `.meta.json`. Every one of the 116 catalog items lacks its
+contract.
+
 Production lacks the contracts layer from PRs #56 and #57 on every item: the
 `.meta.json` beside each component, `/llms.txt`, `/llms-full.txt` and the
 `/llms/components/*.md` pages. It also lacks the PR #60 fix to `account-menu`
@@ -871,6 +876,7 @@ and `thread-list`, merged after the 2026-09-13 evening deploy: destructive rows
 now go solid while highlighted instead of staying tinted (`text-destructive` on
 `bg-destructive/10`, 4.0:1 against a 4.5:1 minimum). Those two items are the
 only component-code drift left.
+
 Everything else has been identical since that deploy, which landed after the
 previous version of this section measured "97 differ" that same day. The figure
 was true when written and wrong by midnight, which is why this section now
