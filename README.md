@@ -47,3 +47,7 @@ apps/docs/scripts/consumer-test.sh   # install everything into a fresh app
 - Wave 0 plan: `docs/superpowers/plans/2026-06-11-wave-0-foundation.md`
 - Marketing wave 1: `docs/superpowers/specs/2026-07-31-marketing-mini-components-design.md` +
   `docs/superpowers/plans/2026-07-31-marketing-mini-components-wave-1.md`
+
+## License
+
+MIT, see [LICENSE](LICENSE). Vendored shadcn/ui (MIT) and AI Elements (Apache-2.0) files keep their own terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
