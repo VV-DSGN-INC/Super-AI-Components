@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 import { CATALOG_ITEMS } from "../lib/catalog";
+import { COMPAT_NOTE } from "../lib/install";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
 import { architecturePage } from "../content/system/architecture.page";
 import { harnessPage } from "../content/system/harness.page";
@@ -37,6 +38,11 @@ for (const item of [...CATALOG_ITEMS, ...MARKETING_ITEMS]) {
     expect(errors).toEqual([]);
   });
 }
+
+test("the Installation block states the Base UI requirement", async ({ page }) => {
+  await page.goto("/components/kbd");
+  await expect(page.locator('[data-slot="install-compat"]')).toHaveText(COMPAT_NOTE);
+});
 
 test("a component with guidance renders its Do and Don't blocks", async ({ page }) => {
   // Skips until the first documented component ships (Task 15).

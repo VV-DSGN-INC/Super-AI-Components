@@ -3,6 +3,7 @@
 > A shadcn-style registry of AI-interface components: primitives, components and blocks installed one item at a time with `npx shadcn add`, on stock shadcn tokens plus `--warning`. Code is the source of truth; every page here derives from the component's guidance module.
 
 Install one item: `npx shadcn@latest add https://super-ai-components.vercel.app/r/<name>.json`. Each item installs its component and a `<name>.meta.json` beside it.
+Requires a shadcn app on Base UI (style base-nova). Radix-based styles such as new-york fail to typecheck: these components use Base UI's render prop and callbacks like onOpenChangeComplete, which Radix primitives do not have.
 Retrieval order: with an item installed, read `components/super-ai/<name>.meta.json` first; it is version-locked to the installed code and its contents outrank these pages. Before installing, read the component's page below, then the full corpus if you are choosing between several.
 
 ## Guides
