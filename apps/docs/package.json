@@ -20,6 +20,7 @@
     "gen:wiring": "tsx scripts/gen-wiring.mts",
     "new:component": "tsx scripts/new-component.mts",
     "reconcile:deps": "tsx scripts/reconcile-deps.mts",
+    "prod:diff": "tsx scripts/prod-diff.mts",
     "build:registry": "tsx scripts/gen-wiring.mts && tsx scripts/gen-registry.mts && shadcn build --output public/r"
   },
   "dependencies": {
