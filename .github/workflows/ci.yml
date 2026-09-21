@@ -3,8 +3,15 @@ on:
   push: { branches: [main] }
   pull_request:
 
+# Two jobs from the same checkout. `gates` is the static and unit layer;
+# `product` is the three steps that exercise what consumers install, plus the
+# builds they need. They run in parallel so a red lint no longer hides a red
+# consumer test (CLAUDE.md records that this happened). Both must pass. Within a
+# job a red step still hides every step after it, which is why the order inside
+# each job is the same as before the split. The local mirror,
+# .claude/skills/gate-run/run-gates.sh, runs `gates` then `product` sequentially.
 jobs:
-  verify:
+  gates:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,6 +26,16 @@ jobs:
       - run: pnpm check:tokens
       - run: pnpm check:contract
       - run: pnpm test
+
+  product:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.1.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
       - run: pnpm build:registry
       - run: pnpm build
       - name: Playwright smoke
