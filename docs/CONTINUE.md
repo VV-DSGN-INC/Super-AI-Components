@@ -4,7 +4,7 @@ A handoff for a fresh session. Read this top to bottom before touching
 anything; it is written so you can pick up mid-build without re-deriving what
 was already decided.
 
-**Last updated:** 2026-09-07, after wave 2 of the post-case-story remediation.
+**Last updated:** 2026-09-20, after the project review (`superpowers/specs/2026-09-17-project-review-remediation-design.md`) and PRs #58 to #61.
 The catalog has been complete since family O's twelve blocks (2026-08-11), and
 `contractExempt` has had no members since 2026-08-15.
 
@@ -16,13 +16,13 @@ ledgers moved out to `design-system/wave-history.md` — see §9.
 
 ## 1. Where things stand
 
-|          |                                                                                                                                                                |
-| -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repo     | `VV-DSGN-INC/Super-AI-Components`                                                                                                                              |
-| Branch   | `main`, at `4e4406c`                                                                                                                                           |
-| HEAD     | **PRs #46–#52 merged 2026-09-13.** Remediation waves 0–3, the prettier gate, the guidance layer, the RTL logical sweep, SAI-05, and the shared ScrollArea stub |
-| Pushed   | **Everything is pushed.** This row read "nothing is pushed, `origin/main` is still at PR #45" for five days after it stopped being true — see the note below   |
-| Deployed | **No.** Measured against production 2026-09-13: of 135 registry items, **97 differ**, 37 are identical and `initials` 404s — see §7                            |
+|          |                                                                                                                                                                                                                                                                                                                                               |
+| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repo     | `VV-DSGN-INC/Super-AI-Components`                                                                                                                                                                                                                                                                                                             |
+| Branch   | `main`, at `530ebba`                                                                                                                                                                                                                                                                                                                          |
+| HEAD     | **PRs #53–#61 merged by 2026-09-20.** §1/§7 reconciliation, the sidebar-footer guard, the ScrollArea stub, the agentic contracts layer (#56), contract wave 2 (#57), the project review spec and plan (#58), the review-round budget (#59), the destructive-row a11y fix (#60) and the Harness and Architecture pages (#61)                   |
+| Pushed   | **Everything is pushed.** This row read "nothing is pushed, `origin/main` is still at PR #45" for five days after it stopped being true — see the note below                                                                                                                                                                                  |
+| Deployed | **Component code yes except two items, contracts layer no.** `pnpm prod:diff` on 2026-09-20 against `main` at `530ebba`: 134 items compared, 2 differ in code (`account-menu` and `thread-list`, from PR #60, not yet deployed), 114 lack their `.meta.json`, 18 are fully identical, and `/llms.txt`/`/llms-full.txt` 404 either way. See §7 |
 
 > **Why that `Pushed` row is called out rather than quietly corrected.** It was
 > written when the only `gh auth` account was a work account with `push: false`,
@@ -833,37 +833,54 @@ green.
 
 ## 7. Deploy state
 
-**Production is stale, and this is the measurement rather than an estimate.**
-Deploys are manual, from `apps/docs`, and need the `weeeha` GitHub account.
-Nothing since the case-story program has shipped.
+**Production is measured, never estimated: `pnpm build:registry && pnpm prod:diff` from `apps/docs`.**
+The script fetches every `/r/<name>.json` from production, compares each file's
+contents and both dependency lists against the local build, and separates three
+kinds of drift: component code, the contracts layer (the `.meta.json` inside each
+item plus the `/llms*.txt` corpus), and items absent from production. It exits 1
+unless everything is identical, so it doubles as the post-deploy check.
+`PROD_URL=<preview url>` points it at a preview. The rules are in
+`scripts/lib/prod-diff.ts` and unit-tested; `--report-only` always exits 0.
 
-Measured 2026-09-13 by fetching every item from
-`https://super-ai-components.vercel.app/r/` and comparing each file's contents
-against a local `pnpm build:registry`:
+Deploys are manual, from `apps/docs`, with the `weeeha` GitHub account:
+`vercel --prod`. The Vercel project is `super-ai-components`, root directory
+`apps/docs`, and `.vercel/project.json` must already name it (§4, "Vercel project
+linking") or the CLI creates a new project.
 
-|                        |                                                  |
-| ---------------------- | ------------------------------------------------ |
-| items compared         | 135                                              |
-| identical to `main`    | 37                                               |
-| **differ from `main`** | **97**                                           |
-| absent from production | 1 (`initials`, which returns the app's 404 HTML) |
+Last measurement, 2026-09-20, against `main` at `530ebba`. The registry items
+compared are byte-identical to `main`'s; the `llms*.txt` corpus compared is this
+branch's own copy, which does not change the result since production 404s it
+either way:
 
-Two things follow that the old "69 of 133" figure did not capture.
+| measured 2026-09-20         | count |
+| --------------------------- | ----: |
+| items compared              |   134 |
+| identical to `main`         |    18 |
+| contract layer only differs |   114 |
+| component code differs      |     2 |
+| absent from production      |     0 |
 
-`initials` is the lib item wave 3 promoted out of three components. Nothing on
-production references it — those three still carry their inlined copies, so no
-consumer is broken today. But `account-menu`, `record-list` and
-`workspace-switcher` on `main` now list
-`https://super-ai-components.vercel.app/r/initials.json` as a registry
-dependency, by absolute URL. **They are installable only once that file
-exists**, so a deploy that publishes the three without it would break all three
-at `shadcn add` time. One deploy of `public/r` publishes them together, which is
-the normal path; the failure mode is a partial or hand-picked upload.
+code (2): thread-list, account-menu
 
-And the drift is now wide enough that spot-checking is not a check: 72% of the
-catalog differs. `thread-list` alone is two releases behind, serving `text-left`
-from before the RTL sweep and an `AlertDialogAction` that never clears
-`confirmingDelete`.
+derived corpus differs: llms.txt (404), llms-full.txt (404)
+
+The 18 identical items are the ones outside the catalog: the three lib items
+(`cost`, `initials`, `use-view-mode`) and the fifteen marketing items, none of
+which carries a `.meta.json`. Every one of the 116 catalog items lacks its
+contract.
+
+Production lacks the contracts layer from PRs #56 and #57 on every item: the
+`.meta.json` beside each component, `/llms.txt`, `/llms-full.txt` and the
+`/llms/components/*.md` pages. It also lacks the PR #60 fix to `account-menu`
+and `thread-list`, merged after the 2026-09-13 evening deploy: destructive rows
+now go solid while highlighted instead of staying tinted (`text-destructive` on
+`bg-destructive/10`, 4.0:1 against a 4.5:1 minimum). Those two items are the
+only component-code drift left.
+
+Everything else has been identical since that deploy, which landed after the
+previous version of this section measured "97 differ" that same day. The figure
+was true when written and wrong by midnight, which is why this section now
+quotes a script and a date instead of a sentence.
 
 ---
 
@@ -1036,11 +1053,14 @@ composed into a surface that already has that chrome:**
 - **A5 `filter-bar`** has no single-select mode (O9) and no sort affordance
   (O10); its root is a bare `div`, so `aria-label` alone trips
   `aria-prohibited-attr`.
-- **A8 `preview-tile`** cannot name its own frame button unless the label is
-  `overlay`, and its interactive frame is always a toggle (`aria-pressed`) even
-  when the tile is an open action. O7 notes C4 `recent-grid` uses `below` +
-  `onSelect` and therefore ships nameless buttons — **a latent violation in a
-  shipped component, not yet caught by a gate.**
+- **~~A8 `preview-tile` cannot name its own frame button unless the label is
+  `overlay`~~ — fixed, and found expired on 2026-09-17.** `preview-tile.tsx` now
+  takes an `aria-labelledby` branch for `labelPlacement="below"` and an
+  `aria-label` branch from `frameLabel` for `"none"`, and `selectMode="open"`
+  drops `aria-pressed`. `recent-grid.tsx` uses both: `below` in the grid layout,
+  `none` + `frameLabel={title}` in the list layout, with a comment saying why. The
+  "latent violation in a shipped component" this entry warned about is not in
+  the shipped component; it was in this entry.
 - **K5 `source-panel`** stamps no per-source id, so O13's citation→source jump
   has to find rows positionally.
 - **B4 `modality-rail`'s stacked label never renders** — `ToggleGroupItem`'s base
