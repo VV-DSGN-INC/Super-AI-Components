@@ -132,7 +132,7 @@ function ApprovalCard({
   };
 
   return (
-    <Card data-slot="approval-card" data-state={state} className={cn("gap-3", className)}>
+    <Card data-slot="approval-card" data-state={state} className={cn("gap-3", className)} {...props}>
       <CardHeader>
         <CardTitle data-slot="approval-card-title">{title}</CardTitle>
         {summary ? (

@@ -7,7 +7,7 @@
     "dev": "storybook dev -p 6007 --no-open",
     "build": "storybook build -o storybook-static",
     "build-storybook": "storybook build -o storybook-static",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test:stories": "vitest run --project storybook"
   },

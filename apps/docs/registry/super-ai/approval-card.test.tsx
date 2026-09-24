@@ -25,6 +25,20 @@ describe("ApprovalCard", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Awaiting your decision");
   });
 
+  it("forwards unknown div props to the root, so a consumer can address the card", () => {
+    const { container } = render(
+      <ApprovalCard
+        id="approval-7"
+        aria-describedby="why-7"
+        title="Publish the Q3 summary"
+        onConfirm={() => {}}
+      />,
+    );
+    const root = container.querySelector('[data-slot="approval-card"]');
+    expect(root).toHaveAttribute("id", "approval-7");
+    expect(root).toHaveAttribute("aria-describedby", "why-7");
+  });
+
   it("renders the submitting state", () => {
     render(
       <ApprovalCard

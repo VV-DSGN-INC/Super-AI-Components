@@ -114,7 +114,6 @@ function HeroVideoDialog({
         className="group relative block w-full cursor-pointer overflow-hidden rounded-xl border"
         onClick={() => setOpen(true)}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- registry component must not depend on next/image */}
         <img
           src={thumbnailSrc}
           alt={thumbnailAlt}
