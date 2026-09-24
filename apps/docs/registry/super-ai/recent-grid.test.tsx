@@ -97,7 +97,6 @@ describe("RecentGrid", () => {
     // natural tab order (the preview-tile frame trigger is the first stop).
     let guard = 0;
     while (document.activeElement !== deleteButton && guard < 5) {
-      // eslint-disable-next-line no-await-in-loop
       await userEvent.tab();
       guard += 1;
     }

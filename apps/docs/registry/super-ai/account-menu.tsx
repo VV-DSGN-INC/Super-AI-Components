@@ -152,7 +152,6 @@ function AccountMenuAvatar({ user, className }: { user: AccountMenuUser; classNa
       )}
     >
       {user.avatarUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img src={user.avatarUrl} alt="" className="size-full object-cover" />
       ) : (
         initials(user.name)

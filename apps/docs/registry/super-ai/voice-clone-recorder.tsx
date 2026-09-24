@@ -340,7 +340,6 @@ function VoiceCloneRecorder({
 
           <div data-slot="voice-clone-recorder-playback" className="flex flex-col gap-2">
             {takeUrl ? (
-              // eslint-disable-next-line jsx-a11y/media-has-caption -- a spoken voice sample has no track to caption
               <audio data-slot="voice-clone-recorder-audio" controls src={takeUrl} className="w-full" />
             ) : null}
             {takeSummary ? <p className="text-muted-foreground text-xs">{takeSummary}</p> : null}
