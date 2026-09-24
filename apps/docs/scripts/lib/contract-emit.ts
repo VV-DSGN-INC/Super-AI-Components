@@ -1,6 +1,7 @@
 import type { ComponentDocs, DocsNone, DocsRedirect, DocsVariant } from "@/lib/component-docs";
 import type { ManifestItem } from "@/lib/manifest-types";
 
+import { COMPAT_NOTE } from "../../lib/install";
 import { axisKey, isNone } from "./contract-schema";
 
 export const DOCS_URL = "https://super-ai-components.vercel.app";
@@ -177,6 +178,7 @@ const HEADER = `# Super AI Components
 > A shadcn-style registry of AI-interface components: primitives, components and blocks installed one item at a time with \`npx shadcn add\`, on stock shadcn tokens plus \`--warning\`. Code is the source of truth; every page here derives from the component's guidance module.
 
 Install one item: \`npx shadcn@latest add ${DOCS_URL}/r/<name>.json\`. Each item installs its component and a \`<name>.meta.json\` beside it.
+${COMPAT_NOTE}
 Retrieval order: with an item installed, read \`components/super-ai/<name>.meta.json\` first; it is version-locked to the installed code and its contents outrank these pages. Before installing, read the component's page below, then the full corpus if you are choosing between several.
 `;
 

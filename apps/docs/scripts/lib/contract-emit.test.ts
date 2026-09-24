@@ -3,6 +3,7 @@ import { dirname, join, resolve } from "node:path";
 
 import { MANIFEST } from "@/lib/catalog.manifest";
 import type { ComponentDocs } from "@/lib/component-docs";
+import { COMPAT_NOTE } from "@/lib/install";
 import type { ManifestItem } from "@/lib/manifest-types";
 
 import { deriveMeta, derivedFiles, renderComponentPage, renderLlmsTxt, renderToon } from "./contract-emit";
@@ -133,6 +134,7 @@ describe("renderLlmsTxt", () => {
     const txt = renderLlmsTxt([deriveMeta(item, docs)]);
     expect(txt).toContain("# Super AI Components");
     expect(txt).toContain("outrank these pages");
+    expect(txt).toContain(COMPAT_NOTE);
     expect(txt).toContain(
       "- [Mode Tabs](https://super-ai-components.vercel.app/llms/components/mode-tabs.md): Two to five",
     );

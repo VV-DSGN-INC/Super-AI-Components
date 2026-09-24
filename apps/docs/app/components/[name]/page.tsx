@@ -23,6 +23,7 @@ import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 import { demos } from "@/lib/demos.generated";
 import { componentDocs } from "@/lib/docs.generated";
+import { COMPAT_NOTE } from "@/lib/install";
 import { MARKETING, MARKETING_ITEMS, type MarketingName } from "@/lib/marketing-catalog";
 
 // Grows one entry per component task (Tasks 6–20).
@@ -89,6 +90,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
           <pre className="bg-muted overflow-x-auto rounded-lg p-4 text-xs">
             <code>{`npx shadcn@latest add https://super-ai-components.vercel.app/r/${name}.json`}</code>
           </pre>
+          <p data-slot="install-compat" className="text-muted-foreground text-xs">
+            {COMPAT_NOTE}
+          </p>
         </div>
       </div>
     </div>

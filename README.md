@@ -4,7 +4,9 @@ The missing half of [AI Elements](https://elements.ai-sdk.dev): a shadcn registr
 for AI applications — app shells, creative studios, flow canvases, feedback loops, observability,
 and monetization UI. AI Elements gives you the conversation; this gives you the application.
 
-## Install (any shadcn app)
+## Install (shadcn apps on Base UI)
+
+Requires a shadcn app on Base UI (style base-nova). Radix-based styles such as new-york fail to typecheck: these components use Base UI's render prop and callbacks like onOpenChangeComplete, which Radix primitives do not have.
 
 ```bash
 npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
