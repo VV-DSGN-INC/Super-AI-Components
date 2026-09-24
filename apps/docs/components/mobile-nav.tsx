@@ -28,7 +28,15 @@ export function MobileNav() {
     >
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger
-          render={<Button type="button" variant="ghost" size="icon" aria-label="Open navigation" />}
+          render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label="Open navigation"
+              className="relative after:absolute after:-inset-1.5"
+            />
+          }
         >
           <MenuIcon />
         </SheetTrigger>
@@ -43,7 +51,7 @@ export function MobileNav() {
       <Link href="/" className="text-sm font-semibold">
         Super-AI-Components
       </Link>
-      <ThemeToggle className="ms-auto" />
+      <ThemeToggle className="relative ms-auto after:absolute after:-inset-1.5" />
     </header>
   );
 }

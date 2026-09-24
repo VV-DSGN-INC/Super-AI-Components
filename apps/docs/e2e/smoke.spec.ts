@@ -108,4 +108,13 @@ test.describe("below md", () => {
     await expect(page).toHaveURL(/\/components\/thread-list$/);
     await expect(page.getByRole("dialog")).toHaveCount(0);
   });
+
+  test("the home fits 375px without sideways scroll", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1, name: "Super-AI-Components" })).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
 });

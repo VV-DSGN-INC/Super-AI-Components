@@ -8,7 +8,7 @@ import { MARKETING_BY_GROUP } from "@/lib/marketing-catalog";
 
 export default function Home() {
   return (
-    <main className="mx-auto max-w-3xl space-y-8 p-6 sm:p-10">
+    <main className="mx-auto w-full max-w-3xl space-y-8 p-6 sm:p-10">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Super-AI-Components</h1>

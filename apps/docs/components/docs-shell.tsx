@@ -13,10 +13,10 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
       <aside className="hidden w-56 shrink-0 border-e md:block">
         <div className="sticky top-0 h-screen overflow-y-auto p-4">
           <div className="mb-6 flex items-center justify-between">
-            <Link href="/" className="text-sm font-semibold">
+            <Link href="/" className="whitespace-nowrap text-sm font-semibold">
               Super-AI-Components
             </Link>
-            <ThemeToggle />
+            <ThemeToggle className="-me-2" />
           </div>
           <DocsNav />
         </div>
