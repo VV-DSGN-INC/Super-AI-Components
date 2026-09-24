@@ -1,5 +1,5 @@
 // collision guard only — marketing stays decoupled from the super-ai catalog otherwise
-import { CATALOG } from "./catalog";
+import { CATALOG, type CatalogFamily } from "./catalog";
 
 export interface MarketingItem {
   name: string;
@@ -105,6 +105,17 @@ export const MARKETING_ITEMS: MarketingItem[] = [
 export const MARKETING_GROUPS = ["Layout", "Text", "Buttons", "Effects"] as const;
 export const MARKETING = MARKETING_ITEMS.map((i) => i.name);
 export type MarketingName = string;
+
+/** The marketing namespace as home-page sections, one per group. */
+export const MARKETING_BY_GROUP: CatalogFamily[] = MARKETING_GROUPS.map((group) => ({
+  family: "Marketing",
+  title: group,
+  items: MARKETING_ITEMS.filter((i) => i.group === group).map(({ name, title, description }) => ({
+    name,
+    title,
+    description,
+  })),
+})).filter((f) => f.items.length > 0);
 
 const collisions = MARKETING.filter((n, i) => MARKETING.indexOf(n) !== i || CATALOG.includes(n));
 if (collisions.length) {

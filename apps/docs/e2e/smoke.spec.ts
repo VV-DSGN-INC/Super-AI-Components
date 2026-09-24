@@ -75,3 +75,37 @@ for (const route of [
     expect(errors).toEqual([]);
   });
 }
+
+test("home groups the catalog by family and filters it", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 2, name: /^A · Primitives/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: /^Marketing · Buttons/ })).toBeVisible();
+  // exact: true — family J's title ("Library, filtering & discovery") contains
+  // "filter" as a substring, and getByLabel matches any labelled element, not
+  // just form controls, so the loose match also resolves to that section.
+  await page.getByLabel("Filter", { exact: true }).fill("thread-list");
+  await expect(page.getByRole("link", { name: /Thread List/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: /^A · Primitives/ })).toHaveCount(0);
+  await page.getByLabel("Filter", { exact: true }).fill("zzzz-no-such-item");
+  await expect(page.locator('[data-slot="catalog-empty"]')).toBeVisible();
+});
+
+test("the theme toggle switches the document to dark", async ({ page }) => {
+  await page.goto("/components/kbd");
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await page.getByRole("button", { name: "Switch to dark theme" }).click();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await expect(page.getByRole("button", { name: "Switch to light theme" })).toBeVisible();
+});
+
+test.describe("below md", () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test("the sidebar is reachable from the menu button and closes on navigation", async ({ page }) => {
+    await page.goto("/components/kbd");
+    await page.getByRole("button", { name: "Open navigation" }).click();
+    await page.getByRole("dialog").getByRole("link", { name: "Thread List" }).click();
+    await expect(page).toHaveURL(/\/components\/thread-list$/);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+});
