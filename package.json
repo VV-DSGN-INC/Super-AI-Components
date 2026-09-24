@@ -1,6 +1,7 @@
 {
   "name": "super-ai-components",
   "private": true,
+  "license": "MIT",
   "packageManager": "pnpm@11.1.0",
   "scripts": {
     "dev": "turbo run dev",
