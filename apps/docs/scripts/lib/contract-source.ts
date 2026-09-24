@@ -7,7 +7,12 @@ import { pascal } from "./scaffold-templates";
 // without the dynamic-import-vars plugin guessing: the map is built at
 // transform time from the real directory, so a typo in `name` is a missing
 // key, never a silent empty module.
-const modules = import.meta.glob<Record<string, unknown>>("../../content/components/*.docs.tsx");
+// Next 16.3 declares its own non-generic import.meta.glob for Turbopack,
+// which shadows Vite's generic signature, so the element type is asserted below; the assertion is valid under both declarations.
+const modules = import.meta.glob("../../content/components/*.docs.tsx") as Record<
+  string,
+  () => Promise<Record<string, unknown>>
+>;
 
 /** Relative to this file; the glob's keys are spelled the same way. */
 export function docsModulePath(name: string): string {

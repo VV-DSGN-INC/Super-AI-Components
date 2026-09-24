@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Minor and patch bumps arrive as one grouped PR a week. Majors arrive alone.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # The primitive every registry item sits on. A bump is a deliberate PR
+      # run through the full gate, not a scheduled one (spec F6).
+      - dependency-name: "@base-ui/react"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
