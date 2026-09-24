@@ -16,7 +16,7 @@
     "lint": "echo \"no lint \u2014 typecheck + the drift gate cover the records; __fixtures__ are deliberately rule-breaking\""
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
+    "@types/node": "^26.6.2",
     "typescript": "^5",
     "vite": "^7.3.6",
     "vitest": "^4.1.8",
