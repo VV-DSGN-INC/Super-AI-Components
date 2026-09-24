@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# Runs every gate in .github/workflows/ci.yml's order. Stops at the first
-# failure, exactly as GitHub Actions does — which is precisely why order
-# matters: a red gate early in the pipeline hides every gate behind it, and
+# Runs every gate in .github/workflows/ci.yml's order: the `gates` job's steps,
+# then the `product` job's. CI runs those two jobs in parallel; this script runs
+# them back to back and stops at the first failure, as each job does — which is
+# why order matters: a red gate hides every gate behind it in the same job, and
 # that has already happened here (CONTINUE.md §1).
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)"

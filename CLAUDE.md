@@ -113,11 +113,12 @@ in the PR body, and say which schema it assumes.
 
 ## CI
 
-`.github/workflows/ci.yml`, job `verify`, in this order:
+`.github/workflows/ci.yml`, two parallel jobs, each in this order:
 
-`install --frozen-lockfile` → `lint` → `format:check` → `typecheck` → `check:tokens` → `check:contract` → `test` → `build:registry` → `build` → **Playwright smoke** → **Storybook a11y + interaction** → **consumer install test**
+`gates`: `install --frozen-lockfile` → `lint` → `format:check` → `typecheck` → `check:tokens` → `check:contract` → `test`
+`product`: `install --frozen-lockfile` → `build:registry` → `build` → **Playwright smoke** → **Storybook a11y + interaction** → **consumer install test**
 
-Twelve steps. The last three are the ones that actually exercise the product, and they are last — so any earlier failure hides them entirely. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
+Twelve steps. The last three are the ones that actually exercise the product; they run in their own job so a red `gates` step no longer hides them, and within a job a red step still hides every step after it. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
 
 `format:check` joined the list on 2026-09-07, when the tree was made
 prettier-clean. The bash hook used to deny a repo-wide format on the grounds
