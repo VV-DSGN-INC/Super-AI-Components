@@ -1300,3 +1300,47 @@ export const Boundary: Story = {
     await expect(canvas.getByRole("searchbox")).toBeInTheDocument();
   },
 };
+
+/**
+ * A text brand wider than the icon rail. Before the switcher slot clipped at
+ * icon-rail width, "Northwind Studio" ran out of the 3rem rail and painted under
+ * the doc-nav trigger, because the sidebar container is positioned and so sits
+ * above the static column beside it. The play probes every few pixels from the
+ * rail's edge to the brand's far end at the brand's own height: whatever is
+ * painted there may be the rail handle or the doc-nav, never the brand. The
+ * brand still overflows the rail (clipping changes paint, not layout, and the
+ * box itself is stretched to the rail, so the overflow is what is measured),
+ * which is asserted first so the probe cannot pass vacuously.
+ */
+export const WideRailBrand: Story = {
+  args: FULL_ARGS,
+  render: (args) => (
+    <DocsShell
+      {...args}
+      railBrand={
+        <div data-testid="wide-brand" className="px-1 text-sm font-medium whitespace-nowrap">
+          Northwind Studio
+        </div>
+      }
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const rail = canvasElement.querySelector<HTMLElement>(
+      '[data-region="icon-rail"] [data-slot="app-sidebar"]',
+    )!;
+    const brand = canvasElement.querySelector<HTMLElement>('[data-testid="wide-brand"]')!;
+    const railBox = rail.getBoundingClientRect();
+    const brandBox = brand.getBoundingClientRect();
+
+    const brandRight = brandBox.left + brand.scrollWidth;
+    await expect(brandRight).toBeGreaterThan(railBox.right + 16);
+
+    const y = brandBox.top + brandBox.height / 2;
+    const exposed: number[] = [];
+    for (let x = railBox.right + 2; x < brandRight - 2; x += 4) {
+      const hit = document.elementFromPoint(x, y);
+      if (hit && brand.contains(hit)) exposed.push(Math.round(x - railBox.right));
+    }
+    await expect(exposed).toEqual([]);
+  },
+};

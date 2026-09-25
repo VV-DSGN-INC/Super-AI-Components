@@ -77,7 +77,19 @@ export default function DocsShellDemo() {
   return (
     <DocsShell
       className="h-[42rem]"
-      railBrand={<div className="px-1 text-sm font-medium">Northwind</div>}
+      // A mark that reads at 3rem, and a name that steps aside when the rail
+      // collapses. The bare word this used to pass ran under the doc-nav trigger.
+      railBrand={
+        <div className="flex items-center gap-2 px-1 text-sm font-medium">
+          <span
+            aria-hidden
+            className="bg-foreground text-background flex size-6 shrink-0 items-center justify-center rounded-md text-xs font-semibold"
+          >
+            N
+          </span>
+          <span className="group-data-[collapsible=icon]:hidden">Northwind</span>
+        </div>
+      }
       areas={AREAS}
       activeAreaId="images"
       navSections={NAV_SECTIONS}

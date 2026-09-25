@@ -48,7 +48,13 @@ function AppSidebar({
   return (
     <Sidebar data-slot="app-sidebar" collapsible={collapsible} className={cn(className)} {...props}>
       {switcher ? (
-        <SidebarHeader data-slot="app-sidebar-switcher" className="gap-2">
+        // Clipped at icon-rail width, the same way the vendored SidebarContent
+        // clips itself: the slot takes whatever the host passes, and a brand
+        // wider than 3rem otherwise paints over the column beside the rail.
+        <SidebarHeader
+          data-slot="app-sidebar-switcher"
+          className="group-data-[collapsible=icon]:overflow-hidden gap-2"
+        >
           {switcher}
         </SidebarHeader>
       ) : null}
