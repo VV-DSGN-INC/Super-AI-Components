@@ -2265,6 +2265,59 @@ contract that rosters all 72, literal-free radius aliases, and eight dead
 `--sidebar-*` tokens are three separate decisions about how far to diverge
 from stock. Do not start them without a spec.
 
+### Added by the shell review (2026-09-24)
+
+All thirteen shells were reviewed rendered, at 1440, against what a real product of each
+kind has. The spec that acts on it is
+[`superpowers/specs/2026-09-24-shell-fidelity-design.md`](superpowers/specs/2026-09-24-shell-fidelity-design.md):
+stills replace the grey media boxes, a full-viewport preview route per block, the missing
+state stories, and two slots (`status`, `loading`) on every shell. What follows is the rest,
+recorded here and not built. Each is a flow a real app has and no shell can show today;
+each needs a component or a block, so each is a catalog decision, not a shell tweak.
+
+**Cross-cutting, taken by the spec (U3 and U4):** no shell-level failure state (offline,
+save failed, session expired), no first-paint loading state, no approval or blocked moment
+even though N8 `permission-prompt` and N10 `safety-block` ship, and demos that never show
+an account menu or notifications in the slots that already take one.
+
+**Per shell, parked:**
+
+- **O1 `home-shell`**: "continue where you left off"; an announcement strip (L3 renders only
+  in O11); recents with a type and a status.
+- **O2 `chat-shell`**: share or branch a conversation; a model picker in the composer (E2 is
+  composed by A7 only, see §5.2).
+- **O3 `studio-shell`**: export and share; version history; presence; unsaved-changes and
+  conflict.
+- **O4 `timeline-shell`**: clip actions (split, delete); ruler zoom; media upload in progress.
+- **O6 `generation-shell`**: result actions (download, variations, upscale, regenerate); a
+  run history; reference-image upload.
+- **O7 `library-shell`**: trash and restore; collections; a sort control; load more.
+- **O8 `explore-shell`**: like, save and follow on a card; a creator profile; report or NSFW
+  gate; search.
+- **O9 `artifact-shell`**: opening an artifact (no detail surface exists); version history;
+  publish or share; delete and restore; sort.
+- **O10 `records-shell`**: run history or logs (a failed run has no way in); bulk enable;
+  duplicate; an owner column; pagination.
+- **O11 `docs-shell`**: search; an on-page table of contents; prev and next; a version
+  switcher; copy on code; "was this helpful".
+- **O12 `settings-shell`**: an unsaved-changes bar; field validation errors; a danger zone
+  with confirmation; API keys (create, reveal once, revoke); an invite flow; invoices.
+- **O13 `notebook-shell`**: a source viewer the citation jump lands in; a notebook switcher;
+  share.
+- **O14 `auth-shell`**: forgot password; an OTP or MFA step.
+
+**Shell types the board never sampled**, from the catalog's own note (voice, extraction,
+vision, data and coding): a builder shell (chat beside a live preview with a code toggle),
+an answer shell (query first, sources rail), a voice session shell (orb, transcript, mute
+and end), an agent run shell (task list, live trace, the agent's viewport, approvals), a
+data analysis shell (chat beside a table and chart pane). Family O is frozen at fourteen by
+`catalog.manifest.test.ts`; any of these is a new family and its own decision.
+
+**Fixed the same day:** the docs shell's rail brand painted over the doc-nav trigger at
+icon width. B1's switcher header now clips at icon-rail width like the vendored
+`SidebarContent`, and `DocsShell.stories.tsx`'s `WideRailBrand` probes the paint to prove
+it.
+
 ## 9. What each wave found
 
 Moved to [`design-system/wave-history.md`](design-system/wave-history.md), which
