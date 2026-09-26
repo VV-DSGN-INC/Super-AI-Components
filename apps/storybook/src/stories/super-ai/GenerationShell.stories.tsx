@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
-import { expect, fn, userEvent, waitFor, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
-import { CompareViewer } from "@/registry/super-ai/compare-viewer";
 import { GenerationPanel } from "@/registry/super-ai/generation-panel";
 import { GenerationShell, type GenerationShellProps } from "@/registry/super-ai/generation-shell";
 import { ParameterSlider } from "@/registry/super-ai/parameter-panel";
@@ -270,69 +269,6 @@ export const Blocked: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByText("Response withheld")).toBeVisible();
-  },
-};
-
-/**
- * F5 `compare-viewer`, before and after, composed as one result's media.
- *
- * DEVIATION from the brief: the two panes carry `label: ""` rather than the
- * drafted "Static wide" / "Slow push in". Composed here, F5's default `side`
- * mode draws its pane-label chip absolutely positioned inside the panel it
- * shares a containing block with, and that panel is F5's own `overflow: auto`
- * element (react-resizable-panels' internal wrapper, not this file's). A
- * result-card tile in O6's four-column grid gives each pane about 73px at
- * 1200px, and any chip text longer than a couple of characters pushes the
- * chip's own content past that width, measured 86px of scrollWidth against
- * 73px of clientWidth for "Static wide", still 83 against 73 for the
- * four-character "Wide". Because the panel both establishes the absolute
- * child's containing block and sets `overflow: auto` on itself, the overflow
- * is real (not merely clipped by an ancestor) and axe's
- * `scrollable-region-focusable` fires on an element with no route to give it
- * one. Empty labels are the smallest change that keeps `side` mode, the two
- * numbered panes, and the play below intact: F5's own `EmptyLabel` story
- * already documents the resulting "small blank pill" as a known cosmetic
- * defect of the component itself, so this does not introduce a new one, it
- * lands on one already recorded. The fix belongs to F5 or to O6's grid
- * column width, not to this file.
- */
-export const CompareRecipe: Story = {
-  args: {
-    ...FULL_ARGS,
-    results: [
-      {
-        id: "compare",
-        state: "done",
-        label: "A lighthouse at dusk - two takes",
-        media: (
-          <CompareViewer
-            panes={[
-              {
-                id: "take-1",
-                label: "",
-                content: (
-                  <div className="bg-secondary flex h-full items-center justify-center text-xs">Take 1</div>
-                ),
-              },
-              {
-                id: "take-2",
-                label: "",
-                content: (
-                  <div className="bg-primary/20 flex h-full items-center justify-center text-xs">Take 2</div>
-                ),
-              },
-            ]}
-            onModeChange={fn()}
-          />
-        ),
-      },
-      ...RESULTS!.slice(0, 2),
-    ],
-  },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-    await expect(canvas.getByText("1")).toBeVisible();
-    await expect(canvas.getByText("2")).toBeVisible();
   },
 };
 
