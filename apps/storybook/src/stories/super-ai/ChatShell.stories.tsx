@@ -275,14 +275,15 @@ export const Paywalled: Story = {
 };
 
 /**
- * AI Elements' streaming message, with D1's stop control live. The cursor is
- * `aria-hidden` decoration - the fact that a response is still arriving is
- * carried by the composer's `aria-busy` state and by a visually-hidden status
- * span, not by the blinking bar alone.
+ * AI Elements' `Message` with a caret, and D1's stop control live. The cursor
+ * is `aria-hidden` decoration - the fact that a response is still arriving is
+ * carried by the composer's own `aria-busy` state and its visually-hidden
+ * `role="status"`, not by the blinking bar.
  */
 export const Streaming: Story = {
   args: {
     ...FULL_ARGS,
+    artifacts: [],
     messages: [
       MESSAGES![0]!,
       {
@@ -295,9 +296,6 @@ export const Streaming: Story = {
               aria-hidden
               className="ms-1 inline-block h-4 w-1.5 animate-pulse bg-foreground/70 align-middle motion-reduce:animate-none"
             />
-            <span role="status" className="sr-only">
-              Still generating a response.
-            </span>
           </>
         ),
       },
@@ -309,6 +307,11 @@ export const Streaming: Story = {
     const stop = canvas.getByRole("button", { name: "Stop generating" });
     await userEvent.click(stop);
     await expect(args.composer!.onStop).toHaveBeenCalledTimes(1);
+
+    const bar = canvasElement.querySelector<HTMLElement>('[data-slot="media-prompt-bar"]')!;
+    await expect(bar).toHaveAttribute("aria-busy", "true");
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="media-prompt-bar-status"]')!;
+    await expect(status).toHaveTextContent("Generating…");
   },
 };
 
@@ -316,33 +319,29 @@ export const Streaming: Story = {
  * A turn that failed to generate, with retry inline where the turn would have
  * rendered. No shipped component models this shape (`CONTINUE.md` §8,
  * "Added by the U3 case-story and slot wave"), so this composes the vendored
- * `Alert variant="destructive"` directly: it paints `bg-card text-destructive`
- * rather than a translucent destructive tint, which is what keeps it clear of
- * the contrast pairing `a11y-baseline.md` bans.
+ * `Alert variant="destructive"` directly, with `role="note"` in place of the
+ * variant's own `role="alert"` - the stream already carries `role="log"` and
+ * announces additions politely, the same reason N10 `safety-block` chose
+ * `role="note"` for its own destructive-adjacent block.
  *
- * DEVIATION FROM BRIEF: `Alert`'s own `destructive` variant only opts the root
- * into full-opacity `text-destructive` - the direct child carrying
- * `data-slot="alert-description"` gets `text-destructive/90` from the same cva
- * class, and that 90% opacity is what the description's own text and the
- * Retry button (which sets no colour of its own and inherits it) render in.
- * Measured at 4.49:1 against `bg-card`, under the 4.5 minimum - axe caught it.
- * The body span and the Button both carry an explicit `text-destructive`
- * class here to restore full opacity, which wins the cascade over the parent
- * rule. This is a marginal defect in the vendored `Alert` component's
- * destructive variant, not something this story can fix centrally without
- * widening scope past its two listed files; recorded here rather than in
- * `a11y-baseline.md`; the a11y ratchet gate can only shrink, not grow.
+ * The description and the Retry button both carry an explicit
+ * `text-destructive` class. The variant's own `AlertDescription` styling is
+ * `text-destructive/90`, which `a11y-baseline.md` measures at 4.49:1 against
+ * `bg-card`, under the 4.5 minimum. Restoring full opacity at the call site,
+ * rather than editing the vendored primitive, is the same house pattern
+ * `cost-chip`, `entity-row` and the dropdown's destructive row already use.
  */
 export const FailedTurn: Story = {
   args: {
     ...FULL_ARGS,
+    artifacts: [],
     messages: [
       MESSAGES![0]!,
       {
         id: "m2",
         role: "assistant",
         content: (
-          <Alert variant="destructive" data-slot="chat-shell-turn-failed">
+          <Alert variant="destructive" role="note">
             <AlertTriangle aria-hidden />
             <AlertTitle>Could not generate a reply</AlertTitle>
             <AlertDescription className="flex flex-col items-start gap-2">
@@ -366,43 +365,55 @@ export const FailedTurn: Story = {
 };
 
 /**
- * N8 `permission-prompt`, held open inline in the stream at the point the
- * agent paused. Arguments stay hidden behind the explicit expand, the same
- * rule F7 `approval-card`'s `detail` follows below.
+ * N8 `permission-prompt`, raised from the paused turn. It is an
+ * `AlertDialog` in every configuration (`permission-prompt.tsx`), so it
+ * renders as a modal over the whole shell rather than inline in the stream;
+ * the turn that raised it carries a line of text so the stream is not left
+ * holding an empty reply while the dialog is open. Arguments stay hidden
+ * behind the explicit expand, the same rule F7 `approval-card`'s `detail`
+ * follows below.
  *
- * DEVIATION FROM BRIEF: the brief's play queried `within(canvasElement)` for
- * the prompt's title and its Allow once button. `AlertDialogContent` renders
- * through `AlertDialogPortal`, which mounts to `document.body` rather than
- * into the story's canvas - the same shape `PermissionPrompt.stories.tsx`
- * already queries with `within(document.body)`. The assertions below are
- * unchanged in substance; only the query root moved to where the dialog
- * actually mounts.
+ * N8 has no inline presentation: no shipped component in this registry shows
+ * a paused tool call as a row in the stream (`CONTINUE.md` §8). The dialog
+ * portals to `document.body`, the same shape `PermissionPrompt.stories.tsx`
+ * already queries with `within(document.body)`.
  */
 export const ToolCall: Story = {
   args: {
     ...FULL_ARGS,
+    artifacts: [],
     messages: [
       MESSAGES![0]!,
       {
         id: "m2",
         role: "assistant",
         content: (
-          <PermissionPrompt
-            open
-            action="Send the audit to #brand-review"
-            reason="You asked for the summary to reach the channel once it was ready."
-            args={[{ key: "channel", value: "#brand-review" }]}
-            onAllowOnce={fn()}
-            onAlwaysAllow={fn()}
-            onDeny={fn()}
-            onEditFirst={fn()}
-          />
+          <>
+            I need to post the audit summary to #brand-review. Waiting for your go.
+            <PermissionPrompt
+              open
+              action="Send the audit to #brand-review"
+              reason="You asked for the summary to reach the channel once it was ready."
+              args={[{ key: "channel", value: "#brand-review" }]}
+              onAllowOnce={fn()}
+              onAlwaysAllow={fn()}
+              onDeny={fn()}
+              onEditFirst={fn()}
+            />
+          </>
         ),
       },
     ],
   },
-  play: async () => {
+  play: async ({ canvasElement }) => {
+    const stream = canvasElement.querySelector<HTMLElement>('[data-region="message-stream"]')!;
+    await expect(
+      within(stream).getByText("I need to post the audit summary to #brand-review. Waiting for your go."),
+    ).toBeVisible();
+
     const body = within(document.body);
+    const dialog = body.getByRole("alertdialog");
+    await expect(dialog).toBeVisible();
     await expect(body.getByText("Send the audit to #brand-review")).toBeVisible();
     await expect(body.getByRole("button", { name: "Allow once" })).toBeVisible();
   },
@@ -411,7 +422,8 @@ export const ToolCall: Story = {
 /**
  * F7 `approval-card` on a proposed artifact, before it has been kept. The
  * four verbs render in F7's own fixed order (Confirm, Edit, Regenerate, Skip)
- * regardless of the order the handlers are passed below.
+ * regardless of the order the handlers are passed below, demonstrated here by
+ * passing them out of that order.
  */
 export const ArtifactApproval: Story = {
   args: {
@@ -427,10 +439,10 @@ export const ArtifactApproval: Story = {
             summary="A 400-word summary comparing Northwind's voice against three competitors."
             detail="Northwind is the only voice in the set that opens on reassurance. Competitors open on speed."
             state="pending"
-            onConfirm={fn()}
-            onEdit={fn()}
-            onRegenerate={fn()}
             onSkip={fn()}
+            onRegenerate={fn()}
+            onEdit={fn()}
+            onConfirm={fn()}
           />
         ),
       },
@@ -439,6 +451,10 @@ export const ArtifactApproval: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    const verbs = canvasElement.querySelector<HTMLElement>('[data-slot="approval-card-verbs"]')!;
+    const order = Array.from(verbs.querySelectorAll("button")).map((button) => button.textContent);
+    await expect(order).toEqual(["Confirm", "Edit", "Regenerate", "Skip"]);
+
     await expect(canvas.getByRole("button", { name: "Confirm" })).toBeVisible();
     await expect(canvas.getByRole("button", { name: "Skip" })).toBeVisible();
   },
