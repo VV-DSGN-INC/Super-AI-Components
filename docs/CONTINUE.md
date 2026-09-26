@@ -2355,6 +2355,23 @@ variant="destructive"` (`bg-card text-destructive`, not a translucent tint,
   also a typed `railPinned: ModalityRailItemData[]`, not a `ReactNode`. Same
   reasoning, same blocker.
 
+Found while building (not in the plan):
+
+- **The vendored `Alert`'s destructive description sits under 4.5:1.**
+  `apps/docs/components/ui/alert.tsx` gives destructive
+  `data-slot=alert-description` children `text-destructive/90`, measured
+  4.49:1 on `bg-card`. O2's `FailedTurn` story sets `text-destructive` on its
+  children to pass axe; any consumer nesting plain text in a destructive
+  `AlertDescription` will hit the same failure. The fix belongs in the
+  vendored primitive, not in each caller.
+- **F5 `compare-viewer`'s side-mode label chip overflows a narrow pane.** In
+  an O6 result tile (about 73px per pane at 1200px) any label longer than
+  two characters overflows the pane's own `overflow: auto` panel, and axe
+  reports `scrollable-region-focusable`. U3 moved its `CompareRecipe` to O3's
+  artboard (about 240px per pane) rather than blank the labels, since the
+  pane switcher's accessible name is built from them. A compare inside a
+  generation grid needs the chip to truncate, or O6 needs a wider result.
+
 ## 9. What each wave found
 
 Moved to [`design-system/wave-history.md`](design-system/wave-history.md), which
