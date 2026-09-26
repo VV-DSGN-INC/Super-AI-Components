@@ -1,7 +1,10 @@
 "use client";
 
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { ArtifactShell, type ArtifactShellGroup } from "@/registry/super-ai/artifact-shell";
+import { PromoCard } from "@/registry/super-ai/promo-card";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const GROUPS: ArtifactShellGroup[] = [
   {
@@ -86,12 +89,17 @@ const GROUPS: ArtifactShellGroup[] = [
   },
 ];
 
+const WORKSPACES = [
+  { id: "northwind", name: "Northwind", plan: "Pro" },
+  { id: "acme", name: "Acme Labs" },
+];
+
 export default function ArtifactShellDemo() {
   return (
     <ArtifactShell
       className="h-[42rem]"
       title="Artifacts"
-      switcher={<div className="px-2 text-sm font-medium">Northwind</div>}
+      switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="northwind" onSelect={() => {}} />}
       nav={
         <SidebarNav
           aria-label="Library"
@@ -110,6 +118,26 @@ export default function ArtifactShellDemo() {
       }
       groups={GROUPS}
       onOpenFilters={() => {}}
+      sidebarPromo={
+        <PromoCard
+          flavour="upgrade"
+          title="Get more render minutes"
+          description="Upgrade to Pro for priority queues and longer exports."
+          ctaLabel="Upgrade"
+          onCtaClick={() => {}}
+          onDismiss={() => {}}
+        />
+      }
+      sidebarFooter={
+        <AccountMenu
+          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+          theme="system"
+          onThemeChange={() => {}}
+          background="default"
+          onBackgroundChange={() => {}}
+          onSignOut={() => {}}
+        />
+      }
     />
   );
 }
