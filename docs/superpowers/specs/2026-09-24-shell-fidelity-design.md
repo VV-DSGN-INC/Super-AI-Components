@@ -148,6 +148,35 @@ records the substitution where one is needed. If a row needs a component that do
 (the chat failure row and the library upload row are the two at risk), the story composes the
 nearest labelled sibling and the gap is written to `CONTINUE.md` §8, never a reimplementation.
 
+**Slots filled with the library (added 2026-09-25, Nick's call).** Measured on 2026-09-25
+across registry imports (transitive), shell demos and shell stories, 66 of the 103 non-block
+items appear in at least one shell and 37 appear in none. The manifest's `consumes` cannot
+show this, because shells take slots and only the demos fill them. Four shell demos pass
+`<div>Northwind</div>` into `switcher` and none passes a promo. This unit closes the part of
+that gap that existing shells should show:
+
+| shell                               | where               | component                                                     |
+| ----------------------------------- | ------------------- | ------------------------------------------------------------- |
+| every shell with an `AppSidebar`    | `switcher` slot     | B2 `workspace-switcher`                                       |
+| every shell with an `AppSidebar`    | `promo` slot        | B5 `promo-card`                                               |
+| every shell with an account slot    | the account trigger | B8 `account-menu` (only `SettingsShell.stories.tsx` shows it) |
+| chat                                | `ArtifactApproval`  | F7 `approval-card` on a proposed artifact                     |
+| timeline                            | `AudioRecipe`       | H6 `waveform-editor` and H7 `stem-mixer` in the track area    |
+| studio                              | `ObjectAIActions`   | I4 `ai-tools-menu` on the selected element                    |
+| studio or generation (task 0 picks) | `CompareRecipe`     | F5 `compare-viewer`, before and after                         |
+
+Recipes are stories and demo variants, not new props. If a slot cannot take the component as
+it ships, that is a gap for `CONTINUE.md` §8, not a wrapper.
+
+Still in no shell after this unit, by where they are expected to land: the agent components
+(`trace-timeline`, `task-tray`, `autonomy-selector`, `escalation-handoff`, `env-status`,
+`trust-dialog`, `source-cards`) and the document components (`inline-generate-popup`,
+`diff-review`, `selection-toolbar`, `quote-reply`) go to the AI shell family
+([`2026-09-25-ai-shell-family-design.md`](2026-09-25-ai-shell-family-design.md)). No home yet:
+`gen-settings-bar`, `reference-strip`, `generation-queue`, `generation-wizard`,
+`tts-composer`, `voice-clone-recorder`, `track-list`, `skill-menu`, `slot-summary`, `action-stack`, `coach-mark`, `whats-new`, `shortcuts-sheet`,
+`rate-limit-banner`, `connection-manager`, `usage-dashboard`, `data-views`.
+
 ### U4. Two slots every shell lacks
 
 - **`status`.** A region under the topbar (or above the content column where there is no
@@ -200,6 +229,10 @@ nearest labelled sibling and the gap is written to `CONTINUE.md` §8, never a re
 - Each block has a URL that renders it alone at viewport size, in both themes, with no
   horizontal overflow at 375.
 - The eight stories in §3 U3 exist, are described, and pass axe.
+- Every sidebar slot a shell demo exposes is filled with the component its JSDoc names, and
+  the four recipes in U3's second table exist. Re-running the 2026-09-25 measurement shows
+  `workspace-switcher`, `promo-card`, `account-menu`, `approval-card`, `waveform-editor`,
+  `stem-mixer`, `ai-tools-menu` and `compare-viewer` in at least one shell.
 - Every shell accepts `status` and `loading`; every `Loading` story passes the twin proof.
 - All twelve gates green on each PR; `pnpm prod:diff` clean after the next deploy.
 - Nick's look checkpoint after the first six stills passes before the rest are generated.
@@ -257,3 +290,5 @@ nearest labelled sibling and the gap is written to `CONTINUE.md` §8, never a re
 ## Changelog
 
 - 2026-09-24 — initial draft from the shell review and the fidelity brainstorm.
+- 2026-09-25: U3 gains "slots filled with the library", from the reference-board coverage
+  check (Nick chose it); matching success criterion added.
