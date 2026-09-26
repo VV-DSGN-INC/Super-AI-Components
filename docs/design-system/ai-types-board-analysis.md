@@ -3,8 +3,9 @@
 **Scope:** seven AI app types no shell covers: answer, agent run, data analysis, builder, voice
 session, document editor, presentation (the Q6 check).
 **Read:** 2026-09-25, public material only.
-**Status:** DRAFT. Nick's own-account captures are pending, and so is the pass that re-checks
-every inclusion claim against its capture. No decision rests on this draft; D26 waits for both.
+**Status:** DRAFT. Every claim was re-checked against its capture on 2026-09-26 (§4). Nick's
+own-account captures are pending and get the same check. No decision rests on this draft; D26
+waits for them.
 **Spec:** [`2026-09-25-ai-shell-family-design.md`](../superpowers/specs/2026-09-25-ai-shell-family-design.md)
 **Board:** [AI types slice · 2026-09-25](https://www.figma.com/design/sJHbH5byHh9FI0vf2HUG3N/Super-AI-Design-System?node-id=14-2),
 164 captures from 31 products, each captioned with its state, source kind and URL.
@@ -86,133 +87,150 @@ screenshots of every state except failed.
 
 ## 3. The finding
 
-**The AI panel sits on a different side depending on who came first.** Where the product was
-built around the AI, the conversation is the left column and the work surface is the right
-pane: v0 and Bolt (preview), ChatGPT agent and Manus (the agent's browser or computer). Where AI
-was added to an existing editor, the work surface keeps the centre and the AI docks right as an
-assistant pane: Google Docs, Word Copilot and Spellbook beside a document; PowerPoint, Pitch and
-Google Slides beside a slide canvas with the slide strip on the left.
+**Where the AI sits depends on whether the product was built around it.** What the captures
+show, after verification:
 
-This matters for the collapse test (spec §3.2). The grouping it was written for (builder, data
-analysis, agent run) does not hold, because data analysis does not use a side pane at all: Hex
-and Databricks Genie stack the question, the query and the result in one column. The grouping
-the evidence does suggest is two families of layout, AI-first and AI-added, and it crosses
-categories. On 2026-09-26 Nick replaced the collapse test with that split (spec decision 8);
-the provisional tally is at the end of §4.
+- **AI-first** (conversation left, work pane right): v0 and Bolt beside a live preview, Manus
+  beside the agent's computer.
+- **AI-added** (work surface centre, AI panel docked right): Google Docs and Spellbook beside a
+  document; PowerPoint and Pitch beside a slide canvas, with the slide strip on the left.
+- **A third arrangement for agents**: a step log on the left and the work detail on the right
+  (Devin, Genspark).
+- **Canva** puts its AI in the content panel beside the left tool rail, which is
+  `studio-shell`'s arrangement, not the AI-added one.
+- **Data analysis** shows no side pane anywhere: Hex and Databricks Genie stack question, query
+  and result. No capture shows a full window, so this stays unconfirmed.
 
-## 4. Inclusion test re-run, provisional
+On 2026-09-26 Nick replaced the collapse test with the AI-first and AI-added split (spec
+decision 8); the verified tally is at the end of §4.
 
-"Pending" means strict is below three but a capture on Nick's list could lift it.
+**A second pattern crosses categories and has not yet been checked as a claim.** The verifiers
+found AI output held for review and applied only on an explicit keep: v0 holds design edits as
+pending until applied, Bolt batches visual edits until "Save changes", Word offers keep,
+discard, regenerate or refine, PowerPoint's panel carries Keep and Undo, and Notion's
+suggestions carry insert and retry. If it holds it is the strongest cross-category pattern in
+the slice, and it maps onto K1 `ai-doc-block` (Keep, Edit, Regenerate, Discard) and F7
+`approval-card`.
+
+## 4. Inclusion test re-run, verified
+
+On 2026-09-26 seven verifiers re-opened every capture cited for each claim and tried to refute
+it. Only what a capture shows counted, not what the page's text describes. Two layout calls
+were corrected by hand after looking at the capture: Devin (the docs site's own "Ask a
+question" box had been read as Devin's chat) and Canva (its AI panel docks left, beside the
+tool rail).
+
+**Confirmed** lists the products whose captures show the pattern, **Strict** counts them under
+D18's rule, and **Partly** lists products where only part of it is visible. "Pending" means a
+capture on Nick's list could lift the count.
 
 ### Answer
 
-| Pattern                                                | Loose | Strict | Seen in                | Verdict                      |
-| ------------------------------------------------------ | ----- | ------ | ---------------------- | ---------------------------- |
-| Search steps that collapse once the answer lands (U13) | 2     | 2      | ChatGPT search, Elicit | pending (Perplexity)         |
-| Query-first start screen                               | 2     | 2      | Perplexity, Glean      | covered by C1 `hero-omnibox` |
-| Sources panel or cards                                 | 2     | 2      | ChatGPT search, Elicit | covered by K8 `source-cards` |
-| Full answer-page layout                                | 0     | 0      | none                   | not seen                     |
+| Pattern                                                | Confirmed         | Strict | Partly                                    | Verdict                                              |
+| ------------------------------------------------------ | ----------------- | ------ | ----------------------------------------- | ---------------------------------------------------- |
+| Search steps that collapse once the answer lands (U13) | none              | 0      | none                                      | not seen; the ChatGPT and Elicit captions overstated |
+| Query-first start screen                               | Perplexity, Glean | 2      |                                           | covered by C1 `hero-omnibox`                         |
+| Sources panel or cards                                 | ChatGPT search    | 1      | Elicit (the results table is the sources) | covered by K8 `source-cards`                         |
+| Full answer page in one window                         | none              | 0      |                                           | not seen                                             |
 
 ### Agent run
 
-| Pattern                                   | Loose | Strict | Seen in                        | Verdict                                             |
-| ----------------------------------------- | ----- | ------ | ------------------------------ | --------------------------------------------------- |
-| Agent viewport (browser, shell or screen) | 3     | 2      | ChatGPT agent, Manus, Devin    | pending                                             |
-| Takeover or approval prompt               | 3     | 2      | ChatGPT agent, Manus, Devin    | pending; N8 `permission-prompt` is the nearest item |
-| Step list or live trace                   | 3     | 2      | ChatGPT agent, Genspark, Devin | pending; N4 `trace-timeline` is the nearest item    |
-| Live and replay scrubber on the viewport  | 2     | 2      | Manus, Devin                   | pending                                             |
+| Pattern                                  | Confirmed                      | Strict | Partly | Verdict                                     |
+| ---------------------------------------- | ------------------------------ | ------ | ------ | ------------------------------------------- |
+| Agent viewport (browser, shell, screen)  | ChatGPT agent, Manus, Devin    | 2      |        | pending                                     |
+| Takeover or approval prompt              | ChatGPT agent, Manus           | 1      |        | pending; Devin only describes it in text    |
+| Step list or live trace                  | ChatGPT agent, Genspark, Devin | 2      |        | pending; N4 `trace-timeline` is the nearest |
+| Scrubber labelled "Live" on the viewport | Manus, Devin                   | 2      |        | pending                                     |
 
 ### Data analysis
 
-| Pattern                                       | Loose | Strict | Seen in                       | Verdict    |
-| --------------------------------------------- | ----- | ------ | ----------------------------- | ---------- |
-| Editable generated query (U9 `query-preview`) | 3     | 3      | Hex, Databricks Genie, Julius | **passes** |
-| Result table with row count and timing (U10)  | 2     | 2      | Hex, Databricks Genie         | pending    |
-| One chart with alternatives (U11)             | 0     | 0      | none                          | fails      |
-| Result stacked in the thread, no side pane    | 2     | 2      | Hex, Databricks Genie         | pending    |
+| Pattern                                       | Confirmed | Strict | Partly                                  | Verdict                                        |
+| --------------------------------------------- | --------- | ------ | --------------------------------------- | ---------------------------------------------- |
+| Editable generated query (U9 `query-preview`) | Hex       | 1      | Julius (code shown, no edit affordance) | pending; Genie's "Show code" is never expanded |
+| Result table with row count and timing (U10)  | Hex       | 1      | Databricks Genie (row count only)       | pending                                        |
+| One chart with alternatives (U11)             | none      | 0      |                                         | not seen; Hex has a table and chart toggle     |
+| Stacked in one column, no side pane           | none      | 0      | Hex, Databricks Genie (cropped)         | pending                                        |
 
 ### Builder
 
-| Pattern                                    | Loose | Strict | Seen in            | Verdict                                   |
-| ------------------------------------------ | ----- | ------ | ------------------ | ----------------------------------------- |
-| Chat left, live preview right, code toggle | 2     | 1      | v0, Bolt           | pending (Claude artifacts, Gemini canvas) |
-| Build log or console strip (U17)           | 2     | 1      | v0, Bolt           | pending                                   |
-| Code diff (U15)                            | 1     | 1      | v0                 | fails for now                             |
-| Changed-file tree (U16)                    | 1     | 1      | Bolt               | fails for now                             |
-| Checkpoint or version control              | 2     | 1      | Bolt, Replit Agent | pending                                   |
-
-All four builders are app builders, so the category is one data point until a general
-assistant's builder (Claude artifacts, Gemini canvas) is captured.
+| Pattern                                    | Confirmed    | Strict | Partly                               | Verdict            |
+| ------------------------------------------ | ------------ | ------ | ------------------------------------ | ------------------ |
+| Chat left, live preview right, code toggle | v0           | 1      | Bolt                                 | pending            |
+| Build log or console                       | Bolt         | 1      | v0 (a Console tab, never open)       | pending            |
+| Line-level code diff (U15)                 | v0           | 1      |                                      | pending            |
+| Changed-file tree (U16)                    | none         | 0      | Bolt (a file tree, no changed state) | pending            |
+| Checkpoint or rollback                     | Replit Agent | 1      |                                      | pending; Bolt none |
 
 ### Voice session
 
-| Pattern                          | Loose | Strict | Seen in                           | Verdict       |
-| -------------------------------- | ----- | ------ | --------------------------------- | ------------- |
-| Orb or visualiser                | 2     | 2      | ElevenLabs, Character.AI (avatar) | pending       |
-| Live transcript (U2)             | 2     | 1      | ElevenLabs, Hume                  | pending       |
-| Mute and end controls            | 3     | 2      | ElevenLabs, Hume, Character.AI    | pending       |
-| Voice picker that auditions (U3) | 1     | 1      | ElevenLabs                        | fails for now |
+| Pattern                          | Confirmed          | Strict | Partly                            | Verdict |
+| -------------------------------- | ------------------ | ------ | --------------------------------- | ------- |
+| Orb or visualiser                | ElevenLabs         | 1      | Character.AI (a round avatar)     | pending |
+| Live transcript (U2)             | ElevenLabs, Hume   | 1      |                                   | pending |
+| Mute and end controls            | Hume, Character.AI | 2      | ElevenLabs (a config toggle)      | pending |
+| Voice picker that auditions (U3) | none               | 0      | ElevenLabs (closed dropdown only) | pending |
 
-ElevenLabs publishes its orb, conversation and voice-picker as an MIT UI kit
-(`ui.elevenlabs.io`). That is the differentiation question already recorded for the AI-Orb repo.
+No capture in this category shows a call in progress.
 
 ### Document editor
 
-| Pattern                                 | Loose | Strict | Seen in                              | Verdict                              |
-| --------------------------------------- | ----- | ------ | ------------------------------------ | ------------------------------------ |
-| Document centre, AI panel docked right  | 3     | 2      | Google Docs, Word Copilot, Spellbook | pending (Notion's panel floats)      |
-| Inline generate on an empty line (K2)   | 2     | 2      | Word Copilot, Canva Docs             | pending; Notion describes it in text |
-| AI actions on a selection (K4)          | 2     | 1      | Google Docs, Word Copilot            | pending                              |
-| AI edits as tracked changes (K3)        | 1     | 1      | Spellbook (Word states it in text)   | pending                              |
-| Generated text marked as AI-made        | 2     | 2      | Canva Docs, Spellbook                | pending                              |
-| "Allow editing" versus "Chat only" gate | 1     | 1      | Word Copilot                         | noted for N9 `autonomy-selector`     |
+| Pattern                                | Confirmed              | Strict | Partly                                      | Verdict                                                 |
+| -------------------------------------- | ---------------------- | ------ | ------------------------------------------- | ------------------------------------------------------- |
+| Document centre, AI panel docked right | Google Docs, Spellbook | 2      |                                             | pending; Word's document and pane never appear together |
+| Notion's AI panel floats over the page | Notion AI              | 1      |                                             | the exception, confirmed                                |
+| Inline generate on an empty line (K2)  | Canva Docs             | 1      | Word Copilot (a floating button with chips) | pending                                                 |
+| AI actions on a selection (K4)         | Word Copilot           | 1      |                                             | pending                                                 |
+| AI edits as tracked changes (K3)       | Spellbook              | 1      |                                             | pending                                                 |
+| Generated text marked as AI-made       | Canva Docs             | 1      |                                             | pending                                                 |
+| "Allow editing" versus "Chat only"     | Word Copilot           | 1      |                                             | noted for N9 `autonomy-selector`                        |
 
 ### Presentation (the Q6 check)
 
-| Pattern                                  | Loose | Strict | Seen in                                        | Verdict    |
-| ---------------------------------------- | ----- | ------ | ---------------------------------------------- | ---------- |
-| Generate a deck from a prompt            | 5     | 3      | Gamma, Google Slides, Canva, PowerPoint, Pitch | **passes** |
-| Slide strip left, canvas, AI panel right | 3     | 2      | PowerPoint, Pitch, Google Slides               | pending    |
-| Outline step before slides               | 2     | 1      | Google Slides, PowerPoint                      | pending    |
-| Right-hand properties inspector          | 0     | 0      | none                                           | not seen   |
-| `studio-shell`'s full arrangement        | 0     | 0      | none                                           | not seen   |
+| Pattern                                  | Confirmed         | Strict | Partly                                      | Verdict                                   |
+| ---------------------------------------- | ----------------- | ------ | ------------------------------------------- | ----------------------------------------- |
+| Generate a deck from a prompt            | PowerPoint, Pitch | 2      | Gamma, Canva (the prompt entry, no deck)    | pending; Google Slides not visible        |
+| Slide strip left, canvas, AI panel right | PowerPoint, Pitch | 2      |                                             | pending; Google Slides not visible        |
+| Outline step before slides               | none              | 0      | PowerPoint (clarifying questions first)     | pending                                   |
+| Right-hand properties inspector          | none              | 0      |                                             | not seen; every side panel is an AI panel |
+| `studio-shell`'s full arrangement        | none              | 0      | Canva (tool rail, AI content panel, canvas) | not seen                                  |
 
-**Q6, provisional:** `studio-shell` does not cover presentation apps as drawn. They keep the
-strip on the left and give the right side to the AI, not to an inspector. Full-window captures
-of Gamma and Google Slides decide it.
+**Q6, provisional:** two presentation editors (PowerPoint, Pitch) use the AI-added arrangement
+and one (Canva) the studio one. Not settled.
 
-### The split test (spec §3.2), provisional
+### The split test (spec §3.2), verified
 
-| Group    | Arrangement                                                        | Products that show it                                                                 | Loose | Strict                                                                             | Verdict                                   |
-| -------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- | ----- | ---------------------------------------------------------------------------------- | ----------------------------------------- |
-| AI-first | conversation left, one work pane right, controls on the pane       | v0, Bolt (app builders); ChatGPT agent, Manus (general agents)                        | 4     | 2                                                                                  | pending (Claude artifacts, Gemini canvas) |
-| AI-added | document or canvas centre, AI panel docked right, opens and closes | Google Docs, Word Copilot, Google Slides, PowerPoint (office suite); Spellbook; Pitch | 6     | 3, or 2 if Spellbook counts as Word, since the arrangement is Word's own task pane | passes provisionally                      |
+| Group    | Products whose captures show it                           | Strict                              | Verdict                                                                       |
+| -------- | --------------------------------------------------------- | ----------------------------------- | ----------------------------------------------------------------------------- |
+| AI-first | v0, Bolt (app builders); Manus (general agent)            | 2                                   | pending: needs Claude artifacts, Gemini canvas or a full-window ChatGPT agent |
+| AI-added | Google Docs, PowerPoint (office suites); Spellbook; Pitch | 3, or 2 if Spellbook counts as Word | passes provisionally, on the Spellbook caveat                                 |
 
-Not in either: Devin nests Progress, Shell, Code and Browser tabs inside its work pane with the
-chat below it; Genspark splits a trace log from a result pane; Notion's AI panel floats over
-the page rather than docking. If the AI-added group holds after verification, presentation is a
-recipe on that shell and Q6 closes as "not `studio-shell`".
+In neither: Devin and Genspark (step log left, work detail right), Notion (floating panel),
+Canva (AI in the left content panel), Perplexity and ElevenLabs (single pane).
 
 ## 5. What the slice changes in the spec
 
-- **The collapse test's grouping fails on data analysis** (§3), and Nick replaced it with the
-  AI-first and AI-added split on 2026-09-26. The AI-added group passes provisionally; the
-  AI-first group needs one more product type.
-- **The order.** Document editor stays first: every component it needs ships and its layout is
-  the best-evidenced of the seven. Answer should drop behind agent run; no answer page was seen
-  whole.
-- **U-items.** U9 passes. U10, U11, U13, U15 to U17, U2 and U3 fail or are pending, as above.
+- **Verification removed both strict passes.** U9 `query-preview` and deck-from-prompt rested on
+  captions, not captures. Nothing clears D1 strictly from public material; the AI-added group
+  comes closest.
+- **The split test.** AI-added passes provisionally on the Spellbook caveat, and a full-window
+  Notion or Google Slides capture with a docked AI panel removes the caveat. AI-first is one
+  product type short.
+- **The order holds**: the AI-added group first (document editor, presentation), then agent
+  run, answer, data analysis, builder, voice.
+- **Agent run may need its own arrangement**: step log left, work detail right (Devin,
+  Genspark), which is in neither group.
 - **Builder** cannot clear D1 from app builders alone.
 
 ## 6. Not covered, and what closes it
 
 - **Failed states:** none in 31 products. Every session on Nick's list includes one deliberate
   failure.
-- **Full windows:** answer, data analysis and presentation have none.
+- **Full windows:** answer, data analysis and voice session have none; presentation has two
+  (PowerPoint, Pitch).
 - **Blocked products:** every OpenAI surface, Perplexity, Canva, Julius. Nick's ChatGPT session
   covers four categories.
-- **Verification:** every row in §4 is re-checked against its cited capture after Nick's
-  captures land, one pass over the whole board.
+- **Verification:** ran on the public board on 2026-09-26 (seven Sonnet verifiers, about 1.03M
+  tokens) and runs again, the same way, on Nick's captures.
 
 ## Sources
 
