@@ -239,8 +239,8 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       '@storybook/addon-a11y':
-        specifier: ^9.1.20
-        version: 9.1.20(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@3.8.4)(vite@7.3.6(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)))
+        specifier: ^10.6.0
+        version: 10.6.0(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@3.8.4)(vite@7.3.6(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)))
       '@storybook/addon-docs':
         specifier: ^9.1.10
         version: 9.1.20(@types/react@19.2.17)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@3.8.4)(vite@7.3.6(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)))
@@ -1728,10 +1728,10 @@ packages:
   '@standard-schema/utils@0.3.0':
     resolution: {integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==}
 
-  '@storybook/addon-a11y@9.1.20':
-    resolution: {integrity: sha512-VFZ34y4ApmFwIzPRs2OJrG6jtYhM5y91eCZLTlR/HMGQciKF4TdOJHjj+5vf91SOER5UDcLizXetpiUowiZSgw==}
+  '@storybook/addon-a11y@10.6.0':
+    resolution: {integrity: sha512-Z/CZor/F8H74/+IoeLroEQXQoVxvmjVtUgATJ95KPBolHxMaHLXLsYU0wosIiiORxmfRCnpen5pQl1n4+pBWQw==}
     peerDependencies:
-      storybook: ^9.1.20
+      storybook: ^10.6.0
 
   '@storybook/addon-docs@9.1.20':
     resolution: {integrity: sha512-eUIOd4u/p9994Nkv8Avn6r/xmS7D+RNmhmu6KGROefN3myLe3JfhSdimal2wDFe/h/OUNZ/LVVKMZrya9oEfKQ==}
@@ -2551,6 +2551,10 @@ packages:
 
   axe-core@4.12.1:
     resolution: {integrity: sha512-s7iGf5GaVMxEG0ENN9x+xTr7GFZCb1ZP/1uATUpCEK2X78nDB3RwbtFCo9pGAf9ru+VwoQ464DkaLEeRM08wJA==}
+    engines: {node: '>=4'}
+
+  axe-core@4.13.0:
+    resolution: {integrity: sha512-UzGt8zg7Ny8djbYMhxl2zuEevVa7r2gJjYY5Lwr1xM7+XU2nd6CkIWFTVcCIbAP63vSz71NaVyyuSk9lHKcy0A==}
     engines: {node: '>=4'}
 
   axobject-query@4.1.0:
@@ -6896,10 +6900,10 @@ snapshots:
 
   '@standard-schema/utils@0.3.0': {}
 
-  '@storybook/addon-a11y@9.1.20(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@3.8.4)(vite@7.3.6(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)))':
+  '@storybook/addon-a11y@10.6.0(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@3.8.4)(vite@7.3.6(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)))':
     dependencies:
       '@storybook/global': 5.0.0
-      axe-core: 4.12.1
+      axe-core: 4.13.0
       storybook: 9.1.20(@testing-library/dom@10.4.1)(prettier@3.8.4)(vite@7.3.6(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4))
 
   '@storybook/addon-docs@9.1.20(@types/react@19.2.17)(storybook@9.1.20(@testing-library/dom@10.4.1)(prettier@3.8.4)(vite@7.3.6(@types/node@26.6.2)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)))':
@@ -7779,6 +7783,8 @@ snapshots:
       possible-typed-array-names: 1.1.0
 
   axe-core@4.12.1: {}
+
+  axe-core@4.13.0: {}
 
   axobject-query@4.1.0: {}
 
