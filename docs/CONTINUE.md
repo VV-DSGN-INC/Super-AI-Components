@@ -2318,6 +2318,43 @@ icon width. B1's switcher header now clips at icon-rail width like the vendored
 `SidebarContent`, and `DocsShell.stories.tsx`'s `WideRailBrand` probes the paint to prove
 it.
 
+### Added by the U3 case-story and slot wave (2026-09-26)
+
+Six gaps found while building the U3 plan's state stories and library
+recipes (`superpowers/plans/2026-09-26-shell-fidelity-u3.md`). None of these
+add a shell prop or fork a component; each is recorded here rather than
+built, per the plan's own rule.
+
+- **No shipped component models a failed chat turn with inline retry.** O2
+  `chat-shell`'s `FailedTurn` case story composes the vendored `Alert
+variant="destructive"` (`bg-card text-destructive`, not a translucent tint,
+  so it clears 4.5:1 without an override) plus a plain `Button` as the
+  turn's `content`, rather than a catalog component. A shipped
+  "message-error" primitive (title, body, Retry) would let O2 and O13
+  `notebook-shell` (which composes the same AI Elements message turn) share
+  one row instead of each inlining its own markup.
+- **No shipped component models an upload-in-progress row with cancel.** A8
+  `preview-tile`'s states (`default`, `loading`, `locked`, `failed`) carry no
+  percentage and no cancel affordance reachable without nesting a control
+  inside the tile's own button. O7 `library-shell`'s `UploadProgress` case
+  story composes the vendored `Progress` and `Button` in `headerActions`,
+  beside the Upload control, rather than in the tile grid.
+- **O10 `records-shell` declares no `promo` prop.** Its `AppSidebar` is
+  filled with `switcher` and `nav` only (the shell's own comment says so:
+  "This shell forwards no `promo` or `footer` to B1"). B5 `promo-card`
+  cannot be composed into it without adding one, which is U4's job.
+- **O11 `docs-shell` declares no `promo` prop either.** Same shape as
+  records-shell: `AppSidebar` gets `switcher={railBrand}` and
+  `footer={railFooter}`, never `promo`. Also blocked on U4.
+- **O4 `timeline-shell` has no topbar and no `ReactNode` chrome slot.** Its
+  only generic slot is `railPinned`, typed `ModalityRailItemData[]` (id,
+  label, icon, badge) - a rail button that calls one shared `onSelect(id)`,
+  not a place to mount a live `AccountMenu` dropdown. B8 cannot be composed
+  here without a new prop.
+- **O8 `explore-shell` has the identical gap.** Its only generic slot is
+  also a typed `railPinned: ModalityRailItemData[]`, not a `ReactNode`. Same
+  reasoning, same blocker.
+
 ## 9. What each wave found
 
 Moved to [`design-system/wave-history.md`](design-system/wave-history.md), which
