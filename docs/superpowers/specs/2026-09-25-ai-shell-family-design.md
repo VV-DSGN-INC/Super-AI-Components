@@ -7,8 +7,9 @@
 analysis, builder and voice session. This spec samples their categories once, from real
 screens, then ships them one app type per PR in order of readiness. Each PR carries the app
 type's missing components and its shell, built to the fidelity spec's bar from the first
-commit. The sampling also tests whether builder, data analysis and agent run are one layout,
-and whether `studio-shell` already covers presentation apps (Q6).
+commit. The sampling also tests whether the AI-first app types (builder, agent run) share one
+layout and the AI-added ones (document editor, presentation) share another; the second answer
+also settles Q6.
 
 ## 1. Decisions made with Nick, 2026-09-25
 
@@ -32,6 +33,11 @@ and whether `studio-shell` already covers presentation apps (Q6).
    section folds into this app type.
 7. **Q6 is settled by sampling, not assumption.** Presentation apps join the slice to test
    whether `studio-shell` covers them. The Text Editor half of Q6 is answered by decision 6.
+8. **The collapse test is replaced (2026-09-26).** The public pass found data analysis stacks
+   its results in the thread, so the original grouping (builder, data analysis, agent run)
+   fails. What the captures show instead is two layouts that cross categories: AI-first apps
+   put the conversation left and the work pane right, and AI-added apps keep the document or
+   canvas in the centre with the AI docked right. §3.2 now tests those two groups.
 
 ## 2. Measured state at baseline
 
@@ -84,14 +90,23 @@ and whether `studio-shell` already covers presentation apps (Q6).
   (method, products, finding, inclusion test re-run, corrections, not covered, sources). The
   outcome is a decision, D26, and a new family in `catalog.md`.
 
-### 3.2 The collapse test (option C)
+### 3.2 The collapse test: AI-first and AI-added
 
-Builder, data analysis and agent run collapse into one `workspace-shell` with three recipes
-if **3+ unrelated products across those categories** share one arrangement at desktop width: a
-conversation column, one work pane, and the same header controls, with only the work pane's
-contents differing. Fewer than three and each ships as its own shell. Either way the work panes
-(`preview-pane`, `result-table` with `chart-suggestion`, the agent viewport) are components.
-The verdict and its evidence go in the analysis doc.
+Two groups, each tested on its own, each needing **3+ unrelated products (strict count, D18's
+rule) across the group's app types** at desktop width:
+
+- **AI-first** (builder, agent run): a conversation column on the left and one work pane on the
+  right, with header controls on the pane, and only the pane's contents differing (a live
+  preview, the agent's browser or screen). Passes: builder and agent run ship as one shell
+  (working name `workspace-shell`) with a recipe each.
+- **AI-added** (document editor, presentation): the document or slide canvas in the centre, an
+  optional strip or outline on the left, and an AI panel docked right that opens and closes.
+  Passes: both ship as one shell (working name `assisted-editor-shell`) with a recipe each.
+
+A group that fails ships its app types as separate shells. Either way the work panes
+(`preview-pane`, the agent viewport) are components. Data analysis, answer and voice session
+are not in either group and ship their own shells. The verdicts and their evidence go in the
+analysis doc.
 
 ### 3.3 One app type per PR
 
@@ -106,7 +121,9 @@ The verdict and its evidence go in the analysis doc.
 
 Order is by how much is missing, with voice last because of the cross-repo orb. It is
 provisional until the captures are read: the first public pass found full layouts for agent
-run and builder and none for answer, which may move agent run ahead of answer. Every PR
+run and builder and none for answer, which may move agent run ahead of answer. If a §3.2 group
+passes, its rows merge into one PR: one shell, one recipe per app type. The AI-added group
+would then go first, since neither of its app types is missing a component. Every PR
 follows the existing pipeline: `catalog.manifest.ts` prepared centrally as task 0,
 `pnpm new:component` for each item, blocks compose and never implement, `Empty` and
 `Responsive` exports, case stories, guidance module then `pnpm contract:emit`, and the `unslop`
@@ -122,8 +139,9 @@ done). If Nick changes the fidelity spec in review, this section follows it.
 
 If 3+ unrelated presentation products share `studio-shell`'s arrangement (modality rail,
 content panel, canvas, inspector, page strip; H5 `frame-strip` already has a slide-pages
-variant), Q6 closes as covered and `decisions.md` records it. If they do not, a presentation
-shell becomes a candidate for this family, sized like the others.
+variant), Q6 closes as covered and `decisions.md` records it. If they do not, presentation
+goes to the AI-added group in §3.2: a recipe on that shell if the group passes, its own shell
+if it fails. Either way `decisions.md` records the Q6 answer.
 
 ## 4. Alternatives considered
 
@@ -132,7 +150,9 @@ shell becomes a candidate for this family, sized like the others.
   category holds up all five. Not chosen because showcase weighs as much as coverage.
 - **C. One workspace shell, five recipes.** Fewest items, following D2, D5 and D6. Kept as the
   §3.2 test rather than chosen, because coverage shown as one entry undercuts both goals, and
-  answer and voice do not fit the layout.
+  answer and voice do not fit the layout. Its first grouping (builder, data analysis, agent
+  run) failed on the public pass and was replaced by the AI-first and AI-added split
+  (decision 8).
 - **Evidence from docs only** (the D14 and D18 method) and **no slice at all** (a new decision
   exempting the family from D1) were both rejected in §1.2.
 - **Nick collects the whole board**, or **public material only**, were rejected in §1.3: the
@@ -219,3 +239,5 @@ shell becomes a candidate for this family, sized like the others.
 - 2026-09-25: document editor and presentation sampled (two passes of two readers; the first
   skipped four products by misreading a numbered reply, the second covered them). The board
   holds 164 captures across 31 products; Nick's own-account captures are next.
+- 2026-09-26: collapse test replaced by the AI-first and AI-added split (decision 8, Nick's
+  call after the public pass); §3.3 and §3.5 follow it.
