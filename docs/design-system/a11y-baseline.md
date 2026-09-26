@@ -377,6 +377,29 @@ row still highlighted, so the state is in front of axe from here on rather than
 depending on a teardown race. There is no equivalent for `account-menu` yet —
 its sign-out row is fixed but only the thread-list one is gated.
 
+### The fifth instance: `Alert variant="destructive"`'s description opacity
+
+`components/ui/alert.tsx` gives the destructive variant's
+`data-slot="alert-description"` children `text-destructive/90` from a shared
+`cva` class, not the full-opacity `text-destructive` the root itself gets.
+Measured in the browser: **4.49:1**, `text-destructive` at 90% opacity over
+`bg-card`, under the 4.5:1 minimum by a hair. Nothing in the registry
+composes a destructive `Alert` today (`grep -rn 'variant="destructive"'
+registry/super-ai/**/*.tsx` finds none), so the first caller to hit it is
+`ChatShell.stories.tsx`'s `FailedTurn` case story, composing the vendored
+`Alert` directly for a shape (a failed chat turn with inline retry) no
+shipped component models yet (`CONTINUE.md` §8).
+
+Fixed the same way as `cost-chip`, `entity-row`, `badge` and the dropdown's
+destructive row: at the call site, not in the vendored primitive. The
+story's `AlertDescription` sets `text-destructive` explicitly on its body
+span and on the `Retry` button (which otherwise sets no colour of its own
+and inherits the 90%-opacity one), winning the cascade over the parent's
+class and restoring full-opacity `text-destructive`, which clears 4.5:1. Any
+caller nesting plain text inside a destructive `AlertDescription` needs the
+same override - this is the documented house pattern for this vendored
+primitive's shortfall, not a defect for the next caller to rediscover.
+
 ### Audit: latent instances found elsewhere in the registry — now fixed
 
 The previous round's audit (grepping `apps/docs/registry/super-ai/*.tsx` for

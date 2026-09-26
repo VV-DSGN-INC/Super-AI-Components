@@ -2320,25 +2320,35 @@ it.
 
 ### Added by the U3 case-story and slot wave (2026-09-26)
 
-Six gaps found while building the U3 plan's state stories and library
+Eight gaps found while building the U3 plan's state stories and library
 recipes (`superpowers/plans/2026-09-26-shell-fidelity-u3.md`). None of these
 add a shell prop or fork a component; each is recorded here rather than
 built, per the plan's own rule.
 
 - **No shipped component models a failed chat turn with inline retry.** O2
   `chat-shell`'s `FailedTurn` case story composes the vendored `Alert
-variant="destructive"` (`bg-card text-destructive`, not a translucent tint,
-  so it clears 4.5:1 without an override) plus a plain `Button` as the
-  turn's `content`, rather than a catalog component. A shipped
-  "message-error" primitive (title, body, Retry) would let O2 and O13
-  `notebook-shell` (which composes the same AI Elements message turn) share
-  one row instead of each inlining its own markup.
+variant="destructive"` (`bg-card`, not a translucent tint) plus a plain
+  `Button` as the turn's `content`, rather than a catalog component; the
+  description and the Retry button both set `text-destructive` explicitly
+  to clear 4.49:1, which the variant's own `text-destructive/90` does not
+  (see the vendored-Alert entry below). A shipped "message-error" primitive
+  (title, body, Retry) would let O2 and O13 `notebook-shell` (which composes
+  the same AI Elements message turn) share one row instead of each inlining
+  its own markup.
+- **N8 `permission-prompt` has no inline presentation.** It is an
+  `AlertDialog` in every configuration (`permission-prompt.tsx`), so it
+  always renders as a modal over the whole shell rather than as a row in the
+  stream. O2 `chat-shell`'s `ToolCall` case story raises it from the paused
+  turn, which is the only presentation N8 has; no shipped component in this
+  registry shows a paused tool call inline.
 - **No shipped component models an upload-in-progress row with cancel.** A8
   `preview-tile`'s states (`default`, `loading`, `locked`, `failed`) carry no
   percentage and no cancel affordance reachable without nesting a control
-  inside the tile's own button. O7 `library-shell`'s `UploadProgress` case
-  story composes the vendored `Progress` and `Button` in `headerActions`,
-  beside the Upload control, rather than in the tile grid.
+  inside the tile's own button. The two nearest siblings each cover half the
+  shape: N12 `task-tray` has cancel (`onCancelTask`) but no percentage, and
+  F1 `result-card` in `streaming` has a percentage but no cancel. O7
+  `library-shell`'s `UploadProgress` case story composes the vendored
+  `Progress` and `Button` in `headerActions` instead of the tile grid.
 - **O10 `records-shell` declares no `promo` prop.** Its `AppSidebar` is
   filled with `switcher` and `nav` only (the shell's own comment says so:
   "This shell forwards no `promo` or `footer` to B1"). B5 `promo-card`
@@ -2354,16 +2364,24 @@ variant="destructive"` (`bg-card text-destructive`, not a translucent tint,
 - **O8 `explore-shell` has the identical gap.** Its only generic slot is
   also a typed `railPinned: ModalityRailItemData[]`, not a `ReactNode`. Same
   reasoning, same blocker.
+- **In `generation-shell` and `records-shell` the account menu cannot be the
+  trailing header item without a prop.** `generation-shell`'s topbar renders
+  its `actions` slot before the credits chip, and `records-shell` renders
+  `headerActions` before the create action. B8 `account-menu` lands in both
+  demos, just not last - the same U4 prop gap as the two `promo` entries
+  above.
 
 Found while building (not in the plan):
 
 - **The vendored `Alert`'s destructive description sits under 4.5:1.**
   `apps/docs/components/ui/alert.tsx` gives destructive
-  `data-slot=alert-description` children `text-destructive/90`, measured
-  4.49:1 on `bg-card`. O2's `FailedTurn` story sets `text-destructive` on its
-  children to pass axe; any consumer nesting plain text in a destructive
-  `AlertDescription` will hit the same failure. The fix belongs in the
-  vendored primitive, not in each caller.
+  `data-slot=alert-description` children `text-destructive/90`, which
+  `a11y-baseline.md` now records at 4.49:1 on `bg-card` beside the badge
+  entry. The house pattern is the call-site override, not a change to the
+  vendored file: O2's `FailedTurn` story sets `text-destructive` on the
+  description and the Retry button to clear it, matching the
+  `cost-chip`/`entity-row`/`badge` precedent, and any caller nesting plain
+  text in a destructive `AlertDescription` needs the same override.
 - **F5 `compare-viewer`'s side-mode label chip overflows a narrow pane.** In
   an O6 result tile (about 73px per pane at 1200px) any label longer than
   two characters overflows the pane's own `overflow: auto` panel, and axe
@@ -2371,6 +2389,11 @@ Found while building (not in the plan):
   artboard (about 240px per pane) rather than blank the labels, since the
   pane switcher's accessible name is built from them. A compare inside a
   generation grid needs the chip to truncate, or O6 needs a wider result.
+- **docs-shell switcher and railFooter fill (plan Task 11) waits for
+  `claude/docs-shell-rail-brand` to reach `origin/main`.** Skipped this
+  wave: the rail fix `Fixed the same day` above says landed, but Task 11's
+  own gate found it absent from `origin/main`. Whoever resumes Task 11
+  should re-run that gate rather than trust either sentence on its own.
 
 ## 9. What each wave found
 
