@@ -1,11 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { AlertTriangle, RotateCcw } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { ChatShell, type ChatShellProps } from "@/registry/super-ai/chat-shell";
 import { NotebookShell } from "@/registry/super-ai/notebook-shell";
+import { ApprovalCard } from "@/registry/super-ai/approval-card";
+import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -266,6 +271,176 @@ export const Paywalled: Story = {
       after: "Everything up to the render is done — the audit itself is finished and saved.",
       onUpgrade: () => {},
     },
+  },
+};
+
+/**
+ * AI Elements' streaming message, with D1's stop control live. The cursor is
+ * `aria-hidden` decoration - the fact that a response is still arriving is
+ * carried by the composer's `aria-busy` state and by a visually-hidden status
+ * span, not by the blinking bar alone.
+ */
+export const Streaming: Story = {
+  args: {
+    ...FULL_ARGS,
+    messages: [
+      MESSAGES![0]!,
+      {
+        id: "m2",
+        role: "assistant",
+        content: (
+          <>
+            Reading the four voice guides now
+            <span
+              aria-hidden
+              className="ms-1 inline-block h-4 w-1.5 animate-pulse bg-foreground/70 align-middle motion-reduce:animate-none"
+            />
+            <span role="status" className="sr-only">
+              Still generating a response.
+            </span>
+          </>
+        ),
+      },
+    ],
+    composer: { generating: true, onStop: fn() },
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const stop = canvas.getByRole("button", { name: "Stop generating" });
+    await userEvent.click(stop);
+    await expect(args.composer!.onStop).toHaveBeenCalledTimes(1);
+  },
+};
+
+/**
+ * A turn that failed to generate, with retry inline where the turn would have
+ * rendered. No shipped component models this shape (`CONTINUE.md` §8,
+ * "Added by the U3 case-story and slot wave"), so this composes the vendored
+ * `Alert variant="destructive"` directly: it paints `bg-card text-destructive`
+ * rather than a translucent destructive tint, which is what keeps it clear of
+ * the contrast pairing `a11y-baseline.md` bans.
+ *
+ * DEVIATION FROM BRIEF: `Alert`'s own `destructive` variant only opts the root
+ * into full-opacity `text-destructive` - the direct child carrying
+ * `data-slot="alert-description"` gets `text-destructive/90` from the same cva
+ * class, and that 90% opacity is what the description's own text and the
+ * Retry button (which sets no colour of its own and inherits it) render in.
+ * Measured at 4.49:1 against `bg-card`, under the 4.5 minimum - axe caught it.
+ * The body span and the Button both carry an explicit `text-destructive`
+ * class here to restore full opacity, which wins the cascade over the parent
+ * rule. This is a marginal defect in the vendored `Alert` component's
+ * destructive variant, not something this story can fix centrally without
+ * widening scope past its two listed files; recorded here rather than in
+ * `a11y-baseline.md`; the a11y ratchet gate can only shrink, not grow.
+ */
+export const FailedTurn: Story = {
+  args: {
+    ...FULL_ARGS,
+    messages: [
+      MESSAGES![0]!,
+      {
+        id: "m2",
+        role: "assistant",
+        content: (
+          <Alert variant="destructive" data-slot="chat-shell-turn-failed">
+            <AlertTriangle aria-hidden />
+            <AlertTitle>Could not generate a reply</AlertTitle>
+            <AlertDescription className="flex flex-col items-start gap-2">
+              <span className="text-destructive">The model timed out after 30 seconds.</span>
+              <Button type="button" size="sm" variant="outline" className="text-destructive" onClick={fn()}>
+                <RotateCcw aria-hidden />
+                Retry
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ),
+      },
+    ],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Could not generate a reply")).toBeVisible();
+    const retry = canvas.getByRole("button", { name: "Retry" });
+    await expect(retry).toBeVisible();
+  },
+};
+
+/**
+ * N8 `permission-prompt`, held open inline in the stream at the point the
+ * agent paused. Arguments stay hidden behind the explicit expand, the same
+ * rule F7 `approval-card`'s `detail` follows below.
+ *
+ * DEVIATION FROM BRIEF: the brief's play queried `within(canvasElement)` for
+ * the prompt's title and its Allow once button. `AlertDialogContent` renders
+ * through `AlertDialogPortal`, which mounts to `document.body` rather than
+ * into the story's canvas - the same shape `PermissionPrompt.stories.tsx`
+ * already queries with `within(document.body)`. The assertions below are
+ * unchanged in substance; only the query root moved to where the dialog
+ * actually mounts.
+ */
+export const ToolCall: Story = {
+  args: {
+    ...FULL_ARGS,
+    messages: [
+      MESSAGES![0]!,
+      {
+        id: "m2",
+        role: "assistant",
+        content: (
+          <PermissionPrompt
+            open
+            action="Send the audit to #brand-review"
+            reason="You asked for the summary to reach the channel once it was ready."
+            args={[{ key: "channel", value: "#brand-review" }]}
+            onAllowOnce={fn()}
+            onAlwaysAllow={fn()}
+            onDeny={fn()}
+            onEditFirst={fn()}
+          />
+        ),
+      },
+    ],
+  },
+  play: async () => {
+    const body = within(document.body);
+    await expect(body.getByText("Send the audit to #brand-review")).toBeVisible();
+    await expect(body.getByRole("button", { name: "Allow once" })).toBeVisible();
+  },
+};
+
+/**
+ * F7 `approval-card` on a proposed artifact, before it has been kept. The
+ * four verbs render in F7's own fixed order (Confirm, Edit, Regenerate, Skip)
+ * regardless of the order the handlers are passed below.
+ */
+export const ArtifactApproval: Story = {
+  args: {
+    ...FULL_ARGS,
+    messages: [
+      MESSAGES![0]!,
+      {
+        id: "m2",
+        role: "assistant",
+        content: (
+          <ApprovalCard
+            title="Brand audit for Northwind"
+            summary="A 400-word summary comparing Northwind's voice against three competitors."
+            detail="Northwind is the only voice in the set that opens on reassurance. Competitors open on speed."
+            state="pending"
+            onConfirm={fn()}
+            onEdit={fn()}
+            onRegenerate={fn()}
+            onSkip={fn()}
+          />
+        ),
+      },
+    ],
+    artifacts: [],
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("button", { name: "Confirm" })).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Skip" })).toBeVisible();
   },
 };
 

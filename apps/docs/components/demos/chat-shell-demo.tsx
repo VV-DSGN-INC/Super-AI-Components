@@ -1,6 +1,9 @@
 "use client";
 
 import { ChatShell } from "@/registry/super-ai/chat-shell";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
+import { PromoCard } from "@/registry/super-ai/promo-card";
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 
 const THREAD_GROUPS = [
   {
@@ -61,13 +64,18 @@ const ARTIFACTS = [
   },
 ];
 
+const WORKSPACES = [
+  { id: "northwind", name: "Northwind", plan: "Pro" },
+  { id: "acme", name: "Acme Labs" },
+];
+
 export default function ChatShellDemo() {
   return (
     <ChatShell
       className="h-[42rem]"
       title="Brand audit for Northwind"
       topbar={{ privacy: { label: "Private" }, savedLabel: "Saved just now" }}
-      switcher={<div className="px-2 text-sm font-medium">Northwind</div>}
+      switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="northwind" onSelect={() => {}} />}
       threadGroups={THREAD_GROUPS}
       activeThreadId="brand-audit"
       messages={MESSAGES}
@@ -78,6 +86,26 @@ export default function ChatShellDemo() {
         { value: "build", label: "Build" },
       ]}
       mode="ask"
+      sidebarPromo={
+        <PromoCard
+          flavour="upgrade"
+          title="Get more render minutes"
+          description="Upgrade to Pro for priority queues and longer exports."
+          ctaLabel="Upgrade"
+          onCtaClick={() => {}}
+          onDismiss={() => {}}
+        />
+      }
+      sidebarFooter={
+        <AccountMenu
+          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+          theme="system"
+          onThemeChange={() => {}}
+          background="default"
+          onBackgroundChange={() => {}}
+          onSignOut={() => {}}
+        />
+      }
     />
   );
 }
