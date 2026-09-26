@@ -245,30 +245,38 @@ export const SelectMode: Story = {
 /**
  * N10 `safety-block` in the result canvas: the run completed, but the output
  * is withheld. `variant="output-blocked"` is the correct half of the pair,
- * since the request itself was not stopped.
+ * since the request itself was not stopped. It renders in the shell's `empty`
+ * slot rather than as a result's `media`, with `results: []`, so it gets the
+ * full canvas width `EMPTY_SPANS_THE_CANVAS` gives F2's day-one empty state
+ * instead of clipping inside A8's square tile, and no card announces "Result
+ * ready" for output that was withheld.
  */
 export const Blocked: Story = {
   args: {
     ...FULL_ARGS,
-    results: [
-      {
-        id: "blocked",
-        state: "done",
-        label: "A lighthouse at dusk, slow push in",
-        media: (
-          <SafetyBlock
-            variant="output-blocked"
-            policy="Likeness policy"
-            alternatives="Try a wider shot with no recognisable landmark."
-          />
-        ),
-      },
-      ...RESULTS!.slice(0, 2),
-    ],
+    results: [],
+    empty: (
+      <SafetyBlock
+        variant="output-blocked"
+        policy="Likeness policy"
+        alternatives="Try a wider shot with no recognisable landmark."
+      />
+    ),
   },
   play: async ({ canvasElement }) => {
+    const shell = shellRoot(canvasElement);
     const canvas = within(canvasElement);
     await expect(canvas.getByText("Response withheld")).toBeVisible();
+
+    // The alternatives text is what N10's own docblock calls mandatory, and
+    // it has to fit inside the canvas rather than fall below a tile's clip.
+    const alternatives = canvas.getByText("Try a wider shot with no recognisable landmark.");
+    await expect(alternatives).toBeVisible();
+    const resultCanvas = region(shell, "result-canvas");
+    const canvasBox = resultCanvas.getBoundingClientRect();
+    const altBox = alternatives.getBoundingClientRect();
+    await expect(altBox.top).toBeGreaterThanOrEqual(Math.floor(canvasBox.top));
+    await expect(altBox.bottom).toBeLessThanOrEqual(Math.ceil(canvasBox.bottom));
   },
 };
 
