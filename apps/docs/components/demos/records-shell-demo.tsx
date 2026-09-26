@@ -1,7 +1,10 @@
 "use client";
 
+import * as React from "react";
+
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { RecordsShell } from "@/registry/super-ai/records-shell";
+import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const FOLDERS = [
@@ -60,11 +63,34 @@ const WORKSPACES = [
 ];
 
 export default function RecordsShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+
   return (
     <RecordsShell
       className="h-[42rem]"
       title="Scenarios"
-      switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="northwind" onSelect={() => {}} />}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
+      nav={
+        <SidebarNav
+          activeId="all"
+          sections={[
+            {
+              label: "Scenarios",
+              items: [
+                { id: "all", label: "All scenarios", count: RECORDS.length },
+                { id: "marketing", label: "Marketing", count: 12 },
+                { id: "revops", label: "Revenue ops", count: 5 },
+              ],
+            },
+          ]}
+        />
+      }
       headerActions={
         <AccountMenu
           user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}

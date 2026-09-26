@@ -1,6 +1,7 @@
 "use client";
 
 import { Clapperboard, Image as ImageIcon, Mic, Sparkles, Type, WandSparkles } from "lucide-react";
+import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
@@ -61,7 +62,7 @@ const RECENTS = [
 ];
 
 const WORKSPACES = [
-  { id: "northwind", name: "Northwind", plan: "Pro" },
+  { id: "northwind", name: "Northwind" },
   { id: "acme", name: "Acme Labs" },
 ];
 
@@ -93,12 +94,21 @@ const RECOMMENDATIONS: HomeShellProps["recommendations"] = [
 ];
 
 export default function HomeShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+  const [promoDismissed, setPromoDismissed] = React.useState(false);
+
   return (
     <HomeShell
       className="h-[42rem]"
       title="Northwind"
       headline="Good afternoon"
-      switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="northwind" onSelect={() => {}} />}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
       nav={<SidebarNav sections={NAV} activeId="home" />}
       credits={{ balance: 420, total: 1000, form: "ring", onManage: () => {} }}
       omnibox={{
@@ -123,11 +133,12 @@ export default function HomeShellDemo() {
       sidebarPromo={
         <PromoCard
           flavour="upgrade"
-          title="Get more render minutes"
-          description="Upgrade to Pro for priority queues and longer exports."
-          ctaLabel="Upgrade"
+          title="Get more credits"
+          description="Upgrade to Pro for a larger monthly credit allowance and priority queues."
+          ctaLabel="Upgrade to Pro"
           onCtaClick={() => {}}
-          onDismiss={() => {}}
+          dismissed={promoDismissed}
+          onDismiss={() => setPromoDismissed(true)}
         />
       }
       sidebarFooter={

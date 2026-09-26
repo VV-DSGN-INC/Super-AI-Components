@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { ArtifactShell, type ArtifactShellGroup } from "@/registry/super-ai/artifact-shell";
 import { PromoCard } from "@/registry/super-ai/promo-card";
@@ -90,16 +92,25 @@ const GROUPS: ArtifactShellGroup[] = [
 ];
 
 const WORKSPACES = [
-  { id: "northwind", name: "Northwind", plan: "Pro" },
+  { id: "northwind", name: "Northwind" },
   { id: "acme", name: "Acme Labs" },
 ];
 
 export default function ArtifactShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+  const [promoDismissed, setPromoDismissed] = React.useState(false);
+
   return (
     <ArtifactShell
       className="h-[42rem]"
       title="Artifacts"
-      switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="northwind" onSelect={() => {}} />}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
       nav={
         <SidebarNav
           aria-label="Library"
@@ -120,12 +131,13 @@ export default function ArtifactShellDemo() {
       onOpenFilters={() => {}}
       sidebarPromo={
         <PromoCard
-          flavour="upgrade"
-          title="Get more render minutes"
-          description="Upgrade to Pro for priority queues and longer exports."
-          ctaLabel="Upgrade"
+          flavour="invite"
+          title="Share this library with the team"
+          description="Anyone you invite can open what's shared here."
+          ctaLabel="Invite a teammate"
           onCtaClick={() => {}}
-          onDismiss={() => {}}
+          dismissed={promoDismissed}
+          onDismiss={() => setPromoDismissed(true)}
         />
       }
       sidebarFooter={

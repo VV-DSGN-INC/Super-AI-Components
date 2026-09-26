@@ -1,9 +1,11 @@
 "use client";
 
-import { ChatShell } from "@/registry/super-ai/chat-shell";
-import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
-import { PromoCard } from "@/registry/super-ai/promo-card";
+import * as React from "react";
+
 import { AccountMenu } from "@/registry/super-ai/account-menu";
+import { ChatShell } from "@/registry/super-ai/chat-shell";
+import { PromoCard } from "@/registry/super-ai/promo-card";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const THREAD_GROUPS = [
   {
@@ -65,17 +67,26 @@ const ARTIFACTS = [
 ];
 
 const WORKSPACES = [
-  { id: "northwind", name: "Northwind", plan: "Pro" },
+  { id: "northwind", name: "Northwind" },
   { id: "acme", name: "Acme Labs" },
 ];
 
 export default function ChatShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+  const [promoDismissed, setPromoDismissed] = React.useState(false);
+
   return (
     <ChatShell
       className="h-[42rem]"
       title="Brand audit for Northwind"
       topbar={{ privacy: { label: "Private" }, savedLabel: "Saved just now" }}
-      switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="northwind" onSelect={() => {}} />}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
       threadGroups={THREAD_GROUPS}
       activeThreadId="brand-audit"
       messages={MESSAGES}
@@ -88,12 +99,13 @@ export default function ChatShellDemo() {
       mode="ask"
       sidebarPromo={
         <PromoCard
-          flavour="upgrade"
-          title="Get more render minutes"
-          description="Upgrade to Pro for priority queues and longer exports."
-          ctaLabel="Upgrade"
+          flavour="invite"
+          title="Bring a teammate into this thread"
+          description="Share Northwind's brand audit with the rest of the team."
+          ctaLabel="Invite a teammate"
           onCtaClick={() => {}}
-          onDismiss={() => {}}
+          dismissed={promoDismissed}
+          onDismiss={() => setPromoDismissed(true)}
         />
       }
       sidebarFooter={
