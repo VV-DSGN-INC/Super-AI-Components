@@ -3,6 +3,8 @@ import { Compass, Images } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { LibraryShellDocs } from "@/content/components/library-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
@@ -1018,5 +1020,37 @@ export const Boundary: Story = {
     await expect(within(canvasElement).getByRole("radio", { name: "Small" })).toBeVisible();
     // O8 docks a prompt bar over its feed; O7 has nowhere to type a prompt.
     await expect(canvasElement.querySelector('[data-region="docked-prompt-bar"]')).not.toBeNull();
+  },
+};
+
+/**
+ * An upload in progress, with cancel. No shipped component models this shape
+ * (`CONTINUE.md` §8, "Added by the U3 case-story and slot wave") - A8
+ * `preview-tile`'s `loading` state carries no percentage and no cancel
+ * affordance, so this composes the vendored `Progress` and `Button` in
+ * `headerActions` instead of the tile grid.
+ */
+export const UploadProgress: Story = {
+  args: {
+    ...FULL_ARGS,
+    headerActions: (
+      <div className="flex items-center gap-3">
+        <div className="flex min-w-40 flex-col gap-1">
+          <div className="flex items-center justify-between gap-2 text-xs">
+            <span className="text-foreground">Uploading landscape.jpg</span>
+            <span className="text-foreground tabular-nums">42%</span>
+          </div>
+          <Progress value={42} aria-label="Uploading landscape.jpg" />
+        </div>
+        <Button type="button" size="sm" variant="outline" onClick={fn()}>
+          Cancel
+        </Button>
+      </div>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Uploading landscape.jpg")).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Cancel" })).toBeVisible();
   },
 };
