@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Apple, Building2, Globe, Sparkles } from "lucide-react";
+import { Apple, Building2, Globe, Mail, Sparkles } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
@@ -7,6 +7,7 @@ import { AuthShellDocs } from "@/content/components/auth-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
 import { AuthShell, type AuthShellMode, type AuthShellProps } from "@/registry/super-ai/auth-shell";
+import { EmptyState } from "@/registry/super-ai/empty-state";
 import { OnboardingWizard } from "@/registry/super-ai/onboarding-wizard";
 
 // Neutral marks: lucide ships no brand glyphs, and this registry ships no
@@ -107,6 +108,30 @@ export const ProviderUnavailable: Story = {
         disabledReason: "Ask an admin to enable SAML",
       },
     ],
+  },
+};
+
+/**
+ * L1 `empty-state` in the provider column, standing in for the confirmation
+ * after a magic-link email is sent. `providers: []` triggers the column's
+ * existing empty affordance; `providersEmpty` overrides its default copy.
+ */
+export const EmailSent: Story = {
+  args: {
+    ...FULL_ARGS,
+    providers: [],
+    providersEmpty: (
+      <EmptyState
+        size="panel"
+        icon={<Mail aria-hidden />}
+        title="Check your email"
+        description="We sent a sign-in link to ada@northwind.com. It expires in 15 minutes."
+      />
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Check your email")).toBeVisible();
   },
 };
 
