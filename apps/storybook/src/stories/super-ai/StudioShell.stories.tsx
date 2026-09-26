@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Brush, Image as ImageIcon, LayoutTemplate, Settings, Shapes, Sparkles, Type } from "lucide-react";
 import * as React from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { AiToolsMenu } from "@/registry/super-ai/ai-tools-menu";
 import { PropertyRow } from "@/registry/super-ai/property-inspector";
 import { StudioShell, type StudioShellProps } from "@/registry/super-ai/studio-shell";
 import { TimelineShell } from "@/registry/super-ai/timeline-shell";
@@ -277,6 +278,54 @@ export const Responsive: Story = {
     },
   },
   globals: { viewport: { value: "mobile" } },
+};
+
+/**
+ * I4 `ai-tools-menu` on the selected element, composed through I3's own
+ * `aiMenu` slot (per studio-shell's docblock: "the rest of I3: actions, the
+ * AI entry, I4 as `aiMenu`, placement"). `presentation="inline"` because I3
+ * already supplies the Popover shell around it.
+ */
+export const ObjectAIActions: Story = {
+  args: {
+    ...FULL_ARGS,
+    selection: { type: "text", label: "Heading" },
+    toolbar: {
+      actions: [
+        { id: "font", label: "Font", showLabel: true },
+        { id: "colour", label: "Colour", showLabel: true },
+      ],
+      aiMenu: (
+        <AiToolsMenu
+          presentation="inline"
+          selection={{ label: "Heading", type: "Text frame" }}
+          groups={[
+            {
+              id: "edit",
+              label: "Edit",
+              actions: [
+                { id: "rewrite", title: "Rewrite tone", cost: { amount: 1, unit: "credits" } },
+                { id: "shorten", title: "Shorten to one line" },
+              ],
+            },
+          ]}
+          onAction={fn()}
+        />
+      ),
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The brief's draft assumed the AI entry's accessible name was the bare
+    // word "AI". `context-toolbar.tsx` defaults `aiLabel` to "AI tools", and
+    // this file's own `ReducedMotion` and `KeyboardOrder` stories already
+    // query it that way, so the name here is "AI tools", not "AI".
+    const aiEntry = canvas.getByRole("button", { name: "AI tools" });
+    await userEvent.click(aiEntry);
+    // I3's popover portals to `document.body`, not into `canvasElement`, so
+    // the assertion has to look there rather than through `canvas`.
+    await waitFor(() => expect(within(document.body).getByText("Rewrite tone")).toBeVisible());
+  },
 };
 
 /* -------------------------------------------------------------------------
