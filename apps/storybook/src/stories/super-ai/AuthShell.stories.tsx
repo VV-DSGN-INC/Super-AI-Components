@@ -3,6 +3,7 @@ import { Apple, Building2, Globe, Mail, Sparkles } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Button } from "@/components/ui/button";
 import { AuthShellDocs } from "@/content/components/auth-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
@@ -115,10 +116,18 @@ export const ProviderUnavailable: Story = {
  * L1 `empty-state` in the provider column, standing in for the confirmation
  * after a magic-link email is sent. `providers: []` triggers the column's
  * existing empty affordance; `providersEmpty` overrides its default copy.
+ *
+ * The screen-level `title`/`description` switch to match, `emailFallback`
+ * replaces the whole email form with a "Use a different email" affordance
+ * rather than the same address asking to be resubmitted, and `onModeChange`
+ * is omitted so the sign-up switch does not offer an account on a screen
+ * that is waiting on a link already sent.
  */
 export const EmailSent: Story = {
   args: {
     ...FULL_ARGS,
+    title: "Check your email",
+    description: "Click the link to continue, or use a different address below.",
     providers: [],
     providersEmpty: (
       <EmptyState
@@ -128,10 +137,23 @@ export const EmailSent: Story = {
         description="We sent a sign-in link to ada@northwind.com. It expires in 15 minutes."
       />
     ),
+    emailFallback: (
+      <div className="flex flex-col items-start gap-2">
+        <p className="text-foreground/70 text-sm">
+          The link works from any device signed in as ada@northwind.com.
+        </p>
+        <Button type="button" variant="outline" size="sm" onClick={() => {}}>
+          Use a different email
+        </Button>
+      </div>
+    ),
+    onModeChange: undefined,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText("Check your email")).toBeVisible();
+    await expect(canvas.getByRole("heading", { name: "Check your email" })).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Use a different email" })).toBeVisible();
+    await expect(canvas.queryByRole("textbox", { name: "Email" })).toBeNull();
   },
 };
 
