@@ -281,12 +281,16 @@ export const FailedExport: Story = {
 /**
  * H6 `waveform-editor` and H7 `stem-mixer` as the stage: a sample-level audio
  * edit, composed as the shell's `preview` region content rather than the
- * placeholder player. Neither component owns any part of the transport or the
- * tracks dock below it, this is what the region already accepts.
+ * placeholder player. Neither component owns any part of the transport or
+ * the tracks dock below it: that is what the region already accepts.
  */
 export const AudioRecipe: Story = {
   args: {
     ...FULL_ARGS,
+    // The narration clip, not the video clip `FULL_ARGS` selects by default -
+    // the stage below is editing the narration, so the inspector below the
+    // tracks dock should match what is actually on the stage.
+    selectedClipId: "a1",
     preview: (
       <div className="flex h-full w-full flex-col gap-3 overflow-y-auto p-2">
         <WaveformEditor
