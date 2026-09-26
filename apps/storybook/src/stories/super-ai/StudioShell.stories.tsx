@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
 import { AiToolsMenu } from "@/registry/super-ai/ai-tools-menu";
+import { CompareViewer } from "@/registry/super-ai/compare-viewer";
 import { PropertyRow } from "@/registry/super-ai/property-inspector";
 import { StudioShell, type StudioShellProps } from "@/registry/super-ai/studio-shell";
 import { TimelineShell } from "@/registry/super-ai/timeline-shell";
@@ -325,6 +326,54 @@ export const ObjectAIActions: Story = {
     // I3's popover portals to `document.body`, not into `canvasElement`, so
     // the assertion has to look there rather than through `canvas`.
     await waitFor(() => expect(within(document.body).getByText("Rewrite tone")).toBeVisible());
+  },
+};
+
+/**
+ * F5 `compare-viewer` as the artboard itself, rather than a result's media:
+ * the object under edit is a before and after pair, and the artboard is
+ * where a studio document sits open for editing. This is a U3 recipe:
+ * compare-viewer on the studio artboard, before and after an edit.
+ */
+export const CompareRecipe: Story = {
+  args: {
+    ...FULL_ARGS,
+    children: (
+      <div className="w-full max-w-2xl">
+        <CompareViewer
+          panes={[
+            {
+              id: "before",
+              label: "Original",
+              content: (
+                <div className="bg-secondary flex h-full items-center justify-center text-xs">Before</div>
+              ),
+            },
+            {
+              id: "after",
+              label: "Edited",
+              content: (
+                <div className="bg-primary/20 flex h-full items-center justify-center text-xs">After</div>
+              ),
+            },
+          ]}
+          onModeChange={fn()}
+        />
+      </div>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // `side` is the mode kept here, and it is the only mode where the label
+    // and the number render as two separate nodes rather than folded into a
+    // switcher button's accessible name: the pane switcher itself only
+    // exists in `mode="single"` (see `compare-viewer.tsx`), so it has nothing
+    // to render here. The two claims this recipe can make in `side` mode are
+    // the two visible labels and the two numbered panes that anchor them.
+    await expect(canvas.getByText("Original")).toBeVisible();
+    await expect(canvas.getByText("Edited")).toBeVisible();
+    await expect(canvas.getByText("1")).toBeVisible();
+    await expect(canvas.getByText("2")).toBeVisible();
   },
 };
 
