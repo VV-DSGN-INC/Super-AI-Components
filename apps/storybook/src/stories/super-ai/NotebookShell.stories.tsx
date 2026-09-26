@@ -242,6 +242,9 @@ export const ArrowsClearTheRow: Story = {
   },
 };
 
+/** The one source error this file needs, spelled the same way everywhere it appears. */
+const PASSWORD_PROTECTED_ERROR = "Could not read the file: it looks password protected.";
+
 /**
  * Sources mid-ingest. The pipeline is the status — a source being embedded says
  * so by name, and a failed one is retryable in place without touching the other
@@ -259,7 +262,7 @@ export const Ingesting: Story = {
         name: "master-agreement.docx",
         meta: "DOCX · 812 KB",
         stage: "failed",
-        errorMessage: "Could not read the file — it looks password protected.",
+        errorMessage: PASSWORD_PROTECTED_ERROR,
       },
     ],
     messages: [],
@@ -278,7 +281,7 @@ export const IngestFailed: Story = {
         name: "master-agreement.docx",
         meta: "DOCX · 812 KB",
         stage: "failed",
-        errorMessage: "Could not read the file, it looks password protected.",
+        errorMessage: PASSWORD_PROTECTED_ERROR,
       },
     ],
     onRetrySource: fn(),
