@@ -1,6 +1,8 @@
 "use client";
 
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { RecordsShell } from "@/registry/super-ai/records-shell";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const FOLDERS = [
   { id: "marketing", name: "Marketing", count: 12, modified: "2 days ago" },
@@ -52,12 +54,27 @@ const RECORDS = [
   },
 ];
 
+const WORKSPACES = [
+  { id: "northwind", name: "Northwind", plan: "Pro" },
+  { id: "acme", name: "Acme Labs" },
+];
+
 export default function RecordsShellDemo() {
   return (
     <RecordsShell
       className="h-[42rem]"
       title="Scenarios"
-      switcher={<div className="px-2 text-sm font-medium">Northwind</div>}
+      switcher={<WorkspaceSwitcher workspaces={WORKSPACES} currentId="northwind" onSelect={() => {}} />}
+      headerActions={
+        <AccountMenu
+          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+          theme="system"
+          onThemeChange={() => {}}
+          background="default"
+          onBackgroundChange={() => {}}
+          onSignOut={() => {}}
+        />
+      }
       createLabel="New scenario"
       onCreate={() => {}}
       folders={FOLDERS}
