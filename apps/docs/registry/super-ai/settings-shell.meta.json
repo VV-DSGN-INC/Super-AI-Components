@@ -118,7 +118,8 @@
     "member-gate-row",
     "quota-meter",
     "pricing-table",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [
     "alert",

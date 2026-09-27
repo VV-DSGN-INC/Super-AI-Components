@@ -93,7 +93,8 @@
     "asset-detail",
     "preview-tile",
     "filter-bar",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [],
   "npm": [

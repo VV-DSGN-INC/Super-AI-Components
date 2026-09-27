@@ -88,7 +88,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `grouped-nav`, `breadcrumb`, `info-callout`, `setting-sections`, `code-block`
-- Composes from this registry: settings-dialog, sidebar-nav, member-gate-row, quota-meter, pricing-table, empty-state
+- Composes from this registry: settings-dialog, sidebar-nav, member-gate-row, quota-meter, pricing-table, empty-state, shell-skeleton
 - shadcn primitives: alert, breadcrumb, button, input
 - npm: lucide-react
 

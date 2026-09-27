@@ -85,7 +85,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `rail`, `content-panel`, `preview`, `inspector`, `transport`, `tracks-ruler`
-- Composes from this registry: modality-rail, tool-panel, transport-controls, time-ruler, track-lane, transcript-editor, property-inspector, render-queue, empty-state
+- Composes from this registry: modality-rail, tool-panel, transport-controls, time-ruler, track-lane, transcript-editor, property-inspector, render-queue, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 

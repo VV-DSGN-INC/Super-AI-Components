@@ -85,7 +85,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sources`, `chat`, `composer`, `studio-outputs`
-- Composes from this registry: source-panel, answer-block, citation-ref, media-prompt-bar, context-chips, result-card, feature-card-row, disclaimer-note, empty-state
+- Composes from this registry: source-panel, answer-block, citation-ref, media-prompt-bar, context-chips, result-card, feature-card-row, disclaimer-note, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 

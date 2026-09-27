@@ -77,7 +77,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `config-panel`, `cost-generate`, `topbar`, `result-canvas`
-- Composes from this registry: generation-panel, model-picker, parameter-panel, preset-grid, run-button, cost-chip, result-card, generation-grid, credits-indicator, app-topbar, empty-state
+- Composes from this registry: generation-panel, model-picker, parameter-panel, preset-grid, run-button, cost-chip, result-card, generation-grid, credits-indicator, app-topbar, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 

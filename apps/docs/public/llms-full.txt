@@ -9233,7 +9233,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `topbar`, `hero-omnibox`, `feature-cards`, `recents-grid`
-- Composes from this registry: app-sidebar, app-topbar, hero-omnibox, suggestion-chips, feature-card-row, recent-grid, recommendation-card, credits-indicator, section-header, empty-state
+- Composes from this registry: app-sidebar, app-topbar, hero-omnibox, suggestion-chips, feature-card-row, recent-grid, recommendation-card, credits-indicator, section-header, empty-state, shell-skeleton
 - shadcn primitives: sidebar
 - npm: lucide-react
 
@@ -9333,7 +9333,7 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `topbar`, `message-stream`, `artifact-cards`, `composer`
-- Composes from this registry: app-sidebar, thread-list, app-topbar, media-prompt-bar, context-chips, mode-tabs, artifact-grid, feedback, disclaimer-note, paywall-message, empty-state
+- Composes from this registry: app-sidebar, thread-list, app-topbar, media-prompt-bar, context-chips, mode-tabs, artifact-grid, feedback, disclaimer-note, paywall-message, empty-state, shell-skeleton
 - shadcn primitives: sidebar
 - npm: lucide-react
 
@@ -9430,7 +9430,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `modality-rail`, `topbar`, `tool-panel`, `canvas`, `inspector`, `page-strip`
-- Composes from this registry: modality-rail, app-topbar, tool-panel, context-toolbar, property-inspector, drawing-tools, frame-strip, preset-grid, result-card, empty-state
+- Composes from this registry: modality-rail, app-topbar, tool-panel, context-toolbar, property-inspector, drawing-tools, frame-strip, preset-grid, result-card, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 
@@ -9527,7 +9527,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `rail`, `content-panel`, `preview`, `inspector`, `transport`, `tracks-ruler`
-- Composes from this registry: modality-rail, tool-panel, transport-controls, time-ruler, track-lane, transcript-editor, property-inspector, render-queue, empty-state
+- Composes from this registry: modality-rail, tool-panel, transport-controls, time-ruler, track-lane, transcript-editor, property-inspector, render-queue, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 
@@ -9616,7 +9616,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `config-panel`, `cost-generate`, `topbar`, `result-canvas`
-- Composes from this registry: generation-panel, model-picker, parameter-panel, preset-grid, run-button, cost-chip, result-card, generation-grid, credits-indicator, app-topbar, empty-state
+- Composes from this registry: generation-panel, model-picker, parameter-panel, preset-grid, run-button, cost-chip, result-card, generation-grid, credits-indicator, app-topbar, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 
@@ -9710,7 +9710,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `facet-rail`, `header`, `dense-grid`
-- Composes from this registry: filter-panel, asset-library, generation-grid, asset-detail, preview-tile, filter-bar, empty-state
+- Composes from this registry: filter-panel, asset-library, generation-grid, asset-detail, preview-tile, filter-bar, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 
@@ -9806,7 +9806,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `rail`, `docked-prompt-bar`, `sort-tabs`, `masonry-feed`
-- Composes from this registry: explore-gallery, media-prompt-bar, choice-chips, asset-detail, template-detail, preview-tile, modality-rail, empty-state
+- Composes from this registry: explore-gallery, media-prompt-bar, choice-chips, asset-detail, template-detail, preview-tile, modality-rail, empty-state, shell-skeleton
 - shadcn primitives: tabs
 - npm: lucide-react
 
@@ -9903,7 +9903,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `header`, `search`, `artifact-card-grid`
-- Composes from this registry: app-sidebar, artifact-grid, filter-bar, date-section, ai-doc-block, empty-state
+- Composes from this registry: app-sidebar, artifact-grid, filter-bar, date-section, ai-doc-block, empty-state, shell-skeleton
 - shadcn primitives: input, sidebar
 - npm: lucide-react
 
@@ -9997,7 +9997,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `header`, `filter-sort`, `record-rows`
-- Composes from this registry: app-sidebar, record-list, filter-bar, asset-library, feedback, empty-state
+- Composes from this registry: app-sidebar, record-list, filter-bar, asset-library, feedback, empty-state, shell-skeleton
 - shadcn primitives: button, select, sidebar
 - npm: lucide-react
 
@@ -10098,7 +10098,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `icon-rail`, `doc-nav`, `announcement-strip`, `content-column`
-- Composes from this registry: app-sidebar, sidebar-nav, feature-announcement, citation-ref, section-header, kbd, empty-state
+- Composes from this registry: app-sidebar, sidebar-nav, feature-announcement, citation-ref, section-header, kbd, empty-state, shell-skeleton
 - shadcn primitives: sidebar, tooltip
 - npm: none
 
@@ -10198,7 +10198,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `grouped-nav`, `breadcrumb`, `info-callout`, `setting-sections`, `code-block`
-- Composes from this registry: settings-dialog, sidebar-nav, member-gate-row, quota-meter, pricing-table, empty-state
+- Composes from this registry: settings-dialog, sidebar-nav, member-gate-row, quota-meter, pricing-table, empty-state, shell-skeleton
 - shadcn primitives: alert, breadcrumb, button, input
 - npm: lucide-react
 
@@ -10295,7 +10295,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sources`, `chat`, `composer`, `studio-outputs`
-- Composes from this registry: source-panel, answer-block, citation-ref, media-prompt-bar, context-chips, result-card, feature-card-row, disclaimer-note, empty-state
+- Composes from this registry: source-panel, answer-block, citation-ref, media-prompt-bar, context-chips, result-card, feature-card-row, disclaimer-note, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 
@@ -10395,8 +10395,8 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `marketing-panel`, `provider-rows`, `email-fallback`, `legal-footer`
-- Composes from this registry: onboarding-wizard, entity-row, empty-state
-- shadcn primitives: button, field, input
+- Composes from this registry: onboarding-wizard, entity-row, empty-state, shell-skeleton
+- shadcn primitives: button, card, field, input
 - npm: lucide-react
 
 ## Evidence

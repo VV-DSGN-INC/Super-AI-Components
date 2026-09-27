@@ -88,7 +88,7 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `topbar`, `message-stream`, `artifact-cards`, `composer`
-- Composes from this registry: app-sidebar, thread-list, app-topbar, media-prompt-bar, context-chips, mode-tabs, artifact-grid, feedback, disclaimer-note, paywall-message, empty-state
+- Composes from this registry: app-sidebar, thread-list, app-topbar, media-prompt-bar, context-chips, mode-tabs, artifact-grid, feedback, disclaimer-note, paywall-message, empty-state, shell-skeleton
 - shadcn primitives: sidebar
 - npm: lucide-react
 

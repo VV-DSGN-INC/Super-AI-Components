@@ -118,7 +118,8 @@
     "transcript-editor",
     "property-inspector",
     "render-queue",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [],
   "npm": [

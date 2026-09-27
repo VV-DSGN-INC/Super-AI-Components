@@ -84,7 +84,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `rail`, `docked-prompt-bar`, `sort-tabs`, `masonry-feed`
-- Composes from this registry: explore-gallery, media-prompt-bar, choice-chips, asset-detail, template-detail, preview-tile, modality-rail, empty-state
+- Composes from this registry: explore-gallery, media-prompt-bar, choice-chips, asset-detail, template-detail, preview-tile, modality-rail, empty-state, shell-skeleton
 - shadcn primitives: tabs
 - npm: lucide-react
 

@@ -84,7 +84,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `topbar`, `hero-omnibox`, `feature-cards`, `recents-grid`
-- Composes from this registry: app-sidebar, app-topbar, hero-omnibox, suggestion-chips, feature-card-row, recent-grid, recommendation-card, credits-indicator, section-header, empty-state
+- Composes from this registry: app-sidebar, app-topbar, hero-omnibox, suggestion-chips, feature-card-row, recent-grid, recommendation-card, credits-indicator, section-header, empty-state, shell-skeleton
 - shadcn primitives: sidebar
 - npm: lucide-react
 

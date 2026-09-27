@@ -97,7 +97,8 @@
     "generation-grid",
     "credits-indicator",
     "app-topbar",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [],
   "npm": [

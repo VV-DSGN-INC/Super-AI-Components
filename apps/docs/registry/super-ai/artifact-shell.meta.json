@@ -103,7 +103,8 @@
     "filter-bar",
     "date-section",
     "ai-doc-block",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [
     "input",

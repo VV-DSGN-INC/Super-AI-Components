@@ -82,7 +82,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `header`, `filter-sort`, `record-rows`
-- Composes from this registry: app-sidebar, record-list, filter-bar, asset-library, feedback, empty-state
+- Composes from this registry: app-sidebar, record-list, filter-bar, asset-library, feedback, empty-state, shell-skeleton
 - shadcn primitives: button, select, sidebar
 - npm: lucide-react
 

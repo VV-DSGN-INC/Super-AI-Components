@@ -114,7 +114,8 @@
     "citation-ref",
     "section-header",
     "kbd",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [
     "sidebar",

@@ -108,7 +108,8 @@
     "result-card",
     "feature-card-row",
     "disclaimer-note",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [],
   "npm": [

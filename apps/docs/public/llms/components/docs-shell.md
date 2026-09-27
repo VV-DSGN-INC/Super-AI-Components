@@ -89,7 +89,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `icon-rail`, `doc-nav`, `announcement-strip`, `content-column`
-- Composes from this registry: app-sidebar, sidebar-nav, feature-announcement, citation-ref, section-header, kbd, empty-state
+- Composes from this registry: app-sidebar, sidebar-nav, feature-announcement, citation-ref, section-header, kbd, empty-state, shell-skeleton
 - shadcn primitives: sidebar, tooltip
 - npm: none
 

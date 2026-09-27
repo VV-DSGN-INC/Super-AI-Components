@@ -125,7 +125,8 @@
     "feedback",
     "disclaimer-note",
     "paywall-message",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [
     "sidebar"

@@ -106,7 +106,8 @@
     "template-detail",
     "preview-tile",
     "modality-rail",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [
     "tabs"

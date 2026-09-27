@@ -85,7 +85,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `modality-rail`, `topbar`, `tool-panel`, `canvas`, `inspector`, `page-strip`
-- Composes from this registry: modality-rail, app-topbar, tool-panel, context-toolbar, property-inspector, drawing-tools, frame-strip, preset-grid, result-card, empty-state
+- Composes from this registry: modality-rail, app-topbar, tool-panel, context-toolbar, property-inspector, drawing-tools, frame-strip, preset-grid, result-card, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 

@@ -88,8 +88,8 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `marketing-panel`, `provider-rows`, `email-fallback`, `legal-footer`
-- Composes from this registry: onboarding-wizard, entity-row, empty-state
-- shadcn primitives: button, field, input
+- Composes from this registry: onboarding-wizard, entity-row, empty-state, shell-skeleton
+- shadcn primitives: button, card, field, input
 - npm: lucide-react
 
 ## Evidence

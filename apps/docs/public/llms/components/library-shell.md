@@ -82,7 +82,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `facet-rail`, `header`, `dense-grid`
-- Composes from this registry: filter-panel, asset-library, generation-grid, asset-detail, preview-tile, filter-bar, empty-state
+- Composes from this registry: filter-panel, asset-library, generation-grid, asset-detail, preview-tile, filter-bar, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 

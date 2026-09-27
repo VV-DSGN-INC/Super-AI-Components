@@ -119,7 +119,8 @@
     "recommendation-card",
     "credits-indicator",
     "section-header",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [
     "sidebar"

@@ -118,7 +118,8 @@
     "frame-strip",
     "preset-grid",
     "result-card",
-    "empty-state"
+    "empty-state",
+    "shell-skeleton"
   ],
   "shadcn": [],
   "npm": [

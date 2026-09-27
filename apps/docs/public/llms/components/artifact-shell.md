@@ -85,7 +85,7 @@ Not yet recorded.
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `header`, `search`, `artifact-card-grid`
-- Composes from this registry: app-sidebar, artifact-grid, filter-bar, date-section, ai-doc-block, empty-state
+- Composes from this registry: app-sidebar, artifact-grid, filter-bar, date-section, ai-doc-block, empty-state, shell-skeleton
 - shadcn primitives: input, sidebar
 - npm: lucide-react
 
