@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { TimelineShell, type TimelineShellProps } from "./timeline-shell";
 
 const REGIONS = ["rail", "content-panel", "preview", "inspector", "transport", "tracks-ruler"];
@@ -243,5 +245,35 @@ describe("TimelineShell", () => {
       expect(node).toHaveAttribute("tabindex", "0");
       expect(node).toHaveAccessibleName();
     }
+  });
+});
+
+describe("TimelineShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="timeline-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<TimelineShell />);
+    expectShellLoadedContract(root(container), { name: "timeline-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="timeline-shell-status"]')).toBeNull();
+  });
+
+  it("renders status at the top of the preview column", () => {
+    const { container } = render(<TimelineShell status={<p>Reconnecting.</p>} />);
+    const status = container.querySelector('[data-slot="timeline-shell-status"]')!;
+    expect(status).toHaveTextContent("Reconnecting.");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "preview");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(<TimelineShell loading preview={<button type="button">Play</button>} />);
+    expectShellLoadingContract(root(container), { name: "timeline-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="modality-rail"]')).toBeNull();
+    expect(container.querySelector('[data-slot="tool-panel"]')).toBeNull();
+    expect(container.querySelector('[data-slot="transport-controls"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<TimelineShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="timeline-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });

@@ -10,7 +10,7 @@ CapCut, Descript and Topaz are three very different products that arrange themse
 
 ## When to reach for it
 
-Reach for it when time is the primary axis of the thing being edited — video, audio, motion, anything with a playhead. The shell owns the clock and nothing else: `duration`, `currentTime`, `onSeek`, `zoom`, `snap` and the in/out range are shell props because the transport, the ruler, every lane and the transcript all have to read the same numbers, and passing them separately is how a clip stops sitting under its own timecode. Everything else is forwarded whole — `panel` to the tool panel, `inspector` to the property inspector, `transport` to the transport controls, `transcript` to the transcript editor. Flip `variant` to "transcript" to swap the track stack for the transcript view; both are views of the same edit-decision list, so the playhead and the seek callback stay exactly where they were. Put export jobs in `renderJobs` with their real spec and stage — a preview row and an export row in the same queue is the point.
+Reach for it when time is the primary axis of the thing being edited — video, audio, motion, anything with a playhead. The shell owns the clock and nothing else: `duration`, `currentTime`, `onSeek`, `zoom`, `snap` and the in/out range are shell props because the transport, the ruler, every lane and the transcript all have to read the same numbers, and passing them separately is how a clip stops sitting under its own timecode. Everything else is forwarded whole — `panel` to the tool panel, `inspector` to the property inspector, `transport` to the transport controls, `transcript` to the transcript editor. Flip `variant` to "transcript" to swap the track stack for the transcript view; both are views of the same edit-decision list, so the playhead and the seek callback stay exactly where they were. Put export jobs in `renderJobs` with their real spec and stage — a preview row and an export row in the same queue is the point. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the preview column, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -24,6 +24,7 @@ Not yet recorded.
 
 - Give the ruler and every lane one scale, and inset the ruler by the lane gutter so second zero lines up.
 - Let each lane keep its own gutter controls — mute, solo and lock belong to the track, not to the shell.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -43,6 +44,8 @@ Not yet recorded.
 - `timeline-shell-render-queue`: The labelled, focusable section F6 sits in.
 - `timeline-shell-tracks`: The ruler + lanes dock, with the full-height playhead layered over it.
 - `timeline-shell-transcript`: What the dock renders instead when variant is transcript.
+- `timeline-shell-status`: At the top of the preview column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -53,6 +56,7 @@ Not yet recorded.
 - The shell adds no shortcuts. Space does not play, J/K/L do nothing, and no key moves between regions. The transport's own shortcuts (Space, arrows, `,`/`.`, I/O) are bound to the transport's root, so they fire only while focus is inside `data-region="transport"` — never from the stage or the dock.
 - Tabbing the tracks dock goes: the tracks group, then the ruler's playhead and in/out handles, then each lane in turn — three gutter toggles, one scroller stop and one stop per clip. Six lanes of ten clips is roughly eighty stops inside a single scroll region with no way to skip a lane.
 - `variant` is a prop, not a control. There is no in-shell switch between the track stack and the transcript, so whatever keyboard path reaches that switch is yours to build above the shell.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -63,6 +67,8 @@ Not yet recorded.
 - The full-height playhead the shell layers over the dock sits inside an `aria-hidden` wrapper and is given no `label`, so it never double-announces against the one the ruler draws inside its own box. The gutter spacer that aligns second zero is `aria-hidden` too.
 - Changing `variant` is announced as nothing. The dock swaps wholesale with no live region anywhere in the shell, so say it where the switch lives.
 - The shell owns no status region at all. Play state, seek position, clip selection and export progress announce only as far as the composed components announce them — the transport's own `role="status"`, the render queue's rows — and there is no shell-level summary tying them together.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -80,6 +86,8 @@ Not yet recorded.
 - The content panel and the inspector are hidden below the `md` and `lg` breakpoints. They stay mounted, so the regions are still there, but their content is unreachable on a phone — a timeline editor at 375px shows the rail, the stage and the dock and nothing else. Decide deliberately whether your product needs a narrow-viewport route to the inspector.
 - F6 is a six-column table and the queue sits under the stage rather than in the inspector, because a 20rem column cannot show a spec, a stage, a status and a cost side by side. That is a placement decision the spec does not make for you: if your export flow belongs in a dialog, pass no `renderJobs` and the region keeps its own empty affordance.
 - Everything is controlled. `currentTime` that never moves, a `selectedClipId` that never changes and a transcript whose `onEdit` goes nowhere produce a screenshot, not an editor — wire the callbacks before demoing it.
+- The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.
+- The transport skeleton is fixed blocks the size of H1's own controls, so it wraps to a second row at the same widths the controls do. The tracks skeleton always fills the list's `max-h-64` cap, so a project with one short track shrinks the tracks area when it loads.
 
 ## Composition
 

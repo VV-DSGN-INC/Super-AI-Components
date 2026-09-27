@@ -1,8 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { AudioLines, Film, Sparkles, Type, Wand2 } from "lucide-react";
+import { AudioLines, Film, LoaderCircle, Sparkles, Type, Wand2 } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { StudioShell } from "@/registry/super-ai/studio-shell";
 import { TimelineShell, type TimelineShellProps } from "@/registry/super-ai/timeline-shell";
 import { WaveformEditor } from "@/registry/super-ai/waveform-editor";
@@ -10,6 +11,7 @@ import { StemMixer } from "@/registry/super-ai/stem-mixer";
 import { TimelineShellDocs } from "@/content/components/timeline-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 const RAIL = [
   { id: "media", label: "Media", icon: <Film /> },
@@ -961,5 +963,56 @@ export const Boundary: Story = {
     await expect(studio.querySelector('[data-region="topbar"]')).not.toBeNull();
     await expect(timeline.querySelector('[data-region="topbar"]')).toBeNull();
     await expect(timeline.querySelector('[data-region="transport"]')).not.toBeNull();
+  },
+};
+
+/**
+ * First paint, before the project has loaded. The rail, the content panel, the
+ * stage with its render queue, the transport, the tracks and the inspector each
+ * draw a skeleton at the size they will take, the root is marked busy, and nothing
+ * inside it takes focus. The transport skeleton is the controls' own blocks, so it
+ * wraps where the controls wrap. The play renders the loaded editor in the same
+ * frame and fails if a skeleton sits more than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <TimelineShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "timeline-shell", {
+      rail: "frame",
+      "content-panel": "frame",
+      preview: "frame",
+      transport: "frame",
+      "tracks-ruler": "frame",
+      inspector: "frame",
+    });
+  },
+};
+
+/**
+ * The editor lost its connection and is getting it back. The message sits at the
+ * top of the preview column, above the stage and the render queue it concerns,
+ * and says the one thing a waiting editor needs: exports keep going. The vendored
+ * Alert is given `role="status"`, and its spinner stops under reduced motion,
+ * leaving the words.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert role="status">
+        <LoaderCircle aria-hidden className="animate-spin motion-reduce:animate-none" />
+        <AlertTitle>Reconnecting</AlertTitle>
+        <AlertDescription>
+          Exports keep rendering on the server and appear in the queue when you are back.
+        </AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="timeline-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.nextElementSibling).toHaveAttribute("data-region", "preview");
+    await expect(within(status!).getByText("Reconnecting")).toBeVisible();
   },
 };

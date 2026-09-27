@@ -8,6 +8,13 @@ import { EmptyState } from "@/registry/super-ai/empty-state";
 import { ModalityRail, type ModalityRailItemData } from "@/registry/super-ai/modality-rail";
 import { PropertyInspector, type PropertyInspectorProps } from "@/registry/super-ai/property-inspector";
 import { RenderQueue, type RenderJob } from "@/registry/super-ai/render-queue";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+  ShellSkeletonRows,
+} from "@/registry/super-ai/shell-skeleton";
 import { TimeRuler, TimeRulerPlayhead } from "@/registry/super-ai/time-ruler";
 import { ToolPanel, type ToolPanelProps, type ToolPanelSection } from "@/registry/super-ai/tool-panel";
 import { TrackLane, type TrackLaneProps } from "@/registry/super-ai/track-lane";
@@ -168,6 +175,21 @@ interface TimelineShellProps extends Omit<React.ComponentProps<"div">, "onSelect
     speakers?: TranscriptSpeaker[];
   };
   transcriptLabel?: string;
+
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders at the top of the preview column, above
+   * the stage, the transport and the tracks it affects, and only when given. Pass
+   * M6 `rate-limit-banner` or the vendored `Alert`; the shell adds no live region,
+   * so the component you pass carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the project has loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click.
+   */
+  loading?: boolean;
 }
 
 function TimelineShell({
@@ -214,6 +236,9 @@ function TimelineShell({
   transcript,
   transcriptLabel = "Transcript",
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: TimelineShellProps) {
@@ -224,6 +249,83 @@ function TimelineShell({
     speakers: transcriptSpeakers = [],
     ...transcriptRest
   } = transcript ?? {};
+
+  const statusStrip = status ? (
+    <div data-slot="timeline-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <div
+        data-slot="timeline-shell"
+        data-variant={variant}
+        aria-busy="true"
+        className={cn("bg-background text-foreground flex h-full min-h-0 w-full overflow-hidden", className)}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        {/* B4's own width, 92px. The twin is what notices if B4 changes it. */}
+        <ShellSkeletonRegion
+          region="rail"
+          className="flex h-full w-23 shrink-0 flex-col gap-1 border-e p-1.5"
+        >
+          <ShellSkeletonBlock className="h-11 w-full" />
+          <ShellSkeletonBlock className="h-11 w-full" />
+          <ShellSkeletonBlock className="h-11 w-full" />
+        </ShellSkeletonRegion>
+        <ShellSkeletonRegion region="content-panel" className="hidden w-72 shrink-0 p-2 md:block">
+          <div className="flex h-full flex-col gap-3 rounded-lg border p-3">
+            <ShellSkeletonBlock className="h-8 w-full" />
+            <ShellSkeletonRows count={8} />
+          </div>
+        </ShellSkeletonRegion>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          {statusStrip}
+          <ShellSkeletonRegion
+            region="preview"
+            className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-2"
+          >
+            <ShellSkeletonBlock className="min-h-0 flex-1 rounded-lg" />
+            <div className="flex h-42 shrink-0 flex-col gap-2 rounded-lg border p-2">
+              <ShellSkeletonBlock className="h-5 w-28" />
+              <ShellSkeletonRows count={3} />
+            </div>
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion
+            region="transport"
+            className="bg-background flex shrink-0 items-center gap-2 border-t px-2 py-1.5"
+          >
+            <div className="flex w-fit min-w-0 flex-wrap items-center gap-2">
+              <ShellSkeletonBlock className="h-8 w-56" />
+              <ShellSkeletonBlock className="h-8 w-56" />
+              <ShellSkeletonBlock className="h-7 w-12" />
+              <ShellSkeletonBlock className="h-4 w-56" />
+            </div>
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion region="tracks-ruler" className="bg-background shrink-0 border-t">
+            <div className="flex h-64 flex-col gap-1 overflow-hidden p-2">
+              {variant === "transcript" ? (
+                <ShellSkeletonLines count={10} />
+              ) : (
+                <>
+                  <ShellSkeletonBlock className="h-8 w-full" />
+                  <ShellSkeletonBlock className="h-16 w-full rounded-lg" />
+                  <ShellSkeletonBlock className="h-16 w-full rounded-lg" />
+                  <ShellSkeletonBlock className="h-16 w-full rounded-lg" />
+                </>
+              )}
+            </div>
+          </ShellSkeletonRegion>
+        </div>
+        <ShellSkeletonRegion region="inspector" className="hidden w-80 shrink-0 border-s p-3 lg:block">
+          <ShellSkeletonBlock className="mb-3 h-6 w-28" />
+          <ShellSkeletonLines count={6} />
+        </ShellSkeletonRegion>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -238,6 +340,7 @@ function TimelineShell({
           exists and the assertion that B4 fills it are the same element. */}
       <ModalityRail
         data-region="rail"
+        data-loading-region="rail"
         items={railItems}
         pinned={railPinned}
         activeId={activeRailId}
@@ -245,7 +348,11 @@ function TimelineShell({
         className="h-full"
       />
 
-      <div data-region="content-panel" className="hidden w-72 shrink-0 p-2 md:block">
+      <div
+        data-region="content-panel"
+        data-loading-region="content-panel"
+        className="hidden w-72 shrink-0 p-2 md:block"
+      >
         <ToolPanel
           label="Tools"
           empty={
@@ -262,7 +369,12 @@ function TimelineShell({
       </div>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <div data-region="preview" className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-2">
+        {statusStrip}
+        <div
+          data-region="preview"
+          data-loading-region="preview"
+          className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden p-2"
+        >
           {/* The stage. A slot, not a component: no catalog component owns
               "the thing being edited", and O3's canvas region is the same
               shape. L1 stands in until the caller has something to play. */}
@@ -319,6 +431,7 @@ function TimelineShell({
 
         <div
           data-region="transport"
+          data-loading-region="transport"
           className="bg-background flex shrink-0 items-center gap-2 border-t px-2 py-1.5"
         >
           <TransportControls
@@ -334,7 +447,11 @@ function TimelineShell({
           />
         </div>
 
-        <div data-region="tracks-ruler" className="bg-background shrink-0 border-t">
+        <div
+          data-region="tracks-ruler"
+          data-loading-region="tracks-ruler"
+          className="bg-background shrink-0 border-t"
+        >
           {variant === "transcript" ? (
             // "The transcript variant replaces the track stack entirely." The
             // ruler goes with it — a ruler with no lanes beneath it labels
@@ -418,6 +535,7 @@ function TimelineShell({
 
       <div
         data-region="inspector"
+        data-loading-region="inspector"
         role="group"
         aria-label={inspectorLabel}
         tabIndex={0}
