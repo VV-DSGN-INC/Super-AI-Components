@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { Switch } from "@/components/ui/switch";
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
 
 import type { SettingsRowData } from "./settings-dialog";
 import { SettingsShell, type SettingsShellSection } from "./settings-shell";
@@ -278,5 +279,36 @@ describe("SettingsShell", () => {
     const content = document.querySelector('[data-slot="settings-shell-content"]')!;
     expect(content).toHaveAttribute("tabindex", "0");
     expect(content).toHaveAccessibleName("Settings content");
+  });
+});
+
+describe("SettingsShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="settings-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<SettingsShell />);
+    expectShellLoadedContract(root(container), { name: "settings-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="settings-shell-status"]')).toBeNull();
+  });
+
+  it("renders status directly under the header row", () => {
+    const { container } = render(<SettingsShell status={<p>Could not save your changes.</p>} />);
+    const status = container.querySelector('[data-slot="settings-shell-status"]')!;
+    expect(status).toHaveTextContent("Could not save your changes.");
+    expect(status.previousElementSibling).toHaveAttribute("data-slot", "settings-shell-header");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <SettingsShell loading accountMenu={<button type="button">Account</button>} />,
+    );
+    expectShellLoadingContract(root(container), { name: "settings-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="settings-shell-search"]')).toBeNull();
+    expect(container.querySelector('[data-slot="settings-dialog"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<SettingsShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="settings-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });

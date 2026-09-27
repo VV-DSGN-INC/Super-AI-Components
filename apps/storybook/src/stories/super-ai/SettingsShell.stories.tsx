@@ -1,13 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { CreditCard, KeyRound, Plug, Server, SlidersHorizontal, Users } from "lucide-react";
+import {
+  AlertTriangle,
+  CreditCard,
+  KeyRound,
+  Plug,
+  RotateCcw,
+  Server,
+  SlidersHorizontal,
+  Users,
+} from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { SettingsDialog, type SettingsRowData } from "@/registry/super-ai/settings-dialog";
 import { SettingsShell, type SettingsShellProps } from "@/registry/super-ai/settings-shell";
 import { SettingsShellDocs } from "@/content/components/settings-shell.docs";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
 
@@ -1017,5 +1029,60 @@ export const Boundary: Story = {
     await expect(aloneCanvas.queryAllByRole("link")).toHaveLength(0);
     await expect(aloneCanvas.getAllByRole("searchbox")).toHaveLength(1);
     await expect(shellCanvas.getAllByRole("searchbox")).toHaveLength(1);
+  },
+};
+
+/**
+ * First paint, before the settings have loaded. The breadcrumb, the grouped nav
+ * and the three content bands each draw a skeleton where they will land, the
+ * header keeps a place for the account menu without mounting it, the root is
+ * marked busy, and nothing inside it takes focus. The play renders the loaded
+ * page in the same frame and fails if a skeleton sits more than 8px from where
+ * its region lands. The breadcrumb's width, and the bands' heights and later
+ * bands' tops, are left out, because words and the section's own rows decide
+ * them.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <SettingsShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "settings-shell", {
+      breadcrumb: "text",
+      "grouped-nav": "frame",
+      "info-callout": "flow-lead",
+      "setting-sections": "flow",
+      "code-block": "flow",
+    });
+  },
+};
+
+/**
+ * A save failed. The message sits under the breadcrumb row, above the nav and
+ * the section that did not save, with the retry beside the reason. The
+ * vendored Alert's destructive description is 4.49:1 on the card, so the text
+ * and the Retry button carry `text-destructive` at full strength themselves.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert variant="destructive">
+        <AlertTriangle aria-hidden />
+        <AlertTitle>Could not save your changes</AlertTitle>
+        <AlertDescription className="flex flex-col items-start gap-2">
+          <span className="text-destructive">The workspace name is unchanged. Retry to save it.</span>
+          <Button type="button" size="sm" variant="outline" className="text-destructive" onClick={fn()}>
+            <RotateCcw aria-hidden />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="settings-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-slot", "settings-shell-header");
+    await expect(within(status!).getByRole("button", { name: "Retry" })).toBeVisible();
   },
 };
