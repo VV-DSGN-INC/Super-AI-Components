@@ -50,9 +50,17 @@ export const ArtifactShellDocs: ComponentDocs = {
       slot: "artifact-shell-draft",
       note: "K1 ai-doc-block: the passage that has not been filed yet, above the buckets.",
     },
+    {
+      slot: "artifact-shell-status",
+      note: "Under the header, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it when generated documents are objects in your product rather than attachments to a conversation. `groups` is the whole index — date buckets on the outside, J4 sessions inside them — and everything else is scoping: `activeType` for the facets, `query` for the search, both controlled or uncontrolled as you prefer. The facets are derived from the artifacts you pass, so there is no facet list to keep in step with your data. Pass `draft` when something has just been generated and is still waiting on a Keep or a Discard: it renders above the index with K1's own verbs and is exempt from the filter, because it is not in the index until it is kept. Turn `localSearch` off when the query round-trips to a server and `groups` already arrives filtered.",
+    "Reach for it when generated documents are objects in your product rather than attachments to a conversation. `groups` is the whole index — date buckets on the outside, J4 sessions inside them — and everything else is scoping: `activeType` for the facets, `query` for the search, both controlled or uncontrolled as you prefer. The facets are derived from the artifacts you pass, so there is no facet list to keep in step with your data. Pass `draft` when something has just been generated and is still waiting on a Keep or a Discard: it renders above the index with K1's own verbs and is exempt from the filter, because it is not in the index until it is kept. Turn `localSearch` off when the query round-trips to a server and `groups` already arrives filtered. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the header, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Let the excerpt identify the artifact — it is the field people recognise, and the one they will search for.",
@@ -61,6 +69,9 @@ export const ArtifactShellDocs: ComponentDocs = {
     {
       text: "Bucket by recency on the outside and keep the originating session on the inside, so a card stays linked to its conversation.",
       example: <BucketsHoldSessions />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
     },
   ],
   donts: [
@@ -81,6 +92,7 @@ export const ArtifactShellDocs: ComponentDocs = {
       "Cmd/Ctrl+B toggles the sidebar from anywhere on the page, including while you are typing in this shell's search field — the vendored `SidebarProvider` binds it to `window` and calls `preventDefault()` unconditionally.",
       'Nothing focuses the search field by shortcut: there is no "/" handler and no skip link into the index. Reaching a card from the page body means tabbing the whole header.',
       "With `collapsibleSessions`, each session header adds a tab stop inside the grid, activated with Space or Enter.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       'Only the grid is a landmark: `<section aria-label={gridLabel}>`, "Artifacts" by default. The header and search regions are plain `div`s carrying `data-region` for styling and tests, so they are not navigable as landmarks.',
@@ -92,6 +104,8 @@ export const ArtifactShellDocs: ComponentDocs = {
       'The draft is its own `<section>` labelled by an `<h2>` from `draftLabel`, and the K1 block inside it brings its own persistent `role="status"` — so mounting a draft announces "This block is generated and waiting on your decision" alongside whatever the result count is saying.',
       'Date buckets are `role="group"`s named by their label and session groups are named `<section>`s inside them, so the index is navigable by region even though it exposes no headings below the `<h1>` and `<h2>`.',
       'The sidebar trigger is named "Toggle Sidebar" and carries no `aria-expanded`, so the sidebar\'s state is never announced in either direction.',
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "Nothing in the shell moves focus. Searching, switching a facet, and emptying the index all leave focus exactly where it was, so the reader has to go looking for the result count to learn what happened.",
@@ -108,5 +122,7 @@ export const ArtifactShellDocs: ComponentDocs = {
     "`localSearch` filters the artifacts this shell was handed, matching the excerpt, the title and the type label. Leave it on for a server-backed index and the local pass filters the server's results a second time — an artifact matched on its body text will vanish because that text is not in its excerpt. Turn it off and the search field becomes a pure `onQueryChange` reporter.",
     "K1's four verbs are the approval contract, and a draft that never resolves is a draft that blocks the index it is sitting on. Wire `draft.onKeep` and `draft.onDiscard` to real handlers that remove the prop; the shell renders whatever it is given and has no idea when the decision was made.",
     "Every region mounts whether it has content or not, including the search field over an empty index. That is the point — a control that appears only once you already have data cannot teach anyone that it exists — so do not conditionally render the regions away on day one.",
+    "While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but `switcher`, `nav`, `sidebarPromo` and `sidebarFooter` appear only once loading ends.",
+    "The header skeleton always reserves the facet row. An index with one artifact type and no `onOpenFilters` renders no facet row once loaded, so its header shrinks by that row when the data arrives.",
   ],
 };

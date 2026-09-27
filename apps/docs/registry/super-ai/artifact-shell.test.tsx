@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { ArtifactShell, type ArtifactShellGroup } from "./artifact-shell";
 
 const REGIONS = ["sidebar", "header", "search", "artifact-card-grid"];
@@ -244,5 +246,42 @@ describe("ArtifactShell", () => {
     rerender(<ArtifactShell groups={GROUPS} onOpenFilters={onOpenFilters} />);
     await userEvent.click(screen.getByRole("button", { name: "Filters" }));
     expect(onOpenFilters).toHaveBeenCalled();
+  });
+});
+
+describe("ArtifactShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="artifact-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<ArtifactShell />);
+    expectShellLoadedContract(root(container), { name: "artifact-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="artifact-shell-status"]')).toBeNull();
+  });
+
+  it("renders status directly under the header", () => {
+    const { container } = render(<ArtifactShell status={<p>Your session expired.</p>} />);
+    const status = container.querySelector('[data-slot="artifact-shell-status"]')!;
+    expect(status).toHaveTextContent("Your session expired.");
+    expect(status.previousElementSibling).toHaveAttribute("data-region", "header");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "search");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <ArtifactShell
+        loading
+        nav={<a href="#all">All artifacts</a>}
+        headerActions={<button type="button">Share</button>}
+        onOpenFilters={() => {}}
+      />,
+    );
+    expectShellLoadingContract(root(container), { name: "artifact-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="app-sidebar"]')).toBeNull();
+    expect(container.querySelector('[data-slot="filter-bar"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<ArtifactShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="artifact-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });
