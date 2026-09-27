@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { RecordsShell } from "./records-shell";
 
 const REGIONS = ["sidebar", "header", "filter-sort", "record-rows"];
@@ -211,5 +213,42 @@ describe("RecordsShell", () => {
     // is the only observable that catches the variant being dropped; it is not
     // a licence to assert classes anywhere else in this file.
     expect(library.className).toContain("[&_[data-slot=asset-library-view-toggle]]:hidden");
+  });
+});
+
+describe("RecordsShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="records-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<RecordsShell />);
+    expectShellLoadedContract(root(container), { name: "records-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="records-shell-status"]')).toBeNull();
+  });
+
+  it("renders status directly under the header", () => {
+    const { container } = render(<RecordsShell status={<p>Could not save the schedule.</p>} />);
+    const status = container.querySelector('[data-slot="records-shell-status"]')!;
+    expect(status).toHaveTextContent("Could not save the schedule.");
+    expect(status.previousElementSibling).toHaveAttribute("data-region", "header");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "filter-sort");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <RecordsShell
+        loading
+        headerActions={<button type="button">Export</button>}
+        onCreate={() => {}}
+        filters={[{ id: "failing", label: "Failing", active: true }]}
+      />,
+    );
+    expectShellLoadingContract(root(container), { name: "records-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="app-sidebar"]')).toBeNull();
+    expect(container.querySelector('[data-slot="filter-bar"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<RecordsShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="records-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });
