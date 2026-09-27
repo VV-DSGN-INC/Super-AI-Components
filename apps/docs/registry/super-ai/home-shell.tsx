@@ -3,7 +3,7 @@
 import { Compass, LayoutGrid, PanelsTopLeft } from "lucide-react";
 import * as React from "react";
 
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/registry/super-ai/app-sidebar";
 import { AppTopbar, type AppTopbarProps } from "@/registry/super-ai/app-topbar";
@@ -14,6 +14,13 @@ import { HeroOmnibox, type HeroOmniboxProps } from "@/registry/super-ai/hero-omn
 import { RecentGrid, type RecentGridItem } from "@/registry/super-ai/recent-grid";
 import { RecommendationCard, type RecommendationCardProps } from "@/registry/super-ai/recommendation-card";
 import { SectionHeader } from "@/registry/super-ai/section-header";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonRegion,
+  ShellSkeletonSidebar,
+  ShellSkeletonTiles,
+} from "@/registry/super-ai/shell-skeleton";
 import {
   SuggestionChip,
   SuggestionChips,
@@ -164,6 +171,34 @@ interface HomeShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   /** C5 cards. Empty falls to L1. */
   recommendations?: HomeShellRecommendation[];
   recommendationsEmpty?: React.ReactNode;
+
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders under the topbar, above everything it
+   * affects, and only when given. Pass M6 `rate-limit-banner` or the vendored
+   * `Alert`; the shell adds no live region, so the component you pass carries its
+   * own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the workspace has loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click. The hero reserves
+   * a headline and a row of starters only when `headline` and `suggestions` are
+   * passed.
+   */
+  loading?: boolean;
+}
+
+/**
+ * The sidebar region while `loading`. B1 is not mounted, because it always
+ * renders its rail button and a loading shell mounts nothing to click. The width
+ * comes from the provider's state instead, the same state B1 reads, so the
+ * skeleton follows a Cmd/Ctrl+B toggle too.
+ */
+function HomeShellSidebarSkeleton() {
+  const { state } = useSidebar();
+  return <ShellSkeletonSidebar region="sidebar" collapsed={state === "collapsed"} />;
 }
 
 function HomeShell({
@@ -203,6 +238,9 @@ function HomeShell({
   recommendations = [],
   recommendationsEmpty,
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: HomeShellProps) {
@@ -232,6 +270,81 @@ function HomeShell({
     [writePrompt, onSelectSuggestion],
   );
 
+  const statusStrip = status ? (
+    <div data-slot="home-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <SidebarProvider
+        data-slot="home-shell"
+        aria-busy="true"
+        defaultOpen={defaultSidebarOpen}
+        className={cn(
+          "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
+          EMBEDDABLE_SHELL,
+          SIDEBAR_FILLS_SHELL,
+          className,
+        )}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        <HomeShellSidebarSkeleton />
+        <SidebarInset className="min-w-0 overflow-hidden">
+          <ShellSkeletonRegion
+            region="topbar"
+            className="bg-background flex h-12 shrink-0 items-center gap-2 border-b px-3"
+          >
+            <ShellSkeletonBlock className="size-7" />
+            <ShellSkeletonBlock className="h-4 w-32" />
+            <ShellSkeletonBlock className="ms-auto h-6 w-24" />
+          </ShellSkeletonRegion>
+          {statusStrip}
+          <div
+            data-slot="home-shell-page"
+            className="flex min-h-0 flex-1 flex-col gap-10 overflow-hidden px-4 pb-12 sm:px-6"
+          >
+            <ShellSkeletonRegion
+              region="hero-omnibox"
+              className="flex w-full flex-col items-center gap-4 pt-10 sm:pt-16"
+            >
+              {headline ? <ShellSkeletonBlock className="h-8 w-full max-w-2xl sm:h-9" /> : null}
+              <ShellSkeletonBlock className="h-33.5 w-full max-w-2xl rounded-2xl" />
+              {suggestions.length > 0 || suggestionsOverflow ? (
+                <ShellSkeletonBlock className="h-7 w-full max-w-2xl" />
+              ) : null}
+            </ShellSkeletonRegion>
+            <ShellSkeletonRegion
+              region="feature-cards"
+              className="mx-auto flex w-full max-w-5xl flex-col gap-2"
+            >
+              <ShellSkeletonBlock className="h-6 w-40" />
+              <ShellSkeletonTiles
+                count={4}
+                className="grid-cols-2 sm:grid-cols-4"
+                tileClassName="aspect-auto h-25"
+              />
+            </ShellSkeletonRegion>
+            <ShellSkeletonRegion
+              region="recents-grid"
+              className="mx-auto flex w-full max-w-5xl flex-col gap-2"
+            >
+              <ShellSkeletonBlock className="h-6 w-24" />
+              <div className="@container">
+                <ShellSkeletonTiles
+                  count={6}
+                  className="grid-cols-2 @[40rem]:grid-cols-3 @[64rem]:grid-cols-4"
+                />
+              </div>
+            </ShellSkeletonRegion>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
+
   return (
     <SidebarProvider
       // Overriding a vendored ui/ primitive's slot is house idiom — nothing
@@ -251,6 +364,7 @@ function HomeShell({
           which is what positions the sidebar. */}
       <div data-region="sidebar" className="contents">
         <AppSidebar
+          data-loading-region="sidebar"
           switcher={switcher}
           nav={
             nav ??
@@ -280,6 +394,7 @@ function HomeShell({
             (HomeShell.stories.tsx, `RTL`, which pins the mirrored half). */}
         <div
           data-region="topbar"
+          data-loading-region="topbar"
           className="bg-background flex h-12 shrink-0 items-center gap-1 border-b ps-2"
         >
           <SidebarTrigger />
@@ -302,6 +417,8 @@ function HomeShell({
           />
         </div>
 
+        {statusStrip}
+
         {/* The page column. It scrolls, but it always contains the omnibox —
             a focusable control in every one of C1's four states, including
             `locked` — so it needs no tab stop of its own and axe's
@@ -314,6 +431,7 @@ function HomeShell({
               page, and the only band that gets this much vertical air. */}
           <section
             data-region="hero-omnibox"
+            data-loading-region="hero-omnibox"
             aria-label="Start something new"
             className="flex w-full flex-col items-center gap-4 pt-10 sm:pt-16"
           >
@@ -362,6 +480,7 @@ function HomeShell({
               rather than leaving an empty carousel with two dead arrows. */}
           <section
             data-region="feature-cards"
+            data-loading-region="feature-cards"
             aria-label={featuresLabel}
             className="mx-auto flex w-full max-w-5xl flex-col gap-2"
           >
@@ -385,6 +504,7 @@ function HomeShell({
               it with an L1 of its own. */}
           <section
             data-region="recents-grid"
+            data-loading-region="recents-grid"
             aria-label={recentsLabel}
             className="mx-auto flex w-full max-w-5xl flex-col gap-2"
           >

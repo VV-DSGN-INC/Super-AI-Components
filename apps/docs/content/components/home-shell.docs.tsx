@@ -50,9 +50,17 @@ export const HomeShellDocs: ComponentDocs = {
     { slot: "home-shell-headline", note: "Optional page h1 above the composer." },
     { slot: "home-shell-starters", note: "The C2 chip row, inside the hero region." },
     { slot: "home-shell-recommendations", note: "The C5 card grid, inside the inspiration section." },
+    {
+      slot: "home-shell-status",
+      note: "Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it when your product's front door is a prompt rather than a document list. Everything is a prop: `suggestions` fills the starter row, `features` fills the card row, `recents` fills the grid, `recommendations` fills the inspiration band, and `omnibox` is forwarded whole to C1. The composer's text is the shell's, not C1's — pass `promptValue`/`onPromptChange` to control it, and leave both off to let the shell hold it. That is deliberate: selecting a starter chip has to write into the composer, and it must never submit or navigate. Put the balance in `credits` and it renders in the title bar, which is where an app-level cost signal belongs. Give `recentsEmptyAction` the same verb as your primary action (\"New project\", not \"Get started\") — L1 has no CTA of its own precisely so that a generic one is never the path of least resistance.",
+    "Reach for it when your product's front door is a prompt rather than a document list. Everything is a prop: `suggestions` fills the starter row, `features` fills the card row, `recents` fills the grid, `recommendations` fills the inspiration band, and `omnibox` is forwarded whole to C1. The composer's text is the shell's, not C1's — pass `promptValue`/`onPromptChange` to control it, and leave both off to let the shell hold it. That is deliberate: selecting a starter chip has to write into the composer, and it must never submit or navigate. Put the balance in `credits` and it renders in the title bar, which is where an app-level cost signal belongs. Give `recentsEmptyAction` the same verb as your primary action (\"New project\", not \"Get started\") — L1 has no CTA of its own precisely so that a generic one is never the path of least resistance. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Let a starter chip fill the composer and stop there, so the prompt can still be edited before it runs.",
@@ -61,6 +69,9 @@ export const HomeShellDocs: ComponentDocs = {
     {
       text: "Keep the recents band mounted when it is empty — its own tile is the day-one page, and it is what teaches a new user the band exists.",
       example: <RecentsKeepTheirEmptyTile />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
     },
   ],
   donts: [
@@ -79,6 +90,7 @@ export const HomeShellDocs: ComponentDocs = {
       "The scrolling page column has `overflow-y-auto` and deliberately no `tabIndex`. It gets away with that because C1 is inside it and is focusable in every one of its states, `locked` included, so axe's `scrollable-region-focusable` rule has a target. Reorder the column so the composer is not in it and that stops being true.",
       'The feature carousel is a `role="region"` with its own Left/Right handling plus two arrow buttons. Those arrows are two tab stops that exist whether or not the row actually overflows.',
       'A starter chip is `type="button"` on purpose, so a chip inside a form can never submit it. Enter and Space fill the composer and stop there. The overflow affordance beside the chips is a real `<a>`, so Enter follows it and Space does not.',
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       'Four of the five bands are `<section>` elements with an `aria-label`, which makes each a named region landmark — "Start something new", then the features, recents and recommendations labels. Landmark navigation is the only structural navigation this page has.',
@@ -87,6 +99,8 @@ export const HomeShellDocs: ComponentDocs = {
       'The recents tiles are the weak point. A8 `preview-tile` renders a `below` label as a *sibling* of its frame button, and C4 uses `labelPlacement="below"` in grid layout and `"none"` in list layout — so the button that opens a project takes its name from the thumbnail alone. Give every thumbnail real `alt` text or the band is a row of unnamed buttons.',
       "Nothing in the shell is a live region. Filling the composer, collapsing the sidebar and paging the carousel all happen silently.",
       "M2 `credits-indicator` announces its own text and the shell adds no wording around it, so the balance arrives with whatever name M2 gives it and nothing identifying it as an app-level cost signal.",
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "Selecting a starter chip fills the composer and leaves focus on the chip, so the person has to Shift+Tab back into the field they just populated, past every chip that came before it. Move focus to the composer inside `onSelectSuggestion` if the chip is meant to be a shortcut rather than a stepping stone.",
@@ -104,5 +118,7 @@ export const HomeShellDocs: ComponentDocs = {
     "C4 now keys its columns off its own container width (D19), not the viewport, so a sidebar open beside a wide window no longer makes it over-column — the grid already sees its own narrower width. If you nest this shell inside something narrower still, no override is needed; restyling the grid rather than the wrapper is only a concern if you reintroduce a viewport-keyed breakpoint yourself.",
     "C2's chip row is a Base UI `ScrollArea`, and its viewport schedules a timer that calls `getAnimations()` on itself. jsdom has no Web Animations API, so in a test long enough for that timer to fire it throws — after the test that triggered it has already passed. The suite goes red with every assertion green. The shim now lives in `vitest.setup.ts`, paired with `BASE_UI_ANIMATIONS_DISABLED` — defining `getAnimations` alone moves every Base UI unmount off its synchronous branch onto a microtask, which breaks any test asserting the DOM straight after a panel swap. Whether the timer fires is a function of suite length, not of what you did wrong.",
     "C5 requires `onDismiss` and renders nothing at all once `dismissed` is true, so the inspiration band is only as durable as the state you feed back into it. Wire dismissal to something that remembers, or a card the user hid will be back on the next render.",
+    "While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but anything you pass to `switcher`, `nav`, `sidebarPromo` or `sidebarFooter` appears only once loading ends.",
+    "The hero skeleton reserves a headline and a row of starters only when `headline` and `suggestions` are passed. Pass them while loading if the loaded page will show them, or the hero grows when the data arrives.",
   ],
 };
