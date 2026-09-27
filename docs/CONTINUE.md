@@ -2395,6 +2395,31 @@ Found while building (not in the plan):
   own gate found it absent from `origin/main`. Whoever resumes Task 11
   should re-run that gate rather than trust either sentence on its own.
 
+### Added by the U4 status and loading wave (2026-09-26)
+
+Every shell takes `status` (a slot under the topbar, or at the top of the content column)
+and `loading` (one boolean, proven per shell by the loading twin), and `notebook-shell`
+takes `headerActions`. The contract is
+[`design-system/block-build-brief.md`](design-system/block-build-brief.md), "Status and
+loading"; the plan is
+[`superpowers/plans/2026-09-26-shell-fidelity-u4.md`](superpowers/plans/2026-09-26-shell-fidelity-u4.md).
+What stays open:
+
+- **U3's four prop gaps stay parked.** A `promo` prop on O10 and O11, the account menu as
+  the trailing header item in O6 and O10, and a chrome slot on O4 and O8. The spec's U4
+  did not list them, and each adds a prop to a shell.
+- **O11's demo has no host chrome yet.** Its account menu and notifications control go in
+  with U3's Task 11, which waits for `claude/docs-shell-rail-brand`.
+- **Rows are not `SidebarMenuSkeleton`.** The spec named it. It picks a random bar width
+  in state, which fails hydration, and importing it puts the vendored sidebar on eight
+  shells that do not use B1. `ShellSkeletonRows` keeps its 32px geometry with fixed widths.
+- **The twin proves one fixture at one viewport.** Each shell's `Loading` story checks its
+  full fixture at 1200×900. Rows mirrored for props no fixture passes (a library or
+  artifact header with `headerActions`, a chat or notebook composer without context chips)
+  are class arithmetic, not measurements.
+- **A region-level wait goes through the empty-override slots.** Chat's history-pending
+  case is `empty` plus `ShellSkeletonLines`; no shell has per-region loading.
+
 ## 9. What each wave found
 
 Moved to [`design-system/wave-history.md`](design-system/wave-history.md), which
