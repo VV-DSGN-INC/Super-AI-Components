@@ -3,6 +3,8 @@
 import { AudioLines, FileText, Network, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { NotebookShell } from "@/registry/super-ai/notebook-shell";
 
 const SOURCES = [
@@ -111,6 +113,19 @@ export default function NotebookShellDemo() {
   return (
     <NotebookShell
       className="h-[42rem]"
+      headerActions={
+        <div className="flex items-center gap-1">
+          <DemoNotifications />
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+        </div>
+      }
       sources={SOURCES}
       sourcesAction={
         <Button type="button" size="sm" variant="outline">

@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { NotebookShell, type NotebookShellProps } from "./notebook-shell";
 
 const REGIONS = ["sources", "chat", "composer", "studio-outputs"];
@@ -265,5 +267,53 @@ describe("NotebookShell", () => {
     render(<NotebookShell outputs={[{ id: "o1", state: "streaming", progress: 40 }]} />);
     expect(document.querySelector('[data-slot="result-card"]')).toHaveAttribute("data-state", "streaming");
     expect(document.querySelector('[data-slot="result-card-progress"]')).not.toBeNull();
+  });
+});
+
+describe("NotebookShell header actions, status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="notebook-shell"]')!;
+
+  it("marks every region's box and renders no header bar and no status by default", () => {
+    const { container } = render(<NotebookShell />);
+    expectShellLoadedContract(root(container), { name: "notebook-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="notebook-shell-header"]')).toBeNull();
+    expect(container.querySelector('[data-slot="notebook-shell-status"]')).toBeNull();
+  });
+
+  it("renders headerActions in a bar at the top of the chat column", () => {
+    const { container } = render(<NotebookShell headerActions={<button type="button">Account</button>} />);
+    const header = container.querySelector('[data-slot="notebook-shell-header"]')!;
+    expect(within(header as HTMLElement).getByRole("button", { name: "Account" })).toBeInTheDocument();
+    expect(header.nextElementSibling).toHaveAttribute("data-region", "chat");
+  });
+
+  it("renders status at the top of the chat column, under the header bar when there is one", () => {
+    const { container } = render(
+      <NotebookShell headerActions={<button type="button">Account</button>} status={<p>Reconnecting.</p>} />,
+    );
+    const status = container.querySelector('[data-slot="notebook-shell-status"]')!;
+    expect(status).toHaveTextContent("Reconnecting.");
+    expect(status.previousElementSibling).toHaveAttribute("data-slot", "notebook-shell-header");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "chat");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <NotebookShell
+        loading
+        headerActions={<button type="button">Account</button>}
+        sourcesAction={<button type="button">Add source</button>}
+        contextChips={[{ id: "c1", kind: "file", label: "Q3-report.pdf" }]}
+      />,
+    );
+    expectShellLoadingContract(root(container), { name: "notebook-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="source-panel"]')).toBeNull();
+    expect(container.querySelector('[data-slot="media-prompt-bar"]')).toBeNull();
+    expect(container.querySelector('[data-slot="notebook-shell-header"]')).not.toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<NotebookShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="notebook-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });

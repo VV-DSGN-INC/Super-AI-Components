@@ -14,6 +14,14 @@ import { EmptyState } from "@/registry/super-ai/empty-state";
 import { FeatureCardRow, type FeatureCardRowItem } from "@/registry/super-ai/feature-card-row";
 import { MediaPromptBar, type MediaPromptBarProps } from "@/registry/super-ai/media-prompt-bar";
 import { ResultCard, type ResultCardProps } from "@/registry/super-ai/result-card";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+  ShellSkeletonRows,
+  ShellSkeletonTiles,
+} from "@/registry/super-ai/shell-skeleton";
 import { SourcePanel, type SourcePanelSource } from "@/registry/super-ai/source-panel";
 
 /**
@@ -216,6 +224,28 @@ interface NotebookShellProps extends Omit<React.ComponentProps<"div">, "title"> 
   outputs?: NotebookShellOutput[];
   /** Replaces the default L1 shown when nothing has been generated. */
   outputsEmpty?: React.ReactNode;
+
+  /**
+   * Host chrome for the notebook: an account menu, a notifications control.
+   * Renders in a bar at the top of the chat column, and only when given, so a
+   * notebook without it is unchanged. The one generic slot this shell has.
+   */
+  headerActions?: React.ReactNode;
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders at the top of the chat column, under
+   * `headerActions`' bar when there is one, and only when given. Pass M6
+   * `rate-limit-banner` or the vendored `Alert`; the shell adds no live region, so
+   * the component you pass carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the notebook has loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click. The bar for
+   * `headerActions` keeps its place, without its controls, when it is passed.
+   */
+  loading?: boolean;
 }
 
 /**
@@ -287,6 +317,10 @@ function NotebookShell({
   outputs = [],
   outputsEmpty,
 
+  headerActions,
+  status,
+  loading = false,
+
   className,
   ...props
 }: NotebookShellProps) {
@@ -335,6 +369,85 @@ function NotebookShell({
 
   const jumpedSource = sources.find((source) => source.id === jumpedSourceId);
 
+  const headerBar = headerActions ? (
+    <div
+      data-slot="notebook-shell-header"
+      className="flex h-12 shrink-0 items-center justify-end gap-2 border-b px-3"
+    >
+      {headerActions}
+    </div>
+  ) : null;
+
+  const statusStrip = status ? (
+    <div data-slot="notebook-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <div
+        data-slot="notebook-shell"
+        aria-busy="true"
+        className={cn(
+          "bg-background text-foreground flex h-full min-h-0 w-full flex-col overflow-hidden lg:flex-row",
+          className,
+        )}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        <ShellSkeletonRegion
+          region="sources"
+          className="bg-card flex shrink-0 flex-col gap-3 border-b p-3 lg:h-full lg:w-72 lg:border-e lg:border-b-0"
+        >
+          <div className="flex h-7 items-center justify-between">
+            <ShellSkeletonBlock className="h-4 w-20" />
+            <ShellSkeletonBlock className="h-7 w-24" />
+          </div>
+          <ShellSkeletonRows count={6} />
+        </ShellSkeletonRegion>
+        <div className="flex min-h-96 min-w-0 flex-1 flex-col lg:h-full lg:min-h-0">
+          {headerActions ? (
+            <div
+              data-slot="notebook-shell-header"
+              className="flex h-12 shrink-0 items-center justify-end gap-2 border-b px-3"
+            >
+              <ShellSkeletonBlock className="h-8 w-24" />
+            </div>
+          ) : null}
+          {statusStrip}
+          <ShellSkeletonRegion region="chat" className="relative min-h-0 flex-1 overflow-hidden">
+            <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6">
+              <ShellSkeletonBlock className="ms-auto h-10 w-2/3 rounded-2xl" />
+              <ShellSkeletonLines count={5} />
+            </div>
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion region="composer" className="bg-background shrink-0 border-t px-4 pb-2">
+            <div className="mx-auto w-full max-w-2xl">
+              <ShellSkeletonBlock
+                className={cn(
+                  "w-full rounded-t-2xl rounded-b-none",
+                  contextChips.length > 0 ? "h-40" : "h-31.5",
+                )}
+              />
+              <div className="flex justify-center px-2 pt-1.5">
+                <ShellSkeletonBlock className="h-4 w-56" />
+              </div>
+            </div>
+          </ShellSkeletonRegion>
+        </div>
+        <ShellSkeletonRegion
+          region="studio-outputs"
+          className="bg-card flex shrink-0 flex-col gap-4 border-t p-3 lg:h-full lg:w-80 lg:border-t-0 lg:border-s"
+        >
+          <ShellSkeletonBlock className="h-5 w-16" />
+          <ShellSkeletonTiles count={2} className="grid-cols-2" tileClassName="aspect-auto h-25" />
+          <ShellSkeletonTiles count={2} tileClassName="aspect-auto h-57" />
+        </ShellSkeletonRegion>
+      </div>
+    );
+  }
+
   return (
     <div
       data-slot="notebook-shell"
@@ -355,6 +468,7 @@ function NotebookShell({
       <section
         ref={sourcesRef}
         data-region="sources"
+        data-loading-region="sources"
         // Named here rather than by `aria-labelledby`, because K5 owns its own
         // header row: passing `heading` and `action` through keeps the label
         // and the add-source control in the component that specified them,
@@ -391,10 +505,18 @@ function NotebookShell({
           floor gives way to `min-h-0`, which is what lets the chat pane
           scroll instead of stretching the row. */}
       <div className="flex min-h-96 min-w-0 flex-1 flex-col lg:h-full lg:min-h-0">
+        {headerBar}
+        {statusStrip}
         {/* Pane two. AI Elements' Conversation brings role="log" and
             stick-to-bottom pinning; `scrollClassName` is what makes the
             element it owns actually scroll. */}
-        <Conversation data-region="chat" aria-label={chatLabel} tabIndex={0} className="min-h-0 flex-1">
+        <Conversation
+          data-region="chat"
+          data-loading-region="chat"
+          aria-label={chatLabel}
+          tabIndex={0}
+          className="min-h-0 flex-1"
+        >
           <ConversationContent
             scrollClassName={CHAT_SCROLL}
             className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-6"
@@ -414,7 +536,11 @@ function NotebookShell({
           </ConversationContent>
         </Conversation>
 
-        <div data-region="composer" className="bg-background shrink-0 border-t px-4 pb-2">
+        <div
+          data-region="composer"
+          data-loading-region="composer"
+          className="bg-background shrink-0 border-t px-4 pb-2"
+        >
           <div className="mx-auto w-full max-w-2xl">
             <MediaPromptBar
               presentation="docked"
@@ -452,6 +578,7 @@ function NotebookShell({
           into this same pane. */}
       <section
         data-region="studio-outputs"
+        data-loading-region="studio-outputs"
         aria-labelledby={studioLabelId}
         tabIndex={0}
         // `border-s` for the same reason as the sources pane's `border-e`: the
