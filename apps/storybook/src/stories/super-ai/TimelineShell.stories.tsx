@@ -5,6 +5,8 @@ import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { StudioShell } from "@/registry/super-ai/studio-shell";
 import { TimelineShell, type TimelineShellProps } from "@/registry/super-ai/timeline-shell";
+import { WaveformEditor } from "@/registry/super-ai/waveform-editor";
+import { StemMixer } from "@/registry/super-ai/stem-mixer";
 import { TimelineShellDocs } from "@/content/components/timeline-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { settledFocusRing } from "@/lib/focus-ring";
@@ -248,6 +250,75 @@ export const Exporting: Story = {
         error: "The source clip was trimmed while the export was running.",
       },
     ],
+  },
+};
+
+/** F6 `render-queue`'s failed row, with `onRetryJob` wired and asserted. */
+export const FailedExport: Story = {
+  args: {
+    ...FULL_ARGS,
+    renderJobs: [
+      {
+        id: "failed",
+        name: "Vertical cut",
+        stage: "export",
+        state: "failed",
+        spec: { format: "MP4", codec: "H.264", resolution: "1080×1920", fps: 30 },
+        cost: { amount: 18, unit: "credits" },
+        error: "The source clip was trimmed while the export was running.",
+      },
+    ],
+    onRetryJob: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const retry = canvas.getByRole("button", { name: "Retry Vertical cut" });
+    await userEvent.click(retry);
+    await expect(args.onRetryJob).toHaveBeenCalledWith("failed");
+  },
+};
+
+/**
+ * H6 `waveform-editor` and H7 `stem-mixer` as the stage: a sample-level audio
+ * edit, composed as the shell's `preview` region content rather than the
+ * placeholder player. Neither component owns any part of the transport or
+ * the tracks dock below it: that is what the region already accepts.
+ */
+export const AudioRecipe: Story = {
+  args: {
+    ...FULL_ARGS,
+    // The narration clip, not the video clip `FULL_ARGS` selects by default -
+    // the stage below is editing the narration, so the inspector below the
+    // tracks dock should match what is actually on the stage.
+    selectedClipId: "a1",
+    preview: (
+      <div className="flex h-full w-full flex-col gap-3 overflow-y-auto p-2">
+        <WaveformEditor
+          peaks={Array.from({ length: 64 }, (_, i) => Math.abs(Math.sin(i / 4)))}
+          sampleCount={48000 * 13}
+          sampleRate={48000}
+          region={{ start: 24000, end: 96000, label: "Breath" }}
+          onRegionChange={fn()}
+          onScrub={fn()}
+        />
+        <StemMixer
+          stems={[
+            { id: "voice", name: "Narration", volume: 100, level: 62 },
+            { id: "harbour", name: "Harbour ambience", volume: 70, level: 24 },
+          ]}
+          onMuteChange={fn()}
+          onSoloChange={fn()}
+          onVolumeChange={fn()}
+          onPanChange={fn()}
+        />
+      </div>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const region = (id: string) => canvasElement.querySelector<HTMLElement>(`[data-region="${id}"]`)!;
+    const stage = region("preview");
+    await expect(stage.querySelector('[data-slot="waveform-editor"]')).not.toBeNull();
+    await expect(stage.querySelector('[data-slot="stem-mixer"]')).not.toBeNull();
   },
 };
 

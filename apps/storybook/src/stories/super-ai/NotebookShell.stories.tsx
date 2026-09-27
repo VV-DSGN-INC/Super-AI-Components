@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AudioLines, BookOpen, FileText, Network, Plus } from "lucide-react";
 import * as React from "react";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { NotebookShellDocs } from "@/content/components/notebook-shell.docs";
@@ -242,6 +242,9 @@ export const ArrowsClearTheRow: Story = {
   },
 };
 
+/** The one source error this file needs, spelled the same way everywhere it appears. */
+const PASSWORD_PROTECTED_ERROR = "Could not read the file: it looks password protected.";
+
 /**
  * Sources mid-ingest. The pipeline is the status — a source being embedded says
  * so by name, and a failed one is retryable in place without touching the other
@@ -259,11 +262,37 @@ export const Ingesting: Story = {
         name: "master-agreement.docx",
         meta: "DOCX · 812 KB",
         stage: "failed",
-        errorMessage: "Could not read the file — it looks password protected.",
+        errorMessage: PASSWORD_PROTECTED_ERROR,
       },
     ],
     messages: [],
     outputs: [],
+  },
+};
+
+/** K5 `source-panel`'s failed source, with `onRetrySource` wired and asserted. */
+export const IngestFailed: Story = {
+  args: {
+    ...FULL_ARGS,
+    sources: [
+      { id: "q3-report", name: "Q3-report.pdf", meta: "PDF · 2.4 MB", stage: "ready", chunkCount: 184 },
+      {
+        id: "contract",
+        name: "master-agreement.docx",
+        meta: "DOCX · 812 KB",
+        stage: "failed",
+        errorMessage: PASSWORD_PROTECTED_ERROR,
+      },
+    ],
+    onRetrySource: fn(),
+    messages: [],
+    outputs: [],
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const retry = canvas.getByRole("button", { name: "Retry master-agreement.docx" });
+    await userEvent.click(retry);
+    await expect(args.onRetrySource).toHaveBeenCalledWith("contract");
   },
 };
 

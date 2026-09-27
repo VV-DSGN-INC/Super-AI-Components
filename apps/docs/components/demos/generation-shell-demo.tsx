@@ -2,6 +2,7 @@
 
 import * as React from "react";
 
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { GenerationShell } from "@/registry/super-ai/generation-shell";
 import { ParameterSlider } from "@/registry/super-ai/parameter-panel";
 
@@ -81,7 +82,19 @@ export default function GenerationShellDemo() {
     <GenerationShell
       className="h-[42rem]"
       title="Video generator"
-      topbar={{ privacy: { label: "Private" } }}
+      topbar={{
+        privacy: { label: "Private" },
+        actions: (
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+        ),
+      }}
       balance={414}
       creditsTotal={1000}
       credits={{ onManage: () => {} }}

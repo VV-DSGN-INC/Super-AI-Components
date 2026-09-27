@@ -3,6 +3,8 @@ import { Compass, Images } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Button } from "@/components/ui/button";
+import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
 import { LibraryShellDocs } from "@/content/components/library-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
@@ -209,6 +211,41 @@ export const SelectMode: Story = {
 
 /** F3 open on the one asset with full provenance — the reason the archive is worth keeping. */
 export const AssetOpen: Story = { args: { ...FULL_ARGS, openAssetId: "a1", onOpenAssetChange: () => {} } };
+
+/**
+ * An upload in progress, with cancel, composed in `headerActions` rather than
+ * in the tile grid. No shipped component models this shape: A8 `preview-tile`
+ * carries no percentage and no cancel affordance reachable without nesting a
+ * control inside the tile's own button, N12 `task-tray` has cancel
+ * (`onCancelTask`) but no percentage, and F1 `result-card` in `streaming` has
+ * a percentage but no cancel (`CONTINUE.md` §8). This uses the vendored
+ * `Progress`'s own `ProgressLabel` and `ProgressValue` rather than hand-built
+ * text, the same pairing `result-card` uses.
+ */
+export const UploadProgress: Story = {
+  args: {
+    ...FULL_ARGS,
+    headerActions: (
+      <div className="flex items-center gap-3">
+        <Progress value={42} className="min-w-40 flex-col items-stretch gap-1">
+          <div className="flex items-center justify-between gap-2">
+            <ProgressLabel>Uploading landscape.jpg</ProgressLabel>
+            <ProgressValue />
+          </div>
+        </Progress>
+        <Button type="button" size="sm" variant="outline" onClick={fn()}>
+          Cancel
+        </Button>
+      </div>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Uploading landscape.jpg")).toBeVisible();
+    await expect(canvas.getByText("42%")).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Cancel" })).toBeVisible();
+  },
+};
 
 /* -------------------------------------------------------------------------
  * Case stories — the situations this archive meets in a product, as opposed

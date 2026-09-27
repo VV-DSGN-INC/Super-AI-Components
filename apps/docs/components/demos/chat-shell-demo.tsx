@@ -1,6 +1,11 @@
 "use client";
 
+import * as React from "react";
+
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { ChatShell } from "@/registry/super-ai/chat-shell";
+import { PromoCard } from "@/registry/super-ai/promo-card";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const THREAD_GROUPS = [
   {
@@ -61,13 +66,27 @@ const ARTIFACTS = [
   },
 ];
 
+const WORKSPACES = [
+  { id: "northwind", name: "Northwind" },
+  { id: "acme", name: "Acme Labs" },
+];
+
 export default function ChatShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+  const [promoDismissed, setPromoDismissed] = React.useState(false);
+
   return (
     <ChatShell
       className="h-[42rem]"
       title="Brand audit for Northwind"
       topbar={{ privacy: { label: "Private" }, savedLabel: "Saved just now" }}
-      switcher={<div className="px-2 text-sm font-medium">Northwind</div>}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
       threadGroups={THREAD_GROUPS}
       activeThreadId="brand-audit"
       messages={MESSAGES}
@@ -78,6 +97,27 @@ export default function ChatShellDemo() {
         { value: "build", label: "Build" },
       ]}
       mode="ask"
+      sidebarPromo={
+        <PromoCard
+          flavour="invite"
+          title="Bring a teammate into this thread"
+          description="Share Northwind's brand audit with the rest of the team."
+          ctaLabel="Invite a teammate"
+          onCtaClick={() => {}}
+          dismissed={promoDismissed}
+          onDismiss={() => setPromoDismissed(true)}
+        />
+      }
+      sidebarFooter={
+        <AccountMenu
+          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+          theme="system"
+          onThemeChange={() => {}}
+          background="default"
+          onBackgroundChange={() => {}}
+          onSignOut={() => {}}
+        />
+      }
     />
   );
 }
