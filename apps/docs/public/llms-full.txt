@@ -9159,7 +9159,7 @@ YouAI, Descript, Zapier, CapCut and Spline all open on the same page, in the sam
 
 ## When to reach for it
 
-Reach for it when your product's front door is a prompt rather than a document list. Everything is a prop: `suggestions` fills the starter row, `features` fills the card row, `recents` fills the grid, `recommendations` fills the inspiration band, and `omnibox` is forwarded whole to C1. The composer's text is the shell's, not C1's — pass `promptValue`/`onPromptChange` to control it, and leave both off to let the shell hold it. That is deliberate: selecting a starter chip has to write into the composer, and it must never submit or navigate. Put the balance in `credits` and it renders in the title bar, which is where an app-level cost signal belongs. Give `recentsEmptyAction` the same verb as your primary action ("New project", not "Get started") — L1 has no CTA of its own precisely so that a generic one is never the path of least resistance.
+Reach for it when your product's front door is a prompt rather than a document list. Everything is a prop: `suggestions` fills the starter row, `features` fills the card row, `recents` fills the grid, `recommendations` fills the inspiration band, and `omnibox` is forwarded whole to C1. The composer's text is the shell's, not C1's — pass `promptValue`/`onPromptChange` to control it, and leave both off to let the shell hold it. That is deliberate: selecting a starter chip has to write into the composer, and it must never submit or navigate. Put the balance in `credits` and it renders in the title bar, which is where an app-level cost signal belongs. Give `recentsEmptyAction` the same verb as your primary action ("New project", not "Get started") — L1 has no CTA of its own precisely so that a generic one is never the path of least resistance. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9173,6 +9173,7 @@ Not yet recorded.
 
 - Let a starter chip fill the composer and stop there, so the prompt can still be edited before it runs.
 - Keep the recents band mounted when it is empty — its own tile is the day-one page, and it is what teaches a new user the band exists.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9192,6 +9193,8 @@ Not yet recorded.
 - `home-shell-headline`: Optional page h1 above the composer.
 - `home-shell-starters`: The C2 chip row, inside the hero region.
 - `home-shell-recommendations`: The C5 card grid, inside the inspiration section.
+- `home-shell-status`: Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9201,6 +9204,7 @@ Not yet recorded.
 - The scrolling page column has `overflow-y-auto` and deliberately no `tabIndex`. It gets away with that because C1 is inside it and is focusable in every one of its states, `locked` included, so axe's `scrollable-region-focusable` rule has a target. Reorder the column so the composer is not in it and that stops being true.
 - The feature carousel is a `role="region"` with its own Left/Right handling plus two arrow buttons. Those arrows are two tab stops that exist whether or not the row actually overflows.
 - A starter chip is `type="button"` on purpose, so a chip inside a form can never submit it. Enter and Space fill the composer and stop there. The overflow affordance beside the chips is a real `<a>`, so Enter follows it and Space does not.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9210,6 +9214,8 @@ Not yet recorded.
 - The recents tiles are the weak point. A8 `preview-tile` renders a `below` label as a *sibling* of its frame button, and C4 uses `labelPlacement="below"` in grid layout and `"none"` in list layout — so the button that opens a project takes its name from the thumbnail alone. Give every thumbnail real `alt` text or the band is a row of unnamed buttons.
 - Nothing in the shell is a live region. Filling the composer, collapsing the sidebar and paging the carousel all happen silently.
 - M2 `credits-indicator` announces its own text and the shell adds no wording around it, so the balance arrives with whatever name M2 gives it and nothing identifying it as an app-level cost signal.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9228,6 +9234,8 @@ Not yet recorded.
 - C4 now keys its columns off its own container width (D19), not the viewport, so a sidebar open beside a wide window no longer makes it over-column — the grid already sees its own narrower width. If you nest this shell inside something narrower still, no override is needed; restyling the grid rather than the wrapper is only a concern if you reintroduce a viewport-keyed breakpoint yourself.
 - C2's chip row is a Base UI `ScrollArea`, and its viewport schedules a timer that calls `getAnimations()` on itself. jsdom has no Web Animations API, so in a test long enough for that timer to fire it throws — after the test that triggered it has already passed. The suite goes red with every assertion green. The shim now lives in `vitest.setup.ts`, paired with `BASE_UI_ANIMATIONS_DISABLED` — defining `getAnimations` alone moves every Base UI unmount off its synchronous branch onto a microtask, which breaks any test asserting the DOM straight after a panel swap. Whether the timer fires is a function of suite length, not of what you did wrong.
 - C5 requires `onDismiss` and renders nothing at all once `dismissed` is true, so the inspiration band is only as durable as the state you feed back into it. Wire dismissal to something that remembers, or a card the user hid will be back on the next render.
+- While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but anything you pass to `switcher`, `nav`, `sidebarPromo` or `sidebarFooter` appears only once loading ends.
+- The hero skeleton reserves a headline and a row of starters only when `headline` and `suggestions` are passed. Pass them while loading if the loaded page will show them, or the hero grows when the data arrives.
 
 ## Composition
 
@@ -9255,7 +9263,7 @@ Manus, Claude and ChatGPT converge on the same five regions in the same position
 
 ## When to reach for it
 
-Reach for it when the primary object of your product is a conversation that produces things. Everything is a prop or a slot: `threadGroups` fills the sidebar, `messages` fills the stream, `artifacts` fills the artifact region, and `composer` is forwarded whole to D1. Mark a thread `running` and the sidebar becomes a job queue — pass `runningLabel` so the status says what is actually happening rather than the generic word. Put a blocked run in `paywall` rather than opening a dialog: it renders as the final turn, which is what keeps monetization part of the conversation. The shell holds no conversation state of its own, so selection, feedback and composer value all stay wherever your data already lives.
+Reach for it when the primary object of your product is a conversation that produces things. Everything is a prop or a slot: `threadGroups` fills the sidebar, `messages` fills the stream, `artifacts` fills the artifact region, and `composer` is forwarded whole to D1. Mark a thread `running` and the sidebar becomes a job queue — pass `runningLabel` so the status says what is actually happening rather than the generic word. Put a blocked run in `paywall` rather than opening a dialog: it renders as the final turn, which is what keeps monetization part of the conversation. The shell holds no conversation state of its own, so selection, feedback and composer value all stay wherever your data already lives. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9270,6 +9278,8 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 
 - Give a running job a visible label as well as a spinner, so the queue is readable without seeing motion.
 - Keep artifacts inside the stream, attached to the conversation that produced them.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
+- For a thread whose history is still arriving, leave `loading` off and pass `ShellSkeletonLines` from `shell-skeleton` through `empty`: `loading` is for the first paint of the whole surface, and the thread list and composer already work.
 
 ## Don't
 
@@ -9286,6 +9296,8 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - `chat-shell`: Root. Contains its own fixed descendants so the shell can be embedded.
 - `chat-shell-turn`: One turn — AI Elements' Message. Carries data-message-id and data-role.
 - `chat-shell-thread-running`: The job-queue status line under a thread that is still working.
+- `chat-shell-status`: Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9299,6 +9311,7 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - Each thread's actions trigger is revealed by opacity, not `display:none`, so it stays a tab stop on every row. Renaming opens an input that takes focus, Enter commits, Escape cancels.
 - The artifact region sits inside the scrolling stream, after every turn. Reaching it from the keyboard means tabbing through every turn's feedback controls first — there is no skip link and no separate tab stop for it.
 - The shell does not render AI Elements' scroll-to-bottom button, so there is no control that jumps back to the newest turn after you scroll up; the stream re-pins itself only when a new turn arrives.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9311,6 +9324,8 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - D1 owns an `sr-only` `role="status"` that announces its generating label, so the start of a run is spoken — but only if you actually set `composer.generating`.
 - The paywall renders as the last child of the log, so a blocked run is announced like any other turn arriving rather than as an interruption. That is the point of putting it in the stream instead of a dialog.
 - The sidebar trigger is named "Toggle Sidebar" by the vendored primitive, and the thread list is named "Conversations" here. Neither is configurable through the shell.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9328,6 +9343,8 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - The stream is the scroll container, which is why it carries `tabIndex={0}` and an accessible name. Moving the overflow onto an inner wrapper without moving those two with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the conversation.
 - J4's card grid keys its columns off its own container width (D19), not the viewport, so it already reads the stream's actual width and needs no override here — the shell renders it unadorned. If you fork this region, do not reintroduce a viewport-breakpoint override on the grid; that is the defect D19 fixed.
 - Feedback, thread selection and composer value are all controlled. Rendering the shell with `messages` that never change and a `feedback` state that never moves produces a screenshot, not a workspace — wire the callbacks before demoing it.
+- While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but `switcher`, `sidebarPromo` and `sidebarFooter` appear only once loading ends.
+- The composer skeleton reserves D1's context-chip row only when `contextChips` is non-empty. Pass the chips while loading if the loaded composer will show them, or the composer grows by that row when the data arrives.
 
 ## Composition
 
@@ -9355,7 +9372,7 @@ Canva, Fotor, Simplified, Spline and Tripo all put the same six things in the sa
 
 ## When to reach for it
 
-Reach for it when the primary object of your product is a document someone edits — a design, a board, a scene, a model. Fill `modalities` with the rail, then key `toolPanels` by the same ids: each entry is I1's own props plus three shortcuts, `presets` for an E4 grid, `results` for F1 cards, and `drawing` for I5 pinned below the panel. The canvas is `children` and never varies with the rail, which is deliberate. One `selection` object drives both the floating toolbar and the inspector, so passing nothing renders the shell's true default view — empty inspector, no toolbar — which is what most users are looking at most of the time. `frames` fills the bottom strip; pass `onAddFrame` and the strip's own add tile becomes its empty state.
+Reach for it when the primary object of your product is a document someone edits — a design, a board, a scene, a model. Fill `modalities` with the rail, then key `toolPanels` by the same ids: each entry is I1's own props plus three shortcuts, `presets` for an E4 grid, `results` for F1 cards, and `drawing` for I5 pinned below the panel. The canvas is `children` and never varies with the rail, which is deliberate. One `selection` object drives both the floating toolbar and the inspector, so passing nothing renders the shell's true default view — empty inspector, no toolbar — which is what most users are looking at most of the time. `frames` fills the bottom strip; pass `onAddFrame` and the strip's own add tile becomes its empty state. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9369,6 +9386,7 @@ Not yet recorded.
 
 - Let presets arrive as E4 so the chosen one stays a programmatic state, not a ring.
 - Keep document-level properties in the inspector's empty content, so nothing selected is still somewhere to work.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9387,6 +9405,8 @@ Not yet recorded.
 - `studio-shell-canvas-surface`: The element that actually scrolls. Carries the canvas name and its tab stop.
 - `studio-shell-canvas-toolbar`: Positions I3 at the top or bottom of the canvas per its own placement flag.
 - `studio-shell-results`: The F1 grid inside the tool panel's results section.
+- `studio-shell-status`: Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9398,6 +9418,7 @@ Not yet recorded.
 - The floating toolbar exists only while `selection` is set, so selecting something inserts a run of tab stops into the middle of the order and clearing the selection removes them. The stop count of this shell is not stable across a session.
 - The page strip is a carousel: its previous and next buttons are real controls, and Left/Right arrows scroll it from anywhere inside it. H5 positions those buttons at `left-2` / `right-2`, inside the strip's own box, so they read against the strip's own edge rather than the page-strip region's.
 - Below the `md` breakpoint the three middle regions become one scrolling column. The three inner tab stops remain, so a narrow viewport does not shorten the run — it lengthens the scroll.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9408,6 +9429,8 @@ Not yet recorded.
 - Nothing announces a modality change. Switching the rail swaps the entire tool panel and renames the group, and a change to a group's accessible name is not announced — a screen-reader user has to enter the panel to discover it is now a different panel.
 - The canvas has no accessible content of its own. With nothing on it, the region contains the empty state's text; with something on it, whatever you render is the entire story — the shell has no description of the document, its size, or what is selected beyond the inspector's status line.
 - The composed children carry their own semantics unchanged: the preset grid keeps its radiogroup/checkbox chosen-ness, the frame strip's tiles keep `aria-current`, the panel's toggle tiles keep `aria-pressed`. Flattening any of them into plain buttons is the one change here that silently deletes state from assistive tech.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9425,6 +9448,7 @@ Not yet recorded.
 - React's div props carry a legacy `results?: number` attribute, which collides with the tool panel's F1 list. The passthrough omits it. If you add another prop to a tool panel entry, check it against `React.ComponentProps<"div">` first — the collision is a type error at the interface, not at the call site, so it reads as unrelated.
 - Below the `md` breakpoint the three middle regions stack into one scrolling column rather than being hidden. That is a deliberate trade: a canvas that shares a scroll container with the panel and the inspector is worse than three columns, and much better than a region a narrow viewport cannot reach at all. A real mobile editor should replace the panel and the inspector with sheets.
 - Everything is controlled. Rendering the shell with a fixed `selection`, a fixed `activeModalityId` and no callbacks produces a screenshot of an editor, not an editor — wire the rail, the frame strip and the preset grid before demoing it.
+- The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.
 
 ## Composition
 
@@ -9452,7 +9476,7 @@ CapCut, Descript and Topaz are three very different products that arrange themse
 
 ## When to reach for it
 
-Reach for it when time is the primary axis of the thing being edited — video, audio, motion, anything with a playhead. The shell owns the clock and nothing else: `duration`, `currentTime`, `onSeek`, `zoom`, `snap` and the in/out range are shell props because the transport, the ruler, every lane and the transcript all have to read the same numbers, and passing them separately is how a clip stops sitting under its own timecode. Everything else is forwarded whole — `panel` to the tool panel, `inspector` to the property inspector, `transport` to the transport controls, `transcript` to the transcript editor. Flip `variant` to "transcript" to swap the track stack for the transcript view; both are views of the same edit-decision list, so the playhead and the seek callback stay exactly where they were. Put export jobs in `renderJobs` with their real spec and stage — a preview row and an export row in the same queue is the point.
+Reach for it when time is the primary axis of the thing being edited — video, audio, motion, anything with a playhead. The shell owns the clock and nothing else: `duration`, `currentTime`, `onSeek`, `zoom`, `snap` and the in/out range are shell props because the transport, the ruler, every lane and the transcript all have to read the same numbers, and passing them separately is how a clip stops sitting under its own timecode. Everything else is forwarded whole — `panel` to the tool panel, `inspector` to the property inspector, `transport` to the transport controls, `transcript` to the transcript editor. Flip `variant` to "transcript" to swap the track stack for the transcript view; both are views of the same edit-decision list, so the playhead and the seek callback stay exactly where they were. Put export jobs in `renderJobs` with their real spec and stage — a preview row and an export row in the same queue is the point. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the preview column, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9466,6 +9490,7 @@ Not yet recorded.
 
 - Give the ruler and every lane one scale, and inset the ruler by the lane gutter so second zero lines up.
 - Let each lane keep its own gutter controls — mute, solo and lock belong to the track, not to the shell.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9485,6 +9510,8 @@ Not yet recorded.
 - `timeline-shell-render-queue`: The labelled, focusable section F6 sits in.
 - `timeline-shell-tracks`: The ruler + lanes dock, with the full-height playhead layered over it.
 - `timeline-shell-transcript`: What the dock renders instead when variant is transcript.
+- `timeline-shell-status`: At the top of the preview column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9495,6 +9522,7 @@ Not yet recorded.
 - The shell adds no shortcuts. Space does not play, J/K/L do nothing, and no key moves between regions. The transport's own shortcuts (Space, arrows, `,`/`.`, I/O) are bound to the transport's root, so they fire only while focus is inside `data-region="transport"` — never from the stage or the dock.
 - Tabbing the tracks dock goes: the tracks group, then the ruler's playhead and in/out handles, then each lane in turn — three gutter toggles, one scroller stop and one stop per clip. Six lanes of ten clips is roughly eighty stops inside a single scroll region with no way to skip a lane.
 - `variant` is a prop, not a control. There is no in-shell switch between the track stack and the transcript, so whatever keyboard path reaches that switch is yours to build above the shell.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9505,6 +9533,8 @@ Not yet recorded.
 - The full-height playhead the shell layers over the dock sits inside an `aria-hidden` wrapper and is given no `label`, so it never double-announces against the one the ruler draws inside its own box. The gutter spacer that aligns second zero is `aria-hidden` too.
 - Changing `variant` is announced as nothing. The dock swaps wholesale with no live region anywhere in the shell, so say it where the switch lives.
 - The shell owns no status region at all. Play state, seek position, clip selection and export progress announce only as far as the composed components announce them — the transport's own `role="status"`, the render queue's rows — and there is no shell-level summary tying them together.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9522,6 +9552,8 @@ Not yet recorded.
 - The content panel and the inspector are hidden below the `md` and `lg` breakpoints. They stay mounted, so the regions are still there, but their content is unreachable on a phone — a timeline editor at 375px shows the rail, the stage and the dock and nothing else. Decide deliberately whether your product needs a narrow-viewport route to the inspector.
 - F6 is a six-column table and the queue sits under the stage rather than in the inspector, because a 20rem column cannot show a spec, a stage, a status and a cost side by side. That is a placement decision the spec does not make for you: if your export flow belongs in a dialog, pass no `renderJobs` and the region keeps its own empty affordance.
 - Everything is controlled. `currentTime` that never moves, a `selectedClipId` that never changes and a transcript whose `onEdit` goes nowhere produce a screenshot, not an editor — wire the callbacks before demoing it.
+- The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.
+- The transport skeleton is fixed blocks the size of H1's own controls, so it wraps to a second row at the same widths the controls do. The tracks skeleton always fills the list's `max-h-64` cap, so a project with one short track shrinks the tracks area when it loads.
 
 ## Composition
 
@@ -9549,7 +9581,7 @@ Freepik's apps, Tripo, Playground, getimg and Simplified all ship this exact lay
 
 ## When to reach for it
 
-Reach for it when your product does one thing to one input and shows you the output. Everything is a prop: `panel` is forwarded whole to E1, `presets` fills E4, `models` fills E2, `parameters` takes E3's own row components, `run` is forwarded whole to E5, and `results` (or `resultGroups`) fills F2. The prices are the shell's, not the children's — set `cost`, `costUnit` and `balance` once and they feed the chip, the shortfall wording on a blocked run and the credits indicator from one place, which is what stops a tool quoting two different numbers. Pass `examplePair` before you pass anything else: it is what the pane shows on day one, and day one is the version most people see. The shell holds no state, so directions, preset, model, parameters, run state and selection all stay wherever your data already lives.
+Reach for it when your product does one thing to one input and shows you the output. Everything is a prop: `panel` is forwarded whole to E1, `presets` fills E4, `models` fills E2, `parameters` takes E3's own row components, `run` is forwarded whole to E5, and `results` (or `resultGroups`) fills F2. The prices are the shell's, not the children's — set `cost`, `costUnit` and `balance` once and they feed the chip, the shortfall wording on a blocked run and the credits indicator from one place, which is what stops a tool quoting two different numbers. Pass `examplePair` before you pass anything else: it is what the pane shows on day one, and day one is the version most people see. The shell holds no state, so directions, preset, model, parameters, run state and selection all stay wherever your data already lives. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9563,6 +9595,7 @@ Not yet recorded.
 
 - Keep the price and Generate in one row below the panel's scroll, so the number is on screen at the moment of commitment.
 - Fill the empty canvas with a before → after pair — it teaches the tool faster than any description.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9577,6 +9610,8 @@ Not yet recorded.
 - `data-region="result-canvas"`: F2 generation-grid of F1 result-cards, or L1's example pair. Scrolls, so it is focusable and named.
 - `generation-shell`: Root. Full height, no scroll of its own — the two panes scroll independently.
 - `result-card`: Each F1 card in the results pane; carries `data-result-id` so a result can be addressed without reaching for its index.
+- `generation-shell-status`: Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9586,6 +9621,7 @@ Not yet recorded.
 - The results canvas is itself a tab stop. It scrolls, so it carries `tabIndex={0}` and a name — that is what keeps a scrollable region reachable — and it means one stop lands on the pane before any card inside it.
 - Nothing here has arrow-key navigation. Once the canvas has focus it takes the usual page keys; the grid inside it is a `role="list"` with no roving tabindex.
 - The shell binds no keys of its own. There is no Escape to leave select mode and no shortcut to Generate — every stop belongs to a composed component.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9594,6 +9630,8 @@ Not yet recorded.
 - The price is announced once, from one number. `cost` feeds A2's chip in the pinned row and E5's shortfall wording, which is why the shell never passes `cost` down to E5; do it yourself and the same price is announced twice from two chips.
 - Toggling select mode changes what each card's control means — open-this-result becomes select-this-result — without moving it or announcing anything. The bulk toolbar appearing above the grid is the only signal, and it is not live.
 - The empty pane is a full L1 with a before → after pair, and that pair announces as whatever you put in it. Give the two images real alt text, or the thing that teaches the tool teaches nothing.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9611,6 +9649,7 @@ Not yet recorded.
 - `parameters` takes E3's row components — `<ParameterSlider />`, `<ParameterSegmented />`, `<ParameterTabs />` — not a whole `<ParameterPanel />`. The shell owns the panel around them so the group-level reset wires to `onResetParameters`; nesting a second panel gives you two headers and two reset affordances for one set of rows.
 - O6's `Filled by:` list does not name B7 app-topbar, but it declares a topbar region — so this shell composes B7 rather than hand-rolling a header, and reports the addition. If your tool genuinely has no title bar, leave the region mounted and empty rather than removing it; a region that appears from nowhere cannot teach that it exists.
 - The `Responsive` story resizes the Storybook canvas only. The vitest runner behind the accessibility gate has no manager to resize an iframe, so it renders and axe-checks that story at the browser's default width, and a green run says nothing about narrow layout. The `Mobile` case story is what gates it: it moves the test iframe itself to 375×812, so the breakpoint actually flips and axe evaluates the stacked layout. Read `Mobile` for the narrow claim and `Responsive` for the canvas preview.
+- E1's card is drawn with a ring and its loading skeleton with a border, so the skeleton's contents sit 1px further in on each edge. That is inside the loading twin's tolerance; restyling either one is where a jump on load would come from.
 
 ## Composition
 
@@ -9638,7 +9677,7 @@ Midjourney Organize is the reference implementation, and the two things it gets 
 
 ## When to reach for it
 
-Reach for it when the primary object of your product is the pile of things a user has already made. Everything is a prop: `facets` fills the rail, `groups` (or `assets`) fills the grid, `search` and `onSearchChange` drive the header's field, and `openAssetId` opens the lightbox. Filtering is yours — the shell renders the rail and the chips, and hands you back the selection through `onSelectedFacetsChange`; the assets you pass are the assets it shows, so server-side and client-side filtering look identical from here. Give every facet an honest count, including zero: J2 disables a zero-count facet and says "no matches" out loud, which is worth more than hiding it. Leave `density` alone unless you are persisting the reader's choice — the default is deliberately the densest one — and pass `groups` rather than `assets` whenever your archive has any notion of when things were made, because a date-bucketed archive is navigable and a flat one is not.
+Reach for it when the primary object of your product is the pile of things a user has already made. Everything is a prop: `facets` fills the rail, `groups` (or `assets`) fills the grid, `search` and `onSearchChange` drive the header's field, and `openAssetId` opens the lightbox. Filtering is yours — the shell renders the rail and the chips, and hands you back the selection through `onSelectedFacetsChange`; the assets you pass are the assets it shows, so server-side and client-side filtering look identical from here. Give every facet an honest count, including zero: J2 disables a zero-count facet and says "no matches" out loud, which is worth more than hiding it. Leave `density` alone unless you are persisting the reader's choice — the default is deliberately the densest one — and pass `groups` rather than `assets` whenever your archive has any notion of when things were made, because a date-bucketed archive is navigable and a flat one is not. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the content column, above the header, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9652,6 +9691,7 @@ Not yet recorded.
 
 - Give every facet its count, so a filter states what it would leave before anyone clicks it.
 - Open dense. An archive is a page you scan, and eight-up is what makes a day of work fit on one.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9666,6 +9706,8 @@ Not yet recorded.
 - `library-shell`: Root. A column below md, a row above it; both panes scroll independently.
 - `preview-tile`: A8, one per asset, carrying data-asset-id. Its own frame button is what opens F3 or toggles selection.
 - `asset-detail`: F3, mounted at shell level rather than inside a region — a lightbox over the archive, not a fourth pane in it.
+- `library-shell-status`: At the top of the content column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9677,6 +9719,7 @@ Not yet recorded.
 - The grid has no roving tabindex and no arrow-key navigation — `role="list"` is for announcement only. Moving between tiles means one Tab per asset, however many the current density is showing.
 - The lightbox is a dialog: Escape closes it and focus is held inside while it is open. Nothing else in the shell handles a key.
 - The bulk-actions bar only exists once something is selected, so entering select mode changes the number of stops above the grid partway through a tab sequence.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9687,6 +9730,8 @@ Not yet recorded.
 - A tile's button always reports `aria-pressed`, because A8 stamps it whenever `onSelect` is set. Right in select mode; in browse mode every tile announces as an unpressed toggle when it is really an open action.
 - The lightbox announces the same name for every asset. F3's `DialogTitle` is a hard-coded, sr-only "Result detail", so opening the tenth tile sounds exactly like opening the first and the asset's own name is never spoken on open.
 - Removing the last facet, changing density and a filter emptying the grid all happen with no live region anywhere in the shell. "No matches" is visible text; nothing announces arriving at it.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9705,6 +9750,7 @@ Not yet recorded.
 - Facet selection, search text, bulk selection and the open asset are all controlled or controllable. Rendering the shell with a `selectedFacets` that never changes produces a screenshot, not an archive — the rail's checkboxes will tick and untick and the grid will never move.
 - The rail does not disappear below `md`; it becomes a short scrolling band above the header. That is deliberate — a region that vanishes at a breakpoint cannot teach that it exists — but it costs vertical space on a phone. If you want a drawer instead, wrap the shell rather than unmounting the region, and keep the `data-region` marker rendered.
 - F2's density prop is the only thing that separates dense from roomy, and it lives on one class list inside the grid. Restyling the dense-grid region's wrapper will not change the column count; pass `density`, or drive it from the rail's thumbnail-size group as the shell already does.
+- The header skeleton reserves a taller title row only when `headerActions` is passed, and an applied-filter row only when facets are already selected, the same rules J1 follows once loaded. Pass both while loading if the loaded header will show them.
 
 ## Composition
 
@@ -9732,7 +9778,7 @@ Midjourney Explore, Spline Community, Pixlr and Canva templates all arrive at th
 
 ## When to reach for it
 
-Reach for it when the primary object of your product is other people's work. `items` fills the feed and carries the two detail surfaces with it — give a tile an `asset` and it opens F3, give it a `template` and it opens J6, and the shell owns which one is open. `sorts` and `types` are separate props because they are separate axes: sorting reorders the whole feed, a type pill removes things from it, and both are yours to apply — the shell hands you the change and renders what you hand back. Ship facet counts on the type pills; without them every pill click is a gamble. The prompt bar's value is the shell's, because a tile's Remix action seeds it: read it through `onPromptValueChange` and act on `onPromptSubmit`. Everything else about the feed — `hasMore`, `loading`, `onLoadMore`, `totalCount` — is forwarded straight to J3 through `gallery`.
+Reach for it when the primary object of your product is other people's work. `items` fills the feed and carries the two detail surfaces with it — give a tile an `asset` and it opens F3, give it a `template` and it opens J6, and the shell owns which one is open. `sorts` and `types` are separate props because they are separate axes: sorting reorders the whole feed, a type pill removes things from it, and both are yours to apply — the shell hands you the change and renders what you hand back. Ship facet counts on the type pills; without them every pill click is a gamble. The prompt bar's value is the shell's, because a tile's Remix action seeds it: read it through `onPromptValueChange` and act on `onPromptSubmit`. Everything else about the feed — `hasMore`, `loading`, `onLoadMore`, `totalCount` — is forwarded straight to J3 through `gallery`. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the feed column, above the prompt bar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9746,6 +9792,7 @@ Not yet recorded.
 
 - Let tile heights vary. The uneven column is what makes a community feed worth scrolling.
 - Keep ordering and filtering as two named controls, so it is obvious they compose.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9762,6 +9809,8 @@ Not yet recorded.
 - `explore-shell-controls`: The control strip itself — the two axes side by side.
 - `explore-shell-scope`: What the feed contains, shown when it offers no axes at all.
 - `explore-shell-more-item`: One A8 preview-tile in F3's more-like-this, derived from the feed.
+- `explore-shell-status`: At the top of the feed column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9772,6 +9821,7 @@ Not yet recorded.
 - The shell pins the open tab panel to `tabIndex={-1}` deliberately. Base UI makes an open panel focusable, which is right when the panel is the scroll container and wrong here — J3 keeps its own named, focusable, scrolling feed inside it, so the default would put two identical stops in front of the same content.
 - Inside the feed every tile is an open button plus a Remix button, exactly as J3 ships them. There is no arrow-key navigation in the masonry and no shortcut onto a tile.
 - Opening a tile's detail puts you in a dialog: focus is trapped there and Escape closes it. The shell itself handles no keys at all.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9782,6 +9832,8 @@ Not yet recorded.
 - An empty feed is L1 substituted into the same region, and L1 has no live region — a filter that empties the feed replaces it silently. The shell adds no announcement of its own.
 - With no axes at all the control strip renders `scopeLabel` as a plain sentence. It is text, not a status, so changing what the feed contains announces nothing.
 - `data-sort` and `data-type` on the root are hooks for you and your tests. They carry no semantics and are never announced.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9801,6 +9853,8 @@ Not yet recorded.
 - B4 has no empty affordance of its own, so a rail with no items renders as an empty 92px column. Supply at least the destination the user is currently on.
 - Base UI makes an open tab panel a tab stop, which is right when the panel is the scroll container and wrong here — J3 keeps its own named, focusable, scrolling feed inside it. The shell sets the panel to `tabIndex={-1}`; if you re-wrap the feed region, keep exactly one tab stop in front of the feed or keyboard users pay for the duplicate on every page.
 - The sort strip uses the tabs `line` variant, not the default segmented one. The default paints the list `bg-muted` and the trigger's resting colour on that surface is under 4.5:1 — the same pairing this registry keeps re-shipping. Restyle the strip and re-measure it.
+- The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.
+- The sort strip's skeleton reserves tabs and pills only for the `sorts` and `types` passed while loading. Pass them if the loaded feed will offer them, or the strip changes height when the data arrives.
 
 ## Composition
 
@@ -9828,7 +9882,7 @@ Claude Artifacts and the Manus Library converge on the same four regions, and on
 
 ## When to reach for it
 
-Reach for it when generated documents are objects in your product rather than attachments to a conversation. `groups` is the whole index — date buckets on the outside, J4 sessions inside them — and everything else is scoping: `activeType` for the facets, `query` for the search, both controlled or uncontrolled as you prefer. The facets are derived from the artifacts you pass, so there is no facet list to keep in step with your data. Pass `draft` when something has just been generated and is still waiting on a Keep or a Discard: it renders above the index with K1's own verbs and is exempt from the filter, because it is not in the index until it is kept. Turn `localSearch` off when the query round-trips to a server and `groups` already arrives filtered.
+Reach for it when generated documents are objects in your product rather than attachments to a conversation. `groups` is the whole index — date buckets on the outside, J4 sessions inside them — and everything else is scoping: `activeType` for the facets, `query` for the search, both controlled or uncontrolled as you prefer. The facets are derived from the artifacts you pass, so there is no facet list to keep in step with your data. Pass `draft` when something has just been generated and is still waiting on a Keep or a Discard: it renders above the index with K1's own verbs and is exempt from the filter, because it is not in the index until it is kept. Turn `localSearch` off when the query round-trips to a server and `groups` already arrives filtered. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the header, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9842,6 +9896,7 @@ Not yet recorded.
 
 - Let the excerpt identify the artifact — it is the field people recognise, and the one they will search for.
 - Bucket by recency on the outside and keep the originating session on the inside, so a card stays linked to its conversation.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9858,6 +9913,8 @@ Not yet recorded.
 - `artifact-shell-title`: The index's heading, inside the header region.
 - `artifact-shell-result-count`: Live region reporting how much of the index the filter and search left showing.
 - `artifact-shell-draft`: K1 ai-doc-block: the passage that has not been filed yet, above the buckets.
+- `artifact-shell-status`: Under the header, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9869,6 +9926,7 @@ Not yet recorded.
 - Cmd/Ctrl+B toggles the sidebar from anywhere on the page, including while you are typing in this shell's search field — the vendored `SidebarProvider` binds it to `window` and calls `preventDefault()` unconditionally.
 - Nothing focuses the search field by shortcut: there is no "/" handler and no skip link into the index. Reaching a card from the page body means tabbing the whole header.
 - With `collapsibleSessions`, each session header adds a tab stop inside the grid, activated with Space or Enter.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9881,6 +9939,8 @@ Not yet recorded.
 - The draft is its own `<section>` labelled by an `<h2>` from `draftLabel`, and the K1 block inside it brings its own persistent `role="status"` — so mounting a draft announces "This block is generated and waiting on your decision" alongside whatever the result count is saying.
 - Date buckets are `role="group"`s named by their label and session groups are named `<section>`s inside them, so the index is navigable by region even though it exposes no headings below the `<h1>` and `<h2>`.
 - The sidebar trigger is named "Toggle Sidebar" and carries no `aria-expanded`, so the sidebar's state is never announced in either direction.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9898,6 +9958,8 @@ Not yet recorded.
 - `localSearch` filters the artifacts this shell was handed, matching the excerpt, the title and the type label. Leave it on for a server-backed index and the local pass filters the server's results a second time — an artifact matched on its body text will vanish because that text is not in its excerpt. Turn it off and the search field becomes a pure `onQueryChange` reporter.
 - K1's four verbs are the approval contract, and a draft that never resolves is a draft that blocks the index it is sitting on. Wire `draft.onKeep` and `draft.onDiscard` to real handlers that remove the prop; the shell renders whatever it is given and has no idea when the decision was made.
 - Every region mounts whether it has content or not, including the search field over an empty index. That is the point — a control that appears only once you already have data cannot teach anyone that it exists — so do not conditionally render the regions away on day one.
+- While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but `switcher`, `nav`, `sidebarPromo` and `sidebarFooter` appear only once loading ends.
+- The header skeleton always reserves the facet row. An index with one artifact type and no `onOpenFilters` renders no facet row once loaded, so its header shrinks by that row when the data arrives.
 
 ## Composition
 
@@ -9925,7 +9987,7 @@ Make, Zapier, n8n and Spline all land on the same page, and the reason is that t
 
 ## When to reach for it
 
-Reach for it when the objects your product lists are runnable rather than stored — if they are stored, O7 is the shell you want, and using this one would promise an execution model you do not have. Everything is a prop or a slot: `records` fills the rows and is forwarded whole to J5, `folders` fills the folder table, `filters` fills the chips, and `nav` fills the rail. Wire `onEnabledChange` before anything else; it is the primary control of the page and a shell rendered without it is a screenshot. Give every record a `runState` and a `lastRun` — a row with neither says nothing about whether the automation is healthy, which is the only thing the list is for. `search` and `onSearchChange` are controlled and the shell does no filtering: hand it the folders and records that already match, exactly as J1 documents.
+Reach for it when the objects your product lists are runnable rather than stored — if they are stored, O7 is the shell you want, and using this one would promise an execution model you do not have. Everything is a prop or a slot: `records` fills the rows and is forwarded whole to J5, `folders` fills the folder table, `filters` fills the chips, and `nav` fills the rail. Wire `onEnabledChange` before anything else; it is the primary control of the page and a shell rendered without it is a screenshot. Give every record a `runState` and a `lastRun` — a row with neither says nothing about whether the automation is healthy, which is the only thing the list is for. `search` and `onSearchChange` are controlled and the shell does no filtering: hand it the folders and records that already match, exactly as J1 documents. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the header, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -9939,6 +10001,7 @@ Not yet recorded.
 
 - Keep the enable toggle in the row, named after the record it enables.
 - Put run status in the subtitle, as an icon shape and a word, beside the time it happened.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -9955,6 +10018,8 @@ Not yet recorded.
 - `records-shell-count`: How many records the list currently holds.
 - `records-shell-sort`: The sort control. `records-shell-sort-trigger` is the named button.
 - `records-shell-feedback`: N1 with its caption, at the foot of the record region.
+- `records-shell-status`: Under the header, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -9966,6 +10031,7 @@ Not yet recorded.
 - An applied filter chip is two stops, not one — A5 renders the toggle and the remove X as siblings — so `filters` with `onRemove` on every entry doubles that section of the tab order.
 - J1's list/grid switch is suppressed with `display: none`, which takes it out of the tab order and the accessibility tree rather than just hiding it. There is no dead stop where the switch would have been.
 - Nothing here handles arrow keys. Rows do not navigate, folders do not navigate, and the only components with arrow-key behaviour are the ones that bring it themselves: the sort `Select` and each row's overflow menu.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -9976,6 +10042,8 @@ Not yet recorded.
 - The sort trigger's accessible name is `sortLabel` ("Sort by") while its visible text is the current option ("Last run"). The visible words are not part of the name, so a voice-control user asking for "Last run" does not reach it — say "Sort by" instead.
 - The shell adds no live region of its own. Toggling a record, changing the sort, typing in the search box and filtering the list all announce nothing beyond the control the user touched; J5's switch reports its own state and that is the whole of it.
 - Everything else is inherited untouched: J5's app clusters and switch names, A5's `aria-pressed` chips, J1's sr-only search label and per-row action names, and N1's `aria-pressed` thumbs.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9992,6 +10060,8 @@ Not yet recorded.
 - The record region is the scroll container, which is why it is a `section` with `tabIndex={0}` and a name taken from the header's heading. Moving the overflow onto an inner wrapper without moving those with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the list.
 - The sort control's trigger renders the raw `value` unless it is given children, so an unlabelled select shows `recent` instead of "Last run". The shell resolves the label from `sortOptions`; if you pass your own options make sure every `value` you might set also has an entry, or the trigger falls back to the word "Sort by".
 - `sort` is optional-controlled and `records`, `folders` and `filters` are not controlled at all — the shell holds no list state. It will happily render filter chips that are `active` over a record list that was never filtered, which looks correct and lies. Filter your data where it lives.
+- While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but `switcher` and `nav` appear only once loading ends.
+- While `loading`, neither `headerActions` nor the create action is mounted; the header reserves one placeholder for them when either is passed, and keeps its height because the bar is a fixed `h-14`.
 
 ## Composition
 
@@ -10019,7 +10089,7 @@ OpenAI docs and Lovable docs both split navigation in two, and the split is the 
 
 ## When to reach for it
 
-Reach for it when your product ships more than one thing and each of them needs its own documentation. Keep the two navigation props apart: `areas` with `activeAreaId` and `onSelectArea` move between products, `navSections` with `activePageId` and `onSelectPage` move between pages of the product you are already in. Feed `navSections` from whichever area is active — the rail changing is what changes the nav. `announcements` is controlled the way L3 is: the shell emits an id and your host stores it, so pass `onDismissAnnouncement` or the dismiss control does nothing. Page bodies can be `sections`, which get A12 headings and K6 citations for free, or arbitrary `children` for MDX you already render; both land inside the measure.
+Reach for it when your product ships more than one thing and each of them needs its own documentation. Keep the two navigation props apart: `areas` with `activeAreaId` and `onSelectArea` move between products, `navSections` with `activePageId` and `onSelectPage` move between pages of the product you are already in. Feed `navSections` from whichever area is active — the rail changing is what changes the nav. `announcements` is controlled the way L3 is: the shell emits an id and your host stores it, so pass `onDismissAnnouncement` or the dismiss control does nothing. Page bodies can be `sections`, which get A12 headings and K6 citations for free, or arbitrary `children` for MDX you already render; both land inside the measure. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the content column, above the announcement strip, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -10033,6 +10103,7 @@ Not yet recorded.
 
 - Keep the rail and the nav as two named navigations doing two different jobs.
 - Let the content column stay measured, even when the window is wide.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -10051,6 +10122,8 @@ Not yet recorded.
 - `docs-shell-article`: The measured column. 68ch, on the article rather than the scroller.
 - `docs-shell-section`: One section: an A12 heading, a body, and its citations.
 - `docs-shell-sources`: The labelled run of K6 markers under a section.
+- `docs-shell-status`: At the top of the content column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -10062,6 +10135,7 @@ Not yet recorded.
 - The rail's drag handle is `tabIndex={-1}` and unreachable by keyboard, so the toggle button and the shortcut are the only two ways to collapse and expand the rail.
 - Rail rows and nav rows are buttons unless a nav item carries `href`, in which case that row is an anchor. Both activate on Enter; only the button form also activates on Space.
 - A resolved citation marker opens its quote on hover **and** on keyboard focus, so the preview is reachable — but Enter on the marker fires `onJumpToSource` rather than pinning the card open.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -10074,6 +10148,8 @@ Not yet recorded.
 - The quote in a citation's hover card is portaled and the marker sets no `aria-describedby` pointing at it, so the card opening is not announced — the quote has to be found in the reading order once it is there.
 - The announcement strip is `aria-live="polite"` and always mounted, so an announcement arriving mid-read is announced in full. Each ✕ is named for its announcement ("Dismiss announcement: Multi-track timeline"), which is what keeps three of them apart.
 - Nothing announces a page change. Selecting a nav row swaps the whole content column with no live region and no focus move, so a screen-reader user hears silence and has to go looking for the article they just asked for.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10093,6 +10169,8 @@ Not yet recorded.
 - The doc-nav column is deliberately not tinted. B3's active row is `bg-accent`, so painting the column the same token would erase the very affordance that says which page you are on — and B3's row icons and A12's small headings both carry `text-muted-foreground`, which fails contrast on any of the three muted surfaces.
 - A section's `action` renders inside the A12 header, and the shell promotes that header to a level-2 heading — so whatever you put there becomes part of the heading's accessible name. Keep it to two or three words; a full sentence turns every heading in the page outline into a paragraph.
 - The content column is the scroll container, which is why it carries `tabIndex={0}` and an accessible name taken from the page title. Moving the overflow onto the article without moving those two with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the page they navigated to.
+- While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The rail skeleton takes its width from the sidebar provider's state instead, so it follows `defaultRailExpanded` and a Cmd/Ctrl+B toggle, but `railBrand` and `railFooter` appear only once loading ends.
+- The announcement strip's skeleton keeps one announcement's height only when `announcements` has an undismissed entry while loading. An announcement that arrives with the data pushes the content column down by one strip.
 
 ## Composition
 
@@ -10120,7 +10198,7 @@ Lovable settings is the reference implementation, and two of its decisions are t
 
 ## When to reach for it
 
-Reach for it when settings are a destination rather than a dialog — when they need URLs, a plan story, or more rows than a modal can hold. Everything is data: each entry in `sections` carries its `group` (which is how the nav groups), its `rows` (M1's grid, where every row needs a description), and optionally a `callout`, `gated` features, a `pricing` table and a `code` block. `sectionId` and `search` are controlled-or-uncontrolled, so the shell works out of the box and still lets your router own the hash. Keep `anchorPrefix` stable — it is the URL. Under about twenty settings a dialog is the better shape; use M1 directly in its `dialog` variant rather than reaching for this shell early.
+Reach for it when settings are a destination rather than a dialog — when they need URLs, a plan story, or more rows than a modal can hold. Everything is data: each entry in `sections` carries its `group` (which is how the nav groups), its `rows` (M1's grid, where every row needs a description), and optionally a `callout`, `gated` features, a `pricing` table and a `code` block. `sectionId` and `search` are controlled-or-uncontrolled, so the shell works out of the box and still lets your router own the hash. Keep `anchorPrefix` stable — it is the URL. Under about twenty settings a dialog is the better shape; use M1 directly in its `dialog` variant rather than reaching for this shell early. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the breadcrumb row, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -10134,6 +10212,7 @@ Not yet recorded.
 
 - Keep search in the nav column and report matches on every group, so a setting is findable from wherever you are standing.
 - Show the gated feature and let the tier badge point at it — a paywall works by being visible.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -10154,6 +10233,8 @@ Not yet recorded.
 - `settings-shell-search-status`: Always-mounted live region reporting the global match count.
 - `settings-shell-gated`: The E7 group — what the nav's tier badge was promising.
 - `settings-shell-code`: The snippet itself. Focusable, because it scrolls.
+- `settings-shell-status`: Under the breadcrumb row, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -10164,6 +10245,7 @@ Not yet recorded.
 - M1's own section tablist is suppressed with `display: none`, so its tabs are not reachable by keyboard at all — which is intended, since the page nav is B3's job. What survives is the open `tabpanel`, which Base UI still gives `tabIndex=0`: there is a tab stop announcing itself as a tab panel whose tab list nothing can reach.
 - Nav rows are anchors (`href="#settings-…"`), so Enter follows them and **Space does not** — Space scrolls the page instead. This differs from B3's button rows elsewhere in the registry, where both keys work.
 - There is no Escape, no focus trap and no shortcut for search. It is a page, not a dialog.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -10175,6 +10257,8 @@ Not yet recorded.
 - The `pre` holding the snippet is a tab stop with no accessible name of its own — the `h3` above it names the region, not the box. A screen-reader user lands on an unnamed scroll container and has to read forward to work out what they are in.
 - The copy button's name is pinned by `aria-label` to "Copy <label>" and does not flip to "Copied": a focused button's name change is not reliably re-announced. Nothing announces that a copy succeeded, and a rejected clipboard write is silent.
 - The gated group and the code block are named `section`s (`aria-labelledby` at their own `h3`), so both are regions a screen-reader user can jump to. The section headings inside the M1 body are `h3`s too.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10193,6 +10277,7 @@ Not yet recorded.
 - The content column is the scroll container and on day one it holds no focusable content at all, which is why it carries `tabIndex={0}` and an accessible name. Move the overflow to an inner wrapper without moving those two and axe's `scrollable-region-focusable` rule fails immediately.
 - The info callout uses the vendored `Alert`, whose role is `alert` — an assertive live region. Switching sections therefore announces the new scope, which is usually what you want and is occasionally chatty. If your callouts are decorative rather than consequential, that is a signal the section did not need one.
 - Everything is controlled or controlled-capable, including the gated rows: E7's switch never turns itself on while `state` is `locked`, it calls `onRequestUpgrade` so you can flip to `inline-upsell`. Rendering the shell with a static `state="locked"` and no handler produces a screenshot of a paywall, not a paywall.
+- While `loading`, `accountMenu` is not mounted: the header keeps a round placeholder its size when it is passed, which is what holds the row at the menu's height, but the menu cannot be opened until loading ends.
 
 ## Composition
 
@@ -10220,7 +10305,7 @@ NotebookLM is the reference, and it is a genuinely distinct archetype rather tha
 
 ## When to reach for it
 
-Reach for it when answers have to be traceable to documents the user supplied. Everything is a prop: `sources` fills the left pane and is the list citations resolve against, `messages` fills the middle, `outputTypes` is the studio menu and `outputs` is what it produced. Give an assistant turn `claims` rather than `content` when the answer is grounded — each claim carries its citations, and K7 adds the warning when some of them are not sourced. A citation names a `sourceId`, not a callback: the shell finds that source, labels the marker with its name, scrolls the left pane to it and announces the move. Wire `sourcesAction` and `sourcesEmptyAction` with the same verb, since the empty pane is the version most first-time users see. The shell holds no notebook state of its own — ingest, retry, composer value and generation all stay wherever your data already lives.
+Reach for it when answers have to be traceable to documents the user supplied. Everything is a prop: `sources` fills the left pane and is the list citations resolve against, `messages` fills the middle, `outputTypes` is the studio menu and `outputs` is what it produced. Give an assistant turn `claims` rather than `content` when the answer is grounded — each claim carries its citations, and K7 adds the warning when some of them are not sourced. A citation names a `sourceId`, not a callback: the shell finds that source, labels the marker with its name, scrolls the left pane to it and announces the move. Wire `sourcesAction` and `sourcesEmptyAction` with the same verb, since the empty pane is the version most first-time users see. The shell holds no notebook state of its own — ingest, retry, composer value and generation all stay wherever your data already lives. `headerActions` puts host chrome, such as an account menu or a notifications control, in a bar at the top of the chat column, and the bar renders only when you pass it. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the chat column, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -10234,6 +10319,7 @@ Not yet recorded.
 
 - Give a citation a source and a quote, so a reader can check the claim without leaving the answer.
 - Generate into the studio pane, under the menu that offered the output.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -10251,6 +10337,9 @@ Not yet recorded.
 - `notebook-shell-jump-status`: Announces which source a citation just scrolled into view.
 - `notebook-shell-output-types`: The menu half of the studio pane.
 - `notebook-shell-outputs`: The results half. Never replaces the menu above it.
+- `notebook-shell-header`: A bar at the top of the chat column for `headerActions`, mounted only when it is passed.
+- `notebook-shell-status`: At the top of the chat column, under the header bar when there is one, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -10262,6 +10351,8 @@ Not yet recorded.
 - The composer is D1 with its negative-prompt toggle removed by `display:none`, so it is genuinely gone from the tab order rather than hidden and still reachable. Enter asks, Shift+Enter breaks the line.
 - The studio's output-type menu is C3's carousel: a `role="region"` with its own Left/Right handling, two arrow buttons, then one stop per card.
 - Nothing in the shell handles Escape, and the citation jump has no keyboard route back to the sentence you were reading other than Shift+Tab.
+- `headerActions` sits in a bar at the top of the chat column, so its controls come after the sources pane in the tab order and before the conversation.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -10272,6 +10363,8 @@ Not yet recorded.
 - K7's coverage warning is ordinary text inside the answer, read in document order after the claims — "Some claims here aren't sourced", or "Nothing in this answer is sourced". It is not a live region, so it is announced when the reader reaches it rather than when the answer lands.
 - K5 gives each source an sr-only `role="status"` for its ingest stage and a `role="progressbar"` named for the source and the stage, so a panel of four in-flight sources is not four identical "Loading" bars. Ingest is the one thing in this shell that announces itself as it happens.
 - The composer's own live region announces "Generating…" and then falls silent when the answer arrives. The chat pane's `role="log"` is what covers the arrival, and only for screen readers that follow logs.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10290,6 +10383,8 @@ Not yet recorded.
 - `use-stick-to-bottom` owns an element between the conversation root and its content and sets no overflow on it, so without a `scrollClassName` the chat pane does not scroll, it grows. Because that element is not yours, the region's accessible name and tab stop live on the conversation root instead — moving the overflow without moving those two fails axe's scrollable-region-focusable rule.
 - D1 is the media-generation omnibox, so it offers a negative-prompt field a notebook composer has no use for. The shell suppresses that control through a descendant variant on D1's own class list, and a `composer.className` you pass is merged after the shell's — override the same utility and the control comes back.
 - Three panes side by side stop working well before the phone breakpoint, so below `lg` the shell stacks them in reading order and moves the scroll to the root. The panes lose their independent scrollers there by design; anything you anchor to the bottom of a pane will scroll away with the page. The `Responsive` story sets the viewport through Storybook's manager, which the vitest story runner has no equivalent of — that story is checked at default width by the gate and by hand at 375px by a human.
+- `headerActions` adds a 48px bar above the chat only when it is passed, so the chat pane is shorter in a notebook that has one. While `loading` the bar keeps its place, with a placeholder instead of your controls.
+- The composer skeleton reserves D1's context-chip row only when `contextChips` is non-empty. Pass the chips while loading if the loaded composer will show them, or the composer grows by that row when the data arrives.
 
 ## Composition
 
@@ -10317,7 +10412,7 @@ Tripo is the reference here, and it is the one archetype on the board with no AI
 
 ## When to reach for it
 
-Reach for it for the sign-in and sign-up screens of any product, AI or not. Everything is a prop: `providers` fills the rows, `marketing` fills the pitch pane, `title` and `description` carry your own copy, and `mode` picks between the sign-in and sign-up defaults. Wire `onSelectProvider` to whatever your identity stack wants — the shell will not redirect, will not post the form, and holds no session of its own; the only state it keeps is the email field, and passing `email` takes even that back. Give every provider a `disabledReason` rather than relying on `disabled` alone, and pass your real `terms` and `privacy` routes before you ship, because the defaults are placeholders. If your product has one identity route and no others, leave `providers` empty: the region stays mounted, shows L1, and the email form below it is still the whole screen.
+Reach for it for the sign-in and sign-up screens of any product, AI or not. Everything is a prop: `providers` fills the rows, `marketing` fills the pitch pane, `title` and `description` carry your own copy, and `mode` picks between the sign-in and sign-up defaults. Wire `onSelectProvider` to whatever your identity stack wants — the shell will not redirect, will not post the form, and holds no session of its own; the only state it keeps is the email field, and passing `email` takes even that back. Give every provider a `disabledReason` rather than relying on `disabled` alone, and pass your real `terms` and `privacy` routes before you ship, because the defaults are placeholders. If your product has one identity route and no others, leave `providers` empty: the region stays mounted, shows L1, and the email form below it is still the whole screen. Pass `status` for a message about the whole surface (offline, an expired session, a rate limit): it renders at the top of the form column, above the providers, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: the title stays, every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -10331,6 +10426,7 @@ Not yet recorded.
 
 - Title each provider row with the action, so the row's accessible name says what pressing it does.
 - Give an unavailable provider a written reason, so the state survives without seeing the dimming.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -10348,6 +10444,8 @@ Not yet recorded.
 - `auth-shell-email-submit`: The email primary action. Relabel it with emailSubmitLabel.
 - `auth-shell-mode-switch`: Sign in to sign up and back. Rendered only when onModeChange is given.
 - `auth-shell-legal`: The default legal sentence, replaceable whole via legal.
+- `auth-shell-status`: At the top of the form column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -10359,6 +10457,7 @@ Not yet recorded.
 - Enter in the email field submits the form: the shell prevents the default and calls `onEmailSubmit`. The field is `required`, so an empty Enter raises the browser's own validation bubble rather than anything the component draws.
 - The provider list is a `role="group"`, not a listbox or a radiogroup, so arrow keys do nothing and there is no roving focus. Ten providers is ten tab stops before the email field.
 - Nothing responds to Escape. There is no dismissable surface here.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -10371,6 +10470,8 @@ Not yet recorded.
 - L6's progress bar is suppressed along with the nav, so nothing announces a step count — which is correct here, since there is only one step.
 - The legal links are plain anchors named by `terms.label` and `privacy.label`, painted at foreground contrast rather than muted, because that is the one line on the screen that has to stay readable.
 - Nothing announces the outcome of picking a provider or submitting an address. There is no live region anywhere in the shell, so an async handler needs its own status message.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds the title, the description and one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10390,6 +10491,8 @@ Not yet recorded.
 - The chrome suppression is CSS, and jsdom computes no stylesheet — so in unit tests `getByRole('button', { name: 'Back' })` still finds L6's hidden nav buttons. Assert against the shell's own regions and slots instead of trying to prove absence by role; the browser a11y gate is what actually sees the suppression.
 - lucide ships no brand marks, so there is no Google or GitHub glyph to reach for. Provider icons are yours to supply through `provider.icon`; whatever you pass is decorative, because the row title is the accessible name.
 - Everything except the email field is controlled. Rendering the shell with `providers` and no `onSelectProvider`, or with `mode` and no `onModeChange`, produces a screenshot rather than a screen — the mode switch does not even render without a handler to call.
+- While `loading`, L6 is not mounted, because its step navigation is hidden with a class rather than removed and a loading shell mounts nothing to click. The skeleton composes the vendored Card L6 is built on, with the real title and description, so the card lands where L6's will; restyle one and restyle the other.
+- The card is centred on the page, so every region's position depends on the card's height. The skeleton draws three provider rows unless `providers` is passed, and a mode-switch line only when `onModeChange` is; pass both while loading if the loaded page will show them.
 
 ## Composition
 
