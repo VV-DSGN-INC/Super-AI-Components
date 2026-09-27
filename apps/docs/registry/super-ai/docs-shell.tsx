@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,14 @@ import { EmptyState } from "@/registry/super-ai/empty-state";
 import { FeatureAnnouncement } from "@/registry/super-ai/feature-announcement";
 import { Kbd, KbdGroup } from "@/registry/super-ai/kbd";
 import { SectionHeader } from "@/registry/super-ai/section-header";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+  ShellSkeletonRows,
+  ShellSkeletonSidebar,
+} from "@/registry/super-ai/shell-skeleton";
 import { SidebarNav, type SidebarNavItemData, type SidebarNavSection } from "@/registry/super-ai/sidebar-nav";
 
 /**
@@ -205,6 +214,21 @@ interface DocsShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   contentEmpty?: React.ReactNode;
   /** Arbitrary body content, rendered after `sections` inside the measure. */
   children?: React.ReactNode;
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders at the top of the content column, above
+   * the announcement strip and the page, and only when given. Pass M6
+   * `rate-limit-banner` or the vendored `Alert`; the shell adds no live region, so
+   * the component you pass carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the docs have loaded. Every region draws a skeleton at the
+   * size it will take, the root carries `aria-busy`, and nothing the shell composes
+   * is mounted, so there is nothing to focus or click. The strip reserves one
+   * announcement's height only when `announcements` has an undismissed entry.
+   */
+  loading?: boolean;
 }
 
 /**
@@ -280,6 +304,17 @@ function DocsShellSectionBlock({ section }: { section: DocsShellSection }) {
   );
 }
 
+/**
+ * The icon rail while `loading`. B1 is not mounted, because it always renders its
+ * rail button and a loading shell mounts nothing to click. The width comes from
+ * the provider's state instead, the same state B1 reads, so the skeleton follows
+ * `defaultRailExpanded` and a Cmd/Ctrl+B toggle.
+ */
+function DocsShellRailSkeleton() {
+  const { state } = useSidebar();
+  return <ShellSkeletonSidebar region="icon-rail" collapsed={state === "collapsed"} />;
+}
+
 function DocsShell({
   areas = [],
   activeAreaId,
@@ -306,6 +341,9 @@ function DocsShell({
   contentEmpty,
   children,
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: DocsShellProps) {
@@ -313,6 +351,74 @@ function DocsShell({
   const hasNav = navSections.length > 0 || (navPinned?.length ?? 0) > 0;
   const hasContent = sections.length > 0 || children != null;
   const liveAnnouncements = announcements.filter((announcement) => !announcement.dismissed);
+
+  const statusStrip = status ? (
+    <div data-slot="docs-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <SidebarProvider
+        data-slot="docs-shell"
+        aria-busy="true"
+        defaultOpen={defaultRailExpanded}
+        className={cn(
+          "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
+          EMBEDDABLE_SHELL,
+          SIDEBAR_FILLS_SHELL,
+          className,
+        )}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        <DocsShellRailSkeleton />
+        <SidebarInset className="min-w-0 flex-col overflow-hidden md:flex-row">
+          <ShellSkeletonRegion
+            region="doc-nav"
+            className="bg-background max-h-56 shrink-0 overflow-hidden border-b md:max-h-none md:w-64 md:border-e md:border-b-0"
+          >
+            <div className="flex items-center gap-2 border-b px-2 py-2">
+              <ShellSkeletonBlock className="size-7" />
+              <ShellSkeletonBlock className="h-4 w-24" />
+            </div>
+            <ShellSkeletonRows count={10} className="p-2" />
+          </ShellSkeletonRegion>
+          <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+            {statusStrip}
+            <ShellSkeletonRegion
+              region="announcement-strip"
+              className={cn(
+                "shrink-0",
+                liveAnnouncements.length > 0 && "flex items-center border-b px-4 py-2",
+              )}
+            >
+              {liveAnnouncements.length > 0 ? (
+                <ShellSkeletonBlock className="h-8 w-md max-w-full rounded-full" />
+              ) : null}
+            </ShellSkeletonRegion>
+            <ShellSkeletonRegion region="content-column" className="min-h-0 flex-1 overflow-hidden px-6 py-8">
+              <div className={cn(CONTENT_MEASURE, "flex flex-col gap-8")}>
+                <div className="flex flex-col gap-2">
+                  <ShellSkeletonBlock className="h-8 w-2/3" />
+                  {lede ? <ShellSkeletonLines count={2} /> : null}
+                </div>
+                <div className="flex flex-col gap-3">
+                  <ShellSkeletonBlock className="h-6 w-40" />
+                  <ShellSkeletonLines count={3} />
+                </div>
+                <div className="flex flex-col gap-3">
+                  <ShellSkeletonBlock className="h-6 w-48" />
+                  <ShellSkeletonLines count={4} />
+                </div>
+              </div>
+            </ShellSkeletonRegion>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider
@@ -335,6 +441,7 @@ function DocsShell({
           which is what positions the rail. */}
       <div data-region="icon-rail" className="contents">
         <AppSidebar
+          data-loading-region="icon-rail"
           collapsible="icon"
           switcher={railBrand}
           footer={railFooter}
@@ -373,6 +480,7 @@ function DocsShell({
             the only three physical classes this file ever had. */}
         <div
           data-region="doc-nav"
+          data-loading-region="doc-nav"
           className="bg-background max-h-56 shrink-0 overflow-y-auto border-b md:max-h-none md:w-64 md:border-e md:border-b-0"
         >
           {/* The one hand-written affordance in this file. The vendored
@@ -412,11 +520,13 @@ function DocsShell({
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          {statusStrip}
           {/* Always mounted, so it is part of the page rather than something
               that appears from nowhere. aria-live because an announcement that
               arrives while you are reading is a state change. */}
           <div
             data-region="announcement-strip"
+            data-loading-region="announcement-strip"
             aria-live="polite"
             className={cn("shrink-0", liveAnnouncements.length > 0 && ANNOUNCEMENT_STRIP_SURFACE)}
           >
@@ -449,6 +559,7 @@ function DocsShell({
               article inside it. */}
           <section
             data-region="content-column"
+            data-loading-region="content-column"
             aria-labelledby={titleId}
             tabIndex={0}
             className="min-h-0 flex-1 overflow-y-auto px-6 py-8"

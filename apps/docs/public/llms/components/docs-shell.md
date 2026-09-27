@@ -10,7 +10,7 @@ OpenAI docs and Lovable docs both split navigation in two, and the split is the 
 
 ## When to reach for it
 
-Reach for it when your product ships more than one thing and each of them needs its own documentation. Keep the two navigation props apart: `areas` with `activeAreaId` and `onSelectArea` move between products, `navSections` with `activePageId` and `onSelectPage` move between pages of the product you are already in. Feed `navSections` from whichever area is active — the rail changing is what changes the nav. `announcements` is controlled the way L3 is: the shell emits an id and your host stores it, so pass `onDismissAnnouncement` or the dismiss control does nothing. Page bodies can be `sections`, which get A12 headings and K6 citations for free, or arbitrary `children` for MDX you already render; both land inside the measure.
+Reach for it when your product ships more than one thing and each of them needs its own documentation. Keep the two navigation props apart: `areas` with `activeAreaId` and `onSelectArea` move between products, `navSections` with `activePageId` and `onSelectPage` move between pages of the product you are already in. Feed `navSections` from whichever area is active — the rail changing is what changes the nav. `announcements` is controlled the way L3 is: the shell emits an id and your host stores it, so pass `onDismissAnnouncement` or the dismiss control does nothing. Page bodies can be `sections`, which get A12 headings and K6 citations for free, or arbitrary `children` for MDX you already render; both land inside the measure. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the content column, above the announcement strip, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -24,6 +24,7 @@ Not yet recorded.
 
 - Keep the rail and the nav as two named navigations doing two different jobs.
 - Let the content column stay measured, even when the window is wide.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -42,6 +43,8 @@ Not yet recorded.
 - `docs-shell-article`: The measured column. 68ch, on the article rather than the scroller.
 - `docs-shell-section`: One section: an A12 heading, a body, and its citations.
 - `docs-shell-sources`: The labelled run of K6 markers under a section.
+- `docs-shell-status`: At the top of the content column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -53,6 +56,7 @@ Not yet recorded.
 - The rail's drag handle is `tabIndex={-1}` and unreachable by keyboard, so the toggle button and the shortcut are the only two ways to collapse and expand the rail.
 - Rail rows and nav rows are buttons unless a nav item carries `href`, in which case that row is an anchor. Both activate on Enter; only the button form also activates on Space.
 - A resolved citation marker opens its quote on hover **and** on keyboard focus, so the preview is reachable — but Enter on the marker fires `onJumpToSource` rather than pinning the card open.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -65,6 +69,8 @@ Not yet recorded.
 - The quote in a citation's hover card is portaled and the marker sets no `aria-describedby` pointing at it, so the card opening is not announced — the quote has to be found in the reading order once it is there.
 - The announcement strip is `aria-live="polite"` and always mounted, so an announcement arriving mid-read is announced in full. Each ✕ is named for its announcement ("Dismiss announcement: Multi-track timeline"), which is what keeps three of them apart.
 - Nothing announces a page change. Selecting a nav row swaps the whole content column with no live region and no focus move, so a screen-reader user hears silence and has to go looking for the article they just asked for.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -84,6 +90,8 @@ Not yet recorded.
 - The doc-nav column is deliberately not tinted. B3's active row is `bg-accent`, so painting the column the same token would erase the very affordance that says which page you are on — and B3's row icons and A12's small headings both carry `text-muted-foreground`, which fails contrast on any of the three muted surfaces.
 - A section's `action` renders inside the A12 header, and the shell promotes that header to a level-2 heading — so whatever you put there becomes part of the heading's accessible name. Keep it to two or three words; a full sentence turns every heading in the page outline into a paragraph.
 - The content column is the scroll container, which is why it carries `tabIndex={0}` and an accessible name taken from the page title. Moving the overflow onto the article without moving those two with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the page they navigated to.
+- While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The rail skeleton takes its width from the sidebar provider's state instead, so it follows `defaultRailExpanded` and a Cmd/Ctrl+B toggle, but `railBrand` and `railFooter` appear only once loading ends.
+- The announcement strip's skeleton keeps one announcement's height only when `announcements` has an undismissed entry while loading. An announcement that arrives with the data pushes the content column down by one strip.
 
 ## Composition
 
