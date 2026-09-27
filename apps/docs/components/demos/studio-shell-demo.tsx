@@ -6,6 +6,7 @@ import { useState } from "react";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { PropertyRow } from "@/registry/super-ai/property-inspector";
 import { StudioShell, type StudioShellProps } from "@/registry/super-ai/studio-shell";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { Input } from "@/components/ui/input";
 
 const MODALITIES = [
@@ -78,14 +79,17 @@ export default function StudioShellDemo() {
         zoomLabel: "72%",
         savedLabel: "Saved just now",
         actions: (
-          <AccountMenu
-            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
-            theme="system"
-            onThemeChange={() => {}}
-            background="default"
-            onBackgroundChange={() => {}}
-            onSignOut={() => {}}
-          />
+          <div className="flex items-center gap-1">
+            <DemoNotifications />
+            <AccountMenu
+              user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+              theme="system"
+              onThemeChange={() => {}}
+              background="default"
+              onBackgroundChange={() => {}}
+              onSignOut={() => {}}
+            />
+          </div>
         ),
       }}
       modalities={MODALITIES}

@@ -22,6 +22,13 @@ import { ModalityRail, type ModalityRailItemData } from "@/registry/super-ai/mod
 import { PresetGrid, type PresetGridProps } from "@/registry/super-ai/preset-grid";
 import { PropertyInspector, type PropertyInspectorProps } from "@/registry/super-ai/property-inspector";
 import { ResultCard, type ResultCardProps } from "@/registry/super-ai/result-card";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+  ShellSkeletonTiles,
+} from "@/registry/super-ai/shell-skeleton";
 import { ToolPanel, type ToolPanelProps, type ToolPanelSection } from "@/registry/super-ai/tool-panel";
 
 /**
@@ -187,6 +194,21 @@ interface StudioShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   pageStrip?: Omit<FrameStripProps, "items" | "kind" | "value" | "onValueChange" | "onAdd" | "onReorder">;
   /** Replaces the default L1 shown when there are no frames and no way to add one. */
   pageStripEmpty?: React.ReactNode;
+
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders under the topbar, above the panel,
+   * canvas and inspector it affects, and only when given. Pass M6
+   * `rate-limit-banner` or the vendored `Alert`; the shell adds no live region, so
+   * the component you pass carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the document has loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click.
+   */
+  loading?: boolean;
 }
 
 /**
@@ -266,6 +288,9 @@ function StudioShell({
   pageStrip,
   pageStripEmpty,
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: StudioShellProps) {
@@ -284,6 +309,78 @@ function StudioShell({
   const panelLabel = label ?? (activeModality ? `${activeModality.label} tools` : "Tools");
   const hasStrip = frames.length > 0 || typeof onAddFrame === "function";
 
+  const statusStrip = status ? (
+    <div data-slot="studio-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <div
+        data-slot="studio-shell"
+        aria-busy="true"
+        className={cn("bg-background text-foreground flex h-full min-h-0 w-full overflow-hidden", className)}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        {/* B4's own width, 92px. The twin is what notices if B4 changes it. */}
+        <ShellSkeletonRegion
+          region="modality-rail"
+          className="flex w-23 shrink-0 flex-col gap-1 border-e p-1.5"
+        >
+          <ShellSkeletonBlock className="h-11 w-full" />
+          <ShellSkeletonBlock className="h-11 w-full" />
+          <ShellSkeletonBlock className="h-11 w-full" />
+          <ShellSkeletonBlock className="h-11 w-full" />
+        </ShellSkeletonRegion>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <ShellSkeletonRegion
+            region="topbar"
+            className="flex h-12 shrink-0 items-center gap-3 border-b px-3"
+          >
+            <ShellSkeletonBlock className="h-7 w-24" />
+            <ShellSkeletonBlock className="h-7 w-14" />
+            <ShellSkeletonBlock className="h-4 w-24" />
+            <ShellSkeletonBlock className="ms-auto h-4 w-20" />
+          </ShellSkeletonRegion>
+          {statusStrip}
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+            <ShellSkeletonRegion
+              region="tool-panel"
+              className="flex shrink-0 flex-col gap-3 border-b p-4 md:w-72 md:border-e md:border-b-0"
+            >
+              <ShellSkeletonBlock className="h-8 w-full" />
+              <ShellSkeletonTiles count={6} className="grid-cols-2" />
+            </ShellSkeletonRegion>
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+              <ShellSkeletonRegion
+                region="canvas"
+                className="flex min-h-64 flex-1 items-center justify-center p-6 md:min-h-0"
+              >
+                <ShellSkeletonBlock className="aspect-video w-full max-w-2xl" />
+              </ShellSkeletonRegion>
+              <ShellSkeletonRegion region="page-strip" className="bg-background shrink-0 border-t px-3 py-2">
+                <ShellSkeletonTiles
+                  count={4}
+                  className="h-19.5 grid-cols-4"
+                  tileClassName="aspect-auto h-full"
+                />
+              </ShellSkeletonRegion>
+            </div>
+            <ShellSkeletonRegion
+              region="inspector"
+              className="shrink-0 border-t p-3 md:w-72 md:border-t-0 md:border-s"
+            >
+              <ShellSkeletonBlock className="mb-3 h-6 w-28" />
+              <ShellSkeletonLines count={6} />
+            </ShellSkeletonRegion>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       data-slot="studio-shell"
@@ -295,6 +392,7 @@ function StudioShell({
           but a region marker is the block layer's to add. */}
       <ModalityRail
         data-region="modality-rail"
+        data-loading-region="modality-rail"
         items={modalities}
         pinned={pinnedModalities}
         activeId={activeModalityId}
@@ -306,6 +404,7 @@ function StudioShell({
             you change a document rather than where you navigate to one. */}
         <AppTopbar
           data-region="topbar"
+          data-loading-region="topbar"
           context="editor"
           title={title}
           {...topbar}
@@ -313,6 +412,8 @@ function StudioShell({
           // silently swallowed.
           className={cn("shrink-0", topbar?.className)}
         />
+
+        {statusStrip}
 
         {/* Below `md` the three middle regions stack into one scrolling column
             rather than being hidden: a region a narrow viewport cannot reach is
@@ -330,6 +431,7 @@ function StudioShell({
               `modality-rail.tsx` already carries. */}
           <div
             data-region="tool-panel"
+            data-loading-region="tool-panel"
             className="flex shrink-0 flex-col gap-2 border-b p-2 md:w-72 md:border-e md:border-b-0"
           >
             <ToolPanel
@@ -356,7 +458,11 @@ function StudioShell({
           </div>
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-            <div data-region="canvas" className="relative flex min-h-0 flex-1 flex-col">
+            <div
+              data-region="canvas"
+              data-loading-region="canvas"
+              className="relative flex min-h-0 flex-1 flex-col"
+            >
               {/* I3 is selection-driven, so with nothing selected there is no
                   toolbar at all. The shell cannot measure where the selection
                   sits on someone else's canvas, so `placement` decides which
@@ -404,7 +510,11 @@ function StudioShell({
               </div>
             </div>
 
-            <div data-region="page-strip" className="bg-background shrink-0 border-t px-3 py-2">
+            <div
+              data-region="page-strip"
+              data-loading-region="page-strip"
+              className="bg-background shrink-0 border-t px-3 py-2"
+            >
               {hasStrip ? (
                 <FrameStrip
                   items={frames}
@@ -430,6 +540,7 @@ function StudioShell({
               because with nothing selected it holds no controls to reach it by. */}
           <div
             data-region="inspector"
+            data-loading-region="inspector"
             role="group"
             aria-label={inspectorLabel}
             tabIndex={0}

@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { StudioShell, type StudioShellProps } from "./studio-shell";
 
 const REGIONS = ["modality-rail", "topbar", "tool-panel", "canvas", "inspector", "page-strip"];
@@ -255,5 +257,39 @@ describe("StudioShell", () => {
     const canvas = container.querySelector('[data-region="canvas"]')!;
     expect(canvas.querySelector('[data-slot="empty-state"]')).toBeNull();
     expect(screen.getByText("Artboard")).toBeVisible();
+  });
+});
+
+describe("StudioShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="studio-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<StudioShell />);
+    expectShellLoadedContract(root(container), { name: "studio-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="studio-shell-status"]')).toBeNull();
+  });
+
+  it("renders status directly under the topbar", () => {
+    const { container } = render(<StudioShell status={<p>Could not save your changes.</p>} />);
+    const status = container.querySelector('[data-slot="studio-shell-status"]')!;
+    expect(status).toHaveTextContent("Could not save your changes.");
+    expect(status.previousElementSibling).toHaveAttribute("data-region", "topbar");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <StudioShell loading topbar={{ actions: <button type="button">Share</button> }}>
+        <button type="button">Title frame</button>
+      </StudioShell>,
+    );
+    expectShellLoadingContract(root(container), { name: "studio-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="modality-rail"]')).toBeNull();
+    expect(container.querySelector('[data-slot="tool-panel"]')).toBeNull();
+    expect(container.querySelector('[data-slot="property-inspector"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<StudioShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="studio-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });
