@@ -23,6 +23,13 @@ import { ParameterPanel } from "@/registry/super-ai/parameter-panel";
 import { PresetGrid, type PresetGridContent, type PresetGridItem } from "@/registry/super-ai/preset-grid";
 import { ResultCard, type ResultCardProps } from "@/registry/super-ai/result-card";
 import { RunButton, type RunButtonProps } from "@/registry/super-ai/run-button";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+  ShellSkeletonTiles,
+} from "@/registry/super-ai/shell-skeleton";
 
 /**
  * Generation Shell — single-purpose tool app
@@ -183,6 +190,21 @@ interface GenerationShellProps extends Omit<React.ComponentProps<"div">, "title"
   emptyDescription?: React.ReactNode;
   /** Replaces the default L1 shown when nothing has been generated yet. */
   empty?: React.ReactNode;
+
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders under the topbar, above the panel and
+   * the results it affects, and only when given. Pass M6 `rate-limit-banner` or
+   * the vendored `Alert`; the shell adds no live region, so the component you pass
+   * carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the tool has loaded. Every region draws a skeleton at the
+   * size it will take, the root carries `aria-busy`, and nothing the shell composes
+   * is mounted, so there is nothing to focus or click.
+   */
+  loading?: boolean;
 }
 
 function GenerationShell({
@@ -226,10 +248,72 @@ function GenerationShell({
   emptyDescription = "Set it up, then press Generate. Results collect here.",
   empty,
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: GenerationShellProps) {
   const hasSettings = models.length > 0 || parameters !== undefined;
+
+  const statusStrip = status ? (
+    <div data-slot="generation-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <div
+        data-slot="generation-shell"
+        aria-busy="true"
+        className={cn(
+          "bg-background text-foreground flex h-full min-h-0 w-full flex-col overflow-hidden",
+          className,
+        )}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        <ShellSkeletonRegion region="topbar" className="flex h-12 shrink-0 items-center gap-3 border-b px-3">
+          <ShellSkeletonBlock className="h-4 w-28" />
+          <ShellSkeletonBlock className="h-5 w-14 rounded-full" />
+          <ShellSkeletonBlock className="ms-auto h-6 w-24" />
+        </ShellSkeletonRegion>
+        {statusStrip}
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 md:flex-row">
+          <ShellSkeletonRegion
+            region="config-panel"
+            className="flex h-auto min-h-0 shrink-0 basis-1/2 flex-col overflow-hidden rounded-xl border md:h-full md:w-96 md:basis-auto"
+          >
+            <div className="flex min-h-0 flex-1 flex-col gap-6 p-4">
+              <ShellSkeletonBlock className="h-5 w-24" />
+              <ShellSkeletonTiles count={4} className="grid-cols-2" tileClassName="aspect-square" />
+              <ShellSkeletonBlock className="h-5 w-20" />
+              <ShellSkeletonLines count={4} />
+            </div>
+            {/* E1's footer: an empty leading span, then the cost row, as in the loaded panel. */}
+            <div className="flex shrink-0 items-center justify-between gap-2 border-t p-4">
+              <span />
+              <ShellSkeletonRegion
+                region="cost-generate"
+                className="flex min-w-0 flex-1 items-center justify-between gap-2"
+              >
+                <ShellSkeletonBlock className="h-5.5 w-22 rounded-full" />
+                <ShellSkeletonBlock className="h-8 w-20" />
+              </ShellSkeletonRegion>
+            </div>
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion region="result-canvas" className="min-h-0 min-w-0 flex-1 overflow-hidden">
+            <ShellSkeletonTiles
+              count={8}
+              className="gap-4 sm:grid-cols-2 lg:grid-cols-4"
+              tileClassName="aspect-square"
+            />
+          </ShellSkeletonRegion>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -248,6 +332,7 @@ function GenerationShell({
           sidebar to put it in. */}
       <AppTopbar
         data-region="topbar"
+        data-loading-region="topbar"
         context="document"
         title={title}
         {...topbar}
@@ -269,6 +354,7 @@ function GenerationShell({
         }
         className={cn("shrink-0", topbar?.className)}
       />
+      {statusStrip}
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 md:flex-row">
         {/* Config left. Height-bounded at every width — stacked it takes half
@@ -277,6 +363,7 @@ function GenerationShell({
             a height to scroll within. */}
         <GenerationPanel
           data-region="config-panel"
+          data-loading-region="config-panel"
           presets={
             presets.length > 0 ? (
               <PresetGrid
@@ -314,6 +401,7 @@ function GenerationShell({
             // so the region is mounted even for a tool that quotes no price.
             <div
               data-region="cost-generate"
+              data-loading-region="cost-generate"
               // `flex-1`, not `w-full`: E1's footer is a `justify-between`
               // flex row with a `gap-2`, so a 100%-wide child overflows it by
               // exactly the gap.
@@ -352,6 +440,7 @@ function GenerationShell({
             an empty state, which is exactly the case that rule exists for. */}
         <section
           data-region="result-canvas"
+          data-loading-region="result-canvas"
           aria-label={resultsLabel}
           tabIndex={0}
           className="min-h-0 min-w-0 flex-1 overflow-y-auto"
