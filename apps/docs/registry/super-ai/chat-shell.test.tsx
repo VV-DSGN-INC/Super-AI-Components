@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { ChatShell } from "./chat-shell";
 
 const REGIONS = ["sidebar", "topbar", "message-stream", "artifact-cards", "composer"];
@@ -196,5 +198,42 @@ describe("ChatShell", () => {
     const { container } = render(<ChatShell title="Brand audit" />);
     const topbar = container.querySelector('[data-region="topbar"]')!;
     expect(within(topbar as HTMLElement).getByText("Brand audit")).toBeVisible();
+  });
+});
+
+describe("ChatShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="chat-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<ChatShell />);
+    expectShellLoadedContract(root(container), { name: "chat-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="chat-shell-status"]')).toBeNull();
+  });
+
+  it("renders status directly under the topbar", () => {
+    const { container } = render(<ChatShell status={<p>The model is at capacity.</p>} />);
+    const status = container.querySelector('[data-slot="chat-shell-status"]')!;
+    expect(status).toHaveTextContent("The model is at capacity.");
+    expect(status.previousElementSibling).toHaveAttribute("data-region", "topbar");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <ChatShell
+        loading
+        threadGroups={[{ id: "today", label: "Today", threads: [{ id: "t1", title: "Brand audit" }] }]}
+        messages={[{ id: "m1", role: "user", content: "Audit the brand voice." }]}
+        contextChips={[{ id: "c1", kind: "file", label: "brand-guide.pdf" }]}
+        sidebarFooter={<button type="button">Account</button>}
+      />,
+    );
+    expectShellLoadingContract(root(container), { name: "chat-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="app-sidebar"]')).toBeNull();
+    expect(container.querySelector('[data-slot="media-prompt-bar"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<ChatShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="chat-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });

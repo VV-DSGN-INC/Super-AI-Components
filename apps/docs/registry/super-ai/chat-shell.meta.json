@@ -7,7 +7,7 @@
   "description": "Chat / agent workspace",
   "purpose": "The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue, a title bar, a scrolling conversation, the artifacts that conversation produced, and a composer pinned to the bottom. It is a block, not a component — it owns arrangement and nothing else. Every region is filled by something that already ships: eleven components from this registry, plus AI Elements' own conversation and message for the stream and its turns. Each of them keeps its own props, its own state model and its own accessibility contract.",
   "whyItMatters": "Manus, Claude and ChatGPT converge on the same five regions in the same positions, which is the strongest signal on the reference board that this is an archetype rather than one product's layout. Two of its decisions are the ones worth copying. The sidebar is a job queue as well as a history, so work that is still running stays visible while you read something else — without that, a background task is invisible the moment you navigate away from it. And artifacts are cards inside the stream rather than a separate destination, so the conversation stays the index of everything it produced; splitting them apart is what turns a workspace back into a chat window with a downloads folder attached.",
-  "usage": "Reach for it when the primary object of your product is a conversation that produces things. Everything is a prop or a slot: `threadGroups` fills the sidebar, `messages` fills the stream, `artifacts` fills the artifact region, and `composer` is forwarded whole to D1. Mark a thread `running` and the sidebar becomes a job queue — pass `runningLabel` so the status says what is actually happening rather than the generic word. Put a blocked run in `paywall` rather than opening a dialog: it renders as the final turn, which is what keeps monetization part of the conversation. The shell holds no conversation state of its own, so selection, feedback and composer value all stay wherever your data already lives.",
+  "usage": "Reach for it when the primary object of your product is a conversation that produces things. Everything is a prop or a slot: `threadGroups` fills the sidebar, `messages` fills the stream, `artifacts` fills the artifact region, and `composer` is forwarded whole to D1. Mark a thread `running` and the sidebar becomes a job queue — pass `runningLabel` so the status says what is actually happening rather than the generic word. Put a blocked run in `paywall` rather than opening a dialog: it renders as the final turn, which is what keeps monetization part of the conversation. The shell holds no conversation state of its own, so selection, feedback and composer value all stay wherever your data already lives. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   "evidence": [
     "Manus",
     "Claude",
@@ -45,6 +45,14 @@
     {
       "slot": "chat-shell-thread-running",
       "note": "The job-queue status line under a thread that is still working."
+    },
+    {
+      "slot": "chat-shell-status",
+      "note": "Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own."
+    },
+    {
+      "slot": "shell-skeleton-region",
+      "note": "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures."
     }
   ],
   "variants": {
@@ -62,7 +70,9 @@
   ],
   "dos": [
     "Give a running job a visible label as well as a spinner, so the queue is readable without seeing motion.",
-    "Keep artifacts inside the stream, attached to the conversation that produced them."
+    "Keep artifacts inside the stream, attached to the conversation that produced them.",
+    "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
+    "For a thread whose history is still arriving, leave `loading` off and pass `ShellSkeletonLines` from `shell-skeleton` through `empty`: `loading` is for the first paint of the whole surface, and the thread list and composer already work."
   ],
   "donts": [
     "Don't let a spinner be the whole signal — a turning glyph has no accessible name and says nothing about what is running.",
@@ -77,7 +87,8 @@
       "While `composer.generating` is set, D1 disables the textarea, the attach button and the settings row and leaves only Stop. A user tabbing into the composer mid-run finds exactly one control.",
       "Each thread's actions trigger is revealed by opacity, not `display:none`, so it stays a tab stop on every row. Renaming opens an input that takes focus, Enter commits, Escape cancels.",
       "The artifact region sits inside the scrolling stream, after every turn. Reaching it from the keyboard means tabbing through every turn's feedback controls first — there is no skip link and no separate tab stop for it.",
-      "The shell does not render AI Elements' scroll-to-bottom button, so there is no control that jumps back to the newest turn after you scroll up; the stream re-pins itself only when a new turn arrives."
+      "The shell does not render AI Elements' scroll-to-bottom button, so there is no control that jumps back to the newest turn after you scroll up; the stream re-pins itself only when a new turn arrives.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one."
     ],
     "screenReader": [
       "The stream is `role=\"log\"` named \"Conversation\", so new turns are announced as they are appended. That behaviour comes from AI Elements rather than from anything the shell adds.",
@@ -88,7 +99,9 @@
       "The composer textarea is named from D1's `label`, which the shell fixes to \"Message\" unless you override it through `composer.label`. Attach is \"Attach a file\", submit is \"Send\".",
       "D1 owns an `sr-only` `role=\"status\"` that announces its generating label, so the start of a run is spoken — but only if you actually set `composer.generating`.",
       "The paywall renders as the last child of the log, so a blocked run is announced like any other turn arriving rather than as an interruption. That is the point of putting it in the stream instead of a dialog.",
-      "The sidebar trigger is named \"Toggle Sidebar\" by the vendored primitive, and the thread list is named \"Conversations\" here. Neither is configurable through the shell."
+      "The sidebar trigger is named \"Toggle Sidebar\" by the vendored primitive, and the thread list is named \"Conversations\" here. Neither is configurable through the shell.",
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears."
     ],
     "focus": [
       "Switching threads moves no focus. Focus stays on the thread row you activated — usually right, and it also means the newly loaded conversation is several tabs away with nothing announcing that it arrived.",
@@ -104,7 +117,9 @@
     "D1 is the media-generation omnibox, so it offers a negative-prompt field that a chat composer has no use for. The shell suppresses that control through a descendant variant on D1's own class list; a `composer.className` you pass is merged after the shell's, so overriding the same utility will bring the control back.",
     "The stream is the scroll container, which is why it carries `tabIndex={0}` and an accessible name. Moving the overflow onto an inner wrapper without moving those two with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the conversation.",
     "J4's card grid keys its columns off its own container width (D19), not the viewport, so it already reads the stream's actual width and needs no override here — the shell renders it unadorned. If you fork this region, do not reintroduce a viewport-breakpoint override on the grid; that is the defect D19 fixed.",
-    "Feedback, thread selection and composer value are all controlled. Rendering the shell with `messages` that never change and a `feedback` state that never moves produces a screenshot, not a workspace — wire the callbacks before demoing it."
+    "Feedback, thread selection and composer value are all controlled. Rendering the shell with `messages` that never change and a `feedback` state that never moves produces a screenshot, not a workspace — wire the callbacks before demoing it.",
+    "While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but `switcher`, `sidebarPromo` and `sidebarFooter` appear only once loading ends.",
+    "The composer skeleton reserves D1's context-chip row only when `contextChips` is non-empty. Pass the chips while loading if the loaded composer will show them, or the composer grows by that row when the data arrives."
   ],
   "states": [],
   "regions": [

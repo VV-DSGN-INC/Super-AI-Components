@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { Conversation, ConversationContent } from "@/components/ai-elements/conversation";
 import { Message, MessageContent } from "@/components/ai-elements/message";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/registry/super-ai/app-sidebar";
 import { AppTopbar, type AppTopbarProps } from "@/registry/super-ai/app-topbar";
@@ -17,6 +17,14 @@ import { Feedback, type FeedbackProps } from "@/registry/super-ai/feedback";
 import { MediaPromptBar, type MediaPromptBarProps } from "@/registry/super-ai/media-prompt-bar";
 import { ModeTabs, type ModeTabsOption } from "@/registry/super-ai/mode-tabs";
 import { PaywallMessage, type PaywallMessageProps } from "@/registry/super-ai/paywall-message";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+  ShellSkeletonSidebar,
+  ShellSkeletonTiles,
+} from "@/registry/super-ai/shell-skeleton";
 import { ThreadList, ThreadListItem, ThreadListSection } from "@/registry/super-ai/thread-list";
 
 /**
@@ -199,6 +207,23 @@ interface ChatShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   onModeChange?: (mode: string) => void;
   /** Replaces N3's default "AI can make mistakes" wording. */
   disclaimer?: React.ReactNode;
+
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders under the topbar, above the stream it
+   * affects, and only when given. Pass M6 `rate-limit-banner` or the vendored
+   * `Alert`; the shell adds no live region, so the component you pass carries its
+   * own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the workspace has loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click. For a thread whose
+   * history is still arriving while the rest works, leave this off and pass a
+   * skeleton through `empty` instead.
+   */
+  loading?: boolean;
 }
 
 function ChatShellRunningJob({ label }: { label: string }) {
@@ -250,6 +275,17 @@ function ChatShellTurn({ message }: { message: ChatShellMessage }) {
   );
 }
 
+/**
+ * The sidebar region while `loading`. B1 is not mounted, because it always
+ * renders its rail button and a loading shell mounts nothing to click. The width
+ * comes from the provider's state instead, the same state B1 reads, so the
+ * skeleton follows a Cmd/Ctrl+B toggle too.
+ */
+function ChatShellSidebarSkeleton() {
+  const { state } = useSidebar();
+  return <ShellSkeletonSidebar region="sidebar" collapsed={state === "collapsed"} />;
+}
+
 function ChatShell({
   switcher,
   threadGroups = [],
@@ -280,11 +316,77 @@ function ChatShell({
   onModeChange,
   disclaimer,
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: ChatShellProps) {
   const artifactsLabelId = React.useId();
   const hasTurns = messages.length > 0 || Boolean(paywall);
+
+  const statusStrip = status ? (
+    <div data-slot="chat-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <SidebarProvider
+        data-slot="chat-shell"
+        aria-busy="true"
+        defaultOpen={defaultSidebarOpen}
+        className={cn(
+          "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
+          EMBEDDABLE_SHELL,
+          SIDEBAR_FILLS_SHELL,
+          className,
+        )}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        <ChatShellSidebarSkeleton />
+        <SidebarInset className="min-w-0 overflow-hidden">
+          <ShellSkeletonRegion
+            region="topbar"
+            className="bg-background flex h-12 shrink-0 items-center gap-2 border-b px-3"
+          >
+            <ShellSkeletonBlock className="size-7" />
+            <ShellSkeletonBlock className="h-4 w-48" />
+            <ShellSkeletonBlock className="ms-auto h-5 w-20" />
+          </ShellSkeletonRegion>
+          {statusStrip}
+          <ShellSkeletonRegion region="message-stream" className="relative min-h-0 flex-1 overflow-hidden">
+            <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6">
+              <ShellSkeletonBlock className="ms-auto h-10 w-2/3 rounded-2xl" />
+              <ShellSkeletonLines count={4} />
+              <ShellSkeletonRegion
+                region="artifact-cards"
+                className="flex w-full flex-col gap-3 border-t pt-6"
+              >
+                <ShellSkeletonBlock className="h-5 w-24" />
+                <ShellSkeletonTiles count={2} className="sm:grid-cols-2" tileClassName="aspect-auto h-28" />
+              </ShellSkeletonRegion>
+            </div>
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion region="composer" className="bg-background shrink-0 border-t px-4 pb-2">
+            <div className="mx-auto w-full max-w-3xl">
+              <ShellSkeletonBlock
+                className={cn(
+                  "w-full rounded-t-2xl rounded-b-none",
+                  contextChips.length > 0 ? "h-41" : "h-32.5",
+                )}
+              />
+              <div className="flex justify-center px-2 pt-1.5">
+                <ShellSkeletonBlock className="h-4 w-56" />
+              </div>
+            </div>
+          </ShellSkeletonRegion>
+        </SidebarInset>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider
@@ -305,6 +407,7 @@ function ChatShell({
           pair, which is what positions the sidebar. */}
       <div data-region="sidebar" className="contents">
         <AppSidebar
+          data-loading-region="sidebar"
           switcher={switcher}
           nav={
             <ThreadList aria-label="Conversations" className="px-2">
@@ -359,6 +462,7 @@ function ChatShell({
             LTR 8px/0px this replaced. */}
         <div
           data-region="topbar"
+          data-loading-region="topbar"
           className="bg-background flex h-12 shrink-0 items-center gap-1 border-b ps-2"
         >
           <SidebarTrigger />
@@ -377,6 +481,8 @@ function ChatShell({
           />
         </div>
 
+        {statusStrip}
+
         {/* AI Elements' Conversation, not a hand-rolled scroll container: it
             brings `role="log"` and use-stick-to-bottom's pinning, which is the
             behaviour a chat stream is actually judged on. It carries the
@@ -384,6 +490,7 @@ function ChatShell({
             inner element it owns actually scroll (see STREAM_SCROLL). */}
         <Conversation
           data-region="message-stream"
+          data-loading-region="message-stream"
           aria-label="Conversation"
           tabIndex={0}
           className="min-h-0 flex-1"
@@ -417,6 +524,7 @@ function ChatShell({
                 discoverable on day one rather than appearing from nowhere. */}
             <section
               data-region="artifact-cards"
+              data-loading-region="artifact-cards"
               aria-labelledby={artifactsLabelId}
               className="flex w-full flex-col gap-3 border-t pt-6"
             >
@@ -428,7 +536,11 @@ function ChatShell({
           </ConversationContent>
         </Conversation>
 
-        <div data-region="composer" className="bg-background shrink-0 border-t px-4 pb-2">
+        <div
+          data-region="composer"
+          data-loading-region="composer"
+          className="bg-background shrink-0 border-t px-4 pb-2"
+        >
           <div className="mx-auto w-full max-w-3xl">
             <MediaPromptBar
               presentation="docked"
