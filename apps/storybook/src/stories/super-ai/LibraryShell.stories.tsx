@@ -1,13 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Compass, Images } from "lucide-react";
+import { Compass, Images, WifiOff } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Progress, ProgressLabel, ProgressValue } from "@/components/ui/progress";
 import { LibraryShellDocs } from "@/content/components/library-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 import { ExploreShell } from "@/registry/super-ai/explore-shell";
 import { LibraryShell, type LibraryShellProps } from "@/registry/super-ai/library-shell";
 
@@ -1055,5 +1057,50 @@ export const Boundary: Story = {
     await expect(within(canvasElement).getByRole("radio", { name: "Small" })).toBeVisible();
     // O8 docks a prompt bar over its feed; O7 has nowhere to type a prompt.
     await expect(canvasElement.querySelector('[data-region="docked-prompt-bar"]')).not.toBeNull();
+  },
+};
+
+/**
+ * First paint, before the archive has loaded. The facet rail, the header with its
+ * search and applied-filter row, and the grid each draw a skeleton at the size
+ * they will take, the root is marked busy, and nothing inside it takes focus. The
+ * play renders the loaded archive in the same frame and fails if a skeleton sits
+ * more than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <LibraryShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "library-shell", {
+      "facet-rail": "frame",
+      header: "frame",
+      "dense-grid": "frame",
+    });
+  },
+};
+
+/**
+ * The archive is offline. The message sits at the top of the content column,
+ * above the header and the grid it qualifies, and says what still works. The
+ * vendored Alert is given `role="status"`, so it is announced politely, once.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert role="status">
+        <WifiOff aria-hidden />
+        <AlertTitle>You are offline</AlertTitle>
+        <AlertDescription>
+          The archive shows what this device has cached. Uploads start again when you reconnect.
+        </AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="library-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.nextElementSibling).toHaveAttribute("data-region", "header");
+    await expect(within(status!).getByText("You are offline")).toBeVisible();
   },
 };

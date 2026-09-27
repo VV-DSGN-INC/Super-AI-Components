@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { LibraryShell, type LibraryShellProps } from "./library-shell";
 
 // Kebab-case, exactly as the manifest declares them. The gate only greps the
@@ -256,5 +258,37 @@ describe("LibraryShell", () => {
       />,
     );
     expect(screen.getByRole("button", { name: "Red bicycle" })).toBeInTheDocument();
+  });
+});
+
+describe("LibraryShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="library-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<LibraryShell />);
+    expectShellLoadedContract(root(container), { name: "library-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="library-shell-status"]')).toBeNull();
+  });
+
+  it("renders status at the top of the content column, above the header", () => {
+    const { container } = render(<LibraryShell status={<p>You are offline.</p>} />);
+    const status = container.querySelector('[data-slot="library-shell-status"]')!;
+    expect(status).toHaveTextContent("You are offline.");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "header");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <LibraryShell loading headerActions={<button type="button">Upload</button>} />,
+    );
+    expectShellLoadingContract(root(container), { name: "library-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="filter-panel"]')).toBeNull();
+    expect(container.querySelector('[data-slot="asset-library"]')).toBeNull();
+    expect(container.querySelector('[data-slot="generation-grid"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<LibraryShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="library-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });
