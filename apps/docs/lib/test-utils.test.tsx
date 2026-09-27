@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { expectAccessibleName } from "./test-utils";
+import { expectAccessibleName, expectShellLoadedContract, expectShellLoadingContract } from "./test-utils";
 
 describe("expectAccessibleName", () => {
   it("passes when the computed name matches", () => {
@@ -19,5 +19,77 @@ describe("expectAccessibleName", () => {
       </button>,
     );
     expect(() => expectAccessibleName(screen.getByRole("button"), "In point at 3s")).toThrow(/Inpoint at 3s/);
+  });
+});
+
+describe("expectShellLoadingContract", () => {
+  const REGIONS = ["topbar", "canvas"];
+
+  it("passes a busy root whose regions are hidden skeletons and which mounts nothing interactive", () => {
+    const { container } = render(
+      <div data-slot="demo-shell" aria-busy="true">
+        <div data-region="topbar" data-loading-region="topbar" aria-hidden="true" />
+        <div data-region="canvas" data-loading-region="canvas" aria-hidden="true" />
+        <div data-slot="demo-shell-status">
+          <button type="button">Retry</button>
+        </div>
+      </div>,
+    );
+    expect(() =>
+      expectShellLoadingContract(container.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
+    ).not.toThrow();
+  });
+
+  it("fails a root that is not busy, a skeleton that is announced, and a mounted control", () => {
+    const { container } = render(
+      <div data-slot="demo-shell">
+        <div data-region="topbar" data-loading-region="topbar" />
+        <div data-region="canvas" data-loading-region="canvas" aria-hidden="true">
+          <a href="#next">Next</a>
+        </div>
+      </div>,
+    );
+    expect(() =>
+      expectShellLoadingContract(container.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
+    ).toThrow(/aria-busy[\s\S]*"topbar" skeleton is not hidden[\s\S]*1 interactive element/);
+  });
+
+  it("fails a region with no skeleton", () => {
+    const { container } = render(
+      <div data-slot="demo-shell" aria-busy="true">
+        <div data-region="topbar" data-loading-region="topbar" aria-hidden="true" />
+      </div>,
+    );
+    expect(() =>
+      expectShellLoadingContract(container.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
+    ).toThrow(/region "canvas" is marked 0 times/);
+  });
+});
+
+describe("expectShellLoadedContract", () => {
+  const REGIONS = ["topbar", "canvas"];
+
+  it("passes a loaded root with one measured box per region", () => {
+    const { container } = render(
+      <div data-slot="demo-shell">
+        <header data-region="topbar" data-loading-region="topbar" />
+        <div data-region="canvas" data-loading-region="canvas" />
+      </div>,
+    );
+    expect(() =>
+      expectShellLoadedContract(container.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
+    ).not.toThrow();
+  });
+
+  it("fails a loaded root that is still busy or has lost a region's marker", () => {
+    const { container } = render(
+      <div data-slot="demo-shell" aria-busy="true">
+        <header data-region="topbar" data-loading-region="topbar" />
+        <div data-region="canvas" />
+      </div>,
+    );
+    expect(() =>
+      expectShellLoadedContract(container.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
+    ).toThrow(/aria-busy while loaded[\s\S]*"canvas" has 0/);
   });
 });
