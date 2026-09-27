@@ -10,7 +10,7 @@ Midjourney Explore, Spline Community, Pixlr and Canva templates all arrive at th
 
 ## When to reach for it
 
-Reach for it when the primary object of your product is other people's work. `items` fills the feed and carries the two detail surfaces with it — give a tile an `asset` and it opens F3, give it a `template` and it opens J6, and the shell owns which one is open. `sorts` and `types` are separate props because they are separate axes: sorting reorders the whole feed, a type pill removes things from it, and both are yours to apply — the shell hands you the change and renders what you hand back. Ship facet counts on the type pills; without them every pill click is a gamble. The prompt bar's value is the shell's, because a tile's Remix action seeds it: read it through `onPromptValueChange` and act on `onPromptSubmit`. Everything else about the feed — `hasMore`, `loading`, `onLoadMore`, `totalCount` — is forwarded straight to J3 through `gallery`.
+Reach for it when the primary object of your product is other people's work. `items` fills the feed and carries the two detail surfaces with it — give a tile an `asset` and it opens F3, give it a `template` and it opens J6, and the shell owns which one is open. `sorts` and `types` are separate props because they are separate axes: sorting reorders the whole feed, a type pill removes things from it, and both are yours to apply — the shell hands you the change and renders what you hand back. Ship facet counts on the type pills; without them every pill click is a gamble. The prompt bar's value is the shell's, because a tile's Remix action seeds it: read it through `onPromptValueChange` and act on `onPromptSubmit`. Everything else about the feed — `hasMore`, `loading`, `onLoadMore`, `totalCount` — is forwarded straight to J3 through `gallery`. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the feed column, above the prompt bar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -24,6 +24,7 @@ Not yet recorded.
 
 - Let tile heights vary. The uneven column is what makes a community feed worth scrolling.
 - Keep ordering and filtering as two named controls, so it is obvious they compose.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -40,6 +41,8 @@ Not yet recorded.
 - `explore-shell-controls`: The control strip itself — the two axes side by side.
 - `explore-shell-scope`: What the feed contains, shown when it offers no axes at all.
 - `explore-shell-more-item`: One A8 preview-tile in F3's more-like-this, derived from the feed.
+- `explore-shell-status`: At the top of the feed column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -50,6 +53,7 @@ Not yet recorded.
 - The shell pins the open tab panel to `tabIndex={-1}` deliberately. Base UI makes an open panel focusable, which is right when the panel is the scroll container and wrong here — J3 keeps its own named, focusable, scrolling feed inside it, so the default would put two identical stops in front of the same content.
 - Inside the feed every tile is an open button plus a Remix button, exactly as J3 ships them. There is no arrow-key navigation in the masonry and no shortcut onto a tile.
 - Opening a tile's detail puts you in a dialog: focus is trapped there and Escape closes it. The shell itself handles no keys at all.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -60,6 +64,8 @@ Not yet recorded.
 - An empty feed is L1 substituted into the same region, and L1 has no live region — a filter that empties the feed replaces it silently. The shell adds no announcement of its own.
 - With no axes at all the control strip renders `scopeLabel` as a plain sentence. It is text, not a status, so changing what the feed contains announces nothing.
 - `data-sort` and `data-type` on the root are hooks for you and your tests. They carry no semantics and are never announced.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -79,6 +85,8 @@ Not yet recorded.
 - B4 has no empty affordance of its own, so a rail with no items renders as an empty 92px column. Supply at least the destination the user is currently on.
 - Base UI makes an open tab panel a tab stop, which is right when the panel is the scroll container and wrong here — J3 keeps its own named, focusable, scrolling feed inside it. The shell sets the panel to `tabIndex={-1}`; if you re-wrap the feed region, keep exactly one tab stop in front of the feed or keyboard users pay for the duplicate on every page.
 - The sort strip uses the tabs `line` variant, not the default segmented one. The default paints the list `bg-muted` and the trigger's resting colour on that surface is under 4.5:1 — the same pairing this registry keeps re-shipping. Restyle the strip and re-measure it.
+- The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.
+- The sort strip's skeleton reserves tabs and pills only for the `sorts` and `types` passed while loading. Pass them if the loaded feed will offer them, or the strip changes height when the data arrives.
 
 ## Composition
 

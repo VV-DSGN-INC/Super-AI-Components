@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { ExploreShell, type ExploreShellItem } from "./explore-shell";
 
 const REGIONS = ["rail", "docked-prompt-bar", "sort-tabs", "masonry-feed"];
@@ -231,5 +233,41 @@ describe("ExploreShell", () => {
     const feed = panel.querySelector('[data-slot="explore-gallery-feed"]')!;
     expect(feed).toHaveAttribute("tabindex", "0");
     expect(feed).toHaveAccessibleName("Community feed");
+  });
+});
+
+describe("ExploreShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="explore-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<ExploreShell />);
+    expectShellLoadedContract(root(container), { name: "explore-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="explore-shell-status"]')).toBeNull();
+  });
+
+  it("renders status at the top of the feed column, above the prompt bar", () => {
+    const { container } = render(<ExploreShell status={<p>The model is at capacity.</p>} />);
+    const status = container.querySelector('[data-slot="explore-shell-status"]')!;
+    expect(status).toHaveTextContent("The model is at capacity.");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "docked-prompt-bar");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <ExploreShell
+        loading
+        sorts={[{ value: "new", label: "New" }]}
+        types={[{ value: "image", label: "Images" }]}
+        empty={<button type="button">Create the first one</button>}
+      />,
+    );
+    expectShellLoadingContract(root(container), { name: "explore-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="modality-rail"]')).toBeNull();
+    expect(container.querySelector('[data-slot="media-prompt-bar"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<ExploreShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="explore-shell-status"]')).toHaveTextContent("Reconnecting");
   });
 });
