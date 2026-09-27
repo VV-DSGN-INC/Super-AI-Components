@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Apple, Building2, Globe, Mail, Sparkles } from "lucide-react";
+import { Apple, Building2, Clock, Globe, Mail, Sparkles } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { AuthShellDocs } from "@/content/components/auth-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 import { AuthShell, type AuthShellMode, type AuthShellProps } from "@/registry/super-ai/auth-shell";
 import { EmptyState } from "@/registry/super-ai/empty-state";
 import { OnboardingWizard } from "@/registry/super-ai/onboarding-wizard";
@@ -838,5 +840,52 @@ export const Boundary: Story = {
     // And the region L6 has no slot for.
     await expect(shell.querySelector('[data-region="legal-footer"]')).not.toBeNull();
     await expect(wizard.querySelector('[data-region="legal-footer"]')).toBeNull();
+  },
+};
+
+/**
+ * First paint, before the sign-in options have loaded. The title and description
+ * stay, because they are the page's own words; the pitch pane, the provider rows,
+ * the email form and the legal line each draw a skeleton at the size they will
+ * take, the root is marked busy, and nothing inside it takes focus. The card is
+ * centred, so every region's top depends on the card's height; the play renders
+ * the loaded page in the same frame and fails if a skeleton sits more than 8px
+ * from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <AuthShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "auth-shell", {
+      "marketing-panel": "frame",
+      "provider-rows": "frame",
+      "email-fallback": "frame",
+      "legal-footer": "frame",
+    });
+  },
+};
+
+/**
+ * The person was sent here because their session expired. The message sits at the
+ * top of the form column, above the providers that clear it, and says that signing
+ * in again resumes the work. The vendored Alert keeps its own role, an assertive
+ * alert, because it explains why the page appeared at all.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert>
+        <Clock aria-hidden />
+        <AlertTitle>Your session expired</AlertTitle>
+        <AlertDescription>Sign in again to pick up where you left off.</AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="auth-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.nextElementSibling).toHaveAttribute("data-region", "provider-rows");
+    await expect(within(status!).getByText("Your session expired")).toBeVisible();
   },
 };
