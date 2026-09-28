@@ -1468,3 +1468,90 @@ change means navigating. That single restraint is what lets one shell serve ever
 **Ships four files.** `detail-fields` and `use-container-width` are not imported by the shell —
 they are what a consumer renders into `attributes` and measures with, and a two-column detail body
 without a field list is half a component.
+
+---
+
+# Q · Presentational chrome (Geist)
+
+Read from [Geist's public documentation](https://vercel.com/geist), not from a reference board.
+These two entries carry **no board evidence** and do not claim any; their Evidence lines say where
+the pattern was read and what job it does here, which is a weaker footing than A–O and is recorded
+as such in D20. Both are chrome around content the consumer supplies, and neither adds a tab stop.
+
+## Q1 `browser-frame` — a page we visited, not our UI
+**Base:** Aspect-ratio, Skeleton · **States:** page · minimal · inverted · long-address · loading
+
+- **The dots and controls are decorative; the address is not.** Geist marks its whole chrome
+  `aria-hidden`, which is right when the URL is illustrative marketing copy. Here the URL is real
+  data — the record of where the agent went — so it stays in the accessibility tree and only the
+  dots and controls are hidden. Hiding it would mean a screen-reader user could see that a page was
+  visited but not which one, which is the entire content of a browsing step.
+- **The address is announced once, from one node.** The two visual halves that make truncation work
+  are `aria-hidden`, with the complete string in a single `sr-only` span. Left visible, accname
+  fuses the halves with no separator — the same failure the build brief records as "Inpoint at 3s".
+- **Zero tab stops.** The address is a `div`, never an `input`, and the controls are not buttons.
+  They depict a browser; they do not drive one. The moment any of them is focusable the component
+  is lying about what it can do.
+- **The address middle-truncates.** Host and tail both stay visible. A trailing ellipsis hides the
+  path, which for an agent-browsing preview is the half that says what was actually looked at.
+  Truncation is CSS-free and computed, because the two halves must both survive.
+- **The content well locks its aspect ratio.** An unlocked well reflows the page when a screenshot
+  finishes decoding, which is the failure this component exists to prevent in a results grid.
+- **The dots are monochrome.** Geist's are traffic-light coloured; this token set is monochrome
+  plus `--destructive` and `--warning`, and there is no honest token for "macOS yellow". Rendering
+  them in `--border` is the deviation the token contract forces, and it costs nothing: the dots
+  were never load-bearing.
+- **The chrome bar never uses `text-muted-foreground`.** It paints `bg-muted`, and that pair
+  measures 4.34:1 against a 4.5 minimum. The variable-rebind idiom is deliberately *not* used here:
+  rebinding exists to reach composed children carrying their own muted classes, and this bar
+  composes nothing, so the honest fix is full-contrast address text — which is also what a real
+  address bar looks like. The content well paints `bg-background`, so consumer content inside it
+  inherits no trap either. See [a11y-baseline.md](a11y-baseline.md).
+
+**Evidence:** Read from Geist's `Browser` component documentation, which positions it for marketing
+pages, docs and changelogs. Its job in *this* registry is different and narrower: framing what an
+agent saw — a browsing step, a computer-use capture, a fetched page rendered as a tool result — so
+the capture reads as external content rather than as the product's own surface. No reference-board
+sighting; see D20.
+
+## Q2 `book-cover` — a thing you read, not a thing you generated
+**States:** plain · stripe · illustrated · textured · tone
+
+- **The title is a real heading**, at a level the caller sets. A grid of covers has to announce as
+  a list of titles; if the title is a styled `div` the grid announces as nothing and the component
+  has spent its only semantic budget on decoration.
+- **The cover art is decorative.** Illustration, stripe and texture are all `aria-hidden`. A
+  consumer whose illustration carries meaning beyond the title passes their own labelled element;
+  the component will not guess.
+- **Not focusable, and it must not become so.** The focus ring belongs to whatever link wraps the
+  cover. A cover that takes focus on its own puts two stops on one target in every grid.
+- **No free-form colour props.** Geist exposes `color` and `textColor` as arbitrary strings; this
+  registry's token gate fails the build on raw hex, so a prop whose purpose is to accept one is a
+  defect here. `tone` is a three-value enum bound to semantic variables instead — `paper` · `ink` ·
+  `muted`, named for the object rather than for the palette. Naming them for the object also avoids
+  a `default` value, which would surface as the rejected `Default` story export. This is the
+  deliberate divergence from Geist, not an oversight.
+- **`textured` is a hairline stripe from `--border`, not a grain overlay.** The job is the
+  cloth-binding cue that separates a cover from a plain card. Doing it with a noise or grain layer
+  would be depth theatre; doing it with the border token is the same cue at no cost.
+- **`variant` is `plain`, not `default`.** A state named `default` becomes the story export
+  `Default`, which the house convention rejects. Geist's `default | simple | stripe` maps to
+  `plain | stripe | illustrated`.
+- **`width` is responsive by container, not viewport**, so a cover in a 300px sidebar and one in a
+  full-width grid resolve independently (D19). The container is the **consumer's**, and the cover
+  deliberately does not establish one of its own. That is forced rather than preferred:
+  `container-type: inline-size` blocks content-based sizing, so a wrapper that were its own query
+  container could not also hug the px-wide face inside it — `w-fit` measures 0 and a flex row of
+  covers renders stacked. Measuring a wrapper whose width is the cover's own width would be
+  circular in any case. With no ancestor container the rungs never match and the base width
+  applies, which is the safe default.
+- **The wrapper hugs its face (`w-fit shrink-0`) whenever a width is set.** Without it the wrapper
+  shrinks as a flex item while the px-sized face does not, and the faces overlap. This shipped
+  broken in the first render of the docs demo and is pinned by test.
+
+**Evidence:** Read from Geist's `Book` component documentation, which positions it as decorative
+chrome for marketing pages, documentation landing covers and changelog heroes. Its job here is a
+cover for a bounded body of knowledge — a docs set, a template pack, a source collection — so a
+library can distinguish what you read from what you generated. It carries **no AI-interface
+semantics**, and its docs page says so plainly rather than dressing it up. No reference-board
+sighting; see D20.

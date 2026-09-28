@@ -56,6 +56,7 @@ const WAVE_BY_FAMILY: Record<FamilyId, number> = {
   // (D18), not a wave of the first board's build. Wave 8 groups it as one
   // shipment rather than implying a place in the original order.
   P: 8,
+  Q: 13,
 };
 
 /**

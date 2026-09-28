@@ -421,6 +421,45 @@ whether labels belong per-component or in one provider.
 
 ---
 
+### D20 · Geist is a third source, and it gets family Q — 2026-08-19
+
+Two components were requested from Vercel's [Geist](https://vercel.com/geist): `Browser` and
+`Book`. They ship here as **family Q, `Presentational chrome`** — Q1 `browser-frame` and
+Q2 `book-cover` — rather than as F8 and K9.
+
+Why a new family rather than the obvious homes. F and K rest on the reference-board analysis; these
+two rest on reading a public documentation site. Filing them under F and K would lend them
+evidentiary footing they do not have, which is the exact failure D18 created family P to avoid.
+Q also sorts past N, so `check-contract`'s B–N subtotal is arithmetically untouched (89) and the
+A–O 114-item freeze stays literally true. Only the grand total moves, 116 → 118, which it must.
+
+**Naming collision, flagged so nobody trips on it:** §6 of this file numbers *open questions* Q1–Q6.
+Family Q's items are also Q1 and Q2. Different files, different namespaces — `component-specs.md`
+and `catalog.md` carry the family; this file's §6 carries the questions. No rename, because the
+family letter is forced (A–P are taken) and renumbering six historical questions to dodge it would
+be worse.
+
+**What was deliberately not carried over from Geist:**
+
+- **`Book`'s `color` and `textColor`.** Both accept arbitrary strings, i.e. raw hex. `check:tokens`
+  fails the build on raw hex, so a prop whose entire purpose is to accept one cannot exist here.
+  Replaced by `tone`, a three-value enum bound to semantic variables. This is the largest
+  divergence and the one most likely to surprise someone who knows Geist.
+- **`Browser`'s coloured traffic-light dots.** This token set is monochrome plus `--destructive`
+  and `--warning`; there is no honest token for "macOS yellow", and inventing one for decoration
+  would be the wrong direction entirely. The dots render in `--border`.
+- **`Book`'s `default` variant name**, which would produce the story export `Default` that the
+  house convention rejects. `default | simple | stripe` maps to `plain | stripe | illustrated`.
+- **Geist source.** Nothing was ported. Both are pattern-derived from the public docs and rebuilt
+  against this repo's tokens and primitives, the same way every A–O item was derived from its
+  reference. They read as this design system, not as Geist.
+
+**What this does not settle.** Whether Geist becomes a recurring source or these two are a one-off.
+`book-cover` in particular carries no AI-interface semantics — it is presentational chrome, its
+docs page says so, and it is the item to revisit first if the registry's positioning is ever
+tightened.
+
+
 ## 2. Components dropped from the approved spec
 
 Each appears in at most one product on the reference board.
