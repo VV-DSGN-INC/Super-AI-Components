@@ -66,7 +66,7 @@ Not yet recorded.
 - Nothing in the shell is a live region. Filling the composer, collapsing the sidebar and paging the carousel all happen silently.
 - M2 `credits-indicator` announces its own text and the shell adds no wording around it, so the balance arrives with whatever name M2 gives it and nothing identifying it as an app-level cost signal.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 

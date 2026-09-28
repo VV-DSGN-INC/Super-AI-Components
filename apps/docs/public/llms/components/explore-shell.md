@@ -65,7 +65,7 @@ Not yet recorded.
 - With no axes at all the control strip renders `scopeLabel` as a plain sentence. It is text, not a status, so changing what the feed contains announces nothing.
 - `data-sort` and `data-type` on the root are hooks for you and your tests. They carry no semantics and are never announced.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -87,6 +87,7 @@ Not yet recorded.
 - The sort strip uses the tabs `line` variant, not the default segmented one. The default paints the list `bg-muted` and the trigger's resting colour on that surface is under 4.5:1 — the same pairing this registry keeps re-shipping. Restyle the strip and re-measure it.
 - The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.
 - The sort strip's skeleton reserves tabs and pills only for the `sorts` and `types` passed while loading. Pass them if the loaded feed will offer them, or the strip changes height when the data arrives.
+- The prompt-bar skeleton reserves D1's context-chip row only when `prompt.contextChips` is passed while loading. Pass it if the loaded prompt bar will show chips, or the bar grows by that row when the data arrives.
 
 ## Composition
 

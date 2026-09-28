@@ -9215,7 +9215,7 @@ Not yet recorded.
 - Nothing in the shell is a live region. Filling the composer, collapsing the sidebar and paging the carousel all happen silently.
 - M2 `credits-indicator` announces its own text and the shell adds no wording around it, so the balance arrives with whatever name M2 gives it and nothing identifying it as an app-level cost signal.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9325,7 +9325,7 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - The paywall renders as the last child of the log, so a blocked run is announced like any other turn arriving rather than as an interruption. That is the point of putting it in the stream instead of a dialog.
 - The sidebar trigger is named "Toggle Sidebar" by the vendored primitive, and the thread list is named "Conversations" here. Neither is configurable through the shell.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9430,7 +9430,7 @@ Not yet recorded.
 - The canvas has no accessible content of its own. With nothing on it, the region contains the empty state's text; with something on it, whatever you render is the entire story — the shell has no description of the document, its size, or what is selected beyond the inspector's status line.
 - The composed children carry their own semantics unchanged: the preset grid keeps its radiogroup/checkbox chosen-ness, the frame strip's tiles keep `aria-current`, the panel's toggle tiles keep `aria-pressed`. Flattening any of them into plain buttons is the one change here that silently deletes state from assistive tech.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9534,7 +9534,7 @@ Not yet recorded.
 - Changing `variant` is announced as nothing. The dock swaps wholesale with no live region anywhere in the shell, so say it where the switch lives.
 - The shell owns no status region at all. Play state, seek position, clip selection and export progress announce only as far as the composed components announce them — the transport's own `role="status"`, the render queue's rows — and there is no shell-level summary tying them together.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9631,7 +9631,7 @@ Not yet recorded.
 - Toggling select mode changes what each card's control means — open-this-result becomes select-this-result — without moving it or announcing anything. The bulk toolbar appearing above the grid is the only signal, and it is not live.
 - The empty pane is a full L1 with a before → after pair, and that pair announces as whatever you put in it. Give the two images real alt text, or the thing that teaches the tool teaches nothing.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9731,7 +9731,7 @@ Not yet recorded.
 - The lightbox announces the same name for every asset. F3's `DialogTitle` is a hard-coded, sr-only "Result detail", so opening the tenth tile sounds exactly like opening the first and the asset's own name is never spoken on open.
 - Removing the last facet, changing density and a filter emptying the grid all happen with no live region anywhere in the shell. "No matches" is visible text; nothing announces arriving at it.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9833,7 +9833,7 @@ Not yet recorded.
 - With no axes at all the control strip renders `scopeLabel` as a plain sentence. It is text, not a status, so changing what the feed contains announces nothing.
 - `data-sort` and `data-type` on the root are hooks for you and your tests. They carry no semantics and are never announced.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -9855,6 +9855,7 @@ Not yet recorded.
 - The sort strip uses the tabs `line` variant, not the default segmented one. The default paints the list `bg-muted` and the trigger's resting colour on that surface is under 4.5:1 — the same pairing this registry keeps re-shipping. Restyle the strip and re-measure it.
 - The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.
 - The sort strip's skeleton reserves tabs and pills only for the `sorts` and `types` passed while loading. Pass them if the loaded feed will offer them, or the strip changes height when the data arrives.
+- The prompt-bar skeleton reserves D1's context-chip row only when `prompt.contextChips` is passed while loading. Pass it if the loaded prompt bar will show chips, or the bar grows by that row when the data arrives.
 
 ## Composition
 
@@ -9940,7 +9941,7 @@ Not yet recorded.
 - Date buckets are `role="group"`s named by their label and session groups are named `<section>`s inside them, so the index is navigable by region even though it exposes no headings below the `<h1>` and `<h2>`.
 - The sidebar trigger is named "Toggle Sidebar" and carries no `aria-expanded`, so the sidebar's state is never announced in either direction.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10043,7 +10044,7 @@ Not yet recorded.
 - The shell adds no live region of its own. Toggling a record, changing the sort, typing in the search box and filtering the list all announce nothing beyond the control the user touched; J5's switch reports its own state and that is the whole of it.
 - Everything else is inherited untouched: J5's app clusters and switch names, A5's `aria-pressed` chips, J1's sr-only search label and per-row action names, and N1's `aria-pressed` thumbs.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10149,7 +10150,7 @@ Not yet recorded.
 - The announcement strip is `aria-live="polite"` and always mounted, so an announcement arriving mid-read is announced in full. Each ✕ is named for its announcement ("Dismiss announcement: Multi-track timeline"), which is what keeps three of them apart.
 - Nothing announces a page change. Selecting a nav row swaps the whole content column with no live region and no focus move, so a screen-reader user hears silence and has to go looking for the article they just asked for.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10258,7 +10259,7 @@ Not yet recorded.
 - The copy button's name is pinned by `aria-label` to "Copy <label>" and does not flip to "Copied": a focused button's name change is not reliably re-announced. Nothing announces that a copy succeeded, and a rejected clipboard write is silent.
 - The gated group and the code block are named `section`s (`aria-labelledby` at their own `h3`), so both are regions a screen-reader user can jump to. The section headings inside the M1 body are `h3`s too.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10364,7 +10365,7 @@ Not yet recorded.
 - K5 gives each source an sr-only `role="status"` for its ingest stage and a `role="progressbar"` named for the source and the stage, so a panel of four in-flight sources is not four identical "Loading" bars. Ingest is the one thing in this shell that announces itself as it happens.
 - The composer's own live region announces "Generating…" and then falls silent when the answer arrives. The chat pane's `role="log"` is what covers the arrival, and only for screen readers that follow logs.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10471,7 +10472,7 @@ Not yet recorded.
 - The legal links are plain anchors named by `terms.label` and `privacy.label`, painted at foreground contrast rather than muted, because that is the one line on the screen that has to stay readable.
 - Nothing announces the outcome of picking a provider or submitting an address. There is no live region anywhere in the shell, so an async handler needs its own status message.
 - While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds the title, the description and one visually hidden line, Loading, plus anything you pass in `status`.
-- The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -10493,6 +10494,7 @@ Not yet recorded.
 - Everything except the email field is controlled. Rendering the shell with `providers` and no `onSelectProvider`, or with `mode` and no `onModeChange`, produces a screenshot rather than a screen — the mode switch does not even render without a handler to call.
 - While `loading`, L6 is not mounted, because its step navigation is hidden with a class rather than removed and a loading shell mounts nothing to click. The skeleton composes the vendored Card L6 is built on, with the real title and description, so the card lands where L6's will; restyle one and restyle the other.
 - The card is centred on the page, so every region's position depends on the card's height. The skeleton draws three provider rows unless `providers` is passed, and a mode-switch line only when `onModeChange` is; pass both while loading if the loaded page will show them.
+- `status` sits under L6 while loaded and under the skeleton's `Card` while loading, so it remounts when `loading` flips, unlike the other twelve shells. A control inside `status` loses focus, and a component left in place loses any state it held, the moment data arrives.
 
 ## Composition
 
