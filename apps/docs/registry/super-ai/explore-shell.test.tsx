@@ -270,4 +270,15 @@ describe("ExploreShell status and loading", () => {
     const { container } = render(<ExploreShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="explore-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<ExploreShell loading status={status} />);
+    const button = container.querySelector('[data-slot="explore-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<ExploreShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

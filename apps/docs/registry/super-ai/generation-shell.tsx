@@ -273,7 +273,6 @@ function GenerationShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <ShellSkeletonRegion region="topbar" className="flex h-12 shrink-0 items-center gap-3 border-b px-3">
           <ShellSkeletonBlock className="h-4 w-28" />
           <ShellSkeletonBlock className="h-5 w-14 rounded-full" />
@@ -311,6 +310,7 @@ function GenerationShell({
             />
           </ShellSkeletonRegion>
         </div>
+        <ShellLoadingLabel />
       </div>
     );
   }

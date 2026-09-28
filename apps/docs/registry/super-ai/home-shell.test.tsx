@@ -255,4 +255,15 @@ describe("HomeShell status and loading", () => {
     const { container } = render(<HomeShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="home-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<HomeShell loading status={status} />);
+    const button = container.querySelector('[data-slot="home-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<HomeShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

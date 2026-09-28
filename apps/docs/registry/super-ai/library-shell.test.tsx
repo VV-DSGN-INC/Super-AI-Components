@@ -291,4 +291,15 @@ describe("LibraryShell status and loading", () => {
     const { container } = render(<LibraryShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="library-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<LibraryShell loading status={status} />);
+    const button = container.querySelector('[data-slot="library-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<LibraryShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

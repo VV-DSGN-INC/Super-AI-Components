@@ -127,5 +127,6 @@ export const AuthShellDocs: ComponentDocs = {
     "Everything except the email field is controlled. Rendering the shell with `providers` and no `onSelectProvider`, or with `mode` and no `onModeChange`, produces a screenshot rather than a screen — the mode switch does not even render without a handler to call.",
     "While `loading`, L6 is not mounted, because its step navigation is hidden with a class rather than removed and a loading shell mounts nothing to click. The skeleton composes the vendored Card L6 is built on, with the real title and description, so the card lands where L6's will; restyle one and restyle the other.",
     "The card is centred on the page, so every region's position depends on the card's height. The skeleton draws three provider rows unless `providers` is passed, and a mode-switch line only when `onModeChange` is; pass both while loading if the loaded page will show them.",
+    "`status` sits under L6 while loaded and under the skeleton's `Card` while loading, so it remounts when `loading` flips, unlike the other twelve shells. A control inside `status` loses focus, and a component left in place loses any state it held, the moment data arrives.",
   ],
 };

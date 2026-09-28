@@ -272,4 +272,15 @@ describe("DocsShell status and loading", () => {
     const { container } = render(<DocsShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="docs-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<DocsShell loading status={status} />);
+    const button = container.querySelector('[data-slot="docs-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<DocsShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

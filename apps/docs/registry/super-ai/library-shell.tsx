@@ -384,7 +384,6 @@ function LibraryShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <ShellSkeletonRegion
           region="facet-rail"
           className="flex max-h-56 w-full shrink-0 flex-col gap-4 overflow-hidden border-b p-4 md:h-full md:max-h-none md:w-64 md:border-e md:border-b-0"
@@ -413,6 +412,7 @@ function LibraryShell({
             />
           </ShellSkeletonRegion>
         </div>
+        <ShellLoadingLabel />
       </div>
     );
   }

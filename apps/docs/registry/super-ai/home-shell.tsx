@@ -290,7 +290,6 @@ function HomeShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <HomeShellSidebarSkeleton />
         <SidebarInset className="min-w-0 overflow-hidden">
           <ShellSkeletonRegion
@@ -341,6 +340,7 @@ function HomeShell({
             </ShellSkeletonRegion>
           </div>
         </SidebarInset>
+        <ShellLoadingLabel />
       </SidebarProvider>
     );
   }

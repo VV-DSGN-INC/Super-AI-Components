@@ -231,4 +231,19 @@ describe("AuthShell status and loading", () => {
     const { container } = render(<AuthShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="auth-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  // Unlike the other twelve shells, auth cannot keep `status` under the same
+  // ancestor across the flip: loaded composes L6, loading composes the
+  // skeleton's `Card` in its place, so this documents the exception in
+  // auth-shell.docs.tsx's pitfalls rather than asserting focus retention.
+  it("loses focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<AuthShell loading status={status} />);
+    const button = container.querySelector('[data-slot="auth-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<AuthShell loading={false} status={status} />);
+    expect(document.activeElement).not.toBe(button);
+  });
 });

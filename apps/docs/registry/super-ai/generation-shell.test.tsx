@@ -253,4 +253,17 @@ describe("GenerationShell status and loading", () => {
       "Reconnecting",
     );
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<GenerationShell loading status={status} />);
+    const button = container.querySelector(
+      '[data-slot="generation-shell-status"] button',
+    ) as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<GenerationShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

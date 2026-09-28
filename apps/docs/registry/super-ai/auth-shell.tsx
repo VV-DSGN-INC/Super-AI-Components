@@ -173,7 +173,10 @@ interface AuthShellProps extends Omit<React.ComponentProps<"div">, "title"> {
    * Renders at the top of the form column, above the providers, and only when
    * given. Pass M6 `rate-limit-banner` or the vendored `Alert`; the shell adds no
    * live region, so the component you pass carries its own role. Still renders
-   * while `loading`.
+   * while `loading`, but in this shell the loaded tree composes L6 and the
+   * loading tree composes the vendored `Card` in its place, so `status` sits
+   * under a different ancestor in each and remounts, taking any focus or host
+   * state with it, when `loading` flips.
    */
   status?: React.ReactNode;
   /**

@@ -463,7 +463,6 @@ function ExploreShell({
         className={cn("bg-background text-foreground flex h-full min-h-0 w-full overflow-hidden", className)}
         {...props}
       >
-        <ShellLoadingLabel />
         {/* B4's own width, 92px. The twin is what notices if B4 changes it. */}
         <ShellSkeletonRegion region="rail" className="flex w-23 shrink-0 flex-col gap-1 border-e p-1.5">
           <ShellSkeletonBlock className="h-11 w-full" />
@@ -501,6 +500,7 @@ function ExploreShell({
             </ShellSkeletonRegion>
           </div>
         </div>
+        <ShellLoadingLabel />
       </div>
     );
   }

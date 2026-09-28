@@ -316,4 +316,15 @@ describe("NotebookShell header actions, status and loading", () => {
     const { container } = render(<NotebookShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="notebook-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<NotebookShell loading status={status} />);
+    const button = container.querySelector('[data-slot="notebook-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<NotebookShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

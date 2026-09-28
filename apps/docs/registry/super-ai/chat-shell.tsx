@@ -345,7 +345,6 @@ function ChatShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <ChatShellSidebarSkeleton />
         <SidebarInset className="min-w-0 overflow-hidden">
           <ShellSkeletonRegion
@@ -384,6 +383,7 @@ function ChatShell({
             </div>
           </ShellSkeletonRegion>
         </SidebarInset>
+        <ShellLoadingLabel />
       </SidebarProvider>
     );
   }

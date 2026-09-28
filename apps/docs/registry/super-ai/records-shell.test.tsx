@@ -251,4 +251,15 @@ describe("RecordsShell status and loading", () => {
     const { container } = render(<RecordsShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="records-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<RecordsShell loading status={status} />);
+    const button = container.querySelector('[data-slot="records-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<RecordsShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

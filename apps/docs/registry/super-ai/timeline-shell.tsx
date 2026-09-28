@@ -265,7 +265,6 @@ function TimelineShell({
         className={cn("bg-background text-foreground flex h-full min-h-0 w-full overflow-hidden", className)}
         {...props}
       >
-        <ShellLoadingLabel />
         {/* B4's own width, 92px. The twin is what notices if B4 changes it. */}
         <ShellSkeletonRegion
           region="rail"
@@ -323,6 +322,7 @@ function TimelineShell({
           <ShellSkeletonBlock className="mb-3 h-6 w-28" />
           <ShellSkeletonLines count={6} />
         </ShellSkeletonRegion>
+        <ShellLoadingLabel />
       </div>
     );
   }

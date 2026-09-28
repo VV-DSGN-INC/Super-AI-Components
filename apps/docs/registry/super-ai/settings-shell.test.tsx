@@ -311,4 +311,15 @@ describe("SettingsShell status and loading", () => {
     const { container } = render(<SettingsShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="settings-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<SettingsShell loading status={status} />);
+    const button = container.querySelector('[data-slot="settings-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<SettingsShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

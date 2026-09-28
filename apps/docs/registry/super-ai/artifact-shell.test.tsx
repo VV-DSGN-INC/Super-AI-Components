@@ -284,4 +284,15 @@ describe("ArtifactShell status and loading", () => {
     const { container } = render(<ArtifactShell loading status={<p>Reconnecting</p>} />);
     expect(container.querySelector('[data-slot="artifact-shell-status"]')).toHaveTextContent("Reconnecting");
   });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<ArtifactShell loading status={status} />);
+    const button = container.querySelector('[data-slot="artifact-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<ArtifactShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
+  });
 });

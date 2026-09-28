@@ -337,7 +337,6 @@ function ArtifactShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <ArtifactShellSidebarSkeleton />
         <SidebarInset className="min-w-0 overflow-hidden">
           <ShellSkeletonRegion
@@ -378,6 +377,7 @@ function ArtifactShell({
             </div>
           </ShellSkeletonRegion>
         </SidebarInset>
+        <ShellLoadingLabel />
       </SidebarProvider>
     );
   }

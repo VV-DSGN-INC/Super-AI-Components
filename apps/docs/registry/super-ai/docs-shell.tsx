@@ -372,7 +372,6 @@ function DocsShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <DocsShellRailSkeleton />
         <SidebarInset className="min-w-0 flex-col overflow-hidden md:flex-row">
           <ShellSkeletonRegion
@@ -416,6 +415,7 @@ function DocsShell({
             </ShellSkeletonRegion>
           </div>
         </SidebarInset>
+        <ShellLoadingLabel />
       </SidebarProvider>
     );
   }

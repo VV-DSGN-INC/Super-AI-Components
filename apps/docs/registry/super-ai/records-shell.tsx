@@ -331,7 +331,6 @@ function RecordsShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <RecordsShellSidebarSkeleton />
         <SidebarInset className="min-w-0 overflow-hidden">
           <ShellSkeletonRegion
@@ -367,6 +366,7 @@ function RecordsShell({
             <ShellSkeletonRows count={6} />
           </ShellSkeletonRegion>
         </SidebarInset>
+        <ShellLoadingLabel />
       </SidebarProvider>
     );
   }

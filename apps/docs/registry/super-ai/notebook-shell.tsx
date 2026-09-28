@@ -395,7 +395,6 @@ function NotebookShell({
         )}
         {...props}
       >
-        <ShellLoadingLabel />
         <ShellSkeletonRegion
           region="sources"
           className="bg-card flex shrink-0 flex-col gap-3 border-b p-3 lg:h-full lg:w-72 lg:border-e lg:border-b-0"
@@ -444,6 +443,7 @@ function NotebookShell({
           <ShellSkeletonTiles count={2} className="grid-cols-2" tileClassName="aspect-auto h-25" />
           <ShellSkeletonTiles count={2} tileClassName="aspect-auto h-57" />
         </ShellSkeletonRegion>
+        <ShellLoadingLabel />
       </div>
     );
   }

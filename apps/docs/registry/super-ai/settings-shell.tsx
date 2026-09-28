@@ -364,7 +364,6 @@ function SettingsShell({
         className={cn("bg-background text-foreground flex h-full min-h-0 w-full flex-col", className)}
         {...props}
       >
-        <ShellLoadingLabel />
         <div
           data-slot="settings-shell-header"
           className="flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2.5"
@@ -411,6 +410,7 @@ function SettingsShell({
             </ShellSkeletonRegion>
           </div>
         </div>
+        <ShellLoadingLabel />
       </div>
     );
   }
