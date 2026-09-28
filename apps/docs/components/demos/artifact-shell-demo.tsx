@@ -2,6 +2,7 @@
 
 import * as React from "react";
 
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { ArtifactShell, type ArtifactShellGroup } from "@/registry/super-ai/artifact-shell";
 import { PromoCard } from "@/registry/super-ai/promo-card";
@@ -141,14 +142,17 @@ export default function ArtifactShellDemo() {
         />
       }
       sidebarFooter={
-        <AccountMenu
-          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
-          theme="system"
-          onThemeChange={() => {}}
-          background="default"
-          onBackgroundChange={() => {}}
-          onSignOut={() => {}}
-        />
+        <div className="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+          <DemoNotifications />
+        </div>
       }
     />
   );

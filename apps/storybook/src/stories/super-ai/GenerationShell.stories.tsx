@@ -6,11 +6,13 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 import { GenerationPanel } from "@/registry/super-ai/generation-panel";
 import { GenerationShell, type GenerationShellProps } from "@/registry/super-ai/generation-shell";
 import { ParameterSlider } from "@/registry/super-ai/parameter-panel";
+import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
 import { RunButton } from "@/registry/super-ai/run-button";
 import { SafetyBlock } from "@/registry/super-ai/safety-block";
 import { GenerationShellDocs } from "@/content/components/generation-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, hasVisibleFocusRing, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 const PRESETS = [
   { id: "cinematic", label: "Cinematic" },
@@ -954,5 +956,43 @@ export const Boundary: Story = {
     // A page has regions; a column has none.
     await expect(shell.querySelectorAll("[data-region]")).toHaveLength(4);
     await expect(panel.querySelectorAll("[data-region]")).toHaveLength(0);
+  },
+};
+
+/**
+ * First paint, before the tool has loaded. The topbar, the settings panel with its
+ * cost and Generate row, and the result canvas each draw a skeleton at the size
+ * they will take, the root is marked busy, and nothing inside it takes focus. The
+ * play renders the loaded tool in the same frame and fails if a skeleton sits more
+ * than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <GenerationShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "generation-shell", {
+      topbar: "frame",
+      "config-panel": "frame",
+      "cost-generate": "frame",
+      "result-canvas": "frame",
+    });
+  },
+};
+
+/**
+ * The plan's limit is reached. M6 sits under the topbar, above the panel and the
+ * results it holds up, says which limit and that it is the plan's cap rather than
+ * a fault in the request, and counts down to the reset.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: <RateLimitBanner cause="your-limit" resource="Video generations" remainingSeconds={5400} />,
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="generation-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-region", "topbar");
+    await expect(within(status!).getByText("Video generations")).toBeVisible();
   },
 };

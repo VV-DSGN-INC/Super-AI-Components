@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { AuthShell, type AuthShellProps } from "./auth-shell";
 
 const REGIONS = ["marketing-panel", "provider-rows", "email-fallback", "legal-footer"];
@@ -191,5 +193,57 @@ describe("AuthShell", () => {
     expect(screen.getByRole("heading", { name: "Welcome back to Northwind" })).toBeVisible();
     expect(screen.getByText("One account for every workspace.")).toBeVisible();
     expect(screen.getByRole("button", { name: "Email me a link" })).toBeVisible();
+  });
+});
+
+describe("AuthShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="auth-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<AuthShell />);
+    expectShellLoadedContract(root(container), { name: "auth-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="auth-shell-status"]')).toBeNull();
+  });
+
+  it("renders status at the top of the form column, above the providers", () => {
+    const { container } = render(<AuthShell status={<p>Your session expired.</p>} />);
+    const status = container.querySelector('[data-slot="auth-shell-status"]')!;
+    expect(status).toHaveTextContent("Your session expired.");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "provider-rows");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <AuthShell
+        loading
+        providers={[{ id: "google", name: "Google" }]}
+        marketing={<a href="/pricing">See pricing</a>}
+        onModeChange={() => {}}
+      />,
+    );
+    expectShellLoadingContract(root(container), { name: "auth-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="onboarding-wizard"]')).toBeNull();
+    expect(container.querySelector('[data-slot="entity-row"]')).toBeNull();
+    expect(screen.getByText("Sign in")).toBeInTheDocument();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<AuthShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="auth-shell-status"]')).toHaveTextContent("Reconnecting");
+  });
+
+  // Unlike the other twelve shells, auth cannot keep `status` under the same
+  // ancestor across the flip: loaded composes L6, loading composes the
+  // skeleton's `Card` in its place, so this documents the exception in
+  // auth-shell.docs.tsx's pitfalls rather than asserting focus retention.
+  it("loses focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<AuthShell loading status={status} />);
+    const button = container.querySelector('[data-slot="auth-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<AuthShell loading={false} status={status} />);
+    expect(document.activeElement).not.toBe(button);
   });
 });

@@ -4,6 +4,7 @@ import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { ChatShell, type ChatShellProps } from "@/registry/super-ai/chat-shell";
 import { NotebookShell } from "@/registry/super-ai/notebook-shell";
 import { ApprovalCard } from "@/registry/super-ai/approval-card";
 import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
+import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -1456,5 +1458,47 @@ export const EmbeddedWithSidebarFooter: Story = {
 
     await expect(footerBox.bottom).toBeLessThanOrEqual(shellBox.bottom + 1);
     await expect(footerBox.height).toBeGreaterThan(0);
+  },
+};
+
+/**
+ * First paint, before the workspace has loaded. The sidebar, the topbar, the
+ * stream and the composer each draw a skeleton at the size they will take, with
+ * the artifact band inside the stream where it will sit, the root is marked busy,
+ * and nothing inside it takes focus. The play renders the loaded conversation in
+ * the same frame and fails if a skeleton sits more than 8px from where its region
+ * lands. The artifact band is compared on its left edge and width only, because
+ * the turns above it decide how far down it starts.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <ChatShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "chat-shell", {
+      sidebar: "frame",
+      topbar: "frame",
+      "message-stream": "frame",
+      "artifact-cards": "flow",
+      composer: "frame",
+    });
+  },
+};
+
+/**
+ * The model is at capacity. M6 sits under the topbar, above the stream and the
+ * composer it holds up, and says in words that nothing is wrong with the request.
+ * It is a note rather than an alert: its countdown changes every second, and only
+ * a coarse line inside it, one that changes once a minute, is announced.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: <RateLimitBanner cause="provider-capacity" resource="Claude Opus 4.5" remainingSeconds={154} />,
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-region", "topbar");
+    await expect(within(status!).getByText("The model is at capacity")).toBeVisible();
   },
 };

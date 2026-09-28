@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { GenerationShell } from "./generation-shell";
 
 const REGIONS = ["config-panel", "cost-generate", "topbar", "result-canvas"];
@@ -217,5 +219,51 @@ describe("GenerationShell", () => {
     expect(checkboxes).toHaveLength(2);
     await userEvent.click(checkboxes[0]);
     expect(onSelectionChange).toHaveBeenCalledWith(["r1"]);
+  });
+});
+
+describe("GenerationShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="generation-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<GenerationShell />);
+    expectShellLoadedContract(root(container), { name: "generation-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="generation-shell-status"]')).toBeNull();
+  });
+
+  it("renders status directly under the topbar", () => {
+    const { container } = render(<GenerationShell status={<p>You reached your plan limit.</p>} />);
+    const status = container.querySelector('[data-slot="generation-shell-status"]')!;
+    expect(status).toHaveTextContent("You reached your plan limit.");
+    expect(status.previousElementSibling).toHaveAttribute("data-region", "topbar");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <GenerationShell loading topbar={{ actions: <button type="button">Share</button> }} cost={4} />,
+    );
+    expectShellLoadingContract(root(container), { name: "generation-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="generation-panel"]')).toBeNull();
+    expect(container.querySelector('[data-slot="app-topbar"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<GenerationShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="generation-shell-status"]')).toHaveTextContent(
+      "Reconnecting",
+    );
+  });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<GenerationShell loading status={status} />);
+    const button = container.querySelector(
+      '[data-slot="generation-shell-status"] button',
+    ) as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<GenerationShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
   });
 });

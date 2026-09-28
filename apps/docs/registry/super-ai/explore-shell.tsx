@@ -16,6 +16,11 @@ import {
 import { MediaPromptBar, type MediaPromptBarProps } from "@/registry/super-ai/media-prompt-bar";
 import { ModalityRail, type ModalityRailItemData } from "@/registry/super-ai/modality-rail";
 import { PreviewTile } from "@/registry/super-ai/preview-tile";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonRegion,
+} from "@/registry/super-ai/shell-skeleton";
 import { TemplateDetail, type TemplateDetailProps } from "@/registry/super-ai/template-detail";
 
 /**
@@ -163,6 +168,22 @@ interface ExploreShellProps extends Omit<React.ComponentProps<"div">, "onSelect"
    * `moreLikeThis` of its own. Derived from the feed, matched on `type`.
    */
   moreLikeThisCount?: number;
+
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders at the top of the feed column, above the
+   * prompt bar and the feed it affects, and only when given. Pass M6
+   * `rate-limit-banner` or the vendored `Alert`; the shell adds no live region, so
+   * the component you pass carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the feed has loaded. Every region draws a skeleton at the
+   * size it will take, the root carries `aria-busy`, and nothing the shell composes
+   * is mounted, so there is nothing to focus or click. The sort strip reserves the
+   * tabs and pills for the `sorts` and `types` you pass.
+   */
+  loading?: boolean;
 }
 
 /**
@@ -201,6 +222,21 @@ function ExploreShellMoreLikeThis({
   );
 }
 
+/**
+ * The feed skeleton's tile shapes, mixed so it reads as a masonry column rather
+ * than a grid. Fixed, so the server and the client draw the same feed.
+ */
+const FEED_SKELETON_ASPECTS = [
+  "aspect-square",
+  "aspect-3/4",
+  "aspect-video",
+  "aspect-4/5",
+  "aspect-video",
+  "aspect-square",
+  "aspect-4/5",
+  "aspect-3/4",
+] as const;
+
 function ExploreShell({
   rail = [],
   railPinned,
@@ -233,6 +269,9 @@ function ExploreShell({
   openItemId,
   onOpenItemChange,
   moreLikeThisCount = 4,
+
+  status,
+  loading = false,
 
   className,
   ...props
@@ -353,6 +392,7 @@ function ExploreShell({
   const controls = (
     <div
       data-region="sort-tabs"
+      data-loading-region="sort-tabs"
       data-slot="explore-shell-controls"
       className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2"
     >
@@ -409,6 +449,64 @@ function ExploreShell({
       ))
     );
 
+  const statusStrip = status ? (
+    <div data-slot="explore-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <div
+        data-slot="explore-shell"
+        aria-busy="true"
+        className={cn("bg-background text-foreground flex h-full min-h-0 w-full overflow-hidden", className)}
+        {...props}
+      >
+        {/* B4's own width, 92px. The twin is what notices if B4 changes it. */}
+        <ShellSkeletonRegion region="rail" className="flex w-23 shrink-0 flex-col gap-1 border-e p-1.5">
+          <ShellSkeletonBlock className="h-11 w-full" />
+          <ShellSkeletonBlock className="h-11 w-full" />
+          <ShellSkeletonBlock className="h-11 w-full" />
+        </ShellSkeletonRegion>
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          {statusStrip}
+          <ShellSkeletonRegion region="docked-prompt-bar" className="shrink-0 border-b px-4 py-3">
+            <div className="mx-auto w-full max-w-5xl">
+              <ShellSkeletonBlock
+                className={cn("w-full rounded-2xl", prompt?.contextChips ? "h-40" : "h-31.5")}
+              />
+            </div>
+          </ShellSkeletonRegion>
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 pt-3 pb-4">
+            <ShellSkeletonRegion
+              region="sort-tabs"
+              className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-2"
+            >
+              {sorts.length > 0 ? <ShellSkeletonBlock className="h-8 w-33" /> : null}
+              {types.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {types.map((option) => (
+                    <ShellSkeletonBlock key={option.value} className="h-8.5 w-24 rounded-full" />
+                  ))}
+                </div>
+              ) : null}
+              {sorts.length === 0 && types.length === 0 ? <ShellSkeletonBlock className="h-5 w-40" /> : null}
+            </ShellSkeletonRegion>
+            <ShellSkeletonRegion region="masonry-feed" className="min-h-0 flex-1 overflow-hidden">
+              <div className="columns-2 gap-3 sm:columns-3 lg:columns-4">
+                {FEED_SKELETON_ASPECTS.map((aspect, index) => (
+                  <ShellSkeletonBlock key={index} className={cn("mb-3 w-full break-inside-avoid", aspect)} />
+                ))}
+              </div>
+            </ShellSkeletonRegion>
+          </div>
+        </div>
+        <ShellLoadingLabel />
+      </div>
+    );
+  }
+
   return (
     <div
       data-slot="explore-shell"
@@ -421,6 +519,7 @@ function ExploreShell({
           positioning, so the shell needs no containment to stay embeddable. */}
       <ModalityRail
         data-region="rail"
+        data-loading-region="rail"
         items={rail}
         pinned={railPinned}
         activeId={activeRailId}
@@ -428,9 +527,14 @@ function ExploreShell({
       />
 
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {statusStrip}
         {/* Above the feed, not below it: a bar pinned to the bottom is a
             composer for the page you are on. This one is the way off it. */}
-        <div data-region="docked-prompt-bar" className="shrink-0 border-b px-4 py-3">
+        <div
+          data-region="docked-prompt-bar"
+          data-loading-region="docked-prompt-bar"
+          className="shrink-0 border-b px-4 py-3"
+        >
           <div className="mx-auto w-full max-w-5xl">
             <MediaPromptBar
               presentation="docked"
@@ -460,6 +564,7 @@ function ExploreShell({
             <TabsContent
               value={activeSort}
               data-region="masonry-feed"
+              data-loading-region="masonry-feed"
               tabIndex={FEED_PANEL_TAB_STOP}
               className="min-h-0 flex-1 overflow-hidden"
             >
@@ -469,7 +574,11 @@ function ExploreShell({
         ) : (
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 pt-3 pb-4">
             {controls}
-            <div data-region="masonry-feed" className="min-h-0 flex-1 overflow-hidden">
+            <div
+              data-region="masonry-feed"
+              data-loading-region="masonry-feed"
+              className="min-h-0 flex-1 overflow-hidden"
+            >
               {feed}
             </div>
           </div>

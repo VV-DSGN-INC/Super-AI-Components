@@ -38,6 +38,16 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     npm: [],
     target: "lib/initials.tsx",
   },
+  {
+    name: "shell-skeleton",
+    title: "Shell skeletons",
+    description:
+      "Skeleton regions, rows, lines, tiles and a sidebar for a shell's loading state: hidden from assistive tech, still under reduced motion, and the same on server and client.",
+    status: "shipped",
+    shadcn: ["skeleton"],
+    npm: [],
+    target: "lib/shell-skeleton.tsx",
+  },
 ];
 
 export const LIB_NAMES = LIB_MANIFEST.map((i) => i.name);

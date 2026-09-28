@@ -22,6 +22,13 @@ import {
 } from "@/registry/super-ai/filter-panel";
 import { GenerationGrid, type GenerationGridDensity } from "@/registry/super-ai/generation-grid";
 import { PreviewTile, type PreviewTileState } from "@/registry/super-ai/preview-tile";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonRegion,
+  ShellSkeletonRows,
+  ShellSkeletonTiles,
+} from "@/registry/super-ai/shell-skeleton";
 
 /**
  * Library Shell — personal archive
@@ -179,6 +186,21 @@ interface LibraryShellProps extends Omit<React.ComponentProps<"div">, "onSelect"
   onSpanSelect?: (asset: LibraryAsset, text: string, span: PromptSpan) => void;
   /** F3's "More like this" rail — usually a strip of A8 tiles. */
   moreLikeThis?: React.ReactNode;
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders at the top of the content column, above
+   * the header and the grid it affects, and only when given. Pass M6
+   * `rate-limit-banner` or the vendored `Alert`; the shell adds no live region, so
+   * the component you pass carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the archive has loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click. The header
+   * reserves room for `headerActions` and for any facets already selected.
+   */
+  loading?: boolean;
 }
 
 /**
@@ -266,6 +288,9 @@ function LibraryShell({
   onSpanSelect,
   moreLikeThis,
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: LibraryShellProps) {
@@ -342,6 +367,56 @@ function LibraryShell({
     />
   );
 
+  const statusStrip = status ? (
+    <div data-slot="library-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <div
+        data-slot="library-shell"
+        aria-busy="true"
+        className={cn(
+          "bg-background text-foreground flex h-full min-h-0 w-full flex-col overflow-hidden md:flex-row",
+          className,
+        )}
+        {...props}
+      >
+        <ShellSkeletonRegion
+          region="facet-rail"
+          className="flex max-h-56 w-full shrink-0 flex-col gap-4 overflow-hidden border-b p-4 md:h-full md:max-h-none md:w-64 md:border-e md:border-b-0"
+        >
+          <ShellSkeletonBlock className="h-6 w-24" />
+          <ShellSkeletonRows count={3} />
+          <ShellSkeletonRows count={6} />
+        </ShellSkeletonRegion>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+          {statusStrip}
+          <ShellSkeletonRegion region="header" className="flex shrink-0 flex-col gap-3 border-b px-4 py-2">
+            <div className={cn("flex items-center justify-between gap-2", headerActions ? "h-12" : "h-9")}>
+              <ShellSkeletonBlock className="h-5 w-24" />
+              {headerActions ? <ShellSkeletonBlock className="h-8 w-32" /> : null}
+            </div>
+            <ShellSkeletonBlock className="h-8 w-full" />
+            {/* J1 renders its filter row even when it is empty, so the gap above it stays either way. */}
+            {appliedFacets.length > 0 ? <ShellSkeletonBlock className="h-7.5 w-48 rounded-full" /> : <div />}
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion region="dense-grid" className="min-h-0 flex-1 overflow-hidden px-4 py-3">
+            <ShellSkeletonBlock className="mb-2 h-4 w-20" />
+            <ShellSkeletonTiles
+              count={12}
+              className="grid-cols-3 sm:grid-cols-4 lg:grid-cols-6"
+              tileClassName="aspect-square"
+            />
+          </ShellSkeletonRegion>
+        </div>
+        <ShellLoadingLabel />
+      </div>
+    );
+  }
+
   return (
     <div
       data-slot="library-shell"
@@ -357,6 +432,7 @@ function LibraryShell({
           a breakpoint cannot teach that it exists. */}
       <aside
         data-region="facet-rail"
+        data-loading-region="facet-rail"
         tabIndex={0}
         aria-label="Filters"
         className="max-h-56 w-full shrink-0 overflow-y-auto border-b p-4 md:h-full md:max-h-none md:w-64 md:border-e md:border-b-0"
@@ -383,9 +459,10 @@ function LibraryShell({
       </aside>
 
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        {statusStrip}
         {/* "header + search" is one region because J1 ships them as one unit.
             The applied-facet chips land in J1's own A5 filter-bar row. */}
-        <div data-region="header" className="shrink-0 border-b px-4 py-2">
+        <div data-region="header" data-loading-region="header" className="shrink-0 border-b px-4 py-2">
           <AssetLibrary
             title={title}
             headerActions={headerActions}
@@ -418,6 +495,7 @@ function LibraryShell({
         {/* The grid scrolls, so it too is focusable and named. */}
         <section
           data-region="dense-grid"
+          data-loading-region="dense-grid"
           tabIndex={0}
           aria-label="Assets"
           className="min-h-0 flex-1 overflow-y-auto px-4 py-3"

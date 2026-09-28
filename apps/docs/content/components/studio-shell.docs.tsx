@@ -52,9 +52,17 @@ export const StudioShellDocs: ComponentDocs = {
       note: "Positions I3 at the top or bottom of the canvas per its own placement flag.",
     },
     { slot: "studio-shell-results", note: "The F1 grid inside the tool panel's results section." },
+    {
+      slot: "studio-shell-status",
+      note: "Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it when the primary object of your product is a document someone edits — a design, a board, a scene, a model. Fill `modalities` with the rail, then key `toolPanels` by the same ids: each entry is I1's own props plus three shortcuts, `presets` for an E4 grid, `results` for F1 cards, and `drawing` for I5 pinned below the panel. The canvas is `children` and never varies with the rail, which is deliberate. One `selection` object drives both the floating toolbar and the inspector, so passing nothing renders the shell's true default view — empty inspector, no toolbar — which is what most users are looking at most of the time. `frames` fills the bottom strip; pass `onAddFrame` and the strip's own add tile becomes its empty state.",
+    "Reach for it when the primary object of your product is a document someone edits — a design, a board, a scene, a model. Fill `modalities` with the rail, then key `toolPanels` by the same ids: each entry is I1's own props plus three shortcuts, `presets` for an E4 grid, `results` for F1 cards, and `drawing` for I5 pinned below the panel. The canvas is `children` and never varies with the rail, which is deliberate. One `selection` object drives both the floating toolbar and the inspector, so passing nothing renders the shell's true default view — empty inspector, no toolbar — which is what most users are looking at most of the time. `frames` fills the bottom strip; pass `onAddFrame` and the strip's own add tile becomes its empty state. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Let presets arrive as E4 so the chosen one stays a programmatic state, not a ring.",
@@ -63,6 +71,9 @@ export const StudioShellDocs: ComponentDocs = {
     {
       text: "Keep document-level properties in the inspector's empty content, so nothing selected is still somewhere to work.",
       example: <InspectorStaysUsefulWhenEmpty />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
     },
   ],
   donts: [
@@ -83,6 +94,7 @@ export const StudioShellDocs: ComponentDocs = {
       "The floating toolbar exists only while `selection` is set, so selecting something inserts a run of tab stops into the middle of the order and clearing the selection removes them. The stop count of this shell is not stable across a session.",
       "The page strip is a carousel: its previous and next buttons are real controls, and Left/Right arrows scroll it from anywhere inside it. H5 positions those buttons at `left-2` / `right-2`, inside the strip's own box, so they read against the strip's own edge rather than the page-strip region's.",
       "Below the `md` breakpoint the three middle regions become one scrolling column. The three inner tab stops remain, so a narrow viewport does not shorten the run — it lengthens the scroll.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       "The shell contributes almost no landmarks. Five of the six regions are plain `<div>`s carrying `data-region`, which is a test handle and nothing more; only the topbar is a landmark, because `app-topbar` renders a bare `<header>` and so maps to `banner`. If your page already has a banner, this shell adds a second one.",
@@ -92,6 +104,8 @@ export const StudioShellDocs: ComponentDocs = {
       "Nothing announces a modality change. Switching the rail swaps the entire tool panel and renames the group, and a change to a group's accessible name is not announced — a screen-reader user has to enter the panel to discover it is now a different panel.",
       "The canvas has no accessible content of its own. With nothing on it, the region contains the empty state's text; with something on it, whatever you render is the entire story — the shell has no description of the document, its size, or what is selected beyond the inspector's status line.",
       "The composed children carry their own semantics unchanged: the preset grid keeps its radiogroup/checkbox chosen-ness, the frame strip's tiles keep `aria-current`, the panel's toggle tiles keep `aria-pressed`. Flattening any of them into plain buttons is the one change here that silently deletes state from assistive tech.",
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "Clearing the selection unmounts the floating toolbar. If focus was on one of its actions, it falls to `<body>` and the next Tab restarts from the top of the page — move focus back to the canvas surface in whatever handler clears the selection.",
@@ -108,5 +122,6 @@ export const StudioShellDocs: ComponentDocs = {
     "React's div props carry a legacy `results?: number` attribute, which collides with the tool panel's F1 list. The passthrough omits it. If you add another prop to a tool panel entry, check it against `React.ComponentProps<\"div\">` first — the collision is a type error at the interface, not at the call site, so it reads as unrelated.",
     "Below the `md` breakpoint the three middle regions stack into one scrolling column rather than being hidden. That is a deliberate trade: a canvas that shares a scroll container with the panel and the inspector is worse than three columns, and much better than a region a narrow viewport cannot reach at all. A real mobile editor should replace the panel and the inspector with sheets.",
     "Everything is controlled. Rendering the shell with a fixed `selection`, a fixed `activeModalityId` and no callbacks produces a screenshot of an editor, not an editor — wire the rail, the frame strip and the preset grid before demoing it.",
+    "The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.",
   ],
 };

@@ -41,6 +41,64 @@ manifest.
 affordance instead. A region that appears from nowhere cannot teach that it exists, and a
 conditional one forces you to weaken your own region test.
 
+## Status and loading
+
+Every shell takes two props beyond its regions, and both follow one contract.
+
+**`status`** is a slot, not a region. It holds a message about the whole surface (offline,
+reconnecting, a failed save, an expired session, a rate limit), filled by M6
+`rate-limit-banner` or the vendored `Alert`. It renders under the topbar, or at the top of
+the content column in a shell with no topbar, in a wrapper carrying
+`data-slot="<shell>-status"`, and only when given: a shell without it renders exactly what
+it rendered before. The shell adds no live region; the component passed in owns its
+announcement. The wrapper mounts together with its content, so a host that needs an
+announcement on arrival should keep `status` mounted and change its content, or rely on
+the passed component's own role (`role="alert"` is announced on mount). It is the one
+host slot that still renders while `loading`.
+
+**`loading`** is one boolean, for first paint. While it is true:
+
+1. The root carries `aria-busy="true"` and one visually hidden line, `ShellLoadingLabel`.
+2. Every manifest region renders as exactly one `ShellSkeletonRegion`, which carries
+   `data-region`, `data-loading-region` and `aria-hidden`. Composed components are not
+   mounted, and no element scrolls or takes a tab stop. Interactive host slots other
+   than `status` are not rendered; static host text (a `title` or `description` string,
+   for example) may still render, since text alone takes no tab stop. B1 `app-sidebar`
+   and L6 `onboarding-wizard` are not mounted either: each leaves a control in the DOM
+   (B1's rail button, L6's class-hidden step navigation).
+3. A skeleton reserves a row only for props the host has already passed (`headline`,
+   `contextChips`, `accountMenu`, `headerActions` and the like). It never draws a row the
+   loaded shell would not render. List data (threads, messages, items) is a fixed number
+   of placeholders.
+4. Every block comes from `shell-skeleton`, the `registry:lib` item, which hides it from
+   assistive tech, stills its pulse under reduced motion and renders the same markup on
+   server and client.
+
+While it is false, each region's box carries `data-loading-region="<region>"` too: the
+`data-region` element itself, or, where that wrapper is `display: contents`, the composed
+component that draws the box (B1, in O1, O2, O9, O10 and O11).
+
+**The loading twin** is the proof, in each shell's `Loading` story. `expectLoadingTwin`
+(`apps/storybook/src/lib/loading-twin.tsx`) renders the shell from the story's full
+fixture, measures every `data-loading-region` against the shell root in both states at
+1200×900, and fails when a compared edge differs by more than 8px. Which edges it compares
+depends on what decides them (D21):
+
+| kind        | compared            | for a region that                                               |
+| ----------- | ------------------- | --------------------------------------------------------------- |
+| `frame`     | x, y, width, height | the layout places and sizes: a rail, a bar, a panel, a pane     |
+| `flow-lead` | x, y, width         | opens a scroll column, and whose height the host's data decides |
+| `flow`      | x, width            | follows another region in a scroll column                       |
+| `text`      | x, y, height        | is as wide as the words in it                                   |
+
+The kind is fixed per region in the story. A failing twin is fixed in the skeleton's
+classes, never by changing a kind, the tolerance or the fixture. The jsdom half is
+`expectShellLoadingContract` and `expectShellLoadedContract` in `apps/docs/lib/test-utils.ts`.
+
+A host that needs one region to wait while the rest works (a thread whose history is still
+arriving) leaves `loading` off and passes a `shell-skeleton` part through that region's
+empty-override prop.
+
 ## The four gate assertions, and what each is worth
 
 `check-contract.mts`'s block branch asserts: non-empty `consumes`; every declared region present in

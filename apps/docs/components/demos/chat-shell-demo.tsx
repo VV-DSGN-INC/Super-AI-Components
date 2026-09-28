@@ -1,10 +1,14 @@
 "use client";
 
+import { Keyboard } from "lucide-react";
 import * as React from "react";
 
+import { Button } from "@/components/ui/button";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { ChatShell } from "@/registry/super-ai/chat-shell";
 import { PromoCard } from "@/registry/super-ai/promo-card";
+import { ShortcutsSheet } from "@/registry/super-ai/shortcuts-sheet";
 import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const THREAD_GROUPS = [
@@ -71,6 +75,19 @@ const WORKSPACES = [
   { id: "acme", name: "Acme Labs" },
 ];
 
+// Only shortcuts this shell really binds: D1 sends on Enter and breaks a line
+// on Shift+Enter, and the vendored sidebar toggles on Cmd/Ctrl+B.
+const SHORTCUTS = [
+  {
+    title: "Conversation",
+    shortcuts: [
+      { label: "Send the message", keys: ["Enter"] },
+      { label: "Start a new line", keys: ["⇧", "Enter"] },
+    ],
+  },
+  { title: "Workspace", shortcuts: [{ label: "Show or hide the sidebar", keys: ["⌘", "B"] }] },
+];
+
 export default function ChatShellDemo() {
   const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
   const [promoDismissed, setPromoDismissed] = React.useState(false);
@@ -79,7 +96,21 @@ export default function ChatShellDemo() {
     <ChatShell
       className="h-[42rem]"
       title="Brand audit for Northwind"
-      topbar={{ privacy: { label: "Private" }, savedLabel: "Saved just now" }}
+      topbar={{
+        privacy: { label: "Private" },
+        savedLabel: "Saved just now",
+        actions: (
+          <ShortcutsSheet
+            sections={SHORTCUTS}
+            trigger={
+              <Button type="button" variant="ghost" size="sm">
+                <Keyboard aria-hidden />
+                Shortcuts
+              </Button>
+            }
+          />
+        ),
+      }}
       switcher={
         <WorkspaceSwitcher
           workspaces={WORKSPACES}
@@ -109,14 +140,17 @@ export default function ChatShellDemo() {
         />
       }
       sidebarFooter={
-        <AccountMenu
-          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
-          theme="system"
-          onThemeChange={() => {}}
-          background="default"
-          onBackgroundChange={() => {}}
-          onSignOut={() => {}}
-        />
+        <div className="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+          <DemoNotifications />
+        </div>
       }
     />
   );

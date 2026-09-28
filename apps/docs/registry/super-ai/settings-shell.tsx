@@ -20,6 +20,13 @@ import { MemberGateRow, type MemberGateRowProps } from "@/registry/super-ai/memb
 import { PricingTable, type PricingTableProps } from "@/registry/super-ai/pricing-table";
 import { QuotaMeter, type QuotaMeterResource } from "@/registry/super-ai/quota-meter";
 import { matchesQuery, SettingsDialog, type SettingsRowData } from "@/registry/super-ai/settings-dialog";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+  ShellSkeletonRows,
+} from "@/registry/super-ai/shell-skeleton";
 import { SidebarNav, type SidebarNavSection } from "@/registry/super-ai/sidebar-nav";
 
 /**
@@ -183,6 +190,21 @@ interface SettingsShellProps extends Omit<React.ComponentProps<"div">, "title"> 
   navEmpty?: React.ReactNode;
   codeEmptyLabel?: React.ReactNode;
   codeFallbackLabel?: React.ReactNode;
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders under the breadcrumb row, above the nav
+   * and the settings it affects, and only when given. Pass M6 `rate-limit-banner`
+   * or the vendored `Alert`; the shell adds no live region, so the component you
+   * pass carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the settings have loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click. The header keeps a
+   * place for `accountMenu` when it is passed, without mounting it.
+   */
+  loading?: boolean;
 }
 
 /**
@@ -255,6 +277,9 @@ function SettingsShell({
   codeEmptyLabel = "This section has nothing to copy.",
   codeFallbackLabel = "Configuration",
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: SettingsShellProps) {
@@ -325,6 +350,71 @@ function SettingsShell({
   const callout = active?.callout ?? calloutFallback;
   const code = active?.code;
 
+  const statusStrip = status ? (
+    <div data-slot="settings-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <div
+        data-slot="settings-shell"
+        aria-busy="true"
+        className={cn("bg-background text-foreground flex h-full min-h-0 w-full flex-col", className)}
+        {...props}
+      >
+        <div
+          data-slot="settings-shell-header"
+          className="flex shrink-0 items-center justify-between gap-3 border-b px-4 py-2.5"
+        >
+          <ShellSkeletonRegion region="breadcrumb" className="flex h-5 items-center gap-1.5">
+            <ShellSkeletonBlock className="h-4 w-14" />
+            <ShellSkeletonBlock className="h-4 w-16" />
+            <ShellSkeletonBlock className="h-4 w-12" />
+          </ShellSkeletonRegion>
+          {accountMenu ? <ShellSkeletonBlock className="size-8 rounded-full" /> : null}
+        </div>
+        {statusStrip}
+        <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+          <ShellSkeletonRegion
+            region="grouped-nav"
+            className="flex max-h-64 w-full shrink-0 flex-col gap-4 overflow-hidden border-b p-3 md:max-h-none md:w-60 md:border-e md:border-b-0"
+          >
+            <div className="flex flex-col gap-1">
+              <ShellSkeletonBlock className="h-8 w-full" />
+              <div className="min-h-4" />
+            </div>
+            <ShellSkeletonRows count={8} />
+          </ShellSkeletonRegion>
+          <div
+            data-slot="settings-shell-content"
+            className="flex min-w-0 flex-1 flex-col gap-6 overflow-hidden p-4"
+          >
+            <ShellSkeletonRegion region="info-callout">
+              <ShellSkeletonBlock className="h-10 w-full rounded-lg" />
+            </ShellSkeletonRegion>
+            <ShellSkeletonRegion region="setting-sections" className="flex flex-col gap-8">
+              <div className="flex flex-col gap-1">
+                <ShellSkeletonBlock className="h-6 w-40" />
+                <ShellSkeletonBlock className="h-4 w-72" />
+              </div>
+              <ShellSkeletonLines count={6} />
+            </ShellSkeletonRegion>
+            <ShellSkeletonRegion region="code-block" className="flex flex-col gap-2 border-t pt-6">
+              <div className="flex h-7 items-center justify-between gap-2">
+                <ShellSkeletonBlock className="h-4 w-40" />
+                <ShellSkeletonBlock className="h-7 w-18" />
+              </div>
+              <ShellSkeletonBlock className="h-36 w-full rounded-md" />
+            </ShellSkeletonRegion>
+          </div>
+        </div>
+        <ShellLoadingLabel />
+      </div>
+    );
+  }
+
   return (
     <div
       data-slot="settings-shell"
@@ -337,7 +427,7 @@ function SettingsShell({
       >
         {/* The vendored Breadcrumb, which already ships the nav landmark, the
             separators and `aria-current="page"` on the leaf. */}
-        <Breadcrumb data-region="breadcrumb" className="min-w-0">
+        <Breadcrumb data-region="breadcrumb" data-loading-region="breadcrumb" className="min-w-0">
           <BreadcrumbList>
             <BreadcrumbItem>
               {rootHref ? (
@@ -365,6 +455,8 @@ function SettingsShell({
         {accountMenu}
       </div>
 
+      {statusStrip}
+
       {/* Below `md` the nav stops being a column and becomes a capped band
           above the content: a fixed 15rem rail leaves 135px of content on a
           375px viewport, which is not a settings page, it is a nav with a
@@ -382,6 +474,7 @@ function SettingsShell({
             `SettingsShell.stories.tsx`'s `RTL`, which fails on a revert. */}
         <div
           data-region="grouped-nav"
+          data-loading-region="grouped-nav"
           className="flex max-h-64 w-full shrink-0 flex-col gap-4 overflow-y-auto border-b p-3 md:max-h-none md:w-60 md:border-e md:border-b-0"
         >
           <div className="flex flex-col gap-1">
@@ -463,7 +556,7 @@ function SettingsShell({
           {/* Always mounted. A callout that appears from nowhere on one section
               in nine cannot teach that the scope of a setting is a thing worth
               reading. */}
-          <div data-region="info-callout">
+          <div data-region="info-callout" data-loading-region="info-callout">
             {callout ? (
               <Alert variant={callout.variant} data-slot="settings-shell-callout">
                 <SlidersHorizontal aria-hidden />
@@ -478,7 +571,11 @@ function SettingsShell({
             )}
           </div>
 
-          <div data-region="setting-sections" className="flex flex-col gap-8">
+          <div
+            data-region="setting-sections"
+            data-loading-region="setting-sections"
+            className="flex flex-col gap-8"
+          >
             {sections.length > 0 ? (
               <>
                 {/* M1's full-page variant. The shell forwards the query and M1
@@ -547,6 +644,7 @@ function SettingsShell({
               the active section has nothing to copy. */}
           <section
             data-region="code-block"
+            data-loading-region="code-block"
             aria-labelledby={codeLabelId}
             className="flex flex-col gap-2 border-t pt-6"
           >

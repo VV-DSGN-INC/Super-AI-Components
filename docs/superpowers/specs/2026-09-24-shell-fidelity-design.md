@@ -265,10 +265,10 @@ Still in no shell after this unit, by where they are expected to land: the agent
 - **`GEMINI_API_KEY`** must be present in the shell that runs the skill. Owner: Nick.
 - **`loading` as one boolean or per region.** One boolean here; the plan revisits if a shell
   needs a partially loaded state (chat with threads loaded and the stream pending is the
-  candidate).
+  candidate). Settled by the U4 plan: one boolean; a region-level wait uses that region's empty-override slot. Nick confirmed on 2026-09-27.
 - **`status` as a region or a slot.** A region changes the manifest and the anatomy of
   thirteen contracts; a slot does not. Plan task 0 decides after reading how `anatomy` is
-  derived.
+  derived. Settled by the U4 plan: a slot. Nick confirmed on 2026-09-27.
 - **The chat failure row and the library upload row** may need a component that does not
   exist; U3's rule above says what happens then.
 - **Provenance line for generated images.** The license test pins third-party notices;
@@ -292,3 +292,4 @@ Still in no shell after this unit, by where they are expected to land: the agent
 - 2026-09-24 — initial draft from the shell review and the fidelity brainstorm.
 - 2026-09-25: U3 gains "slots filled with the library", from the reference-board coverage
   check (Nick chose it); matching success criterion added.
+- 2026-09-26: U4 planned (`superpowers/plans/2026-09-26-shell-fidelity-u4.md`): `status` is a slot, `loading` one boolean, and the loading twin compares each region's edges by what decides them.

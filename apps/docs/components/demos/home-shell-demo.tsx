@@ -3,6 +3,7 @@
 import { Clapperboard, Image as ImageIcon, Mic, Sparkles, Type, WandSparkles } from "lucide-react";
 import * as React from "react";
 
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { HomeShell, type HomeShellProps } from "@/registry/super-ai/home-shell";
@@ -142,14 +143,17 @@ export default function HomeShellDemo() {
         />
       }
       sidebarFooter={
-        <AccountMenu
-          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
-          theme="system"
-          onThemeChange={() => {}}
-          background="default"
-          onBackgroundChange={() => {}}
-          onSignOut={() => {}}
-        />
+        <div className="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+          <DemoNotifications />
+        </div>
       }
     />
   );

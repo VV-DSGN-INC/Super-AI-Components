@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { AccountMenu } from "@/registry/super-ai/account-menu";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { RecordsShell } from "@/registry/super-ai/records-shell";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
@@ -92,14 +93,17 @@ export default function RecordsShellDemo() {
         />
       }
       headerActions={
-        <AccountMenu
-          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
-          theme="system"
-          onThemeChange={() => {}}
-          background="default"
-          onBackgroundChange={() => {}}
-          onSignOut={() => {}}
-        />
+        <div className="flex items-center gap-1">
+          <DemoNotifications />
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+        </div>
       }
       createLabel="New scenario"
       onCreate={() => {}}

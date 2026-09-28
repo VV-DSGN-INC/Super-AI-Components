@@ -4,12 +4,19 @@ import { KeyRound } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldLabel, FieldSeparator } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/registry/super-ai/empty-state";
 import { EntityRow } from "@/registry/super-ai/entity-row";
 import { OnboardingWizard, type OnboardingWizardStep } from "@/registry/super-ai/onboarding-wizard";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonLines,
+  ShellSkeletonRegion,
+} from "@/registry/super-ai/shell-skeleton";
 
 /**
  * Auth Shell — sign in / sign up
@@ -160,6 +167,25 @@ interface AuthShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   legalPrefix?: React.ReactNode;
   /** Replaces the whole legal line. The region still renders. */
   legal?: React.ReactNode;
+
+  /**
+   * A message about the whole surface: offline, an expired session, a rate limit.
+   * Renders at the top of the form column, above the providers, and only when
+   * given. Pass M6 `rate-limit-banner` or the vendored `Alert`; the shell adds no
+   * live region, so the component you pass carries its own role. Still renders
+   * while `loading`, but in this shell the loaded tree composes L6 and the
+   * loading tree composes the vendored `Card` in its place, so `status` sits
+   * under a different ancestor in each and remounts, taking any focus or host
+   * state with it, when `loading` flips.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the sign-in options have loaded. The title and description
+   * stay, since they are the mode's own copy; every region draws a skeleton at the
+   * size it will take, the root carries `aria-busy`, and nothing the shell composes
+   * is mounted, so there is nothing to focus or click.
+   */
+  loading?: boolean;
 }
 
 const MODE_COPY: Record<
@@ -213,11 +239,15 @@ function AuthShell({
   legalPrefix = "By continuing, you agree to our",
   legal,
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: AuthShellProps) {
   const copy = MODE_COPY[mode];
   const emailId = React.useId();
+  const statusNode = status ? <div data-slot="auth-shell-status">{status}</div> : null;
 
   const [internalEmail, setInternalEmail] = React.useState(defaultEmail);
   const emailControlled = emailProp !== undefined;
@@ -231,6 +261,7 @@ function AuthShell({
   const marketingPanel = (
     <div
       data-region="marketing-panel"
+      data-loading-region="marketing-panel"
       // The rebind, not a restyle: composed children carry their own muted
       // foreground and a slot-level fix cannot reach them.
       className={cn("flex h-full flex-col justify-center gap-3", MARKETING_PANEL_ON_MUTED)}
@@ -248,6 +279,7 @@ function AuthShell({
   const providerRows = (
     <div
       data-region="provider-rows"
+      data-loading-region="provider-rows"
       role="group"
       aria-label={providersLabel ?? (mode === "sign-up" ? "Sign-up providers" : "Sign-in providers")}
       className="flex flex-col gap-1"
@@ -285,7 +317,11 @@ function AuthShell({
   );
 
   const emailRegion = (
-    <div data-region="email-fallback" className={cn("flex flex-col gap-4", DIVIDER_ON_CARD)}>
+    <div
+      data-region="email-fallback"
+      data-loading-region="email-fallback"
+      className={cn("flex flex-col gap-4", DIVIDER_ON_CARD)}
+    >
       {emailFallback ?? (
         <>
           <FieldSeparator>{dividerLabel}</FieldSeparator>
@@ -338,7 +374,7 @@ function AuthShell({
   ) : null;
 
   const legalFooter = (
-    <div data-region="legal-footer" className="border-t pt-4">
+    <div data-region="legal-footer" data-loading-region="legal-footer" className="border-t pt-4">
       {legal ?? (
         // text-foreground, not muted: legal text is the one line on this screen
         // that has to stay readable, and quietness comes from size.
@@ -365,6 +401,7 @@ function AuthShell({
     panelSide: marketingSide,
     content: (
       <div className="flex flex-col gap-4">
+        {statusNode}
         {providerRows}
         {emailRegion}
         {modeSwitch}
@@ -372,6 +409,71 @@ function AuthShell({
       </div>
     ),
   };
+
+  if (loading) {
+    // L6 is not mounted: its step navigation is hidden with a class rather than
+    // removed, and a loading shell mounts nothing to click. The vendored Card it
+    // is built on draws the same frame, so the card lands where L6's will.
+    return (
+      <div
+        data-slot="auth-shell"
+        data-mode={mode}
+        aria-busy="true"
+        className={cn(
+          "bg-background text-foreground flex h-full w-full overflow-hidden p-4 sm:p-8",
+          className,
+        )}
+        {...props}
+      >
+        <ShellLoadingLabel />
+        <Card className="m-auto w-full max-w-4xl">
+          <CardHeader className="gap-3">
+            <CardTitle>{title ?? copy.title}</CardTitle>
+            <CardDescription>{description ?? copy.description}</CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-6 md:grid-cols-2">
+            <div className="flex min-w-0 flex-col gap-4">
+              {statusNode}
+              <ShellSkeletonRegion region="provider-rows" className="flex flex-col gap-1">
+                {Array.from({ length: providers.length > 0 ? providers.length : 3 }, (_, index) => (
+                  <ShellSkeletonBlock key={index} className="h-14 w-full rounded-lg" />
+                ))}
+              </ShellSkeletonRegion>
+              <ShellSkeletonRegion region="email-fallback" className="flex flex-col gap-4">
+                <div className="border-t" />
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2">
+                    <ShellSkeletonBlock className="h-5 w-12" />
+                    <ShellSkeletonBlock className="h-8 w-full" />
+                  </div>
+                  <ShellSkeletonBlock className="h-8 w-full" />
+                </div>
+              </ShellSkeletonRegion>
+              {onModeChange ? <ShellSkeletonBlock className="h-5.5 w-56" /> : null}
+              <ShellSkeletonRegion region="legal-footer" className="border-t pt-4">
+                <ShellSkeletonBlock className="h-4 w-3/4" />
+              </ShellSkeletonRegion>
+            </div>
+            <div
+              className={cn(
+                "flex flex-col justify-center gap-2 rounded-lg border p-4",
+                marketingSide === "start" && "md:order-first",
+              )}
+            >
+              <ShellSkeletonRegion
+                region="marketing-panel"
+                className="flex h-full flex-col justify-center gap-3"
+              >
+                <ShellSkeletonBlock className="size-5" />
+                <ShellSkeletonLines count={2} />
+                <ShellSkeletonBlock className="h-4 w-1/2" />
+              </ShellSkeletonRegion>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div

@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import type { FilterSelection } from "@/registry/super-ai/filter-panel";
 import { LibraryShell, type LibraryShellProps } from "@/registry/super-ai/library-shell";
@@ -111,6 +112,7 @@ export default function LibraryShellDemo() {
           <Button size="sm" variant="outline">
             Upload
           </Button>
+          <DemoNotifications />
           <AccountMenu
             user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
             theme="system"

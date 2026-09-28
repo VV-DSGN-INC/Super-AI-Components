@@ -10,7 +10,7 @@ Make, Zapier, n8n and Spline all land on the same page, and the reason is that t
 
 ## When to reach for it
 
-Reach for it when the objects your product lists are runnable rather than stored — if they are stored, O7 is the shell you want, and using this one would promise an execution model you do not have. Everything is a prop or a slot: `records` fills the rows and is forwarded whole to J5, `folders` fills the folder table, `filters` fills the chips, and `nav` fills the rail. Wire `onEnabledChange` before anything else; it is the primary control of the page and a shell rendered without it is a screenshot. Give every record a `runState` and a `lastRun` — a row with neither says nothing about whether the automation is healthy, which is the only thing the list is for. `search` and `onSearchChange` are controlled and the shell does no filtering: hand it the folders and records that already match, exactly as J1 documents.
+Reach for it when the objects your product lists are runnable rather than stored — if they are stored, O7 is the shell you want, and using this one would promise an execution model you do not have. Everything is a prop or a slot: `records` fills the rows and is forwarded whole to J5, `folders` fills the folder table, `filters` fills the chips, and `nav` fills the rail. Wire `onEnabledChange` before anything else; it is the primary control of the page and a shell rendered without it is a screenshot. Give every record a `runState` and a `lastRun` — a row with neither says nothing about whether the automation is healthy, which is the only thing the list is for. `search` and `onSearchChange` are controlled and the shell does no filtering: hand it the folders and records that already match, exactly as J1 documents. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the header, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -24,6 +24,7 @@ Not yet recorded.
 
 - Keep the enable toggle in the row, named after the record it enables.
 - Put run status in the subtitle, as an icon shape and a word, beside the time it happened.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -40,6 +41,8 @@ Not yet recorded.
 - `records-shell-count`: How many records the list currently holds.
 - `records-shell-sort`: The sort control. `records-shell-sort-trigger` is the named button.
 - `records-shell-feedback`: N1 with its caption, at the foot of the record region.
+- `records-shell-status`: Under the header, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -51,6 +54,7 @@ Not yet recorded.
 - An applied filter chip is two stops, not one — A5 renders the toggle and the remove X as siblings — so `filters` with `onRemove` on every entry doubles that section of the tab order.
 - J1's list/grid switch is suppressed with `display: none`, which takes it out of the tab order and the accessibility tree rather than just hiding it. There is no dead stop where the switch would have been.
 - Nothing here handles arrow keys. Rows do not navigate, folders do not navigate, and the only components with arrow-key behaviour are the ones that bring it themselves: the sort `Select` and each row's overflow menu.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -61,6 +65,8 @@ Not yet recorded.
 - The sort trigger's accessible name is `sortLabel` ("Sort by") while its visible text is the current option ("Last run"). The visible words are not part of the name, so a voice-control user asking for "Last run" does not reach it — say "Sort by" instead.
 - The shell adds no live region of its own. Toggling a record, changing the sort, typing in the search box and filtering the list all announce nothing beyond the control the user touched; J5's switch reports its own state and that is the whole of it.
 - Everything else is inherited untouched: J5's app clusters and switch names, A5's `aria-pressed` chips, J1's sr-only search label and per-row action names, and N1's `aria-pressed` thumbs.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -77,12 +83,14 @@ Not yet recorded.
 - The record region is the scroll container, which is why it is a `section` with `tabIndex={0}` and a name taken from the header's heading. Moving the overflow onto an inner wrapper without moving those with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the list.
 - The sort control's trigger renders the raw `value` unless it is given children, so an unlabelled select shows `recent` instead of "Last run". The shell resolves the label from `sortOptions`; if you pass your own options make sure every `value` you might set also has an entry, or the trigger falls back to the word "Sort by".
 - `sort` is optional-controlled and `records`, `folders` and `filters` are not controlled at all — the shell holds no list state. It will happily render filter chips that are `active` over a record list that was never filtered, which looks correct and lies. Filter your data where it lives.
+- While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but `switcher` and `nav` appear only once loading ends.
+- While `loading`, neither `headerActions` nor the create action is mounted; the header reserves one placeholder for them when either is passed, and keeps its height because the bar is a fixed `h-14`.
 
 ## Composition
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `sidebar`, `header`, `filter-sort`, `record-rows`
-- Composes from this registry: app-sidebar, record-list, filter-bar, asset-library, feedback, empty-state
+- Composes from this registry: app-sidebar, record-list, filter-bar, asset-library, feedback, empty-state, shell-skeleton
 - shadcn primitives: button, select, sidebar
 - npm: lucide-react
 

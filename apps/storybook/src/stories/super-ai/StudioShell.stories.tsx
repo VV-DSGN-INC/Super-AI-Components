@@ -1,11 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Brush, Image as ImageIcon, LayoutTemplate, Settings, Shapes, Sparkles, Type } from "lucide-react";
+import {
+  AlertTriangle,
+  Brush,
+  Image as ImageIcon,
+  LayoutTemplate,
+  RotateCcw,
+  Settings,
+  Shapes,
+  Sparkles,
+  Type,
+} from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 import { AiToolsMenu } from "@/registry/super-ai/ai-tools-menu";
 import { CompareViewer } from "@/registry/super-ai/compare-viewer";
 import { PropertyRow } from "@/registry/super-ai/property-inspector";
@@ -1270,4 +1282,57 @@ export const Boundary: Story = {
       </section>
     </div>
   ),
+};
+
+/**
+ * First paint, before the document has loaded. The rail, the topbar, the tool
+ * panel, the canvas, the page strip and the inspector each draw a skeleton at the
+ * size they will take, the root is marked busy, and nothing inside it takes focus.
+ * The play renders the loaded editor in the same frame and fails if a skeleton
+ * sits more than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <StudioShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "studio-shell", {
+      "modality-rail": "frame",
+      topbar: "frame",
+      "tool-panel": "frame",
+      canvas: "frame",
+      "page-strip": "frame",
+      inspector: "frame",
+    });
+  },
+};
+
+/**
+ * A save failed. The message sits under the topbar, above the canvas it concerns,
+ * with the retry beside the reason. The vendored Alert's destructive description
+ * is 4.49:1 on the card, so the text and the Retry button carry
+ * `text-destructive` at full strength themselves.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert variant="destructive">
+        <AlertTriangle aria-hidden />
+        <AlertTitle>Could not save your changes</AlertTitle>
+        <AlertDescription className="flex flex-col items-start gap-2">
+          <span className="text-destructive">Your last three edits are only on this device.</span>
+          <Button type="button" size="sm" variant="outline" className="text-destructive" onClick={fn()}>
+            <RotateCcw aria-hidden />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="studio-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-region", "topbar");
+    await expect(within(status!).getByRole("button", { name: "Retry" })).toBeVisible();
+  },
 };

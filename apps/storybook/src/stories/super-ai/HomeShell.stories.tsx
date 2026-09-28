@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Clapperboard, Image as ImageIcon, Mic, Sparkles, Type, WandSparkles } from "lucide-react";
+import { Clapperboard, Image as ImageIcon, Mic, Sparkles, Type, WandSparkles, WifiOff } from "lucide-react";
 import * as React from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 // The one mechanism that moves the *breakpoint* rather than the box. A width
@@ -7,12 +7,14 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 // query, so 375px of wrapper renders the desktop rail inside a narrow box and
 // reports success. See story-conventions.md, mechanical fact 2, and `Mobile`.
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { HomeShell, type HomeShellProps } from "@/registry/super-ai/home-shell";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 import { HomeShellDocs } from "@/content/components/home-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 const NAV = (
   <SidebarNav
@@ -836,5 +838,56 @@ export const Boundary: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Draft a launch announcement" }));
     await expect(composer).toHaveValue("Draft a launch announcement");
     await expect(canvasElement.querySelector('[data-region="recents-grid"]')).not.toBeNull();
+  },
+};
+
+/**
+ * First paint, before the workspace has loaded. Each region draws a skeleton at
+ * the size it will take: the sidebar at B1's width, the topbar at its height,
+ * and the hero, features and recents bands where the page will put them. The
+ * root is marked busy and nothing inside it takes focus. The play renders the
+ * loaded launcher in the same frame and fails if a skeleton sits more than 8px
+ * from where its region lands. The bands' heights are left out of that
+ * comparison, because the workspace's own data decides them.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <HomeShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "home-shell", {
+      sidebar: "frame",
+      topbar: "frame",
+      "hero-omnibox": "flow-lead",
+      "feature-cards": "flow",
+      "recents-grid": "flow",
+    });
+  },
+};
+
+/**
+ * The workspace is offline. The message sits under the topbar, above everything
+ * it affects, while the page below keeps working from what the device has. The
+ * shell mounts the status wrapper together with its content, so the message is
+ * present here for anyone reading the page rather than announced on arrival.
+ * `role="status"` suits a message that might later change without remounting;
+ * one that must be heard the moment it appears keeps the Alert's default
+ * `role="alert"`, as the auth and artifact stories do.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert role="status">
+        <WifiOff aria-hidden />
+        <AlertTitle>You are offline</AlertTitle>
+        <AlertDescription>New work saves on this device and syncs when you reconnect.</AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="home-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-region", "topbar");
+    await expect(within(status!).getByText("You are offline")).toBeVisible();
   },
 };
