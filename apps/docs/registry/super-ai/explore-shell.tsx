@@ -473,7 +473,9 @@ function ExploreShell({
           {statusStrip}
           <ShellSkeletonRegion region="docked-prompt-bar" className="shrink-0 border-b px-4 py-3">
             <div className="mx-auto w-full max-w-5xl">
-              <ShellSkeletonBlock className="h-31.5 w-full rounded-2xl" />
+              <ShellSkeletonBlock
+                className={cn("w-full rounded-2xl", prompt?.contextChips ? "h-40" : "h-31.5")}
+              />
             </div>
           </ShellSkeletonRegion>
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-4 pt-3 pb-4">

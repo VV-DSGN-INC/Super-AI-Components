@@ -94,12 +94,28 @@ export async function expectLoadingTwin(
   shell: string,
   regions: Record<string, TwinKind>,
 ): Promise<void> {
+  let insideVitestBrowser = false;
   try {
     const { page } = await import("vitest/browser");
     await page.viewport(VIEWPORT.width, VIEWPORT.height);
+    insideVitestBrowser = true;
   } catch (_outsideVitest) {
     // `vitest/browser` exists only inside the vitest runner. In Storybook's own
     // UI the proof measures at whatever viewport the reader has open.
+  }
+
+  if (insideVitestBrowser) {
+    // `page.viewport` resolving is not the same as the resize having landed —
+    // measuring immediately after can read a stale layout and a late resize
+    // between the two measurements would otherwise pass as a flaky miss.
+    try {
+      await waitFor(() => expect(window.innerWidth).toBe(VIEWPORT.width));
+    } catch {
+      throw new Error(
+        `the twin never saw window.innerWidth reach ${VIEWPORT.width} (it is ${window.innerWidth}); ` +
+          "the viewport resize never landed, so the two measurements below would not be comparable",
+      );
+    }
   }
 
   const root = () => {

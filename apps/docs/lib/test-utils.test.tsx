@@ -28,6 +28,9 @@ describe("expectShellLoadingContract", () => {
   it("passes a busy root whose regions are hidden skeletons and which mounts nothing interactive", () => {
     const { container } = render(
       <div data-slot="demo-shell" aria-busy="true">
+        <p data-slot="shell-loading-label" className="sr-only">
+          Loading
+        </p>
         <div data-region="topbar" data-loading-region="topbar" aria-hidden="true" />
         <div data-region="canvas" data-loading-region="canvas" aria-hidden="true" />
         <div data-slot="demo-shell-status">
@@ -38,6 +41,34 @@ describe("expectShellLoadingContract", () => {
     expect(() =>
       expectShellLoadingContract(container.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
     ).not.toThrow();
+  });
+
+  it("fails a root with no ShellLoadingLabel, and one with two", () => {
+    const { container: missing } = render(
+      <div data-slot="demo-shell" aria-busy="true">
+        <div data-region="topbar" data-loading-region="topbar" aria-hidden="true" />
+        <div data-region="canvas" data-loading-region="canvas" aria-hidden="true" />
+      </div>,
+    );
+    expect(() =>
+      expectShellLoadingContract(missing.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
+    ).toThrow(/0 ShellLoadingLabel\(s\), expected one/);
+
+    const { container: doubled } = render(
+      <div data-slot="demo-shell" aria-busy="true">
+        <p data-slot="shell-loading-label" className="sr-only">
+          Loading
+        </p>
+        <p data-slot="shell-loading-label" className="sr-only">
+          Loading
+        </p>
+        <div data-region="topbar" data-loading-region="topbar" aria-hidden="true" />
+        <div data-region="canvas" data-loading-region="canvas" aria-hidden="true" />
+      </div>,
+    );
+    expect(() =>
+      expectShellLoadingContract(doubled.firstElementChild!, { name: "demo-shell", regions: REGIONS }),
+    ).toThrow(/2 ShellLoadingLabel\(s\), expected one/);
   });
 
   it("fails a root that is not busy, a skeleton that is announced, and a mounted control", () => {

@@ -61,9 +61,11 @@ host slot that still renders while `loading`.
 1. The root carries `aria-busy="true"` and one visually hidden line, `ShellLoadingLabel`.
 2. Every manifest region renders as exactly one `ShellSkeletonRegion`, which carries
    `data-region`, `data-loading-region` and `aria-hidden`. Composed components are not
-   mounted, host slots other than `status` are not rendered, and no element scrolls or
-   takes a tab stop. B1 `app-sidebar` and L6 `onboarding-wizard` are not mounted either:
-   each leaves a control in the DOM (B1's rail button, L6's class-hidden step navigation).
+   mounted, and no element scrolls or takes a tab stop. Interactive host slots other
+   than `status` are not rendered; static host text (a `title` or `description` string,
+   for example) may still render, since text alone takes no tab stop. B1 `app-sidebar`
+   and L6 `onboarding-wizard` are not mounted either: each leaves a control in the DOM
+   (B1's rail button, L6's class-hidden step navigation).
 3. A skeleton reserves a row only for props the host has already passed (`headline`,
    `contextChips`, `accountMenu`, `headerActions` and the like). It never draws a row the
    loaded shell would not render. List data (threads, messages, items) is a fixed number

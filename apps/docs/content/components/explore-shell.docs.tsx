@@ -117,5 +117,6 @@ export const ExploreShellDocs: ComponentDocs = {
     "The sort strip uses the tabs `line` variant, not the default segmented one. The default paints the list `bg-muted` and the trigger's resting colour on that surface is under 4.5:1 — the same pairing this registry keeps re-shipping. Restyle the strip and re-measure it.",
     "The rail skeleton is B4's width, 92px, written into this shell as `w-23` rather than read from B4. If B4 changes width, this skeleton falls out of step with it, and that class is the one to change.",
     "The sort strip's skeleton reserves tabs and pills only for the `sorts` and `types` passed while loading. Pass them if the loaded feed will offer them, or the strip changes height when the data arrives.",
+    "The prompt-bar skeleton reserves D1's context-chip row only when `prompt.contextChips` is passed while loading. Pass it if the loaded prompt bar will show chips, or the bar grows by that row when the data arrives.",
   ],
 };

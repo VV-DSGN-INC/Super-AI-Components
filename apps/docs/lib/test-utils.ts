@@ -81,6 +81,8 @@ function fail(name: string, half: string, problems: string[]): void {
 export function expectShellLoadingContract(root: Element, { name, regions }: ShellContract): void {
   const problems: string[] = [];
   if (root.getAttribute("aria-busy") !== "true") problems.push('the root does not carry aria-busy="true"');
+  const labels = root.querySelectorAll('[data-slot="shell-loading-label"]').length;
+  if (labels !== 1) problems.push(`root has ${labels} ShellLoadingLabel(s), expected one`);
   for (const region of regions) {
     const marked = root.querySelectorAll(`[data-region="${region}"]`).length;
     if (marked !== 1) problems.push(`region "${region}" is marked ${marked} times, expected once`);

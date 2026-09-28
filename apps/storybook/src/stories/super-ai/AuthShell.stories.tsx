@@ -196,9 +196,14 @@ export const Responsive: Story = {
  *
  * Seven of the eight are written. One is recorded as a skip, and it is the
  * only skip in family O, so here is the measurement behind it rather than the
- * conclusion. Under the gate's emulated `prefers-reduced-motion: reduce` every
- * element in the rendered tree was read back for a live `animationName` or a
- * non-zero `transitionDuration`. Nothing animates. Three things transition:
+ * conclusion. None of this set sets `loading`, so none of it reaches the one
+ * branch in this shell that does animate: the loading skeleton's pulse,
+ * stilled under reduced motion by `motion-reduce:animate-none` and covered by
+ * the `Loading` export below rather than by a case story here. Restricted to
+ * what this set actually renders: under the gate's emulated
+ * `prefers-reduced-motion: reduce` every element in the rendered tree was read
+ * back for a live `animationName` or a non-zero `transitionDuration`. Nothing
+ * animates. Three things transition:
  * A9's rows and the email input carry `transition-colors` — a crossfade of
  * colour, background, border and outline only, which moves nothing and which
  * the convention names as not worth a story; the five vendored `Button`s carry
@@ -211,7 +216,7 @@ export const Responsive: Story = {
  * pixel-for-pixel identically to `SignIn` and imply coverage of a branch that
  * is switched off.
  *
- * // case-skip: ReducedMotion — read back under emulated reduce, nothing in the rendered tree animates: A9 and the input carry transition-colors (a crossfade), the five vendored Buttons carry the registry-wide transition-all press nudge that CONTINUE.md §8 keeps as a primitive-wide posture, and L6's dot rail — the only motion-reduce branch in the composition — computes display:none because this shell suppresses the progress region
+ * // case-skip: ReducedMotion — this set never sets loading, so it never reaches the shell's one animating branch (the loading skeleton's pulse, stilled by motion-reduce:animate-none and covered by the Loading export instead); read back under emulated reduce, nothing in this set's own rendered tree animates: A9 and the input carry transition-colors (a crossfade), the five vendored Buttons carry the registry-wide transition-all press nudge that CONTINUE.md §8 keeps as a primitive-wide posture, and L6's dot rail — the only motion-reduce branch in the composition — computes display:none because this shell suppresses the progress region
  *
  * Three defects came out of this set, none of them a class. Two are recorded
  * and asserted nowhere, per the fix policy: every provider row announces as a
