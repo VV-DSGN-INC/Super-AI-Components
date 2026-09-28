@@ -56,7 +56,12 @@ interface ReferenceStripItem {
   /** Overrides the label derived from `role`. */
   label?: React.ReactNode;
   /** Omit to render this slot as an empty, still-visible placeholder rather than collapsing it. */
-  thumbnail?: { src: string; alt: string };
+  /**
+   * `{ src, alt }` renders an `<img>` and keeps alt text mandatory. A node
+   * covers what an `<img>` cannot be — a video poster, a canvas, a rendered
+   * placeholder — and owns its own accessible name.
+   */
+  thumbnail?: { src: string; alt: string } | React.ReactNode;
   state?: "loading" | "failed";
   onRemove?: () => void;
 }
@@ -69,6 +74,16 @@ interface ReferenceStripProps extends Omit<React.ComponentProps<"div">, "onSelec
   onMove?: (id: string, direction: "left" | "right") => void;
   emptyTitle?: React.ReactNode;
   emptyDescription?: React.ReactNode;
+}
+
+/**
+ * Distinguishes the `{ src, alt }` form from a node. A React element is also
+ * an object with keys, so `"src" in value` on its own would misread
+ * `<img src=… />` as an image source and try to read `.src` off the element
+ * rather than its props.
+ */
+function isImageSource(value: unknown): value is { src: string; alt: string } {
+  return typeof value === "object" && value !== null && !React.isValidElement(value) && "src" in value;
 }
 
 function ReferenceSlot({
@@ -128,7 +143,11 @@ function ReferenceSlot({
           ) : undefined
         }
       >
-        <img src={item.thumbnail.src} alt={item.thumbnail.alt} className="h-full w-full object-cover" />
+        {isImageSource(item.thumbnail) ? (
+          <img src={item.thumbnail.src} alt={item.thumbnail.alt} className="h-full w-full object-cover" />
+        ) : (
+          item.thumbnail
+        )}
       </PreviewTile>
       {showRole || onMove ? (
         <div className="flex items-center justify-between gap-1">

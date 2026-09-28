@@ -284,6 +284,9 @@ const libItems = LIB_MANIFEST.filter((i) => i.status === "shipped").map((i) => (
       target: i.target,
     },
   ],
+  // Mirrors the superAiItems mapper above. A lib item that reads a registry
+  // token has the same silent-failure mode as a component that does.
+  ...(i.cssVars ? { cssVars: i.cssVars } : {}),
 }));
 
 const allItems = [...superAiItems, ...libItems, ...marketingItems];

@@ -125,4 +125,17 @@ export interface LibManifestItem {
   npm: string[];
   /** Where the file lands in a consumer's app, relative to their src root. */
   target: string;
+  /**
+   * Same contract as `ManifestItem.cssVars`, for the same reason: a lib item
+   * whose code reads a custom property this registry defines must ship that
+   * property, or `npx shadcn add` installs code that resolves to nothing.
+   * Tailwind v4 emits nothing for an undefined utility rather than failing, so
+   * the failure is silent and only visible to the consumer.
+   *
+   * `preview-scene` is the first lib item to need it, and needs it for a
+   * reason the component manifest already has precedent for in
+   * WARNING_CSS_VARS: the palette is monochrome, and a placeholder that stands
+   * in for generated photography cannot be.
+   */
+  cssVars?: CssVars;
 }
