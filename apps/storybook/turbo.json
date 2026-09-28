@@ -1,0 +1,64 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "extends": ["//"],
+  // This workspace compiles apps/docs source. tsconfig.json maps five `paths`
+  // into ../docs (@/registry/*, @/components/demos/*, @/content/*,
+  // @/lib/component-docs, @/components/component-docs) and `include` pulls
+  // ../docs/registry/super-ai and ../docs/components/demos in wholesale;
+  // vite.config.ts mirrors the same five as bundler aliases.
+  //
+  // None of that is visible to turbo. A `paths` mapping is a TypeScript
+  // resolution alias, not a package edge, so turbo hashed these tasks from
+  // files inside apps/storybook alone — any apps/docs change left the hash
+  // untouched, turbo replayed `cache hit`, and the task never ran.
+  //
+  // That is not theoretical. A branch that made `locale` a required prop on
+  // apps/docs' ComponentDocsView left apps/storybook's call site un-updated;
+  // root `pnpm typecheck` reported green for a whole session because
+  // storybook:typecheck replayed a cache hit, and the breakage only surfaced
+  // when `pnpm test:stories` ran and 127 of 131 story files failed to import.
+  //
+  // Declaring `"docs": "workspace:*"` in package.json does NOT fix this — it
+  // was tried and measured. Turbo mixes an internal dependency's files into a
+  // task hash only through a `dependsOn: ["^task"]` edge; `typecheck` has
+  // none, so the hash stayed stable across apps/docs edits and the cache hit
+  // came back anyway. Only explicit `inputs` move the hash.
+  //
+  // These four directories are the ones apps/storybook actually resolves into,
+  // and the list is deliberately precise rather than a blanket
+  // `$TURBO_ROOT$/apps/docs/**`. The blanket form was tried first and is a
+  // trap: a `$TURBO_ROOT$` glob does NOT respect .gitignore, and `!`-negations
+  // against it are silently ignored by turbo 2.9.17 — verified by probe, with
+  // `!$TURBO_ROOT$/apps/docs/node_modules/**` and friends in place, touching
+  // apps/docs/tsconfig.tsbuildinfo, apps/docs/.next/** and
+  // apps/docs/node_modules/** each still moved the hash. Blanket inputs would
+  // therefore invalidate this cache on every docs typecheck (tsbuildinfo),
+  // every build (.next) and every install (node_modules).
+  //
+  // The cost of precision is that this list must stay in step with
+  // tsconfig.json's `paths`/`include` and vite.config.ts's aliases. Do not
+  // rely on remembering: apps/docs/scripts/turbo-inputs.test.ts fails if a
+  // ../docs directory is reachable from either config and missing here.
+  "tasks": {
+    "typecheck": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/registry/**",
+        "$TURBO_ROOT$/apps/docs/components/**",
+        "$TURBO_ROOT$/apps/docs/content/**",
+        "$TURBO_ROOT$/apps/docs/lib/**"
+      ]
+    },
+    // `storybook build` bundles those same apps/docs sources through
+    // vite.config.ts's aliases, so it carried the identical blind spot.
+    "build": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/registry/**",
+        "$TURBO_ROOT$/apps/docs/components/**",
+        "$TURBO_ROOT$/apps/docs/content/**",
+        "$TURBO_ROOT$/apps/docs/lib/**"
+      ]
+    }
+  }
+}

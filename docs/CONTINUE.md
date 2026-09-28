@@ -457,6 +457,55 @@ vendored primitive's state styling from a call site, restate its modifier chain
 exactly — tailwind-merge keys on the modifier set, so a bare `focus:` version
 replaces nothing and leaves source order to decide.
 
+**Turbo cannot see the storybook → docs edge, and a cache hit reads as a pass.**
+`apps/storybook/tsconfig.json` maps five `paths` into `../docs` and `include`s
+`../docs/registry/super-ai` and `../docs/components/demos` wholesale;
+`vite.config.ts` mirrors the same five as bundler aliases. A `paths` mapping is
+a TypeScript resolution alias, not a package edge, so turbo hashed
+`storybook#typecheck` and `storybook#build` from files inside `apps/storybook`
+alone. Any `apps/docs` change left the hash untouched, turbo replayed
+`cache hit, replaying logs`, and the task never ran — root `pnpm typecheck`
+exited 0 over code that does not compile. That is how the i18n branch made
+`locale` required on `ComponentDocsView` and went a whole session green before
+`pnpm test:stories` finally ran and 127 of 131 story files failed to import.
+Fixed by `apps/storybook/turbo.json`, which adds the four reachable `apps/docs`
+directories to `typecheck` and `build` `inputs`. Four things worth knowing
+before you touch it:
+
+- **Declaring `"docs": "workspace:*"` does not fix it.** Measured, not assumed:
+  the hash moved once (package.json changed) and then went straight back to
+  being stable across `apps/docs` edits. Turbo mixes an internal dependency's
+  files into a task hash only through a `dependsOn: ["^task"]` edge, and
+  `typecheck` has none. It would incidentally fix `build` — via `^build` — at
+  the price of making storybook's build wait on docs' full `next build`, an
+  ordering it does not need, since it consumes docs _source_, not docs _output_.
+- **The blanket `$TURBO_ROOT$/apps/docs/**` is a trap, and was tried first.** A
+  `$TURBO_ROOT$` glob does **not** respect `.gitignore`, and turbo 2.9.17
+  **silently ignores `!`-negations** against it. With
+  `!$TURBO_ROOT$/apps/docs/node_modules/**` and friends written out, probing
+  still showed `tsconfig.tsbuildinfo`, `.next/**` and `node_modules/**` each
+  moving the hash. Blanket inputs would invalidate storybook on every docs
+  typecheck, every build and every install — caching dead, for real this time.
+  Hence the precise four-directory list.
+- **Precision costs maintenance, so it is gated.** The list has to stay in step
+  with `tsconfig.json`'s `paths`/`include` and `vite.config.ts`'s aliases — the
+  hand-maintained-list failure mode this repo already knows. `apps/docs/scripts/turbo-inputs.test.ts`
+  fails if a `../docs` directory is reachable from either config and missing
+  from `inputs`, if the blanket glob comes back, or if storybook gains a real
+  `lint`/`test` script. It rides `pnpm test`; it is not a new CI step.
+- **CI was never exposed**, and that is not reassurance. No remote cache is
+  configured (`TURBO_TOKEN`/`TURBO_TEAM`/`remoteCache` are all absent), so a
+  fresh runner always starts cold. This was purely a local hazard — which is
+  exactly where the damage happened, because local is where you decide whether
+  the work is finished.
+
+`lint` and `test` were audited for the same shape and are clean, but only by
+accident: `storybook`'s `lint` is `echo "no lint"` and it has no `test` script
+at all, so turbo skips both. Give storybook a real `lint` or `test` and it
+inherits this blind spot on day one — add the task to `apps/storybook/turbo.json`
+in the same commit.
+
+
 **Guidance modules and the server/client boundary.** `<name>.docs.tsx` is read
 by a Server Component. Marking it `"use client"` breaks the server read; putting
 JSX with event handlers in it breaks the static export. Interactive examples go
