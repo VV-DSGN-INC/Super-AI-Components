@@ -51,7 +51,10 @@ reconnecting, a failed save, an expired session, a rate limit), filled by M6
 the content column in a shell with no topbar, in a wrapper carrying
 `data-slot="<shell>-status"`, and only when given: a shell without it renders exactly what
 it rendered before. The shell adds no live region; the component passed in owns its
-announcement. It is the one host slot that still renders while `loading`.
+announcement. The wrapper mounts together with its content, so a host that needs an
+announcement on arrival should keep `status` mounted and change its content, or rely on
+the passed component's own role (`role="alert"` is announced on mount). It is the one
+host slot that still renders while `loading`.
 
 **`loading`** is one boolean, for first paint. While it is true:
 

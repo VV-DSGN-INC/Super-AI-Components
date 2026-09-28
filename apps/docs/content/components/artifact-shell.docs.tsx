@@ -105,7 +105,7 @@ export const ArtifactShellDocs: ComponentDocs = {
       'Date buckets are `role="group"`s named by their label and session groups are named `<section>`s inside them, so the index is navigable by region even though it exposes no headings below the `<h1>` and `<h2>`.',
       'The sidebar trigger is named "Toggle Sidebar" and carries no `aria-expanded`, so the sidebar\'s state is never announced in either direction.',
       "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
-      "The shell puts no live region around `status`. M6 is a note that announces its countdown politely and the vendored Alert defaults to an assertive alert, so choose the one whose announcement fits the message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
+      "The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "Nothing in the shell moves focus. Searching, switching a facet, and emptying the index all leave focus exactly where it was, so the reader has to go looking for the result count to learn what happened.",

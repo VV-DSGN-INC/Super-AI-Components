@@ -1327,8 +1327,11 @@ export const Loading: Story = {
 /**
  * The reader is offline. The message sits at the top of the content column, above
  * the announcement strip and the page it qualifies, and says what the reader is
- * looking at. The vendored Alert is given `role="status"`, so it is announced
- * politely, once.
+ * looking at. The shell mounts the status wrapper together with its content, so
+ * the message is present here for anyone reading the page rather than announced
+ * on arrival. `role="status"` suits a message that might later change without
+ * remounting; one that must be heard the moment it appears keeps the Alert's
+ * default `role="alert"`, as the auth and artifact stories do.
  */
 export const Status: Story = {
   args: {

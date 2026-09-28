@@ -867,8 +867,11 @@ export const Loading: Story = {
 /**
  * The workspace is offline. The message sits under the topbar, above everything
  * it affects, while the page below keeps working from what the device has. The
- * shell adds no live region of its own: the vendored Alert is given
- * `role="status"` here, so the change is announced politely, once.
+ * shell mounts the status wrapper together with its content, so the message is
+ * present here for anyone reading the page rather than announced on arrival.
+ * `role="status"` suits a message that might later change without remounting;
+ * one that must be heard the moment it appears keeps the Alert's default
+ * `role="alert"`, as the auth and artifact stories do.
  */
 export const Status: Story = {
   args: {
