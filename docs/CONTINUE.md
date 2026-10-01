@@ -31,19 +31,19 @@ ledgers moved out to `design-system/wave-history.md` — see §9.
 > pinned by a gate or a test, and this table is prose. Treat it as prose, and
 > re-derive it from `git log origin/main` rather than believing it.
 
-**Catalog progress: 116 shipped. Nothing is planned, nothing is building.**
+**Catalog progress: 118 shipped. Nothing is planned, nothing is building.**
 11 cut (family G's 10 + O5, per decision D9 — do not revive them).
-_(`check:contract` counts **116**, and the two numbers are already reconciled:
-the 114 is the frozen A–O count, and family P's 2 are counted alongside it
-rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
-at 114 while family P grows separately" asserts all three figures, which is
+_(`check:contract` counts **118**, and the two numbers are already reconciled:
+the 114 is the frozen A–O count, and family P's 2 and family Q's 2 are counted
+alongside it rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
+at 114 while later families grow separately" asserts each figure, which is
 what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
 
 **`contractExempt` has no members.** The 25 pre-Wave-1.5 legacy items that
 carried it were folded into the full contract by wave 0 of the story-guarantees
 program (`superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`,
 step 2): states normalized and declared, one story per declared state, a docs
-module, the flag dropped. `check:contract` reports **116 checked / 0 exempt**,
+module, the flag dropped. `check:contract` reports **118 checked / 0 exempt**,
 from 91 / 25 at the program's start. `catalog.manifest.test.ts` pins the empty
 set as a ratchet, so re-exempting any of them fails a dedicated assertion. The
 flag's own branches in `check-contract.mts` and its stale "the 14 pre-Wave-1.5
@@ -1120,7 +1120,7 @@ other branch.
 - **B8 `account-menu`'s `KeyboardOrder` story fails intermittently under
   full-suite load.** `pnpm test:stories` fails roughly half of full runs at
   `AccountMenu.stories.tsx:221` with `expected 'stop#4 Sign out⇧⌘Q' to be
-  'stop#0 Settings⌘,'` — the closing wrap-around tab reads the last item
+'stop#0 Settings⌘,'` — the closing wrap-around tab reads the last item
   instead of the first. The same file passes 10/10 every time in isolation
   (`pnpm vitest run --project storybook src/stories/super-ai/AccountMenu.stories.tsx`),
   which is what makes it a load-dependent race rather than a wrong assertion.
@@ -1137,7 +1137,6 @@ other branch.
   change can reach it. It fails on `main` too. **It will make CI red on
   roughly half of runs until someone settles that last read**, which is why it
   is at the top of this section rather than in it.
-
 
 ### Added by the wave 0 story retrofit (2026-08-15)
 

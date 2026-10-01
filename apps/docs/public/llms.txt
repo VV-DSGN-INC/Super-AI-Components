@@ -128,3 +128,5 @@ Retrieval order: with an item installed, read `components/super-ai/<name>.meta.j
 - [Auth Shell](https://super-ai-components.vercel.app/llms/components/auth-shell.md): The page shell for signing in and signing up: a pitch pane beside a card that holds a list of identi
 - [Data Views](https://super-ai-components.vercel.app/llms/components/data-views.md): One collection rendered five ways — feed, board, table, calendar and timeline — from a single config
 - [Detail View Shell](https://super-ai-components.vercel.app/llms/components/detail-view-shell.md): The chrome around any record detail, in three opening modes: a centred dialog, a right-docked panel
+- [Browser Frame](https://super-ai-components.vercel.app/llms/components/browser-frame.md): Browser chrome — window dots, back/forward/reload glyphs and an address bar — wrapped around content
+- [Book Cover](https://super-ai-components.vercel.app/llms/components/book-cover.md): A cover for a bounded body of knowledge — a docs set, a template pack, a source collection. A portra

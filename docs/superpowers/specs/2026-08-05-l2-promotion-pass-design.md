@@ -9,8 +9,8 @@
 ## 1. Why this exists
 
 Three times now, two builders working blind reached for the same piece. D3 says
-what to do about that — *"promote shared pieces to L2 rather than importing
-sideways"* — and each time the piece was left duplicated rather than promoted,
+what to do about that — _"promote shared pieces to L2 rather than importing
+sideways"_ — and each time the piece was left duplicated rather than promoted,
 because stalling the build queue was judged worse than carrying the debt.
 
 The debt is now due. Family J is next in the wave order, and **J7 `track-list`
@@ -19,8 +19,8 @@ coordinate model. Promoting after J lands means promoting under four consumers
 instead of two.
 
 There is also a structural reason this recurred: **nothing enforces D3.**
-`check:contract` verifies that a `consumes` entry *resolves*, never that it
-points *downward*. D3 is a documented norm with no mechanical backing, which is
+`check:contract` verifies that a `consumes` entry _resolves_, never that it
+points _downward_. D3 is a documented norm with no mechanical backing, which is
 exactly the asymmetry that let three violations ship green.
 
 ## 2. What the survey actually found
@@ -43,7 +43,7 @@ have absorbed.
 ### 2.2 H6 is not a third implementation
 
 `waveform-editor.tsx` is **percentage-based inside its own container**, with a
-zoom control that walks a *samples-per-column exponent* ladder. It never
+zoom control that walks a _samples-per-column exponent_ ladder. It never
 converts seconds to pixels, because it is a self-contained editor rather than a
 lane on a shared axis.
 
@@ -64,19 +64,19 @@ to avoid `nested-interactive` when the row sits inside a `DropdownMenuItem`.
 
 I4 concluded it could not **compose F4** — correctly, because F4's root owns the
 `DropdownMenu`, so composing per-group yields N menus where I4 needs one. It
-then mirrored the shape rather than looking one level lower. *Cannot compose the
-parent* almost never means *cannot share the child*.
+then mirrored the shape rather than looking one level lower. _Cannot compose the
+parent_ almost never means _cannot share the child_.
 
 ### 2.5 The gate would surface exactly three violations
 
 Cross-family registry→registry imports, measured across all 82 shipped
 components:
 
-| From | To | Disposition |
-| --- | --- | --- |
-| I5 `drawing-tools` | E3 `parameter-panel` | fixed by §4 |
-| C1 `hero-omnibox` | D `mode-tabs` | exempt, §6 |
-| E `voice-clone-recorder` | N3 `disclaimer-note` | exempt, §6 |
+| From                     | To                   | Disposition |
+| ------------------------ | -------------------- | ----------- |
+| I5 `drawing-tools`       | E3 `parameter-panel` | fixed by §4 |
+| C1 `hero-omnibox`        | D `mode-tabs`        | exempt, §6  |
+| E `voice-clone-recorder` | N3 `disclaimer-note` | exempt, §6  |
 
 Every other registry→registry import targets a family-A primitive or the `cost`
 lib — already legal.
@@ -89,17 +89,17 @@ lib — already legal.
 
 `registry/super-ai/timeline.ts`, target `lib/timeline.ts`. Pure functions, no
 React, **no provider** — the `cost` precedent's optional-provider shape exists to
-reconcile a *value* across surfaces; coordinates are arithmetic and need no such
+reconcile a _value_ across surfaces; coordinates are arithmetic and need no such
 reconciliation.
 
 Moved verbatim out of `time-ruler.tsx:34–130`:
 
-| Export | Kind |
-| --- | --- |
-| `timeToPixels`, `pixelsToTime` | seconds ↔ pixels |
-| `snapTime`, `roundTime` | snapping and float hygiene |
-| `timeRulerScale` | the tick/label interval ladder |
-| `TimeRulerTick`, `TimeRulerScale` | types |
+| Export                            | Kind                           |
+| --------------------------------- | ------------------------------ |
+| `timeToPixels`, `pixelsToTime`    | seconds ↔ pixels               |
+| `snapTime`, `roundTime`           | snapping and float hygiene     |
+| `timeRulerScale`                  | the tick/label interval ladder |
+| `TimeRulerTick`, `TimeRulerScale` | types                          |
 
 `TICK_INTERVALS`, `MIN_TICK_GAP_PX` and `MIN_LABEL_GAP_PX` move too but stay
 module-private. They are `timeRulerScale`'s internals; exporting them invites a
@@ -206,8 +206,8 @@ layering.
 
 Two violations survive §4 and §5, and both are **single-consumer**. Promoting on
 one caller's say-so is the exact mistake D12 records for `confidence-badge`:
-*"Promoting a primitive on its consumers' say-so rather than on observed anatomy
-is what the A8 audit in D11 caught."*
+_"Promoting a primitive on its consumers' say-so rather than on observed anatomy
+is what the A8 audit in D11 caught."_
 
 So the rule this pass writes down is:
 
@@ -222,10 +222,11 @@ component it excuses:
 allowSideways: [
   {
     target: "mode-tabs",
-    reason: "The hero omnibox is a composer with mode tabs in it; the overlap was reconciled deliberately in wave 2.",
+    reason:
+      "The hero omnibox is a composer with mode tabs in it; the overlap was reconciled deliberately in wave 2.",
     until: "A second consumer of mode-tabs outside family D.",
   },
-]
+];
 ```
 
 The gate **rejects an exemption whose `reason` or `until` is empty.** That is
@@ -234,7 +235,7 @@ justification, which is roughly what it should cost.
 
 ### 6.3 The two exemptions, written out
 
-- **C1 `hero-omnibox` → D `mode-tabs`.** The hero omnibox *is* a composer with
+- **C1 `hero-omnibox` → D `mode-tabs`.** The hero omnibox _is_ a composer with
   mode tabs in it; the overlap was reconciled deliberately during wave 2.
   Exit: a second consumer of `mode-tabs` outside family D.
 - **E `voice-clone-recorder` → N3 `disclaimer-note`.** `disclaimer-note` is
@@ -250,15 +251,15 @@ Adding A13 and A14 moves the catalog from 114 to **116** active items, family A
 from 12 to 14. `check:contract` reconciles these counts, so a miss fails loudly
 rather than drifting — which is the whole point of D13.
 
-| File | Change |
-| --- | --- |
-| `apps/docs/lib/catalog.manifest.ts` | A13, A14 rows; `allowSideways` on two items; `consumes` updated on E3, I5, F4, I4, H2, H3 |
-| `apps/docs/lib/lib.manifest.ts` | `timeline` entry |
-| `apps/docs/lib/manifest-types.ts` | `allowSideways` field + its type |
-| `docs/design-system/catalog.md` | two rows, Totals table (A 12 → 14, total 114 → 116) |
-| `docs/design-system/component-specs.md` | A13 and A14 entries |
-| `docs/design-system/decisions.md` | new entry: the promotions, the two-consumer rule, and why H6 is excluded |
-| `docs/CONTINUE.md` | §5.11 resolved; §5.12 partially resolved |
+| File                                    | Change                                                                                    |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `apps/docs/lib/catalog.manifest.ts`     | A13, A14 rows; `allowSideways` on two items; `consumes` updated on E3, I5, F4, I4, H2, H3 |
+| `apps/docs/lib/lib.manifest.ts`         | `timeline` entry                                                                          |
+| `apps/docs/lib/manifest-types.ts`       | `allowSideways` field + its type                                                          |
+| `docs/design-system/catalog.md`         | two rows, Totals table (A 12 → 14, total 114 → 116)                                       |
+| `docs/design-system/component-specs.md` | A13 and A14 entries                                                                       |
+| `docs/design-system/decisions.md`       | new entry: the promotions, the two-consumer rule, and why H6 is excluded                  |
+| `docs/CONTINUE.md`                      | §5.11 resolved; §5.12 partially resolved                                                  |
 
 ## 8. Testing
 

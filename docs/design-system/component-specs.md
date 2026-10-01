@@ -1479,6 +1479,7 @@ the pattern was read and what job it does here, which is a weaker footing than A
 as such in D20. Both are chrome around content the consumer supplies, and neither adds a tab stop.
 
 ## Q1 `browser-frame` — a page we visited, not our UI
+
 **Base:** Aspect-ratio, Skeleton · **States:** page · minimal · inverted · long-address · loading
 
 - **The dots and controls are decorative; the address is not.** Geist marks its whole chrome
@@ -1502,19 +1503,20 @@ as such in D20. Both are chrome around content the consumer supplies, and neithe
   them in `--border` is the deviation the token contract forces, and it costs nothing: the dots
   were never load-bearing.
 - **The chrome bar never uses `text-muted-foreground`.** It paints `bg-muted`, and that pair
-  measures 4.34:1 against a 4.5 minimum. The variable-rebind idiom is deliberately *not* used here:
+  measures 4.34:1 against a 4.5 minimum. The variable-rebind idiom is deliberately _not_ used here:
   rebinding exists to reach composed children carrying their own muted classes, and this bar
   composes nothing, so the honest fix is full-contrast address text — which is also what a real
   address bar looks like. The content well paints `bg-background`, so consumer content inside it
   inherits no trap either. See [a11y-baseline.md](a11y-baseline.md).
 
 **Evidence:** Read from Geist's `Browser` component documentation, which positions it for marketing
-pages, docs and changelogs. Its job in *this* registry is different and narrower: framing what an
+pages, docs and changelogs. Its job in _this_ registry is different and narrower: framing what an
 agent saw — a browsing step, a computer-use capture, a fetched page rendered as a tool result — so
 the capture reads as external content rather than as the product's own surface. No reference-board
 sighting; see D20.
 
 ## Q2 `book-cover` — a thing you read, not a thing you generated
+
 **States:** plain · stripe · illustrated · textured · tone
 
 - **The title is a real heading**, at a level the caller sets. A grid of covers has to announce as

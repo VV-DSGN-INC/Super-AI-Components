@@ -1,4 +1,4 @@
-components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
+components[118]{name,layer,family,meta,variants,insteadUse,purpose}:
   kbd,primitive,A,registry/super-ai/kbd.meta.json,none,shortcuts-sheet,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
   cost-chip,primitive,A,registry/super-ai/cost-chip.meta.json,none,credits-indicator|run-button,"A small pill that prices one action: a coin icon, a number, and the unit that number is counted in."
   date-section,primitive,A,registry/super-ai/date-section.meta.json,none,section-header,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
@@ -115,3 +115,5 @@ components[116]{name,layer,family,meta,variants,insteadUse,purpose}:
   auth-shell,block,O,registry/super-ai/auth-shell.meta.json,unwritten,unwritten,The page shell for signing in and signing up: a pitch pane beside a card that holds a list of identi
   data-views,component,P,registry/super-ai/data-views.meta.json,unwritten,unwritten,"One collection rendered five ways — feed, board, table, calendar and timeline — from a single config"
   detail-view-shell,component,P,registry/super-ai/detail-view-shell.meta.json,unwritten,unwritten,"The chrome around any record detail, in three opening modes: a centred dialog, a right-docked panel"
+  browser-frame,component,Q,registry/super-ai/browser-frame.meta.json,tone=surface/inverted,source-cards|citation-ref,"Browser chrome — window dots, back/forward/reload glyphs and an address bar — wrapped around content"
+  book-cover,component,Q,registry/super-ai/book-cover.meta.json,variant=plain/stripe/illustrated|tone=paper/ink/muted,preview-tile|artifact-grid,"A cover for a bounded body of knowledge — a docs set, a template pack, a source collection. A portra"
