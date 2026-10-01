@@ -81,4 +81,34 @@ export const BrowserFrameDocs: ComponentDocs = {
     "Assuming a long URL truncates from the end. It truncates in the middle: the host stays at the head and the final path segment is pinned. A path segment longer than 24 characters is not pinned at all, because pinning it would hold the string at full width and defeat the truncation.",
     "Reaching for it as a generic card. The frame is a provenance claim. Once it wraps your own UI it stops meaning 'from elsewhere', and every honest use of it in the same product gets quieter.",
   ],
+
+  variants: [
+    {
+      prop: "tone",
+      default: "surface",
+      values: [
+        {
+          value: "surface",
+          intent:
+            "The frame sits among other content, in a results list or a tool result, and the capture should read as an inset of the page around it. The default, and right almost everywhere.",
+        },
+        {
+          value: "inverted",
+          intent:
+            "The frame sits alone against a large expanse of page background, where surface chrome would melt into it and the edge of the capture would be lost. A choice about the surface behind the frame, never a signal about the content inside it.",
+        },
+      ],
+    },
+  ],
+
+  insteadUse: [
+    {
+      component: "source-cards",
+      when: "The user needs to know which pages the agent read, not what they looked like. source-cards shows the retrieved set as a ranked list of cards; a frame per source spends a screen on each one.",
+    },
+    {
+      component: "citation-ref",
+      when: "The point is to tie one claim in an answer to the passage that supports it. citation-ref is the inline marker whose preview carries the quoted chunk; a framed capture shows the whole page, not the sentence.",
+    },
+  ],
 };

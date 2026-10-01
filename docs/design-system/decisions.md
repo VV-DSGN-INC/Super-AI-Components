@@ -433,7 +433,7 @@ evidentiary footing they do not have, which is the exact failure D18 created fam
 Q also sorts past N, so `check-contract`'s B–N subtotal is arithmetically untouched (89) and the
 A–O 114-item freeze stays literally true. Only the grand total moves, 116 → 118, which it must.
 
-**Naming collision, flagged so nobody trips on it:** §6 of this file numbers *open questions* Q1–Q6.
+**Naming collision, flagged so nobody trips on it:** §6 of this file numbers _open questions_ Q1–Q6.
 Family Q's items are also Q1 and Q2. Different files, different namespaces — `component-specs.md`
 and `catalog.md` carry the family; this file's §6 carries the questions. No rename, because the
 family letter is forced (A–P are taken) and renumbering six historical questions to dodge it would
@@ -458,7 +458,6 @@ be worse.
 `book-cover` in particular carries no AI-interface semantics — it is presentational chrome, its
 docs page says so, and it is the item to revisit first if the registry's positioning is ever
 tightened.
-
 
 ## 2. Components dropped from the approved spec
 
