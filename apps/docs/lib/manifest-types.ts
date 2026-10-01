@@ -16,7 +16,13 @@ export type FamilyId =
   | "O"
   // P is the first family from the second reference board, kept separate from
   // A–O so the 114-item freeze stays literally true. See D18.
-  | "P";
+  | "P"
+  // Q is the first family from a third source — Vercel's Geist — and is kept
+  // separate for the same reason P is: it carries none of the reference-board
+  // evidence A–O rests on, and folding it into F or K would quietly claim it
+  // did. Sorting past N also leaves check-contract's B–N subtotal untouched.
+  // See D20.
+  | "Q";
 
 export type ManifestStatus = "planned" | "building" | "shipped" | "cut";
 

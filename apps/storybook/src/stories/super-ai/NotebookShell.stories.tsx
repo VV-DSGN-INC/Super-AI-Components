@@ -1,14 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { AudioLines, BookOpen, FileText, Network, Plus } from "lucide-react";
 import * as React from "react";
-import { expect, fn, userEvent, waitFor } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { NotebookShellDocs } from "@/content/components/notebook-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { DocsShell } from "@/registry/super-ai/docs-shell";
 import { NotebookShell, type NotebookShellProps } from "@/registry/super-ai/notebook-shell";
+import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
 
 const SOURCES: NotebookShellProps["sources"] = [
   { id: "q3-report", name: "Q3-report.pdf", meta: "PDF · 2.4 MB", stage: "ready", chunkCount: 184 },
@@ -242,6 +246,9 @@ export const ArrowsClearTheRow: Story = {
   },
 };
 
+/** The one source error this file needs, spelled the same way everywhere it appears. */
+const PASSWORD_PROTECTED_ERROR = "Could not read the file: it looks password protected.";
+
 /**
  * Sources mid-ingest. The pipeline is the status — a source being embedded says
  * so by name, and a failed one is retryable in place without touching the other
@@ -259,11 +266,37 @@ export const Ingesting: Story = {
         name: "master-agreement.docx",
         meta: "DOCX · 812 KB",
         stage: "failed",
-        errorMessage: "Could not read the file — it looks password protected.",
+        errorMessage: PASSWORD_PROTECTED_ERROR,
       },
     ],
     messages: [],
     outputs: [],
+  },
+};
+
+/** K5 `source-panel`'s failed source, with `onRetrySource` wired and asserted. */
+export const IngestFailed: Story = {
+  args: {
+    ...FULL_ARGS,
+    sources: [
+      { id: "q3-report", name: "Q3-report.pdf", meta: "PDF · 2.4 MB", stage: "ready", chunkCount: 184 },
+      {
+        id: "contract",
+        name: "master-agreement.docx",
+        meta: "DOCX · 812 KB",
+        stage: "failed",
+        errorMessage: PASSWORD_PROTECTED_ERROR,
+      },
+    ],
+    onRetrySource: fn(),
+    messages: [],
+    outputs: [],
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const retry = canvas.getByRole("button", { name: "Retry master-agreement.docx" });
+    await userEvent.click(retry);
+    await expect(args.onRetrySource).toHaveBeenCalledWith("contract");
   },
 };
 
@@ -1089,5 +1122,78 @@ export const CitationJump: Story = {
       await expect(status.textContent).toBe("Showing Kickoff call transcript in Sources");
     });
     await expect(args.onJumpToSource).toHaveBeenCalledWith("kickoff-call");
+  },
+};
+
+/**
+ * First paint, before the notebook has loaded. The sources pane, the chat, the
+ * composer and the studio pane each draw a skeleton at the size they will take,
+ * the root is marked busy, and nothing inside it takes focus. The play renders the
+ * loaded notebook in the same frame and fails if a skeleton sits more than 8px
+ * from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <NotebookShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "notebook-shell", {
+      sources: "frame",
+      chat: "frame",
+      composer: "frame",
+      "studio-outputs": "frame",
+    });
+  },
+};
+
+/**
+ * The plan's limit on answers is reached. M6 sits at the top of the chat column,
+ * above the conversation and the composer it holds up, and counts down to the
+ * reset while the sources and the studio pane stay usable.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <RateLimitBanner cause="your-limit" resource="Answers from your sources" remainingSeconds={540} />
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="notebook-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.nextElementSibling).toHaveAttribute("data-region", "chat");
+    await expect(within(status!).getByText("Answers from your sources")).toBeVisible();
+  },
+};
+
+/**
+ * The host's own chrome, a notifications control and the account menu, in the bar
+ * `headerActions` adds at the top of the chat column. The bar exists only when the
+ * prop is passed, so a notebook without it is unchanged.
+ */
+export const HeaderActions: Story = {
+  args: {
+    ...FULL_ARGS,
+    headerActions: (
+      <div className="flex items-center gap-1">
+        <DemoNotifications />
+        <AccountMenu
+          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+          theme="system"
+          onThemeChange={fn()}
+          background="default"
+          onBackgroundChange={fn()}
+          onSignOut={fn()}
+        />
+      </div>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const header = canvasElement.querySelector<HTMLElement>('[data-slot="notebook-shell-header"]');
+    await expect(header).not.toBeNull();
+    await expect(header!.nextElementSibling).toHaveAttribute("data-region", "chat");
+    await expect(
+      within(header!).getByRole("button", { name: "Account menu for Ada Lovelace" }),
+    ).toBeVisible();
+    await expect(within(header!).getByRole("button", { name: "Notifications, 2 unread" })).toBeVisible();
   },
 };

@@ -31,19 +31,19 @@ ledgers moved out to `design-system/wave-history.md` — see §9.
 > pinned by a gate or a test, and this table is prose. Treat it as prose, and
 > re-derive it from `git log origin/main` rather than believing it.
 
-**Catalog progress: 116 shipped. Nothing is planned, nothing is building.**
+**Catalog progress: 118 shipped. Nothing is planned, nothing is building.**
 11 cut (family G's 10 + O5, per decision D9 — do not revive them).
-_(`check:contract` counts **116**, and the two numbers are already reconciled:
-the 114 is the frozen A–O count, and family P's 2 are counted alongside it
-rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
-at 114 while family P grows separately" asserts all three figures, which is
+_(`check:contract` counts **118**, and the two numbers are already reconciled:
+the 114 is the frozen A–O count, and family P's 2 and family Q's 2 are counted
+alongside it rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
+at 114 while later families grow separately" asserts each figure, which is
 what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
 
 **`contractExempt` has no members.** The 25 pre-Wave-1.5 legacy items that
 carried it were folded into the full contract by wave 0 of the story-guarantees
 program (`superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`,
 step 2): states normalized and declared, one story per declared state, a docs
-module, the flag dropped. `check:contract` reports **116 checked / 0 exempt**,
+module, the flag dropped. `check:contract` reports **118 checked / 0 exempt**,
 from 91 / 25 at the program's start. `catalog.manifest.test.ts` pins the empty
 set as a ratchet, so re-exempting any of them fails a dedicated assertion. The
 flag's own branches in `check-contract.mts` and its stale "the 14 pre-Wave-1.5
@@ -1114,6 +1114,29 @@ to grow past the threshold would have hit this with no change of its own. And
 the general shape: a jsdom stub that makes a feature-detect start succeeding
 does not only stop a crash, it moves every consumer of that detect onto its
 other branch.
+
+### Found while building family Q (2026-08-19)
+
+- **B8 `account-menu`'s `KeyboardOrder` story fails intermittently under
+  full-suite load.** `pnpm test:stories` fails roughly half of full runs at
+  `AccountMenu.stories.tsx:221` with `expected 'stop#4 Sign out⇧⌘Q' to be
+'stop#0 Settings⌘,'` — the closing wrap-around tab reads the last item
+  instead of the first. The same file passes 10/10 every time in isolation
+  (`pnpm vitest run --project storybook src/stories/super-ai/AccountMenu.stories.tsx`),
+  which is what makes it a load-dependent race rather than a wrong assertion.
+  The story already uses the settle idiom from
+  [`story-conventions.md`](design-system/story-conventions.md) §4 fact 4 for
+  the walk itself, so the gap is that the **closing** tab is not settled the
+  same way: under load the frame that `enqueueFocus` schedules has not painted
+  when the read happens, so the assertion sees the pre-redirect element. This
+  is the exact mechanism that fact records, just at the one read the idiom was
+  not applied to.
+
+  Filed rather than fixed: it was found while building family Q, whose two
+  components contain no portal and no focusable element, so nothing in that
+  change can reach it. It fails on `main` too. **It will make CI red on
+  roughly half of runs until someone settles that last read**, which is why it
+  is at the top of this section rather than in it.
 
 ### Added by the wave 0 story retrofit (2026-08-15)
 
@@ -2264,6 +2287,161 @@ not cheap: this registry runs stock shadcn tokens on purpose, so a name
 contract that rosters all 72, literal-free radius aliases, and eight dead
 `--sidebar-*` tokens are three separate decisions about how far to diverge
 from stock. Do not start them without a spec.
+
+### Added by the shell review (2026-09-24)
+
+All thirteen shells were reviewed rendered, at 1440, against what a real product of each
+kind has. The spec that acts on it is
+[`superpowers/specs/2026-09-24-shell-fidelity-design.md`](superpowers/specs/2026-09-24-shell-fidelity-design.md):
+stills replace the grey media boxes, a full-viewport preview route per block, the missing
+state stories, and two slots (`status`, `loading`) on every shell. What follows is the rest,
+recorded here and not built. Each is a flow a real app has and no shell can show today;
+each needs a component or a block, so each is a catalog decision, not a shell tweak.
+
+**Cross-cutting, taken by the spec (U3 and U4):** no shell-level failure state (offline,
+save failed, session expired), no first-paint loading state, no approval or blocked moment
+even though N8 `permission-prompt` and N10 `safety-block` ship, and demos that never show
+an account menu or notifications in the slots that already take one.
+
+**Per shell, parked:**
+
+- **O1 `home-shell`**: "continue where you left off"; an announcement strip (L3 renders only
+  in O11); recents with a type and a status.
+- **O2 `chat-shell`**: share or branch a conversation; a model picker in the composer (E2 is
+  composed by A7 only, see §5.2).
+- **O3 `studio-shell`**: export and share; version history; presence; unsaved-changes and
+  conflict.
+- **O4 `timeline-shell`**: clip actions (split, delete); ruler zoom; media upload in progress.
+- **O6 `generation-shell`**: result actions (download, variations, upscale, regenerate); a
+  run history; reference-image upload.
+- **O7 `library-shell`**: trash and restore; collections; a sort control; load more.
+- **O8 `explore-shell`**: like, save and follow on a card; a creator profile; report or NSFW
+  gate; search.
+- **O9 `artifact-shell`**: opening an artifact (no detail surface exists); version history;
+  publish or share; delete and restore; sort.
+- **O10 `records-shell`**: run history or logs (a failed run has no way in); bulk enable;
+  duplicate; an owner column; pagination.
+- **O11 `docs-shell`**: search; an on-page table of contents; prev and next; a version
+  switcher; copy on code; "was this helpful".
+- **O12 `settings-shell`**: an unsaved-changes bar; field validation errors; a danger zone
+  with confirmation; API keys (create, reveal once, revoke); an invite flow; invoices.
+- **O13 `notebook-shell`**: a source viewer the citation jump lands in; a notebook switcher;
+  share.
+- **O14 `auth-shell`**: forgot password; an OTP or MFA step.
+
+**Shell types the board never sampled**, from the catalog's own note (voice, extraction,
+vision, data and coding): a builder shell (chat beside a live preview with a code toggle),
+an answer shell (query first, sources rail), a voice session shell (orb, transcript, mute
+and end), an agent run shell (task list, live trace, the agent's viewport, approvals), a
+data analysis shell (chat beside a table and chart pane). Family O is frozen at fourteen by
+`catalog.manifest.test.ts`; any of these is a new family and its own decision.
+
+**Fixed the same day:** the docs shell's rail brand painted over the doc-nav trigger at
+icon width. B1's switcher header now clips at icon-rail width like the vendored
+`SidebarContent`, and `DocsShell.stories.tsx`'s `WideRailBrand` probes the paint to prove
+it.
+
+### Added by the U3 case-story and slot wave (2026-09-26)
+
+Eight gaps found while building the U3 plan's state stories and library
+recipes (`superpowers/plans/2026-09-26-shell-fidelity-u3.md`). None of these
+add a shell prop or fork a component; each is recorded here rather than
+built, per the plan's own rule.
+
+- **No shipped component models a failed chat turn with inline retry.** O2
+  `chat-shell`'s `FailedTurn` case story composes the vendored `Alert
+variant="destructive"` (`bg-card`, not a translucent tint) plus a plain
+  `Button` as the turn's `content`, rather than a catalog component; the
+  description and the Retry button both set `text-destructive` explicitly
+  to clear 4.49:1, which the variant's own `text-destructive/90` does not
+  (see the vendored-Alert entry below). A shipped "message-error" primitive
+  (title, body, Retry) would let O2 and O13 `notebook-shell` (which composes
+  the same AI Elements message turn) share one row instead of each inlining
+  its own markup.
+- **N8 `permission-prompt` has no inline presentation.** It is an
+  `AlertDialog` in every configuration (`permission-prompt.tsx`), so it
+  always renders as a modal over the whole shell rather than as a row in the
+  stream. O2 `chat-shell`'s `ToolCall` case story raises it from the paused
+  turn, which is the only presentation N8 has; no shipped component in this
+  registry shows a paused tool call inline.
+- **No shipped component models an upload-in-progress row with cancel.** A8
+  `preview-tile`'s states (`default`, `loading`, `locked`, `failed`) carry no
+  percentage and no cancel affordance reachable without nesting a control
+  inside the tile's own button. The two nearest siblings each cover half the
+  shape: N12 `task-tray` has cancel (`onCancelTask`) but no percentage, and
+  F1 `result-card` in `streaming` has a percentage but no cancel. O7
+  `library-shell`'s `UploadProgress` case story composes the vendored
+  `Progress` and `Button` in `headerActions` instead of the tile grid.
+- **O10 `records-shell` declares no `promo` prop.** Its `AppSidebar` is
+  filled with `switcher` and `nav` only (the shell's own comment says so:
+  "This shell forwards no `promo` or `footer` to B1"). B5 `promo-card`
+  cannot be composed into it without adding one, which is U4's job.
+- **O11 `docs-shell` declares no `promo` prop either.** Same shape as
+  records-shell: `AppSidebar` gets `switcher={railBrand}` and
+  `footer={railFooter}`, never `promo`. Also blocked on U4.
+- **O4 `timeline-shell` has no topbar and no `ReactNode` chrome slot.** Its
+  only generic slot is `railPinned`, typed `ModalityRailItemData[]` (id,
+  label, icon, badge) - a rail button that calls one shared `onSelect(id)`,
+  not a place to mount a live `AccountMenu` dropdown. B8 cannot be composed
+  here without a new prop.
+- **O8 `explore-shell` has the identical gap.** Its only generic slot is
+  also a typed `railPinned: ModalityRailItemData[]`, not a `ReactNode`. Same
+  reasoning, same blocker.
+- **In `generation-shell` and `records-shell` the account menu cannot be the
+  trailing header item without a prop.** `generation-shell`'s topbar renders
+  its `actions` slot before the credits chip, and `records-shell` renders
+  `headerActions` before the create action. B8 `account-menu` lands in both
+  demos, just not last - the same U4 prop gap as the two `promo` entries
+  above.
+
+Found while building (not in the plan):
+
+- **The vendored `Alert`'s destructive description sits under 4.5:1.**
+  `apps/docs/components/ui/alert.tsx` gives destructive
+  `data-slot=alert-description` children `text-destructive/90`, which
+  `a11y-baseline.md` now records at 4.49:1 on `bg-card` beside the badge
+  entry. The house pattern is the call-site override, not a change to the
+  vendored file: O2's `FailedTurn` story sets `text-destructive` on the
+  description and the Retry button to clear it, matching the
+  `cost-chip`/`entity-row`/`badge` precedent, and any caller nesting plain
+  text in a destructive `AlertDescription` needs the same override.
+- **F5 `compare-viewer`'s side-mode label chip overflows a narrow pane.** In
+  an O6 result tile (about 73px per pane at 1200px) any label longer than
+  two characters overflows the pane's own `overflow: auto` panel, and axe
+  reports `scrollable-region-focusable`. U3 moved its `CompareRecipe` to O3's
+  artboard (about 240px per pane) rather than blank the labels, since the
+  pane switcher's accessible name is built from them. A compare inside a
+  generation grid needs the chip to truncate, or O6 needs a wider result.
+- **docs-shell switcher and railFooter fill (plan Task 11) waits for
+  `claude/docs-shell-rail-brand` to reach `origin/main`.** Skipped this
+  wave: the rail fix `Fixed the same day` above says landed, but Task 11's
+  own gate found it absent from `origin/main`. Whoever resumes Task 11
+  should re-run that gate rather than trust either sentence on its own.
+
+### Added by the U4 status and loading wave (2026-09-26)
+
+Every shell takes `status` (a slot under the topbar, or at the top of the content column)
+and `loading` (one boolean, proven per shell by the loading twin), and `notebook-shell`
+takes `headerActions`. The contract is
+[`design-system/block-build-brief.md`](design-system/block-build-brief.md), "Status and
+loading"; the plan is
+[`superpowers/plans/2026-09-26-shell-fidelity-u4.md`](superpowers/plans/2026-09-26-shell-fidelity-u4.md).
+What stays open:
+
+- **U3's four prop gaps stay parked.** A `promo` prop on O10 and O11, the account menu as
+  the trailing header item in O6 and O10, and a chrome slot on O4 and O8. The spec's U4
+  did not list them, and each adds a prop to a shell.
+- **O11's demo has no host chrome yet.** Its account menu and notifications control go in
+  with U3's Task 11, which waits for `claude/docs-shell-rail-brand`.
+- **Rows are not `SidebarMenuSkeleton`.** The spec named it. It picks a random bar width
+  in state, which fails hydration, and importing it puts the vendored sidebar on eight
+  shells that do not use B1. `ShellSkeletonRows` keeps its 32px geometry with fixed widths.
+- **The twin proves one fixture at one viewport.** Each shell's `Loading` story checks its
+  full fixture at 1200×900. Rows mirrored for props no fixture passes (a library or
+  artifact header with `headerActions`, a chat or notebook composer without context chips)
+  are class arithmetic, not measurements.
+- **A region-level wait goes through the empty-override slots.** Chat's history-pending
+  case is `empty` plus `ShellSkeletonLines`; no shell has per-region loading.
 
 ## 9. What each wave found
 

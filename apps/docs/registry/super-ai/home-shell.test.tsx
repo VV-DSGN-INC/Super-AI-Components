@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { HomeShell, type HomeShellProps } from "./home-shell";
 
 const REGIONS = ["sidebar", "topbar", "hero-omnibox", "feature-cards", "recents-grid"];
@@ -213,5 +215,55 @@ describe("HomeShell", () => {
   it("renders the headline as the page's h1", () => {
     render(<HomeShell headline="Good afternoon" />);
     expect(screen.getByRole("heading", { level: 1, name: "Good afternoon" })).toBeVisible();
+  });
+});
+
+describe("HomeShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="home-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<HomeShell />);
+    expectShellLoadedContract(root(container), { name: "home-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="home-shell-status"]')).toBeNull();
+  });
+
+  it("renders status directly under the topbar", () => {
+    const { container } = render(<HomeShell status={<p>You are offline.</p>} />);
+    const status = container.querySelector('[data-slot="home-shell-status"]')!;
+    expect(status).toHaveTextContent("You are offline.");
+    expect(status.previousElementSibling).toHaveAttribute("data-region", "topbar");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <HomeShell
+        loading
+        headline="Good afternoon"
+        nav={<a href="#projects">Projects</a>}
+        sidebarFooter={<button type="button">Account</button>}
+        suggestions={SUGGESTIONS}
+        features={FEATURES}
+        recents={RECENTS}
+      />,
+    );
+    expectShellLoadingContract(root(container), { name: "home-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="app-sidebar"]')).toBeNull();
+    expect(container.querySelector('[data-slot="hero-omnibox"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<HomeShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="home-shell-status"]')).toHaveTextContent("Reconnecting");
+  });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<HomeShell loading status={status} />);
+    const button = container.querySelector('[data-slot="home-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<HomeShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
   });
 });

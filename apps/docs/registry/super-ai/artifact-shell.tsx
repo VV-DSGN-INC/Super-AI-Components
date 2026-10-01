@@ -4,7 +4,7 @@ import { FileText, Search } from "lucide-react";
 import * as React from "react";
 
 import { Input } from "@/components/ui/input";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { AiDocBlock, type AiDocBlockProps } from "@/registry/super-ai/ai-doc-block";
 import { AppSidebar } from "@/registry/super-ai/app-sidebar";
@@ -17,6 +17,13 @@ import {
 import { DateSection } from "@/registry/super-ai/date-section";
 import { EmptyState } from "@/registry/super-ai/empty-state";
 import { FilterBar, FilterChip, FiltersButton } from "@/registry/super-ai/filter-bar";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonRegion,
+  ShellSkeletonSidebar,
+  ShellSkeletonTiles,
+} from "@/registry/super-ai/shell-skeleton";
 
 /**
  * Artifact Shell — artifact / document index
@@ -163,6 +170,20 @@ interface ArtifactShellProps extends Omit<React.ComponentProps<"div">, "title"> 
   empty?: React.ReactNode;
   /** Replaces the default L1 shown when the filter or search matches nothing. */
   noResults?: React.ReactNode;
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders under the header, above the search and
+   * the index it affects, and only when given. Pass M6 `rate-limit-banner` or the
+   * vendored `Alert`; the shell adds no live region, so the component you pass
+   * carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the index has loaded. Every region draws a skeleton at the
+   * size it will take, the root carries `aria-busy`, and nothing the shell composes
+   * is mounted, so there is nothing to focus or click.
+   */
+  loading?: boolean;
 }
 
 function matchesQuery(item: ArtifactGridItem, query: string) {
@@ -174,6 +195,17 @@ function matchesQuery(item: ArtifactGridItem, query: string) {
   return [item.excerpt, item.title ?? "", artifactTypeLabel(item.type)].some((field) =>
     field.toLowerCase().includes(query),
   );
+}
+
+/**
+ * The sidebar region while `loading`. B1 is not mounted, because it always
+ * renders its rail button and a loading shell mounts nothing to click. The width
+ * comes from the provider's state instead, the same state B1 reads, so the
+ * skeleton follows a Cmd/Ctrl+B toggle too.
+ */
+function ArtifactShellSidebarSkeleton() {
+  const { state } = useSidebar();
+  return <ShellSkeletonSidebar region="sidebar" collapsed={state === "collapsed"} />;
 }
 
 function ArtifactShell({
@@ -209,6 +241,9 @@ function ArtifactShell({
   draftLabel = "Just generated",
   empty,
   noResults,
+
+  status,
+  loading = false,
 
   className,
   ...props
@@ -282,6 +317,71 @@ function ArtifactShell({
           ? `${total} ${total === 1 ? "artifact" : "artifacts"}`
           : `${visible} of ${total} artifacts`;
 
+  const statusStrip = status ? (
+    <div data-slot="artifact-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <SidebarProvider
+        data-slot="artifact-shell"
+        aria-busy="true"
+        defaultOpen={defaultSidebarOpen}
+        className={cn(
+          "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
+          EMBEDDABLE_SHELL,
+          SIDEBAR_FILLS_SHELL,
+          className,
+        )}
+        {...props}
+      >
+        <ArtifactShellSidebarSkeleton />
+        <SidebarInset className="min-w-0 overflow-hidden">
+          <ShellSkeletonRegion
+            region="header"
+            className="bg-background flex shrink-0 flex-col gap-2 border-b px-3 py-2"
+          >
+            <div className={cn("flex items-center gap-2", headerActions ? "h-8" : "h-7")}>
+              <ShellSkeletonBlock className="size-7" />
+              <ShellSkeletonBlock className="h-4 w-32" />
+              {headerActions ? <ShellSkeletonBlock className="ms-auto h-8 w-24" /> : null}
+            </div>
+            <div className="flex h-7.5 items-center gap-1.5">
+              <ShellSkeletonBlock className="h-7.5 w-12 rounded-full" />
+              <ShellSkeletonBlock className="h-7.5 w-24 rounded-full" />
+              <ShellSkeletonBlock className="h-7.5 w-20 rounded-full" />
+              <ShellSkeletonBlock className="h-7.5 w-20 rounded-full" />
+            </div>
+          </ShellSkeletonRegion>
+          {statusStrip}
+          <ShellSkeletonRegion
+            region="search"
+            className="bg-background flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 border-b px-3 py-2"
+          >
+            <ShellSkeletonBlock className="h-8 min-w-0 flex-1 sm:max-w-md" />
+            <ShellSkeletonBlock className="h-4 w-14" />
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion
+            region="artifact-card-grid"
+            className="flex min-h-0 flex-1 flex-col gap-6 overflow-hidden px-3 py-4"
+          >
+            <ShellSkeletonBlock className="h-6 w-24" />
+            <div className="@container">
+              <ShellSkeletonTiles
+                count={6}
+                className="@[40rem]:grid-cols-2 @[64rem]:grid-cols-3"
+                tileClassName="aspect-auto h-36"
+              />
+            </div>
+          </ShellSkeletonRegion>
+        </SidebarInset>
+        <ShellLoadingLabel />
+      </SidebarProvider>
+    );
+  }
+
   return (
     <SidebarProvider
       // Overriding a vendored ui/ primitive's slot is house idiom — nothing
@@ -301,6 +401,7 @@ function ArtifactShell({
           which is what positions the sidebar. */}
       <div data-region="sidebar" className="contents">
         <AppSidebar
+          data-loading-region="sidebar"
           switcher={switcher}
           nav={
             nav ??
@@ -321,7 +422,11 @@ function ArtifactShell({
         {/* "header + filter" is one region in the spec: the facets are how the
             index is scoped, so they belong with its title rather than floating
             above the cards as a second toolbar. */}
-        <div data-region="header" className="bg-background flex shrink-0 flex-col gap-2 border-b px-3 py-2">
+        <div
+          data-region="header"
+          data-loading-region="header"
+          className="bg-background flex shrink-0 flex-col gap-2 border-b px-3 py-2"
+        >
           <div className="flex items-center gap-2">
             <SidebarTrigger />
             <h1 data-slot="artifact-shell-title" className="min-w-0 flex-1 truncate text-sm font-semibold">
@@ -372,11 +477,14 @@ function ArtifactShell({
           </FilterBar>
         </div>
 
+        {statusStrip}
+
         {/* Search is its own region, below the header: it searches the whole
             index, including the buckets scrolled off the bottom, so it is not a
             control of the grid it sits above. */}
         <div
           data-region="search"
+          data-loading-region="search"
           className="bg-background flex shrink-0 flex-wrap items-center gap-x-3 gap-y-1 border-b px-3 py-2"
         >
           <div className="relative min-w-0 flex-1 sm:max-w-md">
@@ -425,6 +533,7 @@ function ArtifactShell({
             reaches a grid whose cards are all off-screen. */}
         <section
           data-region="artifact-card-grid"
+          data-loading-region="artifact-card-grid"
           aria-label={gridLabel}
           tabIndex={0}
           className="focus-visible:ring-ring flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-3 py-4 focus-visible:ring-2 focus-visible:outline-none"

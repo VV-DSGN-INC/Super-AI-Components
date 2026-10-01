@@ -1,11 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { AlertTriangle, RotateCcw } from "lucide-react";
 import * as React from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { RecordsShell, type RecordsShellProps } from "@/registry/super-ai/records-shell";
 import { RecordsShellDocs } from "@/content/components/records-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 
 const FOLDERS: RecordsShellProps["folders"] = [
@@ -1058,5 +1062,56 @@ export const Boundary: Story = {
     //    own "one table" ordering rule applied a level up.
     const region = canvasElement.querySelector<HTMLElement>('[data-region="record-rows"]')!;
     await expect(region.firstElementChild).toHaveAttribute("data-slot", "asset-library");
+  },
+};
+
+/**
+ * First paint, before the records have loaded. The sidebar, the header, the filter
+ * and sort row and the rows each draw a skeleton at the size they will take, the
+ * root is marked busy, and nothing inside it takes focus. The play renders the
+ * loaded list in the same frame and fails if a skeleton sits more than 8px from
+ * where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <RecordsShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "records-shell", {
+      sidebar: "frame",
+      header: "frame",
+      "filter-sort": "frame",
+      "record-rows": "frame",
+    });
+  },
+};
+
+/**
+ * A save failed. The message sits under the header, above the rows it concerns,
+ * with the retry beside the reason. The vendored Alert's destructive description
+ * is 4.49:1 on the card, so the text and the Retry button carry
+ * `text-destructive` at full strength themselves.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert variant="destructive">
+        <AlertTriangle aria-hidden />
+        <AlertTitle>Could not save the schedule</AlertTitle>
+        <AlertDescription className="flex flex-col items-start gap-2">
+          <span className="text-destructive">The new run time is only on this device. Retry to keep it.</span>
+          <Button type="button" size="sm" variant="outline" className="text-destructive" onClick={fn()}>
+            <RotateCcw aria-hidden />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="records-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-region", "header");
+    await expect(within(status!).getByRole("button", { name: "Retry" })).toBeVisible();
   },
 };

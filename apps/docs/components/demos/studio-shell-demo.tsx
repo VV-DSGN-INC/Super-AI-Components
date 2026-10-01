@@ -3,8 +3,10 @@
 import { Brush, Image as ImageIcon, LayoutTemplate, Settings, Shapes, Sparkles, Type } from "lucide-react";
 import { useState } from "react";
 
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { PropertyRow } from "@/registry/super-ai/property-inspector";
 import { StudioShell, type StudioShellProps } from "@/registry/super-ai/studio-shell";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { Input } from "@/components/ui/input";
 
 const MODALITIES = [
@@ -73,7 +75,23 @@ export default function StudioShellDemo() {
     <StudioShell
       className="h-[42rem]"
       title="Series A deck"
-      topbar={{ zoomLabel: "72%", savedLabel: "Saved just now" }}
+      topbar={{
+        zoomLabel: "72%",
+        savedLabel: "Saved just now",
+        actions: (
+          <div className="flex items-center gap-1">
+            <DemoNotifications />
+            <AccountMenu
+              user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+              theme="system"
+              onThemeChange={() => {}}
+              background="default"
+              onBackgroundChange={() => {}}
+              onSignOut={() => {}}
+            />
+          </div>
+        ),
+      }}
       modalities={MODALITIES}
       pinnedModalities={PINNED}
       activeModalityId={modality}

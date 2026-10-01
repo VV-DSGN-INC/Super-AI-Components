@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/registry/super-ai/app-sidebar";
 import { AssetLibrary, type AssetLibraryItem } from "@/registry/super-ai/asset-library";
@@ -13,6 +13,13 @@ import { EmptyState } from "@/registry/super-ai/empty-state";
 import { Feedback, type FeedbackProps } from "@/registry/super-ai/feedback";
 import { AddFilterChip, FilterBar, FilterChip, FiltersButton } from "@/registry/super-ai/filter-bar";
 import { RecordList, type RecordListItem, type RecordListProps } from "@/registry/super-ai/record-list";
+import {
+  ShellLoadingLabel,
+  ShellSkeletonBlock,
+  ShellSkeletonRegion,
+  ShellSkeletonRows,
+  ShellSkeletonSidebar,
+} from "@/registry/super-ai/shell-skeleton";
 
 /**
  * Records Shell — project / scenario list
@@ -204,6 +211,32 @@ interface RecordsShellProps extends Omit<React.ComponentProps<"div">, "title" | 
    */
   feedback?: FeedbackProps;
   feedbackCaption?: React.ReactNode;
+
+  /**
+   * A message about the whole surface: offline, reconnecting, a failed save, an
+   * expired session, a rate limit. Renders under the header, above the filters and
+   * rows it affects, and only when given. Pass M6 `rate-limit-banner` or the
+   * vendored `Alert`; the shell adds no live region, so the component you pass
+   * carries its own role. Still renders while `loading`.
+   */
+  status?: React.ReactNode;
+  /**
+   * First paint, before the records have loaded. Every region draws a skeleton at
+   * the size it will take, the root carries `aria-busy`, and nothing the shell
+   * composes is mounted, so there is nothing to focus or click.
+   */
+  loading?: boolean;
+}
+
+/**
+ * The sidebar region while `loading`. B1 is not mounted, because it always
+ * renders its rail button and a loading shell mounts nothing to click. The width
+ * comes from the provider's state instead, the same state B1 reads, so the
+ * skeleton follows a Cmd/Ctrl+B toggle too.
+ */
+function RecordsShellSidebarSkeleton() {
+  const { state } = useSidebar();
+  return <ShellSkeletonSidebar region="sidebar" collapsed={state === "collapsed"} />;
 }
 
 function RecordsShell({
@@ -248,6 +281,9 @@ function RecordsShell({
   feedback,
   feedbackCaption = "Is this list telling you what you need?",
 
+  status,
+  loading = false,
+
   className,
   ...props
 }: RecordsShellProps) {
@@ -275,6 +311,66 @@ function RecordsShell({
     href: folder.href,
   }));
 
+  const statusStrip = status ? (
+    <div data-slot="records-shell-status" className="shrink-0 border-b px-3 py-2">
+      {status}
+    </div>
+  ) : null;
+
+  if (loading) {
+    return (
+      <SidebarProvider
+        data-slot="records-shell"
+        aria-busy="true"
+        defaultOpen={defaultSidebarOpen}
+        className={cn(
+          "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
+          EMBEDDABLE_SHELL,
+          SIDEBAR_FILLS_SHELL,
+          className,
+        )}
+        {...props}
+      >
+        <RecordsShellSidebarSkeleton />
+        <SidebarInset className="min-w-0 overflow-hidden">
+          <ShellSkeletonRegion
+            region="header"
+            className="bg-background flex h-14 shrink-0 items-center gap-2 border-b px-2"
+          >
+            <ShellSkeletonBlock className="size-7" />
+            <ShellSkeletonBlock className="h-5 w-28" />
+            <ShellSkeletonBlock className="size-4" />
+            {headerActions || createAction || onCreate ? (
+              <ShellSkeletonBlock className="ms-auto h-7 w-28" />
+            ) : null}
+          </ShellSkeletonRegion>
+          {statusStrip}
+          <ShellSkeletonRegion
+            region="filter-sort"
+            className="bg-background flex shrink-0 flex-wrap items-center gap-2 border-b px-3 py-2"
+          >
+            <ShellSkeletonBlock className="h-7.5 w-20 rounded-full" />
+            <ShellSkeletonBlock className="h-7.5 w-28 rounded-full" />
+            <ShellSkeletonBlock className="h-7.5 w-20" />
+            <ShellSkeletonBlock className="ms-auto h-7 w-24" />
+          </ShellSkeletonRegion>
+          <ShellSkeletonRegion
+            region="record-rows"
+            className="flex min-h-0 flex-1 flex-col gap-6 overflow-hidden px-3 py-4"
+          >
+            <div className="flex flex-col gap-3">
+              <ShellSkeletonBlock className="h-5 w-24" />
+              <ShellSkeletonBlock className="h-8 w-full" />
+              <ShellSkeletonRows count={3} />
+            </div>
+            <ShellSkeletonRows count={6} />
+          </ShellSkeletonRegion>
+        </SidebarInset>
+        <ShellLoadingLabel />
+      </SidebarProvider>
+    );
+  }
+
   return (
     <SidebarProvider
       // Overriding a vendored ui/ primitive's slot is house idiom — nothing
@@ -294,6 +390,7 @@ function RecordsShell({
           pair, which is what positions the sidebar. */}
       <div data-region="sidebar" className="contents">
         <AppSidebar
+          data-loading-region="sidebar"
           switcher={switcher}
           nav={
             nav ??
@@ -313,6 +410,7 @@ function RecordsShell({
             exist, so it sits here rather than floating over the rows. */}
         <header
           data-region="header"
+          data-loading-region="header"
           className="bg-background flex h-14 shrink-0 items-center gap-2 border-b px-2"
         >
           <SidebarTrigger />
@@ -342,11 +440,14 @@ function RecordsShell({
           </div>
         </header>
 
+        {statusStrip}
+
         {/* "filter + sort". A5 owns the chips and the filters button; the sort
             is the vendored Select, because A5 has no sort affordance and a
             fourth chip that opens a menu would read as another filter. */}
         <div
           data-region="filter-sort"
+          data-loading-region="filter-sort"
           className="bg-background flex shrink-0 flex-wrap items-center gap-2 border-b px-3 py-2"
         >
           {/* role="group" so the name is allowed to land: `aria-label` on a
@@ -401,6 +502,7 @@ function RecordsShell({
             rule applied one level up. */}
         <section
           data-region="record-rows"
+          data-loading-region="record-rows"
           // A `section` with a name is a landmark, which is what lets the
           // scroll container carry `tabIndex` without tripping axe's
           // `scrollable-region-focusable`, and what makes `aria-labelledby`

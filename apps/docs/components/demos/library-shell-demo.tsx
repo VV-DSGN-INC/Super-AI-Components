@@ -3,6 +3,8 @@
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import type { FilterSelection } from "@/registry/super-ai/filter-panel";
 import { LibraryShell, type LibraryShellProps } from "@/registry/super-ai/library-shell";
 
@@ -106,9 +108,20 @@ export default function LibraryShellDemo() {
       className="h-[42rem]"
       title="Library"
       headerActions={
-        <Button size="sm" variant="outline">
-          Upload
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline">
+            Upload
+          </Button>
+          <DemoNotifications />
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+        </div>
       }
       search={search}
       onSearchChange={setSearch}

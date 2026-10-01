@@ -1,6 +1,12 @@
 "use client";
 
+import * as React from "react";
+
+import { AccountMenu } from "@/registry/super-ai/account-menu";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { RecordsShell } from "@/registry/super-ai/records-shell";
+import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const FOLDERS = [
   { id: "marketing", name: "Marketing", count: 12, modified: "2 days ago" },
@@ -52,12 +58,53 @@ const RECORDS = [
   },
 ];
 
+const WORKSPACES = [
+  { id: "northwind", name: "Northwind", plan: "Pro" },
+  { id: "acme", name: "Acme Labs" },
+];
+
 export default function RecordsShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+
   return (
     <RecordsShell
       className="h-[42rem]"
       title="Scenarios"
-      switcher={<div className="px-2 text-sm font-medium">Northwind</div>}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
+      nav={
+        <SidebarNav
+          activeId="all"
+          sections={[
+            {
+              label: "Scenarios",
+              items: [
+                { id: "all", label: "All scenarios", count: RECORDS.length },
+                { id: "marketing", label: "Marketing", count: 12 },
+                { id: "revops", label: "Revenue ops", count: 5 },
+              ],
+            },
+          ]}
+        />
+      }
+      headerActions={
+        <div className="flex items-center gap-1">
+          <DemoNotifications />
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+        </div>
+      }
       createLabel="New scenario"
       onCreate={() => {}}
       folders={FOLDERS}

@@ -51,9 +51,17 @@ export const AuthShellDocs: ComponentDocs = {
       note: "Sign in to sign up and back. Rendered only when onModeChange is given.",
     },
     { slot: "auth-shell-legal", note: "The default legal sentence, replaceable whole via legal." },
+    {
+      slot: "auth-shell-status",
+      note: "At the top of the form column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it for the sign-in and sign-up screens of any product, AI or not. Everything is a prop: `providers` fills the rows, `marketing` fills the pitch pane, `title` and `description` carry your own copy, and `mode` picks between the sign-in and sign-up defaults. Wire `onSelectProvider` to whatever your identity stack wants — the shell will not redirect, will not post the form, and holds no session of its own; the only state it keeps is the email field, and passing `email` takes even that back. Give every provider a `disabledReason` rather than relying on `disabled` alone, and pass your real `terms` and `privacy` routes before you ship, because the defaults are placeholders. If your product has one identity route and no others, leave `providers` empty: the region stays mounted, shows L1, and the email form below it is still the whole screen.",
+    "Reach for it for the sign-in and sign-up screens of any product, AI or not. Everything is a prop: `providers` fills the rows, `marketing` fills the pitch pane, `title` and `description` carry your own copy, and `mode` picks between the sign-in and sign-up defaults. Wire `onSelectProvider` to whatever your identity stack wants — the shell will not redirect, will not post the form, and holds no session of its own; the only state it keeps is the email field, and passing `email` takes even that back. Give every provider a `disabledReason` rather than relying on `disabled` alone, and pass your real `terms` and `privacy` routes before you ship, because the defaults are placeholders. If your product has one identity route and no others, leave `providers` empty: the region stays mounted, shows L1, and the email form below it is still the whole screen. Pass `status` for a message about the whole surface (offline, an expired session, a rate limit): it renders at the top of the form column, above the providers, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: the title stays, every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Title each provider row with the action, so the row's accessible name says what pressing it does.",
@@ -62,6 +70,9 @@ export const AuthShellDocs: ComponentDocs = {
     {
       text: "Give an unavailable provider a written reason, so the state survives without seeing the dimming.",
       example: <UnavailableProviderSaysWhy />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
     },
   ],
   donts: [
@@ -82,6 +93,7 @@ export const AuthShellDocs: ComponentDocs = {
       "Enter in the email field submits the form: the shell prevents the default and calls `onEmailSubmit`. The field is `required`, so an empty Enter raises the browser's own validation bubble rather than anything the component draws.",
       'The provider list is a `role="group"`, not a listbox or a radiogroup, so arrow keys do nothing and there is no roving focus. Ten providers is ten tab stops before the email field.',
       "Nothing responds to Escape. There is no dismissable surface here.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       'The provider list is a named group — `providersLabel`, defaulting to "Sign-in providers" or "Sign-up providers" from `mode`.',
@@ -93,6 +105,8 @@ export const AuthShellDocs: ComponentDocs = {
       "L6's progress bar is suppressed along with the nav, so nothing announces a step count — which is correct here, since there is only one step.",
       "The legal links are plain anchors named by `terms.label` and `privacy.label`, painted at foreground contrast rather than muted, because that is the one line on the screen that has to stay readable.",
       "Nothing announces the outcome of picking a provider or submitting an address. There is no live region anywhere in the shell, so an async handler needs its own status message.",
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds the title, the description and one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "L6 moves focus to its heading when the step id changes. This shell has one step whose id never changes, so that never fires: the shell steals no focus on mount and moves none of its own.",
@@ -111,5 +125,8 @@ export const AuthShellDocs: ComponentDocs = {
     "The chrome suppression is CSS, and jsdom computes no stylesheet — so in unit tests `getByRole('button', { name: 'Back' })` still finds L6's hidden nav buttons. Assert against the shell's own regions and slots instead of trying to prove absence by role; the browser a11y gate is what actually sees the suppression.",
     "lucide ships no brand marks, so there is no Google or GitHub glyph to reach for. Provider icons are yours to supply through `provider.icon`; whatever you pass is decorative, because the row title is the accessible name.",
     "Everything except the email field is controlled. Rendering the shell with `providers` and no `onSelectProvider`, or with `mode` and no `onModeChange`, produces a screenshot rather than a screen — the mode switch does not even render without a handler to call.",
+    "While `loading`, L6 is not mounted, because its step navigation is hidden with a class rather than removed and a loading shell mounts nothing to click. The skeleton composes the vendored Card L6 is built on, with the real title and description, so the card lands where L6's will; restyle one and restyle the other.",
+    "The card is centred on the page, so every region's position depends on the card's height. The skeleton draws three provider rows unless `providers` is passed, and a mode-switch line only when `onModeChange` is; pass both while loading if the loaded page will show them.",
+    "`status` sits under L6 while loaded and under the skeleton's `Card` while loading, so it remounts when `loading` flips, unlike the other twelve shells. A control inside `status` loses focus, and a component left in place loses any state it held, the moment data arrives.",
   ],
 };

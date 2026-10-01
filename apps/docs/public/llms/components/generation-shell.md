@@ -10,7 +10,7 @@ Freepik's apps, Tripo, Playground, getimg and Simplified all ship this exact lay
 
 ## When to reach for it
 
-Reach for it when your product does one thing to one input and shows you the output. Everything is a prop: `panel` is forwarded whole to E1, `presets` fills E4, `models` fills E2, `parameters` takes E3's own row components, `run` is forwarded whole to E5, and `results` (or `resultGroups`) fills F2. The prices are the shell's, not the children's — set `cost`, `costUnit` and `balance` once and they feed the chip, the shortfall wording on a blocked run and the credits indicator from one place, which is what stops a tool quoting two different numbers. Pass `examplePair` before you pass anything else: it is what the pane shows on day one, and day one is the version most people see. The shell holds no state, so directions, preset, model, parameters, run state and selection all stay wherever your data already lives.
+Reach for it when your product does one thing to one input and shows you the output. Everything is a prop: `panel` is forwarded whole to E1, `presets` fills E4, `models` fills E2, `parameters` takes E3's own row components, `run` is forwarded whole to E5, and `results` (or `resultGroups`) fills F2. The prices are the shell's, not the children's — set `cost`, `costUnit` and `balance` once and they feed the chip, the shortfall wording on a blocked run and the credits indicator from one place, which is what stops a tool quoting two different numbers. Pass `examplePair` before you pass anything else: it is what the pane shows on day one, and day one is the version most people see. The shell holds no state, so directions, preset, model, parameters, run state and selection all stay wherever your data already lives. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.
 
 ## Variants
 
@@ -24,6 +24,7 @@ Not yet recorded.
 
 - Keep the price and Generate in one row below the panel's scroll, so the number is on screen at the moment of commitment.
 - Fill the empty canvas with a before → after pair — it teaches the tool faster than any description.
+- Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.
 
 ## Don't
 
@@ -38,6 +39,8 @@ Not yet recorded.
 - `data-region="result-canvas"`: F2 generation-grid of F1 result-cards, or L1's example pair. Scrolls, so it is focusable and named.
 - `generation-shell`: Root. Full height, no scroll of its own — the two panes scroll independently.
 - `result-card`: Each F1 card in the results pane; carries `data-result-id` so a result can be addressed without reaching for its index.
+- `generation-shell-status`: Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.
+- `shell-skeleton-region`: One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.
 
 ## Accessibility
 
@@ -47,6 +50,7 @@ Not yet recorded.
 - The results canvas is itself a tab stop. It scrolls, so it carries `tabIndex={0}` and a name — that is what keeps a scrollable region reachable — and it means one stop lands on the pane before any card inside it.
 - Nothing here has arrow-key navigation. Once the canvas has focus it takes the usual page keys; the grid inside it is a `role="list"` with no roving tabindex.
 - The shell binds no keys of its own. There is no Escape to leave select mode and no shortcut to Generate — every stop belongs to a composed component.
+- While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.
 
 **Screen reader**
 
@@ -55,6 +59,8 @@ Not yet recorded.
 - The price is announced once, from one number. `cost` feeds A2's chip in the pinned row and E5's shortfall wording, which is why the shell never passes `cost` down to E5; do it yourself and the same price is announced twice from two chips.
 - Toggling select mode changes what each card's control means — open-this-result becomes select-this-result — without moving it or announcing anything. The bulk toolbar appearing above the grid is the only signal, and it is not live.
 - The empty pane is a full L1 with a before → after pair, and that pair announces as whatever you put in it. Give the two images real alt text, or the thing that teaches the tool teaches nothing.
+- While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.
+- The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.
 
 **Focus**
 
@@ -72,12 +78,13 @@ Not yet recorded.
 - `parameters` takes E3's row components — `<ParameterSlider />`, `<ParameterSegmented />`, `<ParameterTabs />` — not a whole `<ParameterPanel />`. The shell owns the panel around them so the group-level reset wires to `onResetParameters`; nesting a second panel gives you two headers and two reset affordances for one set of rows.
 - O6's `Filled by:` list does not name B7 app-topbar, but it declares a topbar region — so this shell composes B7 rather than hand-rolling a header, and reports the addition. If your tool genuinely has no title bar, leave the region mounted and empty rather than removing it; a region that appears from nowhere cannot teach that it exists.
 - The `Responsive` story resizes the Storybook canvas only. The vitest runner behind the accessibility gate has no manager to resize an iframe, so it renders and axe-checks that story at the browser's default width, and a green run says nothing about narrow layout. The `Mobile` case story is what gates it: it moves the test iframe itself to 375×812, so the breakpoint actually flips and axe evaluates the stacked layout. Read `Mobile` for the narrow claim and `Responsive` for the canvas preview.
+- E1's card is drawn with a ring and its loading skeleton with a border, so the skeleton's contents sit 1px further in on each edge. That is inside the loading twin's tolerance; restyling either one is where a jump on load would come from.
 
 ## Composition
 
 - States: none (a block is a layout, not a state machine)
 - Regions: `config-panel`, `cost-generate`, `topbar`, `result-canvas`
-- Composes from this registry: generation-panel, model-picker, parameter-panel, preset-grid, run-button, cost-chip, result-card, generation-grid, credits-indicator, app-topbar, empty-state
+- Composes from this registry: generation-panel, model-picker, parameter-panel, preset-grid, run-button, cost-chip, result-card, generation-grid, credits-indicator, app-topbar, empty-state, shell-skeleton
 - shadcn primitives: none
 - npm: lucide-react
 

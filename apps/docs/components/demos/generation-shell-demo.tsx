@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { DemoNotifications } from "@/components/demos/demo-notifications";
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { GenerationShell } from "@/registry/super-ai/generation-shell";
 import { ParameterSlider } from "@/registry/super-ai/parameter-panel";
 
@@ -81,7 +83,22 @@ export default function GenerationShellDemo() {
     <GenerationShell
       className="h-[42rem]"
       title="Video generator"
-      topbar={{ privacy: { label: "Private" } }}
+      topbar={{
+        privacy: { label: "Private" },
+        actions: (
+          <div className="flex items-center gap-1">
+            <DemoNotifications />
+            <AccountMenu
+              user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+              theme="system"
+              onThemeChange={() => {}}
+              background="default"
+              onBackgroundChange={() => {}}
+              onSignOut={() => {}}
+            />
+          </div>
+        ),
+      }}
       balance={414}
       creditsTotal={1000}
       credits={{ onManage: () => {} }}

@@ -1,11 +1,25 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Brush, Image as ImageIcon, LayoutTemplate, Settings, Shapes, Sparkles, Type } from "lucide-react";
+import {
+  AlertTriangle,
+  Brush,
+  Image as ImageIcon,
+  LayoutTemplate,
+  RotateCcw,
+  Settings,
+  Shapes,
+  Sparkles,
+  Type,
+} from "lucide-react";
 import * as React from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
+import { AiToolsMenu } from "@/registry/super-ai/ai-tools-menu";
+import { CompareViewer } from "@/registry/super-ai/compare-viewer";
 import { PropertyRow } from "@/registry/super-ai/property-inspector";
 import { StudioShell, type StudioShellProps } from "@/registry/super-ai/studio-shell";
 import { TimelineShell } from "@/registry/super-ai/timeline-shell";
@@ -277,6 +291,103 @@ export const Responsive: Story = {
     },
   },
   globals: { viewport: { value: "mobile" } },
+};
+
+/**
+ * I4 `ai-tools-menu` on the selected element, composed through I3's own
+ * `aiMenu` slot (per studio-shell's docblock: "the rest of I3: actions, the
+ * AI entry, I4 as `aiMenu`, placement"). `presentation="inline"` because I3
+ * already supplies the Popover shell around it.
+ */
+export const ObjectAIActions: Story = {
+  args: {
+    ...FULL_ARGS,
+    selection: { type: "text", label: "Heading" },
+    toolbar: {
+      ...FULL_ARGS.toolbar,
+      aiMenu: (
+        <AiToolsMenu
+          presentation="inline"
+          selection={{ label: "Heading", type: "Text frame" }}
+          groups={[
+            {
+              id: "edit",
+              label: "Edit",
+              actions: [
+                { id: "rewrite", title: "Rewrite tone", cost: { amount: 1, unit: "credits" } },
+                { id: "shorten", title: "Shorten to one line" },
+              ],
+            },
+          ]}
+          onAction={fn()}
+        />
+      ),
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    // The brief's draft assumed the AI entry's accessible name was the bare
+    // word "AI". `context-toolbar.tsx` defaults `aiLabel` to "AI tools", and
+    // this file's own `ReducedMotion` and `KeyboardOrder` stories already
+    // query it that way, so the name here is "AI tools", not "AI".
+    const aiEntry = canvas.getByRole("button", { name: "AI tools" });
+    await userEvent.click(aiEntry);
+    // I3's popover portals to `document.body`, not into `canvasElement`, so
+    // the assertion has to look there rather than through `canvas`.
+    await waitFor(() => expect(within(document.body).getByText("Rewrite tone")).toBeVisible());
+  },
+};
+
+/**
+ * F5 `compare-viewer` as the artboard itself, rather than a result's media:
+ * the object under edit is a before and after pair, and the artboard is
+ * where a studio document sits open for editing. Nothing is selected, the
+ * same as `NothingSelected` above, so the floating toolbar and the text
+ * inspector stay out of the way of the pair they would otherwise sit over.
+ */
+export const CompareRecipe: Story = {
+  args: {
+    ...FULL_ARGS,
+    selection: undefined,
+    children: (
+      <div className="w-full max-w-2xl">
+        <CompareViewer
+          panes={[
+            {
+              id: "before",
+              label: "Original",
+              content: (
+                <div className="bg-secondary flex h-full items-center justify-center text-xs">Before</div>
+              ),
+            },
+            {
+              id: "after",
+              label: "Edited",
+              content: (
+                <div className="bg-primary/20 flex h-full items-center justify-center text-xs">After</div>
+              ),
+            },
+          ]}
+          onModeChange={fn()}
+        />
+      </div>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const viewer = within(canvasElement.querySelector<HTMLElement>('[data-slot="compare-viewer"]')!);
+    // `side` is the mode kept here, and it is the only mode where the label
+    // and the number render as two separate nodes rather than folded into a
+    // switcher button's accessible name: the pane switcher itself only
+    // exists in `mode="single"` (see `compare-viewer.tsx`), so it has nothing
+    // to render here. The two claims this recipe can make in `side` mode are
+    // the two visible labels and the two numbered panes that anchor them,
+    // both scoped to the viewer itself so an unrelated "1" or "2" elsewhere
+    // on the artboard cannot make this query ambiguous.
+    await expect(viewer.getByText("Original")).toBeVisible();
+    await expect(viewer.getByText("Edited")).toBeVisible();
+    await expect(viewer.getByText("1")).toBeVisible();
+    await expect(viewer.getByText("2")).toBeVisible();
+  },
 };
 
 /* -------------------------------------------------------------------------
@@ -1171,4 +1282,57 @@ export const Boundary: Story = {
       </section>
     </div>
   ),
+};
+
+/**
+ * First paint, before the document has loaded. The rail, the topbar, the tool
+ * panel, the canvas, the page strip and the inspector each draw a skeleton at the
+ * size they will take, the root is marked busy, and nothing inside it takes focus.
+ * The play renders the loaded editor in the same frame and fails if a skeleton
+ * sits more than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <StudioShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "studio-shell", {
+      "modality-rail": "frame",
+      topbar: "frame",
+      "tool-panel": "frame",
+      canvas: "frame",
+      "page-strip": "frame",
+      inspector: "frame",
+    });
+  },
+};
+
+/**
+ * A save failed. The message sits under the topbar, above the canvas it concerns,
+ * with the retry beside the reason. The vendored Alert's destructive description
+ * is 4.49:1 on the card, so the text and the Retry button carry
+ * `text-destructive` at full strength themselves.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert variant="destructive">
+        <AlertTriangle aria-hidden />
+        <AlertTitle>Could not save your changes</AlertTitle>
+        <AlertDescription className="flex flex-col items-start gap-2">
+          <span className="text-destructive">Your last three edits are only on this device.</span>
+          <Button type="button" size="sm" variant="outline" className="text-destructive" onClick={fn()}>
+            <RotateCcw aria-hidden />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="studio-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-region", "topbar");
+    await expect(within(status!).getByRole("button", { name: "Retry" })).toBeVisible();
+  },
 };

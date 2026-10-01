@@ -15,6 +15,8 @@ import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
 import { AssetLibraryDocs } from "@/content/components/asset-library.docs";
 import { AuthShellDocs } from "@/content/components/auth-shell.docs";
 import { AutonomySelectorDocs } from "@/content/components/autonomy-selector.docs";
+import { BookCoverDocs } from "@/content/components/book-cover.docs";
+import { BrowserFrameDocs } from "@/content/components/browser-frame.docs";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { ChoiceChipsDocs } from "@/content/components/choice-chips.docs";
 import { CitationRefDocs } from "@/content/components/citation-ref.docs";
@@ -133,6 +135,8 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "asset-library": AssetLibraryDocs,
   "auth-shell": AuthShellDocs,
   "autonomy-selector": AutonomySelectorDocs,
+  "book-cover": BookCoverDocs,
+  "browser-frame": BrowserFrameDocs,
   "chat-shell": ChatShellDocs,
   "choice-chips": ChoiceChipsDocs,
   "citation-ref": CitationRefDocs,

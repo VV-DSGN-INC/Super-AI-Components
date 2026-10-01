@@ -57,9 +57,17 @@ export const SettingsShellDocs: ComponentDocs = {
     },
     { slot: "settings-shell-gated", note: "The E7 group — what the nav's tier badge was promising." },
     { slot: "settings-shell-code", note: "The snippet itself. Focusable, because it scrolls." },
+    {
+      slot: "settings-shell-status",
+      note: "Under the breadcrumb row, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it when settings are a destination rather than a dialog — when they need URLs, a plan story, or more rows than a modal can hold. Everything is data: each entry in `sections` carries its `group` (which is how the nav groups), its `rows` (M1's grid, where every row needs a description), and optionally a `callout`, `gated` features, a `pricing` table and a `code` block. `sectionId` and `search` are controlled-or-uncontrolled, so the shell works out of the box and still lets your router own the hash. Keep `anchorPrefix` stable — it is the URL. Under about twenty settings a dialog is the better shape; use M1 directly in its `dialog` variant rather than reaching for this shell early.",
+    "Reach for it when settings are a destination rather than a dialog — when they need URLs, a plan story, or more rows than a modal can hold. Everything is data: each entry in `sections` carries its `group` (which is how the nav groups), its `rows` (M1's grid, where every row needs a description), and optionally a `callout`, `gated` features, a `pricing` table and a `code` block. `sectionId` and `search` are controlled-or-uncontrolled, so the shell works out of the box and still lets your router own the hash. Keep `anchorPrefix` stable — it is the URL. Under about twenty settings a dialog is the better shape; use M1 directly in its `dialog` variant rather than reaching for this shell early. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the breadcrumb row, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Keep search in the nav column and report matches on every group, so a setting is findable from wherever you are standing.",
@@ -68,6 +76,9 @@ export const SettingsShellDocs: ComponentDocs = {
     {
       text: "Show the gated feature and let the tier badge point at it — a paywall works by being visible.",
       example: <TierBadgePointsAtSomething />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
     },
   ],
   donts: [
@@ -87,6 +98,7 @@ export const SettingsShellDocs: ComponentDocs = {
       "M1's own section tablist is suppressed with `display: none`, so its tabs are not reachable by keyboard at all — which is intended, since the page nav is B3's job. What survives is the open `tabpanel`, which Base UI still gives `tabIndex=0`: there is a tab stop announcing itself as a tab panel whose tab list nothing can reach.",
       'Nav rows are anchors (`href="#settings-…"`), so Enter follows them and **Space does not** — Space scrolls the page instead. This differs from B3\'s button rows elsewhere in the registry, where both keys work.',
       "There is no Escape, no focus trap and no shortcut for search. It is a page, not a dialog.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       'The breadcrumb is the vendored one and marks the active section with `aria-current="page"`, so the trail reads root, group, then the section you are in. The group crumb is plain text on purpose — there is no page behind it.',
@@ -97,6 +109,8 @@ export const SettingsShellDocs: ComponentDocs = {
       "The `pre` holding the snippet is a tab stop with no accessible name of its own — the `h3` above it names the region, not the box. A screen-reader user lands on an unnamed scroll container and has to read forward to work out what they are in.",
       'The copy button\'s name is pinned by `aria-label` to "Copy <label>" and does not flip to "Copied": a focused button\'s name change is not reliably re-announced. Nothing announces that a copy succeeded, and a rejected clipboard write is silent.',
       "The gated group and the code block are named `section`s (`aria-labelledby` at their own `h3`), so both are regions a screen-reader user can jump to. The section headings inside the M1 body are `h3`s too.",
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "Activating a nav row changes the hash and calls `onSelect`, but focus stays on the link — the section anchor is a plain `div` and cannot receive it. A keyboard user who picks a section is still standing in the rail and has to Tab past the rest of the nav to reach what they chose. Move focus to the content column yourself if the section list is long.",
@@ -114,5 +128,6 @@ export const SettingsShellDocs: ComponentDocs = {
     "The content column is the scroll container and on day one it holds no focusable content at all, which is why it carries `tabIndex={0}` and an accessible name. Move the overflow to an inner wrapper without moving those two and axe's `scrollable-region-focusable` rule fails immediately.",
     "The info callout uses the vendored `Alert`, whose role is `alert` — an assertive live region. Switching sections therefore announces the new scope, which is usually what you want and is occasionally chatty. If your callouts are decorative rather than consequential, that is a signal the section did not need one.",
     'Everything is controlled or controlled-capable, including the gated rows: E7\'s switch never turns itself on while `state` is `locked`, it calls `onRequestUpgrade` so you can flip to `inline-upsell`. Rendering the shell with a static `state="locked"` and no handler produces a screenshot of a paywall, not a paywall.',
+    "While `loading`, `accountMenu` is not mounted: the header keeps a round placeholder its size when it is passed, which is what holds the row at the menu's height, but the menu cannot be opened until loading ends.",
   ],
 };

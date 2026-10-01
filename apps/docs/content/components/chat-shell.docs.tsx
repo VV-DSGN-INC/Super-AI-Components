@@ -50,9 +50,17 @@ export const ChatShellDocs: ComponentDocs = {
       slot: "chat-shell-thread-running",
       note: "The job-queue status line under a thread that is still working.",
     },
+    {
+      slot: "chat-shell-status",
+      note: "Under the topbar, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it when the primary object of your product is a conversation that produces things. Everything is a prop or a slot: `threadGroups` fills the sidebar, `messages` fills the stream, `artifacts` fills the artifact region, and `composer` is forwarded whole to D1. Mark a thread `running` and the sidebar becomes a job queue — pass `runningLabel` so the status says what is actually happening rather than the generic word. Put a blocked run in `paywall` rather than opening a dialog: it renders as the final turn, which is what keeps monetization part of the conversation. The shell holds no conversation state of its own, so selection, feedback and composer value all stay wherever your data already lives.",
+    "Reach for it when the primary object of your product is a conversation that produces things. Everything is a prop or a slot: `threadGroups` fills the sidebar, `messages` fills the stream, `artifacts` fills the artifact region, and `composer` is forwarded whole to D1. Mark a thread `running` and the sidebar becomes a job queue — pass `runningLabel` so the status says what is actually happening rather than the generic word. Put a blocked run in `paywall` rather than opening a dialog: it renders as the final turn, which is what keeps monetization part of the conversation. The shell holds no conversation state of its own, so selection, feedback and composer value all stay wherever your data already lives. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders under the topbar, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Give a running job a visible label as well as a spinner, so the queue is readable without seeing motion.",
@@ -61,6 +69,12 @@ export const ChatShellDocs: ComponentDocs = {
     {
       text: "Keep artifacts inside the stream, attached to the conversation that produced them.",
       example: <ArtifactsInsideTheStream />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
+    },
+    {
+      text: "For a thread whose history is still arriving, leave `loading` off and pass `ShellSkeletonLines` from `shell-skeleton` through `empty`: `loading` is for the first paint of the whole surface, and the thread list and composer already work.",
     },
   ],
   donts: [
@@ -83,6 +97,7 @@ export const ChatShellDocs: ComponentDocs = {
       "Each thread's actions trigger is revealed by opacity, not `display:none`, so it stays a tab stop on every row. Renaming opens an input that takes focus, Enter commits, Escape cancels.",
       "The artifact region sits inside the scrolling stream, after every turn. Reaching it from the keyboard means tabbing through every turn's feedback controls first — there is no skip link and no separate tab stop for it.",
       "The shell does not render AI Elements' scroll-to-bottom button, so there is no control that jumps back to the newest turn after you scroll up; the stream re-pins itself only when a new turn arrives.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       'The stream is `role="log"` named "Conversation", so new turns are announced as they are appended. That behaviour comes from AI Elements rather than from anything the shell adds.',
@@ -94,6 +109,8 @@ export const ChatShellDocs: ComponentDocs = {
       'D1 owns an `sr-only` `role="status"` that announces its generating label, so the start of a run is spoken — but only if you actually set `composer.generating`.',
       "The paywall renders as the last child of the log, so a blocked run is announced like any other turn arriving rather than as an interruption. That is the point of putting it in the stream instead of a dialog.",
       'The sidebar trigger is named "Toggle Sidebar" by the vendored primitive, and the thread list is named "Conversations" here. Neither is configurable through the shell.',
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "Switching threads moves no focus. Focus stays on the thread row you activated — usually right, and it also means the newly loaded conversation is several tabs away with nothing announcing that it arrived.",
@@ -110,6 +127,8 @@ export const ChatShellDocs: ComponentDocs = {
     "The stream is the scroll container, which is why it carries `tabIndex={0}` and an accessible name. Moving the overflow onto an inner wrapper without moving those two with it fails axe's scrollable-region-focusable rule and strands keyboard users outside the conversation.",
     "J4's card grid keys its columns off its own container width (D19), not the viewport, so it already reads the stream's actual width and needs no override here — the shell renders it unadorned. If you fork this region, do not reintroduce a viewport-breakpoint override on the grid; that is the defect D19 fixed.",
     "Feedback, thread selection and composer value are all controlled. Rendering the shell with `messages` that never change and a `feedback` state that never moves produces a screenshot, not a workspace — wire the callbacks before demoing it.",
+    "While `loading`, B1 is not mounted, because it always renders its rail button and a loading shell mounts nothing to click. The sidebar skeleton takes its width from the sidebar provider's state instead, so it follows `defaultSidebarOpen` and a Cmd/Ctrl+B toggle, but `switcher`, `sidebarPromo` and `sidebarFooter` appear only once loading ends.",
+    "The composer skeleton reserves D1's context-chip row only when `contextChips` is non-empty. Pass the chips while loading if the loaded composer will show them, or the composer grows by that row when the data arrives.",
   ],
   variants: {
     none: "A shell owns arrangement and nothing else, so it has no axis of its own: every region is filled by a component that carries its own variants. Vary the parts, never the shell.",
