@@ -2,6 +2,8 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
+import { expectShellLoadedContract, expectShellLoadingContract } from "@/lib/test-utils";
+
 import { DocsShell } from "./docs-shell";
 
 const REGIONS = ["icon-rail", "doc-nav", "announcement-strip", "content-column"];
@@ -236,5 +238,49 @@ describe("DocsShell", () => {
     const content = container.querySelector('[data-region="content-column"]')!;
     expect(within(content as HTMLElement).getByText("Webhooks")).toBeVisible();
     expect(within(content as HTMLElement).getByText("Receive events as they happen.")).toBeVisible();
+  });
+});
+
+describe("DocsShell status and loading", () => {
+  const root = (container: HTMLElement) => container.querySelector('[data-slot="docs-shell"]')!;
+
+  it("marks every region's box and renders no status by default", () => {
+    const { container } = render(<DocsShell />);
+    expectShellLoadedContract(root(container), { name: "docs-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="docs-shell-status"]')).toBeNull();
+  });
+
+  it("renders status at the top of the content column, above the announcement strip", () => {
+    const { container } = render(<DocsShell status={<p>You are offline.</p>} />);
+    const status = container.querySelector('[data-slot="docs-shell-status"]')!;
+    expect(status).toHaveTextContent("You are offline.");
+    expect(status.nextElementSibling).toHaveAttribute("data-region", "announcement-strip");
+  });
+
+  it("draws every region as a skeleton, busy and with nothing to focus, while loading", () => {
+    const { container } = render(
+      <DocsShell loading railFooter={<button type="button">Account</button>}>
+        <a href="#install">Install</a>
+      </DocsShell>,
+    );
+    expectShellLoadingContract(root(container), { name: "docs-shell", regions: REGIONS });
+    expect(container.querySelector('[data-slot="app-sidebar"]')).toBeNull();
+    expect(container.querySelector('[data-slot="docs-shell-article"]')).toBeNull();
+  });
+
+  it("keeps status while loading", () => {
+    const { container } = render(<DocsShell loading status={<p>Reconnecting</p>} />);
+    expect(container.querySelector('[data-slot="docs-shell-status"]')).toHaveTextContent("Reconnecting");
+  });
+
+  it("keeps focus on a status control when loading flips to false", () => {
+    const status = <button type="button">Retry</button>;
+    const { container, rerender } = render(<DocsShell loading status={status} />);
+    const button = container.querySelector('[data-slot="docs-shell-status"] button') as HTMLButtonElement;
+    button.focus();
+    expect(document.activeElement).toBe(button);
+
+    rerender(<DocsShell loading={false} status={status} />);
+    expect(document.activeElement).toBe(button);
   });
 });

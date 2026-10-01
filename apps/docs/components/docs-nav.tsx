@@ -18,7 +18,15 @@ const toNavItem = (item: { name: string; title: string }) => ({
   title: item.title,
 });
 
-function NavList({ items, pathname }: { items: { href: string; title: string }[]; pathname: string }) {
+function NavList({
+  items,
+  pathname,
+  onNavigate,
+}: {
+  items: { href: string; title: string }[];
+  pathname: string;
+  onNavigate?: () => void;
+}) {
   return (
     <ul className="space-y-0.5">
       {items.map((item) => {
@@ -27,6 +35,7 @@ function NavList({ items, pathname }: { items: { href: string; title: string }[]
           <li key={item.href}>
             <Link
               href={item.href}
+              onClick={onNavigate}
               className={`block rounded-md px-2 py-1.5 text-sm transition-colors ${
                 isActive
                   ? "bg-accent text-accent-foreground font-medium"
@@ -42,7 +51,7 @@ function NavList({ items, pathname }: { items: { href: string; title: string }[]
   );
 }
 
-export function DocsNav() {
+export function DocsNav({ onNavigate }: { onNavigate?: () => void } = {}) {
   const pathname = usePathname();
 
   return (
@@ -51,7 +60,7 @@ export function DocsNav() {
         <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
           System
         </p>
-        <NavList items={SYSTEM_LINKS} pathname={pathname} />
+        <NavList items={SYSTEM_LINKS} pathname={pathname} onNavigate={onNavigate} />
       </div>
       {GROUPS.map((group) => (
         <div key={group}>
@@ -61,6 +70,7 @@ export function DocsNav() {
           <NavList
             items={CATALOG_ITEMS.filter((i) => i.group === group).map(toNavItem)}
             pathname={pathname}
+            onNavigate={onNavigate}
           />
         </div>
       ))}
@@ -72,7 +82,7 @@ export function DocsNav() {
             <p className="text-muted-foreground mb-1 px-2 text-xs font-semibold uppercase tracking-wider">
               Marketing · {group}
             </p>
-            <NavList items={items.map(toNavItem)} pathname={pathname} />
+            <NavList items={items.map(toNavItem)} pathname={pathname} onNavigate={onNavigate} />
           </div>
         );
       })}

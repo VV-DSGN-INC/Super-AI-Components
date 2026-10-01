@@ -1,7 +1,13 @@
 "use client";
 
+import * as React from "react";
+
+import { DemoNotifications } from "@/components/demos/demo-notifications";
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { ArtifactShell, type ArtifactShellGroup } from "@/registry/super-ai/artifact-shell";
+import { PromoCard } from "@/registry/super-ai/promo-card";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const GROUPS: ArtifactShellGroup[] = [
   {
@@ -86,12 +92,26 @@ const GROUPS: ArtifactShellGroup[] = [
   },
 ];
 
+const WORKSPACES = [
+  { id: "northwind", name: "Northwind" },
+  { id: "acme", name: "Acme Labs" },
+];
+
 export default function ArtifactShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+  const [promoDismissed, setPromoDismissed] = React.useState(false);
+
   return (
     <ArtifactShell
       className="h-[42rem]"
       title="Artifacts"
-      switcher={<div className="px-2 text-sm font-medium">Northwind</div>}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
       nav={
         <SidebarNav
           aria-label="Library"
@@ -110,6 +130,30 @@ export default function ArtifactShellDemo() {
       }
       groups={GROUPS}
       onOpenFilters={() => {}}
+      sidebarPromo={
+        <PromoCard
+          flavour="invite"
+          title="Share this library with the team"
+          description="Anyone you invite can open what's shared here."
+          ctaLabel="Invite a teammate"
+          onCtaClick={() => {}}
+          dismissed={promoDismissed}
+          onDismiss={() => setPromoDismissed(true)}
+        />
+      }
+      sidebarFooter={
+        <div className="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+          <DemoNotifications />
+        </div>
+      }
     />
   );
 }

@@ -45,9 +45,17 @@ export const LibraryShellDocs: ComponentDocs = {
       slot: "asset-detail",
       note: "F3, mounted at shell level rather than inside a region — a lightbox over the archive, not a fourth pane in it.",
     },
+    {
+      slot: "library-shell-status",
+      note: "At the top of the content column, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it when the primary object of your product is the pile of things a user has already made. Everything is a prop: `facets` fills the rail, `groups` (or `assets`) fills the grid, `search` and `onSearchChange` drive the header's field, and `openAssetId` opens the lightbox. Filtering is yours — the shell renders the rail and the chips, and hands you back the selection through `onSelectedFacetsChange`; the assets you pass are the assets it shows, so server-side and client-side filtering look identical from here. Give every facet an honest count, including zero: J2 disables a zero-count facet and says \"no matches\" out loud, which is worth more than hiding it. Leave `density` alone unless you are persisting the reader's choice — the default is deliberately the densest one — and pass `groups` rather than `assets` whenever your archive has any notion of when things were made, because a date-bucketed archive is navigable and a flat one is not.",
+    "Reach for it when the primary object of your product is the pile of things a user has already made. Everything is a prop: `facets` fills the rail, `groups` (or `assets`) fills the grid, `search` and `onSearchChange` drive the header's field, and `openAssetId` opens the lightbox. Filtering is yours — the shell renders the rail and the chips, and hands you back the selection through `onSelectedFacetsChange`; the assets you pass are the assets it shows, so server-side and client-side filtering look identical from here. Give every facet an honest count, including zero: J2 disables a zero-count facet and says \"no matches\" out loud, which is worth more than hiding it. Leave `density` alone unless you are persisting the reader's choice — the default is deliberately the densest one — and pass `groups` rather than `assets` whenever your archive has any notion of when things were made, because a date-bucketed archive is navigable and a flat one is not. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the content column, above the header, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Give every facet its count, so a filter states what it would leave before anyone clicks it.",
@@ -56,6 +64,9 @@ export const LibraryShellDocs: ComponentDocs = {
     {
       text: "Open dense. An archive is a page you scan, and eight-up is what makes a day of work fit on one.",
       example: <DenseByDefault />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
     },
   ],
   donts: [
@@ -76,6 +87,7 @@ export const LibraryShellDocs: ComponentDocs = {
       'The grid has no roving tabindex and no arrow-key navigation — `role="list"` is for announcement only. Moving between tiles means one Tab per asset, however many the current density is showing.',
       "The lightbox is a dialog: Escape closes it and focus is held inside while it is open. Nothing else in the shell handles a key.",
       "The bulk-actions bar only exists once something is selected, so entering select mode changes the number of stops above the grid partway through a tab sequence.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       'Three named regions: the rail is an `<aside aria-label="Filters">`, the grid a `<section aria-label="Assets">`, and the header a plain div carrying J1\'s own structure. The rail\'s landmark name is fixed — `filtersTitle` renames the heading inside J2, not the landmark around it.',
@@ -85,6 +97,8 @@ export const LibraryShellDocs: ComponentDocs = {
       "A tile's button always reports `aria-pressed`, because A8 stamps it whenever `onSelect` is set. Right in select mode; in browse mode every tile announces as an unpressed toggle when it is really an open action.",
       "The lightbox announces the same name for every asset. F3's `DialogTitle` is a hard-coded, sr-only \"Result detail\", so opening the tenth tile sounds exactly like opening the first and the asset's own name is never spoken on open.",
       'Removing the last facet, changing density and a filter emptying the grid all happen with no live region anywhere in the shell. "No matches" is visible text; nothing announces arriving at it.',
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "Removing a facet chip unmounts the button that had focus and nothing restores it, so focus falls to `<body>` and the next Tab restarts from the top of the page. That is A5's documented behaviour and the shell does not intercept it — and it fires from either half of the chip, since both are wired to the same removal.",
@@ -102,5 +116,6 @@ export const LibraryShellDocs: ComponentDocs = {
     "Facet selection, search text, bulk selection and the open asset are all controlled or controllable. Rendering the shell with a `selectedFacets` that never changes produces a screenshot, not an archive — the rail's checkboxes will tick and untick and the grid will never move.",
     "The rail does not disappear below `md`; it becomes a short scrolling band above the header. That is deliberate — a region that vanishes at a breakpoint cannot teach that it exists — but it costs vertical space on a phone. If you want a drawer instead, wrap the shell rather than unmounting the region, and keep the `data-region` marker rendered.",
     "F2's density prop is the only thing that separates dense from roomy, and it lives on one class list inside the grid. Restyling the dense-grid region's wrapper will not change the column count; pass `density`, or drive it from the rail's thumbnail-size group as the shell already does.",
+    "The header skeleton reserves a taller title row only when `headerActions` is passed, and an applied-filter row only when facets are already selected, the same rules J1 follows once loaded. Pass both while loading if the loaded header will show them.",
   ],
 };

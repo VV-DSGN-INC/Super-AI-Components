@@ -1,13 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Compass, Library, MessagesSquare, Settings, Sparkles } from "lucide-react";
 import * as React from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 import { ExploreShell, type ExploreShellProps } from "@/registry/super-ai/explore-shell";
 import { LibraryShell, type LibraryShellProps } from "@/registry/super-ai/library-shell";
+import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
 import { ExploreShellDocs } from "@/content/components/explore-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -1083,4 +1085,46 @@ const BOUNDARY_LIBRARY_ARGS: LibraryShellProps = {
       ],
     },
   ],
+};
+
+/**
+ * First paint, before the feed has loaded. The rail, the prompt bar, the sort
+ * strip and the feed each draw a skeleton at the size they will take, the root is
+ * marked busy, and nothing inside it takes focus. The sort strip keeps room for
+ * the tabs and pills this feed offers, because those are known before the items
+ * are. The play renders the loaded feed in the same frame and fails if a skeleton
+ * sits more than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <ExploreShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "explore-shell", {
+      rail: "frame",
+      "docked-prompt-bar": "frame",
+      "sort-tabs": "frame",
+      "masonry-feed": "frame",
+    });
+  },
+};
+
+/**
+ * The model is at capacity and the provider has given no estimate. M6 sits at the
+ * top of the feed column, above the prompt bar it holds up, says honestly that
+ * there is no estimate rather than inventing one, and offers to notify instead.
+ * The feed below stays browsable.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: <RateLimitBanner cause="provider-capacity" resource="Image generations" onNotifyMe={fn()} />,
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="explore-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.nextElementSibling).toHaveAttribute("data-region", "docked-prompt-bar");
+    await expect(
+      within(status!).getByRole("button", { name: "Notify me when capacity returns" }),
+    ).toBeVisible();
+  },
 };

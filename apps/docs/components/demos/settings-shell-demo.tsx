@@ -4,6 +4,7 @@ import { CreditCard, KeyRound, Plug, Server, SlidersHorizontal, Users } from "lu
 import * as React from "react";
 
 import { Switch } from "@/components/ui/switch";
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { SettingsShell, type SettingsShellSection } from "@/registry/super-ai/settings-shell";
 
@@ -249,14 +250,17 @@ export default function SettingsShellDemo() {
         { label: "MCP calls", used: 12400, limit: 50000, resetsIn: "Resets in 6 days" },
       ]}
       accountMenu={
-        <AccountMenu
-          user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
-          theme={theme}
-          onThemeChange={setTheme}
-          background={background}
-          onBackgroundChange={setBackground}
-          onSignOut={() => {}}
-        />
+        <div className="flex items-center gap-1">
+          <DemoNotifications />
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme={theme}
+            onThemeChange={setTheme}
+            background={background}
+            onBackgroundChange={setBackground}
+            onSignOut={() => {}}
+          />
+        </div>
       }
     />
   );

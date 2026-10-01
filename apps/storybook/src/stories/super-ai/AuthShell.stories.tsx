@@ -1,12 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Apple, Building2, Globe, Sparkles } from "lucide-react";
+import { Apple, Building2, Clock, Globe, Mail, Sparkles } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { AuthShellDocs } from "@/content/components/auth-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 import { AuthShell, type AuthShellMode, type AuthShellProps } from "@/registry/super-ai/auth-shell";
+import { EmptyState } from "@/registry/super-ai/empty-state";
 import { OnboardingWizard } from "@/registry/super-ai/onboarding-wizard";
 
 // Neutral marks: lucide ships no brand glyphs, and this registry ships no
@@ -111,6 +115,51 @@ export const ProviderUnavailable: Story = {
 };
 
 /**
+ * L1 `empty-state` in the provider column, standing in for the confirmation
+ * after a magic-link email is sent. `providers: []` triggers the column's
+ * existing empty affordance; `providersEmpty` overrides its default copy.
+ *
+ * The screen-level `title`/`description` switch to match, `emailFallback`
+ * replaces the whole email form with a "Use a different email" affordance
+ * rather than the same address asking to be resubmitted, and `onModeChange`
+ * is omitted so the sign-up switch does not offer an account on a screen
+ * that is waiting on a link already sent.
+ */
+export const EmailSent: Story = {
+  args: {
+    ...FULL_ARGS,
+    title: "Check your email",
+    description: "Click the link to continue, or use a different address below.",
+    providers: [],
+    providersEmpty: (
+      <EmptyState
+        size="panel"
+        icon={<Mail aria-hidden />}
+        title="Check your email"
+        description="We sent a sign-in link to ada@northwind.com. It expires in 15 minutes."
+      />
+    ),
+    emailFallback: (
+      <div className="flex flex-col items-start gap-2">
+        <p className="text-foreground/70 text-sm">
+          The link works from any device signed in as ada@northwind.com.
+        </p>
+        <Button type="button" variant="outline" size="sm" onClick={() => {}}>
+          Use a different email
+        </Button>
+      </div>
+    ),
+    onModeChange: undefined,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("heading", { name: "Check your email" })).toBeVisible();
+    await expect(canvas.getByRole("button", { name: "Use a different email" })).toBeVisible();
+    await expect(canvas.queryByRole("textbox", { name: "Email" })).toBeNull();
+  },
+};
+
+/**
  * Narrow viewport. Below `md` the split collapses to one column, the pitch pane
  * drops under the form (it is after the form in the DOM whichever side it sits
  * on, so reading order never changed), and the card takes the full width.
@@ -147,9 +196,14 @@ export const Responsive: Story = {
  *
  * Seven of the eight are written. One is recorded as a skip, and it is the
  * only skip in family O, so here is the measurement behind it rather than the
- * conclusion. Under the gate's emulated `prefers-reduced-motion: reduce` every
- * element in the rendered tree was read back for a live `animationName` or a
- * non-zero `transitionDuration`. Nothing animates. Three things transition:
+ * conclusion. None of this set sets `loading`, so none of it reaches the one
+ * branch in this shell that does animate: the loading skeleton's pulse,
+ * stilled under reduced motion by `motion-reduce:animate-none` and covered by
+ * the `Loading` export below rather than by a case story here. Restricted to
+ * what this set actually renders: under the gate's emulated
+ * `prefers-reduced-motion: reduce` every element in the rendered tree was read
+ * back for a live `animationName` or a non-zero `transitionDuration`. Nothing
+ * animates. Three things transition:
  * A9's rows and the email input carry `transition-colors` — a crossfade of
  * colour, background, border and outline only, which moves nothing and which
  * the convention names as not worth a story; the five vendored `Button`s carry
@@ -162,7 +216,7 @@ export const Responsive: Story = {
  * pixel-for-pixel identically to `SignIn` and imply coverage of a branch that
  * is switched off.
  *
- * // case-skip: ReducedMotion — read back under emulated reduce, nothing in the rendered tree animates: A9 and the input carry transition-colors (a crossfade), the five vendored Buttons carry the registry-wide transition-all press nudge that CONTINUE.md §8 keeps as a primitive-wide posture, and L6's dot rail — the only motion-reduce branch in the composition — computes display:none because this shell suppresses the progress region
+ * // case-skip: ReducedMotion — this set never sets loading, so it never reaches the shell's one animating branch (the loading skeleton's pulse, stilled by motion-reduce:animate-none and covered by the Loading export instead); read back under emulated reduce, nothing in this set's own rendered tree animates: A9 and the input carry transition-colors (a crossfade), the five vendored Buttons carry the registry-wide transition-all press nudge that CONTINUE.md §8 keeps as a primitive-wide posture, and L6's dot rail — the only motion-reduce branch in the composition — computes display:none because this shell suppresses the progress region
  *
  * Three defects came out of this set, none of them a class. Two are recorded
  * and asserted nowhere, per the fix policy: every provider row announces as a
@@ -791,5 +845,52 @@ export const Boundary: Story = {
     // And the region L6 has no slot for.
     await expect(shell.querySelector('[data-region="legal-footer"]')).not.toBeNull();
     await expect(wizard.querySelector('[data-region="legal-footer"]')).toBeNull();
+  },
+};
+
+/**
+ * First paint, before the sign-in options have loaded. The title and description
+ * stay, because they are the page's own words; the pitch pane, the provider rows,
+ * the email form and the legal line each draw a skeleton at the size they will
+ * take, the root is marked busy, and nothing inside it takes focus. The card is
+ * centred, so every region's top depends on the card's height; the play renders
+ * the loaded page in the same frame and fails if a skeleton sits more than 8px
+ * from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <AuthShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "auth-shell", {
+      "marketing-panel": "frame",
+      "provider-rows": "frame",
+      "email-fallback": "frame",
+      "legal-footer": "frame",
+    });
+  },
+};
+
+/**
+ * The person was sent here because their session expired. The message sits at the
+ * top of the form column, above the providers that clear it, and says that signing
+ * in again resumes the work. The vendored Alert keeps its own role, an assertive
+ * alert, because it explains why the page appeared at all.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert>
+        <Clock aria-hidden />
+        <AlertTitle>Your session expired</AlertTitle>
+        <AlertDescription>Sign in again to pick up where you left off.</AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="auth-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.nextElementSibling).toHaveAttribute("data-region", "provider-rows");
+    await expect(within(status!).getByText("Your session expired")).toBeVisible();
   },
 };

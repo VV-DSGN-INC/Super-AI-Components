@@ -40,6 +40,21 @@ against.
 - **A gate that has only ever passed has proved nothing.** When you add one,
   make it fail on a deliberate instance of the bug first.
 
+## When the smoke port is taken
+
+The Playwright smoke step serves the built app on port 3100, CI's port, and
+runs with `CI=1` so it never reuses a server already there: that server has
+been a sibling worktree's, and the gate once passed against the wrong build.
+The script checks the port before the first gate and again before the smoke
+step, and stops naming the process that holds it. Kill it only if it is yours;
+otherwise pick a free port for this run:
+
+```bash
+SMOKE_PORT=3101 .claude/skills/gate-run/run-gates.sh
+```
+
+`SMOKE_PORT` is read by `apps/docs/playwright.config.ts`; CI never sets it.
+
 ## First run on a fresh clone
 
 `pnpm test:stories` fails with `Executable doesn't exist` rather than anything

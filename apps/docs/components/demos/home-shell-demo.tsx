@@ -1,10 +1,15 @@
 "use client";
 
 import { Clapperboard, Image as ImageIcon, Mic, Sparkles, Type, WandSparkles } from "lucide-react";
+import * as React from "react";
 
+import { DemoNotifications } from "@/components/demos/demo-notifications";
 import { Button } from "@/components/ui/button";
+import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { HomeShell, type HomeShellProps } from "@/registry/super-ai/home-shell";
+import { PromoCard } from "@/registry/super-ai/promo-card";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
+import { WorkspaceSwitcher } from "@/registry/super-ai/workspace-switcher";
 
 const NAV = [
   {
@@ -57,6 +62,11 @@ const RECENTS = [
   { id: "r4", title: "Onboarding voiceover", durationLabel: "03:41", editedAgo: "Edited last week" },
 ];
 
+const WORKSPACES = [
+  { id: "northwind", name: "Northwind" },
+  { id: "acme", name: "Acme Labs" },
+];
+
 const RECOMMENDATIONS: HomeShellProps["recommendations"] = [
   {
     id: "digest",
@@ -85,12 +95,21 @@ const RECOMMENDATIONS: HomeShellProps["recommendations"] = [
 ];
 
 export default function HomeShellDemo() {
+  const [currentWorkspaceId, setCurrentWorkspaceId] = React.useState("northwind");
+  const [promoDismissed, setPromoDismissed] = React.useState(false);
+
   return (
     <HomeShell
       className="h-[42rem]"
       title="Northwind"
       headline="Good afternoon"
-      switcher={<div className="px-2 text-sm font-medium">Northwind</div>}
+      switcher={
+        <WorkspaceSwitcher
+          workspaces={WORKSPACES}
+          currentId={currentWorkspaceId}
+          onSelect={setCurrentWorkspaceId}
+        />
+      }
       nav={<SidebarNav sections={NAV} activeId="home" />}
       credits={{ balance: 420, total: 1000, form: "ring", onManage: () => {} }}
       omnibox={{
@@ -112,6 +131,30 @@ export default function HomeShellDemo() {
       recents={RECENTS}
       recentsEmptyAction={<Button size="sm">New project</Button>}
       recommendations={RECOMMENDATIONS}
+      sidebarPromo={
+        <PromoCard
+          flavour="upgrade"
+          title="Get more credits"
+          description="Upgrade to Pro for a larger monthly credit allowance and priority queues."
+          ctaLabel="Upgrade to Pro"
+          onCtaClick={() => {}}
+          dismissed={promoDismissed}
+          onDismiss={() => setPromoDismissed(true)}
+        />
+      }
+      sidebarFooter={
+        <div className="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+          <AccountMenu
+            user={{ name: "Ada Lovelace", email: "ada@northwind.example" }}
+            theme="system"
+            onThemeChange={() => {}}
+            background="default"
+            onBackgroundChange={() => {}}
+            onSignOut={() => {}}
+          />
+          <DemoNotifications />
+        </div>
+      }
     />
   );
 }

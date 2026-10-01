@@ -1,14 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { AudioLines, Blocks, Image as ImageIcon, Rocket } from "lucide-react";
+import { AudioLines, Blocks, Image as ImageIcon, Rocket, WifiOff } from "lucide-react";
 import * as React from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { DocsShell, type DocsShellProps } from "@/registry/super-ai/docs-shell";
 import { SettingsShell } from "@/registry/super-ai/settings-shell";
 import { DocsShellDocs } from "@/content/components/docs-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 const AREAS: DocsShellProps["areas"] = [
   { id: "platform", label: "Platform", icon: <Blocks /> },
@@ -1298,5 +1300,54 @@ export const Boundary: Story = {
     // 4. And the reading half of the rule: only O11 carries evidence markers.
     await expect(canvasElement.querySelectorAll('[data-slot="citation-ref"]').length).toBe(3);
     await expect(canvas.getByRole("searchbox")).toBeInTheDocument();
+  },
+};
+
+/**
+ * First paint, before the docs have loaded. The icon rail, the page nav, the
+ * announcement strip and the content column each draw a skeleton at the size
+ * they will take, the root is marked busy, and nothing inside it takes focus.
+ * The strip keeps one announcement's height because this page has one waiting.
+ * The play renders the loaded page in the same frame and fails if a skeleton sits
+ * more than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <DocsShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "docs-shell", {
+      "icon-rail": "frame",
+      "doc-nav": "frame",
+      "announcement-strip": "frame",
+      "content-column": "frame",
+    });
+  },
+};
+
+/**
+ * The reader is offline. The message sits at the top of the content column, above
+ * the announcement strip and the page it qualifies, and says what the reader is
+ * looking at. The shell mounts the status wrapper together with its content, so
+ * the message is present here for anyone reading the page rather than announced
+ * on arrival. `role="status"` suits a message that might later change without
+ * remounting; one that must be heard the moment it appears keeps the Alert's
+ * default `role="alert"`, as the auth and artifact stories do.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert role="status">
+        <WifiOff aria-hidden />
+        <AlertTitle>You are offline</AlertTitle>
+        <AlertDescription>These pages are the copy saved on your last visit.</AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="docs-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.nextElementSibling).toHaveAttribute("data-region", "announcement-strip");
+    await expect(within(status!).getByText("You are offline")).toBeVisible();
   },
 };

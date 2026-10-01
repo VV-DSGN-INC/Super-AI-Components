@@ -48,9 +48,21 @@ export const NotebookShellDocs: ComponentDocs = {
     },
     { slot: "notebook-shell-output-types", note: "The menu half of the studio pane." },
     { slot: "notebook-shell-outputs", note: "The results half. Never replaces the menu above it." },
+    {
+      slot: "notebook-shell-header",
+      note: "A bar at the top of the chat column for `headerActions`, mounted only when it is passed.",
+    },
+    {
+      slot: "notebook-shell-status",
+      note: "At the top of the chat column, under the header bar when there is one, only when `status` is passed. Holds M6 or the vendored Alert; the shell adds no live region of its own.",
+    },
+    {
+      slot: "shell-skeleton-region",
+      note: "One per region while `loading`: hidden from assistive tech and sized like the loaded region. It carries `data-loading-region`, as does each loaded region's box, which is what the loading twin measures.",
+    },
   ],
   usage:
-    "Reach for it when answers have to be traceable to documents the user supplied. Everything is a prop: `sources` fills the left pane and is the list citations resolve against, `messages` fills the middle, `outputTypes` is the studio menu and `outputs` is what it produced. Give an assistant turn `claims` rather than `content` when the answer is grounded — each claim carries its citations, and K7 adds the warning when some of them are not sourced. A citation names a `sourceId`, not a callback: the shell finds that source, labels the marker with its name, scrolls the left pane to it and announces the move. Wire `sourcesAction` and `sourcesEmptyAction` with the same verb, since the empty pane is the version most first-time users see. The shell holds no notebook state of its own — ingest, retry, composer value and generation all stay wherever your data already lives.",
+    "Reach for it when answers have to be traceable to documents the user supplied. Everything is a prop: `sources` fills the left pane and is the list citations resolve against, `messages` fills the middle, `outputTypes` is the studio menu and `outputs` is what it produced. Give an assistant turn `claims` rather than `content` when the answer is grounded — each claim carries its citations, and K7 adds the warning when some of them are not sourced. A citation names a `sourceId`, not a callback: the shell finds that source, labels the marker with its name, scrolls the left pane to it and announces the move. Wire `sourcesAction` and `sourcesEmptyAction` with the same verb, since the empty pane is the version most first-time users see. The shell holds no notebook state of its own — ingest, retry, composer value and generation all stay wherever your data already lives. `headerActions` puts host chrome, such as an account menu or a notifications control, in a bar at the top of the chat column, and the bar renders only when you pass it. Pass `status` for a message about the whole surface (offline, reconnecting, a failed save, an expired session, a rate limit): it renders at the top of the chat column, only when given, and holds M6 or the vendored Alert. Pass `loading` for first paint: every region draws a skeleton at its loaded size, the root is marked busy, and nothing is mounted that could take focus.",
   dos: [
     {
       text: "Give a citation a source and a quote, so a reader can check the claim without leaving the answer.",
@@ -59,6 +71,9 @@ export const NotebookShellDocs: ComponentDocs = {
     {
       text: "Generate into the studio pane, under the menu that offered the output.",
       example: <OutputsLandInTheStudioPane />,
+    },
+    {
+      text: "Mount the command palette once, at the root of your app, and keep it out of the shell: it is not a shell slot, and a palette mounted in each shell binds its shortcut once per surface.",
     },
   ],
   donts: [
@@ -79,6 +94,8 @@ export const NotebookShellDocs: ComponentDocs = {
       "The composer is D1 with its negative-prompt toggle removed by `display:none`, so it is genuinely gone from the tab order rather than hidden and still reachable. Enter asks, Shift+Enter breaks the line.",
       "The studio's output-type menu is C3's carousel: a `role=\"region\"` with its own Left/Right handling, two arrow buttons, then one stop per card.",
       "Nothing in the shell handles Escape, and the citation jump has no keyboard route back to the sentence you were reading other than Shift+Tab.",
+      "`headerActions` sits in a bar at the top of the chat column, so its controls come after the sources pane in the tab order and before the conversation.",
+      "While `loading`, the shell mounts none of its controls, so there is no tab stop inside it until the data arrives; a control you pass in `status` is the only one.",
     ],
     screenReader: [
       'Four regions, named three different ways: sources by `aria-label={sourcesLabel}`, chat by `aria-label={chatLabel}` on AI Elements\' Conversation (which also brings `role="log"`), studio by `aria-labelledby` onto its own `<h2>` — and the composer by nothing at all. `data-region="composer"` is a bare div with no role and no name.',
@@ -88,6 +105,8 @@ export const NotebookShellDocs: ComponentDocs = {
       'K7\'s coverage warning is ordinary text inside the answer, read in document order after the claims — "Some claims here aren\'t sourced", or "Nothing in this answer is sourced". It is not a live region, so it is announced when the reader reaches it rather than when the answer lands.',
       'K5 gives each source an sr-only `role="status"` for its ingest stage and a `role="progressbar"` named for the source and the stage, so a panel of four in-flight sources is not four identical "Loading" bars. Ingest is the one thing in this shell that announces itself as it happens.',
       'The composer\'s own live region announces "Generating…" and then falls silent when the answer arrives. The chat pane\'s `role="log"` is what covers the arrival, and only for screen readers that follow logs.',
+      "While `loading`, the root carries `aria-busy` and every skeleton is hidden from assistive tech, so a screen reader finds one visually hidden line, Loading, plus anything you pass in `status`.",
+      "The shell puts no live region around `status`, and the wrapper mounts together with its content, so a message given on `status`'s first render is not reliably announced on arrival: a live region announces changes to a region already in the DOM, not its own insertion. M6's countdown updates that follow are announced, and the vendored Alert's default assertive alert is generally announced on mount, so choose the one whose announcement fits, or keep `status` mounted and change its content for a later message. Inside a busy root, a screen reader may hold an announcement until `loading` clears.",
     ],
     focus: [
       "A citation jump moves the scroll and not the focus. The left pane scrolls the matching row into view and the status region names it, while focus stays on the marker in the middle pane — deliberate, since you are still mid-sentence, but it means the only keyboard route into the source you just surfaced is back through the pane's own tab stop.",
@@ -105,5 +124,7 @@ export const NotebookShellDocs: ComponentDocs = {
     "`use-stick-to-bottom` owns an element between the conversation root and its content and sets no overflow on it, so without a `scrollClassName` the chat pane does not scroll, it grows. Because that element is not yours, the region's accessible name and tab stop live on the conversation root instead — moving the overflow without moving those two fails axe's scrollable-region-focusable rule.",
     "D1 is the media-generation omnibox, so it offers a negative-prompt field a notebook composer has no use for. The shell suppresses that control through a descendant variant on D1's own class list, and a `composer.className` you pass is merged after the shell's — override the same utility and the control comes back.",
     "Three panes side by side stop working well before the phone breakpoint, so below `lg` the shell stacks them in reading order and moves the scroll to the root. The panes lose their independent scrollers there by design; anything you anchor to the bottom of a pane will scroll away with the page. The `Responsive` story sets the viewport through Storybook's manager, which the vitest story runner has no equivalent of — that story is checked at default width by the gate and by hand at 375px by a human.",
+    "`headerActions` adds a 48px bar above the chat only when it is passed, so the chat pane is shorter in a notebook that has one. While `loading` the bar keeps its place, with a placeholder instead of your controls.",
+    "The composer skeleton reserves D1's context-chip row only when `contextChips` is non-empty. Pass the chips while loading if the loaded composer will show them, or the composer grows by that row when the data arrives.",
   ],
 };

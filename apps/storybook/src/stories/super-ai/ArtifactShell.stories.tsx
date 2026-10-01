@@ -1,11 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { LogIn } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { ArtifactShell, type ArtifactShellProps } from "@/registry/super-ai/artifact-shell";
 import { ArtifactShellDocs } from "@/content/components/artifact-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 import { focusTreatmentSignature, settledFocusRing } from "@/lib/focus-ring";
+import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 import { LibraryShell } from "@/registry/super-ai/library-shell";
 import { SidebarNav } from "@/registry/super-ai/sidebar-nav";
 
@@ -1364,5 +1368,55 @@ export const EmbeddedWithSidebarFooter: Story = {
 
     await expect(footerBox.bottom).toBeLessThanOrEqual(shellBox.bottom + 1);
     await expect(footerBox.height).toBeGreaterThan(0);
+  },
+};
+
+/**
+ * First paint, before the index has loaded. The sidebar, the header with its facet
+ * row, the search row and the card grid each draw a skeleton at the size they
+ * will take, the root is marked busy, and nothing inside it takes focus. The play
+ * renders the loaded index in the same frame and fails if a skeleton sits more
+ * than 8px from where its region lands.
+ */
+export const Loading: Story = {
+  args: FULL_ARGS,
+  render: (args) => <LoadingTwin>{(loading) => <ArtifactShell {...args} loading={loading} />}</LoadingTwin>,
+  play: async ({ canvasElement }) => {
+    await expectLoadingTwin(canvasElement, "artifact-shell", {
+      sidebar: "frame",
+      header: "frame",
+      search: "frame",
+      "artifact-card-grid": "frame",
+    });
+  },
+};
+
+/**
+ * The session expired while the index was open. The message sits under the
+ * header, above the search and the cards it now blocks, and offers the one action
+ * that clears it. The vendored Alert keeps its own role, an assertive alert,
+ * because this one stops work until it is answered.
+ */
+export const Status: Story = {
+  args: {
+    ...FULL_ARGS,
+    status: (
+      <Alert>
+        <LogIn aria-hidden />
+        <AlertTitle>Your session expired</AlertTitle>
+        <AlertDescription className="flex flex-col items-start gap-2">
+          <span>Sign in again to keep working. Nothing you saved is lost.</span>
+          <Button type="button" size="sm" variant="outline" onClick={fn()}>
+            Sign in again
+          </Button>
+        </AlertDescription>
+      </Alert>
+    ),
+  },
+  play: async ({ canvasElement }) => {
+    const status = canvasElement.querySelector<HTMLElement>('[data-slot="artifact-shell-status"]');
+    await expect(status).not.toBeNull();
+    await expect(status!.previousElementSibling).toHaveAttribute("data-region", "header");
+    await expect(within(status!).getByRole("button", { name: "Sign in again" })).toBeVisible();
   },
 };
