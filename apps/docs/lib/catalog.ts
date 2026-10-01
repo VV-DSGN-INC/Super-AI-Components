@@ -50,6 +50,7 @@ export const FAMILY_TITLES: Record<FamilyId, string> = {
   N: "Feedback, trust & observability",
   O: "Blocks",
   P: "Records & views",
+  Q: "Presentational chrome (Geist)",
 };
 
 const FAMILY_ORDER = Object.keys(FAMILY_TITLES) as FamilyId[];
