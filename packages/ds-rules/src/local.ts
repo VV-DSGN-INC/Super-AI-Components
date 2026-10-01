@@ -7,17 +7,25 @@ import type { Rule } from "./schema";
  *  ban the old gate never mechanised). Spec:
  *  docs/superpowers/specs/2026-08-21-ds-rules-retrofit-design.md §4. */
 
+/** The registry, plus the docs site's own pages and components. A consumer
+ *  never installs `app/` or `components/`, but they are the first thing a
+ *  consumer sees, and a raw colour there is the same contract break as one in
+ *  the registry. `components` covers `components/ui` and
+ *  `components/ai-elements` too; the scopes must not nest, or walk() visits a
+ *  file once per enclosing scope. (Coverage salvaged from PR GH-79.) */
 export const CATALOG_SCOPES = [
   "apps/docs/registry/super-ai",
   "apps/docs/registry/marketing",
-  "apps/docs/components/ui",
+  "apps/docs/components",
+  "apps/docs/app",
 ];
 
 /** Findings under these scopes report as warnings, never blockers: vendored
- *  shadcn ports, where fixing means diverging from upstream — a decision
- *  nobody has made. Triaged in docs/design-system/vendored-token-findings.md.
- *  rulecheck.mjs mirrors this list; records.test.ts pins the two equal. */
-export const VENDORED_SCOPES = ["apps/docs/components/ui"];
+ *  shadcn and AI Elements ports, where fixing means diverging from upstream —
+ *  a decision nobody has made. Triaged in
+ *  docs/design-system/vendored-token-findings.md. rulecheck.mjs mirrors this
+ *  list; records.test.ts pins the two equal. */
+export const VENDORED_SCOPES = ["apps/docs/components/ui", "apps/docs/components/ai-elements"];
 
 const catalogGrep = { flags: "", scope: CATALOG_SCOPES, include: [".tsx"], exempt: [".test."] };
 
@@ -30,6 +38,12 @@ export const LOCAL_RULES: Rule[] = [
       method: "heuristic",
       pattern: "#[0-9a-fA-F]{3,8}\\b",
       ...catalogGrep,
+      /** Two demos whose hex is content, not styling. preset-grid-demo's four
+       *  are the named presets of a colour picker ("Sunset orange", …): the
+       *  chart tokens are greyscale, so no token says "orange". The video
+       *  dialog's poster is an inline SVG data URI, which cannot read a CSS
+       *  variable. Both carried over from PR GH-79's gate. */
+      exempt: [".test.", "components/demos/preset-grid-demo.tsx", "components/demos/hero-video-dialog-demo.tsx"],
       falsePositives:
         "Issue references like #1234 in comments — the documented repo convention is to write GH-1234 in registry sources instead (carried from check-tokens.mjs).",
     },
@@ -76,6 +90,10 @@ export const LOCAL_RULES: Rule[] = [
       method: "heuristic",
       pattern: "\\b(?:rgba?|hsla?)\\s*\\(",
       ...catalogGrep,
+      /** drawing-tools-demo's palette is the data the drawing tool paints
+       *  with, the values a user picks a stroke colour from, not a style of
+       *  the demo itself. Same footing as TOK-1's preset-grid exemption. */
+      exempt: [".test.", "components/demos/drawing-tools-demo.tsx"],
       falsePositives:
         "A string that discusses a colour function (docs copy, comments) rather than applying one. None known in the current tree; every hit needs a look before dismissal.",
     },

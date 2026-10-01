@@ -10,13 +10,15 @@ set -uo pipefail
 path=$(node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).tool_input?.file_path??"")}catch{process.stdout.write("")}})' 2>/dev/null) || exit 0
 
 # Mirrors the union of rule scopes in packages/ds-rules/rules/*.json —
-# `{registry/{super-ai,marketing},components/ui}/**/*.tsx` — so an edit-time
+# `{registry/{super-ai,marketing},components,app}/**/*.tsx` — so an edit-time
 # signal exists for every file the gate actually covers, not just the
-# original super-ai subset.
+# original super-ai subset. A case `*` matches across `/`, so the components
+# line covers components/ui and components/ai-elements as well.
 case "$path" in
   *apps/docs/registry/super-ai/*.tsx) ;;
   *apps/docs/registry/marketing/*.tsx) ;;
-  *apps/docs/components/ui/*.tsx) ;;
+  *apps/docs/components/*.tsx) ;;
+  *apps/docs/app/*.tsx) ;;
   *) exit 0 ;;
 esac
 

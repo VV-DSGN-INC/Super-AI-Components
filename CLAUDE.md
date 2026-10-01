@@ -87,7 +87,7 @@ Use `pnpm`, not npm — the lockfile is `pnpm-lock.yaml` and CI installs with `-
 
 ## The token gate
 
-`packages/ds-rules/rulecheck.mjs` (invoked by `pnpm check:tokens`) enforces the design spec's token contract across `registry/super-ai/**/*.tsx`. It fails the build on:
+`packages/ds-rules/rulecheck.mjs` (invoked by `pnpm check:tokens`) enforces the design spec's token contract across the registry (`registry/{super-ai,marketing}/**/*.tsx`) and the docs site's own `app/` and `components/`, with `components/ui` and `components/ai-elements` demoted to warnings as vendored code. It fails the build on:
 
 - raw hex colours (`#1a1a1a`)
 - raw `oklch(...)`
