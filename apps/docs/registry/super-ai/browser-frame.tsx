@@ -54,7 +54,7 @@ const TONE: Record<
   inverted: {
     chrome: "bg-foreground",
     dot: "bg-background/30",
-    glyph: "text-background/70",
+    glyph: "text-background",
     field: "bg-background/10",
     address: "text-background",
   },

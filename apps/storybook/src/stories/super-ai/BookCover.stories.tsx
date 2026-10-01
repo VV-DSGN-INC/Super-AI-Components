@@ -20,7 +20,7 @@ type Story = StoryObj<typeof BookCover>;
  * thing on it that a screen reader can read.
  */
 export const Plain: Story = {
-  args: { title: "Brand guidelines", width: 160 },
+  args: { title: "Brand guidelines", variant: "plain", width: 160 },
 };
 
 /**

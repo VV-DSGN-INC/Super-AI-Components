@@ -27,7 +27,7 @@ const Capture = () => (
  * what is inside came from somewhere other than this product.
  */
 export const Page: Story = {
-  args: { address: "https://vercel.com/geist/browser", children: <Capture /> },
+  args: { address: "https://vercel.com/geist/browser", tone: "surface", children: <Capture /> },
   render: (args) => (
     <div className="w-full max-w-lg">
       <BrowserFrame {...args} />

@@ -92,4 +92,60 @@ export const BookCoverDocs: ComponentDocs = {
     "Reading width as viewport-responsive. A cover in a 300px sidebar resolves to its small width even on a wide screen. That is the intent, and it will look wrong if you were expecting breakpoints.",
     "Using it for generated artifacts. A cover says 'a thing you read'. On an image or a video result it makes a false promise about what opening it will do.",
   ],
+
+  variants: [
+    {
+      prop: "variant",
+      default: "plain",
+      values: [
+        {
+          value: "plain",
+          intent:
+            "The cover stands alone, or sits among covers whose titles already tell them apart. Nothing on the face competes with the title, which is the only part a screen reader gets.",
+        },
+        {
+          value: "stripe",
+          intent:
+            "Covers sit together on a shelf and the titles alone do not group them, so a category band earns its place. On a cover shown by itself the band says nothing.",
+        },
+        {
+          value: "illustrated",
+          intent:
+            "You have a decorative picture that helps a reader recognise the collection at a glance. The slot is hidden from assistive tech, so anything the picture says that the title does not belongs in a labelled element of your own.",
+        },
+      ],
+    },
+    {
+      prop: "tone",
+      default: "paper",
+      values: [
+        {
+          value: "paper",
+          intent:
+            "The shelf sits on the page background and the covers should read as objects on it without adding weight. The safe pick for a mixed shelf.",
+        },
+        {
+          value: "ink",
+          intent:
+            "The shelf sits on a light surface and the covers need to hold strong contrast against it. Chosen for what is behind the shelf, never to mark what kind of document is on the cover.",
+        },
+        {
+          value: "muted",
+          intent:
+            "The shelf sits on a card, where a paper face would share the card's own surface and disappear into it, and ink would be too heavy. Contrast again, never classification.",
+        },
+      ],
+    },
+  ],
+
+  insteadUse: [
+    {
+      component: "preview-tile",
+      when: "The user is choosing among things the system generated (images, videos, drafts) rather than choosing what to read. preview-tile is the selectable frame for an output and carries a selection ring; a cover promises a document and has no selected state.",
+    },
+    {
+      component: "artifact-grid",
+      when: "The set is the documents an assistant produced, and a reader finds them by the session that made them. artifact-grid groups them under that session; a shelf of covers drops the provenance.",
+    },
+  ],
 };
