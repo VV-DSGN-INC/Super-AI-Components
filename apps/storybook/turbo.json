@@ -49,6 +49,17 @@
         "$TURBO_ROOT$/apps/docs/lib/**"
       ]
     },
+    // eslint lints story files and wrappers that import apps/docs source, so a
+    // docs change can make storybook's lint fail. Same blind spot, same inputs.
+    "lint": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/docs/registry/**",
+        "$TURBO_ROOT$/apps/docs/components/**",
+        "$TURBO_ROOT$/apps/docs/content/**",
+        "$TURBO_ROOT$/apps/docs/lib/**"
+      ]
+    },
     // `storybook build` bundles those same apps/docs sources through
     // vite.config.ts's aliases, so it carried the identical blind spot.
     "build": {

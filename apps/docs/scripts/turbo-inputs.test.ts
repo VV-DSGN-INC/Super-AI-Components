@@ -119,7 +119,7 @@ describe("apps/storybook/turbo.json input coverage", () => {
     expect(reachable).toContain("components");
   });
 
-  it.each(["typecheck", "build"])("declares cross-package inputs for %s", (task) => {
+  it.each(["typecheck", "build", "lint"])("declares cross-package inputs for %s", (task) => {
     expect(Object.keys(byTask)).toContain(task);
     const inputs = byTask[task];
 
@@ -136,32 +136,28 @@ describe("apps/storybook/turbo.json input coverage", () => {
     }
   });
 
-  it.each(["typecheck", "build"])("does not use the blanket apps/docs glob for %s", (task) => {
+  it.each(["typecheck", "build", "lint"])("does not use the blanket apps/docs glob for %s", (task) => {
     // $TURBO_ROOT$ globs ignore .gitignore and turbo drops `!`-negations against
     // them, so the blanket form busts the cache on every tsbuildinfo/.next write.
     expect(byTask[task]).not.toContain("$TURBO_ROOT$/apps/docs/**");
   });
 
-  it("still has no real lint or test task in apps/storybook to cover", () => {
+  it("has no storybook test script that turbo.json does not cover", () => {
     const pkg = JSON.parse(readFileSync(path.join(STORYBOOK, "package.json"), "utf8")) as {
       scripts?: Record<string, string>;
     };
     const scripts = pkg.scripts ?? {};
 
-    // `lint` and `test` are turbo tasks that would inherit this exact blind
-    // spot. They are safe today only by accident — storybook's lint is a no-op
-    // and it has no test script at all, so neither can hide a failure. The
-    // moment either becomes real it needs an entry in turbo.json, and this is
-    // the tripwire that says so.
-    expect(
-      scripts.lint,
-      "apps/storybook gained a real lint script. It lints files that import apps/docs, " +
-        "so add a `lint` task with the same cross-package inputs to apps/storybook/turbo.json.",
-    ).toBe('echo "no lint"');
+    // `lint` is a real eslint run and is covered by the `lint` task above.
+    // A `test` script would inherit the same blind spot; this is the tripwire
+    // that says to add a `test` task with the same inputs and then extend the
+    // task lists above.
+    expect(scripts.lint, "storybook lint script missing; drop the lint task or restore it").toBeDefined();
     expect(
       scripts.test,
       "apps/storybook gained a test script. Add a `test` task with the same cross-package " +
-        "inputs to apps/storybook/turbo.json, or it will replay cache hits over broken code.",
+        "inputs to apps/storybook/turbo.json, add it to the task lists in this test, " +
+        "or it will replay cache hits over broken code.",
     ).toBeUndefined();
   });
 });

@@ -469,7 +469,7 @@ exited 0 over code that does not compile. That is how the i18n branch made
 `locale` required on `ComponentDocsView` and went a whole session green before
 `pnpm test:stories` finally ran and 127 of 131 story files failed to import.
 Fixed by `apps/storybook/turbo.json`, which adds the four reachable `apps/docs`
-directories to `typecheck` and `build` `inputs`. Four things worth knowing
+directories to `typecheck`, `build` and `lint` `inputs`. Four things worth knowing
 before you touch it:
 
 <!-- prettier-ignore -->
@@ -492,19 +492,17 @@ before you touch it:
   with `tsconfig.json`'s `paths`/`include` and `vite.config.ts`'s aliases — the
   hand-maintained-list failure mode this repo already knows. `apps/docs/scripts/turbo-inputs.test.ts`
   fails if a `../docs` directory is reachable from either config and missing
-  from `inputs`, if the blanket glob comes back, or if storybook gains a real
-  `lint`/`test` script. It rides `pnpm test`; it is not a new CI step.
+  from `inputs`, if the blanket glob comes back, or if storybook gains a
+  `test` script. It rides `pnpm test`; it is not a new CI step.
 - **CI was never exposed**, and that is not reassurance. No remote cache is
   configured (`TURBO_TOKEN`/`TURBO_TEAM`/`remoteCache` are all absent), so a
   fresh runner always starts cold. This was purely a local hazard — which is
   exactly where the damage happened, because local is where you decide whether
   the work is finished.
 
-`lint` and `test` were audited for the same shape and are clean, but only by
-accident: `storybook`'s `lint` is `echo "no lint"` and it has no `test` script
-at all, so turbo skips both. Give storybook a real `lint` or `test` and it
-inherits this blind spot on day one — add the task to `apps/storybook/turbo.json`
-in the same commit.
+`lint` is a real eslint run over files that import `apps/docs`, so it carries the
+same four inputs in `apps/storybook/turbo.json`. `storybook` has no `test` script;
+give it one and add the task there in the same commit.
 
 **Guidance modules and the server/client boundary.** `<name>.docs.tsx` is read
 by a Server Component. Marking it `"use client"` breaks the server read; putting

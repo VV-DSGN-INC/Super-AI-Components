@@ -9,7 +9,7 @@ apps/docs        Next.js docs site — owns registry/super-ai/**, the token gate
 apps/storybook   Storybook workspace — and the accessibility gate (see CI)
 ```
 
-`pnpm-workspace.yaml` also globs `packages/*`; `packages/ds-rules` (the rule records + detector behind `check:tokens`) is its first member — `apps/docs`, `apps/storybook`, and `packages/ds-rules` are the workspaces today.
+`pnpm-workspace.yaml` also globs `packages/*`; `packages/ds-rules` (rule records + detector behind `check:tokens`) is the third workspace.
 
 Design specs live under `docs/superpowers/specs/` and implementation plans under `docs/superpowers/plans/`, one file per initiative.
 
@@ -21,7 +21,7 @@ Repo: `github.com/VV-DSGN-INC/Super-AI-Components`.
 
 The real contracts are written down, in one copy each, under `docs/`. **This file points at them and must never restate them** — a second copy is how instructions drift, which is why `CONTINUE.md` §3.4 also forbids pasting them into subagent prompts.
 
-Read these before writing any component code. The first two are contracts, not suggestions:
+Read these before writing component code. The first two are contracts:
 
 1. **[`docs/design-system/component-build-brief.md`](docs/design-system/component-build-brief.md)** — the house contract every component is built to. The single most important file in the repo, and what each build agent gets handed.
 2. **[`docs/design-system/block-build-brief.md`](docs/design-system/block-build-brief.md)** — family O (blocks) only. Supplements the above, never replaces it.
@@ -31,9 +31,9 @@ Read these before writing any component code. The first two are contracts, not s
 6. **[`docs/design-system/a11y-baseline.md`](docs/design-system/a11y-baseline.md)** — the measured accessibility posture, the recurring contrast failure, and what is excluded from the gate and why.
 7. **[`docs/design-system/anti-slop.md`](docs/design-system/anti-slop.md)** — the anti-slop taxonomy, audit, and fix ladder for generated UI; the runnable version is the `unslop` skill (`.claude/skills/unslop/`), used before building and again before "done".
 
-Specs are normative **including their prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
+Specs are normative **including prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
 
-**Catalog status: 118 of 118 shipped**, nothing `building`. There is no next batch. The `contractExempt` retrofit is **done** — the flag has since been deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
+**Catalog status: 118 of 118 shipped**, nothing `building`, no next batch. The `contractExempt` flag is deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
 
 ## IMPORTANT: The registry is the product
 
@@ -49,7 +49,7 @@ Each has cost a real debugging session. The reasoning is in the linked file — 
 - **`consumes` / `shadcn` / `npm` are reconciled from real imports** — never from the catalog's assumed bases (it names primitives this repo does not vendor) and never from a builder's own list. → `CONTINUE.md` §3.5. Gate: `apps/docs/scripts/reconcile-deps.mts`.
 - **A gate list must mirror `ci.yml`, in `ci.yml`'s order.** A gate missing from a written list goes unrun for a whole phase, and because CI stops at the first failure, one red gate hides every gate behind it. This has already happened here. → `CONTINUE.md` §1
 - **A green run can prove nothing.** `playwright.config.ts` runs `pnpm start`, and `next start` serves the _prebuilt_ output — editing source without rebuilding tests a stale app. Rebuild, then run.
-- **`apps/storybook` compiles `apps/docs` source, and turbo can't see it.** The edge is `tsconfig.json` `paths`/`include`, not a package dependency, so `storybook`'s `typecheck` and `build` are pinned to `$TURBO_ROOT$/apps/docs/**` in `apps/storybook/turbo.json`. Without that, an `apps/docs` change leaves the hash untouched and turbo replays `cache hit` over code that does not compile. Give storybook a real `lint` or `test` script and add it there in the same commit. → `CONTINUE.md` §4
+- **`apps/storybook` compiles `apps/docs` source; turbo can't see it.** Pin new tasks in its `turbo.json`. → `CONTINUE.md` §4. Gate: `apps/docs/scripts/turbo-inputs.test.ts`.
 - **The a11y exclusion list may only shrink, never grow.** Adding a file to silence a new failure defeats the gate; fix the component instead. → `a11y-baseline.md`. The same rule holds for `story-coverage.baseline.json`: regenerate it with `pnpm story-coverage:baseline`, which refuses to grow it. → `story-conventions.md`. Gates: `apps/docs/scripts/lib/a11y-ratchet.test.ts`, `apps/docs/scripts/lib/story-coverage.test.ts`.
 - **Never pair `text-muted-foreground` with `bg-muted` / `bg-accent` / `bg-secondary`** — same lightness in this token set, 4.34:1 against a 4.5:1 minimum. When a component paints a surface, **rebind the variable** (`[--muted-foreground:var(--accent-foreground)]`) rather than restyling slots: composed children carry their own muted classes and a slot-level override cannot reach them. → `a11y-baseline.md`. Gate: `packages/ds-rules/rulecheck.mjs`.
 - **Blocks compose; they do not implement.** When a composed component does not fit, use a labelled sibling or a documented override and _report the gap_ — never fork or reimplement it. A reimplemented row passes every gate and is still wrong. → `block-build-brief.md`
