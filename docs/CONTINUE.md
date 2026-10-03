@@ -472,6 +472,7 @@ Fixed by `apps/storybook/turbo.json`, which adds the four reachable `apps/docs`
 directories to `typecheck` and `build` `inputs`. Four things worth knowing
 before you touch it:
 
+<!-- prettier-ignore -->
 - **Declaring `"docs": "workspace:*"` does not fix it.** Measured, not assumed:
   the hash moved once (package.json changed) and then went straight back to
   being stable across `apps/docs` edits. Turbo mixes an internal dependency's
@@ -504,7 +505,6 @@ accident: `storybook`'s `lint` is `echo "no lint"` and it has no `test` script
 at all, so turbo skips both. Give storybook a real `lint` or `test` and it
 inherits this blind spot on day one — add the task to `apps/storybook/turbo.json`
 in the same commit.
-
 
 **Guidance modules and the server/client boundary.** `<name>.docs.tsx` is read
 by a Server Component. Marking it `"use client"` breaks the server read; putting
