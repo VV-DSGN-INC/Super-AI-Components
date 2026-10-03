@@ -12,13 +12,16 @@
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing",
-          "apps/docs/components/ui"
+          "apps/docs/components",
+          "apps/docs/app"
         ],
         "include": [
           ".tsx"
         ],
         "exempt": [
-          ".test."
+          ".test.",
+          "components/demos/preset-grid-demo.tsx",
+          "components/demos/hero-video-dialog-demo.tsx"
         ],
         "falsePositives": "Issue references like #1234 in comments — the documented repo convention is to write GH-1234 in registry sources instead (carried from check-tokens.mjs)."
       },
@@ -36,7 +39,8 @@
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing",
-          "apps/docs/components/ui"
+          "apps/docs/components",
+          "apps/docs/app"
         ],
         "include": [
           ".tsx"
@@ -59,7 +63,8 @@
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing",
-          "apps/docs/components/ui"
+          "apps/docs/components",
+          "apps/docs/app"
         ],
         "include": [
           ".tsx"
@@ -93,13 +98,15 @@
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing",
-          "apps/docs/components/ui"
+          "apps/docs/components",
+          "apps/docs/app"
         ],
         "include": [
           ".tsx"
         ],
         "exempt": [
-          ".test."
+          ".test.",
+          "components/demos/drawing-tools-demo.tsx"
         ],
         "falsePositives": "A string that discusses a colour function (docs copy, comments) rather than applying one. None known in the current tree; every hit needs a look before dismissal."
       },
@@ -117,7 +124,8 @@
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing",
-          "apps/docs/components/ui"
+          "apps/docs/components",
+          "apps/docs/app"
         ],
         "include": [
           ".tsx"
@@ -141,7 +149,8 @@
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing",
-          "apps/docs/components/ui"
+          "apps/docs/components",
+          "apps/docs/app"
         ],
         "include": [
           ".tsx"
@@ -165,7 +174,8 @@
         "scope": [
           "apps/docs/registry/super-ai",
           "apps/docs/registry/marketing",
-          "apps/docs/components/ui"
+          "apps/docs/components",
+          "apps/docs/app"
         ],
         "include": [
           ".tsx"

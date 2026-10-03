@@ -28,7 +28,7 @@ const YESTERDAY: Result[] = [
 function Media() {
   return (
     <div className="bg-foreground/10 flex h-full w-full items-center justify-center">
-      <Sparkles aria-hidden className="text-foreground/40 size-6" />
+      <Sparkles aria-hidden className="text-foreground/60 size-6" />
     </div>
   );
 }
