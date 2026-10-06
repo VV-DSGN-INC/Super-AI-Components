@@ -1,0 +1,7 @@
+../Super-AI-Components/apps/docs/registry/super-ai/shortcuts-sheet.tsx(42,33): error TS2322: Type '{ render: ReactElement<unknown, string | JSXElementConstructor<any>>; }' is not assignable to type 'IntrinsicAttributes & DialogTriggerProps & RefAttributes<HTMLButtonElement>'.
+  Property 'render' does not exist on type 'IntrinsicAttributes & DialogTriggerProps & RefAttributes<HTMLButtonElement>'.
+../Super-AI-Components/apps/docs/registry/super-ai/thread-list.tsx(138,9): error TS2322: Type '{ children: Element[]; onOpenChangeComplete: (open: any) => void; }' is not assignable to type 'IntrinsicAttributes & DropdownMenuProps'.
+  Property 'onOpenChangeComplete' does not exist on type 'IntrinsicAttributes & DropdownMenuProps'.
+../Super-AI-Components/apps/docs/registry/super-ai/thread-list.tsx(138,32): error TS7006: Parameter 'open' implicitly has an 'any' type.
+../Super-AI-Components/apps/docs/registry/super-ai/thread-list.tsx(149,11): error TS2322: Type '{ children: Element; render: Element; }' is not assignable to type 'IntrinsicAttributes & DropdownMenuTriggerProps & RefAttributes<HTMLButtonElement>'.
+  Property 'render' does not exist on type 'IntrinsicAttributes & DropdownMenuTriggerProps & RefAttributes<HTMLButtonElement>'.

@@ -1,0 +1,126 @@
+11.1.0
+$ turbo run typecheck
+• turbo 2.9.17
+
+   • Packages in scope: docs, storybook
+   • Running typecheck in 2 packages
+   • Remote caching disabled
+
+storybook:typecheck: cache miss, executing 6004c3c6a188802f
+docs:typecheck: cache miss, executing 6b22ab604aa40eea
+storybook:typecheck: $ tsc --noEmit
+docs:typecheck: $ tsc --noEmit
+storybook:typecheck: src/components/ai-elements/confirmation.tsx(100,3): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/components/ai-elements/confirmation.tsx(120,9): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/components/ai-elements/confirmation.tsx(122,9): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/components/ai-elements/confirmation.tsx(144,9): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/components/ai-elements/confirmation.tsx(146,9): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/components/ai-elements/confirmation.tsx(165,3): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/components/ai-elements/context.tsx(59,16): error TS2322: Type '{ defaultOpen?: boolean | undefined; open?: boolean | undefined; onOpenChange?: ((open: boolean, eventDetails: PreviewCardRootChangeEventDetails) => void) | undefined; ... 7 more ...; openDelay: number; }' is not assignable to type 'IntrinsicAttributes & Props<unknown>'.
+storybook:typecheck:   Property 'closeDelay' does not exist on type 'IntrinsicAttributes & Props<unknown>'.
+storybook:typecheck: src/components/ai-elements/context.tsx(319,34): error TS2339: Property 'reasoningTokens' does not exist on type 'LanguageModelUsage'.
+storybook:typecheck: src/components/ai-elements/context.tsx(359,30): error TS2339: Property 'cachedInputTokens' does not exist on type 'LanguageModelUsage'.
+storybook:typecheck: src/components/ai-elements/inline-citation.tsx(53,14): error TS2322: Type '{ defaultOpen?: boolean | undefined; open?: boolean | undefined; onOpenChange?: ((open: boolean, eventDetails: PreviewCardRootChangeEventDetails) => void) | undefined; ... 7 more ...; openDelay: number; }' is not assignable to type 'IntrinsicAttributes & Props<unknown>'.
+storybook:typecheck:   Property 'closeDelay' does not exist on type 'IntrinsicAttributes & Props<unknown>'.
+storybook:typecheck: src/components/ai-elements/plan.tsx(126,32): error TS2322: Type '{ nativeButton?: boolean | undefined; form?: string | undefined; slot?: string | undefined; title?: string | undefined; ref?: Ref<HTMLButtonElement> | undefined; ... 286 more ...; variant: "ghost"; }' is not assignable to type 'ButtonProps'.
+storybook:typecheck:   Types of property 'render' are incompatible.
+storybook:typecheck:     Type 'ReactElement<unknown, string | JSXElementConstructor<any>> | ComponentRenderFn<HTMLProps, CollapsibleTriggerState> | undefined' is not assignable to type 'ReactElement<unknown, string | JSXElementConstructor<any>> | ComponentRenderFn<HTMLProps, ButtonState> | undefined'.
+storybook:typecheck:       Type 'ComponentRenderFn<HTMLProps, CollapsibleTriggerState>' is not assignable to type 'ReactElement<unknown, string | JSXElementConstructor<any>> | ComponentRenderFn<HTMLProps, ButtonState> | undefined'.
+storybook:typecheck:         Type 'ComponentRenderFn<HTMLProps, CollapsibleTriggerState>' is not assignable to type 'ComponentRenderFn<HTMLProps, ButtonState>'.
+storybook:typecheck:           Type 'ButtonState' is missing the following properties from type 'Pick<UseCollapsibleRootReturnValue, "disabled" | "open" | "transitionStatus">': open, transitionStatus
+storybook:typecheck: src/components/ai-elements/prompt-input.tsx(1259,3): error TS2339: Property 'openDelay' does not exist on type 'Props<unknown>'.
+storybook:typecheck: src/components/ai-elements/prompt-input.tsx(1260,3): error TS2339: Property 'closeDelay' does not exist on type 'Props<unknown>'.
+storybook:typecheck: src/components/ai-elements/prompt-input.tsx(1263,14): error TS2322: Type '{ defaultOpen?: boolean | undefined; open?: boolean | undefined; onOpenChange?: ((open: boolean, eventDetails: PreviewCardRootChangeEventDetails) => void) | undefined; ... 7 more ...; openDelay: any; }' is not assignable to type 'IntrinsicAttributes & Props<unknown>'.
+storybook:typecheck:   Property 'closeDelay' does not exist on type 'IntrinsicAttributes & Props<unknown>'.
+storybook:typecheck: src/components/ai-elements/reasoning.tsx(173,8): error TS2322: Type '{ children: ReactNode & string; hiddenUntilFound?: boolean | undefined; keepMounted?: boolean | undefined; slot?: string | undefined; title?: string | undefined; ref?: Ref<...> | undefined; ... 272 more ...; style?: CSSProperties | ... 1 more ... | undefined; }' is not assignable to type '{ mode?: "static" | "streaming" | undefined; dir?: "auto" | "ltr" | "rtl" | undefined; BlockComponent?: ComponentType<BlockProps> | undefined; parseMarkdownIntoBlocksFn?: ((markdown: string) => string[]) | undefined; ... 19 more ...; onAnimationEnd?: (() => void) | undefined; }'.
+storybook:typecheck:   Types of property 'dir' are incompatible.
+storybook:typecheck:     Type 'string | undefined' is not assignable to type '"auto" | "ltr" | "rtl" | undefined'.
+storybook:typecheck:       Type 'string' is not assignable to type '"auto" | "ltr" | "rtl" | undefined'.
+storybook:typecheck: src/components/ai-elements/tool.tsx(43,5): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/components/ai-elements/tool.tsx(54,5): error TS2578: Unused '@ts-expect-error' directive.
+storybook:typecheck: src/shims/next-link.tsx(15,65): error TS2339: Property 'pathname' does not exist on type 'never'.
+storybook:typecheck: [ELIFECYCLE] Command failed with exit code 2.
+ ERROR  storybook#typecheck: command (/Users/nickv/ClaudeCode Projects/Super-AI-Components/apps/storybook) /opt/homebrew/bin/pnpm run typecheck exited (2)
+
+ Tasks:    1 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    17.018s 
+Failed:    storybook#typecheck
+
+ ERROR  run failed: command  exited (2)
+[ELIFECYCLE] Command failed with exit code 2.
+$ turbo run lint
+• turbo 2.9.17
+
+   • Packages in scope: docs, storybook
+   • Running lint in 2 packages
+   • Remote caching disabled
+
+storybook:lint: cache miss, executing 7b87ffb79ef74e67
+docs:lint: cache miss, executing a2e4e1c0b59a5a05
+docs:lint: $ eslint .
+storybook:lint: $ echo "no lint"
+storybook:lint: no lint
+
+ Tasks:    2 successful, 2 total
+Cached:    0 cached, 2 total
+  Time:    4.043s 
+
+$ turbo run check:tokens
+• turbo 2.9.17
+
+   • Packages in scope: docs, storybook
+   • Running check:tokens in 2 packages
+   • Remote caching disabled
+
+docs:check:tokens: cache miss, executing 4eb60da83444243c
+docs:check:tokens: $ node scripts/check-tokens.mjs
+docs:check:tokens: check:tokens — 9 file(s) clean.
+
+ Tasks:    1 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    718ms 
+
+$ turbo run test
+• turbo 2.9.17
+
+   • Packages in scope: docs, storybook
+   • Running test in 2 packages
+   • Remote caching disabled
+
+docs:test: cache miss, executing bb4f9860203c2c21
+docs:test: $ vitest run
+docs:test: 
+docs:test:  RUN  v4.1.8 /Users/nickv/ClaudeCode Projects/Super-AI-Components/apps/docs
+docs:test: 
+docs:test: (node:76422) [DEP0205] DeprecationWarning: `module.register()` is deprecated. Use `module.registerHooks()` instead.
+docs:test: (Use `node --trace-deprecation ...` to show where the warning was created)
+docs:test:  ✓ registry/super-ai/kbd.test.tsx (2 tests) 548ms
+docs:test:      ✓ renders a semantic <kbd> with content and custom class  357ms
+docs:test:  ✓ registry/super-ai/cost-chip.test.tsx (3 tests) 217ms
+docs:test:  ✓ registry/super-ai/date-section.test.tsx (2 tests) 892ms
+docs:test:      ✓ renders a labeled section containing its children  862ms
+docs:test:  ✓ registry/super-ai/gen-settings-bar.test.tsx (3 tests) 966ms
+docs:test:      ✓ renders items as a toolbar with data-slots; items fire onClick  937ms
+docs:test:  ✓ registry/super-ai/choice-chips.test.tsx (3 tests) 1046ms
+docs:test:      ✓ controlled: marks the selected chip and fires onValueChange  943ms
+docs:test:  ✓ registry/super-ai/field-row.test.tsx (4 tests) 1029ms
+docs:test:      ✓ associates label with the control, shows hint, exposes data-slot  505ms
+docs:test:      ✓ wires aria-describedby to the hint  370ms
+docs:test:  ✓ registry/super-ai/filter-bar.test.tsx (3 tests) 334ms
+docs:test:  ✓ registry/super-ai/shortcuts-sheet.test.tsx (2 tests) 345ms
+docs:test:      ✓ opens from its trigger and renders sections with keycaps  315ms
+docs:test:  ✓ registry/super-ai/thread-list.test.tsx (6 tests) 1064ms
+docs:test:      ✓ renders nav landmark, active item gets aria-current, click selects  304ms
+docs:test: 
+docs:test:  Test Files  9 passed (9)
+docs:test:       Tests  28 passed (28)
+docs:test:    Start at  20:22:49
+docs:test:    Duration  8.95s (transform 2.77s, setup 1.79s, import 11.21s, tests 6.44s, environment 45.09s)
+docs:test: 
+
+ Tasks:    1 successful, 1 total
+Cached:    0 cached, 1 total
+  Time:    12.009s 
+
+
