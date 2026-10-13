@@ -109,6 +109,15 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+  /* Scene palette for `preview-scene`. Kept in sync with
+     apps/docs/app/globals.css and lib.manifest.ts by hand, like every other
+     token in this file — Storybook carries its own copy of the theme. */
+  --scene-sky: oklch(0.82 0.06 245);
+  --scene-ground: oklch(0.7 0.06 78);
+  --scene-subject: oklch(0.6 0.12 38);
+  --scene-accent: oklch(0.68 0.08 195);
+  --scene-shadow: oklch(0.34 0.05 255);
+  --scene-highlight: oklch(0.93 0.05 88);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -144,6 +153,12 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+  --scene-sky: oklch(0.4 0.07 255);
+  --scene-ground: oklch(0.36 0.05 72);
+  --scene-subject: oklch(0.54 0.12 38);
+  --scene-accent: oklch(0.55 0.08 195);
+  --scene-shadow: oklch(0.2 0.04 258);
+  --scene-highlight: oklch(0.84 0.06 88);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);

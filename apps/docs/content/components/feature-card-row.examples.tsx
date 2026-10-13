@@ -3,6 +3,7 @@
 import { Mic, Wand2 } from "lucide-react";
 
 import { FeatureCardRow, type FeatureCardRowItem } from "@/registry/super-ai/feature-card-row";
+import { PreviewScene } from "@/registry/super-ai/preview-scene";
 
 /**
  * Live examples for feature-card-row.docs.tsx.
@@ -44,7 +45,7 @@ const MIXED_SHAPE_ITEMS: FeatureCardRowItem[] = [
   },
   {
     id: "templates",
-    thumbnail: { src: "https://placehold.co/320x180?text=Templates", alt: "Grid of starter templates" },
+    thumbnail: <PreviewScene subject="interior" treatment="cel" variant={1} />,
     title: "Browse templates",
     description: "Start from a layout other teams already ship with.",
   },
