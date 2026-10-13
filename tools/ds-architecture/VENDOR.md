@@ -8,7 +8,7 @@ normal sweep — an automatic sync would let an unexercised stage travel.
 | --------------- | ---------------------------------- | ------- | ---------- |
 | ds-architecture | scripts/, src/, stages/, LADDER.md | 396bab6 | 2026-08-22 |
 
-- **Source:** the local `ds-architecture` repo (no remote), commit `396bab6`
+- **Source:** the `ds-architecture` repo (now `weeeha/ds-architecture`, private), commit `396bab6`
   (2026-08-22, "feat: ladder integration across three stages"). Stages built
   upstream at that commit: 00, 01, 09.
 - **Vendored here:** 2026-08-22 at stage 00; refreshed to the commit above on
@@ -62,3 +62,12 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   `@custom-variant dark`). Stage 00 never reads axes against the tree, so
   this is inert today — revisit when a stage consumes axes (stamp
   `data-theme` at runtime, or upstream a schema relaxation).
+
+## Local modifications
+
+- **2026-10-12, names only.** Client brand and repo names in the vendored copy were
+  replaced with placeholders, because this repo is public: the starter kit's icon package
+  became `@your-org/ui`, its two example themes became `brand-emerald` and `brand-warm`,
+  and stage 01's reference test no longer lists the brand name among the words the
+  reference CSS must not contain. No behaviour changed: these files are not part of the
+  pnpm workspace and nothing in this repo runs their tests. Upstream is unchanged.

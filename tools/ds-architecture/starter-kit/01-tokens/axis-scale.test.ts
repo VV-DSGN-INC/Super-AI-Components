@@ -6,7 +6,7 @@
  *  equal specificity, so anything a finish declares wins outright.
  *
  *  That cost us once: `elevated` set `--radius-card: 18px` alone, which landed
- *  1px under pegbo-emerald's 19px popup and flattened Card against
+ *  1px under brand-emerald's 19px popup and flattened Card against
  *  DialogContent in the exact pair both prototypes ship. The rule this file
  *  enforces is the fix: a finish replaces the WHOLE radius scale or none of
  *  it, and every resulting scale still has to read as a ladder.
@@ -22,8 +22,8 @@ const read = (rel: string) =>
   readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8")
 
 const globals = read("./globals.css")
-const emerald = read("./themes/pegbo-emerald.css")
-const warm = read("./themes/pegbo-warm.css")
+const emerald = read("./themes/brand-emerald.css")
+const warm = read("./themes/brand-warm.css")
 const elevated = read("./finishes/elevated.css")
 const flatDense = read("./finishes/flat-dense.css")
 
@@ -48,8 +48,8 @@ const ROLES = ["--radius-button", "--radius-control", "--radius-card", "--radius
 const root = block(globals, ":root")
 const themes = {
   base: {},
-  "pegbo-emerald": block(emerald, '[data-theme="pegbo-emerald"]'),
-  "pegbo-warm": block(warm, '[data-theme="pegbo-warm"]'),
+  "brand-emerald": block(emerald, '[data-theme="brand-emerald"]'),
+  "brand-warm": block(warm, '[data-theme="brand-warm"]'),
 }
 const finishes = {
   default: {},

@@ -17,7 +17,7 @@
 - Nothing under `apps/docs/registry/**` changes. `CLAUDE.md` is not edited. No CI step is added: every new test runs inside `pnpm test`.
 - `apps/docs/content/system/facts.json` is derived. Never edit it by hand. Regenerate with `cd apps/docs && pnpm facts:emit`.
 - Every string in the page modules, `figures.ts`, the roster and the derived rows is public prose. It holds no digit outside backticks and `{facts.key}` placeholders, no em dash, no exclamation mark, none of: tapestry, landscape, delve, elevate, seamless, effortless, unlock, robust, journey, load-bearing, and none of: "here's the kicker", "what people miss", "that distinction matters". When a number describes the repo, use a fact. Number words are for things the page itself defines, such as its four parts.
-- All prose in this plan is original. Do not open, quote or paraphrase `pegbo-inc/design-system-rebuild`.
+- All prose in this plan is original. Do not open, quote or paraphrase the reference repo.
 - Component files under `apps/docs/components/system/` use token classes only: no hex, no `oklch()`, no Tailwind palette classes, no gradients, no `transition-all`, no `animate-bounce`, no emoji. Never put `text-muted-foreground` in the same class string as `bg-muted`, `bg-accent` or `bg-secondary`, and never place muted text inside a surface that paints one of those.
 - Run `pnpm exec prettier --write <changed files>` before every commit. `format:check` is a CI gate.
 - End every commit message with the attribution trailer your session's instructions give you.
@@ -3551,7 +3551,7 @@ tree has moved past it. Agents never emit it. The integrator runs
 step that is on neither `GATE_ROWS` nor `PLUMBING` in
 `apps/docs/content/system/gates.ts` fails `gates.test.ts`: say what the step is
 before it lands. That test is also the drift check between `ci.yml` and
-`run-gates.sh`, which closes carry item 3 of the 2026-09-18 pegbo transfer audit.
+`run-gates.sh`, which closes carry item 3 of the 2026-09-18 transfer audit.
 ```
 
 Run `pnpm exec prettier --write docs/CONTINUE.md` and commit:

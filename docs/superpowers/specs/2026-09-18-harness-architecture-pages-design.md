@@ -10,20 +10,20 @@ from one source. Every number on them is counted from the tree, the gate roster
 they print is held to `ci.yml` by a test, and their prose passes the same kind
 of checks it describes.
 
-The idea comes from `pegbo-inc/design-system-rebuild` (`src/docs/harness.mdx`
-and `src/docs/architecture.mdx`, read at `27729431`). Pegbo owns that source, so
+The idea comes from the Harness and Architecture pages of a client design system.
+The client owns that source, so
 this spec carries the pattern and rewrites everything. No text, diagram or
 module is copied.
 
 This is sub-project A of four agreed on 2026-09-18. Each gets its own spec, plan
 and PR.
 
-| sub-project   | repo                  | what                                                                                                                                                        |
-| ------------- | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A (this spec) | Super-AI              | the two pages and the machinery under them                                                                                                                  |
-| B             | Super-AI              | the gaps the pages have to admit: an audit loop, carry items 4 to 7 of the 2026-09-18 pegbo transfer audit, verdicts on pegbo PRs #391, #404, #376 and #415 |
-| C             | Minimal Design System | a Harness page, and its hand-written Architecture page rebuilt on this pattern                                                                              |
-| D             | Minimal Design System | its six carry items                                                                                                                                         |
+| sub-project   | repo                  | what                                                                                                                                                   |
+| ------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A (this spec) | Super-AI              | the two pages and the machinery under them                                                                                                             |
+| B             | Super-AI              | the gaps the pages have to admit: an audit loop, carry items 4 to 7 of the 2026-09-18 transfer audit, and verdicts on four of the reference repo's PRs |
+| C             | Minimal Design System | a Harness page, and its hand-written Architecture page rebuilt on this pattern                                                                         |
+| D             | Minimal Design System | its six carry items                                                                                                                                    |
 
 ## 1. Decisions made with Nick
 
