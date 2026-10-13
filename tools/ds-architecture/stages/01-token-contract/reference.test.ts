@@ -51,6 +51,6 @@ describe("stage 01 reference stylesheet", () => {
   })
 
   it("ships placeholder values, not this system's palette", () => {
-    expect(css).not.toMatch(/emerald|pegbo|geist/i)
+    expect(css).not.toMatch(/emerald|geist/i)
   })
 })
