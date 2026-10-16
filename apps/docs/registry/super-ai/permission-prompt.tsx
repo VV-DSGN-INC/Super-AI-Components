@@ -148,10 +148,34 @@ function PermissionPrompt({
     onEditingChange?.(next);
   };
 
-  const handleApproveEdited = () => onEditFirst?.(editedValues);
+  // The dialog's own open state, so an uncontrolled prompt (`trigger` or
+  // `defaultOpen`, no `open`) actually closes once a decision is made. The
+  // vendored `AlertDialogAction` is a plain Button rather than Base UI's
+  // Close, so before this only Deny (an `AlertDialogCancel`, which is a Close)
+  // ever dismissed it: Allow once, Always allow and Approve edited fired their
+  // callbacks and left the gate on screen. The same shape thread-list fixed.
+  // Controlled callers get `onOpenChange(false)` from the same three, which
+  // is the request to close; whether it closes stays theirs to decide.
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false);
+  const isOpen = open ?? uncontrolledOpen;
+  const setOpenState = (next: boolean) => {
+    if (open === undefined) setUncontrolledOpen(next);
+    // A resolved prompt reopens at the four verbs, not inside the editor.
+    if (!next && editing === undefined) setUncontrolledEditing(false);
+    onOpenChange?.(next);
+  };
+  const resolveWith = (decide?: () => void) => () => {
+    decide?.();
+    setOpenState(false);
+  };
+
+  const handleApproveEdited = () => {
+    onEditFirst?.(editedValues);
+    setOpenState(false);
+  };
 
   return (
-    <AlertDialog open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={isOpen} onOpenChange={(next) => setOpenState(next)}>
       {trigger ? <AlertDialogTrigger render={trigger} /> : null}
       {/* Overriding a vendored ui/ primitive's data-slot is house idiom — see
           trust-dialog.tsx for the same move.
@@ -159,11 +183,9 @@ function PermissionPrompt({
           The restated `motion-reduce:data-*:animate-none` pair is the panel
           half of story-conventions.md fact 3: a bare `motion-reduce:` class
           loses the source-order tie to `data-open:animate-in`, so both sides
-          have to carry the variant. It lives at this call site because that is
-          where `dialog.tsx` expects a panel's pair to live — the *backdrop*
-          half went into the vendored file in the K/L wave, and
-          `alert-dialog.tsx` did not get that change, so this component's
-          overlay still fades under reduce. See ReducedMotion. */}
+          have to carry the variant. The vendored `alert-dialog.tsx` carries it
+          on both overlay and panel now, but it stays here because a consumer's
+          `shadcn add` installs the upstream primitive, not the vendored one. */}
       <AlertDialogContent
         data-slot="permission-prompt"
         className={cn(
@@ -282,7 +304,7 @@ function PermissionPrompt({
                 data-slot="permission-prompt-always-allow"
                 type="button"
                 variant="outline"
-                onClick={onAlwaysAllow}
+                onClick={resolveWith(onAlwaysAllow)}
               >
                 {alwaysAllowLabel}
               </Button>
@@ -300,7 +322,7 @@ function PermissionPrompt({
               <AlertDialogAction
                 data-slot="permission-prompt-allow-once"
                 variant="default"
-                onClick={onAllowOnce}
+                onClick={resolveWith(onAllowOnce)}
               >
                 {allowOnceLabel}
               </AlertDialogAction>
