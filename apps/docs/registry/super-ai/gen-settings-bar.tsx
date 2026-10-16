@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Toolbar } from "@base-ui/react/toolbar";
 
 import { cn } from "@/lib/utils";
 
@@ -13,9 +14,11 @@ interface GenSettingsBarProps extends React.ComponentProps<"div"> {
 function GenSettingsBar({ disabled = false, className, ...props }: GenSettingsBarProps) {
   return (
     <GenSettingsBarContext.Provider value={{ disabled }}>
-      {/* TODO: arrow-key roving tabIndex (role=toolbar APG pattern; v1 ships Tab-per-item) */}
-      <div
-        role="toolbar"
+      {/* Base UI's Toolbar supplies the APG toolbar pattern, the same way
+          context-toolbar composes it: one tab stop, and Left/Right move
+          between items and wrap. `disabled` stays on the
+          items rather than on the root, so one item can still opt back in. */}
+      <Toolbar.Root
         data-slot="gen-settings-bar"
         data-disabled={disabled || undefined}
         className={cn(
@@ -41,11 +44,20 @@ function GenSettingsBar({ disabled = false, className, ...props }: GenSettingsBa
 
 function GenSettingsItem({ className, disabled, ...props }: React.ComponentProps<"button">) {
   const ctx = React.useContext(GenSettingsBarContext);
+  const isDisabled = disabled ?? ctx.disabled;
   return (
-    <button
+    <Toolbar.Button
       type="button"
       data-slot="gen-settings-item"
-      disabled={disabled ?? ctx.disabled}
+      disabled={isDisabled}
+      // Base UI keeps a disabled toolbar item focusable by default. This bar
+      // documents a natively disabled button that leaves the walk, which is
+      // what a locked, mid-run strip should do, so that behaviour is kept.
+      // Only on items that are actually disabled: Toolbar.Root (1.5.0) adds
+      // every item whose metadata says `focusableWhenDisabled: false` to its
+      // skip list whether or not the item is disabled, so setting it
+      // unconditionally leaves the arrows nowhere to go.
+      focusableWhenDisabled={!isDisabled}
       className={cn(
         "hover:bg-accent hover:text-accent-foreground focus-visible:ring-ring focus-visible:ring-2 focus-visible:outline-none inline-flex items-center gap-1 rounded px-2 py-1 transition-colors disabled:pointer-events-none disabled:opacity-50",
         className,

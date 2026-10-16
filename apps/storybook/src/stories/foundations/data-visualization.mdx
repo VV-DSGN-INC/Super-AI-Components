@@ -59,22 +59,25 @@ draw with layout and text.
 Reach for the chart port when the shape of a series is the point. Reach for the other four when a
 figure, a proportion or an ordering is the point, and skip the library.
 
-## The palette is five greys, and it is the same in both themes
+## The palette is five greys, and dark inverts it
 
-`apps/storybook/src/index.css` declares `--chart-1` through `--chart-5` twice, at lines 107 to 111 in
-`:root` and lines 142 to 146 in `.dark`, and the two blocks are identical. All five sit at chroma 0,
-so they are neutral: lightness 0.87, 0.556, 0.439, 0.371 and 0.269, from `--chart-1` down to
-`--chart-5`. The `@theme inline` block aliases them to `--color-chart-1` through `--color-chart-5`
-at lines 58 to 62, which is what a Tailwind class or a `var()` in chart config reads.
+`apps/storybook/src/index.css` declares `--chart-1` through `--chart-5` in `:root` and again in
+`.dark`, with the same values as `apps/docs/app/globals.css`. All five sit at chroma 0, so they are
+neutral. Light runs 0.87, 0.556, 0.439, 0.371 and 0.269 from `--chart-1` down to `--chart-5`; dark
+inverts that order at 0.556, 0.648, 0.739, 0.831 and 0.922. The `@theme inline` block aliases them
+to `--color-chart-1` through `--color-chart-5`, which is what a Tailwind class or a `var()` in chart
+config reads.
 
-Two consequences follow from the same file, and both are worth checking before you assign a series.
+Two consequences, both worth checking before you assign a series.
 
-- The ramp does not invert between themes, so a step that reads as the emphasised series on a light
-  page reads as the quiet one on a dark page. `--chart-1` at lightness 0.87 is near the light page
-  background (1.0) and far from the dark one (0.145).
-- The bottom of the ramp crowds the dark surfaces. `--chart-5` at 0.269 is the same lightness as
-  dark `--muted`, `--accent` and `--secondary`, and sits a short step above dark `--card` at 0.205.
-  A five-series chart on a dark card loses its darkest series into the card.
+- The ramp keeps its position relative to the page, not its absolute lightness: `--chart-1` is the
+  step nearest the background in both themes and `--chart-5` the furthest. So a series keeps its
+  emphasis when the theme changes. Until 2026-10-16 the dark block was a copy of the light one,
+  which flipped emphasis and left `--chart-5` at 1.2:1 on the dark page.
+- Every dark step clears 3:1 against the dark background (`--chart-1` is about 4.2:1), the non-text
+  minimum for a bar or a swatch. In light, `--chart-1` at 0.87 is about 1.4:1 against white, so a
+  series that has to be seen on a light page belongs further down the ramp.
+  `apps/docs/lib/chart-ramp.test.ts` pins the dark half and keeps the two stylesheets in step.
 
 Three or four series is what this palette supports comfortably. Past that, split the chart.
 

@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
+import { Button } from "@/components/ui/button";
 import { ApprovalCard } from "@/registry/super-ai/approval-card";
 import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
 import { PermissionPromptDocs } from "@/content/components/permission-prompt.docs";
@@ -576,6 +577,63 @@ function ControlledShell() {
     </div>
   );
 }
+
+/**
+ * The uncontrolled path, opened from its own `trigger` with no `open` prop:
+ * the shape a product reaches for first, and the one that was broken. The
+ * vendored `AlertDialogAction` is a plain `Button`, not Base UI's Close, so
+ * Allow once, Always allow and Approve edited fired their callbacks and left
+ * the gate on screen; only Deny, which is a Close, ever dismissed it. The
+ * component owns its open state now, the same fix `thread-list` took.
+ *
+ * The play walks all three terminal verbs through one mounted prompt:
+ * each closes the dialog, waits for it to be gone (story-conventions.md, so
+ * axe never meets a half-dismissed panel), and checks focus came back to the
+ * trigger, which is where a reviewer working a queue presses next. The last
+ * reopen also proves a resolved prompt starts at the four verbs rather than
+ * inside the editor it was closed from.
+ */
+export const Uncontrolled: Story = {
+  args: { open: undefined },
+  render: (args) => (
+    <PermissionPrompt
+      {...args}
+      trigger={<Button variant="outline">Review request</Button>}
+      action="Send email to finance@example.com"
+      reason="The invoice PDF finished rendering."
+      args={EMAIL_ARGS}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const body = within(document.body);
+    const trigger = within(canvasElement).getByRole("button", { name: "Review request" });
+    const gone = () => waitFor(() => expect(body.queryByRole("alertdialog")).toBeNull());
+    const open = async () => {
+      await userEvent.click(trigger);
+      return body.findByRole("alertdialog");
+    };
+
+    await expect(body.queryByRole("alertdialog")).toBeNull();
+
+    for (const verb of ["Allow once", "Always allow"]) {
+      const dialog = await open();
+      await userEvent.click(within(dialog).getByRole("button", { name: verb }));
+      await gone();
+      await waitFor(() => expect(document.activeElement).toBe(trigger));
+    }
+
+    const dialog = await open();
+    await userEvent.click(within(dialog).getByRole("button", { name: "Edit first" }));
+    await userEvent.click(within(dialog).getByRole("button", { name: "Approve edited" }));
+    await gone();
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
+
+    const reopened = await open();
+    await expect(within(reopened).getByRole("button", { name: "Allow once" })).toBeInTheDocument();
+    await userEvent.keyboard("{Escape}");
+    await gone();
+  },
+};
 
 /**
  * Every optional slot emptied, one dialog at a time — they are opened in turn

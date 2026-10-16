@@ -39,7 +39,7 @@ export function IdentityFirstSignOutLast() {
 
 export function AppearanceInNestedSubmenu() {
   const [theme, setTheme] = React.useState("dark");
-  const [background, setBackground] = React.useState("forest");
+  const [background, setBackground] = React.useState("grey-4");
   return (
     <AccountMenu
       user={SAMPLE_USER}

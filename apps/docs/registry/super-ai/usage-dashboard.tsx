@@ -159,12 +159,12 @@ function UsageDashboardDelta({
     <span
       data-slot="usage-dashboard-delta"
       data-direction={direction}
-      className={cn(
-        "inline-flex items-center gap-1 text-xs font-medium",
-        direction === "up" ? "text-warning" : "text-foreground",
-      )}
+      // Colour on the icon only (data-views-shared's idiom): `text-warning` as
+      // text measures 2.2:1 on the card, and the signed text already carries
+      // the direction.
+      className="text-foreground inline-flex items-center gap-1 text-xs font-medium"
     >
-      <Icon aria-hidden className="size-3" />
+      <Icon aria-hidden className={cn("size-3", direction === "up" && "text-warning")} />
       {`${formatDeltaPct(pct)} ${comparisonLabel}`}
     </span>
   );

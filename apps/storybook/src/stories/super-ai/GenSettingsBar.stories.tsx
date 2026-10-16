@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Shuffle, Volume2 } from "lucide-react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { FieldRow, UnitInput } from "@/registry/super-ai/field-row";
 import { AddFilterChip, FilterBar, FilterChip, FiltersButton } from "@/registry/super-ai/filter-bar";
 import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
 import { GenSettingsBarDocs } from "@/content/components/gen-settings-bar.docs";
+import { settledFocusRing } from "@/lib/focus-ring";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
 const meta: Meta<typeof GenSettingsBar> = {
@@ -161,29 +162,24 @@ export const RTL: Story = {
 };
 
 /**
- * Tab traversal across the strip, and the story that records the gap
- * between what this component announces and what it does.
+ * The keyboard contract `role="toolbar"` promises under the ARIA authoring
+ * practices, which this story used to record as missing: five segments were
+ * five tab stops and the arrows did nothing. The bar now composes Base UI's
+ * `Toolbar`, the same primitive `context-toolbar` builds on, so:
  *
- * The root renders `role="toolbar"`. Under the ARIA authoring practices
- * that role is a promise about the keyboard: one tab stop for the whole
- * toolbar, arrows to move between its controls. This component does not
- * implement it — the source carries the TODO — so what actually ships is
- * five separate tab stops and arrow keys that do nothing. A screen reader
- * user is told "toolbar", tries the arrows, and gets silence.
+ * 1. **The strip is one tab stop.** Tab enters on the first segment and the
+ *    next Tab leaves the canvas, whatever the segment count.
+ * 2. **Right arrow walks every segment exactly once and wraps.** The lap is
+ *    asserted as a cycle (each stop new, then back to the start) rather than
+ *    as "reached N stops within M presses", per `story-conventions.md` fact 4.
+ *    Left arrow steps back across the wrap.
+ * 3. **Every stop paints a settled ring.** `settledFocusRing` rather than the
+ *    older `boxShadow !== "none"` check, which a Tailwind ring passes while
+ *    painting nothing.
  *
- * **Defect, recorded not pinned.** What the play function guarantees is the
- * part that holds under either implementation: Tab reaches at least one stop,
- * every stop it reaches is inside the bar, and each one is genuinely
- * `:focus-visible` with a ring or an outline painted rather than merely
- * focusable. It deliberately asserts neither the number of stops nor which
- * element each stop is — both are consequences of the missing roving
- * tabindex, so pinning them would make implementing the ARIA pattern a test
- * failure, which is the one thing a story recording a defect must not do.
- * Same shape and same reasoning as `ChoiceChips`' `KeyboardOrder`, which
- * carries the identical gap.
- *
- * The count is written down here rather than asserted: five stops today, one
- * once the toolbar rovers.
+ * Disabled segments stay natively disabled and leave the walk
+ * (`focusableWhenDisabled={false}`); `gen-settings-bar.test.tsx` covers the
+ * tab-stop half in jsdom, where Base UI's arrow handling does not run.
  */
 export const KeyboardOrder: Story = {
   render: (args) => (
@@ -198,28 +194,42 @@ export const KeyboardOrder: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const bar = canvas.getByRole("toolbar", { name: "Generation settings" });
-
-    // A render assertion rather than a traversal one: five segments are drawn.
-    // Roving tabindex changes which of them Tab reaches, never how many exist.
     const segments = canvas.getAllByRole("button");
     await expect(segments).toHaveLength(5);
     await expect(segments.every((segment) => bar.contains(segment))).toBe(true);
+    const nameOf = (el: Element | null) => el?.textContent?.trim() ?? "nothing";
 
+    // 1. One tab stop.
     await userEvent.tab();
-    let stops = 0;
-    while (document.activeElement && canvasElement.contains(document.activeElement)) {
-      const focused = document.activeElement as HTMLElement;
-      await expect(bar.contains(focused)).toBe(true);
+    await waitFor(() => expect(document.activeElement).toBe(segments[0]));
+    await userEvent.tab();
+    await expect(`after one tab: inside=${canvasElement.contains(document.activeElement)}`).toBe(
+      "after one tab: inside=false",
+    );
+    await userEvent.tab({ shift: true });
+    await waitFor(() => expect(document.activeElement).toBe(segments[0]));
 
-      // Every stop is visibly focused, not merely focusable.
+    // 2 and 3. One lap of ArrowRight, settling on departure from each stop.
+    const start = document.activeElement as HTMLElement;
+    await expect(start.matches(":focus-visible")).toBe(true);
+    await settledFocusRing(start, waitFor);
+    const seen = new Set<Element>([start]);
+    let previous: Element = start;
+    for (let i = 1; i < segments.length; i += 1) {
+      await userEvent.keyboard("{ArrowRight}");
+      await waitFor(() => expect(document.activeElement).not.toBe(previous));
+      const focused = document.activeElement as HTMLElement;
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
-      stops += 1;
-      await userEvent.tab();
+      await settledFocusRing(focused, waitFor);
+      seen.add(focused);
+      previous = focused;
     }
-    // At least one stop, so the loop above cannot pass by never running.
-    await expect(stops).toBeGreaterThan(0);
+    await expect(seen.size).toBe(segments.length);
+    await userEvent.keyboard("{ArrowRight}");
+    await waitFor(() => expect(document.activeElement).toBe(start));
+    await userEvent.keyboard("{ArrowLeft}");
+    await waitFor(() => expect(document.activeElement).toBe(segments[segments.length - 1]));
   },
 };
 

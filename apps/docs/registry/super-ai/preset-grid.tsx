@@ -2,7 +2,9 @@
 
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
+import { Radio as RadioPrimitive } from "@base-ui/react/radio";
 
+import { RadioGroup } from "@/components/ui/radio-group";
 import { cn } from "@/lib/utils";
 import { PreviewTile } from "@/registry/super-ai/preview-tile";
 
@@ -83,44 +85,68 @@ function PresetGridTile({
   selected: boolean;
   onSelect: () => void;
 }) {
+  // `text-start`, not `text-left`: a `<button>` centres its text by
+  // default, so something has to override it for the overlay label, and
+  // the logical form compiles to the same declaration in LTR while
+  // mirroring under `dir="rtl"`. Sanctioned swap class — CONTINUE.md §8,
+  // "Logical properties"; A9 entity-row carries the same note.
+  const tileClassName =
+    "focus-visible:ring-ring rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none";
+  // `onSelect` intentionally not forwarded to preview-tile: its own
+  // interactive Frame would add a second, nested aria-pressed button.
+  // `selected` alone is enough to draw the ring — that class is
+  // unconditional on preview-tile's Frame, independent of `onSelect`.
+  const body = (
+    <PreviewTile
+      aspect="square"
+      state={item.state}
+      selected={selected}
+      label={item.label}
+      labelPlacement="overlay"
+      badge={item.badge}
+    >
+      {content === "palette" ? (
+        <span
+          aria-hidden
+          data-slot="preset-grid-swatch"
+          className="block h-full w-full"
+          style={{ backgroundColor: item.color }}
+        />
+      ) : (
+        item.thumbnail
+      )}
+    </PreviewTile>
+  );
+  if (!multiple) {
+    // Single-select is a Base UI radio inside the grid's RadioGroup, which
+    // supplies the ARIA radio pattern: one tab stop, arrows move focus and
+    // selection together. Rendered as a native button, like A4 choice-chips.
+    return (
+      <RadioPrimitive.Root
+        value={item.id}
+        nativeButton
+        render={<button type="button" />}
+        data-slot="preset-grid-tile"
+        data-state={selected ? "on" : "off"}
+        className={tileClassName}
+      >
+        {body}
+      </RadioPrimitive.Root>
+    );
+  }
+  // Multi-select stays one tab stop per tile: the APG checkbox-group pattern
+  // keeps every checkbox in the tab order, and Space toggles it.
   return (
     <button
       type="button"
-      role={multiple ? "checkbox" : "radio"}
+      role="checkbox"
       aria-checked={selected ? "true" : "false"}
       data-slot="preset-grid-tile"
       data-state={selected ? "on" : "off"}
       onClick={onSelect}
-      // `text-start`, not `text-left`: a `<button>` centres its text by
-      // default, so something has to override it for the overlay label, and
-      // the logical form compiles to the same declaration in LTR while
-      // mirroring under `dir="rtl"`. Sanctioned swap class — CONTINUE.md §8,
-      // "Logical properties"; A9 entity-row carries the same note.
-      className="focus-visible:ring-ring rounded-lg text-start focus-visible:ring-2 focus-visible:outline-none"
+      className={tileClassName}
     >
-      {/* `onSelect` intentionally not forwarded to preview-tile: its own
-          interactive Frame would add a second, nested aria-pressed button.
-          `selected` alone is enough to draw the ring — that class is
-          unconditional on preview-tile's Frame, independent of `onSelect`. */}
-      <PreviewTile
-        aspect="square"
-        state={item.state}
-        selected={selected}
-        label={item.label}
-        labelPlacement="overlay"
-        badge={item.badge}
-      >
-        {content === "palette" ? (
-          <span
-            aria-hidden
-            data-slot="preset-grid-swatch"
-            className="block h-full w-full"
-            style={{ backgroundColor: item.color }}
-          />
-        ) : (
-          item.thumbnail
-        )}
-      </PreviewTile>
+      {body}
     </button>
   );
 }
@@ -189,17 +215,8 @@ function PresetGrid({
     onValueChange?.(next);
   };
 
-  return (
-    <div
-      // TODO: roving tabIndex per the ARIA radiogroup / APG checkbox-group
-      // pattern (v1 ships Tab-per-tile) — the same accepted gap as A4
-      // choice-chips.
-      role={multiple ? "group" : "radiogroup"}
-      data-slot="preset-grid"
-      data-content={content}
-      className={cn("grid grid-cols-3 gap-3 sm:grid-cols-4", className)}
-      {...props}
-    >
+  const cells = (
+    <>
       {visibleItems.map((item) => (
         <PresetGridTile
           key={item.id}
@@ -217,7 +234,33 @@ function PresetGrid({
           onSelect={() => setExpanded(true)}
         />
       ) : null}
-    </div>
+    </>
+  );
+  const gridClassName = cn("grid grid-cols-3 gap-3 sm:grid-cols-4", className);
+
+  if (multiple) {
+    return (
+      <div role="group" data-slot="preset-grid" data-content={content} className={gridClassName} {...props}>
+        {cells}
+      </div>
+    );
+  }
+  return (
+    // The vendored group renders `role="radiogroup"`; see-more is a plain
+    // button inside it, so it stays its own tab stop after the radios.
+    <RadioGroup
+      data-slot="preset-grid"
+      data-content={content}
+      value={[...selected][0] ?? null}
+      onValueChange={(next: unknown) => handleSelect(next as string)}
+      className={gridClassName}
+      {...(props as Omit<
+        React.ComponentProps<typeof RadioGroup>,
+        "value" | "defaultValue" | "onValueChange"
+      >)}
+    >
+      {cells}
+    </RadioGroup>
   );
 }
 
