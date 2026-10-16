@@ -1194,8 +1194,11 @@ story who could not write it honestly without noticing. These are not
 composition gaps — they are divergences with no owner, filed here because
 that is where the backlog lives.
 
-- **`--warning` is undefined in Storybook, so no warning surface has ever been
-  measured.** `apps/storybook/src/index.css` carries no `--color-warning` and
+- **~~`--warning` is undefined in Storybook, so no warning surface has ever been
+  measured.~~ Closed 2026-10-16:** Storybook defines the token with the docs
+  app's values, the three amber-as-text sites it exposed are fixed, and
+  `rate-limit-banner` / `data-views` ship `cssVars`. History follows.
+  **Original entry:** `apps/storybook/src/index.css` carries no `--color-warning` and
   no `--warning`; `apps/docs/app/globals.css` carries both. Tailwind v4 emits
   nothing for an undefined utility, so every `bg-warning` / `text-warning` in
   the registry renders **unpainted** under the axe gate — the stories that

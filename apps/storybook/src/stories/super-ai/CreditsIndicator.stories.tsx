@@ -36,28 +36,15 @@ export const Ring: Story = {
 };
 
 /**
- * The warning surface — and, as rendered here, a defect that is not this
- * component's.
+ * The warning surface. `low` paints `bg-warning text-warning-foreground`, the
+ * designed pair (about 7:1 in light), on the pill itself rather than as a
+ * tinted foreground, because amber text on the page background measures 2.2:1.
  *
- * `low` paints `bg-warning text-warning-foreground`, but Storybook's
- * stylesheet never registers those tokens: `apps/storybook/src/index.css`
- * lists its `--color-*` theme entries explicitly and `--color-warning` is
- * not among them, while `--warning` itself is defined only in the docs
- * app's `globals.css`. In Tailwind v4 a colour utility with no theme entry
- * is simply not generated, so both classes are dead here. Probed on this
- * story: the pill computes to `background-color: rgba(0, 0, 0, 0)` with an
- * inherited `--foreground` text colour, rather than the amber surface the
- * component asks for.
- *
- * Two consequences worth stating. The `low` state renders as *less* styled
- * than `normal` in Storybook, since `bg-muted` does resolve. And the axe
- * gate has never actually seen this surface — for this component or for the
- * fifteen-odd others in the registry that use `--warning` — so a contrast
- * failure in any warning state is currently invisible to CI, which is the
- * same shape of hole `story-conventions.md` records for `safety-block`.
- *
- * Not fixed here: the repair belongs in the shared Storybook stylesheet,
- * not in a per-component retrofit. Carried in the report.
+ * Until 2026-10-16 this story rendered the pill colourless: Storybook's
+ * stylesheet defined no `--warning`, so Tailwind generated neither class and
+ * the axe gate never saw any warning surface in the registry. The token is
+ * defined there now, mirroring `apps/docs/app/globals.css`, so this pass is a
+ * pass on the colour the component ships.
  */
 export const Low: Story = {
   args: { form: "ring", balance: 80, total: 1000, onManage: () => {} },

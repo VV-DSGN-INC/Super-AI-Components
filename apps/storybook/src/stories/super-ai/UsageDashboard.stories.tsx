@@ -945,31 +945,14 @@ export const Mobile: Story = {
  * up and nothing else — the "don't ship the total without the breakdown"
  * rule on this component's docs page, stated as a component choice.
  *
- * **All three carry `cssVars: WARNING_CSS_VARS`, and this story is not
- * evidence about any of it.** `apps/storybook/src/index.css` defines no
- * `--warning` and no `--color-warning` (`apps/docs/app/globals.css` defines
- * both), and Tailwind v4 emits nothing at all for an undefined utility. So
- * under this gate `text-warning` and `bg-warning` are absent rather than
- * wrong, and both halves were measured here: N6's rising-spend delta
- * computes `color: oklch(0.145 0 0)`, identical to the falling-spend delta
- * beside it, and M2's `low` pill — rendered in its alarm state on purpose —
- * computes `background-color: rgba(0, 0, 0, 0)` and the same default
- * foreground, while carrying `bg-warning text-warning-foreground` in its
- * class list. **A green axe pass on this story is not evidence about the
- * warning colour at all.** That is the whole content of CONTINUE.md §8's
- * "`--warning` is undefined in Storybook" entry, and the reason nothing
- * below asserts a colour.
- *
- * The comparison that survives is the design one, and it goes against N6.
- * M2's source explains that it paints its alarm states on the *surface*
- * because a warning tint used as foreground cannot reach 4.5:1 on a
- * near-white fill at any size; `a11y-baseline.md` records ~2.2:1 for
- * `text-warning` in the docs app, where the token resolves. N6's delta uses
- * exactly the foreground shape M2 rejected, so on the reading recorded there
- * it is a contrast failure that this environment cannot show. Recorded
- * rather than repainted: choosing a warning treatment for a delta is a
- * design decision, and the fix M2 chose (going solid) is not obviously right
- * for a percentage sitting inside a sentence.
+ * **All three carry `cssVars: WARNING_CSS_VARS`, and since 2026-10-16 this
+ * story measures it.** Storybook defines `--warning` now, mirroring the docs
+ * app; before that every warning class here compiled to nothing and axe saw
+ * the fallback. Measured with the token present, N6's rising-spend delta
+ * failed: it was `text-warning` as text, 2.2:1 on the card, exactly the
+ * foreground shape M2 rejects for its alarm states. The delta now keeps its
+ * sentence in `text-foreground` and puts the amber on the arrow icon only,
+ * which is `aria-hidden`; M2's `low` pill paints the solid pair as before.
  *
  * The one thing that does not depend on the token is asserted: every delta
  * states its direction in words and in `data-direction`, so removing the
@@ -1007,10 +990,13 @@ export const Boundary: Story = {
     await expect(meters.length).toBeGreaterThan(0);
     await expect(canvasElement).toHaveTextContent("420");
     // M2 is in its `low` state here, which is what makes the token point
-    // above checkable: the classes are on the element and paint nothing.
+    // above checkable: the classes are on the element and, now that Storybook
+    // defines `--warning`, they paint. A transparent ground here means the
+    // token has fallen out of `index.css` again and axe is measuring nothing.
     const pill = canvasElement.querySelector<HTMLElement>('[data-slot="credits-indicator"]')!;
     await expect(pill).toHaveClass("bg-warning");
     await expect(pill).toHaveClass("text-warning-foreground");
+    await expect(getComputedStyle(pill).backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
 
     // 3. Direction survives without the token: text and attribute, on every
     //    delta, whatever `--warning` resolves to.
