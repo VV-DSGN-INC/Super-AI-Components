@@ -28,6 +28,15 @@ const WARNING_CSS_VARS: CssVars = {
   dark: { warning: "oklch(0.82 0.14 72)", "warning-foreground": "oklch(0.24 0.05 70)" },
 };
 
+// The same token without its foreground pair, for an item that only tints a
+// surface or border with --warning and never sets text on it, so it does not
+// ship keys nothing reads (cssvars-liveness.test.ts checks both directions).
+const WARNING_SURFACE_CSS_VARS: CssVars = {
+  theme: { "color-warning": WARNING_CSS_VARS.theme!["color-warning"] },
+  light: { warning: WARNING_CSS_VARS.light!.warning },
+  dark: { warning: WARNING_CSS_VARS.dark!.warning },
+};
+
 export const MANIFEST: ManifestItem[] = [
   {
     id: "A1",
@@ -1657,6 +1666,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["your-limit", "provider-capacity", "live-countdown", "notify-me"],
     specAnchor: "component-specs.md#m6-rate-limit-banner",
+    cssVars: WARNING_SURFACE_CSS_VARS,
   },
   {
     id: "M7",
@@ -2279,6 +2289,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["kanban", "table", "feed", "calendar", "timeline", "group-tone"],
     specAnchor: "component-specs.md#p1-data-views",
+    cssVars: WARNING_CSS_VARS,
     // The six view shells are imported by data-views.tsx and by nothing else,
     // so D3 leaves them nowhere to be but this item's own files. See D18.
     files: [
