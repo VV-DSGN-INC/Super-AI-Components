@@ -113,6 +113,11 @@ const DEFAULT_THEMES: AccountMenuThemeOption[] = [
   { value: "system", label: "System" },
 ];
 
+// The defaults are the five chart-ramp greys, named for what they are. They
+// used to be called Slate, Stone, Forest and Ink, which promised hues this
+// monochrome token set does not have. Numbered rather than light-to-dark
+// because the dark theme inverts the ramp, so a lightness word would be wrong
+// in one of the two themes. Pass your own `backgrounds` for named themes.
 const DEFAULT_BACKGROUNDS: AccountMenuBackgroundOption[] = [
   {
     value: "default",
@@ -120,23 +125,23 @@ const DEFAULT_BACKGROUNDS: AccountMenuBackgroundOption[] = [
     swatchClassName: "bg-chart-1 data-checked:bg-chart-1 dark:data-checked:bg-chart-1",
   },
   {
-    value: "slate",
-    label: "Slate",
+    value: "grey-2",
+    label: "Grey 2",
     swatchClassName: "bg-chart-2 data-checked:bg-chart-2 dark:data-checked:bg-chart-2",
   },
   {
-    value: "stone",
-    label: "Stone",
+    value: "grey-3",
+    label: "Grey 3",
     swatchClassName: "bg-chart-3 data-checked:bg-chart-3 dark:data-checked:bg-chart-3",
   },
   {
-    value: "forest",
-    label: "Forest",
+    value: "grey-4",
+    label: "Grey 4",
     swatchClassName: "bg-chart-4 data-checked:bg-chart-4 dark:data-checked:bg-chart-4",
   },
   {
-    value: "ink",
-    label: "Ink",
+    value: "grey-5",
+    label: "Grey 5",
     swatchClassName: "bg-chart-5 data-checked:bg-chart-5 dark:data-checked:bg-chart-5",
   },
 ];
