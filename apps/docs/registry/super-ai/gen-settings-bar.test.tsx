@@ -35,4 +35,25 @@ describe("GenSettingsBar", () => {
     );
     expect(screen.getByRole("button", { name: "Download" })).toBeEnabled();
   });
+
+  it("is one tab stop (APG toolbar); the arrow walk needs layout, so GenSettingsBar's KeyboardOrder story asserts it", async () => {
+    const user = userEvent.setup();
+    render(
+      <>
+        <button type="button">before</button>
+        <GenSettingsBar aria-label="Generation settings">
+          <GenSettingsItem>Veo 3.1 Fast</GenSettingsItem>
+          <GenSettingsItem>16:9</GenSettingsItem>
+          <GenSettingsItem>720p</GenSettingsItem>
+        </GenSettingsBar>
+        <button type="button">after</button>
+      </>,
+    );
+    await user.tab();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Veo 3.1 Fast" })).toHaveFocus();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "after" })).toHaveFocus();
+    expect(screen.getByRole("button", { name: "16:9" })).toHaveAttribute("tabindex", "-1");
+  });
 });

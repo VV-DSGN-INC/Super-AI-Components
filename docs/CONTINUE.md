@@ -956,8 +956,9 @@ quotes a script and a date instead of a sentence.
 >
 > **Still open here:** the vendored sidebar's RTL mirroring, the tooltip that eats
 > an Escape, the notebook chat pane's scroll container (a dependency limit — see
-> below), and roving tabIndex in `choice-chips` / `preset-grid` /
-> `gen-settings-bar`. The roving tabIndex was deliberately **not** attempted at
+> below), and ~~roving tabIndex in `choice-chips` / `preset-grid` /
+> `gen-settings-bar`~~ (landed 2026-10-16 by composing Base UI's `RadioGroup`
+> and `Toolbar`). The roving tabIndex was deliberately **not** attempted at
 > the end of a long session: it has RTL, wrapping and disabled-item edge cases,
 > and half-shipping a keyboard pattern into a published registry is worse than
 > leaving it recorded. **The logical-direction sweep landed on 2026-09-10**, run
@@ -983,7 +984,8 @@ quotes a script and a date instead of a sentence.
 > carrying a real `lint`, `typecheck`, `test:stories` and `addon-a11y`. Two were
 > already recorded here and stay open: the Base UI vs Radix consumer contract
 > (§5, "no registry mechanism expresses '…but adapted'") and the roving
-> tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar` (below).
+> tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar` (below;
+> landed 2026-10-16).
 >
 > - **~~`thread-list`'s delete confirmation never closed~~ — fixed 2026-09-11.**
 >   `AlertDialogAction` is a plain `Button` in this Base UI adaptation, not

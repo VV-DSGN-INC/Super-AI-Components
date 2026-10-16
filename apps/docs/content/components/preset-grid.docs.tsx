@@ -70,8 +70,8 @@ export const PresetGridDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      "Every tile is its own tab stop. There is no roving tabindex — the source says so, and names A4 `choice-chips` as carrying the same accepted gap — so a twelve-preset grid is twelve stops, plus one more for the see-more tile.",
-      'Arrow keys do nothing. The tiles carry `role="radio"` (or `role="checkbox"` under `multiple`), which is exactly the role a keyboard user expects to arrow through; here Tab is the only way between them, and Home and End do not work either.',
+      "Single-select is a radio group (the vendored radio-group, Base UI): the tiles are one tab stop, landing on the checked tile or the first, and the see-more tile is the next stop after them. Under `multiple` every tile is its own tab stop, as the checkbox-group pattern has it.",
+      "In single-select the arrow keys move between tiles in DOM order, selecting as they go, and wrap; they do not move by row through the grid. Home and End do nothing. Under `multiple` the arrows do nothing and Tab is the way between checkboxes.",
       "Space and Enter select, because each tile is a native `<button>` underneath its role. In single-select a tile can only ever be turned on — pressing the already-checked tile re-selects it — while under `multiple` the same press toggles it off.",
       'There is no `disabled` anywhere in the API. Every tile is focusable and activatable including one whose `state` is `"loading"` or `"failed"`, so a preset that is still resolving is picked exactly as easily as one that finished.',
     ],

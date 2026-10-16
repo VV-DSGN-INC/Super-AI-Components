@@ -266,12 +266,12 @@ export const KeyboardOrder: Story = {
     const title = root.querySelector<HTMLElement>('[data-slot="section-header-title"] > span')!;
     await expect(title.tabIndex).toBe(-1);
 
-    // 2. One lap: the completed step, the two field chips, then Back, Skip
-    //    and the primary. Each tab moves by exactly one control.
+    // 2. One lap: the completed step, the field's chip group (one stop, A4 is
+    //    a radio group), then Back, Skip and the primary. Each tab moves by
+    //    exactly one control.
     const expected = [
       canvas.getByRole("button", { name: "Completed: Choose model" }),
       canvas.getByRole("radio", { name: "Cinematic" }),
-      canvas.getByRole("radio", { name: "Anime" }),
       canvas.getByRole("button", { name: "Back" }),
       canvas.getByRole("button", { name: "Skip" }),
       canvas.getByRole("button", { name: "Next" }),
