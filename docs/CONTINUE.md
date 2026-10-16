@@ -1484,13 +1484,6 @@ that stayed open, plus what the wave learned about the primitives underneath.
   under RTL. The array semantics stay correct; the label and icon mislead. H5
   `frame-strip`'s `onReorder(id, "left" | "right")` has the same shape. An API
   naming decision (`"start" | "end"`, or index deltas), not a class swap.
-- **A keyboard-focused menu row in I4 `ai-tools-menu` has no perceptible focus
-  treatment.** `focus:bg-transparent` on the `DropdownMenuItem` overrides the
-  primitive's `focus:bg-accent` — presumably to keep A9's muted description off
-  an accent surface — and leaves the focused row distinguishable only by title
-  colour (oklch 0.205 vs 0.145). F4 `action-stack` carries the identical
-  override on the identical row, so it is one decision for both and belongs
-  with the shared row the I4 docs module's last pitfall already asks for.
 - **Two more accessible-name collapses in the empty-string class.** D3
   `context-chips` with `label=""` names its remove control bare "Remove" (its
   docs module says the name cannot collapse — that sentence has a hole); I2
@@ -1914,9 +1907,10 @@ lg:columns-3` off the viewport, so any 375px container on a desktop page gets
 - **Neither focus helper can see a menu row's treatment.** `DropdownMenuItem`
   marks focus with `focus:bg-accent`, and `focusTreatmentSignature` reads
   outline, box-shadow and border colour only. K4 `selection-toolbar` takes its
-  own signature including `background-color`, which doubles as the regression
-  guard for the `focus:bg-transparent` override F7 and I4 carry — a candidate
-  for the shared helper.
+  own signature including `background-color`, and F4 `action-stack` and I4
+  `ai-tools-menu` read `background-color` directly since their
+  `focus:bg-transparent` override was removed — a candidate for the shared
+  helper.
 
 - **`check:tokens` false-positives on prose.** L6 `onboarding-wizard` found that
   writing the literal class name `transition-all` inside a source _comment_

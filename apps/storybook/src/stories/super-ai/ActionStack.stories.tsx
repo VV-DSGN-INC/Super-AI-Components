@@ -357,18 +357,16 @@ export const ReducedMotion: Story = {
  *    (Extend, then Upscale, then Lip sync) leave you where you started, and it
  *    is the docs module's first focus claim.
  *
- * **Recorded, not pinned, and shared with I4: a keyboard-focused row inside
- * the menu has no perceptible focus treatment.** `className="p-0
- * focus:bg-transparent"` on the `DropdownMenuItem` overrides the primitive's
- * `focus:bg-accent`, presumably so A9's composed `text-muted-foreground`
- * description is never left on an accent surface; what survives is
- * `focus:text-accent-foreground`, a text colour rather than an indicator, and
- * the focused and resting rows differ only as oklch 0.205 against 0.145.
- * `action-stack.tsx` carries the identical override on the identical row, so
- * CONTINUE.md §8 records it as **one decision for both** rather than two
- * bugs — which is why nothing below asserts a ring inside the popup, and why
- * this file does not change it unilaterally. I4's `KeyboardOrder` carries the
- * measurement.
+ * 5. **A keyboard-focused row inside the menu paints a surface.** This story
+ *    used to record the opposite: `className="p-0 focus:bg-transparent"` on
+ *    the `DropdownMenuItem` overrode the primitive's `focus:bg-accent`, so the
+ *    focused and resting rows differed only as title colour, oklch 0.205
+ *    against 0.145. The override is gone and the description is kept legible
+ *    by rebinding `--muted-foreground` on focus instead, so the walk below
+ *    asserts the focused row's background differs from a resting row's, and
+ *    that the muted description resolves to the row's own foreground rather
+ *    than to muted-on-accent (4.34:1). I4's `KeyboardOrder` asserts the same
+ *    on its own rows, since the two components shared the override.
  */
 export const KeyboardOrder: Story = {
   args: { actions: [...VIDEO_ACTIONS, LIP_SYNC] },
@@ -438,9 +436,22 @@ export const KeyboardOrder: Story = {
     const lockedItem = within(menu).getByRole("menuitem", { name: /Use in Lip sync/ });
     await expect(lockedItem).toHaveAttribute("aria-disabled", "true");
 
+    // The focused row is marked by a surface, not by a title colour alone.
+    await waitFor(() => expect(items).toContain(document.activeElement));
+    const focusedItem = document.activeElement as HTMLElement;
+    const restingItem = items.find((item) => item !== focusedItem)!;
+    const surface = (el: Element) => getComputedStyle(el).backgroundColor;
+    await expect(`resting surface=${surface(restingItem)}`).toBe("resting surface=rgba(0, 0, 0, 0)");
+    await expect(`focused surface differs=${surface(focusedItem) !== surface(restingItem)}`).toBe(
+      "focused surface differs=true",
+    );
+    // And the muted description on that surface is rebound to the row's own
+    // foreground, so it never sits at muted-on-accent.
+    const description = focusedItem.querySelector<HTMLElement>('[data-slot="entity-row-description"]')!;
+    await expect(getComputedStyle(description).color).toBe(getComputedStyle(focusedItem).color);
+
     // Choosing a row closes the menu and hands focus back to the trigger, so
     // the next hop in the chain starts from where the last one did.
-    await waitFor(() => expect(items).toContain(document.activeElement));
     await userEvent.keyboard("{Enter}");
     await waitFor(() => expect(body.queryByRole("menu")).toBeNull());
     await waitFor(() => expect(document.activeElement).toBe(trigger));
