@@ -2,9 +2,17 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { FAMILY_TITLES } from "@/lib/catalog";
-import type { FamilyId, ManifestItem } from "@/lib/manifest-types";
+import type {
+  CatalogComponent,
+  CatalogGroup,
+  CatalogVariant,
+  OpenUICatalog,
+} from "@/lib/openui-catalog-types";
+import type { FamilyId } from "@/lib/manifest-types";
 
 import type { ContractMeta } from "./contract-emit";
+
+export type { CatalogComponent, CatalogGroup, CatalogVariant, OpenUICatalog };
 
 /** The OpenUI component catalog: every shipped item's contract as data an
  *  OpenUI library can turn into `defineComponent` calls (name, description,
@@ -22,43 +30,6 @@ export const CATALOG_FILE = "apps/docs/public/openui/catalog.json";
 export const META_DIR = "apps/docs/registry/super-ai";
 
 const BARE_IDENTIFIER = /^[A-Za-z_$][\w$]*$/;
-
-export type CatalogVariant = {
-  prop: string;
-  default?: string;
-  values: { value: string; intent: string }[];
-};
-
-export type CatalogComponent = {
-  /** Display name, the meta's `title`. */
-  name: string;
-  /** Registry name, the meta's `name`; what `shadcn add` takes. */
-  slug: string;
-  family: FamilyId;
-  layer: ManifestItem["layer"];
-  meta: string;
-  docs: string;
-  /** The meta's `purpose`: what the item is, which is what a model places by. */
-  description: string;
-  /** Empty when the guidance module wrote no axes, or wrote `{ none }`. */
-  variants: CatalogVariant[];
-  /** The meta's `donts`, then its `pitfalls`, verbatim. */
-  notes: string[];
-  /** Registry items this one composes. */
-  consumes: string[];
-  /** Registry items that compose this one: the inverse of `consumes`. */
-  consumedBy: string[];
-  insteadUse: { slug: string; when: string }[];
-};
-
-export type CatalogGroup = { family: FamilyId; title: string; components: string[] };
-
-export type OpenUICatalog = {
-  version: 1;
-  generatedFrom: string;
-  components: CatalogComponent[];
-  groups: CatalogGroup[];
-};
 
 /** OpenUI props are flat and positional, so only an axis with a bare
  *  identifier becomes an enum. `propName` is the meta's own promotion of

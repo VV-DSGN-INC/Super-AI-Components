@@ -4,7 +4,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { AnswerBlock, type AnswerClaim } from "@/registry/super-ai/answer-block";
 
-const CLAIMS: AnswerClaim[] = [
+export const CLAIMS: AnswerClaim[] = [
   {
     id: "1",
     text: "Out-of-network imaging requires prior authorization.",

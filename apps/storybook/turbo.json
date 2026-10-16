@@ -40,13 +40,17 @@
   // rely on remembering: apps/docs/scripts/turbo-inputs.test.ts fails if a
   // ../docs directory is reachable from either config and missing here.
   "tasks": {
+    // public/openui/** is the one input reached by a relative import rather
+    // than an alias: components/openui/catalog.ts reads the emitted catalog
+    // JSON, so a re-emit has to move these hashes too.
     "typecheck": {
       "inputs": [
         "$TURBO_DEFAULT$",
         "$TURBO_ROOT$/apps/docs/registry/**",
         "$TURBO_ROOT$/apps/docs/components/**",
         "$TURBO_ROOT$/apps/docs/content/**",
-        "$TURBO_ROOT$/apps/docs/lib/**"
+        "$TURBO_ROOT$/apps/docs/lib/**",
+        "$TURBO_ROOT$/apps/docs/public/openui/**"
       ]
     },
     // eslint lints story files and wrappers that import apps/docs source, so a
@@ -57,7 +61,8 @@
         "$TURBO_ROOT$/apps/docs/registry/**",
         "$TURBO_ROOT$/apps/docs/components/**",
         "$TURBO_ROOT$/apps/docs/content/**",
-        "$TURBO_ROOT$/apps/docs/lib/**"
+        "$TURBO_ROOT$/apps/docs/lib/**",
+        "$TURBO_ROOT$/apps/docs/public/openui/**"
       ]
     },
     // `storybook build` bundles those same apps/docs sources through
@@ -68,7 +73,8 @@
         "$TURBO_ROOT$/apps/docs/registry/**",
         "$TURBO_ROOT$/apps/docs/components/**",
         "$TURBO_ROOT$/apps/docs/content/**",
-        "$TURBO_ROOT$/apps/docs/lib/**"
+        "$TURBO_ROOT$/apps/docs/lib/**",
+        "$TURBO_ROOT$/apps/docs/public/openui/**"
       ]
     }
   }
