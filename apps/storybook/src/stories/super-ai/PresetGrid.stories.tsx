@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { ChoiceChip, ChoiceChips } from "@/registry/super-ai/choice-chips";
@@ -9,6 +9,7 @@ import { PreviewTile } from "@/registry/super-ai/preview-tile";
 import { RecentGrid } from "@/registry/super-ai/recent-grid";
 import { PresetGridDocs } from "@/content/components/preset-grid.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { settledFocusRing } from "@/lib/focus-ring";
 
 const STYLE_ITEMS: PresetGridItem[] = [
   { id: "anime", label: "Anime" },
@@ -305,80 +306,74 @@ export const ReducedMotion: Story = {
 };
 
 /**
- * Tab traversal across three tiles and the see-more cell. Two facts are
- * load-bearing and only visible here.
+ * Keyboard across three tiles and the see-more cell. Single-select is a Base
+ * UI radio group now, which this story used to record as missing (one Tab
+ * stop per tile, arrows inert):
  *
- * The overflow affordance is inside the tab sequence, as its last stop —
- * that is what makes "see-more is a tile in the grid" a keyboard claim and
- * not only a layout one. A "Show more" link rendered below the grid would
- * land after whatever else the page put between them.
+ * 1. **The radios are one tab stop, and see-more is the second.** Tab lands
+ *    on the checked tile, or the first when none is, as here; the next Tab
+ *    reaches the overflow cell, which is a
+ *    plain button and not a radio, so "see-more is a tile in the grid" stays
+ *    a keyboard claim: it is the very next stop after the presets, not a link
+ *    below whatever else the page put there. The Tab after it leaves the grid.
+ * 2. **Arrows walk the presets, one per press, selecting as they go, and
+ *    wrap**, asserted as a cycle rather than as a count inside an allowance.
+ * 3. **Every stop paints a settled ring** (`settledFocusRing`).
  *
- * Every cell draws its own `focus-visible:ring-2`, so each stop is visibly
- * focused without any global style, and the closing Tab leaves the grid —
- * nothing here traps focus.
+ * Multi-select (`multiple`) keeps one stop per tile on purpose: the APG
+ * checkbox-group pattern keeps every checkbox in the tab order.
  *
- * **The accepted gap, recorded and not asserted.** There is no roving
- * tabindex: the source says so in a TODO and names A4 `choice-chips` as
- * carrying the same one, so a twelve-preset grid costs twelve stops and the
- * arrow keys a `radiogroup` promises do nothing. This story walks the tab
- * sequence that exists; it does not assert that arrows are inert, because
- * that would pin the gap green.
- *
- * **The defect, likewise recorded.** Activating see-more takes the hidden
- * count to zero, so the control unmounts under the user's own focus and
- * nothing restores it — focus falls to `<body>` at the exact moment three
- * more options appeared. The expansion is driven from the keyboard below to
- * show it is reachable; where focus lands afterwards is left unasserted.
+ * **The defect, still recorded.** Activating see-more takes the hidden count
+ * to zero, so the control unmounts under the user's own focus and nothing
+ * restores it: focus falls to `<body>` at the exact moment three more options
+ * appeared. The expansion is driven from the keyboard below to show it is
+ * reachable; where focus lands afterwards is left unasserted.
  */
 export const KeyboardOrder: Story = {
   args: { items: STYLE_ITEMS, content: "style", "aria-label": "Style presets", visibleCount: 3 },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const grid = canvas.getByRole("radiogroup", { name: "Style presets" });
-    const stops = Array.from(grid.querySelectorAll<HTMLElement>("button"));
+    const radios = canvas.getAllByRole("radio");
+    const seeMore = grid.querySelector<HTMLElement>('[data-slot="preset-grid-see-more"]')!;
+    await expect(radios).toHaveLength(3);
+    await expect(radios.filter((el) => el.tabIndex === 0)).toHaveLength(1);
+    const nameOf = (el: Element | null) => el?.textContent?.trim().slice(0, 24) ?? "nothing";
 
-    // Three tiles plus the see-more cell.
-    await expect(stops).toHaveLength(4);
-    await expect(stops.filter((el) => el.tabIndex === 0)).toHaveLength(4);
-
-    const nameOf = (el: Element | null) =>
-      el === null
-        ? "nothing"
-        : `stop#${stops.indexOf(el as HTMLElement)} [${el.textContent?.trim().slice(0, 24) ?? ""}]`;
-
-    const assertVisiblyFocused = async (el: HTMLElement) => {
-      const id = nameOf(el);
-      await expect(`${id} focusVisible=${el.matches(":focus-visible")}`).toBe(`${id} focusVisible=true`);
-      const style = getComputedStyle(el);
-      await expect(`${id} ring=${style.boxShadow !== "none" || style.outlineStyle !== "none"}`).toBe(
-        `${id} ring=true`,
-      );
-    };
-
+    // 1. Two stops: the radio group, then see-more, then out.
     await userEvent.tab();
-    await expect(nameOf(document.activeElement)).toBe(nameOf(stops[0]));
-    await assertVisiblyFocused(document.activeElement as HTMLElement);
-
-    // One lap, one control per press, no repeats — the sequence is proved
-    // rather than counted inside an allowance.
-    const seen = new Set<HTMLElement>([document.activeElement as HTMLElement]);
-    for (let i = 1; i < stops.length; i += 1) {
-      await userEvent.tab();
-      const focused = document.activeElement as HTMLElement;
-      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
-      await assertVisiblyFocused(focused);
-      seen.add(focused);
-    }
-    await expect(seen.size).toBe(stops.length);
-
-    // …and the last of them is the overflow tile, not a tile of presets.
-    await expect(nameOf(document.activeElement)).toBe(nameOf(stops[3]));
-
+    await waitFor(() => expect(radios).toContain(document.activeElement));
+    const start = document.activeElement as HTMLElement;
+    await expect(start).toBe(radios[0]);
+    await expect(start.matches(":focus-visible")).toBe(true);
+    await settledFocusRing(start, waitFor);
+    await userEvent.tab();
+    await waitFor(() => expect(document.activeElement).toBe(seeMore));
+    await settledFocusRing(seeMore, waitFor);
     await userEvent.tab();
     await expect(grid.contains(document.activeElement)).toBe(false);
 
+    // 2 and 3. Back into the group, then one lap of arrows.
+    await userEvent.tab({ shift: true });
+    await userEvent.tab({ shift: true });
+    await waitFor(() => expect(document.activeElement).toBe(start));
+    const seen = new Set<Element>([start]);
+    let previous: Element = start;
+    for (let i = 1; i < radios.length; i += 1) {
+      await userEvent.keyboard("{ArrowRight}");
+      await waitFor(() => expect(document.activeElement).not.toBe(previous));
+      const focused = document.activeElement as HTMLElement;
+      await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
+      await expect(focused).toHaveAttribute("aria-checked", "true");
+      await settledFocusRing(focused, waitFor);
+      seen.add(focused);
+      previous = focused;
+    }
+    await userEvent.keyboard("{ArrowRight}");
+    await waitFor(() => expect(document.activeElement).toBe(start));
+
     // The hidden presets are reachable without a pointer.
-    stops[3].focus();
+    seeMore.focus();
     await userEvent.keyboard("{Enter}");
     await expect(canvas.getAllByRole("radio")).toHaveLength(STYLE_ITEMS.length);
   },

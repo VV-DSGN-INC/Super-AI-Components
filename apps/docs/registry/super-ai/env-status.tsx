@@ -121,6 +121,9 @@ const STATE_ROW_TONE: Record<EnvStatusState, string> = {
   "not-running": "",
 };
 
+// The icon keeps its hue: it is `aria-hidden` and the badge's text carries the
+// state, so the colour is a graphic accent rather than the signal (the
+// data-views-shared idiom: colour on the icon only).
 const STATE_ICON_TONE: Record<EnvStatusState, string> = {
   ok: "text-foreground",
   degraded: "text-warning",
@@ -137,14 +140,16 @@ const STATE_BADGE_VARIANT: Record<EnvStatusState, "secondary" | "outline" | "des
 
 /**
  * `outline`'s own `text-foreground` reads fine, but `degraded` needs to say
- * "wait" visually too — `text-warning`. `destructive`'s own
+ * "wait" visually too. Solid, not `text-warning`: amber text on the page
+ * background is 2.2:1, while `--warning` / `--warning-foreground` are a
+ * designed pair, the pricing-table save badge's move. `destructive`'s own
  * `bg-destructive/10 text-destructive` is 4.0:1 against a 4.5:1 minimum
  * (a11y-baseline.md); going solid (`bg-destructive text-background`) is the
  * same fix `generation-queue.tsx`'s failed badge and `tts-composer.tsx` use.
  */
 const STATE_BADGE_CLASS: Record<EnvStatusState, string | undefined> = {
   ok: undefined,
-  degraded: "border-warning/40 text-warning",
+  degraded: "bg-warning text-warning-foreground border-transparent",
   "key-invalid": "bg-destructive text-background",
   "not-running": undefined,
 };

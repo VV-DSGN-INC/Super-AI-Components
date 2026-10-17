@@ -956,8 +956,9 @@ quotes a script and a date instead of a sentence.
 >
 > **Still open here:** the vendored sidebar's RTL mirroring, the tooltip that eats
 > an Escape, the notebook chat pane's scroll container (a dependency limit — see
-> below), and roving tabIndex in `choice-chips` / `preset-grid` /
-> `gen-settings-bar`. The roving tabIndex was deliberately **not** attempted at
+> below), and ~~roving tabIndex in `choice-chips` / `preset-grid` /
+> `gen-settings-bar`~~ (landed 2026-10-16 by composing Base UI's `RadioGroup`
+> and `Toolbar`). The roving tabIndex was deliberately **not** attempted at
 > the end of a long session: it has RTL, wrapping and disabled-item edge cases,
 > and half-shipping a keyboard pattern into a published registry is worse than
 > leaving it recorded. **The logical-direction sweep landed on 2026-09-10**, run
@@ -983,7 +984,8 @@ quotes a script and a date instead of a sentence.
 > carrying a real `lint`, `typecheck`, `test:stories` and `addon-a11y`. Two were
 > already recorded here and stay open: the Base UI vs Radix consumer contract
 > (§5, "no registry mechanism expresses '…but adapted'") and the roving
-> tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar` (below).
+> tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar` (below;
+> landed 2026-10-16).
 >
 > - **~~`thread-list`'s delete confirmation never closed~~ — fixed 2026-09-11.**
 >   `AlertDialogAction` is a plain `Button` in this Base UI adaptation, not
@@ -1192,8 +1194,11 @@ story who could not write it honestly without noticing. These are not
 composition gaps — they are divergences with no owner, filed here because
 that is where the backlog lives.
 
-- **`--warning` is undefined in Storybook, so no warning surface has ever been
-  measured.** `apps/storybook/src/index.css` carries no `--color-warning` and
+- **~~`--warning` is undefined in Storybook, so no warning surface has ever been
+  measured.~~ Closed 2026-10-16:** Storybook defines the token with the docs
+  app's values, the three amber-as-text sites it exposed are fixed, and
+  `rate-limit-banner` / `data-views` ship `cssVars`. History follows.
+  **Original entry:** `apps/storybook/src/index.css` carries no `--color-warning` and
   no `--warning`; `apps/docs/app/globals.css` carries both. Tailwind v4 emits
   nothing for an undefined utility, so every `bg-warning` / `text-warning` in
   the registry renders **unpainted** under the axe gate — the stories that
@@ -1484,13 +1489,6 @@ that stayed open, plus what the wave learned about the primitives underneath.
   under RTL. The array semantics stay correct; the label and icon mislead. H5
   `frame-strip`'s `onReorder(id, "left" | "right")` has the same shape. An API
   naming decision (`"start" | "end"`, or index deltas), not a class swap.
-- **A keyboard-focused menu row in I4 `ai-tools-menu` has no perceptible focus
-  treatment.** `focus:bg-transparent` on the `DropdownMenuItem` overrides the
-  primitive's `focus:bg-accent` — presumably to keep A9's muted description off
-  an accent surface — and leaves the focused row distinguishable only by title
-  colour (oklch 0.205 vs 0.145). F4 `action-stack` carries the identical
-  override on the identical row, so it is one decision for both and belongs
-  with the shared row the I4 docs module's last pitfall already asks for.
 - **Two more accessible-name collapses in the empty-string class.** D3
   `context-chips` with `label=""` names its remove control bare "Remove" (its
   docs module says the name cannot collapse — that sentence has a hole); I2
@@ -1914,9 +1912,10 @@ lg:columns-3` off the viewport, so any 375px container on a desktop page gets
 - **Neither focus helper can see a menu row's treatment.** `DropdownMenuItem`
   marks focus with `focus:bg-accent`, and `focusTreatmentSignature` reads
   outline, box-shadow and border colour only. K4 `selection-toolbar` takes its
-  own signature including `background-color`, which doubles as the regression
-  guard for the `focus:bg-transparent` override F7 and I4 carry — a candidate
-  for the shared helper.
+  own signature including `background-color`, and F4 `action-stack` and I4
+  `ai-tools-menu` read `background-color` directly since their
+  `focus:bg-transparent` override was removed — a candidate for the shared
+  helper.
 
 - **`check:tokens` false-positives on prose.** L6 `onboarding-wizard` found that
   writing the literal class name `transition-all` inside a source _comment_

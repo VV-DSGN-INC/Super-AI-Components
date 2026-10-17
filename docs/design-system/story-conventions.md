@@ -184,6 +184,15 @@ These decide the shape of the stories, and all six cost time to rediscover.
     favour. `sheet` is a third case again — it animates by transition, so
     `motion-reduce:transition-none` is what suppresses it.
 
+    **Since 2026-10-16 the vendored primitives restate the pair themselves**
+    (`dialog`, `alert-dialog`, `popover`, `select`, `dropdown-menu` and its
+    sub-content, in both `apps/docs/components/ui` and the Storybook copy;
+    `apps/docs/lib/vendored-popup-motion.test.ts` keeps it that way). **Keep
+    restating it at the call site anyway.** A registry item depends on a bare
+    `dialog` or `popover`, which `shadcn add` resolves to the upstream
+    primitive, not this repo's vendored copy, so the call site's pair is the
+    only one a consumer installs.
+
 4.  **Inside a Base UI portal — dialog, popover, sheet — you cannot read
     `document.activeElement` immediately after `userEvent.tab()`.** Tabbing off
     the last control lands on `FloatingFocusManager`'s trailing focus guard,

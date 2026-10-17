@@ -79,18 +79,12 @@ export const NotifyMe: Story = {
  * Case stories — the situations this banner meets in a product, as opposed to
  * the prop combinations above. See docs/design-system/story-conventions.md.
  *
- * READ THIS BEFORE TRUSTING ANY GREEN RUN ON THIS FILE. The banner's own
- * surface is `border-warning/40 bg-warning/5`, and `--warning` is undefined in
- * `apps/storybook/src/index.css`, so Tailwind v4 emits no rule for either
- * class and **the frame renders unpainted under the axe gate**. Every
- * contrast pass below is a pass against an inherited background, not against
- * the warning tint this component ships. The same token is missing from the
- * manifest entry's (absent) `cssVars`, so a consumer's `shadcn add` installs
- * the banner colourless too. Both are recorded and deliberately unfixed —
- * a11y-baseline.md "Gate hole", CONTINUE.md §8 and §9 — because defining the
- * variable turns several components red at once and `text-warning` measures
- * about 2.2:1 where it does resolve. Restated in `Boundary`, which is where
- * the frame is the subject.
+ * The banner's own surface is `border-warning/40 bg-warning/5`. Until
+ * 2026-10-16 `--warning` was undefined in `apps/storybook/src/index.css` and
+ * missing from this item's manifest `cssVars`, so the frame rendered unpainted
+ * under the axe gate and arrived colourless after `shadcn add`. Both are fixed
+ * (the item now ships a surface-only subset of the warning token), so the
+ * contrast passes below are passes against the tint this component ships.
  *
  * Seven of the eight are written. Not written for this component,
  * deliberately:
@@ -626,15 +620,13 @@ export const Mobile: Story = {
  * rather than a contract — neither component promises it — so the play
  * function asserts the titles and leaves the icons alone.
  *
- * **The colour caveat, restated where it bites.** Two of the three paint with
- * `--warning` — this banner's `border-warning/40 bg-warning/5` frame, and the
- * meter's near-limit bar and value, which the 41-of-50 row above is deliberately
- * over the threshold to render. Storybook defines the token nowhere, so both
- * arrive with no tint: a warning frame that looks like a plain card, beside a
- * "near limit" bar the same colour as a healthy one. Nothing on this page is
- * evidence about the warning surface, its axe pass included — see the block
- * comment above, and a11y-baseline.md's "Gate hole" for why it stays that way.
- * `paywall-message` is the one of the three that never reaches for the token.
+ * **The colour, measured.** Two of the three paint with `--warning`: this
+ * banner's `border-warning/40 bg-warning/5` frame, and the meter's near-limit
+ * bar and readout, which the 41-of-50 row above is deliberately over the
+ * threshold to render. Both resolve in Storybook now, and the meter's readout
+ * is solid `bg-warning text-warning-foreground` rather than amber text (which
+ * measured 2.2:1). `paywall-message` is the one of the three that never
+ * reaches for the token.
  */
 export const Boundary: Story = {
   render: () => (

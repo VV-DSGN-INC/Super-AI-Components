@@ -650,7 +650,21 @@ do nothing.
 violations**, with `preview-tile.tsx` still the single name on the exclusion
 list.
 
-## Gate hole: `--warning` is undefined in Storybook, so warning surfaces are never measured
+## Gate hole (closed 2026-10-16): `--warning` was undefined in Storybook, so warning surfaces were never measured
+
+**Closed.** `apps/storybook/src/index.css` now defines `--color-warning`,
+`--color-warning-foreground` and `--warning` / `--warning-foreground` in
+`:root` and `.dark`, with the same values as `apps/docs/app/globals.css` and the
+manifest's `WARNING_CSS_VARS`, so the gate measures the colour a consumer
+installs. Defining it turned 37 stories red, all from amber used as text at
+2.2:1: M3 `quota-meter`'s near-limit readout and N7 `env-status`'s degraded
+badge went solid (`bg-warning text-warning-foreground`), and N6
+`usage-dashboard`'s rising delta moved its colour onto the `aria-hidden` icon.
+The value question this section left open was answered by measuring what
+ships: the token keeps the docs app's value, and the components stop using it
+as foreground. The two items in the table's second row ship `cssVars` now, and
+`cssvars-liveness.test.ts` fails any item that uses a warning utility without
+them. The record below is kept as the history of the hole.
 
 Found by the wave 0 story retrofit (2026-08-15). This is not an exclusion —
 nothing was ever added to a list — it is a hole the gate cannot see through,
@@ -703,12 +717,9 @@ The second row is a separate, worse bug in the same token: a consumer who runs
 Tailwind emits nothing for them too — the same silent colourlessness the
 `WARNING_CSS_VARS` comment in `catalog.manifest.ts` exists to prevent.
 
-**Deliberately not fixed here.** Adding `--warning` to the Storybook
-stylesheet is a one-line change that would turn several components red at
-once, and _which_ value it should take — matching the docs app, or a darker
-one chosen to clear 4.5:1 as foreground — is a design decision, not a
-mechanical one. Recorded rather than patched, per the rule that a gate is
-never quieted to get a run green. Tracked in `CONTINUE.md` §8.
+**Originally not fixed here**, on the grounds that the value was a design
+decision; see the closing note at the top of this section for how it was
+resolved.
 
 ## Excluded: Base UI's own focus-guard spans (`aria-hidden-focus`)
 

@@ -54,7 +54,7 @@ Not yet recorded.
 
 - A tile is one tab stop for its open button, plus one more if it has a `prompt` (the Remix button) and one per node you put in `actions`. A thirty-tile feed where every item carries a prompt is sixty tab stops before the Load more button.
 - The tile actions are `opacity-0`, never `hidden`, so they stay in the tab order and `group-focus-within` brings them into view the moment anything inside the tile takes focus. Tabbing through the feed reveals the Remix button rather than passing an invisible one.
-- The sort tabs are a real tablist: one tab stop, Left and Right move between sorts. The type pills are not — A4 `choice-chips` announces `role="radiogroup"` but ships no roving tabindex, so every pill is its own tab stop and the arrow keys a radio group promises do nothing.
+- The sort tabs are a real tablist: one tab stop, Left and Right move between sorts. The type pills are A4 `choice-chips`, a radio group: one tab stop too, with the arrow keys moving between pills and filtering as they go.
 - The feed adds a tab stop of its own in front of the first tile. The scroll container is the tab panel, or a `role="region"` with `tabIndex={0}` when there are no sorts, which is what keeps a scrollable region keyboard-reachable at all.
 - In the docked prompt, Enter submits and Shift+Enter inserts a newline. Nothing else is bound: there is no Escape, no shortcut onto Remix, and no route to page two other than tabbing to the Load more button.
 

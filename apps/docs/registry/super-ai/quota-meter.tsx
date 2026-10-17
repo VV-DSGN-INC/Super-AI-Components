@@ -41,9 +41,12 @@ const BAR: Record<QuotaState, string> = {
   "over-limit": "bg-destructive",
 };
 
+// Near-limit goes solid rather than tinting the text: `text-warning` on the page
+// background measures 2.2:1, and `--warning` / `--warning-foreground` are a
+// designed pair (7:1). The pricing-table save badge is the same move.
 const VALUE: Record<QuotaState, string> = {
   normal: "text-muted-foreground",
-  "near-limit": "text-warning",
+  "near-limit": "bg-warning text-warning-foreground rounded-sm px-1",
   "over-limit": "text-destructive",
 };
 

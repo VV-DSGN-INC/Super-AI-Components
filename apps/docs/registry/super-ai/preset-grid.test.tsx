@@ -134,4 +134,27 @@ describe("PresetGrid", () => {
     render(<PresetGrid items={STYLE_ITEMS} className="test-class" aria-label="Style presets" />);
     expect(document.querySelector('[data-slot="preset-grid"]')!.className).toContain("test-class");
   });
+
+  it("single-select is one tab stop and arrows move the selection; multi-select keeps a stop per tile", async () => {
+    const user = userEvent.setup();
+    const items = [
+      { id: "a", label: "Photoreal" },
+      { id: "b", label: "Anime" },
+      { id: "c", label: "Sketch" },
+    ];
+    const { unmount } = render(<PresetGrid aria-label="Style" items={items} defaultValue="a" />);
+    await user.tab();
+    expect(screen.getByRole("radio", { name: "Photoreal" })).toHaveFocus();
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("radio", { name: "Anime" })).toHaveFocus();
+    expect(screen.getByRole("radio", { name: "Anime" })).toHaveAttribute("aria-checked", "true");
+    await user.tab();
+    expect(document.body).toHaveFocus();
+    unmount();
+
+    render(<PresetGrid aria-label="Style" items={items} multiple defaultValue={[]} />);
+    await user.tab();
+    await user.tab();
+    expect(screen.getByRole("checkbox", { name: "Anime" })).toHaveFocus();
+  });
 });
