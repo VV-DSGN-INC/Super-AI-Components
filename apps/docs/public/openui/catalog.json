@@ -592,15 +592,14 @@
       "layer": "primitive",
       "meta": "registry/super-ai/choice-chips.meta.json",
       "docs": "https://super-ai-components.vercel.app/components/choice-chips",
-      "description": "A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, style, artifact type. The group is a real radiogroup and each chip a real radio, so the selection is in the accessibility tree rather than implied by a colour. Selection is drawn as a ring outside the chip, which means moving it never changes any chip's size and never reflows the row underneath.",
+      "description": "A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, style, artifact type. The group is a real radiogroup and each chip a real radio, so the selection is in the accessibility tree rather than implied by a colour. Selection is drawn as a fill and a border colour, never a ring, so moving it never changes any chip's size and the ring stays free to mean keyboard focus.",
       "variants": [],
       "notes": [
         "Don't start the run from onValueChange — merging the pick and the commit removes the pause where someone sets two parameters, or changes their mind, before anything is charged.",
         "Don't ship a numeric group whose meaning lives only in nearby prose — the digits are the accessible name, so without a group label the choice is unlabelled.",
         "`value={undefined}` does not mean \"nothing is selected\" — the component reads it as \"this group is uncontrolled\" and falls back to its own internal state. A controlled group that needs an unselected position needs a sentinel chip to point at, which is what the All chip in artifact-grid is for.",
-        "Selection and keyboard focus are drawn with the same ring, so a focused-but-unselected chip looks like a selected one. `aria-checked` keeps assistive tech correct; sighted keyboard users are the ones this can mislead, which matters most in groups of three or four visually similar chips.",
-        "v1 traverses with Tab, one stop per chip, rather than the roving tabindex the ARIA radiogroup pattern specifies — arrow keys do not move the selection. A ten-chip row is ten tab stops between whatever precedes and follows it, so keep rows short and put them near the control they configure.",
-        "`disabled` reaches the underlying button and does stop the click, but the chip carries no disabled styling of its own, so a disabled option is visually identical to an available one. Until that ships, pass your own disabled classes, or leave the option out and say why elsewhere.",
+        "Arrowing selects. A handler that does real work on `onValueChange` (fetching, re-pricing) runs once per arrow press as a keyboard user walks the row, so keep that work cheap or defer it to the control that commits the run.",
+        "A disabled chip is drawn at half opacity and skipped by the arrows, which says it is unavailable but not why. When the reason matters (a plan gate, an exhausted quota), say it next to the row, or leave the option out.",
         "Chips that append a count after the label need a logical margin (`ms-*`), not a physical one (`ml-*`), or the gap lands on the wrong side of the count under an RTL locale."
       ],
       "consumes": [],
@@ -613,7 +612,7 @@
       "insteadUse": [
         {
           "slug": "preset-grid",
-          "when": "More than one option needs to be selected at once, the options are pictures rather than short labels, or there are more than about eight of them. preset-grid is the same ring-selected model built on the same preview-tile frame, with a see-more affordance and the `multiple` prop — every tile switches to a checkbox — that this component's own spec describes but never shipped."
+          "when": "More than one option needs to be selected at once, the options are pictures rather than short labels, or there are more than about eight of them. preset-grid is the same one-of-many selection model built on the preview-tile frame, with a see-more affordance and the `multiple` prop — every tile switches to a checkbox — that this component's own spec describes but never shipped."
         },
         {
           "slug": "filter-bar",
@@ -1483,7 +1482,7 @@
       "notes": [
         "Don't use it to narrow something already on screen. A segment here changes the next run, not the current view — a strip whose clicks filter a library is a `filter-bar` wearing the wrong component.",
         "Don't prefix each segment with the parameter it sets. The value names itself, the strip has no room for both, and nothing here truncates — the labels just push the bar past the edge of whatever holds it.",
-        "The bar announces role=\"toolbar\" but does not yet implement the arrow-key roving tabindex that role promises — see the TODO in the source. Today every segment is its own tab stop, so a keyboard user pays one Tab per segment to cross the strip and arrow keys do nothing. Keep the strip to the five or six segments the pattern was drawn for until that lands.",
+        "Only `GenSettingsItem`s join the arrow walk. A plain `<button>` placed inside the bar is not a toolbar item, so it keeps a tab stop of its own and the arrows pass it by; wrap any segment in `GenSettingsItem` (or render it through one) to keep the strip one stop.",
         "There is no value API. `GenSettingsItem` is a plain button: the value it shows is its `children`, and `onClick` hands you a MouseEvent rather than a new value, so each segment needs its own handler and the values are owned entirely upstream. Nothing here can report \"resolution changed to 1080p\" generically — the catalog naming Select and Toggle-group as the base describes the controls you open, not what this component ships.",
         "`disabled` travels through React context, so a segment inside a disabled bar is disabled even though nothing in its own JSX says so. To keep one segment live during a run, pass `disabled={false}` on it explicitly — leaving it off falls through to the bar's value.",
         "Nothing wraps, truncates or scrolls. The strip is an inline-flex that grows to fit, so a long model name widens it until it overruns its parent; in a composer's settings slot the caller owns the decision about what gives, and the honest fix is usually a shorter label rather than a wider bar.",
@@ -2337,8 +2336,8 @@
         "Don't collapse the rows into one overall percentage before passing them in — an aggregate is exactly the summary that hides the resource about to stop the user.",
         "Don't pass a Date, a timestamp, or a live countdown to resetsIn — it takes a rendered node because the component does not own a clock, and computing one here desyncs hydration.",
         "Don't hand-tint the rows to signal severity — the threshold is derived from used and limit, and a caller-applied colour will disagree with data-state the moment the numbers move.",
-        "This component needs the --warning token, which is not part of stock shadcn — it ships in the component's cssVars and the CLI writes it into your globals.css. If it is missing, Tailwind emits no rule at all rather than failing, so near-limit degrades silently: the amber bar renders unpainted and the amber number falls back to inherited text. Check for --warning in your CSS before concluding that near-limit does not work.",
-        "Where --warning is defined, near-limit's readout paints text-warning on your page background, which measures roughly 2.2:1 in the default light theme — under the 4.5:1 that normal-size text needs. The state is also carried by the bar and by data-state, so it is not the only signal, but do not rely on the amber number alone to communicate near-limit, and expect an audit to flag it.",
+        "This component needs the --warning token, which is not part of stock shadcn — it ships in the component's cssVars and the CLI writes it into your globals.css. If it is missing, Tailwind emits no rule at all rather than failing, so near-limit degrades silently: the amber bar and the amber readout pill both render unpainted. Check for --warning in your CSS before concluding that near-limit does not work.",
+        "Near-limit's readout is a solid `bg-warning text-warning-foreground` pill (about 7:1), not amber text: amber on a light page measures roughly 2.2:1. If you restyle the readout, keep the pair together rather than putting `text-warning` on your background.",
         "nearLimitAt is a ratio between 0 and 1, not a percentage. Passing 80 instead of 0.8 does not raise the threshold — no row can ever reach it, so every resource reads normal until it tips straight to over-limit.",
         "The bar clamps at 100% but the numbers never do, so an over-limit row shows a full bar beside a readout like 5,240 / 5,000. That is deliberate — the real overage is the useful number — but it means bar width alone cannot tell you how far over a plan is.",
         "A resource with limit set to 0 always reads over-limit with a full bar, since there is no allowance to be within. If you mean unmetered, leave the resource out rather than passing a zero limit."
