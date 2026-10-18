@@ -220,7 +220,7 @@ The one-line version: **this system's look is decided — Geist, one emerald acc
 
 ### ICO — Icons
 
-- **ICO-1 (hard)** Phosphor via `@nickv/pegbo-ui/lib/icons` only (existing law), one weight per context, sizes 16/20/24.
+- **ICO-1 (hard)** Phosphor via `@your-org/ui/lib/icons` only (existing law), one weight per context, sizes 16/20/24.
 - **ICO-2 (hard)** Zero emoji in chrome — nav, buttons, headings, labels, bullets, table cells. Emoji live only in user-generated content.
 - **ICO-3 (hard)** Icons are sized to their job: ≤24px inline, ≤48px in empty states, never a decorative giant, never the icon-in-tinted-circle feature-grid mold.
 

@@ -2,7 +2,7 @@
  *
  *  A style axis is only real where a component reads it. Between the day the
  *  roles were introduced and 2026-08-20 all three were declared in `:root`,
- *  re-tuned by pegbo-warm, and re-tuned again by BOTH finishes — while every
+ *  re-tuned by brand-warm, and re-tuned again by BOTH finishes — while every
  *  component rendered a raw Tailwind step instead. Switching `data-finish`
  *  moved no pixel of shadow anywhere, including the `flat-dense` promise that
  *  cards carry no shadow at all. Nothing failed, because every existing check
