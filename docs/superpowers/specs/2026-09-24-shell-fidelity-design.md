@@ -186,7 +186,7 @@ Still in no shell after this unit, by where they are expected to land: the agent
 - **`loading`.** A boolean. When true, every region renders its skeleton (the vendored
   `SidebarMenuSkeleton` for rails and navs, tile skeletons for grids, a line skeleton for
   prose), the root carries `aria-busy="true"`, and nothing interactive is mounted. The
-  loading twin proof from the pegbo audit (item 7) is the test: skeleton geometry within 8px
+  loading twin proof from the transfer audit (item 7) is the test: skeleton geometry within 8px
   of loaded geometry per region.
 - **Notebook gains `headerActions`**, the one shell with no generic slot.
 - **Not a slot: the command palette.** A host mounts it at the app root; each shell's

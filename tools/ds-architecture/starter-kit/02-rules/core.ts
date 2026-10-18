@@ -3,7 +3,7 @@ import type { Rule } from "./schema"
 /** Rules that hold in any project, not just this design system. Emitted to
  *  rules/core.json and vendored by the portable me:unslop skill. The ID scheme
  *  groups by topic while this file groups by portability, so the two cut
- *  across each other — COL-1 is core, COL-3 is pegbo. That is expected. */
+ *  across each other — COL-1 is core, COL-3 is project-specific. That is expected. */
 
 export const CORE_RULES: Rule[] = [
   {
@@ -58,7 +58,7 @@ export const CORE_RULES: Rule[] = [
       include: [".tsx", ".ts"],
       exempt: [],
     },
-    fix: "Route through @nickv/pegbo-ui/lib/icons at 16/20/24 (Phosphor), or drop the glyph — emoji live only inside user-generated content, never in chrome.",
+    fix: "Route through @your-org/ui/lib/icons at 16/20/24 (Phosphor), or drop the glyph — emoji live only inside user-generated content, never in chrome.",
     why: "Zero emoji in chrome — nav, buttons, headings, labels, bullets, table cells; the model's default is to reach for one, and it never belongs in generated UI.",
   },
   {

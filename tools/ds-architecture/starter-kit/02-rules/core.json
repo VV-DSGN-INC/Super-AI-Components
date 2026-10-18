@@ -68,7 +68,7 @@
         ],
         "exempt": []
       },
-      "fix": "Route through @nickv/pegbo-ui/lib/icons at 16/20/24 (Phosphor), or drop the glyph — emoji live only inside user-generated content, never in chrome.",
+      "fix": "Route through @your-org/ui/lib/icons at 16/20/24 (Phosphor), or drop the glyph — emoji live only inside user-generated content, never in chrome.",
       "why": "Zero emoji in chrome — nav, buttons, headings, labels, bullets, table cells; the model's default is to reach for one, and it never belongs in generated UI."
     },
     {

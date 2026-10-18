@@ -11,7 +11,7 @@ const read = (rel: string) =>
   readFileSync(fileURLToPath(new URL(rel, import.meta.url)), "utf8")
 
 const globals = read("./globals.css")
-const warm = read("./themes/pegbo-warm.css")
+const warm = read("./themes/brand-warm.css")
 
 /** Pull the flat declaration block for a selector. Blocks in these files hold
  *  only declarations and comments, never nested rules. */
@@ -33,12 +33,12 @@ function block(css: string, selector: string): Record<string, string> {
 const modes = {
   "emerald light": [block(globals, ":root")],
   "emerald dark": [block(globals, ":root"), block(globals, ".dark")],
-  "warm light": [block(globals, ":root"), block(warm, '[data-theme="pegbo-warm"]')],
+  "warm light": [block(globals, ":root"), block(warm, '[data-theme="brand-warm"]')],
   "warm dark": [
     block(globals, ":root"),
     block(globals, ".dark"),
-    block(warm, '[data-theme="pegbo-warm"]'),
-    block(warm, '[data-theme="pegbo-warm"].dark'),
+    block(warm, '[data-theme="brand-warm"]'),
+    block(warm, '[data-theme="brand-warm"].dark'),
   ],
 }
 
