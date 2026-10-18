@@ -26,7 +26,7 @@ registry. An MCP server of our own stays out, as the contracts spec decided.
 The ledger is the instrument. A consumer surface with no arm in the ledger has no claim on the
 Harness page, and a surface that loses its arm is removed. **Why:** 3 of 20 systems measure
 anything; this repository's stance since the project review is measured over asserted; and the
-pegbo ledger that would have been the precedent has a design and zero rows. This repository can
+client library's ledger that would have been the precedent has a design and zero rows. This repository can
 have rows first because its consumer cell already exists: `consumer-test.sh` scaffolds a fresh
 Base UI app and installs every item from a local registry build.
 
@@ -35,7 +35,7 @@ Base UI app and installs every item from a local registry build.
 Extends D23. The instruction file, the index copy and anything else the kit installs are emitted
 by `gen-registry.mts` from the same metas that produce `llms.txt`, and a drift test holds them to
 their source. Nothing an agent reads in a consumer is hand-written. **Why:** the one hand-written
-artifact in pegbo's chain went stale twice in one branch; code.org's design-system skill drifted
+artifact in the client library's chain went stale twice in one branch; code.org's design-system skill drifted
 across 104 commits and pointed at deleted files.
 
 ### D29 · Enforcement is a command the agent runs, not a sentence it reads
@@ -96,7 +96,7 @@ Slice 1 has three arms. They differ only in the files the builder can see; every
   each installed file. Nothing before install.
 - `kit`: `today` plus the `agent-kit` item (§3.5) installed before the builder starts.
 
-Blindness is by removal, the pegbo ledger's rule: an arm that must not see a file has it
+Blindness is by removal, the client library ledger's rule: an arm that must not see a file has it
 deleted from the cell. A prohibition is a request, and one builder that reads the file anyway
 invalidates the row with nobody noticing.
 
@@ -183,7 +183,7 @@ non-prompting permission mode with every command allowlisted, per Nick's standin
   MCP dependency afterwards.
 - **An MCP server of ours over the corpus.** Rejected, D30. The contracts spec deferred it, the
   shadcn MCP exists, and the one measured CLI-against-MCP comparison went to the CLI.
-- **Port the pegbo ledger's code.** Rejected. Private repository, an npm-package cell, different
+- **Port the client library ledger's code.** Rejected. Private repository, an npm-package cell, different
   briefs. The design ports: arms by removal, rows kept, a derived table, a pins test. The harness
   is written here against `consumer-test.sh`.
 - **A hand-written consumer skill first.** Rejected, D28.
@@ -230,7 +230,7 @@ Slice 2: the `skill`, `mcp`, `cli` and `llms` arms, then the schedule. Slice 3: 
 
 - An MCP server of ours (D30).
 - DTCG and DESIGN.md emitters: this registry owns no tokens.
-- The elicitation state and component drafted in the pegbo research
+- The elicitation state and component drafted in the client library research
   (`research/specs/2026-10-11-elicitation-component.md`): a catalog candidate for `gaps.md` §5,
   decided separately.
 - The Storybook MCP addon: Storybook stays local here, per the Harness spec.
@@ -255,7 +255,7 @@ Slice 2: the `skill`, `mcp`, `cli` and `llms` arms, then the schedule. Slice 3: 
 
 ## 10. Handoff pointers
 
-- The source: the field scan's §3 (where pegbo sits), §4 (ideas ranked), §9.1 and §10.1 (the
+- The source: the field scan's §3 (where the client library sits), §4 (ideas ranked), §9.1 and §10.1 (the
   measured results), at the path and commit in the header.
 - The cell: `apps/docs/scripts/consumer-test.sh`. The emitter: `apps/docs/scripts/gen-registry.mts`.
   The rules: `packages/ds-rules/rulecheck.mjs` and `token-rules.mjs`. The retrieval order:
