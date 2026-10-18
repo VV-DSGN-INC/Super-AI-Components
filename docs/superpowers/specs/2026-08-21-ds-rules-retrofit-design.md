@@ -12,7 +12,7 @@ eleven-step shape throughout.
 
 The architecture comes from the `ds-architecture` archive
 (`~/ClaudeCode Projects/ds-architecture-archive-2026-08-21.zip`), extracted from
-`pegbo-inc/design-system-rebuild` (PR #115 there). Its manual defines the three ideas this
+the reference repo (PR #115 there). Its manual defines the three ideas this
 retrofit imports:
 
 1. **A rule and its detector are the same record** — no prose guide + separate lint
@@ -110,7 +110,7 @@ adaptations:
 
 - **Scopes repointed** to this repo's directories.
 - **ICO-2 (zero emoji in chrome) is kept; only its `fix` string is repointed.** The
-  harvested fix routes through pegbo's `@nickv/pegbo-ui/lib/icons` adapter; this repo
+  harvested fix routes through the reference library's `@your-org/ui/lib/icons` adapter; this repo
   imports `lucide-react` directly (90 registry files do), so the fix becomes "use
   lucide-react at 16/20/24, or drop the glyph". The ban itself fully applies here.
 
@@ -244,7 +244,7 @@ Each PR: gates green from the repo root before review, preview/link in the PR bo
 
 - Archive: `~/ClaudeCode Projects/ds-architecture-archive-2026-08-21.zip` (MANUAL.md
   Parts 0–3, 6, 9–10 are the load-bearing ones for this retrofit).
-- Upstream: `pegbo-inc/design-system-rebuild`, PR #115.
+- Upstream: the reference repo, PR #115.
 - This repo: `apps/docs/scripts/check-tokens.mjs`, `apps/docs/scripts/lib/token-rules.mjs`,
   `apps/docs/scripts/check-contract.mts`, `apps/docs/lib/manifest-types.ts`,
   `docs/design-system/{anti-slop,a11y-baseline,decisions}.md`, `.claude/skills/unslop/`,

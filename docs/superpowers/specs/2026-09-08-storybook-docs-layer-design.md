@@ -179,7 +179,7 @@ different fact from "this system has 47 accessibility bugs".
 
 ## Out of scope
 
-- **No Pegbo code, structure, page list, theming or framing.** The screenshots
+- **No client code, structure, page list, theming or framing.** The screenshots
   that prompted this were a reference for shape only; this repo's architecture
   differs and the pages describe this system.
 - No toolbar axes (theme, brand, finish, direction, motion, icons).
