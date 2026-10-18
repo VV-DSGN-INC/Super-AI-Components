@@ -9,7 +9,7 @@ import {
   SIZE_GROUPS,
   UNMAPPED_COLOR_TOKENS,
   UNMAPPED_SIZE_TOKENS,
-} from "@nickv/pegbo-ui/tokens"
+} from "@your-org/ui/tokens"
 
 /** Machine-readable usage contract for a component: the judgments a human
  *  designer applies when placing it, written down so an agent doesn't have to

@@ -416,7 +416,7 @@ tree has moved past it. Agents never emit it. The integrator runs
 step that is on neither `GATE_ROWS` nor `PLUMBING` in
 `apps/docs/content/system/gates.ts` fails `gates.test.ts`: say what the step is
 before it lands. That test is also the drift check between `ci.yml` and
-`run-gates.sh`, which closes carry item 3 of the 2026-09-18 pegbo transfer audit.
+`run-gates.sh`, which closes carry item 3 of the 2026-09-18 transfer audit.
 
 ### 3.6 Commit, push, deploy
 

@@ -1,6 +1,6 @@
 ---
 name: unslop
-description: Anti-slop audit for generated UI in @nickv/pegbo-ui. Use BEFORE designing/building any new screen, component, or prototype view (the rules constrain generation), and AGAIN before calling it done (the audit verifies it). Also use when reviewing UI changes, when a screen "looks AI-generated", or when the user says slop, generic, or template-y.
+description: Anti-slop audit for generated UI in @your-org/ui. Use BEFORE designing/building any new screen, component, or prototype view (the rules constrain generation), and AGAIN before calling it done (the audit verifies it). Also use when reviewing UI changes, when a screen "looks AI-generated", or when the user says slop, generic, or template-y.
 ---
 
 # Anti-slop audit
@@ -39,7 +39,7 @@ Hold these while designing. Any hard-rule hit fails review:
    — schema: `src/lib/component-meta.ts`); no colored left-border strips; no
    badge theater or unlabeled sparkles; marketing patterns (hero pills,
    marquees, testimonial carousels, stat bands) never in product UI.
-5. **Icons** — `@nickv/pegbo-ui/lib/icons` only, one weight, sizes 16/20/24, zero
+5. **Icons** — `@your-org/ui/lib/icons` only, one weight, sizes 16/20/24, zero
    emoji in chrome.
 6. **Motion** — only on state change; two durations (~120–150ms feedback,
    ~200–250ms overlays), ease-out, transform/opacity only, named properties;
