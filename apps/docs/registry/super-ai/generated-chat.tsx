@@ -314,17 +314,116 @@ function questionId(...inputs: (string | number)[]): string {
   return normalise(inputs.join(" ")).replace(/ /g, "-");
 }
 
+/**
+ * A saved view: the question that made it and its versions, never its rows.
+ * Opening it reruns the question on current data.
+ */
+interface ViewSpec {
+  id: string;
+  kind: string;
+  title: string;
+  scope: string;
+  origin: string;
+  versions: ViewVersion[];
+  current: number;
+  /** True only on a pinned copy, stored under `pin:<id>`. */
+  pinned: boolean;
+  /** When the view last ran: built, shown, edited or rerun. */
+  ranAt: number;
+}
+
+interface ViewState {
+  views: Record<string, ViewSpec>;
+  activeId: string | null;
+  layout: ViewLayout;
+  /** The view last built or touched, for a follow-up like "pin it". */
+  recentId: string | null;
+}
+
+type ViewAction =
+  | { type: "effect"; effect: ViewEffect; at: number }
+  /** Shows a view and keeps the layout: a card clicked in the chat. */
+  | { type: "show"; id: string; at: number }
+  /** Shows a view as the page: opened from a library or a pin. */
+  | { type: "open"; id: string; at: number }
+  | { type: "edit"; id: string; version: ViewVersion; at: number }
+  | { type: "undo"; id: string }
+  | { type: "pin"; id: string }
+  | { type: "rerun"; id: string; at: number }
+  | { type: "close" };
+
+const initialViewState: ViewState = { views: {}, activeId: null, layout: "docked", recentId: null };
+
+function currentVersion(view: ViewSpec): ViewVersion {
+  return view.versions[view.current]!;
+}
+
+function pinnedId(id: string): string {
+  return `pin:${id}`;
+}
+
+function withView(state: ViewState, view: ViewSpec): ViewState {
+  return { ...state, views: { ...state.views, [view.id]: view } };
+}
+
+/**
+ * The view store. A turn builds a view and never shows it; only a click, or a
+ * turn that names the view, shows one. `show` keeps the layout and `open`
+ * makes the view the page: keep the two apart, because a chat card that
+ * collapses the chat is the usual mistake. A pin is a copy, so later edits to
+ * the chat's view never reach it.
+ */
+function viewReducer(state: ViewState, action: ViewAction): ViewState {
+  if (action.type === "close") return { ...state, activeId: null, layout: "docked" };
+  if (action.type === "effect") {
+    const { effect, at } = action;
+    if (effect.type === "build-view") {
+      const { version, ...rest } = effect.view;
+      const view: ViewSpec = { ...rest, versions: [version], current: 0, pinned: false, ranAt: at };
+      return { ...withView(state, view), recentId: view.id };
+    }
+    if (effect.type === "edit-view")
+      return viewReducer(state, { type: "edit", id: effect.id, version: effect.version, at });
+    const shown = viewReducer(state, { type: "show", id: effect.id, at });
+    return shown === state ? state : { ...shown, layout: effect.layout };
+  }
+
+  const view = state.views[action.id];
+  if (!view) return state;
+  switch (action.type) {
+    case "show":
+      return { ...withView(state, { ...view, ranAt: action.at }), activeId: view.id, recentId: view.id };
+    case "open":
+      return { ...viewReducer(state, { type: "show", id: view.id, at: action.at }), layout: "page" };
+    case "edit": {
+      const versions = [...view.versions.slice(0, view.current + 1), action.version];
+      const edited = { ...view, versions, current: versions.length - 1, ranAt: action.at };
+      return { ...withView(state, edited), recentId: view.id };
+    }
+    case "undo":
+      return view.current > 0 ? withView(state, { ...view, current: view.current - 1 }) : state;
+    case "pin":
+      return withView(state, { ...view, id: pinnedId(view.id), pinned: true });
+    case "rerun":
+      return withView(state, { ...view, ranAt: action.at });
+  }
+}
+
 export {
   createScriptedTransport,
+  currentVersion,
   findTurn,
   hasScript,
   initialQuestionState,
+  initialViewState,
   isQuestionLocked,
   lastUserText,
   normalise,
   questionId,
   questionReducer,
   questionStatusFor,
+  pinnedId,
+  viewReducer,
 };
 export type {
   CardData,
@@ -339,8 +438,11 @@ export type {
   TurnPart,
   ViewCardData,
   ViewEffect,
+  ViewAction,
   ViewInput,
   ViewLayout,
+  ViewSpec,
+  ViewState,
   ViewVersion,
   WidgetData,
   WidgetSize,

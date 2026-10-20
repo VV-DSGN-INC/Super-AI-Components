@@ -5,14 +5,19 @@ import {
   createScriptedTransport,
   findTurn,
   hasScript,
+  currentVersion,
   initialQuestionState,
+  initialViewState,
   isQuestionLocked,
   lastUserText,
   normalise,
   questionId,
   questionReducer,
   questionStatusFor,
+  pinnedId,
+  viewReducer,
   type GeneratedChatMessage,
+  type ViewInput,
   type Turn,
 } from "./generated-chat";
 
@@ -249,5 +254,112 @@ describe("questionReducer", () => {
   it("derives a question id from everything it names", () => {
     expect(questionId("retry", "r2", "r1")).toBe(questionId("retry", "r2", "r1"));
     expect(questionId("retry", "r2", "r1")).not.toBe(questionId("retry", "r1"));
+  });
+});
+
+describe("viewReducer", () => {
+  const input: ViewInput = {
+    id: "failed-runs",
+    kind: "runs",
+    title: "Failed runs this week",
+    scope: "All projects",
+    origin: "Track failed runs",
+    version: { label: "v1 · table", mode: "table" },
+  };
+  const built = viewReducer(initialViewState, {
+    type: "effect",
+    effect: { type: "build-view", view: input },
+    at: 1,
+  });
+
+  it("builds a view without showing it", () => {
+    expect(built.views["failed-runs"]).toMatchObject({
+      title: "Failed runs this week",
+      current: 0,
+      ranAt: 1,
+    });
+    expect(built.recentId).toBe("failed-runs");
+    expect(built.activeId).toBeNull();
+  });
+
+  it("shows a view in the current layout, and opens one as the page", () => {
+    const shown = viewReducer(built, { type: "show", id: "failed-runs", at: 2 });
+    expect(shown.activeId).toBe("failed-runs");
+    expect(shown.layout).toBe("docked");
+    expect(shown.views["failed-runs"]!.ranAt).toBe(2);
+    const opened = viewReducer(built, { type: "open", id: "failed-runs", at: 2 });
+    expect(opened.layout).toBe("page");
+  });
+
+  it("shows a view at once when a show-view effect names it", () => {
+    const s = viewReducer(built, {
+      type: "effect",
+      effect: { type: "show-view", id: "failed-runs", layout: "page" },
+      at: 3,
+    });
+    expect(s.activeId).toBe("failed-runs");
+    expect(s.layout).toBe("page");
+  });
+
+  it("drops undone versions when a new edit lands", () => {
+    const board = { label: "v2 · board", mode: "board" };
+    const edited = viewReducer(built, { type: "edit", id: "failed-runs", version: board, at: 2 });
+    expect(currentVersion(edited.views["failed-runs"]!)).toEqual(board);
+    const undone = viewReducer(edited, { type: "undo", id: "failed-runs" });
+    expect(currentVersion(undone.views["failed-runs"]!).mode).toBe("table");
+    const redone = viewReducer(undone, {
+      type: "edit",
+      id: "failed-runs",
+      version: { label: "v2 · table by reason", mode: "table", variant: "by-reason" },
+      at: 3,
+    });
+    expect(redone.views["failed-runs"]!.versions.map((v) => v.mode)).toEqual(["table", "table"]);
+    expect(redone.views["failed-runs"]!.current).toBe(1);
+  });
+
+  it("an edit-view effect is the same as an edit", () => {
+    const s = viewReducer(built, {
+      type: "effect",
+      effect: { type: "edit-view", id: "failed-runs", version: { label: "v2 · board", mode: "board" } },
+      at: 2,
+    });
+    expect(currentVersion(s.views["failed-runs"]!).mode).toBe("board");
+  });
+
+  it("pins a copy that later edits never reach", () => {
+    const pinned = viewReducer(built, { type: "pin", id: "failed-runs" });
+    const copy = pinned.views[pinnedId("failed-runs")]!;
+    expect(copy.pinned).toBe(true);
+    expect(copy.id).toBe("pin:failed-runs");
+    const edited = viewReducer(pinned, {
+      type: "edit",
+      id: "failed-runs",
+      version: { label: "v2 · board", mode: "board" },
+      at: 2,
+    });
+    expect(edited.views[pinnedId("failed-runs")]!.versions).toEqual(copy.versions);
+  });
+
+  it("rerun stamps the time and nothing else", () => {
+    const s = viewReducer(built, { type: "rerun", id: "failed-runs", at: 9 });
+    expect(s.views["failed-runs"]).toEqual({ ...built.views["failed-runs"], ranAt: 9 });
+  });
+
+  it("close hides the view and keeps it", () => {
+    const shown = viewReducer(built, { type: "open", id: "failed-runs", at: 2 });
+    const closed = viewReducer(shown, { type: "close" });
+    expect(closed.activeId).toBeNull();
+    expect(closed.layout).toBe("docked");
+    expect(closed.views["failed-runs"]).toBeDefined();
+  });
+
+  it("ignores actions on a view it does not hold", () => {
+    expect(viewReducer(built, { type: "show", id: "nope", at: 2 })).toBe(built);
+    expect(viewReducer(built, { type: "undo", id: "nope" })).toBe(built);
+    expect(viewReducer(built, { type: "pin", id: "nope" })).toBe(built);
+    expect(viewReducer(built, { type: "rerun", id: "nope", at: 2 })).toBe(built);
+    expect(viewReducer(built, { type: "edit", id: "nope", version: { label: "x", mode: "x" }, at: 2 })).toBe(
+      built,
+    );
   });
 });
