@@ -37,6 +37,14 @@ export const AppTopbarDocs: ComponentDocs = {
     { slot: "app-topbar", note: "Root `<header>` landmark spanning the shell width." },
     { slot: "app-topbar-leading", note: "Context-specific lead group plus the privacy chip." },
     { slot: "app-topbar-breadcrumb", note: "Document context: path to the current document." },
+    {
+      slot: "app-topbar-breadcrumb-overflow",
+      note: 'Document context, below 28rem of bar width, three or more crumbs: the ellipsis button standing in for the middle crumbs, named "Show hidden path". In the DOM at every width, painted only below the rung.',
+    },
+    {
+      slot: "app-topbar-breadcrumb-overflow-menu",
+      note: "The menu that button opens: the hidden crumbs in path order, a link row for each crumb with an `href` and a disabled row for one without.",
+    },
     { slot: "app-topbar-zoom", note: "Editor context: zoom-out / level / zoom-in button group." },
     { slot: "app-topbar-history", note: "Editor context: undo / redo button group." },
     {
@@ -80,6 +88,7 @@ export const AppTopbarDocs: ComponentDocs = {
   accessibility: {
     keyboard: [
       "Document context has one tab stop per breadcrumb crumb that carries an `href`, and none otherwise. The final crumb is deliberately not a link, a crumb without `href` renders as plain text, and the title, privacy chip and saved-state line are never focusable.",
+      "Below 28rem of the bar's own width, a path of three or more crumbs trades its middle crumbs for one stop: the ellipsis button between the first crumb and the current one. Enter, Space or ArrowDown opens a menu of the hidden crumbs, the arrow keys move through it (a crumb without `href` is a disabled row the arrows still visit), Enter follows a link row, and Escape closes the menu and returns focus to the button. Above the rung the button is `display: none` and is not a stop, and the middle crumbs are stops instead. The tab count therefore changes with the bar's width, the one place in this component where it does.",
       "Editor context is always four tab stops before your `actions` — Zoom out, Zoom in, Undo, Redo — and they render whether or not you passed the matching handler. An editor topbar with no `onUndo` still presents an enabled, focusable Undo button that does nothing.",
       "`canUndo` and `canRedo` default to `true`, so `disabled` only appears when you say so. Omitting them is not the same as having no history.",
       'The button groups have no roving tabindex and no arrow-key navigation — they are `role="group"` wrappers, so each control is its own stop.',
@@ -88,12 +97,13 @@ export const AppTopbarDocs: ComponentDocs = {
     screenReader: [
       "The root is a `<header>`, which is a banner landmark only when it is not inside another landmark. Nested in a shell's `<main>` it is a generic container instead, and either way it carries no `aria-label` — two topbars on one page are indistinguishable.",
       'The breadcrumb is a `<nav aria-label="breadcrumb">`; the final crumb announces as a disabled link with `aria-current="page"`, and each separator is `role="presentation"` so it is not read.',
+      'Below 28rem of bar width the middle crumbs of a path of three or more, and their separators, are `display: none`, so they leave the accessibility tree rather than merely the screen. In their place is a `button` named "Show hidden path" with `aria-haspopup="menu"`; the menu it opens lists them as `menuitem` rows in path order, a crumb with an `href` as a link row and one without as `aria-disabled="true"`. Nothing in the path is announced twice at either width, and the button\'s name is hard-coded English like the zoom and history labels.',
       "In document context with a `breadcrumb`, the `title` prop renders nowhere at all — the last crumb's label is what appears. If the two ever differ, the name a screen reader hears is the crumb's, not the title's.",
       'Zoom and history are icon-only buttons named entirely by `aria-label` — "Zoom out", "Zoom in", "Undo", "Redo". Those strings are hard-coded and not localisable through this component.',
       "The zoom level is rendered as ordinary text between the two buttons, with no `aria-live` and no relationship to either. Pressing Zoom in changes the number silently, so a screen-reader user gets no feedback that the press did anything.",
       'The saved-state line is the same shape: plain text, no live region. "Last saved 5 days ago" becoming "Saving…" is a change nobody is told about.',
       "The privacy chip announces as its label text; its optional glyph is wrapped `aria-hidden`, which is what makes the visible word rather than the icon the actual signal.",
-      "Below 28rem of the bar's own width — a container query on the root, not a viewport breakpoint — the saved-state line is `sr-only`: it keeps its full text and its place in the read order and stops being painted. A sighted phone user loses the saved state before anything else in the row; the document's name keeps a 4rem floor and the privacy chip never shrinks. Nothing about the bar's roles or names changes with its width.",
+      "Below 28rem of the bar's own width — a container query on the root, not a viewport breakpoint — the saved-state line is `sr-only`: it keeps its full text and its place in the read order and stops being painted. A sighted phone user loses the saved state first and the middle of the path second (into the ellipsis menu); the document's name keeps a 4rem floor and the privacy chip never shrinks. The ellipsis button is the one role that comes and goes with the bar's width; every other role and name is the same at every width.",
     ],
     focus: [
       "Switching `context` swaps the entire leading group. If focus was on Zoom in when the surface flips to document context, the button unmounts and focus falls to `<body>` — put the switch behind a navigation rather than a toggle in the bar itself.",
@@ -105,6 +115,7 @@ export const AppTopbarDocs: ComponentDocs = {
     "Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.",
     'Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing ("5 days ago") before handing it over.',
     "Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.",
-    "Putting something that must stay visible at every width into `savedLabel` — it is the first thing the row gives up, going `sr-only` below 28rem of bar width. The title keeps a 4rem floor and truncates (an empty title reserves nothing); ancestor breadcrumb crumbs shrink first and can reach zero, since the bar has no `BreadcrumbEllipsis` collapse. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.",
+    "Putting something that must stay visible at every width into `savedLabel`: it is the first thing the row gives up, going `sr-only` below 28rem of bar width. At the same rung a path of three or more crumbs collapses to the first crumb, an ellipsis menu holding the middle crumbs, and the current crumb. The current crumb keeps a 4rem floor and truncates (an empty title reserves nothing); the first crumb has no floor and is the next thing cut. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.",
+    "Expecting a two-level path to collapse: there is no middle to hide, so `Projects / Q3 Roadmap` renders inline at every width and only truncates. And give a middle crumb an `href` when it is a place: without one it becomes a disabled row in the overflow menu, present in the path but not a destination.",
   ],
 };

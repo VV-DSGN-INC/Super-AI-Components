@@ -342,7 +342,7 @@ export const MANIFEST: ManifestItem[] = [
     status: "shipped",
     wave: 2,
     base: ["breadcrumb", "button-group"],
-    shadcn: ["badge", "breadcrumb", "button", "button-group"],
+    shadcn: ["badge", "breadcrumb", "button", "button-group", "dropdown-menu"],
     consumes: [],
     npm: ["lucide-react"],
     states: ["document-context", "editor-context", "privacy-chip", "saved-state"],

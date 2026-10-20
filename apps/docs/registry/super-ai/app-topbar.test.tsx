@@ -1,6 +1,15 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { AppTopbar } from "./app-topbar";
+
+const DEEP_PATH = [
+  { label: "Projects", href: "/projects" },
+  { label: "Marketing", href: "/projects/marketing" },
+  { label: "Campaigns" },
+  { label: "Q3 planning", href: "/projects/marketing/q3" },
+  { label: "Q3 Roadmap" },
+];
 
 describe("AppTopbar", () => {
   it("renders the document-context state leading with breadcrumb + privacy", () => {
@@ -66,5 +75,53 @@ describe("AppTopbar", () => {
   it("passes className through", () => {
     render(<AppTopbar context="document" title="Q3 Roadmap" className="test-class" />);
     expect(document.querySelector('[data-slot="app-topbar"]')!.className).toContain("test-class");
+  });
+
+  it("keeps a deep path's middle crumbs reachable through an overflow menu between the first and current crumb", async () => {
+    render(<AppTopbar context="document" title="Q3 Roadmap" breadcrumb={DEEP_PATH} />);
+
+    // Both forms of the path are in the DOM and a container query on the bar
+    // picks one. jsdom runs no CSS, so this sees both: the inline middle
+    // crumbs with their hrefs, and the ellipsis button that replaces them
+    // below 28rem of bar width.
+    expect(screen.getByRole("link", { name: "Marketing" })).toHaveAttribute("href", "/projects/marketing");
+    const more = screen.getByRole("button", { name: "Show hidden path" });
+    expect(more).toHaveAttribute("aria-haspopup", "menu");
+    expect(more).toBe(document.querySelector('[data-slot="app-topbar-breadcrumb-overflow"]'));
+
+    // It sits in the list between the first crumb and the first hidden one,
+    // so the collapsed path reads first, ellipsis, current.
+    const items = within(screen.getByRole("list")).getAllByRole("listitem");
+    expect(items[0]).toContainElement(screen.getByRole("link", { name: "Projects" }));
+    expect(items[1]).toContainElement(more);
+    expect(items[2]).toContainElement(screen.getByRole("link", { name: "Marketing" }));
+    expect(items[items.length - 1]).toContainElement(screen.getByRole("link", { name: "Q3 Roadmap" }));
+
+    // The menu lists exactly the hidden crumbs, in path order: a link row
+    // for a crumb with an href, a disabled row for one without. The first
+    // and current crumbs are not repeated.
+    await userEvent.click(more);
+    const menu = await screen.findByRole("menu");
+    expect(menu).toBe(document.querySelector('[data-slot="app-topbar-breadcrumb-overflow-menu"]'));
+    const rows = within(menu).getAllByRole("menuitem");
+    expect(rows.map((row) => row.textContent)).toEqual(["Marketing", "Campaigns", "Q3 planning"]);
+    expect(rows[0]).toHaveAttribute("href", "/projects/marketing");
+    expect(rows[1]).not.toHaveAttribute("href");
+    expect(rows[1]).toHaveAttribute("aria-disabled", "true");
+    expect(rows[2]).toHaveAttribute("href", "/projects/marketing/q3");
+  });
+
+  it("renders no overflow menu when the path has no middle to hide", () => {
+    const { rerender } = render(
+      <AppTopbar
+        context="document"
+        title="Q3 Roadmap"
+        breadcrumb={[{ label: "Projects", href: "/projects" }, { label: "Q3 Roadmap" }]}
+      />,
+    );
+    expect(screen.queryByRole("button", { name: "Show hidden path" })).not.toBeInTheDocument();
+
+    rerender(<AppTopbar context="document" title="Q3 Roadmap" breadcrumb={[{ label: "Q3 Roadmap" }]} />);
+    expect(screen.queryByRole("button", { name: "Show hidden path" })).not.toBeInTheDocument();
   });
 });
