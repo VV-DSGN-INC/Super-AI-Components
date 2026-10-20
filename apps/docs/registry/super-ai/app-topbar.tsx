@@ -38,7 +38,10 @@ import { cn } from "@/lib/utils";
  * Two rules now decide it, in order:
  *
  * 1. The document's name keeps a floor and truncates with an ellipsis inside
- *    it. Ancestor crumbs still shrink first, which is the right priority.
+ *    it. Ancestor crumbs still shrink first, which is the right priority. The
+ *    floor protects text, so an empty `title` gets none: E5's `EmptyLabel`
+ *    story pins that an unnamed bar paints the title at zero width, and a
+ *    4rem blank there would only push the privacy chip right for nothing.
  * 2. Below `@md` (28rem) of the bar's own width the saved-state line goes
  *    `sr-only`: still in the read order with its full text, no longer painted.
  *    It is the least load-bearing text in the row and the one a phone has no
@@ -108,7 +111,7 @@ function AppTopbarBreadcrumb({ crumbs }: { crumbs: AppTopbarCrumb[] }) {
           const isLast = index === crumbs.length - 1;
           return (
             <React.Fragment key={`${crumb.label}-${index}`}>
-              <BreadcrumbItem className={cn("min-w-0", isLast && TITLE_FLOOR)}>
+              <BreadcrumbItem className={cn("min-w-0", isLast && crumb.label && TITLE_FLOOR)}>
                 {isLast ? (
                   <BreadcrumbPage className="truncate">{crumb.label}</BreadcrumbPage>
                 ) : crumb.href ? (
@@ -157,7 +160,10 @@ function AppTopbar({
             {breadcrumb?.length ? (
               <AppTopbarBreadcrumb crumbs={breadcrumb} />
             ) : (
-              <span data-slot="app-topbar-title" className={cn("truncate text-sm font-medium", TITLE_FLOOR)}>
+              <span
+                data-slot="app-topbar-title"
+                className={cn("truncate text-sm font-medium", title && TITLE_FLOOR)}
+              >
                 {title}
               </span>
             )}
@@ -181,7 +187,10 @@ function AppTopbar({
                 <Redo2 />
               </Button>
             </ButtonGroup>
-            <span data-slot="app-topbar-title" className={cn("truncate text-sm font-medium", TITLE_FLOOR)}>
+            <span
+              data-slot="app-topbar-title"
+              className={cn("truncate text-sm font-medium", title && TITLE_FLOOR)}
+            >
               {title}
             </span>
           </>

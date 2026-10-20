@@ -76,7 +76,7 @@ Not yet recorded.
 - Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.
 - Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing ("5 days ago") before handing it over.
 - Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.
-- Putting something that must stay visible at every width into `savedLabel` — it is the first thing the row gives up, going `sr-only` below 28rem of bar width. The title keeps a 4rem floor and truncates; ancestor breadcrumb crumbs shrink first and can reach zero, since the bar has no `BreadcrumbEllipsis` collapse. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.
+- Putting something that must stay visible at every width into `savedLabel` — it is the first thing the row gives up, going `sr-only` below 28rem of bar width. The title keeps a 4rem floor and truncates (an empty title reserves nothing); ancestor breadcrumb crumbs shrink first and can reach zero, since the bar has no `BreadcrumbEllipsis` collapse. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.
 
 ## Composition
 
