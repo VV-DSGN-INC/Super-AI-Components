@@ -361,15 +361,23 @@ function ChatShell({
   const [sidebarOpen, setSidebarOpen] = React.useState(hasView ? false : defaultSidebarOpen);
   const [viewWasOpen, setViewWasOpen] = React.useState(hasView);
   const [openBeforeView, setOpenBeforeView] = React.useState(defaultSidebarOpen);
+  // A toggle the user makes while the view is open is their latest word, so
+  // closing the view keeps it rather than restoring what came before.
+  const [toggledDuringView, setToggledDuringView] = React.useState(false);
   if (hasView !== viewWasOpen) {
     setViewWasOpen(hasView);
     if (hasView) {
       setOpenBeforeView(sidebarOpen);
+      setToggledDuringView(false);
       setSidebarOpen(false);
-    } else {
+    } else if (!toggledDuringView) {
       setSidebarOpen(openBeforeView);
     }
   }
+  const onSidebarOpenChange = (open: boolean) => {
+    setSidebarOpen(open);
+    if (hasView) setToggledDuringView(true);
+  };
 
   const statusStrip = status ? (
     <div data-slot="chat-shell-status" className="shrink-0 border-b px-3 py-2">
@@ -440,7 +448,7 @@ function ChatShell({
       // keys on `sidebar-wrapper`, and the block needs one addressable root.
       data-slot="chat-shell"
       open={sidebarOpen}
-      onOpenChange={setSidebarOpen}
+      onOpenChange={onSidebarOpenChange}
       className={cn(
         "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
         EMBEDDABLE_SHELL,

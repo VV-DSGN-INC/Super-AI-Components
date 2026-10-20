@@ -280,6 +280,17 @@ describe("ChatShell status and loading", () => {
       expect(sidebarState()).toBe("expanded");
     });
 
+    it("keeps a toggle the user made while the view was open, once the view closes", async () => {
+      const user = userEvent.setup();
+      const view = <section aria-label="A view">rows</section>;
+      const { rerender } = render(<ChatShell defaultSidebarOpen={false} view={view} />);
+      expect(sidebarState()).toBe("collapsed");
+      await user.click(document.querySelector<HTMLElement>('[data-sidebar="trigger"]')!);
+      expect(sidebarState()).toBe("expanded");
+      rerender(<ChatShell defaultSidebarOpen={false} />);
+      expect(sidebarState()).toBe("expanded");
+    });
+
     it("leaves a sidebar the user had collapsed collapsed after the view closes", () => {
       const view = <section aria-label="A view">rows</section>;
       const { rerender } = render(<ChatShell defaultSidebarOpen={false} />);
