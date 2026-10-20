@@ -5,8 +5,13 @@ import {
   createScriptedTransport,
   findTurn,
   hasScript,
+  initialQuestionState,
+  isQuestionLocked,
   lastUserText,
   normalise,
+  questionId,
+  questionReducer,
+  questionStatusFor,
   type GeneratedChatMessage,
   type Turn,
 } from "./generated-chat";
@@ -178,5 +183,71 @@ describe("createScriptedTransport", () => {
   it("has no stream to reconnect to", async () => {
     const transport = createScriptedTransport({ turns: scripted, fallback: scriptedFallback });
     await expect(transport.reconnectToStream({ chatId: "c1" })).resolves.toBeNull();
+  });
+});
+
+describe("questionReducer", () => {
+  const ask = (state: typeof initialQuestionState, id: string, cardKey: string) =>
+    questionReducer(state, { type: "ask", id, cardKey });
+
+  it("keeps one question open: a newer ask closes the open one as skipped", () => {
+    const s = ask(ask(initialQuestionState, "q1", "m1:0"), "q2", "m2:0");
+    expect(s.status.q1).toBe("skipped");
+    expect(s.status.q2).toBe("requested");
+    expect(s.openId).toBe("q2");
+  });
+
+  it("never runs an approved question twice", () => {
+    const approved = questionReducer(ask(initialQuestionState, "q1", "m1:0"), {
+      type: "answer",
+      id: "q1",
+      approved: true,
+    });
+    expect(approved.status.q1).toBe("approved");
+    expect(ask(approved, "q1", "m3:0")).toBe(approved);
+  });
+
+  it("leaves an open question alone when it is asked again", () => {
+    const open = ask(initialQuestionState, "q1", "m1:0");
+    expect(ask(open, "q1", "m1:0")).toBe(open);
+  });
+
+  it("keeps an earlier card on the answer it got", () => {
+    const skipped = questionReducer(ask(initialQuestionState, "q1", "A"), {
+      type: "answer",
+      id: "q1",
+      approved: false,
+    });
+    const again = ask(skipped, "q1", "B");
+    expect(questionStatusFor(again, "q1", "A")).toBe("skipped");
+    expect(questionStatusFor(again, "q1", "B")).toBe("requested");
+  });
+
+  it("undoes only an approved question", () => {
+    const open = ask(initialQuestionState, "q1", "m1:0");
+    expect(questionReducer(open, { type: "undo", id: "q1" })).toBe(open);
+    const skipped = questionReducer(open, { type: "answer", id: "q1", approved: false });
+    expect(questionReducer(skipped, { type: "undo", id: "q1" })).toBe(skipped);
+    const approved = questionReducer(open, { type: "answer", id: "q1", approved: true });
+    expect(questionReducer(approved, { type: "undo", id: "q1" }).status.q1).toBe("undone");
+  });
+
+  it("ignores an answer to a question that is not open", () => {
+    expect(questionReducer(initialQuestionState, { type: "answer", id: "nope", approved: true })).toBe(
+      initialQuestionState,
+    );
+  });
+
+  it("locks a question while it waits and once it is approved", () => {
+    expect(isQuestionLocked("requested")).toBe(true);
+    expect(isQuestionLocked("approved")).toBe(true);
+    expect(isQuestionLocked("skipped")).toBe(false);
+    expect(isQuestionLocked("undone")).toBe(false);
+    expect(isQuestionLocked(undefined)).toBe(false);
+  });
+
+  it("derives a question id from everything it names", () => {
+    expect(questionId("retry", "r2", "r1")).toBe(questionId("retry", "r2", "r1"));
+    expect(questionId("retry", "r2", "r1")).not.toBe(questionId("retry", "r1"));
   });
 });

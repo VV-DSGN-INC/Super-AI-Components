@@ -238,12 +238,102 @@ function createScriptedTransport<C>({
   };
 }
 
-export { createScriptedTransport, findTurn, hasScript, lastUserText, normalise };
+/**
+ * Where a question stands. `skipped` covers both a "no" and a question closed
+ * because a newer one was asked; `undone` is an approval taken back in its
+ * undo window.
+ */
+type QuestionStatus = "requested" | "approved" | "skipped" | "undone";
+
+interface QuestionState {
+  /** The latest status per question id. */
+  status: Record<string, QuestionStatus>;
+  /** Which card shows each question now, keyed by question id. */
+  cards: Record<string, string>;
+  /** A card's status frozen when a newer card took its question over. */
+  settled: Record<string, QuestionStatus>;
+  /** The one question waiting for an answer, if any. */
+  openId: string | null;
+}
+
+type QuestionAction =
+  | { type: "ask"; id: string; cardKey: string }
+  | { type: "answer"; id: string; approved: boolean }
+  | { type: "undo"; id: string };
+
+const initialQuestionState: QuestionState = { status: {}, cards: {}, settled: {}, openId: null };
+
+/** A question waiting for its answer, or already approved, cannot be asked again. */
+function isQuestionLocked(status: QuestionStatus | undefined): boolean {
+  return status === "requested" || status === "approved";
+}
+
+/**
+ * One open question at a time. Asking closes any other open question as
+ * skipped; asking an approved one changes nothing, so a repeated click never
+ * runs an action twice. When a question moves to a new card, the old card
+ * keeps the answer it got.
+ */
+function questionReducer(state: QuestionState, action: QuestionAction): QuestionState {
+  switch (action.type) {
+    case "ask": {
+      const current = state.status[action.id];
+      if (isQuestionLocked(current)) return state;
+      const status = { ...state.status, [action.id]: "requested" as const };
+      if (state.openId && state.openId !== action.id) status[state.openId] = "skipped";
+      const settled = { ...state.settled };
+      const previousCard = state.cards[action.id];
+      if (previousCard && previousCard !== action.cardKey && current) settled[previousCard] = current;
+      return { status, cards: { ...state.cards, [action.id]: action.cardKey }, settled, openId: action.id };
+    }
+    case "answer": {
+      if (state.status[action.id] !== "requested") return state;
+      return {
+        ...state,
+        status: { ...state.status, [action.id]: action.approved ? "approved" : "skipped" },
+        openId: state.openId === action.id ? null : state.openId,
+      };
+    }
+    case "undo": {
+      if (state.status[action.id] !== "approved") return state;
+      return { ...state, status: { ...state.status, [action.id]: "undone" } };
+    }
+  }
+}
+
+/** What one card shows: the live status while it is the question's card, its frozen one after. */
+function questionStatusFor(state: QuestionState, id: string, cardKey: string): QuestionStatus | undefined {
+  return state.cards[id] === cardKey ? state.status[id] : state.settled[cardKey];
+}
+
+/**
+ * A question id built from everything its sentence names, so changing what the
+ * action would touch makes a new question rather than reusing a settled one.
+ */
+function questionId(...inputs: (string | number)[]): string {
+  return normalise(inputs.join(" ")).replace(/ /g, "-");
+}
+
+export {
+  createScriptedTransport,
+  findTurn,
+  hasScript,
+  initialQuestionState,
+  isQuestionLocked,
+  lastUserText,
+  normalise,
+  questionId,
+  questionReducer,
+  questionStatusFor,
+};
 export type {
   CardData,
   GeneratedChatData,
   GeneratedChatMessage,
+  QuestionAction,
   QuestionData,
+  QuestionState,
+  QuestionStatus,
   ScriptedTransportOptions,
   Turn,
   TurnPart,
