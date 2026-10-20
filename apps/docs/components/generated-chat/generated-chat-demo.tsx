@@ -254,6 +254,9 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
                     columns={COLUMNS}
                     renderCard={renderRunCard}
                     renderRow={renderRunCard}
+                    // The frame's content part is the one scroll region; the
+                    // table's own overflow would nest an unfocusable second one.
+                    className={version.mode === "board" ? undefined : "h-auto overflow-visible"}
                   />
                 </ViewFrameContent>
                 <ViewFrameFooter origin={`Made in chat: ${active.origin}`} version={version.label} />

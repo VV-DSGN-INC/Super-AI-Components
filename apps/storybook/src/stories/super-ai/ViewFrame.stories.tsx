@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Pin, RotateCw, Undo2, X } from "lucide-react";
+import { CircleAlert, Pin, RotateCw, Undo2, X } from "lucide-react";
 import * as React from "react";
 import { expect, userEvent, within } from "storybook/test";
 
@@ -7,9 +7,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrowserFrame } from "@/registry/super-ai/browser-frame";
+import { TableView, type ColumnDef } from "@/registry/super-ai/data-views";
 import {
   ViewFrame,
   ViewFrameAction,
@@ -60,32 +60,24 @@ const RUNS = [
   },
 ];
 
+/** data-views' table draws a plain table with no scroller of its own, so the
+ *  frame's content part stays the one scroll region. */
+const RUN_COLUMNS: ColumnDef<(typeof RUNS)[number]>[] = [
+  { id: "when", header: "When", cell: (r) => r.when },
+  { id: "project", header: "Project", cell: (r) => r.project },
+  { id: "prompt", header: "Prompt", cell: (r) => r.prompt },
+  { id: "model", header: "Model", cell: (r) => r.model },
+  { id: "reason", header: "Reason", cell: (r) => r.reason },
+  { id: "credits", header: "Credits", cell: (r) => r.credits, align: "right" },
+];
+
 function RunsTable() {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>When</TableHead>
-          <TableHead>Project</TableHead>
-          <TableHead>Prompt</TableHead>
-          <TableHead>Model</TableHead>
-          <TableHead>Reason</TableHead>
-          <TableHead className="text-right">Credits</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {RUNS.map((r) => (
-          <TableRow key={r.when}>
-            <TableCell>{r.when}</TableCell>
-            <TableCell>{r.project}</TableCell>
-            <TableCell>{r.prompt}</TableCell>
-            <TableCell>{r.model}</TableCell>
-            <TableCell>{r.reason}</TableCell>
-            <TableCell className="text-right">{r.credits}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <TableView
+      items={RUNS.map((r) => ({ ...r, id: r.when }))}
+      columns={RUN_COLUMNS}
+      className="h-auto overflow-visible"
+    />
   );
 }
 
@@ -271,7 +263,8 @@ export const Failed: Story = {
     <div className="h-[28rem] w-full max-w-3xl">
       <Frame
         body={
-          <Alert variant="destructive">
+          <Alert>
+            <CircleAlert aria-hidden />
             <AlertDescription>This view could not run. The runs service did not answer.</AlertDescription>
             <Button className="mt-2 w-fit">Retry</Button>
           </Alert>

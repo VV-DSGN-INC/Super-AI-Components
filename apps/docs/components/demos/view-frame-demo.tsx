@@ -5,8 +5,8 @@ import * as React from "react";
 
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TableView, type ColumnDef } from "@/registry/super-ai/data-views";
 import {
   ViewFrame,
   ViewFrameAction,
@@ -44,6 +44,17 @@ const RUNS = [
     reason: "Content filter",
     credits: 4,
   },
+];
+
+/** data-views' table draws a plain table with no scroller of its own, so the
+ *  frame's content part stays the one scroll region. */
+const RUN_COLUMNS: ColumnDef<(typeof RUNS)[number] & { id: string }>[] = [
+  { id: "when", header: "When", cell: (r) => r.when },
+  { id: "project", header: "Project", cell: (r) => r.project },
+  { id: "prompt", header: "Prompt", cell: (r) => r.prompt },
+  { id: "model", header: "Model", cell: (r) => r.model },
+  { id: "reason", header: "Reason", cell: (r) => r.reason },
+  { id: "credits", header: "Credits", cell: (r) => r.credits, align: "right" },
 ];
 
 export default function ViewFrameDemo() {
@@ -91,30 +102,11 @@ export default function ViewFrameDemo() {
               <Skeleton className="h-8 w-full" />
             </div>
           ) : mode === "table" ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>When</TableHead>
-                  <TableHead>Project</TableHead>
-                  <TableHead>Prompt</TableHead>
-                  <TableHead>Model</TableHead>
-                  <TableHead>Reason</TableHead>
-                  <TableHead className="text-right">Credits</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {RUNS.map((r) => (
-                  <TableRow key={r.when}>
-                    <TableCell>{r.when}</TableCell>
-                    <TableCell>{r.project}</TableCell>
-                    <TableCell>{r.prompt}</TableCell>
-                    <TableCell>{r.model}</TableCell>
-                    <TableCell>{r.reason}</TableCell>
-                    <TableCell className="text-right">{r.credits}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <TableView
+              items={RUNS.map((r) => ({ ...r, id: r.when }))}
+              columns={RUN_COLUMNS}
+              className="h-auto overflow-visible"
+            />
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
               {["Timed out", "Content filter"].map((reason) => (

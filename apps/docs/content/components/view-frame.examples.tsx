@@ -1,6 +1,6 @@
 "use client";
 
-import { Pin, RotateCw, Undo2, X } from "lucide-react";
+import { CircleAlert, Pin, RotateCw, Undo2, X } from "lucide-react";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -100,7 +100,8 @@ export function ModesLiveInActions() {
 export function FailureStaysInBody() {
   return (
     <Chrome>
-      <Alert variant="destructive">
+      <Alert>
+        <CircleAlert aria-hidden />
         <AlertDescription>This view could not run. The runs service did not answer.</AlertDescription>
         <Button className="mt-2 w-fit">Retry</Button>
       </Alert>
