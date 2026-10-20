@@ -53,7 +53,7 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     title: "Generated chat",
     description:
       "Replies that answer in registry components: AI SDK message parts for cards, widgets, questions and views, a scripted transport, the question and view stores, and the renderer that draws them.",
-    status: "building",
+    status: "shipped",
     shadcn: [],
     npm: ["ai"],
     target: "lib/generated-chat.tsx",

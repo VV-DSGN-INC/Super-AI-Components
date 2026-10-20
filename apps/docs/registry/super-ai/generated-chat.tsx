@@ -155,8 +155,12 @@ interface ScriptedTransportOptions<C> {
   fallback: Turn<C>;
   /** Pause between parts, so a scripted reply arrives the way a streamed one does. */
   stepMs?: number;
-  /** Read when a turn starts, for turns whose reply depends on host state. */
-  context?: () => C;
+  /**
+   * Read when a turn starts, for turns whose reply depends on what has
+   * happened so far. It receives the conversation, so a turn can be a pure
+   * function of the chat rather than of host state held outside it.
+   */
+  context?: (messages: GeneratedChatMessage[]) => C;
 }
 
 type GeneratedChatChunk = UIMessageChunk<never, GeneratedChatData>;
@@ -191,7 +195,7 @@ function createScriptedTransport<C>({
   return {
     async sendMessages({ messages, abortSignal }) {
       const turn = findTurn(lastUserText(messages), turns, fallback);
-      const ctx = context?.() as C;
+      const ctx = context?.(messages) as C;
       const parts = typeof turn.parts === "function" ? turn.parts(ctx) : turn.parts;
       const effects = typeof turn.effects === "function" ? turn.effects(ctx) : (turn.effects ?? []);
 

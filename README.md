@@ -16,10 +16,10 @@ Requires a shadcn app on Base UI (style base-nova). Radix-based styles such as n
 npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
 ```
 
-**The catalog is complete: 118 of 118 items shipped**, across families A–Q: primitives, chrome,
+**The catalog is complete: 121 of 121 items shipped**, across families A–R: primitives, chrome,
 composers, generation, results, timeline, tools, library, documents, guidance, account, trust,
-observability, thirteen page-level blocks, family P's data view and detail-view shell, and two presentational chrome items (family Q, from Geist). Eleven further items are cut on the
-record (family G and O5, per D9) and are not coming back. Plus four `registry:lib` contracts.
+observability, thirteen page-level blocks, family P's data view and detail-view shell, two presentational chrome items (family Q, from Geist), and family R's widget, widget grid and view frame for chats that answer in components. Eleven further items are cut on the
+record (family G and O5, per D9) and are not coming back. Plus five `registry:lib` contracts, `generated-chat` among them: the engine behind [`/generated-chat`](https://super-ai-components.vercel.app/generated-chat).
 Full catalog: `docs/design-system/` (see below).
 
 **Marketing wave 1** adds a second registry namespace: 15 landing-page mini-components

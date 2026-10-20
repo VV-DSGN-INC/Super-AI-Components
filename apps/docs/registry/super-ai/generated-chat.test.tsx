@@ -169,6 +169,21 @@ describe("createScriptedTransport", () => {
     expect(message.parts[0]).toMatchObject({ type: "text", text: "Board it is." });
   });
 
+  it("hands the context function the conversation so far", async () => {
+    let seen: GeneratedChatMessage[] = [];
+    const transport = createScriptedTransport({
+      turns: scripted,
+      fallback: scriptedFallback,
+      stepMs: 0,
+      context: (messages) => {
+        seen = messages;
+        return { viewBuilt: false };
+      },
+    });
+    await collect(await send(transport, "Make it a board"));
+    expect(seen.map((m) => m.id)).toEqual(["u1"]);
+  });
+
   it("plays the fallback for anything unscripted", async () => {
     const transport = createScriptedTransport({ turns: scripted, fallback: scriptedFallback, stepMs: 0 });
     const { message } = await collect(await send(transport, "write me a poem"));

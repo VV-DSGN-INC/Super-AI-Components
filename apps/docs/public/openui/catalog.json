@@ -3545,6 +3545,37 @@
       "insteadUse": []
     },
     {
+      "name": "View Frame",
+      "slug": "view-frame",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/view-frame.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/view-frame",
+      "description": "The fixed chrome around a generated view: a header with a title, a scope and freshness line and a row of actions, one scrolling body, an optional slot for an ask bar, and a footer naming where the view came from and which version it is. A model or script writes the body. Everything around it keeps the same shape every time.",
+      "variants": [],
+      "notes": [
+        "Don't float the ask bar over the body. It hides the rows it sits on and the body has no idea it is there.",
+        "Don't nest a second scroller inside the body. The body already scrolls, and two scrollbars mean two tab stops.",
+        "The frame fills its container with h-full. Give it a parent with a definite height, or the body stops scrolling and the frame grows with its content.",
+        "Do not add overflow to anything inside the body unless you remove it from the body. Two scroll regions inside each other trap the wheel and double the tab stops.",
+        "ViewFrameFoot renders nothing at all without children, not an empty bar. A falsy child such as `false` or `null` counts as no children, but an empty fragment does not.",
+        "A long title wraps rather than truncates, and the actions wrap onto their own row first. Keep titles short anyway. The title is the only thing naming the view.",
+        "ViewFrameAction takes a single icon as its child. Putting text in it makes a wide button on a 44px target and the label is no longer the only name."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "browser-frame",
+          "when": "The content is a page the agent visited, shown as external. Browser frame marks its content as not ours; view frame wraps a view this product generated and keeps its actions."
+        },
+        {
+          "slug": "artifact-shell",
+          "when": "You need the index of everything generated, with a sidebar and a grid. View frame holds one generated view, not the library of them."
+        }
+      ]
+    },
+    {
       "name": "Voice Clone Recorder",
       "slug": "voice-clone-recorder",
       "family": "E",
@@ -3613,6 +3644,103 @@
       "consumes": [],
       "consumedBy": [],
       "insteadUse": []
+    },
+    {
+      "name": "Widget",
+      "slug": "widget",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/widget.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/widget",
+      "description": "A fixed-size tile for one fact among same-sized siblings. It comes in three families: small is one grid cell, medium is two wide, large is two by two. A tile has an icon, a title, a short meta, one header action or a whole-tile open button, a body that clips, and a skeleton for the loading moment. It sets no width of its own and fills the cell its grid item gives it.",
+      "variants": [
+        {
+          "prop": "size",
+          "values": [
+            {
+              "value": "small",
+              "intent": "One number or one status with a caption. Fits one grid cell."
+            },
+            {
+              "value": "medium",
+              "intent": "A figure with one supporting line or a short bar. Two cells wide."
+            },
+            {
+              "value": "large",
+              "intent": "A short list, such as runs with progress. Two cells wide and two tall."
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Don't repeat the title as openLabel. A reader then hears the title and never the number the tile exists to show.",
+        "Don't fit a list into a medium tile and expect it to scroll. The body clips, so the third run is lost; move to large or open a view.",
+        "A body that runs past the tile is clipped silently. There is no scrollbar and no fade, so test the longest content you can really emit at the exact size.",
+        "The open overlay covers the whole card, which is why onOpen and action exclude each other in the type. Content that needs its own links or buttons belongs in a view, not a tile.",
+        "Width and breakpoint classes on the tile fight the grid. Size the grid item and let the tile fill it.",
+        "With onOpen the body is hidden from assistive tech. Whatever the body shows must be in openLabel, or a screen reader user never learns it.",
+        "The header action is 24px square, the system's compact icon button. Keep one per tile and keep it away from the tile edge it floats on."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "entity-row",
+          "when": "The item is one row in a list of many. A widget is a same-sized tile among siblings, while entity-row is the icon, title and description row that lists use."
+        },
+        {
+          "slug": "stat-readout",
+          "when": "The facts are label and value pairs inside a panel. Stat-readout is a definition list with no tile, size family or open affordance."
+        }
+      ]
+    },
+    {
+      "name": "Widget Grid",
+      "slug": "widget-grid",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/widget-grid.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/widget-grid",
+      "description": "A grid that places fixed-size widget tiles two columns wide in a narrow space and four columns wide in a roomy one. It answers to its own width through a container query, so the same code lays out a widget row in a chat column and on a full-width home page. Rows are as tall as the columns are wide, which keeps a small tile square and makes a large one four squares.",
+      "variants": [
+        {
+          "prop": "size",
+          "values": [
+            {
+              "value": "small",
+              "intent": "Choose small for a single figure or status that reads at a glance, like a count or a balance. It is 1 column by 1 row, always square."
+            },
+            {
+              "value": "medium",
+              "intent": "Choose medium for a tile that needs a line of text or a short list beside its figure. It is 2 columns by 1 row and takes a full row in the two-column layout."
+            },
+            {
+              "value": "large",
+              "intent": "Choose large for the one tile on the page that carries a body of content, like a live list of running work. It is 2 columns by 2 rows, four squares."
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Don't add horizontal padding or margin to the grid. The row height is worked out from the container's width, so a narrower grid inside it leaves every tile taller than it is wide. Pad the parent instead.",
+        "Don't put content taller than its cell inside an item. The cell is fixed by the grid; content that ignores it spills over the row below.",
+        "Reading the columns from the viewport. The switch is a container query on the grid's own wrapper, so a grid in a narrow chat column stays at two columns on a wide window.",
+        "Putting padding on the grid and wondering why tiles are no longer square. Pad the parent.",
+        "Expecting a medium or large tile to fill a hole. A medium tile after three small ones in a four-column row moves to the next row and leaves a gap. Order the tiles for the four-column case, since two columns never leaves one.",
+        "Rebuilding the threshold in your own CSS. Import FOUR_COLUMN_MIN_REM when a test or sibling layout needs the number; it is a literal because it is the size model's contract, not a design token."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "recent-grid",
+          "when": "The items are thumbnails of things to reopen, each with a title and recency text, rather than fixed-size glanceable tiles."
+        },
+        {
+          "slug": "artifact-grid",
+          "when": "The items are documents grouped under the session that produced them and need a type filter, not a uniform tile size."
+        }
+      ]
     },
     {
       "name": "Workspace Switcher",
@@ -3851,6 +3979,15 @@
       "components": [
         "book-cover",
         "browser-frame"
+      ]
+    },
+    {
+      "family": "R",
+      "title": "Generated chat",
+      "components": [
+        "view-frame",
+        "widget",
+        "widget-grid"
       ]
     }
   ]

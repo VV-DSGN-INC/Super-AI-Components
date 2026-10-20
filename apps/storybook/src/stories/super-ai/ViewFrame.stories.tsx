@@ -128,17 +128,6 @@ function IconActions() {
   );
 }
 
-function Modes({ value = "table" }: { value?: "table" | "board" }) {
-  return (
-    <Tabs defaultValue={value}>
-      <TabsList variant="line">
-        <TabsTrigger value="table">Table</TabsTrigger>
-        <TabsTrigger value="board">Board</TabsTrigger>
-      </TabsList>
-    </Tabs>
-  );
-}
-
 function AskBar() {
   return <Input aria-label="Ask about this view" placeholder="Ask about this view" />;
 }

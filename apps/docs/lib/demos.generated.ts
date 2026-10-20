@@ -115,9 +115,12 @@ import TransportControlsDemo from "@/components/demos/transport-controls-demo";
 import TrustDialogDemo from "@/components/demos/trust-dialog-demo";
 import TtsComposerDemo from "@/components/demos/tts-composer-demo";
 import UsageDashboardDemo from "@/components/demos/usage-dashboard-demo";
+import ViewFrameDemo from "@/components/demos/view-frame-demo";
 import VoiceCloneRecorderDemo from "@/components/demos/voice-clone-recorder-demo";
 import WaveformEditorDemo from "@/components/demos/waveform-editor-demo";
 import WhatsNewDemo from "@/components/demos/whats-new-demo";
+import WidgetDemo from "@/components/demos/widget-demo";
+import WidgetGridDemo from "@/components/demos/widget-grid-demo";
 import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 
 export const demos: Record<string, ComponentType> = {
@@ -235,8 +238,11 @@ export const demos: Record<string, ComponentType> = {
   "trust-dialog": TrustDialogDemo,
   "tts-composer": TtsComposerDemo,
   "usage-dashboard": UsageDashboardDemo,
+  "view-frame": ViewFrameDemo,
   "voice-clone-recorder": VoiceCloneRecorderDemo,
   "waveform-editor": WaveformEditorDemo,
   "whats-new": WhatsNewDemo,
+  "widget": WidgetDemo,
+  "widget-grid": WidgetGridDemo,
   "workspace-switcher": WorkspaceSwitcherDemo,
 };

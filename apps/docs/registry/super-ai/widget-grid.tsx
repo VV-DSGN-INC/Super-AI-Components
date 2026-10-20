@@ -41,7 +41,7 @@ const GRID_CLASSES = [
   "grid",
   "[--wg-cols:2]",
   FOUR_COLUMN_QUERY,
-  "[--wg-gap:calc(var(--spacing)*3)]",
+  "[--wg-gap:--spacing(3)]",
   "gap-(--wg-gap)",
   "grid-cols-[repeat(var(--wg-cols),minmax(0,1fr))]",
   "auto-rows-[calc((100cqw-(var(--wg-cols)-1)*var(--wg-gap))/var(--wg-cols))]",
