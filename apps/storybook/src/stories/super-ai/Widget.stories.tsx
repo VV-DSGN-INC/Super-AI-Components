@@ -304,11 +304,11 @@ export const Mobile: Story = {
 /**
  * Three ways to show a number, told apart by the shape of the thing:
  *
- * - **Widget** — a tile among same-sized siblings in a grid; one fact, at a
+ * - **Widget**: a tile among same-sized siblings in a grid; one fact, at a
  *   glance, optionally the door to a bigger answer.
- * - **Entity row** — one item in a list: icon, title, description, trailing.
+ * - **Entity row**: one item in a list: icon, title, description, trailing.
  *   The row grows with its text; a tile never does.
- * - **Stat readout** — label and value pairs inside a panel that already
+ * - **Stat readout**: label and value pairs inside a panel that already
  *   exists. No tile, no size, nothing to open.
  *
  * The test: if it sits in a grid beside tiles of the same size, it is a
