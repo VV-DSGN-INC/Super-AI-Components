@@ -11,10 +11,12 @@ import { cn } from "@/lib/utils";
 import { DataViews, type ColumnDef, type ViewGroup } from "@/registry/super-ai/data-views";
 import { DisclaimerNote } from "@/registry/super-ai/disclaimer-note";
 import {
+  canSend,
   createScriptedTransport,
   currentVersion,
   initialQuestionState,
   initialViewState,
+  isQuestionLocked,
   questionReducer,
   questionStatusFor,
   ReplyParts,
@@ -115,7 +117,7 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
     },
   });
 
-  const busy = status === "submitted" || status === "streaming";
+  const busy = !canSend(status);
   const localId = React.useRef(0);
   const post = React.useCallback(
     (parts: GeneratedChatMessage["parts"]) => {
@@ -133,17 +135,25 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
       setDraft("");
       void sendMessage({ text });
     },
+    // Each handler posts only on a real transition, read from the store,
+    // so a repeated click can never post a second card or a second receipt.
     ask: (question: QuestionData) => {
-      if (busy) return;
+      if (busy || isQuestionLocked(questions.status[question.id])) return;
       const id = post([{ type: "data-question", data: question }]);
       dispatchQuestion({ type: "ask", id: question.id, cardKey: `${id}:0` });
     },
     answer: (question, approved) => {
+      if (questions.status[question.id] !== "requested") return;
       dispatchQuestion({ type: "answer", id: question.id, approved });
       if (approved && question.after) post(toMessageParts(question.after));
     },
+    // F7's own contract: Undo takes the decision back, so the same card asks
+    // again rather than claiming the question was skipped.
     undo: (question) => {
+      const cardKey = questions.cards[question.id];
+      if (questions.status[question.id] !== "approved" || !cardKey) return;
       dispatchQuestion({ type: "undo", id: question.id });
+      dispatchQuestion({ type: "ask", id: question.id, cardKey });
       post([
         { type: "text", text: "Undone. Both runs stay failed, and no credits were spent.", state: "done" },
       ]);

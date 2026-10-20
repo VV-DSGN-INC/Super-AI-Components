@@ -15,7 +15,7 @@
  * them and the chat state never holds view logic.
  */
 
-import type { ChatTransport, UIMessage, UIMessageChunk } from "ai";
+import type { ChatStatus, ChatTransport, UIMessage, UIMessageChunk } from "ai";
 import * as React from "react";
 
 /** A tile's size family. Each size is its own layout, tested at its own size. */
@@ -115,6 +115,15 @@ interface Turn<C = unknown> {
   effects?: ViewEffect[] | ((ctx: C) => ViewEffect[]);
 }
 
+/**
+ * Whether a new message may be sent. `useChat` does not refuse a second
+ * `sendMessage` while a reply is arriving, so every chip, widget and composer
+ * that sends must be gated on this, or two replies interleave.
+ */
+function canSend(status: ChatStatus): boolean {
+  return status === "ready" || status === "error";
+}
+
 /** Lower case, punctuation to spaces, whitespace collapsed. */
 function normalise(text: string): string {
   return text
@@ -183,8 +192,10 @@ function pause(ms: number, signal: AbortSignal | undefined): Promise<void> {
  * A `ChatTransport` that plays scripted turns as a real stream: one part per
  * step, then the turn's effects as transient data, then `finish`. A scripted
  * reply goes through the same `useChat` state a model reply does, so there is
- * one reveal clock, not two. Stopping the chat aborts the signal; the stream
- * then closes with what has arrived and sends nothing more.
+ * one reveal clock, not two. The turn's effects are sent first, as transient
+ * data, so a stopped reply never posts a card for a view it did not build.
+ * Stopping the chat aborts the signal; the stream then closes with what has
+ * arrived and sends nothing more.
  */
 function createScriptedTransport<C>({
   turns,
@@ -215,6 +226,10 @@ function createScriptedTransport<C>({
           };
 
           emit({ type: "start" });
+          // Effects go first: a view is built before its card is posted, so
+          // stopping mid-reply can never leave a card for a view that does not
+          // exist. Building never shows a view, so nothing moves on screen.
+          for (const effect of effects) emit({ type: "data-effect", data: effect, transient: true });
           for (const [index, part] of parts.entries()) {
             if (index > 0) await pause(stepMs, abortSignal);
             if (stopped()) return;
@@ -232,7 +247,6 @@ function createScriptedTransport<C>({
             }
           }
           if (stopped()) return;
-          for (const effect of effects) emit({ type: "data-effect", data: effect, transient: true });
           emit({ type: "finish" });
           open = false;
           controller.close();
@@ -440,6 +454,15 @@ interface ReplyPartsProps {
   streaming?: boolean;
 }
 
+/**
+ * A registry lookup that sees only what the consumer registered. A plain
+ * `record[name]` also finds inherited keys, so a type named "constructor"
+ * would resolve to `Object` and crash the page instead of reading as unknown.
+ */
+function ownEntry<T>(record: Partial<Record<string, T>>, name: string): T | undefined {
+  return Object.hasOwn(record, name) ? record[name] : undefined;
+}
+
 /** A typo in a registered name should fail where it was made, never render a blank reply. */
 function unregistered(kind: string, name: string): null {
   if (process.env.NODE_ENV !== "production") {
@@ -482,13 +505,14 @@ function ReplyParts({ message, renderers, streaming = false }: ReplyPartsProps) 
         return <React.Fragment key={key}>{(renderers.text ?? defaultText)(part.text, live)}</React.Fragment>;
       }
       case "data-card": {
-        const Card = renderers.cards[part.data.type];
+        const Card = ownEntry(renderers.cards, part.data.type);
         if (!Card) return unregistered("card", part.data.type);
         return <Card key={key} {...(part.data.props ?? {})} />;
       }
       case "data-widgets": {
         const items = part.data.items.flatMap((item, itemIndex) => {
-          const Widget = renderers.widgets?.[item.type]?.[item.size];
+          const sizes = renderers.widgets ? ownEntry(renderers.widgets, item.type) : undefined;
+          const Widget = sizes ? ownEntry(sizes, item.size) : undefined;
           if (!Widget) return unregistered("widget", `${item.type} (${item.size})`) ?? [];
           const itemKey = `${key}:${itemIndex}`;
           return [{ key: itemKey, size: item.size, node: <Widget {...(item.props ?? {})} /> }];
@@ -514,6 +538,7 @@ function ReplyParts({ message, renderers, streaming = false }: ReplyPartsProps) 
 }
 
 export {
+  canSend,
   createScriptedTransport,
   currentVersion,
   findTurn,

@@ -3,6 +3,7 @@ import { readUIMessageStream, type UIMessageChunk } from "ai";
 import { describe, expect, it } from "vitest";
 
 import {
+  canSend,
   createScriptedTransport,
   findTurn,
   hasScript,
@@ -143,14 +144,14 @@ describe("createScriptedTransport", () => {
     expect(message.parts[0]).toMatchObject({ type: "text", text: "3 of 26 runs failed overnight." });
   });
 
-  it("sends effects as transient chunks after the parts and before finish", async () => {
+  it("sends effects as transient chunks before the parts, so a stopped reply never posts a card for a view it did not build", async () => {
     const transport = createScriptedTransport({ turns: scripted, fallback: scriptedFallback, stepMs: 0 });
     const { chunks, message } = await collect(await send(transport, "what failed overnight"));
     expect(message.parts.some((p) => p.type === "data-effect")).toBe(false);
     const types = chunks.map((c) => c.type);
     const effectAt = types.indexOf("data-effect");
-    expect(effectAt).toBeGreaterThan(types.lastIndexOf("data-suggestions"));
-    expect(effectAt).toBeLessThan(types.indexOf("finish"));
+    expect(effectAt).toBeGreaterThan(types.indexOf("start"));
+    expect(effectAt).toBeLessThan(types.indexOf("text-start"));
     expect(chunks[effectAt]).toMatchObject({
       type: "data-effect",
       transient: true,
@@ -197,7 +198,7 @@ describe("createScriptedTransport", () => {
     setTimeout(() => controller.abort(), 10);
     const { chunks, message } = await collect(stream);
     expect(message.parts.map((p) => p.type)).toEqual(["text"]);
-    expect(chunks.some((c) => c.type === "data-suggestions" || c.type === "data-effect")).toBe(false);
+    expect(chunks.some((c) => c.type === "data-suggestions")).toBe(false);
     const countAtClose = chunks.length;
     await new Promise((r) => setTimeout(r, 100));
     expect(chunks.length).toBe(countAtClose);
@@ -475,5 +476,38 @@ describe("ReplyParts", () => {
     };
     const { container } = render(<ReplyParts message={withEffect} renderers={renderers} />);
     expect(container.querySelector('[data-slot="reply-parts"]')!.children).toHaveLength(0);
+  });
+});
+
+describe("canSend", () => {
+  it("allows a new message only when no reply is arriving", () => {
+    expect(canSend("ready")).toBe(true);
+    expect(canSend("error")).toBe(true);
+    expect(canSend("submitted")).toBe(false);
+    expect(canSend("streaming")).toBe(false);
+  });
+});
+
+describe("ReplyParts registry lookups", () => {
+  it("treats an inherited object key as unregistered, never as a component", () => {
+    const inherited: GeneratedChatMessage = {
+      id: "m10",
+      role: "assistant",
+      parts: [{ type: "data-card", data: { type: "constructor" } }],
+    };
+    expect(() => render(<ReplyParts message={inherited} renderers={{ cards: {} }} />)).toThrow(
+      /no card renderer is registered for "constructor"/,
+    );
+  });
+
+  it("treats an inherited widget key as unregistered too", () => {
+    const inherited: GeneratedChatMessage = {
+      id: "m11",
+      role: "assistant",
+      parts: [{ type: "data-widgets", data: { items: [{ type: "toString", size: "small" }] } }],
+    };
+    expect(() => render(<ReplyParts message={inherited} renderers={{ cards: {}, widgets: {} }} />)).toThrow(
+      /no widget renderer is registered for "toString \(small\)"/,
+    );
   });
 });

@@ -185,7 +185,7 @@ function RunningWidget() {
 function QuestionCard({ data, cardKey }: { data: QuestionData; cardKey: string }) {
   const { answer, undo, statusFor } = useDemoActions();
   const status = statusFor(data, cardKey);
-  const resolved = status === "approved" || status === "skipped" || status === "undone";
+  const resolved = status === "approved" || status === "skipped";
   return (
     <ApprovalCard
       title={data.title}

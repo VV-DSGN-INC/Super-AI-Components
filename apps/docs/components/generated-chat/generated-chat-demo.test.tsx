@@ -45,6 +45,50 @@ describe("GeneratedChatDemo", () => {
     await waitFor(() => expect(lastButton("Track failed runs")).toBeEnabled(), { timeout: 2000 });
   });
 
+  it("reopens the question when the approval is undone, and says so once", async () => {
+    const user = userEvent.setup();
+    render(<GeneratedChatDemo stepMs={0} />);
+    await user.click(screen.getByRole("button", { name: "What failed overnight?" }));
+    await user.click(await within(stream()).findByRole("button", { name: "Retry 2 timed-out runs" }));
+    await user.click(await within(stream()).findByRole("button", { name: "Confirm" }));
+    await user.click(await within(stream()).findByRole("button", { name: "Undo" }));
+
+    expect(await within(stream()).findByRole("button", { name: "Confirm" })).toBeInTheDocument();
+    expect(within(stream()).queryByText("Skipped")).toBeNull();
+    expect(within(stream()).getAllByText(/^Undone\./)).toHaveLength(1);
+    expect(within(stream()).getByRole("button", { name: "Retry 2 timed-out runs" })).toBeDisabled();
+  });
+
+  it(
+    "keeps a working view card when the reply is stopped after the card arrives",
+    { timeout: 15000 },
+    async () => {
+      const user = userEvent.setup();
+      // A long step leaves a wide window between the card and the chips, so
+      // Stop lands mid-reply even on a loaded machine.
+      render(<GeneratedChatDemo stepMs={600} />);
+      await user.click(screen.getByRole("button", { name: "What failed overnight?" }));
+      const track = await within(stream()).findByRole(
+        "button",
+        { name: "Track failed runs" },
+        { timeout: 5000 },
+      );
+      await waitFor(() => expect(track).toBeEnabled(), { timeout: 5000 });
+
+      await user.click(track);
+      const show = await within(stream()).findByRole(
+        "button",
+        { name: "Show Failed runs this week" },
+        { timeout: 5000 },
+      );
+      await user.click(await screen.findByRole("button", { name: "Stop generating" }));
+      await waitFor(() => expect(show).toBeEnabled(), { timeout: 5000 });
+
+      await user.click(show);
+      expect(await screen.findByRole("region", { name: "Failed runs this week" })).toBeInTheDocument();
+    },
+  );
+
   it("answers anything unscripted with the ready prompts", async () => {
     const user = userEvent.setup();
     render(<GeneratedChatDemo stepMs={0} />);
