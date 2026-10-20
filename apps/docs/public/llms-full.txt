@@ -9293,7 +9293,7 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - `data-region="topbar"`: The sidebar trigger plus B7 app-topbar, titled with the active conversation.
 - `data-region="message-stream"`: AI Elements' Conversation. role=log, named, its own tab stop, sticks to bottom.
 - `data-region="artifact-cards"`: J4 artifact-grid, nested inside the stream and mounted from the first turn. `artifactsWhenEmpty="hide"` holds it back until a session has an artifact.
-- `data-region="view"`: Only when `view` is passed: a view the conversation built, docked. From lg it is the main area and the conversation narrows to 24rem beside it; below lg it sits above the conversation. The sidebar collapses to its icon rail while it is open.
+- `data-region="view"`: Only when `view` is passed: a view the conversation built, docked. From lg it is the main area and the conversation narrows to 24rem beside it; below lg it takes the top 60% and the conversation the rest. The sidebar collapses to its icon rail while it is open.
 - `data-region="composer"`: D1 media-prompt-bar with D3 chips and D4 modes, N3 underneath.
 - `chat-shell`: Root. Contains its own fixed descendants so the shell can be embedded.
 - `chat-shell-turn`: One turn — AI Elements' Message. Carries data-message-id and data-role.

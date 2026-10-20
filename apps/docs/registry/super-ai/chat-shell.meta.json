@@ -32,7 +32,7 @@
     },
     {
       "slot": "data-region=\"view\"",
-      "note": "Only when `view` is passed: a view the conversation built, docked. From lg it is the main area and the conversation narrows to 24rem beside it; below lg it sits above the conversation. The sidebar collapses to its icon rail while it is open."
+      "note": "Only when `view` is passed: a view the conversation built, docked. From lg it is the main area and the conversation narrows to 24rem beside it; below lg it takes the top 60% and the conversation the rest. The sidebar collapses to its icon rail while it is open."
     },
     {
       "slot": "data-region=\"composer\"",

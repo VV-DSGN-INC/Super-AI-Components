@@ -174,8 +174,8 @@ and the sweep found three O2 gaps around generated replies. Phase 2 moves the do
 the shell and closes those gaps.
 
 - **A `view` region.** `ChatShell` takes `view?: ReactNode`. From `lg` the view is the main area
-  and the stream narrows to 24rem beside it. Below `lg` they stack: the view on top, the stream
-  under it. Opening a view collapses the sidebar to its icon rail; closing it restores whatever
+  and the stream narrows to 24rem beside it. Below `lg` they stack: the view takes the top 60%, the
+  stream the rest. Opening a view collapses the sidebar to its icon rail; closing it restores whatever
   the sidebar was. The region list gains `view`.
 - **The rail shows icons only.** B6 `thread-list` rows gain an optional `icon`. Inside a
   collapsed sidebar a row shows its icon alone, its title kept as the accessible name, and the

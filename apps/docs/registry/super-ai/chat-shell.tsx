@@ -207,8 +207,7 @@ interface ChatShellProps extends Omit<React.ComponentProps<"div">, "title"> {
 
   /**
    * A view the conversation built, shown docked: from `lg` it is the main area
-   * and the conversation narrows to 24rem beside it; below `lg` it sits above the
-   * conversation. While a view is open the sidebar collapses to its icon rail,
+   * and the conversation narrows to 24rem beside it; below `lg` it takes the top 60% and the conversation the rest. While a view is open the sidebar collapses to its icon rail,
    * and closing the view restores whatever the sidebar was. Pass R3
    * `view-frame`, or any surface with its own accessible name.
    */
@@ -548,7 +547,7 @@ function ChatShell({
           {hasView ? (
             <div
               data-region="view"
-              className="flex min-h-0 min-w-0 shrink-0 basis-[45%] flex-col border-b p-3 lg:flex-1 lg:basis-auto lg:border-e lg:border-b-0"
+              className="flex min-h-0 min-w-0 shrink-0 basis-[60%] flex-col border-b p-3 lg:flex-1 lg:basis-auto lg:border-e lg:border-b-0"
             >
               {view}
             </div>
