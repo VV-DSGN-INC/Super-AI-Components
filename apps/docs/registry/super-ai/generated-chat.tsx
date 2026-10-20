@@ -43,6 +43,8 @@ interface QuestionData {
   id: string;
   title: string;
   summary: string;
+  /** What approving spends, in credits, shown at the point of decision. */
+  cost?: number;
   undoable?: boolean;
   after?: TurnPart[];
 }
