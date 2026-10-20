@@ -45,7 +45,10 @@ export const AppTopbarDocs: ComponentDocs = {
     },
     { slot: "app-topbar-privacy", note: "Icon + text status chip. Available in either context." },
     { slot: "app-topbar-trailing", note: "Right-aligned group holding saved-state and actions." },
-    { slot: "app-topbar-saved", note: 'Saved-state as plain readable text, e.g. "Last saved 5 days ago".' },
+    {
+      slot: "app-topbar-saved",
+      note: 'Saved-state as plain readable text, e.g. "Last saved 5 days ago". Below 28rem of bar width it is `sr-only`: read, not painted.',
+    },
     { slot: "app-topbar-actions", note: "Consumer-supplied trailing controls (share, export, presence, …)." },
   ],
   usage:
@@ -90,6 +93,7 @@ export const AppTopbarDocs: ComponentDocs = {
       "The zoom level is rendered as ordinary text between the two buttons, with no `aria-live` and no relationship to either. Pressing Zoom in changes the number silently, so a screen-reader user gets no feedback that the press did anything.",
       'The saved-state line is the same shape: plain text, no live region. "Last saved 5 days ago" becoming "Saving…" is a change nobody is told about.',
       "The privacy chip announces as its label text; its optional glyph is wrapped `aria-hidden`, which is what makes the visible word rather than the icon the actual signal.",
+      "Below 28rem of the bar's own width — a container query on the root, not a viewport breakpoint — the saved-state line is `sr-only`: it keeps its full text and its place in the read order and stops being painted. A sighted phone user loses the saved state before anything else in the row; the document's name keeps a 4rem floor and the privacy chip never shrinks. Nothing about the bar's roles or names changes with its width.",
     ],
     focus: [
       "Switching `context` swaps the entire leading group. If focus was on Zoom in when the surface flips to document context, the button unmounts and focus falls to `<body>` — put the switch behind a navigation rather than a toggle in the bar itself.",
@@ -101,5 +105,6 @@ export const AppTopbarDocs: ComponentDocs = {
     "Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.",
     'Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing ("5 days ago") before handing it over.',
     "Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.",
+    "Putting something that must stay visible at every width into `savedLabel` — it is the first thing the row gives up, going `sr-only` below 28rem of bar width. The title keeps a 4rem floor and truncates; ancestor breadcrumb crumbs shrink first and can reach zero, since the bar has no `BreadcrumbEllipsis` collapse. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.",
   ],
 };

@@ -1205,6 +1205,15 @@ export const LongContent: Story = {
  * in both copies; the play below asserts `transition-property: none` on both
  * halves, which is the value the fix changes.
  *
+ * **A second thing it found, in B7 rather than here.** At 375px the topbar's
+ * title collapsed to zero width and the privacy chip painted over the
+ * saved-state text, because nothing in `app-topbar` could give way: trailing
+ * `shrink-0`, chip `shrink-0`, the leading group absorbing the deficit. Fixed
+ * at the source with a floor on the title and a container query that takes the
+ * saved label out of paint below 28rem of bar width; `AppTopbar.stories.tsx`'s
+ * `Mobile` carries the breadcrumb half, and the play below reads the plain-title
+ * half back in the shell.
+ *
  * The resize does not leak: `LongContent` above and `Boundary` below both read
  * 1200px back, and `LongContent`'s own assertions depend on it.
  */
@@ -1250,6 +1259,26 @@ export const Mobile: Story = {
         `stream ${stream.scrollWidth <= stream.clientWidth}`,
       ].join(" · "),
     ).toBe("document true · shell true · stream true");
+
+    // B7's narrow rules, measured in the shell that found the defect: the
+    // title keeps its floor, the privacy chip ends before the trailing group
+    // begins, and the saved label is `sr-only` — out of paint, still read.
+    // Before the fix the title collapsed to zero width and the chip painted
+    // over "Saved just now" (chip 89..146, label from 136).
+    const title = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-title"]')!;
+    const chip = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-privacy"]')!;
+    const trailing = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-trailing"]')!;
+    const saved = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-saved"]')!;
+    await expect(
+      [
+        `title has width: ${title.getBoundingClientRect().width > 0}`,
+        `chip clear of trailing: ${chip.getBoundingClientRect().right <= trailing.getBoundingClientRect().left}`,
+        `saved label painted: ${saved.getBoundingClientRect().width > 1}`,
+        `saved label read: ${saved.textContent === "Saved just now"}`,
+      ].join(" · "),
+    ).toBe(
+      "title has width: true · chip clear of trailing: true · saved label painted: false · saved label read: true",
+    );
 
     // The topbar trigger is the only way into the history now, so it had
     // better open something.
