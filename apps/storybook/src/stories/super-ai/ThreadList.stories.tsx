@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Coins, Image as ImageIcon, TriangleAlert } from "lucide-react";
 import * as React from "react";
 import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
@@ -637,6 +638,54 @@ export const Mobile: Story = {
     for (const row of rowsOf(canvasElement)) {
       await expect(actionsTrigger(row).className).toContain("pointer-coarse:opacity-100");
     }
+  },
+};
+
+/**
+ * Inside a sidebar collapsed to its icon rail. The wrapper is the one condition
+ * the rail styles key on, the sidebar's group root carrying
+ * `data-collapsible="icon"`, so this renders exactly what O2 chat-shell's rail
+ * shows. A row draws its icon alone and keeps its title as its accessible
+ * name; the section label becomes screen-reader text; the row menu hides,
+ * because a 2.5rem rail has no room for it; and a row with no icon is dropped
+ * rather than drawn as an empty, focusable button.
+ */
+export const CollapsedRail: Story = {
+  render: () => (
+    <div className="group w-12 rounded-lg border p-1" data-collapsible="icon" data-testid="rail">
+      <ThreadList aria-label="Conversations">
+        <ThreadListSection label="Today">
+          <ThreadListItem id="t1" title="What failed overnight" icon={<TriangleAlert />} active />
+          <ThreadListItem id="t2" title="Credits this week" icon={<Coins />} unread />
+          <ThreadListItem id="t3" title="Spring campaign posters" icon={<ImageIcon />} pinned />
+          <ThreadListItem id="t4" title="A thread with no icon" />
+        </ThreadListSection>
+      </ThreadList>
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const row = canvas.getByRole("button", { name: "What failed overnight" });
+    const title = within(row).getByText("What failed overnight");
+    // sr-only: the class dictates a 1px box (D21), so this is pinnable.
+    await expect(getComputedStyle(title).width).toBe("1px");
+    await expect(getComputedStyle(row.querySelector('[data-slot="thread-icon"]')!).display).toBe("flex");
+
+    const label = canvasElement.querySelector<HTMLElement>('[data-slot="date-section-label"]')!;
+    await expect(getComputedStyle(label).width).toBe("1px");
+
+    for (const item of rowsOf(canvasElement)) {
+      const menu = within(item).queryAllByRole("button", { hidden: true })[1];
+      if (menu) await expect(getComputedStyle(menu).display).toBe("none");
+    }
+
+    const iconless = canvas
+      .getByText("A thread with no icon")
+      .closest<HTMLElement>('[data-slot="thread-list-item"]')!;
+    await expect(getComputedStyle(iconless).display).toBe("none");
+
+    const rail = canvas.getByTestId("rail");
+    await expect(rail.scrollWidth).toBeLessThanOrEqual(rail.clientWidth);
   },
 };
 
