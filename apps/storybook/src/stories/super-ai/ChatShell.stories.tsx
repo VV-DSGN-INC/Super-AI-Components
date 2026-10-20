@@ -8,11 +8,20 @@ import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChatShell, type ChatShellProps } from "@/registry/super-ai/chat-shell";
 import { NotebookShell } from "@/registry/super-ai/notebook-shell";
 import { ApprovalCard } from "@/registry/super-ai/approval-card";
 import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
 import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
+import {
+  ViewFrame,
+  ViewFrameContent,
+  ViewFrameDescription,
+  ViewFrameFooter,
+  ViewFrameHeader,
+  ViewFrameTitle,
+} from "@/registry/super-ai/view-frame";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -1500,5 +1509,100 @@ export const Status: Story = {
     await expect(status).not.toBeNull();
     await expect(status!.previousElementSibling).toHaveAttribute("data-region", "topbar");
     await expect(within(status!).getByText("The model is at capacity")).toBeVisible();
+  },
+};
+
+/* -------------------------------------------------------------------------
+ * Docked view (generated chat, phase 2)
+ * ---------------------------------------------------------------------- */
+
+const VOICE_VIEW = (
+  <ViewFrame title="Voice comparison">
+    <ViewFrameHeader>
+      <ViewFrameTitle>Voice comparison</ViewFrameTitle>
+      <ViewFrameDescription>Northwind and three competitors · updated just now</ViewFrameDescription>
+    </ViewFrameHeader>
+    <ViewFrameContent>
+      <ul className="flex flex-col gap-2 text-sm">
+        <li>Northwind opens on reassurance.</li>
+        <li>All three competitors open on speed.</li>
+      </ul>
+    </ViewFrameContent>
+    <ViewFrameFooter origin="Made in chat: Brand audit for Northwind" version="v1" />
+  </ViewFrame>
+);
+
+/** A reply that is only a card: no text to stretch the turn. */
+const CARD_ONLY_MESSAGES: ChatShellProps["messages"] = [
+  ...(MESSAGES ?? []),
+  {
+    id: "m3",
+    role: "assistant",
+    content: (
+      <Card data-testid="card-only">
+        <CardHeader>
+          <CardTitle>Voice comparison</CardTitle>
+        </CardHeader>
+        <CardContent>Two lines.</CardContent>
+      </Card>
+    ),
+  },
+];
+
+/**
+ * A view the conversation built, docked. From `lg` the view is the main area and
+ * the conversation narrows to 24rem beside it; the sidebar collapses to its icon
+ * rail while the view is open, each thread drawn as its icon with the title kept
+ * as its name. A reply that is only a card fills its turn rather than shrinking
+ * to the card's content.
+ */
+export const DockedView: Story = {
+  args: { ...FULL_ARGS, messages: CARD_ONLY_MESSAGES, view: VOICE_VIEW },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvasElement.querySelector('[data-slot="sidebar"]')).toHaveAttribute(
+      "data-state",
+      "collapsed",
+    );
+
+    const view = canvasElement.querySelector<HTMLElement>('[data-region="view"]')!;
+    const conversation = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell-conversation"]')!;
+    // lg:w-96 is the class's own number (D21), so it is pinnable.
+    await expect(getComputedStyle(conversation).width).toBe("384px");
+    await expect(view.getBoundingClientRect().right).toBeLessThanOrEqual(
+      conversation.getBoundingClientRect().left,
+    );
+    await expect(canvas.getByRole("region", { name: "Voice comparison" })).toBeVisible();
+
+    const card = canvas.getByTestId("card-only");
+    const body = card.closest<HTMLElement>('[data-slot="chat-shell-turn-body"]')!;
+    const turn = body.parentElement!;
+    await expect(Math.round(body.getBoundingClientRect().width)).toBe(
+      Math.round(turn.getBoundingClientRect().width),
+    );
+
+    const row = canvas.getByRole("button", { name: "Brand audit for Northwind" });
+    await expect(getComputedStyle(within(row).getByText("Brand audit for Northwind")).width).toBe("1px");
+  },
+};
+
+/**
+ * The same docked view on a phone. Below `lg` the view sits above the
+ * conversation and both take the full width; nothing scrolls sideways.
+ */
+export const DockedViewMobile: Story = {
+  args: { ...FULL_ARGS, messages: CARD_ONLY_MESSAGES, view: VOICE_VIEW },
+  play: async ({ canvasElement }) => {
+    const { page } = await import("vitest/browser");
+    await page.viewport(375, 812);
+    const view = canvasElement.querySelector<HTMLElement>('[data-region="view"]')!;
+    const conversation = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell-conversation"]')!;
+    await waitFor(() =>
+      expect(view.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        conversation.getBoundingClientRect().top + 1,
+      ),
+    );
+    const shell = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell"]')!;
+    await expect(shell.scrollWidth).toBeLessThanOrEqual(shell.clientWidth);
   },
 };

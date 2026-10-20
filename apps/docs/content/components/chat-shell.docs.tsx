@@ -35,7 +35,11 @@ export const ChatShellDocs: ComponentDocs = {
     },
     {
       slot: 'data-region="artifact-cards"',
-      note: "J4 artifact-grid, nested inside the stream and always mounted.",
+      note: 'J4 artifact-grid, nested inside the stream and mounted from the first turn. `artifactsWhenEmpty="hide"` holds it back until a session has an artifact.',
+    },
+    {
+      slot: 'data-region="view"',
+      note: "Only when `view` is passed: a view the conversation built, docked. From lg it is the main area and the conversation narrows to 24rem beside it; below lg it sits above the conversation. The sidebar collapses to its icon rail while it is open.",
     },
     {
       slot: 'data-region="composer"',
@@ -116,10 +120,13 @@ export const ChatShellDocs: ComponentDocs = {
       "Switching threads moves no focus. Focus stays on the thread row you activated — usually right, and it also means the newly loaded conversation is several tabs away with nothing announcing that it arrived.",
       "Deleting the active thread unmounts the row that had focus and nothing restores it, so focus falls to `<body>` and the next Tab restarts at the top of the shell. Move focus in your `onDeleteThread`.",
       "Cmd/Ctrl+B while focus is inside the sidebar collapses it around the focused element. The rail keeps its controls mounted, so focus survives, but it lands on something now rendered as an icon.",
+      "Passing `view` moves no focus. A view opened from a card in the stream leaves focus on that card's button, which is now beside the view rather than inside it. Move focus to the view's title yourself when it should be read next, and back to the card when the view closes.",
       "The stream is focusable and has no focus style of its own — it gets `tabIndex={0}` and no `focus-visible` class — so tabbing into the conversation shows only whatever outline your app provides. Everything else here uses the shared primitives' rings.",
     ],
   },
   pitfalls: [
+    "The shell owns the sidebar's open state so a docked view can collapse it and give it back. `defaultSidebarOpen` is read once, on mount; a view arriving collapses the sidebar, and its leaving restores what the sidebar was just before, including a toggle the user made in between. Do not try to drive the sidebar from outside while a view is open.",
+    "A thread with no `icon` gets a speech-bubble glyph in the collapsed rail. Pass `icon` on each thread when the rail should tell them apart; the title stays the row's accessible name either way.",
     "AI Elements is written against Radix-flavoured shadcn and this registry is Base UI, so the vendored `message` needed two local `asChild` → `render=` edits to typecheck. Installing chat-shell through shadcn fetches AI Elements' file from its own registry, not this repo's patched copy — in a Base UI project, expect to make the same two edits.",
     "`use-stick-to-bottom` owns an element between the conversation root and its content, and sets no overflow on it. Without a `scrollClassName` the stream does not scroll at all, it just grows — and because that element is not yours, the region's accessible name and tab stop have to live on the conversation root instead.",
     "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a panel, a preview or an app region — if you re-wrap or restyle the root, keep that containment or the sidebar will pin itself to the browser's left edge. The root also constrains that container to the shell's own height, which is what makes `sidebarPromo` and `sidebarFooter` usable in an embedded shell; before that they were bottom-anchored below the visible edge, invisible and still in the tab order.",

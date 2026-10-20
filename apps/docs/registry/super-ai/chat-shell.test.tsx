@@ -247,4 +247,59 @@ describe("ChatShell status and loading", () => {
     rerender(<ChatShell loading={false} status={status} />);
     expect(document.activeElement).toBe(button);
   });
+
+  describe("docked view (phase 2)", () => {
+    const sidebarState = () => document.querySelector('[data-slot="sidebar"]')?.getAttribute("data-state");
+
+    it("renders a view region only when a view is given", () => {
+      const { container, rerender } = render(<ChatShell />);
+      expect(container.querySelector('[data-region="view"]')).toBeNull();
+      rerender(<ChatShell view={<section aria-label="Failed runs this week">rows</section>} />);
+      const region = container.querySelector('[data-region="view"]');
+      expect(region).not.toBeNull();
+      expect(
+        within(region as HTMLElement).getByRole("region", { name: "Failed runs this week" }),
+      ).toBeInTheDocument();
+    });
+
+    it("collapses the sidebar while a view is open and restores it after", () => {
+      const view = <section aria-label="A view">rows</section>;
+      const { rerender } = render(<ChatShell />);
+      expect(sidebarState()).toBe("expanded");
+      rerender(<ChatShell view={view} />);
+      expect(sidebarState()).toBe("collapsed");
+      rerender(<ChatShell />);
+      expect(sidebarState()).toBe("expanded");
+    });
+
+    it("starts collapsed when it mounts with a view already open, and expands when it closes", () => {
+      const view = <section aria-label="A view">rows</section>;
+      const { rerender } = render(<ChatShell view={view} />);
+      expect(sidebarState()).toBe("collapsed");
+      rerender(<ChatShell />);
+      expect(sidebarState()).toBe("expanded");
+    });
+
+    it("leaves a sidebar the user had collapsed collapsed after the view closes", () => {
+      const view = <section aria-label="A view">rows</section>;
+      const { rerender } = render(<ChatShell defaultSidebarOpen={false} />);
+      rerender(<ChatShell defaultSidebarOpen={false} view={view} />);
+      rerender(<ChatShell defaultSidebarOpen={false} />);
+      expect(sidebarState()).toBe("collapsed");
+    });
+
+    it("gives every thread an icon, so the collapsed rail can list it", () => {
+      const { container } = render(<ChatShell threadGroups={THREADS} />);
+      const rows = container.querySelectorAll('[data-slot="thread-list-item"]');
+      expect(rows.length).toBe(2);
+      rows.forEach((row) => expect(row.querySelector('[data-slot="thread-icon"]')).not.toBeNull());
+    });
+
+    it("holds the artifacts region back until there is an artifact when asked, and shows it by default", () => {
+      const { container, rerender } = render(<ChatShell artifactsWhenEmpty="hide" />);
+      expect(container.querySelector('[data-region="artifact-cards"]')).toBeNull();
+      rerender(<ChatShell />);
+      expect(container.querySelector('[data-region="artifact-cards"]')).not.toBeNull();
+    });
+  });
 });

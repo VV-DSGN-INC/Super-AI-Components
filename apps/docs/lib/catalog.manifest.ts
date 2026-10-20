@@ -1967,7 +1967,7 @@ export const MANIFEST: ManifestItem[] = [
     // chat-shell.tsx itself imports.
     external: ["https://registry.ai-sdk.dev/conversation.json", "https://registry.ai-sdk.dev/message.json"],
     npm: ["lucide-react"],
-    regions: ["sidebar", "topbar", "message-stream", "artifact-cards", "composer"],
+    regions: ["sidebar", "topbar", "message-stream", "artifact-cards", "composer", "view"],
     states: [],
     specAnchor: "block-specs.md#o2-chat-shell",
   },
