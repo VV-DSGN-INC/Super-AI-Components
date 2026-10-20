@@ -48,6 +48,7 @@ import FilterBarDemo from "@/components/demos/filter-bar-demo";
 import FilterPanelDemo from "@/components/demos/filter-panel-demo";
 import FrameStripDemo from "@/components/demos/frame-strip-demo";
 import GenSettingsBarDemo from "@/components/demos/gen-settings-bar-demo";
+import GeneratedBodyDemo from "@/components/demos/generated-body-demo";
 import GenerationGridDemo from "@/components/demos/generation-grid-demo";
 import GenerationPanelDemo from "@/components/demos/generation-panel-demo";
 import GenerationQueueDemo from "@/components/demos/generation-queue-demo";
@@ -171,6 +172,7 @@ export const demos: Record<string, ComponentType> = {
   "filter-panel": FilterPanelDemo,
   "frame-strip": FrameStripDemo,
   "gen-settings-bar": GenSettingsBarDemo,
+  "generated-body": GeneratedBodyDemo,
   "generation-grid": GenerationGridDemo,
   "generation-panel": GenerationPanelDemo,
   "generation-queue": GenerationQueueDemo,

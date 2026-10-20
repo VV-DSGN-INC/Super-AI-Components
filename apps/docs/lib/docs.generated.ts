@@ -48,6 +48,7 @@ import { FilterBarDocs } from "@/content/components/filter-bar.docs";
 import { FilterPanelDocs } from "@/content/components/filter-panel.docs";
 import { FrameStripDocs } from "@/content/components/frame-strip.docs";
 import { GenSettingsBarDocs } from "@/content/components/gen-settings-bar.docs";
+import { GeneratedBodyDocs } from "@/content/components/generated-body.docs";
 import { GenerationGridDocs } from "@/content/components/generation-grid.docs";
 import { GenerationPanelDocs } from "@/content/components/generation-panel.docs";
 import { GenerationQueueDocs } from "@/content/components/generation-queue.docs";
@@ -171,6 +172,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "filter-panel": FilterPanelDocs,
   "frame-strip": FrameStripDocs,
   "gen-settings-bar": GenSettingsBarDocs,
+  "generated-body": GeneratedBodyDocs,
   "generation-grid": GenerationGridDocs,
   "generation-panel": GenerationPanelDocs,
   "generation-queue": GenerationQueueDocs,

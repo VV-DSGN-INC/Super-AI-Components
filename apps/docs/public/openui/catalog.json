@@ -1510,6 +1510,38 @@
       ]
     },
     {
+      "name": "Generated Body",
+      "slug": "generated-body",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/generated-body.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/generated-body",
+      "description": "The body of a view written as an OpenUI Lang program. You hand it the text that has arrived so far and your own library; it renders what the library allows, line by line as the stream grows. When a finished program does not render, it says so, names the reason, offers Retry if you gave it a handler, and shows the last version that did render underneath. It keeps no history and runs no timers: you stream the program in and you keep the versions.",
+      "variants": [],
+      "notes": [
+        "Don't set `streaming` to false before the last line has arrived. A program cut off mid-stream leaves references undefined, and a finished program is judged as it stands.",
+        "Don't mark a stream finished to see a partial result. While `streaming` is true the same cut-off program draws what has arrived and reports nothing.",
+        "Don't expect the valid part of a broken program to show. With no `fallbackProgram` the alert is the whole body.",
+        "An unknown component name does not blank the program. The parser keeps the rest, which is why the body checks the parse errors and not only the root: a check on the root alone would paint the valid half of a broken program.",
+        "Do not judge on the first render of a stream. Undefined references and unfinished lines are normal while lines are still coming, so the body reports nothing until `streaming` is false.",
+        "`onRender` fires once per finished program. Changing the callback or re-rendering does not fire it again, but a new stream that ends with the same text does. Record versions by the program you passed, not by call count.",
+        "The fallback is rendered with the same library and no streaming. If the library changed since that version rendered, the fallback can fail too, and it is drawn as it parses without a second alert.",
+        "In development, @openuidev/react-lang mounts its inspector panel by itself unless `globalThis[Symbol.for(\"openui.devtools.autoMount\")]` is set before the package loads. The registry item does not set it for you."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "answer-block",
+          "when": "The reply is prose with sources, not a view. Answer-block puts citations at the claim and needs no program or library, while generated-body is for layouts a model composes from your components."
+        },
+        {
+          "slug": "view-frame",
+          "when": "You need the chrome (title, actions, footer) rather than the body. View-frame is fixed and never generated; generated-body goes inside its content area."
+        }
+      ]
+    },
+    {
       "name": "Generation Grid",
       "slug": "generation-grid",
       "family": "F",
@@ -3988,6 +4020,7 @@
       "family": "R",
       "title": "Generated chat",
       "components": [
+        "generated-body",
         "view-frame",
         "widget",
         "widget-grid"

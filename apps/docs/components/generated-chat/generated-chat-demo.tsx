@@ -5,8 +5,12 @@ import { Pin, RotateCw, TriangleAlert, Undo2, X } from "lucide-react";
 import * as React from "react";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import "@/components/openui/no-devtools";
+
+import { openuiLibrary } from "@/components/openui/library";
 import { ChatShell } from "@/registry/super-ai/chat-shell";
 import { DataViews, type ColumnDef, type ViewGroup } from "@/registry/super-ai/data-views";
+import { GeneratedBody } from "@/registry/super-ai/generated-body";
 import {
   canSend,
   createScriptedTransport,
@@ -36,7 +40,9 @@ import {
 
 import { failedThisWeek, type Run } from "./fixtures";
 import { DemoActionsContext, RENDERERS, type DemoActions } from "./renderers";
-import { FALLBACK, READY_PROMPTS, TURNS, VIEW, type DemoContext } from "./turns";
+import { isProgramId, PROGRAMS, RETRY_PROMPTS, type ProgramId } from "./programs";
+import { FALLBACK, READY_PROMPTS, SPEND_VIEW, TURNS, VIEW, type DemoContext } from "./turns";
+import { useLineReveal } from "./use-line-reveal";
 
 const COLUMNS: ColumnDef<Run>[] = [
   { id: "at", header: "When", cell: (r) => r.at, width: "w-24" },
@@ -95,11 +101,11 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
         stepMs,
         // A view exists once any reply has posted its card: a pure function
         // of the conversation, so the transport never reads page state.
-        context: (messages) => ({
-          viewBuilt: messages.some((m) =>
-            m.parts.some((p) => p.type === "data-view" && p.data.viewId === VIEW.id),
-          ),
-        }),
+        context: (messages) => {
+          const built = (id: string) =>
+            messages.some((m) => m.parts.some((p) => p.type === "data-view" && p.data.viewId === id));
+          return { viewBuilt: built(VIEW.id), spendBuilt: built(SPEND_VIEW.id) };
+        },
       }),
     [stepMs],
   );
@@ -167,6 +173,16 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
   const active = views.activeId ? views.views[views.activeId] : undefined;
   const version = active ? currentVersion(active) : undefined;
 
+  // A generated view's body: the current version's program, revealed line by
+  // line and replayed on Rerun, with the last version that rendered kept per view.
+  const [lastGood, setLastGood] = React.useState<Record<string, ProgramId>>({});
+  const variant = active?.kind === "generated" ? version?.variant : undefined;
+  const program = isProgramId(variant) ? PROGRAMS[variant] : null;
+  const reveal = useLineReveal(program, `${active?.id}:${variant}:${active?.ranAt}`, stepMs);
+  const goodId = active ? lastGood[active.id] : undefined;
+  const fallbackProgram = goodId && goodId !== variant ? PROGRAMS[goodId] : null;
+  const retryPrompt = isProgramId(variant) ? RETRY_PROMPTS[variant] : undefined;
+
   const view =
     active && version ? (
       <ViewFrame title={active.title}>
@@ -174,26 +190,28 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
           <ViewFrameTitle>{active.title}</ViewFrameTitle>
           <ViewFrameDescription>{active.scope} · updated just now</ViewFrameDescription>
           <ViewFrameActions>
-            <Tabs
-              value={version.mode}
-              onValueChange={(mode) => {
-                if (mode === version.mode) return;
-                dispatchView({
-                  type: "edit",
-                  id: active.id,
-                  version: {
-                    label: `v${active.versions.length + 1} · ${mode === "board" ? "board" : "table"}`,
-                    mode: String(mode),
-                  },
-                  at: Date.now(),
-                });
-              }}
-            >
-              <TabsList variant="line" aria-label="View mode">
-                <TabsTrigger value="table">Table</TabsTrigger>
-                <TabsTrigger value="board">Board</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            {active.kind === "runs" ? (
+              <Tabs
+                value={version.mode}
+                onValueChange={(mode) => {
+                  if (mode === version.mode) return;
+                  dispatchView({
+                    type: "edit",
+                    id: active.id,
+                    version: {
+                      label: `v${active.versions.length + 1} · ${mode === "board" ? "board" : "table"}`,
+                      mode: String(mode),
+                    },
+                    at: Date.now(),
+                  });
+                }}
+              >
+                <TabsList variant="line" aria-label="View mode">
+                  <TabsTrigger value="table">Table</TabsTrigger>
+                  <TabsTrigger value="board">Board</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            ) : null}
             <ViewFrameAction
               label="Undo"
               disabled={active.current === 0}
@@ -216,17 +234,32 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
           </ViewFrameActions>
         </ViewFrameHeader>
         <ViewFrameContent>
-          <DataViews<Run>
-            items={failedThisWeek()}
-            viewMode={version.mode === "board" ? "kanban" : "table"}
-            groups={GROUPS}
-            columns={COLUMNS}
-            renderCard={renderRunCard}
-            renderRow={renderRunCard}
-            // The frame's content part is the one scroll region; the
-            // table's own overflow would nest an unfocusable second one.
-            className={version.mode === "board" ? undefined : "h-auto overflow-visible"}
-          />
+          {active.kind === "generated" ? (
+            <GeneratedBody
+              program={reveal.text}
+              streaming={reveal.streaming}
+              library={openuiLibrary}
+              fallbackProgram={fallbackProgram}
+              onRetry={retryPrompt ? () => actions.submit(retryPrompt) : undefined}
+              onRender={({ ok }) => {
+                if (!ok || !isProgramId(variant)) return;
+                const id = active.id;
+                setLastGood((prev) => (prev[id] === variant ? prev : { ...prev, [id]: variant }));
+              }}
+            />
+          ) : (
+            <DataViews<Run>
+              items={failedThisWeek()}
+              viewMode={version.mode === "board" ? "kanban" : "table"}
+              groups={GROUPS}
+              columns={COLUMNS}
+              renderCard={renderRunCard}
+              renderRow={renderRunCard}
+              // The frame's content part is the one scroll region; the
+              // table's own overflow would nest an unfocusable second one.
+              className={version.mode === "board" ? undefined : "h-auto overflow-visible"}
+            />
+          )}
         </ViewFrameContent>
         <ViewFrameFooter origin={`Made in chat: ${active.origin}`} version={version.label} />
       </ViewFrame>

@@ -133,3 +133,4 @@ Retrieval order: with an item installed, read `components/super-ai/<name>.meta.j
 - [Widget](https://super-ai-components.vercel.app/llms/components/widget.md): A fixed-size tile for one fact among same-sized siblings. It comes in three families: small is one g
 - [Widget Grid](https://super-ai-components.vercel.app/llms/components/widget-grid.md): A grid that places fixed-size widget tiles two columns wide in a narrow space and four columns wide
 - [View Frame](https://super-ai-components.vercel.app/llms/components/view-frame.md): The fixed chrome around a generated view: a header with a title, a scope and freshness line and a ro
+- [Generated Body](https://super-ai-components.vercel.app/llms/components/generated-body.md): The body of a view written as an OpenUI Lang program. You hand it the text that has arrived so far a

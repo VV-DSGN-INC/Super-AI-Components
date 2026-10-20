@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   creditsLeft,
+  dailySpend,
+  projectSpend,
   failedOvernight,
   failedThisWeek,
   overnightRuns,
@@ -40,5 +42,20 @@ describe("generated chat fixtures", () => {
 
   it("gives every run a unique id", () => {
     expect(new Set(RUNS.map((r) => r.id)).size).toBe(RUNS.length);
+  });
+
+  it("derives spend by project and by day from the same lines the kind totals come from", () => {
+    expect(projectSpend()).toEqual([
+      { project: "Onboarding video", credits: 400 },
+      { project: "Spring campaign", credits: 170 },
+      { project: "Podcast intro", credits: 40 },
+    ]);
+    expect(dailySpend()).toEqual([
+      { day: "Mon 19 Oct", credits: 378 },
+      { day: "Tue 20 Oct", credits: 232 },
+    ]);
+    const total = weekSpend().total;
+    expect(projectSpend().reduce((sum, p) => sum + p.credits, 0)).toBe(total);
+    expect(dailySpend().reduce((sum, d) => sum + d.credits, 0)).toBe(total);
   });
 });

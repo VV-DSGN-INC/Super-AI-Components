@@ -5,13 +5,13 @@ import { shippedItems } from "./manifest-types";
 
 describe("MANIFEST", () => {
   it("carries every catalog row, including the cut records", () => {
-    // 121 active + family G's 10 cut rows + the cut O5 `flow-shell` = 132.
+    // 122 active + family G's 10 cut rows + the cut O5 `flow-shell` = 133.
     // (107 + family G/O5 = 118 before PR #14 / D14-D17 added 7 rows: D7
     // `slot-summary`, K7 `answer-block`, K8 `source-cards`, N9
     // `autonomy-selector`, N10 `safety-block`, N11 `escalation-handoff`, N12
     // `task-tray`. D18 then added family P's two items, D20 family Q's, and
-    // D26 family R's three: 121 active, 132 rows.)
-    expect(MANIFEST).toHaveLength(132);
+    // D26 family R's four: 122 active, 133 rows.)
+    expect(MANIFEST).toHaveLength(133);
   });
 
   it("holds the A–O freeze at 114 while later families grow separately", () => {
@@ -31,8 +31,8 @@ describe("MANIFEST", () => {
     expect(active.filter((i) => i.family <= "O")).toHaveLength(114);
     expect(active.filter((i) => i.family === "P")).toHaveLength(2);
     expect(active.filter((i) => i.family === "Q")).toHaveLength(2);
-    expect(active.filter((i) => i.family === "R")).toHaveLength(3);
-    expect(active).toHaveLength(121);
+    expect(active.filter((i) => i.family === "R")).toHaveLength(4);
+    expect(active).toHaveLength(122);
   });
 
   // The 14 components that shipped before Wave 1.5. They were exempt from the
