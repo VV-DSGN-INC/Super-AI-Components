@@ -555,7 +555,7 @@ function ChatShell({
           {hasView ? (
             <div
               data-region="view"
-              className="flex min-h-0 min-w-0 shrink-0 basis-[60%] flex-col border-b p-3 lg:flex-1 lg:basis-auto lg:border-e lg:border-b-0"
+              className="flex min-h-0 min-w-0 shrink-0 basis-1/2 flex-col border-b p-3 lg:flex-1 lg:basis-auto lg:border-e lg:border-b-0"
             >
               {view}
             </div>

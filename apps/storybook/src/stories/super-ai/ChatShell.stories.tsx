@@ -1602,6 +1602,11 @@ export const DockedViewMobile: Story = {
         conversation.getBoundingClientRect().top + 1,
       ),
     );
+    // Below lg the two split the body evenly (basis-1/2), so the conversation
+    // keeps room for the latest reply and its chips while a view is open.
+    await expect(
+      Math.abs(view.getBoundingClientRect().height - conversation.getBoundingClientRect().height),
+    ).toBeLessThanOrEqual(1);
     const shell = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell"]')!;
     await expect(shell.scrollWidth).toBeLessThanOrEqual(shell.clientWidth);
   },
