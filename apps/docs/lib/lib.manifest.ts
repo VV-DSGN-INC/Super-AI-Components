@@ -48,6 +48,16 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     npm: [],
     target: "lib/shell-skeleton.tsx",
   },
+  {
+    name: "generated-chat",
+    title: "Generated chat",
+    description:
+      "Replies that answer in registry components: AI SDK message parts for cards, widgets, questions and views, a scripted transport, the question and view stores, and the renderer that draws them.",
+    status: "building",
+    shadcn: [],
+    npm: ["ai"],
+    target: "lib/generated-chat.tsx",
+  },
 ];
 
 export const LIB_NAMES = LIB_MANIFEST.map((i) => i.name);
