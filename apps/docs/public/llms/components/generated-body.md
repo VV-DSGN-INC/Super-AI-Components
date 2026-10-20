@@ -66,6 +66,7 @@ None: The body renders one way. The only thing that changes it is the verdict on
 - `onRender` fires once per finished program. Changing the callback or re-rendering does not fire it again, but a new stream that ends with the same text does. Record versions by the program you passed, not by call count.
 - The fallback is rendered with the same library and no streaming. If the library changed since that version rendered, the fallback can fail too, and it is drawn as it parses without a second alert.
 - In development, @openuidev/react-lang mounts its inspector panel by itself unless `globalThis[Symbol.for("openui.devtools.autoMount")]` is set before the package loads. The registry item does not set it for you.
+- On pnpm 11 the install stops with ERR_PNPM_IGNORED_BUILDS until @openuidev/lang-core is listed under allowBuilds. Its postinstall only sends telemetry, so set it to false, as this repo does. The registry pins @openuidev/react-lang to the 0.3 line the failure rules were measured against.
 
 ## Composition
 
