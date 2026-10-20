@@ -1634,3 +1634,27 @@ Desk research (D26).
 **Evidence:** ChatGPT's canvas and Claude's artifacts panel: a generated surface beside the
 conversation with its own title, version and actions, opened from a card in the thread. Desk
 research (D26).
+
+## R4 `generated-body` — a body written by a model
+
+**Base:** Alert, Button · **States:** streaming · rendered · failed-with-fallback · failed-without-fallback
+
+- **It renders an OpenUI Lang program with the caller's library.** The library decides what a
+  program may contain, so a body can only be built from surfaces the caller exposed. The
+  component imports no surface of its own.
+- **It streams.** While `streaming` is true it renders whatever has arrived and never reports a
+  failure: a half-written program is incomplete, not wrong.
+- **A finished program that does not render keeps the last good one.** When the stream ends and
+  the parse reports errors, unresolved references or no root, the body shows a status alert
+  saying the version did not render and why, a Retry button when the caller gives `onRetry`,
+  and the caller's `fallbackProgram` under it. With no fallback, it shows the alert alone, never
+  a stale or half-rendered body.
+- **It reports each finished render once** through `onRender({ ok, errors })`, so the caller can
+  record the last good version. It owns no timers and no versions; the caller streams the
+  program in and keeps the history.
+- **Parts:** `generated-body` (the root), `generated-body-content` (the rendered program),
+  `generated-body-failure` (the alert), `generated-body-retry`, `generated-body-fallback`.
+
+**Evidence:** ChatGPT's canvas and Claude's artifacts panel regenerate a view in place and keep
+the previous version reachable; v0 and Lovable render a generated UI incrementally as it streams.
+Desk research (D26).
