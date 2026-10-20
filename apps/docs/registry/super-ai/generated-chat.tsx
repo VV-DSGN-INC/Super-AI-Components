@@ -16,6 +16,7 @@
  */
 
 import type { ChatTransport, UIMessage, UIMessageChunk } from "ai";
+import * as React from "react";
 
 /** A tile's size family. Each size is its own layout, tested at its own size. */
 type WidgetSize = "small" | "medium" | "large";
@@ -409,6 +410,103 @@ function viewReducer(state: ViewState, action: ViewAction): ViewState {
   }
 }
 
+type Renderable = React.ComponentType<Record<string, unknown>>;
+
+/**
+ * What draws each part. The lib imports no registry component, so the
+ * consumer decides what a card, a widget row, a question, a view card and the
+ * chips look like, and registers card and widget types by name.
+ */
+interface ReplyRenderers {
+  cards: Record<string, Renderable>;
+  widgets?: Record<string, Partial<Record<WidgetSize, Renderable>>>;
+  widgetGrid?: (items: { key: string; size: WidgetSize; node: React.ReactNode }[]) => React.ReactNode;
+  question?: (data: QuestionData, cardKey: string) => React.ReactNode;
+  view?: (data: ViewCardData) => React.ReactNode;
+  suggestions?: (items: string[]) => React.ReactNode;
+  text?: (text: string, streaming: boolean) => React.ReactNode;
+}
+
+interface ReplyPartsProps {
+  message: GeneratedChatMessage;
+  renderers: ReplyRenderers;
+  /** The whole reply is still arriving. */
+  streaming?: boolean;
+}
+
+/** A typo in a registered name should fail where it was made, never render a blank reply. */
+function unregistered(kind: string, name: string): null {
+  if (process.env.NODE_ENV !== "production") {
+    throw new Error(`ReplyParts: no ${kind} renderer is registered for "${name}".`);
+  }
+  return null;
+}
+
+function defaultText(text: string) {
+  return (
+    <p data-slot="reply-text" className="whitespace-pre-wrap">
+      {text}
+    </p>
+  );
+}
+
+function defaultGrid(items: { key: string; node: React.ReactNode }[]) {
+  return (
+    <div data-slot="reply-widgets" className="flex flex-wrap gap-3">
+      {items.map((item) => (
+        <React.Fragment key={item.key}>{item.node}</React.Fragment>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Draws one assistant message's parts in order through the consumer's
+ * renderers. A question is keyed by `<message id>:<part index>`, the card key
+ * the question store uses to keep an earlier card on the answer it got.
+ * Transient effects never reach a message; one that was persisted anyway
+ * draws nothing.
+ */
+function ReplyParts({ message, renderers, streaming = false }: ReplyPartsProps) {
+  const nodes = message.parts.map((part, index) => {
+    const key = `${message.id}:${index}`;
+    switch (part.type) {
+      case "text": {
+        const live = streaming || part.state === "streaming";
+        return <React.Fragment key={key}>{(renderers.text ?? defaultText)(part.text, live)}</React.Fragment>;
+      }
+      case "data-card": {
+        const Card = renderers.cards[part.data.type];
+        if (!Card) return unregistered("card", part.data.type);
+        return <Card key={key} {...(part.data.props ?? {})} />;
+      }
+      case "data-widgets": {
+        const items = part.data.items.flatMap((item, itemIndex) => {
+          const Widget = renderers.widgets?.[item.type]?.[item.size];
+          if (!Widget) return unregistered("widget", `${item.type} (${item.size})`) ?? [];
+          const itemKey = `${key}:${itemIndex}`;
+          return [{ key: itemKey, size: item.size, node: <Widget {...(item.props ?? {})} /> }];
+        });
+        return <React.Fragment key={key}>{(renderers.widgetGrid ?? defaultGrid)(items)}</React.Fragment>;
+      }
+      case "data-question":
+        return <React.Fragment key={key}>{renderers.question?.(part.data, key) ?? null}</React.Fragment>;
+      case "data-view":
+        return <React.Fragment key={key}>{renderers.view?.(part.data) ?? null}</React.Fragment>;
+      case "data-suggestions":
+        return <React.Fragment key={key}>{renderers.suggestions?.(part.data.items) ?? null}</React.Fragment>;
+      default:
+        return null;
+    }
+  });
+
+  return (
+    <div data-slot="reply-parts" className="flex min-w-0 flex-col gap-3">
+      {nodes}
+    </div>
+  );
+}
+
 export {
   createScriptedTransport,
   currentVersion,
@@ -423,6 +521,7 @@ export {
   questionReducer,
   questionStatusFor,
   pinnedId,
+  ReplyParts,
   viewReducer,
 };
 export type {
@@ -433,6 +532,8 @@ export type {
   QuestionData,
   QuestionState,
   QuestionStatus,
+  ReplyPartsProps,
+  ReplyRenderers,
   ScriptedTransportOptions,
   Turn,
   TurnPart,

@@ -1,3 +1,4 @@
+import { render, screen } from "@testing-library/react";
 import { readUIMessageStream, type UIMessageChunk } from "ai";
 import { describe, expect, it } from "vitest";
 
@@ -15,8 +16,10 @@ import {
   questionReducer,
   questionStatusFor,
   pinnedId,
+  ReplyParts,
   viewReducer,
   type GeneratedChatMessage,
+  type ReplyRenderers,
   type ViewInput,
   type Turn,
 } from "./generated-chat";
@@ -361,5 +364,101 @@ describe("viewReducer", () => {
     expect(viewReducer(built, { type: "edit", id: "nope", version: { label: "x", mode: "x" }, at: 2 })).toBe(
       built,
     );
+  });
+});
+
+describe("ReplyParts", () => {
+  const message: GeneratedChatMessage = {
+    id: "m7",
+    role: "assistant",
+    parts: [
+      { type: "text", text: "3 of 26 runs failed overnight." },
+      { type: "data-card", id: "p1", data: { type: "failed-runs", props: { count: 3 } } },
+      {
+        type: "data-question",
+        id: "p2",
+        data: { id: "retry-r1-r2", title: "Retry 2 video runs?", summary: "Costs 80 credits." },
+      },
+      {
+        type: "data-widgets",
+        id: "p3",
+        data: {
+          items: [
+            { type: "credits", size: "small" },
+            { type: "running", size: "medium" },
+          ],
+        },
+      },
+      { type: "data-suggestions", id: "p4", data: { items: ["Track failed runs"] } },
+    ],
+  };
+  const seen: { cardKey?: string; grid?: { key: string; size: string }[] } = {};
+  const renderers: ReplyRenderers = {
+    cards: { "failed-runs": ({ count }) => <div data-testid="card">{`Failed: ${String(count)}`}</div> },
+    widgets: {
+      credits: { small: () => <div>Credits tile</div> },
+      running: { medium: () => <div>Running tile</div> },
+    },
+    widgetGrid: (items) => {
+      seen.grid = items.map(({ key, size }) => ({ key, size }));
+      return (
+        <div data-testid="grid">
+          {items.map((i) => (
+            <div key={i.key}>{i.node}</div>
+          ))}
+        </div>
+      );
+    },
+    question: (data, cardKey) => {
+      seen.cardKey = cardKey;
+      return <div data-testid="question">{data.title}</div>;
+    },
+    suggestions: (items) => <div data-testid="chips">{items.join(", ")}</div>,
+  };
+
+  it("renders every part in message order", () => {
+    const { container } = render(<ReplyParts message={message} renderers={renderers} />);
+    const root = container.querySelector('[data-slot="reply-parts"]')!;
+    const order = Array.from(root.children).map((el) => el.textContent);
+    expect(order).toEqual([
+      "3 of 26 runs failed overnight.",
+      "Failed: 3",
+      "Retry 2 video runs?",
+      "Credits tileRunning tile",
+      "Track failed runs",
+    ]);
+  });
+
+  it("keys a question by its message and part position", () => {
+    render(<ReplyParts message={message} renderers={renderers} />);
+    expect(seen.cardKey).toBe("m7:2");
+  });
+
+  it("hands the grid one entry per widget, sizes kept", () => {
+    render(<ReplyParts message={message} renderers={renderers} />);
+    expect(seen.grid).toEqual([
+      { key: "m7:3:0", size: "small" },
+      { key: "m7:3:1", size: "medium" },
+    ]);
+    expect(screen.getByTestId("grid")).toBeInTheDocument();
+  });
+
+  it("fails loudly on an unregistered card type", () => {
+    const typo: GeneratedChatMessage = {
+      id: "m8",
+      role: "assistant",
+      parts: [{ type: "data-card", data: { type: "faild-runs" } }],
+    };
+    expect(() => render(<ReplyParts message={typo} renderers={renderers} />)).toThrow(/faild-runs/);
+  });
+
+  it("draws nothing for a persisted effect part", () => {
+    const withEffect: GeneratedChatMessage = {
+      id: "m9",
+      role: "assistant",
+      parts: [{ type: "data-effect", data: { type: "show-view", id: "v", layout: "docked" } }],
+    };
+    const { container } = render(<ReplyParts message={withEffect} renderers={renderers} />);
+    expect(container.querySelector('[data-slot="reply-parts"]')!.children).toHaveLength(0);
   });
 });
