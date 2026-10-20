@@ -587,6 +587,28 @@ NotebookLM's three simultaneously-empty panes make this concrete. The approved s
 
 ---
 
+### D26 · Generated chat is family R — 2026-10-20
+
+Three components ship as **family R, `Generated chat`**: R1 `widget`, R2 `widget-grid` and R3
+`view-frame`, with the engine they serve as the `generated-chat` `registry:lib` contract. Spec:
+[`2026-10-20-generated-chat-design.md`](../superpowers/specs/2026-10-20-generated-chat-design.md).
+
+**Why a new family.** Their evidence is desk research (WidgetKit's size families, ChatGPT's canvas,
+Claude's artifacts panel) and a private client concept study whose architecture is cited and whose
+code is not. Filing them under F, J or K would lend them reference-board footing they lack, the
+failure D18 and D20 created families P and Q to avoid. R sorts past N, so the B–N subtotal and the
+A–O freeze are untouched. The grand total moves 118 to 121.
+
+**Why "view" and not "artifact".** In this registry an artifact is a generated document (J4, O9).
+A view is a saved question rerun on open, so its chrome is `view-frame`.
+
+**Why the question card is not a fourth item.** F7 `approval-card` is the Approval contract, and a
+second implementation is the fork the block brief forbids. Its verbs are fixed, so the title and
+summary carry the outcome.
+
+**Naming collision:** `gaps.md` uses "R" for recovered omissions. Different file, different
+namespace, as D20 recorded for Q.
+
 ## 5. Revised sequencing proposal
 
 Replaces §11 of the approved spec. Each wave ships components plus the block that proves them.
