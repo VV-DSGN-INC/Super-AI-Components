@@ -4,10 +4,12 @@ import { useChat } from "@ai-sdk/react";
 import { Pin, RotateCw, Undo2, X } from "lucide-react";
 import * as React from "react";
 
+import { Conversation, ConversationContent } from "@/components/ai-elements/conversation";
+import { Message, MessageContent } from "@/components/ai-elements/message";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ChatShell, type ChatShellMessage } from "@/registry/super-ai/chat-shell";
 import { DataViews, type ColumnDef, type ViewGroup } from "@/registry/super-ai/data-views";
+import { DisclaimerNote } from "@/registry/super-ai/disclaimer-note";
 import {
   createScriptedTransport,
   currentVersion,
@@ -21,6 +23,7 @@ import {
   type QuestionData,
   type TurnPart,
 } from "@/registry/super-ai/generated-chat";
+import { MediaPromptBar } from "@/registry/super-ai/media-prompt-bar";
 import { SuggestionChip, SuggestionChips } from "@/registry/super-ai/suggestion-chips";
 import {
   ViewFrame,
@@ -37,8 +40,6 @@ import { failedThisWeek, type Run } from "./fixtures";
 import { DemoActionsContext, RENDERERS, type DemoActions } from "./renderers";
 import { FALLBACK, READY_PROMPTS, TURNS, VIEW, type DemoContext } from "./turns";
 
-const THREAD_ID = "generated-chat";
-
 const COLUMNS: ColumnDef<Run>[] = [
   { id: "at", header: "When", cell: (r) => r.at, width: "w-24" },
   { id: "project", header: "Project", cell: (r) => r.project },
@@ -47,6 +48,9 @@ const COLUMNS: ColumnDef<Run>[] = [
   { id: "reason", header: "Reason", cell: (r) => r.reason },
   { id: "credits", header: "Credits", cell: (r) => r.credits, align: "right", width: "w-20" },
 ];
+
+/** The chat composer has no negative prompt; same suppression O2 chat-shell uses. */
+const COMPOSER_NO_NEGATIVE_PROMPT = "[&_[data-slot=media-prompt-bar-negative-toggle]]:hidden";
 
 const REASONS = ["Timed out", "Content filter", "Provider error"];
 const GROUPS: ViewGroup<Run>[] = REASONS.map((reason) => ({
@@ -157,22 +161,6 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
     },
   };
 
-  const chatMessages: ChatShellMessage[] = messages.map((m, index) =>
-    m.role === "user"
-      ? {
-          id: m.id,
-          role: "user",
-          content: m.parts.flatMap((p) => (p.type === "text" ? [p.text] : [])).join(" "),
-        }
-      : {
-          id: m.id,
-          role: "assistant",
-          content: (
-            <ReplyParts message={m} renderers={RENDERERS} streaming={busy && index === messages.length - 1} />
-          ),
-        },
-  );
-
   const active = views.activeId ? views.views[views.activeId] : undefined;
   const version = active ? currentVersion(active) : undefined;
 
@@ -263,46 +251,85 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
               </ViewFrame>
             </div>
           ) : null}
-          <ChatShell
+          <section
+            aria-label="Chat"
+            data-slot="generated-chat-column"
             className={cn(
-              "min-h-0",
+              "bg-background flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border",
               active ? "lg:w-[26rem] lg:shrink-0" : "flex-1",
               active && pane === "view" && "max-lg:hidden",
               active && "max-lg:flex-1",
             )}
-            title="Generated chat"
-            defaultSidebarOpen={false}
-            threadGroups={[
-              { id: "today", label: "Today", threads: [{ id: THREAD_ID, title: "Generated chat" }] },
-            ]}
-            activeThreadId={THREAD_ID}
-            messages={chatMessages}
-            empty={
-              <div className="flex flex-col items-start gap-3">
-                <p className="font-medium">What should we look at?</p>
-                <SuggestionChips>
-                  {READY_PROMPTS.map((prompt) => (
-                    <SuggestionChip
-                      key={prompt}
-                      suggestion={prompt}
-                      disabled={busy}
-                      onSelect={actions.submit}
-                    />
-                  ))}
-                </SuggestionChips>
+          >
+            {/* The same pieces O2 chat-shell composes. Phase 2 moves parts and a
+                docked view region into the shell itself. */}
+            <Conversation
+              data-region="message-stream"
+              aria-label="Conversation"
+              tabIndex={0}
+              className="min-h-0 flex-1"
+            >
+              <ConversationContent
+                scrollClassName="h-full overflow-y-auto"
+                className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6"
+              >
+                {messages.length === 0 ? (
+                  <div className="flex flex-col items-start gap-3">
+                    <p className="font-medium">What should we look at?</p>
+                    <SuggestionChips>
+                      {READY_PROMPTS.map((prompt) => (
+                        <SuggestionChip
+                          key={prompt}
+                          suggestion={prompt}
+                          disabled={busy}
+                          onSelect={actions.submit}
+                        />
+                      ))}
+                    </SuggestionChips>
+                  </div>
+                ) : (
+                  messages.map((m, index) => (
+                    <Message key={m.id} from={m.role} data-message-id={m.id}>
+                      {m.role === "user" ? (
+                        <MessageContent className="leading-relaxed">
+                          {m.parts.flatMap((p) => (p.type === "text" ? [p.text] : [])).join(" ")}
+                        </MessageContent>
+                      ) : (
+                        // w-full: a reply that is only a card must fill its turn,
+                        // not shrink to the card's own content width.
+                        <MessageContent className="w-full leading-relaxed">
+                          <ReplyParts
+                            message={m}
+                            renderers={RENDERERS}
+                            streaming={busy && index === messages.length - 1}
+                          />
+                        </MessageContent>
+                      )}
+                    </Message>
+                  ))
+                )}
+              </ConversationContent>
+            </Conversation>
+            <div className="bg-background shrink-0 border-t px-4 pb-2">
+              <div className="mx-auto w-full max-w-3xl">
+                <MediaPromptBar
+                  presentation="docked"
+                  label="Ask about this workspace"
+                  submitLabel="Send"
+                  placeholder="Ask about runs, credits or the queue"
+                  value={draft}
+                  onValueChange={setDraft}
+                  generating={busy}
+                  onStop={stop}
+                  onSubmit={(value) => actions.submit(value)}
+                  className={cn(COMPOSER_NO_NEGATIVE_PROMPT, "border-b")}
+                />
+                <DisclaimerNote variant="under-composer">
+                  Scripted replies over a fixture workspace. No model is called.
+                </DisclaimerNote>
               </div>
-            }
-            composer={{
-              value: draft,
-              onValueChange: setDraft,
-              placeholder: "Ask about runs, credits or the queue",
-              label: "Ask about this workspace",
-              generating: busy,
-              onStop: stop,
-              onSubmit: (value) => actions.submit(value),
-            }}
-            disclaimer="Scripted replies over a fixture workspace. No model is called."
-          />
+            </div>
+          </section>
         </div>
       </div>
     </DemoActionsContext.Provider>

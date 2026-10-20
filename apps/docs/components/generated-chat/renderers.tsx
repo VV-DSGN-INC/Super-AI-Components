@@ -16,7 +16,6 @@ import {
   type ReplyRenderers,
   type ViewCardData,
 } from "@/registry/super-ai/generated-chat";
-import { GenerationQueue } from "@/registry/super-ai/generation-queue";
 import { StatReadout } from "@/registry/super-ai/stat-readout";
 import { SuggestionChip, SuggestionChips } from "@/registry/super-ai/suggestion-chips";
 import { Widget } from "@/registry/super-ai/widget";
@@ -73,16 +72,20 @@ function FailedRunsCard() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <GenerationQueue
-          className="max-w-none"
-          items={runs.map((r) => ({
-            id: r.id,
-            title: r.prompt,
-            description: `${r.project} · ${r.model} · ${r.at}`,
-            state: "failed" as const,
-            errorMessage: `${r.reason} · ${r.project} · ${r.at}`,
-          }))}
-        />
+        {/* E6 generation-queue always draws a batch bar, which reads a settled
+            list of failures as work finishing; rows are entity-row instead. */}
+        <ul aria-label="Failed runs" className="flex flex-col">
+          {runs.map((r) => (
+            <li key={r.id}>
+              <EntityRow
+                icon={<AlertTriangle aria-hidden className="text-destructive" />}
+                title={r.prompt}
+                description={`${r.reason} · ${r.project} · ${r.at}`}
+                trailing={<span className="text-foreground text-xs">Failed</span>}
+              />
+            </li>
+          ))}
+        </ul>
       </CardContent>
       <CardFooter className="justify-end">
         <Button type="button" size="sm" disabled={busy || locked} onClick={() => ask(question)}>
@@ -133,9 +136,7 @@ function CreditsWidget() {
       <div className="flex h-full flex-col justify-end gap-2">
         <span className="text-3xl font-semibold tabular-nums">{fmt(left)}</span>
         <Progress value={used} aria-label={`${used} percent of the plan used`} />
-        <span className="text-foreground text-xs">
-          of {fmt(PLAN.credits)} · resets {PLAN.resetsOn}
-        </span>
+        <span className="text-foreground text-xs">of {fmt(PLAN.credits)}</span>
       </div>
     </Widget>
   );
@@ -156,9 +157,7 @@ function FailedWidget() {
     >
       <div className="flex h-full flex-col justify-end gap-2">
         <span className="text-3xl font-semibold tabular-nums">{failed.length}</span>
-        <span className="text-foreground text-xs">
-          of {overnightRuns().length} runs · {timedOutOvernight().length} timed out
-        </span>
+        <span className="text-foreground text-xs">of {overnightRuns().length} runs</span>
       </div>
     </Widget>
   );

@@ -507,7 +507,7 @@ function ReplyParts({ message, renderers, streaming = false }: ReplyPartsProps) 
   });
 
   return (
-    <div data-slot="reply-parts" className="flex min-w-0 flex-col gap-3">
+    <div data-slot="reply-parts" className="flex w-full min-w-0 flex-col gap-3">
       {nodes}
     </div>
   );
