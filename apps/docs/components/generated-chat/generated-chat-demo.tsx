@@ -174,13 +174,20 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
   const version = active ? currentVersion(active) : undefined;
 
   // A generated view's body: the current version's program, revealed line by
-  // line and replayed on Rerun, with the last version that rendered kept per view.
-  const [lastGood, setLastGood] = React.useState<Record<string, ProgramId>>({});
+  // line and replayed on Rerun. Every variant that rendered is recorded per
+  // view, and the fallback is the newest of them that comes before the current
+  // version, so after Undo a later version is never offered as the last good one.
+  const [rendered, setRendered] = React.useState<Record<string, ProgramId[]>>({});
   const variant = active?.kind === "generated" ? version?.variant : undefined;
   const program = isProgramId(variant) ? PROGRAMS[variant] : null;
   const reveal = useLineReveal(program, `${active?.id}:${variant}:${active?.ranAt}`, stepMs);
-  const goodId = active ? lastGood[active.id] : undefined;
-  const fallbackProgram = goodId && goodId !== variant ? PROGRAMS[goodId] : null;
+  const good = active ? (rendered[active.id] ?? []) : [];
+  const fallbackId = active?.versions
+    .slice(0, active.current)
+    .map((v) => v.variant)
+    .reverse()
+    .find((v): v is ProgramId => isProgramId(v) && v !== variant && good.includes(v));
+  const fallbackProgram = fallbackId ? PROGRAMS[fallbackId] : null;
   const retryPrompt = isProgramId(variant) ? RETRY_PROMPTS[variant] : undefined;
 
   const view =
@@ -244,7 +251,9 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
               onRender={({ ok }) => {
                 if (!ok || !isProgramId(variant)) return;
                 const id = active.id;
-                setLastGood((prev) => (prev[id] === variant ? prev : { ...prev, [id]: variant }));
+                setRendered((prev) =>
+                  prev[id]?.includes(variant) ? prev : { ...prev, [id]: [...(prev[id] ?? []), variant] },
+                );
               }}
             />
           ) : (

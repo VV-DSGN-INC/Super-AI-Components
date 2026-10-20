@@ -109,6 +109,29 @@ describe("GeneratedChatDemo", () => {
     expect(within(view).queryByText("This version did not render.")).toBeNull();
   });
 
+  it("after Undo, falls back to the last version before the current one that rendered", async () => {
+    const user = userEvent.setup();
+    render(<GeneratedChatDemo stepMs={0} />);
+    await user.type(screen.getByRole("textbox"), "Show spend by project{Enter}");
+    await user.click(
+      await within(stream()).findByRole("button", { name: "Show Spend by project this week" }),
+    );
+    const view = await screen.findByRole("region", { name: "Spend by project this week" });
+    expect(await within(view).findByText("Onboarding video")).toBeInTheDocument();
+    await user.click(await waitFor(() => lastButton("Add a daily trend")));
+    expect(await within(view).findByText("This version did not render.")).toBeInTheDocument();
+    await user.click(within(view).getByRole("button", { name: "Retry" }));
+    expect(await within(view).findByText("Mon 19 Oct")).toBeInTheDocument();
+
+    // Back to the version that failed. What rendered before it was v1, not the
+    // v3 that came after it, so the trend must not appear as the fallback.
+    await user.click(within(view).getByRole("button", { name: "Undo" }));
+    expect(await within(view).findByText("This version did not render.")).toBeInTheDocument();
+    const fallback = view.querySelector<HTMLElement>('[data-slot="generated-body-fallback"]')!;
+    expect(within(fallback).getByText("Onboarding video")).toBeInTheDocument();
+    expect(within(view).queryByText("Mon 19 Oct")).toBeNull();
+  });
+
   it("answers anything unscripted with the ready prompts", async () => {
     const user = userEvent.setup();
     render(<GeneratedChatDemo stepMs={0} />);
