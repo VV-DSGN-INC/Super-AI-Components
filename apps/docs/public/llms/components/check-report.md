@@ -6,7 +6,7 @@ Layer: component · Family: R · Install: `npx shadcn@latest add https://super-a
 
 ## Why it matters
 
-A message written live by an agent is checked before it goes out, and one that fails is never sent as written. That only builds trust if a reader can see which rule failed and what happened next. Designing Bots asks for a way out of every dead end and a fallback when the bot cannot do what was asked (chapter 8). The rules here are this project's, not an industry standard, and no product count is claimed for this item; it rests on the book and the content system.
+A message written live by an agent is checked before it goes out, and one that fails is never sent as written. That only builds trust if a reader can see which rule failed and what happened next. Designing Bots asks for a way out of every dead end and a fallback when the bot cannot do what was asked (chapter 8). The rule list belongs to this project and no industry standard sets it, and no product count is claimed for this item; it rests on the book and the content system.
 
 ## When to reach for it
 

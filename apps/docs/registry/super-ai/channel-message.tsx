@@ -117,7 +117,7 @@ const KIND_WORD: Record<MessageKind, string> = {
  */
 function typeScale(large: boolean) {
   return large
-    ? { what: "text-lg font-medium", body: "text-base", small: "text-base", button: "h-9 px-3 text-base" }
+    ? { what: "text-lg font-medium", body: "text-base", small: "text-base", button: "min-h-9 px-3 text-base" }
     : { what: "text-sm font-medium", body: "text-sm", small: "text-xs", button: "" };
 }
 
@@ -149,7 +149,7 @@ function Options({ channel, options, spoken, answerable, onAnswer, scale, classN
                 type="button"
                 variant="outline"
                 size="sm"
-                className={cn(itemClass, "h-auto min-h-7 whitespace-normal py-1")}
+                className={cn("h-auto min-h-7 whitespace-normal py-1", itemClass)}
                 onClick={() => onAnswer(option)}
               >
                 {label(option, index)}
@@ -170,7 +170,7 @@ function Options({ channel, options, spoken, answerable, onAnswer, scale, classN
       </ul>
       {more > 0 && (
         <p data-slot="channel-message-overflow" className={cn(scale.small, "text-foreground")}>
-          {channel === "app" ? `and ${more} more` : `and ${more} more in the app`}
+          and {more} more in the app
         </p>
       )}
     </div>
@@ -211,10 +211,17 @@ function ChannelMessage({
   // Focus follows the controls: when the message becomes `answered` after it was shown, the result
   // takes focus, since the button the person pressed has just left the page. On first render it
   // does not, so a page of answered messages never steals focus on load.
+  const rootRef = React.useRef<HTMLElement>(null);
   const answerRef = React.useRef<HTMLParagraphElement>(null);
   const previousState = React.useRef(state);
   React.useEffect(() => {
-    if (previousState.current !== "answered" && state === "answered") answerRef.current?.focus();
+    if (previousState.current !== "answered" && state === "answered") {
+      // Only when focus was on the message (the pressed button just left) or nowhere. A caller that
+      // sets `answered` from its own Step or Play control keeps focus on that control.
+      const active = document.activeElement;
+      if (!active || active === document.body || rootRef.current?.contains(active))
+        answerRef.current?.focus();
+    }
     previousState.current = state;
   }, [state]);
 
@@ -391,17 +398,9 @@ function ChannelMessage({
         {askLine && expiresLine}
         {handoffLine}
         {answerLine}
-        {optionList ?? (
-          <p
-            className={cn(
-              "inline-flex w-fit min-w-0 items-center rounded-lg bg-primary px-3 py-1.5 font-medium text-primary-foreground",
-              scale.body,
-            )}
-          >
-            {linkLabel}
-          </p>
-        )}
-        {optionList && <p className={cn(scale.small, "text-foreground")}>{linkLabel}</p>}
+        {optionList}
+        <p className={cn(scale.small, "text-foreground")}>{linkLabel}</p>
+
         <div className="border-t border-border pt-2">{quiet("Footer link: ")}</div>
       </div>
     );
@@ -436,6 +435,7 @@ function ChannelMessage({
 
   return (
     <article
+      ref={rootRef}
       data-slot="channel-message"
       data-channel={channel}
       data-state={state}

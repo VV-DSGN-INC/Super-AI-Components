@@ -266,7 +266,9 @@ export const KeyboardOrder: Story = {
 /**
  * The caller owns the state. Pressing an option reports the value and changes
  * nothing; only when the parent sets `state="answered"` do the buttons give
- * way to the result and focus move onto it.
+ * way to the result. Here a separate control of the caller's sets the state,
+ * so focus stays on that control; when the pressed option button itself had
+ * focus, the result takes it instead (pinned in the unit tests).
  */
 export const Controlled: Story = {
   args: { channel: "chat", message: CHECK_IN, state: "sent" },
@@ -296,7 +298,8 @@ export const Controlled: Story = {
     await userEvent.click(canvas.getByRole("button", { name: "Apply the answer" }));
     const answer = canvasElement.querySelector<HTMLElement>('[data-slot="channel-message-answer"]')!;
     await expect(answer.textContent).toBe("Answered: Not great");
-    await waitFor(() => expect(document.activeElement).toBe(answer));
+    // The caller's own control set the state, so focus stays on it rather than jumping.
+    await expect(document.activeElement).toBe(canvas.getByRole("button", { name: "Apply the answer" }));
   },
 };
 

@@ -137,6 +137,21 @@ describe("ChannelMessage controls", () => {
     expect(slot("overflow")!.textContent).toBe("and 3 more in the app");
   });
 
+  it("the app thread names its overflow the same way", () => {
+    const six = ["One", "Two", "Three", "Four", "Five", "Six"];
+    render(
+      <ChannelMessage channel="app" message={{ ...ASK, options: six }} state="sent" onAnswer={() => {}} />,
+    );
+    expect(within(slot("options") as HTMLElement).getAllByRole("button")).toHaveLength(5);
+    expect(slot("overflow")!.textContent).toBe("and 1 more in the app");
+  });
+
+  it("the phone script counts its overflow the same way", () => {
+    const six = ["One", "Two", "Three", "Four", "Five", "Six"];
+    render(<ChannelMessage channel="phone" message={{ ...ASK, options: six }} state="sent" />);
+    expect(slot("overflow")!.textContent).toBe("and 1 more in the app");
+  });
+
   it("caps chat at five, email at one", () => {
     const six = ["One", "Two", "Three", "Four", "Five", "Six"];
     const { unmount } = render(
@@ -184,6 +199,90 @@ describe("ChannelMessage controls", () => {
     expect(slot("script")!.textContent).toContain("Press 2 for Not great");
     await userEvent.click(screen.getByRole("button", { name: "Press 2 for Not great" }));
     expect(onAnswer).toHaveBeenCalledWith("Not great");
+  });
+});
+
+describe("ChannelMessage email, answered and path", () => {
+  it("an email with no options has no button: the link is text, never a control", () => {
+    render(<ChannelMessage channel="email" message={READY} state="sent" onAnswer={() => {}} />);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(slot("options")).toBeNull();
+    expect(slot("link")!.textContent).toBe("Open in the app");
+    expect(slot("link")!.getAttribute("data-link")).toBe("lifeos://review/42");
+  });
+
+  it("an email with options has one button and keeps the link as text", () => {
+    render(<ChannelMessage channel="email" message={ASK} state="sent" onAnswer={() => {}} />);
+    expect(screen.getAllByRole("button").map((b) => b.textContent)).toEqual(["Fine"]);
+    expect(slot("link")!.textContent).toBe("Open in the app");
+  });
+
+  it("answered replaces the controls on every channel", () => {
+    for (const channel of ["app", "push", "chat", "email", "phone"] as Channel[]) {
+      const { unmount } = render(
+        <ChannelMessage
+          channel={channel}
+          locked={false}
+          message={ASK}
+          state="answered"
+          answer="Fine"
+          onAnswer={() => {}}
+        />,
+      );
+      expect(screen.queryAllByRole("button"), channel).toHaveLength(0);
+      expect(slot("answer")!.textContent, channel).toBe("Answered: Fine");
+      unmount();
+    }
+  });
+
+  it("answered with no answer value still says so", () => {
+    render(<ChannelMessage channel="chat" message={ASK} state="answered" />);
+    expect(slot("answer")!.textContent).toBe("Answered");
+  });
+
+  it("names each path in words", () => {
+    for (const [path, word] of [
+      ["code", "Written by code"],
+      ["live", "Written live"],
+      ["fallback", "Fallback template"],
+    ] as const) {
+      const { unmount } = render(<ChannelMessage channel="chat" message={READY} state="sent" path={path} />);
+      expect(slot("path")!.textContent).toBe(word);
+      unmount();
+    }
+  });
+
+  it("prints the deadline as given", () => {
+    render(<ChannelMessage channel="app" message={ASK} state="sent" />);
+    expect(root().textContent).toContain("Expires Fri 18:00");
+  });
+
+  it("leaves focus alone when the caller, not the person, sets answered", () => {
+    const { rerender } = render(
+      <>
+        <button type="button">Step</button>
+        <ChannelMessage channel="chat" message={ASK} state="sent" onAnswer={() => {}} />
+      </>,
+    );
+    screen.getByRole("button", { name: "Step" }).focus();
+    rerender(
+      <>
+        <button type="button">Step</button>
+        <ChannelMessage channel="chat" message={ASK} state="answered" answer="Fine" onAnswer={() => {}} />
+      </>,
+    );
+    expect(document.activeElement).toBe(screen.getByRole("button", { name: "Step" }));
+  });
+
+  it("moves focus to the result when the pressed button was on the message", () => {
+    const { rerender } = render(
+      <ChannelMessage channel="chat" message={ASK} state="sent" onAnswer={() => {}} />,
+    );
+    screen.getByRole("button", { name: "Fine" }).focus();
+    rerender(
+      <ChannelMessage channel="chat" message={ASK} state="answered" answer="Fine" onAnswer={() => {}} />,
+    );
+    expect(document.activeElement).toBe(slot("answer"));
   });
 });
 
@@ -301,6 +400,14 @@ describe("ChannelMessage content", () => {
     rerender(<ChannelMessage channel="chat" typeSize="large" message={READY} state="sent" />);
     expect(slot("what")!.className).toContain("text-lg");
     expect(slot("what")!.className).not.toContain("text-sm");
+  });
+
+  it("large type keeps the taller floor on the option buttons", () => {
+    render(<ChannelMessage channel="chat" typeSize="large" message={ASK} state="sent" onAnswer={() => {}} />);
+    for (const button of screen.getAllByRole("button")) {
+      expect(button.className).toContain("min-h-9");
+      expect(button.className).toContain("text-base");
+    }
   });
 
   it("names the article by its sender and channel", () => {

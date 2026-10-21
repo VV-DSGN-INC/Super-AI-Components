@@ -6,7 +6,7 @@ Layer: component · Family: R · Install: `npx shadcn@latest add https://super-a
 
 ## Why it matters
 
-A person checking what a system did with a message needs the trace in words, not event codes and not a diagram. Designing Bots treats the transcript as how a bot is judged: scripts are mockups, and reading the real conversations is how a team finds out where they fail (chapters 17 and 19). The log is the transcript of one message across channels. No product count is claimed for this item; it rests on the book and on the content system's log, and shares the family decision.
+A person checking what a system did with a message needs the trace in plain sentences. Designing Bots treats the transcript as how a bot is judged: scripts are mockups, and reading the real conversations is how a team finds out where they fail (chapters 17 and 19). The log is the transcript of one message across channels. No product count is claimed for this item; it rests on the book and on the content system's log, and shares the family decision.
 
 ## When to reach for it
 
@@ -52,8 +52,8 @@ None: The log renders every event the same way, as a time and a sentence, becaus
 
 ## Pitfalls
 
-- `at` is minutes since the first event, not a clock time. Passing a timestamp prints "+1760000000000 min".
-- The sentence is built from the event type, channel, path, reason and value. An event type the component does not know is a type error, not a fallback row.
+- `at` is minutes since the first event. A clock time or an epoch value prints as a huge offset, which widens the time column and takes space from the sentence.
+- The sentence is built from the event type, channel, path, reason and value. An event type outside the union is a compile error; if one reaches the page anyway, the row prints the raw type string.
 - A very long `reason` wraps inside its row. The time column stays the same width, so a reason is never pushed under it.
 
 ## Composition

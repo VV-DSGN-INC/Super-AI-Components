@@ -578,8 +578,8 @@ open questions Q1 to Q6 against family Q. `component-specs.md` and `catalog.md` 
 `gaps.md` carries the restore items. No rename: the family letter is forced.
 
 **Evidence, and where it falls short.** The products named for `channel-message` were checked
-against their own documentation on 2026-10-20: Courier, Novu, Knock and Braze show a preview per
-channel of one message. That meets D1's three but not the five this batch's plan asked for, and it
+against their own documentation on 2026-10-20: Courier, Novu, Knock and Braze document a preview
+per channel for one message (Braze for email, in-app messages, content cards and banners). That meets D1's three but not the five this batch's plan asked for, and it
 is reported rather than padded. OneSignal, Customer.io, Iterable and Twilio Content Templates were
 checked and not cited. `message-log` and `check-report` have no product count of their own; they
 are the other two parts of the same message and are admitted with R1 on the source. If that is too

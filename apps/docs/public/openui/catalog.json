@@ -620,10 +620,10 @@
         "Don't pass `onAnswer` and expect buttons in every state. Only a `sent` message can be answered; a withdrawn, expired or pending one shows its options as text.",
         "The component does not check the message against its kind. A `ready` with an `ask` renders as written. Validate the kind against the slots before you pass it in.",
         "Only `sent` is answerable. A `failed-check` message was not delivered as written, so its options are text. The template that went out instead is a `sent` message with `path=\"fallback\"`; pass that one when the person can answer.",
-        "`link` is a label for the way back to the app, not an anchor. It is shown as \"Open in the app\" with the address in a `data-link` attribute. Wrap or replace it yourself if you want it to navigate.",
+        "`link` is text and never an anchor, and it follows each channel's habit. Push prints \"Tap to open in the app\", chat and email print \"Open in the app\", and the app thread and the phone script (\"It is in your app too.\") print no label. The address sits in a `data-link` attribute on the push, chat and email labels only. The component has no prop for navigation; open the address from your own handler.",
         "`expires` is printed as you give it. Pass the words a person should read, such as \"Fri 18:00\", not a timestamp.",
         "Hierarchy comes from size and weight. Do not add `text-muted-foreground` text inside the thread and chat bubbles: they paint `bg-muted`, and the pair measures 4.34:1 against a 4.5:1 minimum.",
-        "`typeSize=\"large\"` changes the type scale of the render, not your page. Give it a container that can wrap; it wraps, it does not scroll."
+        "`typeSize=\"large\"` changes the type scale inside the render only. Give it a container that can wrap; text and options wrap onto further lines and never scroll sideways."
       ],
       "consumes": [],
       "consumedBy": [],
@@ -1989,8 +1989,8 @@
       "notes": [
         "Don't hand it unsorted events and expect it to order them. It renders what it is given, because an append-only log has no other order.",
         "Don't leave a skipped event without a reason. The row then says only \"Skipped push\", which is a log that explains nothing.",
-        "`at` is minutes since the first event, not a clock time. Passing a timestamp prints \"+1760000000000 min\".",
-        "The sentence is built from the event type, channel, path, reason and value. An event type the component does not know is a type error, not a fallback row.",
+        "`at` is minutes since the first event. A clock time or an epoch value prints as a huge offset, which widens the time column and takes space from the sentence.",
+        "The sentence is built from the event type, channel, path, reason and value. An event type outside the union is a compile error; if one reaches the page anyway, the row prints the raw type string.",
         "A very long `reason` wraps inside its row. The time column stays the same width, so a reason is never pushed under it."
       ],
       "consumes": [],

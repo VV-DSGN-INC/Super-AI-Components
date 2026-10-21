@@ -28,7 +28,7 @@ export const CheckReportDocs: ComponentDocs = {
   whatItIs:
     "The output checks' verdict per rule. Each rule that ran gets a row with the word pass or fail, its name and an optional detail. When a failed check sent the same-kind template instead of the text as written, the report says so. It shows results; it does not run any rule.",
   whyItMatters:
-    "A message written live by an agent is checked before it goes out, and one that fails is never sent as written. That only builds trust if a reader can see which rule failed and what happened next. Designing Bots asks for a way out of every dead end and a fallback when the bot cannot do what was asked (chapter 8). The rules here are this project's, not an industry standard, and no product count is claimed for this item; it rests on the book and the content system.",
+    "A message written live by an agent is checked before it goes out, and one that fails is never sent as written. That only builds trust if a reader can see which rule failed and what happened next. Designing Bots asks for a way out of every dead end and a fallback when the bot cannot do what was asked (chapter 8). The rule list belongs to this project and no industry standard sets it, and no product count is claimed for this item; it rests on the book and the content system.",
   evidence: ["Designing Bots (chapter 8)"],
   anatomy: [
     { slot: "check-report", note: 'The region, named "Output checks" or "Output checks for <channel>".' },

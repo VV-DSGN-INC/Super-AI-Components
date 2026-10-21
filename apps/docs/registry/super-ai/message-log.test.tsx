@@ -76,6 +76,18 @@ describe("MessageLog", () => {
     expect(rows()[1]).toContain("Message created");
   });
 
+  it("keeps a very large offset in its own column", () => {
+    render(<MessageLog events={[{ id: "1", at: 1760000000000, type: "message.created" }]} />);
+    const time = document.querySelector('[data-slot="message-log-row"]')!.firstElementChild!;
+    expect(time.className).toContain("min-w-16");
+    expect(time.className).toContain("whitespace-nowrap");
+  });
+
+  it("says something for a type outside the union rather than leaving the row blank", () => {
+    render(<MessageLog events={[{ id: "1", at: 0, type: "message.bounced" as MessageLogEvent["type"] }]} />);
+    expect(rows()[0]).toContain("message.bounced");
+  });
+
   it("is a list, one item per event", () => {
     render(<MessageLog events={[{ id: "1", at: 0, type: "message.created" }]} />);
     const list = screen.getByRole("list");

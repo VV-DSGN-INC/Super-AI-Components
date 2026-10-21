@@ -105,6 +105,11 @@ export const LongContent: Story = {
     for (const el of rows[1]!.querySelectorAll<HTMLElement>("*")) {
       await expect(el.getBoundingClientRect().right).toBeLessThanOrEqual(box.right + 0.5);
     }
+    // The sentence wraps in its own column: it starts at or after the time column's right edge.
+    const [time, sentence] = rows[1]!.children as unknown as HTMLElement[];
+    await expect(sentence!.getBoundingClientRect().left).toBeGreaterThanOrEqual(
+      time!.getBoundingClientRect().right,
+    );
   },
 };
 

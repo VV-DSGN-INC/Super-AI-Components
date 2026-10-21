@@ -6,7 +6,7 @@
   "family": "R",
   "description": "One message drawn in the shape of the channel it is sent on: app, push, chat, email or phone.",
   "purpose": "One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots (who it is from, what it says, one question, a few closed answers, a way to stop). The `channel` prop picks the shape: a thread bubble for the app, a lock-screen card for push, a bubble with inline buttons for chat, a sender, subject and one button for email, and a spoken script for phone. The component shows the message and its state in words. It sends nothing and decides nothing.",
-  "whyItMatters": "A bot that reaches a person on five channels has one voice and five shapes, and a design system built for screens gives the other four no way to say so. Designing Bots pairs Slack message attachments with Messenger templates for the same content (chapter 9) and says that writing once and running everywhere runs at low quality, while separating the logic from the presentation and tuning per platform is better (chapter 20). Notification products already preview one message per channel: Courier holds every channel in one template and renders each variant with test data, Novu previews on every channel's editor, Knock puts a preview pane on each channel step, and Braze previews email, in-app messages and content cards in the composer. This component makes the same move for a bot: one message, five shapes, chosen by a prop, so the five cannot drift apart.",
+  "whyItMatters": "A bot that reaches a person on five channels has one voice and five shapes, and a design system built for screens gives the other four no way to say so. Designing Bots pairs Slack message attachments with Messenger templates for the same content (chapter 9) and says that writing once and running everywhere runs at low quality, while separating the logic from the presentation and tuning per platform is better (chapter 20). Notification products already preview one message per channel: Courier holds every channel in one template and renders each variant with test data, Novu previews on every channel's editor, Knock puts a preview pane on each channel step, and Braze documents a composer preview for email, in-app messages, content cards and banners. This component makes the same move for a bot: one message, five shapes, chosen by a prop, so the five cannot drift apart.",
   "usage": "Reach for it wherever one message has to be shown as it will arrive: a configurator that previews a message per channel, a delivery log, a support view of what a person saw. Pass the message once and render it per channel with `channel`. Keep the state in your own store and pass it in; the component never changes it. To make the controls work, give `onAnswer`, set `state` to `sent`, and when the callback fires set `state` to `answered` with the `answer` value. Without `onAnswer` the options render as plain text, which is what a screenshot or a static page should show. Use `to=\"second\"` for a second recipient, who reads `summary` and none of the question. Use `locked` on push to choose between the lock screen and the unlocked notification.",
   "evidence": [
     "Courier",
@@ -26,7 +26,7 @@
     },
     {
       "slot": "channel-message-kind",
-      "note": "The kind as a badge on app, chat and email, and as the lock-screen phrase on a locked push."
+      "note": "The kind as a badge on app, chat and email, and as the lock-screen phrase on a locked push. An unlocked push and the phone script do not show it."
     },
     {
       "slot": "channel-message-what",
@@ -46,7 +46,7 @@
     },
     {
       "slot": "channel-message-link",
-      "note": "A label for the way back to the app. Never a live link."
+      "note": "The way back to the app, as text on push, chat and email. The app thread and the phone script carry it implicitly and print no label. Never a live link."
     },
     {
       "slot": "channel-message-quiet",
@@ -178,20 +178,20 @@
       "Each option button is named by its own text. On the phone script the text is the spoken phrase, for example \"Press 2 for Not great\", so the name carries the digit.",
       "The state is a word in a status region, so a change from sent to answered or withdrawn is announced. The state is never conveyed by colour: `Pending`, `Sent`, `Answered`, `Withdrawn`, `Expired`, `Failed check` and `Not routed` are all text.",
       "The link label and the quiet line are plain text. The link is not announced as a link because it is not one.",
-      "A locked push exposes the sender and the kind phrase only. The body and the actions are not in the DOM, so a screen reader cannot read what the lock screen hides."
+      "A locked push card holds the sender and the kind phrase and nothing else from the message. The body, the question and the actions are not in the DOM, so a screen reader cannot read what the lock screen hides. The state, path, reason and trust lines sit below the card and stay."
     ],
     "focus": [
-      "When `state` changes to `answered` after the message was on screen, focus moves to the result line (`tabIndex={-1}`), because the button the person pressed has just left the page. A message that first renders already answered does not take focus.",
+      "When `state` changes to `answered` after the message was on screen, focus moves to the result line (`tabIndex={-1}`) if it was on the message or nowhere, because the button the person pressed has just left the page. If focus is on a control of your own, such as a Step or Play button that set the state, it stays there. A message that first renders already answered does not take focus.",
       "A withdrawn or expired message keeps no focus target. If a button had focus when the state changed, the browser puts focus on the page body, so move it in your own handler."
     ]
   },
   "pitfalls": [
     "The component does not check the message against its kind. A `ready` with an `ask` renders as written. Validate the kind against the slots before you pass it in.",
     "Only `sent` is answerable. A `failed-check` message was not delivered as written, so its options are text. The template that went out instead is a `sent` message with `path=\"fallback\"`; pass that one when the person can answer.",
-    "`link` is a label for the way back to the app, not an anchor. It is shown as \"Open in the app\" with the address in a `data-link` attribute. Wrap or replace it yourself if you want it to navigate.",
+    "`link` is text and never an anchor, and it follows each channel's habit. Push prints \"Tap to open in the app\", chat and email print \"Open in the app\", and the app thread and the phone script (\"It is in your app too.\") print no label. The address sits in a `data-link` attribute on the push, chat and email labels only. The component has no prop for navigation; open the address from your own handler.",
     "`expires` is printed as you give it. Pass the words a person should read, such as \"Fri 18:00\", not a timestamp.",
     "Hierarchy comes from size and weight. Do not add `text-muted-foreground` text inside the thread and chat bubbles: they paint `bg-muted`, and the pair measures 4.34:1 against a 4.5:1 minimum.",
-    "`typeSize=\"large\"` changes the type scale of the render, not your page. Give it a container that can wrap; it wraps, it does not scroll."
+    "`typeSize=\"large\"` changes the type scale inside the render only. Give it a container that can wrap; text and options wrap onto further lines and never scroll sideways."
   ],
   "states": [
     "pending",

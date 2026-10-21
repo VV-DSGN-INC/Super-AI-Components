@@ -60,6 +60,9 @@ function sentence(event: MessageLogEvent): string {
       return `Expired${on}`;
     case "message.withdrawn":
       return `Withdrawn${on}${event.reason ? `: ${event.reason}` : ""}`;
+    default:
+      // A type outside the union is a compile error; at runtime the row still says something.
+      return String((event as { type: string }).type);
   }
 }
 
@@ -87,7 +90,9 @@ function MessageLog({ events, emptyText = "Nothing sent yet", className, ...prop
             data-slot="message-log-row"
             className="flex min-w-0 gap-3 border-b border-border py-1.5 last:border-b-0"
           >
-            <span className="w-16 shrink-0 font-mono text-xs tabular-nums leading-5">+{event.at} min</span>
+            <span className="min-w-16 shrink-0 whitespace-nowrap font-mono text-xs tabular-nums leading-5">
+              +{event.at} min
+            </span>
             <span className="min-w-0 break-words">{sentence(event)}</span>
           </li>
         ))

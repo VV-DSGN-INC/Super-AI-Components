@@ -22,7 +22,7 @@ export default function ChannelMessageDemo() {
     <div className="@container flex w-full flex-col gap-4">
       <div className="flex items-center gap-2">
         <Switch id="channel-message-locked" checked={locked} onCheckedChange={setLocked} />
-        <Label htmlFor="channel-message-locked">Phone is locked</Label>
+        <Label htmlFor="channel-message-locked">Push is locked</Label>
       </div>
       <div className="grid w-full gap-6 @2xl:grid-cols-2">
         {CHANNELS.map((channel) => (
