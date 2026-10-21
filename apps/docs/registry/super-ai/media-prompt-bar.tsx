@@ -54,7 +54,7 @@ interface MediaPromptBarProps extends Omit<React.ComponentProps<"div">, "onSubmi
   onAttach?: () => void;
   attachLabel?: string;
   /**
-   * The randomize state (D28). When passed, a dice button joins the action row. Click calls this
+   * The randomize state (D30). When passed, a dice button joins the action row. Click calls this
    * and fills the target with the string it returns, so the host owns the pool. The fill is only a
    * draft: it never generates, and returning nothing leaves the field alone.
    */

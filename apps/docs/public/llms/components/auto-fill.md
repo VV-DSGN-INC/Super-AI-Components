@@ -6,7 +6,7 @@ Layer: component · Family: P · Install: `npx shadcn@latest add https://super-a
 
 ## Why it matters
 
-Filling a column by prompt is a bulk change to data a person owns, so the cost of a bad prompt is a column of wrong values. Attio, Clearfeed, Coda, Linear, LogicGate and Relay all fill fields from a prompt, and LogicGate removes the AI mark when a value is accepted and Linear gives each value a justification. Notion and Zapier show the same trial run on a few records before the full run. That trial run is this component's sample-preview state: Sample response lives here as sample-preview (D29) rather than as its own item.
+Filling a column by prompt is a bulk change to data a person owns, so the cost of a bad prompt is a column of wrong values. Attio, Clearfeed, Coda, Linear, LogicGate and Relay all fill fields from a prompt, and LogicGate removes the AI mark when a value is accepted and Linear gives each value a justification. Notion and Zapier show the same trial run on a few records before the full run. That trial run is this component's sample-preview state: Sample response lives here as sample-preview (D31) rather than as its own item.
 
 ## When to reach for it
 

@@ -47,7 +47,7 @@ far fewer near-duplicate leaves, and 14 layout archetypes instead of 4.
 | [figma-board-map.md](figma-board-map.md)                       | What lives where on the Figma boards, and how to navigate them                                                                                                                                                               |
 | [decisions.md](decisions.md)                                   | Decisions taken, decisions still open, and a revised sequencing proposal                                                                                                                                                     |
 | [gaps.md](gaps.md)                                             | **What the catalog is missing** — 7 recovered omissions, 5 trust/control components, 20 unsampled AI types, and 5 trust-builder candidates from the Shape of AI slice. Also the sampling-bias limitation of the whole method |
-| [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) | The fourth source: all six Shape of AI categories audited against the catalog, the Trust builders inclusion test, and the design notes for the five candidates (D26)                                                         |
+| [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) | The fourth source: all six Shape of AI categories audited against the catalog, the Trust builders inclusion test, and the design notes for the five candidates (D28)                                                         |
 
 ## Reading order
 

@@ -376,7 +376,7 @@ batch.
 
 ## 8. Wave 15: the non-trust passes, built — 2026-10-21
 
-D28 builds three of the four §4 passes outside Trust builders and four of the §4 states.
+D30 builds three of the four §4 passes outside Trust builders and four of the §4 states.
 `shared-vision` is held: it passed at exactly 3 and is agent-surface work for its own slice.
 
 | Built                  | As                       | Evidence (named on Shape of AI)                                                      |

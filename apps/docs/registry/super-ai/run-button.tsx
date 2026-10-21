@@ -48,7 +48,7 @@ interface RunButtonProps extends Omit<React.ComponentProps<"div">, "onError"> {
   progress?: number;
   label?: string;
   /**
-   * Draft run (D28). The trigger label gains " draft" ("Generate draft", or
+   * Draft run (D30). The trigger label gains " draft" ("Generate draft", or
    * "<label> draft" for a custom label) so the cheaper click is never
    * mistaken for the final one. Controlled by the host, like `state`.
    */

@@ -15,7 +15,7 @@ export const AutoFillDocs: ComponentDocs = {
   whatItIs:
     "One prompt that fills a field across many records. A column-header action opens the configuration, a preview runs the prompt on the first few records and shows each result next to the value already there, and only then does Apply to all write anything. Each generated cell stays marked until a person accepts it or replaces it.",
   whyItMatters:
-    "Filling a column by prompt is a bulk change to data a person owns, so the cost of a bad prompt is a column of wrong values. Attio, Clearfeed, Coda, Linear, LogicGate and Relay all fill fields from a prompt, and LogicGate removes the AI mark when a value is accepted and Linear gives each value a justification. Notion and Zapier show the same trial run on a few records before the full run. That trial run is this component's sample-preview state: Sample response lives here as sample-preview (D29) rather than as its own item.",
+    "Filling a column by prompt is a bulk change to data a person owns, so the cost of a bad prompt is a column of wrong values. Attio, Clearfeed, Coda, Linear, LogicGate and Relay all fill fields from a prompt, and LogicGate removes the AI mark when a value is accepted and Linear gives each value a justification. Notion and Zapier show the same trial run on a few records before the full run. That trial run is this component's sample-preview state: Sample response lives here as sample-preview (D31) rather than as its own item.",
   evidence: ["Attio", "Clearfeed", "Coda", "Linear", "LogicGate", "Relay", "Notion", "Zapier"],
   anatomy: [
     {

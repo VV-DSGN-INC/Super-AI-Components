@@ -92,7 +92,7 @@ Wireframes for every entry are on the working board, column 4 — see
 - Changing any segment re-estimates cost, which is why A2 lives inside the bar rather than beside it.
 - G6 `model-bar` is this component with a Run split-button appended — one engine, two presentations.
 
-- **`draft` (D28).** A draft/final quality segment. Draft is labelled as lower quality, never only
+- **`draft` (D30).** A draft/final quality segment. Draft is labelled as lower quality, never only
   as cheaper, and changing it re-estimates cost like any other segment.
   **Evidence:** CapCut, Freepik, ElevenLabs Flows, Playground and Tripo all ship a variant of exactly this.
 
@@ -290,9 +290,9 @@ Shape of AI, Disclosure; see [shape-of-ai-board-analysis.md](shape-of-ai-board-a
 - Attach, model select and mode chip live inside the field, not above it. Same slot arrangement as D1.
 - Credits sit at the point of spend (M2), never buried in billing.
 
-- **`randomize` (D28).** A dice button in the field fills it with a starter from a host-supplied
+- **`randomize` (D30).** A dice button in the field fills it with a starter from a host-supplied
   pool. It never runs on click: the person edits or runs it. The host owns the pool, which is how
-  the space stays constrained (Krea, Scenario; two named, recorded in D28).
+  the space stays constrained (Krea, Scenario; two named, recorded in D30).
   **Evidence:** Descript, Zapier Copilot, CapCut, Manus, Claude — five of five App Home screens.
 
 ## C2 `suggestion-chips`
@@ -350,7 +350,7 @@ Shape of AI, Disclosure; see [shape-of-ai-board-analysis.md](shape-of-ai-board-a
 - The settings strip is A7 embedded. Cost re-estimates live as settings change.
 - `locked` replaces the input row in place — gate at the point of creation, not at a billing page.
 
-- **`randomize` (D28).** Same rule as C1: the dice fills, never runs. In D1 it can target the
+- **`randomize` (D30).** Same rule as C1: the dice fills, never runs. In D1 it can target the
   prompt or the seed, because audio and image generators randomize both.
   **Evidence:** Freepik, ElevenLabs Flows, CapCut, Playground, Runway.
 
@@ -362,7 +362,7 @@ Shape of AI, Disclosure; see [shape-of-ai-board-analysis.md](shape-of-ai-board-a
 - Empty slots stay visible rather than collapsing, so the set of possible inputs is discoverable.
 - Reorder and remove are per-slot. Removing a first frame must not silently promote another reference.
 
-- **`describe` (D28).** On a filled slot, Describe returns what is likely behind the reference:
+- **`describe` (D30).** On a filled slot, Describe returns what is likely behind the reference:
   exact extracted values first, then at most four inferred prompt options, each one action from the
   prompt. It renders only when the host can describe (an `onDescribe` handler is passed); a product
   that cannot expose prompts must not show the action (Midjourney, ChatGPT, Ideogram, Leonardo).
@@ -532,7 +532,7 @@ missing-required · multi-step · **Variants:** `layout`: inline · stacked
 - Labels overlay the thumbnail rather than sitting below it, so a dense grid stays a grid.
 - See-more is a tile in the grid, not a link below it — the grid never reflows when expanded.
 
-- **`user-presets` (D28).** A "Your styles" section sits above the system presets, with
+- **`user-presets` (D30).** A "Your styles" section sits above the system presets, with
   save-current as a tile in it. Every preset shows its source (personal, team, system), because a
   team style and a personal one behave differently when edited (ElevenLabs, FloraFauna,
   Midjourney, Krea).
@@ -546,7 +546,7 @@ missing-required · multi-step · **Variants:** `layout`: inline · stacked
 - Running state must expose Cancel. A generation you cannot stop burns credits and trust.
 - The cost number here and in E1 / D1 come from one source. Two different prices is the failure mode.
 
-- **`draft` (D28).** With draft on, the label says so ("Generate draft") and the cost shows the
+- **`draft` (D30).** With draft on, the label says so ("Generate draft") and the cost shows the
   delta to a final run, so the cheaper click is never mistaken for the real one (Firefly,
   Chronicle, ElevenLabs, Gamma, Jasper, Midjourney, Replit, Runway, Synthesia).
   **Evidence:** Freepik "Generate 55", Tripo, Playground, ElevenLabs.
@@ -1742,7 +1742,7 @@ suggested · accepted · overridden · failed
 - **`sample-preview` runs first.** The prompt runs on the first few records and the results sit
   beside the existing values, with per-record cost and time. Nothing is written until "Apply to
   all". This is Shape of AI's Sample response, carried here as a state because it is below D1 as
-  an item (D29).
+  an item (D31).
 - **Human content is never overwritten without permission.** Filled cells are skipped by default;
   overwriting is an explicit choice that states how many cells it changes.
 - **Generated values stay marked until a person acts.** A13 marks each suggested cell; accepting

@@ -234,10 +234,10 @@ single-product patterns on this board.
 
 N9–N12 enter by D16 via [agent-board-analysis.md](agent-board-analysis.md), not by the primary
 board.
-N13–N16, and A13 `ai-label`, enter by D26 via
+N13–N16, and A13 `ai-label`, enter by D28 via
 [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md): the Trust builders slice. They
-are the first additions to A and N since the 114 freeze, and the only ones D26 reopens them for.
-D8, D9 and N17 enter by D28, the same source's passes outside Trust builders. E11, K9 and N18 enter by D29. N10 and the `slot-summary` candidate carry a ⚠ in that doc: their counts rest on framework
+are the first additions to A and N since the 114 freeze, and the only ones D28 reopens them for.
+D8, D9 and N17 enter by D30, the same source's passes outside Trust builders. E11, K9 and N18 enter by D31. N10 and the `slot-summary` candidate carry a ⚠ in that doc: their counts rest on framework
 documentation rather than observed pixels, and must be verified against the running products before
 their specs are treated as settled. `slot-summary` passed at 3 but is **held** — it is the surface
 the Dialog contract governs, and it waits for the contract's first consumer.
@@ -319,11 +319,11 @@ frame. See D20 for what was deliberately not carried over from Geist.
 | L — First-run & onboarding          | 6                                                                                                                                    |
 | M — Account, plan & monetization    | 7                                                                                                                                    |
 | N — Feedback, trust & observability | 18                                                                                                                                   |
-| **B–N subtotal (L3)**               | **99** (96 before D29, 93 before D28, 89 before D26, 88 after D16, 82 before it, 74 before D12, 84 before D9)                        |
+| **B–N subtotal (L3)**               | **99** (96 before D31, 93 before D30, 89 before D28, 88 after D16, 82 before it, 74 before D12, 84 before D9)                        |
 | O — Blocks (L4)                     | 13 (O5 cut)                                                                                                                          |
 | P — Records & views (v2)            | 3                                                                                                                                    |
 | Q — Presentational chrome (Geist)   | 2                                                                                                                                    |
-| **Total registry items**            | **130** (126 before D29, 123 before D28, 118 before D26, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| **Total registry items**            | **130** (126 before D31, 123 before D30, 118 before D28, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

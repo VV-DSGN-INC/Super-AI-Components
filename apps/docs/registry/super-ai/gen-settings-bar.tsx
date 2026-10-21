@@ -81,7 +81,7 @@ interface GenSettingsQualityProps extends Omit<React.ComponentProps<"div">, "onC
 }
 
 /**
- * Draft / final quality segment (D28). Two toggle items in one Toolbar group,
+ * Draft / final quality segment (D30). Two toggle items in one Toolbar group,
  * built from `GenSettingsItem` like every other segment, so the bar stays one
  * tab stop and `disabled` on the bar still locks it. Draft is named as lower
  * quality in text rather than only as cheaper.

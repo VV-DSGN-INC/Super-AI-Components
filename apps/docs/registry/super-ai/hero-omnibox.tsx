@@ -45,7 +45,7 @@ interface HeroOmniboxProps extends Omit<React.ComponentProps<"div">, "onSubmit">
   onAttach?: () => void;
   attachLabel?: string;
   /**
-   * The randomize state (D28). When passed, a dice button joins the action row. Click calls this
+   * The randomize state (D30). When passed, a dice button joins the action row. Click calls this
    * and fills the field with the string it returns, so the host owns the pool. The fill is only a
    * draft: it never submits, and returning nothing leaves the field alone.
    */

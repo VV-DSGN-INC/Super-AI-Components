@@ -306,7 +306,7 @@ export const ReducedMotion: Story = {
 };
 
 /**
- * User presets (D28): `source: "personal" | "team"` lifts a preset into a
+ * User presets (D30): `source: "personal" | "team"` lifts a preset into a
  * "Your styles" section above the system presets, and `onSaveCurrent` puts a
  * "Save current" tile first in that section. Each user preset shows its source
  * as text and carries it in its accessible name ("Neon noir, Personal"), so
