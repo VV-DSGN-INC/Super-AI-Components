@@ -1,9 +1,10 @@
 "use client";
 
-import { Ban, Paperclip, Square, X } from "lucide-react";
+import { Ban, Dices, Paperclip, Square, X } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { CostChip } from "@/registry/super-ai/cost-chip";
@@ -13,10 +14,11 @@ import { CostChip } from "@/registry/super-ai/cost-chip";
  *
  * Spec: docs/design-system/component-specs.md#d1-media-prompt-bar
  * Presentations: floating · docked · node-embedded
- * State: locked · negative-prompt
+ * State: locked · negative-prompt · randomize
  */
 
 type MediaPromptBarPresentation = "floating" | "docked" | "node-embedded";
+type MediaPromptBarRandomizeTarget = "prompt" | "seed";
 
 interface MediaPromptBarProps extends Omit<React.ComponentProps<"div">, "onSubmit"> {
   /** One of D1's three presentations. Floating collapses the settings strip; node-embedded drops the negative prompt. Defaults to "docked". */
@@ -51,6 +53,22 @@ interface MediaPromptBarProps extends Omit<React.ComponentProps<"div">, "onSubmi
 
   onAttach?: () => void;
   attachLabel?: string;
+  /**
+   * The randomize state (D30). When passed, a dice button joins the action row. Click calls this
+   * and fills the target with the string it returns, so the host owns the pool. The fill is only a
+   * draft: it never generates, and returning nothing leaves the field alone.
+   */
+  onRandomize?: () => string | undefined;
+  /** What the dice fills. "seed" adds a seed field to the action row. Defaults to "prompt". */
+  randomizeTarget?: MediaPromptBarRandomizeTarget;
+  /** Defaults to "Random prompt", or "Random seed" when the target is the seed. */
+  randomizeLabel?: string;
+  /** Announced politely through the status region after the dice fills its target. */
+  randomizedLabel?: string;
+  /** Seed field value, shown only when `randomizeTarget` is "seed" and `onRandomize` is passed. */
+  seed?: string;
+  onSeedChange?: (seed: string) => void;
+  seedLabel?: string;
   generating?: boolean;
   generatingLabel?: string;
   onSubmit?: (value: string) => void;
@@ -85,6 +103,13 @@ function MediaPromptBar({
   cost,
   onAttach,
   attachLabel = "Attach reference",
+  onRandomize,
+  randomizeTarget = "prompt",
+  randomizeLabel,
+  randomizedLabel,
+  seed,
+  onSeedChange,
+  seedLabel = "Seed",
   generating = false,
   generatingLabel = "Generating…",
   onSubmit,
@@ -107,6 +132,16 @@ function MediaPromptBar({
   const [internalNegativeValue, setInternalNegativeValue] = React.useState("");
   const currentNegativeValue = negativeValue ?? internalNegativeValue;
 
+  const [internalSeed, setInternalSeed] = React.useState("");
+  const currentSeed = seed ?? internalSeed;
+  const randomizeRef = React.useRef<HTMLButtonElement>(null);
+  // Counter keys the announcement so a second roll with the same label is announced again.
+  const [randomized, setRandomized] = React.useState(0);
+  const targetsSeed = randomizeTarget === "seed";
+  const resolvedRandomizeLabel = randomizeLabel ?? (targetsSeed ? "Random seed" : "Random prompt");
+  const resolvedRandomizedLabel =
+    randomizedLabel ?? (targetsSeed ? "Random seed added" : "Random prompt added");
+
   const [internalNegativeOpen, setInternalNegativeOpen] = React.useState(false);
 
   const isNodeEmbedded = presentation === "node-embedded";
@@ -121,6 +156,7 @@ function MediaPromptBar({
   const showSettings = Boolean(settings) && !isFloating && !locked;
 
   const handleValueChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setRandomized(0);
     setInternalValue(event.target.value);
     onValueChange?.(event.target.value);
   };
@@ -138,6 +174,27 @@ function MediaPromptBar({
   const handleSubmit = () => {
     if (generating || locked || currentValue.trim() === "") return;
     onSubmit?.(currentValue);
+  };
+
+  const handleSeedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRandomized(0);
+    setInternalSeed(event.target.value);
+    onSeedChange?.(event.target.value);
+  };
+
+  // Fills, never generates. Focus is held on the dice so a person can keep rolling from the keyboard.
+  const handleRandomize = () => {
+    const starter = onRandomize?.();
+    if (!starter) return;
+    if (targetsSeed) {
+      setInternalSeed(starter);
+      onSeedChange?.(starter);
+    } else {
+      setInternalValue(starter);
+      onValueChange?.(starter);
+    }
+    setRandomized((n) => n + 1);
+    randomizeRef.current?.focus();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -252,6 +309,34 @@ function MediaPromptBar({
                 <Paperclip aria-hidden />
               </Button>
 
+              {onRandomize ? (
+                <Button
+                  ref={randomizeRef}
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={resolvedRandomizeLabel}
+                  data-slot="media-prompt-bar-randomize"
+                  onClick={handleRandomize}
+                  disabled={generating}
+                >
+                  <Dices aria-hidden />
+                </Button>
+              ) : null}
+
+              {onRandomize && targetsSeed ? (
+                <Input
+                  inputMode="numeric"
+                  data-slot="media-prompt-bar-randomize-seed"
+                  aria-label={seedLabel}
+                  placeholder={seedLabel}
+                  value={currentSeed}
+                  onChange={handleSeedChange}
+                  disabled={generating}
+                  className="h-7 w-28"
+                />
+              ) : null}
+
               {canHaveNegativePrompt && !isNegativePromptOpen ? (
                 <Button
                   type="button"
@@ -301,13 +386,19 @@ function MediaPromptBar({
         </div>
       )}
 
-      {/* Generating is announced, not just shown by a spinner. */}
+      {/* Generating and a randomize fill are announced, not just shown. */}
       <span data-slot="media-prompt-bar-status" role="status" aria-live="polite" className="sr-only">
-        {generating ? generatingLabel : ""}
+        {generating ? (
+          generatingLabel
+        ) : randomized > 0 ? (
+          <span key={randomized}>{resolvedRandomizedLabel}</span>
+        ) : (
+          ""
+        )}
       </span>
     </div>
   );
 }
 
 export { MediaPromptBar };
-export type { MediaPromptBarPresentation, MediaPromptBarProps };
+export type { MediaPromptBarPresentation, MediaPromptBarProps, MediaPromptBarRandomizeTarget };

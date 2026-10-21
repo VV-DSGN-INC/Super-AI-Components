@@ -3,6 +3,7 @@ import type { ComponentType } from "react";
 
 import AccountMenuDemo from "@/components/demos/account-menu-demo";
 import ActionStackDemo from "@/components/demos/action-stack-demo";
+import AgentPresenceDemo from "@/components/demos/agent-presence-demo";
 import AiDocBlockDemo from "@/components/demos/ai-doc-block-demo";
 import AiLabelDemo from "@/components/demos/ai-label-demo";
 import AiToolsMenuDemo from "@/components/demos/ai-tools-menu-demo";
@@ -15,6 +16,7 @@ import ArtifactShellDemo from "@/components/demos/artifact-shell-demo";
 import AssetDetailDemo from "@/components/demos/asset-detail-demo";
 import AssetLibraryDemo from "@/components/demos/asset-library-demo";
 import AuthShellDemo from "@/components/demos/auth-shell-demo";
+import AutoFillDemo from "@/components/demos/auto-fill-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import BookCoverDemo from "@/components/demos/book-cover-demo";
 import BrowserFrameDemo from "@/components/demos/browser-frame-demo";
@@ -64,6 +66,7 @@ import KbdDemo from "@/components/demos/kbd-demo";
 import LibraryShellDemo from "@/components/demos/library-shell-demo";
 import MediaPromptBarDemo from "@/components/demos/media-prompt-bar-demo";
 import MemberGateRowDemo from "@/components/demos/member-gate-row-demo";
+import MemoryManagerDemo from "@/components/demos/memory-manager-demo";
 import ModalityRailDemo from "@/components/demos/modality-rail-demo";
 import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
 import ModelPickerDemo from "@/components/demos/model-picker-demo";
@@ -77,6 +80,8 @@ import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PricingTableDemo from "@/components/demos/pricing-table-demo";
 import PrivateSessionNoticeDemo from "@/components/demos/private-session-notice-demo";
 import PromoCardDemo from "@/components/demos/promo-card-demo";
+import PromptEnhancerDemo from "@/components/demos/prompt-enhancer-demo";
+import PromptTemplateFormDemo from "@/components/demos/prompt-template-form-demo";
 import PropertyInspectorDemo from "@/components/demos/property-inspector-demo";
 import QuotaMeterDemo from "@/components/demos/quota-meter-demo";
 import QuoteReplyDemo from "@/components/demos/quote-reply-demo";
@@ -106,6 +111,7 @@ import StatReadoutDemo from "@/components/demos/stat-readout-demo";
 import StemMixerDemo from "@/components/demos/stem-mixer-demo";
 import StudioShellDemo from "@/components/demos/studio-shell-demo";
 import SuggestionChipsDemo from "@/components/demos/suggestion-chips-demo";
+import SummaryCardDemo from "@/components/demos/summary-card-demo";
 import TaskTrayDemo from "@/components/demos/task-tray-demo";
 import TemplateDetailDemo from "@/components/demos/template-detail-demo";
 import ThreadListDemo from "@/components/demos/thread-list-demo";
@@ -121,6 +127,7 @@ import TrustDialogDemo from "@/components/demos/trust-dialog-demo";
 import TtsComposerDemo from "@/components/demos/tts-composer-demo";
 import UsageDashboardDemo from "@/components/demos/usage-dashboard-demo";
 import VoiceCloneRecorderDemo from "@/components/demos/voice-clone-recorder-demo";
+import VoiceProfileDemo from "@/components/demos/voice-profile-demo";
 import WaveformEditorDemo from "@/components/demos/waveform-editor-demo";
 import WhatsNewDemo from "@/components/demos/whats-new-demo";
 import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
@@ -128,6 +135,7 @@ import WorkspaceSwitcherDemo from "@/components/demos/workspace-switcher-demo";
 export const demos: Record<string, ComponentType> = {
   "account-menu": AccountMenuDemo,
   "action-stack": ActionStackDemo,
+  "agent-presence": AgentPresenceDemo,
   "ai-doc-block": AiDocBlockDemo,
   "ai-label": AiLabelDemo,
   "ai-tools-menu": AiToolsMenuDemo,
@@ -140,6 +148,7 @@ export const demos: Record<string, ComponentType> = {
   "asset-detail": AssetDetailDemo,
   "asset-library": AssetLibraryDemo,
   "auth-shell": AuthShellDemo,
+  "auto-fill": AutoFillDemo,
   "autonomy-selector": AutonomySelectorDemo,
   "book-cover": BookCoverDemo,
   "browser-frame": BrowserFrameDemo,
@@ -189,6 +198,7 @@ export const demos: Record<string, ComponentType> = {
   "library-shell": LibraryShellDemo,
   "media-prompt-bar": MediaPromptBarDemo,
   "member-gate-row": MemberGateRowDemo,
+  "memory-manager": MemoryManagerDemo,
   "modality-rail": ModalityRailDemo,
   "mode-tabs": ModeTabsDemo,
   "model-picker": ModelPickerDemo,
@@ -202,6 +212,8 @@ export const demos: Record<string, ComponentType> = {
   "pricing-table": PricingTableDemo,
   "private-session-notice": PrivateSessionNoticeDemo,
   "promo-card": PromoCardDemo,
+  "prompt-enhancer": PromptEnhancerDemo,
+  "prompt-template-form": PromptTemplateFormDemo,
   "property-inspector": PropertyInspectorDemo,
   "quota-meter": QuotaMeterDemo,
   "quote-reply": QuoteReplyDemo,
@@ -231,6 +243,7 @@ export const demos: Record<string, ComponentType> = {
   "stem-mixer": StemMixerDemo,
   "studio-shell": StudioShellDemo,
   "suggestion-chips": SuggestionChipsDemo,
+  "summary-card": SummaryCardDemo,
   "task-tray": TaskTrayDemo,
   "template-detail": TemplateDetailDemo,
   "thread-list": ThreadListDemo,
@@ -246,6 +259,7 @@ export const demos: Record<string, ComponentType> = {
   "tts-composer": TtsComposerDemo,
   "usage-dashboard": UsageDashboardDemo,
   "voice-clone-recorder": VoiceCloneRecorderDemo,
+  "voice-profile": VoiceProfileDemo,
   "waveform-editor": WaveformEditorDemo,
   "whats-new": WhatsNewDemo,
   "workspace-switcher": WorkspaceSwitcherDemo,

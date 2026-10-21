@@ -26,16 +26,19 @@ Not yet recorded.
 - Give Cancel a visible seat right next to the busy trigger the moment a run starts.
 - Spell out the shortfall in numbers when credits are short — "Need 6, you have 2", not a silently disabled button.
 - Swap the locked CTA in for the trigger itself, in the same spot — the same answer hero-omnibox gives for its own locked state.
+- Turn on `draft` when the run is the cheaper, lower-quality one. The label reads "Generate draft" and `finalCost` adds the delta to a final run, so the click is never mistaken for the real one.
 
 ## Don't
 
 - Don't just grey out the trigger when credits are short — a disabled button with no numbers gives the user nothing to act on.
 - Don't gate the feature with a separate banner next to a trigger that still looks live — now two places can disagree about whether the action is locked.
+- Don't run a draft under the plain label with the draft price alone. Users then believe they are paying for the final result.
 
 ## Anatomy
 
 - `run-button`: Root wrapper for every state; carries data-state and aria-busy.
 - `run-button-cost`: CostChip (A2), shown alongside the trigger whenever a cost is known.
+- `run-button-final-delta`: With `draft` on and a `finalCost`, a second CostChip beside the cost showing the extra credits a final run would take. Absent otherwise.
 - `run-button-trigger`: The main action: Generate, Generating…, Run again, or Try again.
 - `run-button-progress`: Progress fill drawn inside the trigger while running — never a separate bar.
 - `run-button-cancel`: Always present next to the trigger while running; a generation you can't stop burns trust.
@@ -72,6 +75,7 @@ Not yet recorded.
 
 ## Pitfalls
 
+- Passing `draft` without `finalCost`. The label still says draft, but the delta chip is omitted, so the user sees one price and cannot tell what stepping up would cost. When both costs are numbers the chip shows a signed delta; when either is a pre-formatted string it shows the final price itself.
 - Treating insufficient-credits as a disabled idle button. The point of the state is the number — how much is needed and how much the user has — not just refusing the click.
 - Relabelling the trigger for estimating/running without announcing it. Screen reader users won't pick up a text change on an already-focused button by itself; that's what the sr-only status region and aria-busy are for.
 - Recomputing the cost locally instead of passing through the same number the estimate (A2 cost-chip) and any parent generation panel already agreed on — two different prices for the same action is the exact failure mode the spec calls out.
@@ -79,7 +83,7 @@ Not yet recorded.
 
 ## Composition
 
-- States: `idle`, `estimating`, `running`, `done`, `failed`, `insufficient-credits`, `locked`
+- States: `idle`, `estimating`, `running`, `done`, `failed`, `insufficient-credits`, `locked`, `draft`
 - Composes from this registry: cost-chip
 - shadcn primitives: button, button-group, progress
 - npm: lucide-react

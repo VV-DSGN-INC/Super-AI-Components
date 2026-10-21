@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { ReferenceStrip, type ReferenceStripItem } from "./reference-strip";
+import { ReferenceStrip, type ReferenceDescription, type ReferenceStripItem } from "./reference-strip";
 
 describe("ReferenceStrip", () => {
   it("renders the empty state", async () => {
@@ -85,5 +85,115 @@ describe("ReferenceStrip", () => {
   it("passes className through", () => {
     render(<ReferenceStrip className="test-class" />);
     expect(document.querySelector('[data-slot="reference-strip"]')!.className).toContain("test-class");
+  });
+
+  describe("describe", () => {
+    const items: ReferenceStripItem[] = [
+      {
+        id: "first",
+        role: "first-frame",
+        thumbnail: { src: "/refs/first.png", alt: "First frame of the shot" },
+      },
+      { id: "last", role: "last-frame" },
+      { id: "up", role: "reference", state: "loading", thumbnail: { src: "/refs/up.png", alt: "Uploading" } },
+    ];
+
+    it("never offers Describe without an onDescribe handler", () => {
+      render(<ReferenceStrip items={items} onUseDescription={vi.fn()} />);
+      expect(screen.queryByRole("button", { name: /describe/i })).not.toBeInTheDocument();
+      expect(document.querySelector('[data-slot^="reference-strip-describe"]')).not.toBeInTheDocument();
+    });
+
+    it("offers Describe on filled, settled slots only", () => {
+      render(
+        <ReferenceStrip
+          items={items}
+          onDescribe={vi.fn(() => new Promise<ReferenceDescription>(() => {}))}
+        />,
+      );
+      // One filled slot; the empty and the loading slots offer nothing.
+      expect(screen.getAllByRole("button", { name: /^describe/i })).toHaveLength(1);
+      expect(screen.getByRole("button", { name: "Describe First frame" })).toBeInTheDocument();
+    });
+
+    it("shows exact values first, then caps inferred prompts at four", async () => {
+      const onDescribe = vi.fn().mockResolvedValue({
+        exact: {
+          prompt: "A lighthouse at dusk",
+          params: [
+            { label: "Seed", value: "48213" },
+            { label: "Sampler", value: "euler a" },
+          ],
+        },
+        inferred: ["one", "two", "three", "four", "five", "six"],
+      } satisfies ReferenceDescription);
+      render(<ReferenceStrip items={items} onDescribe={onDescribe} />);
+
+      await userEvent.click(screen.getByRole("button", { name: "Describe First frame" }));
+      expect(onDescribe).toHaveBeenCalledWith(items[0]);
+
+      const exact = await waitFor(() => {
+        const el = document.querySelector('[data-slot="reference-strip-describe-exact"]');
+        expect(el).toBeInTheDocument();
+        return el!;
+      });
+      const inferred = document.querySelector('[data-slot="reference-strip-describe-inferred"]')!;
+      expect(exact.compareDocumentPosition(inferred) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(exact).toHaveTextContent("A lighthouse at dusk");
+      expect(exact.querySelector('[data-slot="stat-readout"]')).toHaveTextContent("48213");
+
+      expect(inferred.querySelectorAll("li")).toHaveLength(4);
+      expect(inferred).not.toHaveTextContent("five");
+      expect(inferred).not.toHaveTextContent("six");
+    });
+
+    it("hands the chosen text to onUseDescription and closes", async () => {
+      const onUseDescription = vi.fn();
+      render(
+        <ReferenceStrip
+          items={items}
+          onDescribe={vi.fn().mockResolvedValue({ inferred: ["Foggy harbour, 35mm film"] })}
+          onUseDescription={onUseDescription}
+        />,
+      );
+      await userEvent.click(screen.getByRole("button", { name: "Describe First frame" }));
+      await userEvent.click(
+        await screen.findByRole("button", { name: "Use prompt: Foggy harbour, 35mm film" }),
+      );
+      expect(onUseDescription).toHaveBeenCalledExactlyOnceWith("Foggy harbour, 35mm film");
+      await waitFor(() =>
+        expect(
+          document.querySelector('[data-slot="reference-strip-describe-panel"]'),
+        ).not.toBeInTheDocument(),
+      );
+    });
+
+    it("announces pending politely and ignores a result after cancel", async () => {
+      let resolve!: (value: ReferenceDescription) => void;
+      const onDescribe = vi.fn(() => new Promise<ReferenceDescription>((r) => (resolve = r)));
+      render(<ReferenceStrip items={items} onDescribe={onDescribe} />);
+
+      await userEvent.click(screen.getByRole("button", { name: "Describe First frame" }));
+      expect(screen.getByRole("status")).toHaveTextContent("Describing First frame");
+      expect(await screen.findByText("Describing this reference…")).toBeInTheDocument();
+
+      await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+      resolve({ inferred: ["late result"] });
+      await Promise.resolve();
+      expect(screen.queryByText("late result")).not.toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    });
+
+    it("says the reference could not be described when onDescribe rejects", async () => {
+      const onDescribe = vi.fn().mockRejectedValue(new Error("no metadata"));
+      render(<ReferenceStrip items={items} onDescribe={onDescribe} />);
+      await userEvent.click(screen.getByRole("button", { name: "Describe First frame" }));
+      expect(await screen.findByText("This reference could not be described.")).toBeInTheDocument();
+      expect(screen.getByRole("status")).toHaveTextContent("First frame could not be described");
+
+      onDescribe.mockResolvedValueOnce({ inferred: ["retry worked"] });
+      await userEvent.click(screen.getByRole("button", { name: "Try again" }));
+      expect(await screen.findByText("retry worked")).toBeInTheDocument();
+    });
   });
 });

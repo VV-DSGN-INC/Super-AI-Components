@@ -16,7 +16,7 @@ Requires a shadcn app on Base UI (style base-nova). Radix-based styles such as n
 npx shadcn@latest add https://super-ai-components.vercel.app/r/thread-list.json
 ```
 
-**The catalog is complete: 123 of 123 items shipped**, across families A–Q: primitives, chrome,
+**The catalog is complete: 130 of 130 items shipped**, across families A–Q: primitives, chrome,
 composers, generation, results, timeline, tools, library, documents, guidance, account, trust,
 observability, thirteen page-level blocks, family P's data view and detail-view shell, and two presentational chrome items (family Q, from Geist). Eleven further items are cut on the
 record (family G and O5, per D9) and are not coming back. Plus four `registry:lib` contracts.
