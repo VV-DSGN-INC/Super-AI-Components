@@ -392,8 +392,11 @@ for n in <names>; do
 done
 
 # 2. Set shadcn / consumes / npm from that output, flip status to "shipped".
-# 3. Regenerate wiring and run every gate.
+# 3. Regenerate wiring, re-emit the derived files, and run every gate.
 pnpm gen:wiring
+pnpm contract:emit
+pnpm facts:emit
+pnpm openui:emit   # public/openui/catalog.json goes stale when the catalog changes, and `pnpm test` fails on it
 pnpm check:contract
 cd ../.. && pnpm typecheck && pnpm lint && pnpm check:tokens && pnpm test && pnpm build
 cd apps/storybook && rm -rf node_modules/.cache/storybook && pnpm test:stories
@@ -522,11 +525,15 @@ composing Base UI directly is sometimes correct — say so when you do.
 session's stash. Use `git show HEAD:path > /tmp/copy` instead. Agents are told
 never to run git write commands at all.
 
-**Vercel project linking.** A fresh worktree has no `.vercel`, and
-`vercel deploy` will silently create a _new_ project. Ensure
-`apps/docs/.vercel/project.json` contains:
-`{"projectId":"prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy","orgId":"team_a028ZfIo8cWgn1t63MHMUVfw"}`.
-A stray project named `docs` exists from this mistake and can be deleted.
+**Vercel project linking.** With the project's root directory set to
+`apps/docs`, `vercel deploy` from `apps/docs` fails with a doubled path, and
+from the repo root it uploads the local `.claude/worktrees` folders (about
+31,000 files, over the 15,000 limit) and has no `.vercel` link. Deploy from a
+clean checkout instead, naming the project by environment variable, so no link
+file is needed and no new project gets created (§7):
+`VERCEL_ORG_ID=team_a028ZfIo8cWgn1t63MHMUVfw VERCEL_PROJECT_ID=prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy vercel deploy --yes`.
+A stray project named `docs` exists from the old link-in-`apps/docs` mistake and
+can be deleted.
 
 **`react/no-unescaped-entities` is an error here, not a warning.** Guidance prose
 quotes things; every literal `'`/`"` in JSX text must be escaped. Broke the lint
@@ -891,10 +898,19 @@ unless everything is identical, so it doubles as the post-deploy check.
 `PROD_URL=<preview url>` points it at a preview. The rules are in
 `scripts/lib/prod-diff.ts` and unit-tested; `--report-only` always exits 0.
 
-Deploys are manual, from `apps/docs`, with the `weeeha` GitHub account:
-`vercel --prod`. The Vercel project is `super-ai-components`, root directory
-`apps/docs`, and `.vercel/project.json` must already name it (§4, "Vercel project
-linking") or the CLI creates a new project.
+Deploys are manual, with the `weeeha` GitHub account. The Vercel project is
+`super-ai-components` with root directory `apps/docs`, so deploy from the root
+of a clean checkout, not from `apps/docs` (doubled path) and not from a working
+checkout (it uploads `.claude/worktrees`, over the file limit):
+
+```bash
+git worktree add --detach ../deploy-tmp <commit>
+cd ../deploy-tmp
+VERCEL_ORG_ID=team_a028ZfIo8cWgn1t63MHMUVfw VERCEL_PROJECT_ID=prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy vercel deploy --yes   # add --prod for production
+```
+
+The two IDs stand in for a `.vercel` link, which a fresh checkout lacks (§4,
+"Vercel project linking").
 
 Last measurement, 2026-09-20, against `main` at `530ebba`. The registry items
 compared are byte-identical to `main`'s; the `llms*.txt` corpus compared is this
