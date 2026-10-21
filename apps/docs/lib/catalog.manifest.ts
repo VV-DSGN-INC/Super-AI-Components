@@ -1229,7 +1229,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["text", "image", "shape", "media", "overflow"],
     specAnchor: "component-specs.md#i3-context-toolbar",
-    patterns: ["identifiers/iconography", "inputs/inline-action", "wayfinders/nudges"],
+    patterns: ["inputs/inline-action", "wayfinders/nudges"],
   },
   {
     id: "I4",
@@ -1395,7 +1395,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["streaming", "editable", "re-promptable", "approval-verbs"],
     specAnchor: "component-specs.md#k1-ai-doc-block",
-    patterns: ["identifiers/iconography", "inputs/regenerate", "trust-builders/disclosure"],
+    patterns: ["inputs/regenerate", "trust-builders/disclosure"],
   },
   {
     id: "K2",

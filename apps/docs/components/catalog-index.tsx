@@ -71,7 +71,16 @@ export function CatalogIndex({ families }: { families: CatalogFamily[] }) {
         </p>
       </div>
 
-      {visible.length === 0 ? (
+      {category === "identifiers" ? (
+        <p data-slot="category-note" className="rounded-md border px-3 py-2 text-sm">
+          Identifiers are brand decisions the consuming product makes, so this registry ships no component for
+          them. It has no AI colour on purpose (anti-slop.md bans the purple gradient) and no named persona
+          (D22 keeps the registry voice-neutral). The one shared rule is a single glyph for AI actions, owned
+          by <code className="text-xs">ai-label</code>.
+        </p>
+      ) : null}
+
+      {visible.length === 0 && category !== "identifiers" ? (
         <p data-slot="catalog-empty" className="text-muted-foreground text-sm">
           Nothing matches. Try a shorter word.
         </p>

@@ -578,6 +578,10 @@ Only mappings the audit states are filled, for Covered and Partial rows. State
 rows (Randomize, Describe, Draft mode, Saved styles) are not mapped, because
 the pattern lands on an item only once the state ships.
 
+Identifiers (Avatar, Color, Name, Personality) are brand decisions with no
+catalog item, so selecting that category on the index shows a note instead of
+an empty list. Iconography maps to `ai-label` once that component lands.
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is
