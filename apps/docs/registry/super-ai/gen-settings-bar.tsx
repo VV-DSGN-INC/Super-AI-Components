@@ -67,4 +67,53 @@ function GenSettingsItem({ className, disabled, ...props }: React.ComponentProps
   );
 }
 
-export { GenSettingsBar, GenSettingsItem };
+type GenQuality = "draft" | "final";
+
+interface GenSettingsQualityProps extends Omit<React.ComponentProps<"div">, "onChange"> {
+  /** Current quality. The segment renders only when this and `onQualityChange` are both passed. */
+  quality?: GenQuality;
+  /**
+   * Fired with the quality the user picked. This is the same path every other
+   * segment reports through: the host updates its settings and re-estimates
+   * cost, so a quality change is never a silent price change.
+   */
+  onQualityChange?: (quality: GenQuality) => void;
+}
+
+/**
+ * Draft / final quality segment (D28). Two toggle items in one Toolbar group,
+ * built from `GenSettingsItem` like every other segment, so the bar stays one
+ * tab stop and `disabled` on the bar still locks it. Draft is named as lower
+ * quality in text rather than only as cheaper.
+ */
+function GenSettingsQuality({ quality, onQualityChange, className, ...props }: GenSettingsQualityProps) {
+  if (quality === undefined || onQualityChange === undefined) return null;
+  return (
+    <Toolbar.Group
+      data-slot="gen-settings-quality"
+      aria-label="Quality"
+      className={cn("inline-flex items-center gap-0.5", className)}
+      {...props}
+    >
+      <GenSettingsItem
+        data-slot="gen-settings-quality-draft"
+        aria-pressed={quality === "draft"}
+        className={cn(quality === "draft" && "bg-accent text-accent-foreground")}
+        onClick={() => onQualityChange("draft")}
+      >
+        Draft, lower quality
+      </GenSettingsItem>
+      <GenSettingsItem
+        data-slot="gen-settings-quality-final"
+        aria-pressed={quality === "final"}
+        className={cn(quality === "final" && "bg-accent text-accent-foreground")}
+        onClick={() => onQualityChange("final")}
+      >
+        Final
+      </GenSettingsItem>
+    </Toolbar.Group>
+  );
+}
+
+export { GenSettingsBar, GenSettingsItem, GenSettingsQuality };
+export type { GenQuality, GenSettingsQualityProps };
