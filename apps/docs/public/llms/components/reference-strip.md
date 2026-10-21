@@ -10,7 +10,7 @@ Freepik, Runway, ElevenLabs and CapCut all place typed references above the prom
 
 ## When to reach for it
 
-Reach for it whenever a composer or node accepts more than one typed image input — plain references, or a mix of first frame / last frame / video ref / character. Pass a flat `items` array; give every item a `role` to turn on role labels for the whole strip, or leave `role` off entirely for a plain multi-reference set. Omit `thumbnail` on any item to render that slot as an empty, attachable placeholder rather than leaving it out of the array — that's how a mode advertises a typed slot ('last frame') it accepts but the user hasn't filled yet.
+Reach for it whenever a composer or node accepts more than one typed image input — plain references, or a mix of first frame / last frame / video ref / character. Pass a flat `items` array; give every item a `role` to turn on role labels for the whole strip, or leave `role` off entirely for a plain multi-reference set. Pass `onDescribe` when the host can say what is behind a reference: it receives the slot and resolves to `{ exact?: { prompt?, params? }, inferred? }`, and each chosen prompt comes back through `onUseDescription(text)`. Omit `thumbnail` on any item to render that slot as an empty, attachable placeholder rather than leaving it out of the array — that's how a mode advertises a typed slot ('last frame') it accepts but the user hasn't filled yet.
 
 ## Variants
 
@@ -25,6 +25,7 @@ Not yet recorded.
 - Give every typed slot a real text role label, shown below the tile, not just an icon or a colour dot.
 - Keep an unfilled typed slot in the strip as an empty, addable placeholder instead of leaving it out of the data.
 - Wire onRemove per item so a reference is a single, undoable action — never a destructive click on the thumbnail itself.
+- Pass onDescribe only when your product can really expose a prompt, and list in `params` only values that change reproduction, such as model, seed and sampler.
 
 ## Don't
 
@@ -40,6 +41,10 @@ Not yet recorded.
 - `reference-strip-role`: The role's own visible text label — never colour- or icon-only.
 - `reference-strip-remove`: Per-slot remove control, in the preview-tile's badge corner.
 - `reference-strip-move`: Per-slot reorder controls; disabled at each end of the strip.
+- `reference-strip-describe`: Per-slot Describe action and its status region. Rendered only on a settled, filled slot, and only when `onDescribe` is passed.
+- `reference-strip-describe-trigger`: The Describe button; its accessible name carries the slot's role, for example `Describe First frame`.
+- `reference-strip-describe-panel`: The popover holding the pending, failed or result view. Extracted values come first, then at most four inferred prompts, each with a Use button (`reference-strip-describe-use`).
+- `reference-strip-describe-status`: Visually hidden `role="status"` text that announces pending and failed politely.
 - `reference-strip-previous`: Visible "scroll left" affordance; also keeps the strip keyboard-reachable.
 - `reference-strip-next`: Visible "scroll right" affordance.
 
@@ -62,6 +67,7 @@ Not yet recorded.
 - `thumbnail.alt` is the image's accessible name and the only thing separating two filled slots that share a role. That is why it is required rather than optional.
 - `state="failed"` replaces the image with the words "Couldn't load" inside the frame — words, not colour — but it is not a live region, so a slot that fails after upload announces nothing. `state="loading"` announces nothing either: the skeleton is a plain `<div>` with no busy state on it.
 - An empty slot announces as a toggle button that is not pressed, named "Add" or by its role label. `preview-tile` puts `aria-pressed` on any interactive frame, and attaching a reference is not a toggle.
+- Describe announces through a visually hidden `role="status"` region that stays mounted: pending reads `Describing First frame` and a rejection reads `First frame could not be described`. The finished result is not announced; it appears in the popover the user already opened. The trigger is named `Describe <role>` and each option button `Use prompt: <text>`, so a long inferred prompt makes a long button name.
 - Nothing announces a reorder. After Move right the DOM order changes silently, and the user has to re-read the strip to find where the item went.
 
 **Focus**
@@ -69,6 +75,7 @@ Not yet recorded.
 - Reordering to either end disables the button that was just pressed — the last Move right on the last slot, the first Move left on the first — and a focused element that becomes disabled is blurred, so focus drops to `<body>`. Move focus to the sibling move button inside your `onMove`.
 - Removing a slot unmounts its remove button, and removing the last one replaces the whole Carousel with the empty panel. Focus falls to `<body>` in both cases.
 - Previous and Next scroll the strip without moving focus, so the focused slot and the visible slots can disagree — a Tab through the strip will reach slots that are scrolled off screen.
+- Describe adds one tab stop per filled, settled slot, and only when `onDescribe` is passed. It opens a popover: focus moves into it, Escape closes it and returns focus to the button. A pending describe is cancelled by Escape or by the Cancel button, and a result that arrives afterwards is dropped.
 - Every button here is the shared `Button` and carries its focus ring; an empty slot's tile uses `preview-tile`'s own `focus-visible:ring-2` instead.
 
 ## Pitfalls
@@ -76,10 +83,12 @@ Not yet recorded.
 - Removing the first frame and letting the next reference silently be promoted into that role — remove is per-slot and must never re-derive a different item's role as a side effect (D2).
 - Hand-rolling a scrolling row with overflow-x-auto instead of the Carousel base — that loses the visible next affordance and the keyboard-reachable region, and axe's scrollable-region-focusable rule has already caught this exact class of bug once in this repo.
 - Forgetting `thumbnail.alt` is required, not optional — these are the only informational images in the strip, so a missing or decorative-sounding alt ("reference") leaves screen reader users unable to tell slots apart.
+- Showing Describe on a host that cannot produce a description. The action renders only when `onDescribe` is passed, so a product that cannot expose prompts should omit it rather than ship a button that always fails.
+- Passing every metadata field as a parameter. `params` is for values that change reproduction, such as model, seed and sampler. File size and dimensions bury the seed in the readout.
 
 ## Composition
 
-- States: `empty`, `filled`, `with-roles`
+- States: `empty`, `filled`, `with-roles`, `describe`
 - Composes from this registry: preview-tile
 - shadcn primitives: button, carousel
 - npm: lucide-react, embla-carousel-react
