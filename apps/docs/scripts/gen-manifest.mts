@@ -57,6 +57,7 @@ const WAVE_BY_FAMILY: Record<FamilyId, number> = {
   // shipment rather than implying a place in the original order.
   P: 8,
   Q: 13,
+  R: 14,
 };
 
 /**

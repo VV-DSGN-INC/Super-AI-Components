@@ -557,6 +557,45 @@ The one thing a gate cannot tell from oversight is silence, which is why the
 scaffolder seeds both fields with a nine-character reason: a new component is
 red until someone writes the judgment.
 
+### D27 · Designing Bots and the LifeOS content system are a fifth source, and channel renderers get family R - 2026-10-20
+
+Amir Shevat's _Designing Bots_ (chapter 9 on rich interactions, chapter 20 on future trends) and
+Nick's LifeOS content system supply the argument for three components: `channel-message`,
+`message-log` and `check-report`. The book pairs Slack attachments with Messenger templates for
+the same content and says "write once, run everywhere" runs at low quality; the content system
+turns that into a rule, one message made of a kind and a few slots, drawn in the shape of each
+channel it is sent on. The registry has nothing that says so. Chat shells and message components
+draw one surface.
+
+What this adds is a channel as a prop. `channel-message` takes the message and a `channel` of
+`app`, `push`, `chat`, `email` or `phone`, and renders five shapes from one component. `message-log`
+lists what happened to the message in sentences. `check-report` lists the output checks' verdict
+per rule and states the fallback.
+
+**Family letter.** R, the next free letter after Q. `gaps.md` also uses R-numbers (R1 to R7, restore
+items); the two are different namespaces in different files, the same split D20 recorded for the
+open questions Q1 to Q6 against family Q. `component-specs.md` and `catalog.md` carry the family;
+`gaps.md` carries the restore items. No rename: the family letter is forced.
+
+**Evidence, and where it falls short.** The products named for `channel-message` were checked
+against their own documentation on 2026-10-20: Courier, Novu, Knock and Braze show a preview per
+channel of one message. That meets D1's three but not the five this batch's plan asked for, and it
+is reported rather than padded. OneSignal, Customer.io, Iterable and Twilio Content Templates were
+checked and not cited. `message-log` and `check-report` have no product count of their own; they
+are the other two parts of the same message and are admitted with R1 on the source. If that is too
+generous for D1, they are the two to demote to a docs-site pattern, and Nick's merge is where that
+gets decided.
+
+**Rejected.** Five separate components, one per channel: they drift, and the point of the family
+is that one message is shown five ways. Folding into family N: its contents are oversight and
+trust builders (D26, PR 107, not yet merged when this was written), and a channel renderer is
+neither. Folding `check-report` into `message-log` as a row type: the report is read per rule at
+one moment, the log per event over time, and a row type would make each carry the other's shape.
+
+**What this does not settle.** Whether the registry wants a notification-and-channel family at all
+if the source stays a single book. The three items carry no AI-interface semantics of their own
+beyond a bot's message; their docs pages say so.
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is

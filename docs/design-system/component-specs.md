@@ -1557,3 +1557,93 @@ cover for a bounded body of knowledge — a docs set, a template pack, a source 
 library can distinguish what you read from what you generated. It carries **no AI-interface
 semantics**, and its docs page says so plainly rather than dressing it up. No reference-board
 sighting; see D20.
+
+---
+
+# R · Channel renderers (Designing Bots)
+
+## R1 `channel-message` `NEW`
+
+**Base:** Card, Badge, Button · **States:** pending · sent · answered · withdrawn · expired · failed-check · not-routed
+
+- **One message, five shapes, chosen by a prop.** `channel` is `app`, `push`, `chat`, `email` or
+  `phone`; the message (`kind` plus slots: `from`, `what`, `ask`, `options`, `link`, `expires`,
+  `quiet`, optional `handoff` and `summary`) never changes. Five components would let the five
+  channels drift apart, which is the failure the component exists to make visible.
+- **Caps are per channel and overflow is stated.** Push shows three actions, chat five, email one,
+  the app thread up to five. Options past the cap are not dropped silently: the channel renders
+  "and N more in the app". The app is the record, so the rest are always reachable there.
+- **The push lock screen shows who and what kind, never what.** While `locked` (the default), the
+  card carries `from` and a phrase for `kind` ("has a check-in"), and nothing from `what`. The
+  body and actions appear after unlock. A health or case message on a lock screen is the privacy
+  default, not an option.
+- **The state is always a word.** `pending`, `sent`, `answered`, `withdrawn`, `expired`,
+  `failed-check`, `not-routed` each render as text in the state slot. Colour never carries it
+  alone. `not-routed` names a reason when one is given and still says "Not routed" when it is not.
+- **`answered` replaces the controls with the result.** The options become the chosen value as
+  text, and focus moves to it. A render that keeps the buttons after an answer invites a second
+  tap on a question that is already closed.
+- **No `onAnswer`, no buttons.** Without the callback the options render as inert text. A static
+  page or a screenshot never shows a control that does nothing.
+- **A second recipient gets the summary.** `to: "second"` renders `summary` as the body and omits
+  the ask, the options and the handoff line: status and next step, no detail.
+- **Trust, type size and pace each have one visible effect.** `trust` is a line the channel always
+  carries; `typeSize: "large"` switches the render to the larger type scale; `pace: "slow"` on the
+  phone script states the key fact twice.
+- **Text always survives.** Every shape carries the full message as text even where it also shows
+  controls, so a client that cannot draw the controls still delivers the message.
+
+**Evidence:** Designing Bots, chapter 9, pairs Slack message attachments with Messenger templates
+for the same content and notes that they render differently; chapter 20 names "write once, run
+everywhere" as the low-quality option and "separate logic from presentation and tune per platform"
+as the better one. Product precedent for previewing one message per channel, checked against each
+vendor's own documentation: Courier (one template holds every channel, and its preview renders
+every channel variant with test data), Novu (notification preview on every channel's template
+editor), Knock (a live-preview pane on each channel step's template, named for email only) and
+Braze (composer preview for email, in-app messages, content cards and banners; push and SMS are
+test-send only). OneSignal, Customer.io, Iterable and Twilio Content Templates were checked and
+not cited: their public documentation did not show a per-channel preview of one message. Four
+products meet D1's three; the plan's five is not reached and is not padded. See D27.
+
+## R2 `message-log` `NEW`
+
+**Base:** none, a list · **States:** empty · populated
+
+- **One sentence per event, in words.** "Sent on chat, written live", "Skipped push: quiet hours
+  until 08:00", "Answered on chat: Read it". A reader checking what the system did reads the log
+  without a legend, which is why the rows are sentences and not event codes.
+- **Append-only, in the order it happened.** The component renders the events it is given and
+  never sorts, groups or edits them. Time is relative to the first event ("+4 min") because the
+  question the log answers is how long each step took, not what the wall clock said.
+- **A skip names its channel and its reason.** `message.skipped` without a reason is a log that
+  explains nothing. The reason is part of the same sentence.
+- **An empty log says so.** "Nothing sent yet" by default, replaceable through `emptyText`. A blank
+  list reads as a failure to load.
+- **An answer on one channel is followed by withdrawals on the rest.** The log shows both as rows;
+  the component does not infer the second from the first.
+
+**Evidence:** Designing Bots, chapters 17 and 19: scripts are mockups and the transcript is how a
+bot is judged. The log is the transcript of one message. No product count is claimed for this
+item; it rests on the book and the LifeOS content system's message log, and shares the family
+decision. See D27.
+
+## R3 `check-report` `NEW`
+
+**Base:** Badge · **States:** all-pass · some-fail
+
+- **Every rule is listed, pass or fail.** Eight rules in a fixed order: kind on the list, slots
+  filled, one ask, no number in the ask, fits the channel, glossary words, no guilt, readability.
+  A report that lists only failures cannot show that the others ran.
+- **The verdict is a word.** "pass" or "fail" beside the rule, with the detail. A badge colour
+  alone is never the verdict.
+- **A failed check is never a dead end.** When `fallback` is set the report says "Sent the template
+  instead", because a message that fails a check falls back to the code-rendered template of the
+  same kind on the same channel and is never sent as written (chapter 8: never leave the user at a
+  dead end).
+- **It reports, it does not run.** The component takes results; evaluating the rules belongs to
+  the caller. The same report renders from any rule set that fits the shape.
+
+**Evidence:** Designing Bots, chapter 8 on error handling and fallback, and the LifeOS content
+system's output checks. The rule list is this project's, not an industry standard. Product
+precedent for a per-rule verdict list is thin in the notification products named under R1, so this
+entry rests on the book and the content system, and says so. See D27.

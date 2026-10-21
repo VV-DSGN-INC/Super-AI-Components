@@ -22,7 +22,13 @@ export type FamilyId =
   // evidence A–O rests on, and folding it into F or K would quietly claim it
   // did. Sorting past N also leaves check-contract's B–N subtotal untouched.
   // See D20.
-  | "Q";
+  | "Q"
+  // R is the first family from a fourth source — Designing Bots and the LifeOS
+  // content system — and holds the channel renderers: one message drawn in the
+  // shape of each channel it is sent on. Kept apart from N (oversight and trust
+  // builders) for the reason D27 gives. This letter is not gaps.md's R-numbers,
+  // which number restore items.
+  | "R";
 
 export type ManifestStatus = "planned" | "building" | "shipped" | "cut";
 

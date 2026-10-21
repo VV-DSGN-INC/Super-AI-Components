@@ -9,8 +9,9 @@ describe("MANIFEST", () => {
     // (107 + family G/O5 = 118 before PR #14 / D14-D17 added 7 rows: D7
     // `slot-summary`, K7 `answer-block`, K8 `source-cards`, N9
     // `autonomy-selector`, N10 `safety-block`, N11 `escalation-handoff`, N12
-    // `task-tray`. D18 then added family P's two items, and D20 family Q's.)
-    expect(MANIFEST).toHaveLength(129);
+    // `task-tray`. D18 then added family P's two items, D20 family Q's and D27
+    // family R's three.)
+    expect(MANIFEST).toHaveLength(132);
   });
 
   it("holds the A–O freeze at 114 while later families grow separately", () => {
@@ -30,7 +31,8 @@ describe("MANIFEST", () => {
     expect(active.filter((i) => i.family <= "O")).toHaveLength(114);
     expect(active.filter((i) => i.family === "P")).toHaveLength(2);
     expect(active.filter((i) => i.family === "Q")).toHaveLength(2);
-    expect(active).toHaveLength(118);
+    expect(active.filter((i) => i.family === "R")).toHaveLength(3);
+    expect(active).toHaveLength(121);
   });
 
   // The 14 components that shipped before Wave 1.5. They were exempt from the
