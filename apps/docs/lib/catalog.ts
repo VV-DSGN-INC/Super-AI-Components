@@ -1,5 +1,11 @@
 import { MANIFEST } from "./catalog.manifest";
-import type { FamilyId, ManifestItem } from "./manifest-types";
+import {
+  SHAPE_OF_AI_CATEGORY_TITLES,
+  type FamilyId,
+  type ManifestItem,
+  type ShapeOfAiCategory,
+  type ShapeOfAiPattern,
+} from "./manifest-types";
 
 export interface CatalogItem {
   id: string;
@@ -8,6 +14,8 @@ export interface CatalogItem {
   description: string;
   family: FamilyId;
   group: "Primitives" | "Components" | "Blocks";
+  /** Shape of AI cross-reference (D29); empty when the audit maps nothing. */
+  patterns: ShapeOfAiPattern[];
 }
 
 export const ORDER = { primitive: 0, component: 1, block: 2 } as const;
@@ -24,6 +32,7 @@ export const CATALOG_ITEMS: CatalogItem[] = MANIFEST.filter((i) => i.status === 
     description: i.description,
     family: i.family,
     group: groupFor(i.layer),
+    patterns: i.patterns ?? [],
   }));
 
 export const CATALOG = CATALOG_ITEMS.map((i) => i.name);
@@ -62,7 +71,7 @@ const FAMILY_ORDER = Object.keys(FAMILY_TITLES) as FamilyId[];
 export interface CatalogFamily {
   family: string;
   title: string;
-  items: Pick<CatalogItem, "name" | "title" | "description">[];
+  items: (Pick<CatalogItem, "name" | "title" | "description"> & { patterns?: ShapeOfAiPattern[] })[];
 }
 
 /** Shipped items grouped by family in catalog order. Cut families (G) have no
@@ -70,9 +79,23 @@ export interface CatalogFamily {
 export const CATALOG_BY_FAMILY: CatalogFamily[] = FAMILY_ORDER.map((family) => ({
   family,
   title: FAMILY_TITLES[family],
-  items: CATALOG_ITEMS.filter((i) => i.family === family).map(({ name, title, description }) => ({
+  items: CATALOG_ITEMS.filter((i) => i.family === family).map(({ name, title, description, patterns }) => ({
     name,
     title,
     description,
+    patterns,
   })),
 })).filter((f) => f.items.length > 0);
+
+/** Splits `trust-builders/caveat` into the category key and its readable
+ *  parts: "Trust builders" and "Caveat". The category prefix is a union member
+ *  by construction (ShapeOfAiPattern), so the cast is safe. */
+export const describePattern = (pattern: ShapeOfAiPattern) => {
+  const [category, slug] = pattern.split("/") as [ShapeOfAiCategory, string];
+  const words = slug.replace(/-/g, " ");
+  return {
+    category,
+    categoryTitle: SHAPE_OF_AI_CATEGORY_TITLES[category],
+    label: words.charAt(0).toUpperCase() + words.slice(1),
+  };
+};
