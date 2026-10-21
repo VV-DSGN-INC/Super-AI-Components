@@ -128,7 +128,9 @@ describe("MANIFEST patterns (Shape of AI cross-reference, D29)", () => {
   });
 
   it("maps every Shape of AI pattern that can be a component to at least one shipped item", () => {
-    const mapped = new Set(MANIFEST.filter((i) => i.status === "shipped").flatMap((i) => i.patterns ?? []));
+    const mapped = new Set<string>(
+      MANIFEST.filter((i) => i.status === "shipped").flatMap((i) => i.patterns ?? []),
+    );
     const unmapped = [...VOCABULARY].filter((p) => !NOT_COMPONENTS.has(p) && !mapped.has(p));
     expect(unmapped).toEqual([]);
     expect(VOCABULARY.size - NOT_COMPONENTS.size).toBe(53);
