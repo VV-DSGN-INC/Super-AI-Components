@@ -169,19 +169,44 @@ Wave 2 needs a gateway credential on the docs project and Nick's go before it de
 
 ## 5. Phase 2: `chat-shell` answers in parts
 
-O2 `chat-shell` gains a path where a message is a `GeneratedChatMessage` rendered by
-`ReplyParts`, beside today's string path, which stays for existing consumers. Its demo and
-stories move to a scripted conversation. The block's `Regions:` line gains nothing new: cards,
-widgets and questions render inside the existing message stream. Spec'd in detail once phase 1
-lands, because its shape depends on what the demo page teaches.
+Approved as drafted (Nick, 2026-10-20). The phase 1 demo had to build the docked view around O2,
+and the sweep found three O2 gaps around generated replies. Phase 2 moves the docked view into
+the shell and closes those gaps.
+
+- **A `view` region.** `ChatShell` takes `view?: ReactNode`. From `lg` the view is the main area
+  and the stream narrows to 24rem beside it. Below `lg` they stack: the view takes the top 60%, the
+  stream the rest. Opening a view collapses the sidebar to its icon rail; closing it restores whatever
+  the sidebar was. The region list gains `view`.
+- **The rail shows icons only.** B6 `thread-list` rows gain an optional `icon`. Inside a
+  collapsed sidebar a row shows its icon alone, its title kept as the accessible name, and the
+  section labels and row menus hide. The shell gives every thread a default icon and hides its
+  empty state in the rail.
+- **The artifacts region can wait for an artifact.** `artifactsWhenEmpty?: "show" | "hide"`,
+  default `"show"`. Ruling: the draft hid it by default, but O2 recorded "always mounted, so the
+  region is discoverable on day one", and every current consumer relies on that. Opt-in keeps
+  both.
+- **An assistant turn fills the column**, so a reply that is only a card is never shrink-wrapped.
+- **Messages stay `ReactNode`.** A consumer passes `<ReplyParts>` as a turn's content. Ruling: O2
+  takes no dependency on the `generated-chat` lib, so a block never imports a contract it does
+  not need.
+- The demo page moves back onto O2.
 
 ## 6. Phase 3: generated view bodies
 
-`view-frame` gets a body engine that renders OpenUI Lang over the catalog `/openui` already
-emits. A model, or a recorded answer, writes one line per node; the body streams line by line,
-keeps the last version that rendered, and offers Retry when one fails. The catalog decides
-what a model may compose, so a body can only contain surfaces that exist. Overlays and charts
-stay excluded, as `/openui` already rules.
+Approved as drafted (Nick, 2026-10-20).
+
+- **R4 `generated-body`** renders an OpenUI Lang program with the consumer's library. It streams
+  line by line. When the stream ends with parse errors (a component the catalog does not expose,
+  a bad argument), it shows a status alert naming the failure, a Retry button when the caller
+  gives one, and the last version that rendered under it. It reports each finished render as
+  rendered or failed, so the caller can track the last good version. It owns no timers and no
+  versions. npm: `@openuidev/react-lang`.
+- **The demo** gains a generated view. "Show spend by project" builds it. "Add a daily trend"
+  makes a version that uses `Chart`, which the catalog does not expose, so it fails, keeps the
+  last good version and offers Retry. Retry asks for the trend as a table, which renders.
+- **Programs are recorded**, built from the spend records the rest of the page reads. No model
+  is called. The catalog is the one `/openui` already uses, so a body can only contain surfaces
+  that exist; overlays and charts stay excluded.
 
 ## 7. Alternatives considered
 
@@ -239,3 +264,4 @@ stay excluded, as `/openui` already rules.
 ## Changelog
 
 - 2026-10-20: first version, after Nick picked phase 1, then 2 and 3.
+- 2026-10-20: §5 and §6 detailed after Nick approved the phase 2 and 3 draft as drawn.

@@ -97,4 +97,31 @@ describe("ThreadList", () => {
     await userEvent.click(await screen.findByRole("menuitem", { name: "Pin" }));
     expect(h.onTogglePin).toHaveBeenCalledWith("t1");
   });
+
+  it("draws a row's icon before its title and keeps the title as the row's name", () => {
+    render(
+      <ThreadList aria-label="Conversations">
+        <ThreadListItem id="t2" title="Credits this week" icon={<svg data-testid="glyph" />} />
+      </ThreadList>,
+    );
+    const row = screen.getByRole("button", { name: "Credits this week" });
+    const icon = row.querySelector('[data-slot="thread-icon"]');
+    expect(icon).not.toBeNull();
+    expect(icon).toHaveAttribute("aria-hidden", "true");
+    expect(
+      icon!.compareDocumentPosition(screen.getByText("Credits this week")) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("marks a row without an icon, so a collapsed rail can drop it rather than show an empty button", () => {
+    render(
+      <ThreadList aria-label="Conversations">
+        <ThreadListItem id="t3" title="Spring campaign posters" />
+      </ThreadList>,
+    );
+    const item = screen
+      .getByRole("button", { name: "Spring campaign posters" })
+      .closest('[data-slot="thread-list-item"]');
+    expect(item).toHaveAttribute("data-iconless");
+  });
 });

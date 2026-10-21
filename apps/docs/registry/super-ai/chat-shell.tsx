@@ -130,6 +130,8 @@ interface ChatShellThread {
   runningLabel?: string;
   unread?: boolean;
   pinned?: boolean;
+  /** The thread's mark in the collapsed rail. Defaults to a speech-bubble glyph. */
+  icon?: React.ReactNode;
 }
 
 interface ChatShellThreadGroup {
@@ -196,6 +198,20 @@ interface ChatShellProps extends Omit<React.ComponentProps<"div">, "title"> {
   paywall?: PaywallMessageProps;
   /** Replaces the default L1 shown when there are no turns. */
   empty?: React.ReactNode;
+  /**
+   * `"show"` (the default) mounts the artifacts region from the first turn, so it
+   * is discoverable on day one. `"hide"` holds it back until a session has an
+   * artifact, for a conversation whose output is not artifacts at all.
+   */
+  artifactsWhenEmpty?: "show" | "hide";
+
+  /**
+   * A view the conversation built, shown docked: from `lg` it is the main area
+   * and the conversation narrows to 24rem beside it; below `lg` it takes the top 60% and the conversation the rest. While a view is open the sidebar collapses to its icon rail,
+   * and closing the view restores whatever the sidebar was. Pass R3
+   * `view-frame`, or any surface with its own accessible name.
+   */
+  view?: React.ReactNode;
 
   /** D1, the composer. `presentation`, `contextChips` and `settings` are the shell's. */
   composer?: Omit<MediaPromptBarProps, "presentation" | "contextChips" | "settings">;
@@ -234,7 +250,7 @@ function ChatShellRunningJob({ label }: { label: string }) {
       // itself; the visible word carries the same fact for anyone who cannot
       // see the spinner turn.
       role="status"
-      className="text-foreground flex items-center gap-1.5 px-2 pb-1 text-xs"
+      className="text-foreground flex items-center gap-1.5 px-2 pb-1 text-xs group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
     >
       {/* `motion-reduce:animate-none` beside the `animate-*`, which is the
           plain form of the idiom — the restated `data-open`/`data-closed`
@@ -242,7 +258,8 @@ function ChatShellRunningJob({ label }: { label: string }) {
           variant would win the source-order tie. Suppressing the spin leaves
           the label as the only signal, which is what the label is for. */}
       <LoaderCircle aria-hidden className="size-3 shrink-0 animate-spin motion-reduce:animate-none" />
-      {label}
+      {/* The icon rail keeps the spinner and reads the label out. */}
+      <span className="group-data-[collapsible=icon]:sr-only">{label}</span>
     </p>
   );
 }
@@ -265,7 +282,12 @@ function ChatShellTurn({ message }: { message: ChatShellMessage }) {
       data-message-id={message.id}
       data-role={message.role}
     >
-      <MessageContent data-slot="chat-shell-turn-body" className="leading-relaxed">
+      {/* An assistant turn fills the column: a reply that is only a card would
+          otherwise shrink to the card's own content width. */}
+      <MessageContent
+        data-slot="chat-shell-turn-body"
+        className={cn("leading-relaxed", message.role === "assistant" && "w-full")}
+      >
         {message.content}
       </MessageContent>
       {/* N1 is an assistant-turn affordance: there is nothing to rate about
@@ -308,6 +330,8 @@ function ChatShell({
   artifactsEmptyLabel = "Nothing yet. Anything this conversation produces collects here.",
   paywall,
   empty,
+  artifactsWhenEmpty = "show",
+  view,
 
   composer,
   contextChips = [],
@@ -324,6 +348,36 @@ function ChatShell({
 }: ChatShellProps) {
   const artifactsLabelId = React.useId();
   const hasTurns = messages.length > 0 || Boolean(paywall);
+  const showArtifacts =
+    artifactsWhenEmpty === "show" || artifacts.some((session) => session.items.length > 0);
+
+  // The shell holds the sidebar's open state so a docked view can collapse it to
+  // the rail and give it back afterwards. Adjusted during render when `view`
+  // arrives or leaves (React's "storing information from previous renders"),
+  // not in an effect, so the collapse lands in the same paint as the view.
+  const hasView = view != null && view !== false;
+  // Mounting with a view already open starts on the rail; `openBeforeView`
+  // still remembers `defaultSidebarOpen`, so closing the view expands it.
+  const [sidebarOpen, setSidebarOpen] = React.useState(hasView ? false : defaultSidebarOpen);
+  const [viewWasOpen, setViewWasOpen] = React.useState(hasView);
+  const [openBeforeView, setOpenBeforeView] = React.useState(defaultSidebarOpen);
+  // A toggle the user makes while the view is open is their latest word, so
+  // closing the view keeps it rather than restoring what came before.
+  const [toggledDuringView, setToggledDuringView] = React.useState(false);
+  if (hasView !== viewWasOpen) {
+    setViewWasOpen(hasView);
+    if (hasView) {
+      setOpenBeforeView(sidebarOpen);
+      setToggledDuringView(false);
+      setSidebarOpen(false);
+    } else if (!toggledDuringView) {
+      setSidebarOpen(openBeforeView);
+    }
+  }
+  const onSidebarOpenChange = (open: boolean) => {
+    setSidebarOpen(open);
+    if (hasView) setToggledDuringView(true);
+  };
 
   const statusStrip = status ? (
     <div data-slot="chat-shell-status" className="shrink-0 border-b px-3 py-2">
@@ -393,7 +447,8 @@ function ChatShell({
       // Overriding a vendored ui/ primitive's slot is house idiom — nothing
       // keys on `sidebar-wrapper`, and the block needs one addressable root.
       data-slot="chat-shell"
-      defaultOpen={defaultSidebarOpen}
+      open={sidebarOpen}
+      onOpenChange={onSidebarOpenChange}
       className={cn(
         "bg-background text-foreground h-full min-h-0 w-full overflow-hidden",
         EMBEDDABLE_SHELL,
@@ -411,36 +466,43 @@ function ChatShell({
           switcher={switcher}
           nav={
             <ThreadList aria-label="Conversations" className="px-2">
-              {threadGroups.length > 0
-                ? threadGroups.map((group) => (
-                    <ThreadListSection key={group.id} label={group.label}>
-                      {group.threads.map((thread) => (
-                        <div key={thread.id} data-thread-id={thread.id}>
-                          <ThreadListItem
-                            id={thread.id}
-                            title={thread.title}
-                            active={thread.id === activeThreadId}
-                            unread={thread.unread}
-                            pinned={thread.pinned}
-                            onSelect={onSelectThread}
-                            onRename={onRenameThread}
-                            onDelete={onDeleteThread}
-                            onTogglePin={onTogglePinThread}
-                          />
-                          {thread.running ? (
-                            <ChatShellRunningJob label={thread.runningLabel ?? "Running"} />
-                          ) : null}
-                        </div>
-                      ))}
-                    </ThreadListSection>
-                  ))
-                : (threadsEmpty ?? (
+              {threadGroups.length > 0 ? (
+                threadGroups.map((group) => (
+                  <ThreadListSection key={group.id} label={group.label}>
+                    {group.threads.map((thread) => (
+                      <div key={thread.id} data-thread-id={thread.id}>
+                        <ThreadListItem
+                          id={thread.id}
+                          title={thread.title}
+                          active={thread.id === activeThreadId}
+                          unread={thread.unread}
+                          pinned={thread.pinned}
+                          icon={thread.icon ?? <MessagesSquare />}
+                          onSelect={onSelectThread}
+                          onRename={onRenameThread}
+                          onDelete={onDeleteThread}
+                          onTogglePin={onTogglePinThread}
+                        />
+                        {thread.running ? (
+                          <ChatShellRunningJob label={thread.runningLabel ?? "Running"} />
+                        ) : null}
+                      </div>
+                    ))}
+                  </ThreadListSection>
+                ))
+              ) : (
+                // The icon rail has no room for an empty state; it would
+                // only draw clipped text.
+                <div className="group-data-[collapsible=icon]:hidden">
+                  {threadsEmpty ?? (
                     <EmptyState
                       size="panel"
                       title="No conversations yet"
                       description="Ask something below and it will be saved here."
                     />
-                  ))}
+                  )}
+                </div>
+              )}
             </ThreadList>
           }
           promo={sidebarPromo}
@@ -483,95 +545,118 @@ function ChatShell({
 
         {statusStrip}
 
-        {/* AI Elements' Conversation, not a hand-rolled scroll container: it
+        {/* The body row. Without a view it is one column and lays out exactly as
+            before; with one, the view leads (it is the main area) and the
+            conversation narrows beside it from lg, or sits under it below. */}
+        <div
+          data-slot="chat-shell-body"
+          className={cn("flex min-h-0 flex-1 flex-col", hasView && "lg:flex-row")}
+        >
+          {hasView ? (
+            <div
+              data-region="view"
+              className="flex min-h-0 min-w-0 shrink-0 basis-1/2 flex-col border-b p-3 lg:flex-1 lg:basis-auto lg:border-e lg:border-b-0"
+            >
+              {view}
+            </div>
+          ) : null}
+          <div
+            data-slot="chat-shell-conversation"
+            className={cn("flex min-h-0 min-w-0 flex-1 flex-col", hasView && "lg:w-96 lg:flex-none")}
+          >
+            {/* AI Elements' Conversation, not a hand-rolled scroll container: it
             brings `role="log"` and use-stick-to-bottom's pinning, which is the
             behaviour a chat stream is actually judged on. It carries the
             region name and the tab stop; `scrollClassName` is what makes the
             inner element it owns actually scroll (see STREAM_SCROLL). */}
-        <Conversation
-          data-region="message-stream"
-          data-loading-region="message-stream"
-          aria-label="Conversation"
-          tabIndex={0}
-          className="min-h-0 flex-1"
-        >
-          <ConversationContent
-            scrollClassName={STREAM_SCROLL}
-            className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6"
-          >
-            {hasTurns ? (
-              <>
-                {messages.map((message) => (
-                  <ChatShellTurn key={message.id} message={message} />
-                ))}
-                {/* M5 last: it is the turn that did not happen, so nothing can
+            <Conversation
+              data-region="message-stream"
+              data-loading-region="message-stream"
+              aria-label="Conversation"
+              tabIndex={0}
+              className="min-h-0 flex-1"
+            >
+              <ConversationContent
+                scrollClassName={STREAM_SCROLL}
+                className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-6"
+              >
+                {hasTurns ? (
+                  <>
+                    {messages.map((message) => (
+                      <ChatShellTurn key={message.id} message={message} />
+                    ))}
+                    {/* M5 last: it is the turn that did not happen, so nothing can
                     follow it until the plan changes. */}
-                {paywall ? <PaywallMessage {...paywall} /> : null}
-              </>
-            ) : (
-              (empty ?? (
-                <EmptyState
-                  size="page"
-                  title="Start the conversation"
-                  description="Describe what you want done. Anything produced along the way is collected below."
-                  icon={<MessagesSquare />}
-                />
-              ))
-            )}
+                    {paywall ? <PaywallMessage {...paywall} /> : null}
+                  </>
+                ) : (
+                  (empty ?? (
+                    <EmptyState
+                      size="page"
+                      title="Start the conversation"
+                      description="Describe what you want done. Anything produced along the way is collected below."
+                      icon={<MessagesSquare />}
+                    />
+                  ))
+                )}
 
-            {/* Inside the stream, not beside it: the conversation is the index
+                {/* Inside the stream, not beside it: the conversation is the index
                 of what it produced. Always mounted so the region is
                 discoverable on day one rather than appearing from nowhere. */}
-            <section
-              data-region="artifact-cards"
-              data-loading-region="artifact-cards"
-              aria-labelledby={artifactsLabelId}
-              className="flex w-full flex-col gap-3 border-t pt-6"
-            >
-              <h2 id={artifactsLabelId} className="text-sm font-medium">
-                {artifactsLabel}
-              </h2>
-              <ArtifactGrid sessions={artifacts} filterable={false} emptyLabel={artifactsEmptyLabel} />
-            </section>
-          </ConversationContent>
-        </Conversation>
+                {showArtifacts ? (
+                  <section
+                    data-region="artifact-cards"
+                    data-loading-region="artifact-cards"
+                    aria-labelledby={artifactsLabelId}
+                    className="flex w-full flex-col gap-3 border-t pt-6"
+                  >
+                    <h2 id={artifactsLabelId} className="text-sm font-medium">
+                      {artifactsLabel}
+                    </h2>
+                    <ArtifactGrid sessions={artifacts} filterable={false} emptyLabel={artifactsEmptyLabel} />
+                  </section>
+                ) : null}
+              </ConversationContent>
+            </Conversation>
 
-        <div
-          data-region="composer"
-          data-loading-region="composer"
-          className="bg-background shrink-0 border-t px-4 pb-2"
-        >
-          <div className="mx-auto w-full max-w-3xl">
-            <MediaPromptBar
-              presentation="docked"
-              placeholder="Ask anything, or describe a task to run"
-              label="Message"
-              submitLabel="Send"
-              attachLabel="Attach a file"
-              contextChips={
-                contextChips.length > 0 ? (
-                  <ContextChips>
-                    {contextChips.map((chip) => (
-                      <ContextChip
-                        key={chip.id}
-                        kind={chip.kind}
-                        label={chip.label}
-                        unresolved={chip.unresolved}
-                        onRemove={chip.onRemove}
-                      />
-                    ))}
-                  </ContextChips>
-                ) : undefined
-              }
-              settings={
-                modes.length > 0 ? (
-                  <ModeTabs modes={modes} value={mode} onValueChange={onModeChange} label="Chat mode" />
-                ) : undefined
-              }
-              {...composer}
-              className={cn(COMPOSER_NO_NEGATIVE_PROMPT, "border-b", composer?.className)}
-            />
-            <DisclaimerNote variant="under-composer">{disclaimer}</DisclaimerNote>
+            <div
+              data-region="composer"
+              data-loading-region="composer"
+              className="bg-background shrink-0 border-t px-4 pb-2"
+            >
+              <div className="mx-auto w-full max-w-3xl">
+                <MediaPromptBar
+                  presentation="docked"
+                  placeholder="Ask anything, or describe a task to run"
+                  label="Message"
+                  submitLabel="Send"
+                  attachLabel="Attach a file"
+                  contextChips={
+                    contextChips.length > 0 ? (
+                      <ContextChips>
+                        {contextChips.map((chip) => (
+                          <ContextChip
+                            key={chip.id}
+                            kind={chip.kind}
+                            label={chip.label}
+                            unresolved={chip.unresolved}
+                            onRemove={chip.onRemove}
+                          />
+                        ))}
+                      </ContextChips>
+                    ) : undefined
+                  }
+                  settings={
+                    modes.length > 0 ? (
+                      <ModeTabs modes={modes} value={mode} onValueChange={onModeChange} label="Chat mode" />
+                    ) : undefined
+                  }
+                  {...composer}
+                  className={cn(COMPOSER_NO_NEGATIVE_PROMPT, "border-b", composer?.className)}
+                />
+                <DisclaimerNote variant="under-composer">{disclaimer}</DisclaimerNote>
+              </div>
+            </div>
           </div>
         </div>
       </SidebarInset>

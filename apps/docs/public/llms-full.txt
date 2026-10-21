@@ -1590,6 +1590,7 @@ Not yet recorded.
 - `thread-list`: The list root. It renders a <nav>, so it is a landmark — give it an aria-label, because a product with this component almost always has a second nav on screen.
 - `date-section`: One date bucket. ThreadListSection deliberately renders date-section rather than a slot of its own, so address a bucket with [data-slot="date-section"].
 - `thread-list-item`: One row. Carries data-active when it is the open thread and data-renaming while the title is being edited in place — the row's markup is completely different in that second case.
+- `thread-icon`: The optional mark before the title, decorative and hidden from assistive tech. Inside a sidebar collapsed to its icon rail it is all the row shows; the title stays as screen-reader text, so the row keeps its name.
 - `thread-unread`: The leading dot on a thread with activity you have not seen. It is part of the row button's accessible name, so an unread row announces as “Unread ‹title›”.
 
 ## Accessibility
@@ -1623,6 +1624,7 @@ Not yet recorded.
 
 ## Pitfalls
 
+- In a sidebar collapsed to its icon rail, a row with no `icon` is dropped from the rail rather than drawn as an empty button, and every row's actions menu hides. Give each thread an icon if the rail should list it, and keep rename, pin and delete reachable by expanding the sidebar.
 - Rename and delete-confirm are internal state with no prop to force them. There is no `renaming` prop, no `open` prop on the confirmation and no imperative handle — to reach either state in a test, open the row's actions menu and choose the item, the same way a person does.
 - The two resolve differently, and only one of them is safe. Cancelling the delete confirmation puts focus back on the row's actions button, as it should. Committing a rename does not: the input unmounts and focus falls to the document body, so a keyboard user who presses Enter loses their place in the list entirely. Move focus back to the row yourself after you persist the new title.
 - Every row's actions button is named "Thread actions for <title>", so the name is only as useful as the title you pass — a sidebar of threads all called "New chat" is still a list of identical buttons to a screen-reader user, which is the real reason the row title is worth keeping short and distinct. It used to be a constant "Thread actions" for every row; if you query it in a test, match the interpolated name.
@@ -10391,7 +10393,8 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - `data-region="sidebar"`: B1 app-sidebar holding B6 thread-list, or L1 when there are no threads.
 - `data-region="topbar"`: The sidebar trigger plus B7 app-topbar, titled with the active conversation.
 - `data-region="message-stream"`: AI Elements' Conversation. role=log, named, its own tab stop, sticks to bottom.
-- `data-region="artifact-cards"`: J4 artifact-grid, nested inside the stream and always mounted.
+- `data-region="artifact-cards"`: J4 artifact-grid, nested inside the stream and mounted from the first turn. `artifactsWhenEmpty="hide"` holds it back until a session has an artifact.
+- `data-region="view"`: Only when `view` is passed: a view the conversation built, docked. From lg it is the main area and the conversation narrows to 24rem beside it; below lg the two split the height evenly, the view on top, so the latest reply and its chips stay in sight. The sidebar collapses to its icon rail while it is open.
 - `data-region="composer"`: D1 media-prompt-bar with D3 chips and D4 modes, N3 underneath.
 - `chat-shell`: Root. Contains its own fixed descendants so the shell can be embedded.
 - `chat-shell-turn`: One turn — AI Elements' Message. Carries data-message-id and data-role.
@@ -10432,10 +10435,13 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 - Switching threads moves no focus. Focus stays on the thread row you activated — usually right, and it also means the newly loaded conversation is several tabs away with nothing announcing that it arrived.
 - Deleting the active thread unmounts the row that had focus and nothing restores it, so focus falls to `<body>` and the next Tab restarts at the top of the shell. Move focus in your `onDeleteThread`.
 - Cmd/Ctrl+B while focus is inside the sidebar collapses it around the focused element. The rail keeps its controls mounted, so focus survives, but it lands on something now rendered as an icon.
+- Passing `view` moves no focus. A view opened from a card in the stream leaves focus on that card's button, which is now beside the view rather than inside it. Move focus to the view's title yourself when it should be read next, and back to the card when the view closes.
 - The stream is focusable and has no focus style of its own — it gets `tabIndex={0}` and no `focus-visible` class — so tabbing into the conversation shows only whatever outline your app provides. Everything else here uses the shared primitives' rings.
 
 ## Pitfalls
 
+- The shell owns the sidebar's open state so a docked view can collapse it and give it back. `defaultSidebarOpen` is read once, on mount; a view arriving collapses the sidebar, and its leaving restores what the sidebar was just before, including a toggle the user made in between. Do not try to drive the sidebar from outside while a view is open.
+- A thread with no `icon` gets a speech-bubble glyph in the collapsed rail. Pass `icon` on each thread when the rail should tell them apart; the title stays the row's accessible name either way.
 - AI Elements is written against Radix-flavoured shadcn and this registry is Base UI, so the vendored `message` needed two local `asChild` → `render=` edits to typecheck. Installing chat-shell through shadcn fetches AI Elements' file from its own registry, not this repo's patched copy — in a Base UI project, expect to make the same two edits.
 - `use-stick-to-bottom` owns an element between the conversation root and its content, and sets no overflow on it. Without a `scrollClassName` the stream does not scroll at all, it just grows — and because that element is not yours, the region's accessible name and tab stop have to live on the conversation root instead.
 - The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a panel, a preview or an app region — if you re-wrap or restyle the root, keep that containment or the sidebar will pin itself to the browser's left edge. The root also constrains that container to the shell's own height, which is what makes `sidebarPromo` and `sidebarFooter` usable in an embedded shell; before that they were bottom-anchored below the visible edge, invisible and still in the tab order.
@@ -10449,7 +10455,7 @@ None: A shell owns arrangement and nothing else, so it has no axis of its own: e
 ## Composition
 
 - States: none (a block is a layout, not a state machine)
-- Regions: `sidebar`, `topbar`, `message-stream`, `artifact-cards`, `composer`
+- Regions: `sidebar`, `topbar`, `message-stream`, `artifact-cards`, `composer`, `view`
 - Composes from this registry: app-sidebar, thread-list, app-topbar, media-prompt-bar, context-chips, mode-tabs, artifact-grid, feedback, disclaimer-note, paywall-message, empty-state, shell-skeleton
 - shadcn primitives: sidebar
 - npm: lucide-react
