@@ -521,16 +521,19 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 
 - Lock the whole strip with the bar's `disabled` while a run is in flight, instead of disabling each segment — the bar shares one flag through context, so five segments cannot drift out of step with each other.
 - Let the selected model decide which segments exist, and drop the ones it does not have rather than leaving a dead segment on the strip.
+- Name the draft option as lower quality in its text ("Draft, lower quality"), and re-estimate cost from `onQualityChange` the way you do for any other segment.
 
 ## Don't
 
 - Don't use it to narrow something already on screen. A segment here changes the next run, not the current view — a strip whose clicks filter a library is a `filter-bar` wearing the wrong component.
 - Don't prefix each segment with the parameter it sets. The value names itself, the strip has no room for both, and nothing here truncates — the labels just push the bar past the edge of whatever holds it.
+- Don't sell the draft option on price alone. A label such as "Cheaper" hides the trade, and the lower quality arrives as a surprise.
 
 ## Anatomy
 
 - `gen-settings-bar`: The strip. Renders role="toolbar", so give it an aria-label naming what it configures — "Generation settings" — because nothing inside it names the group. Carries data-disabled while the bar is locked, which is what to style against.
 - `gen-settings-item`: One segment. A real button whose children are the current value — that text is also its entire accessible name. It reads `disabled` from the bar through context, and takes its own `disabled` to override that either way.
+- `gen-settings-quality`: Optional draft or final segment (`GenSettingsQuality`). Renders only when you pass both `quality` and `onQualityChange`; otherwise it is absent from the DOM. A labelled group of two toggle items, `gen-settings-quality-draft` and `gen-settings-quality-final`, each a `GenSettingsItem` with `aria-pressed`.
 
 ## Accessibility
 
@@ -545,6 +548,7 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 - The bar announces as a toolbar with no name unless you give it one — nothing inside it says what is being configured. Pass an `aria-label` such as "Generation settings", and note that the announced role then promises arrow-key navigation this component does not have.
 - A segment's accessible name is its children and nothing else, so the value is the name: a segment reads "1080p", never "Resolution, 1080p". An icon-only segment ships an unlabeled button unless you add an `aria-label`.
 - Changing a parameter rewrites a button's own label under the user. The bar owns no live region, so nothing announces "resolution is now 1080p" — and a name that changes while its element still holds focus is not reliably re-announced.
+- The quality segment is a named group ("Quality") of two buttons whose state is `aria-pressed`, so "Draft, lower quality, pressed" is spoken. Like every segment it relabels nothing and announces nothing on change.
 - `data-disabled` on the bar is a styling hook only. The programmatic state lives on the segments' own `disabled` attributes; the toolbar element itself carries no `aria-disabled`.
 
 **Focus**
@@ -554,6 +558,7 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 
 ## Pitfalls
 
+- `GenSettingsQuality` is controlled and optional. Pass `quality` ("draft" or "final") together with `onQualityChange`; with either missing it renders nothing, so a host that does not support drafts shows no dead segment. The bar does not re-estimate cost itself, so `onQualityChange` is where you update the settings and request the new estimate, exactly as for any other segment.
 - Only `GenSettingsItem`s join the arrow walk. A plain `<button>` placed inside the bar is not a toolbar item, so it keeps a tab stop of its own and the arrows pass it by; wrap any segment in `GenSettingsItem` (or render it through one) to keep the strip one stop.
 - There is no value API. `GenSettingsItem` is a plain button: the value it shows is its `children`, and `onClick` hands you a MouseEvent rather than a new value, so each segment needs its own handler and the values are owned entirely upstream. Nothing here can report "resolution changed to 1080p" generically — the catalog naming Select and Toggle-group as the base describes the controls you open, not what this component ships.
 - `disabled` travels through React context, so a segment inside a disabled bar is disabled even though nothing in its own JSX says so. To keep one segment live during a run, pass `disabled={false}` on it explicitly — leaving it off falls through to the bar's value.
@@ -564,7 +569,7 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 
 ## Composition
 
-- States: `video-model`, `image-model`, `running`, `partially-locked`
+- States: `video-model`, `image-model`, `running`, `partially-locked`, `draft`
 - Composes from this registry: nothing
 - shadcn primitives: none
 - npm: @base-ui/react
@@ -1829,7 +1834,7 @@ Five of five reference App Home screens open with exactly this shape — Descrip
 
 ## When to reach for it
 
-Reach for it as the anchor of an App Home screen — the first thing a user sees when they arrive with no session in progress yet. Drive its `state` prop from real product state (`idle` while empty, `focused` when the field has attention, `generating` while a request is in flight, `locked` once a plan limit is hit) rather than deriving it purely from DOM focus, since `generating` and `locked` are business states, not interaction states. Pass `modes`, `models`, and `cost` only when the surface actually has them — each is optional and the field lays out correctly without any of them.
+Reach for it as the anchor of an App Home screen — the first thing a user sees when they arrive with no session in progress yet. Drive its `state` prop from real product state (`idle` while empty, `focused` when the field has attention, `generating` while a request is in flight, `locked` once a plan limit is hit) rather than deriving it purely from DOM focus, since `generating` and `locked` are business states, not interaction states. Pass `modes`, `models`, and `cost` only when the surface actually has them — each is optional and the field lays out correctly without any of them. To offer the `randomize` state, pass `onRandomize`: it returns a starter string from a pool the host owns, the dice button fills the field with it, and the person edits or sends it. Returning nothing leaves the field alone, and the dice never submits.
 
 ## Variants
 
@@ -1857,6 +1862,7 @@ Not yet recorded.
 - `hero-omnibox-textarea`: The prompt input. Carries the accessible name, visible or not.
 - `hero-omnibox-toolbar`: The row beneath the textarea: attach, model, cost on the left; submit on the right.
 - `hero-omnibox-attach`: Icon-only attach button, inside the field.
+- `hero-omnibox-randomize`: Optional dice button after attach, present only when `onRandomize` is passed. Fills the field with a host-supplied starter and never submits.
 - `hero-omnibox-model`: Optional model select, inside the field.
 - `hero-omnibox-cost`: Optional cost chip (M2) — credits at the point of spend, not in a billing page.
 - `hero-omnibox-submit`: Icon-only send button. Replaced by hero-omnibox-stop while generating.
@@ -1872,6 +1878,7 @@ Not yet recorded.
 - Enter submits and Shift+Enter inserts a newline. Submit is a no-op on an empty or whitespace-only value, while `generating` and while `locked` — the same guard the button uses.
 - The submit button is `disabled` until the field holds non-whitespace content, so the composer gains a tab stop as you type the first character.
 - `generating` disables the textarea, the attach button, the model select and the mode tabs, leaving Stop as the only focusable control in the card. `locked` unmounts the field entirely, leaving only the paywall CTA.
+- The dice button, when `onRandomize` is passed, is one more tab stop after attach and is `disabled` while `generating`. Activating it fills the field and keeps focus on the dice, so Enter or Space can roll again. It never submits; the person still presses Enter or Send.
 - Mode tabs are one tab stop, not one per mode. The Base UI toggle group underneath does roving focus, so arrow keys move between modes, Home and End jump to the ends, and the set wraps.
 - Clicking anywhere on the card focuses the field. That is mouse-only — the root is a plain `<div>` with a click handler and no key handler — which is harmless here, because the field it focuses is the next tab stop anyway.
 
@@ -1881,11 +1888,13 @@ Not yet recorded.
 - `generating` is announced. The `role="status"` region is always mounted and only its text is swapped in, which is what makes the announcement land, and the root also carries `aria-busy`. The end of generating is not announced — the text is emptied, and emptying a live region says nothing.
 - `locked` announces nothing at all. The field is replaced by the paywall with no live region and no focus move, so a screen-reader user who was typing learns about the limit only by tabbing into it.
 - Attach, submit and stop are icon-only buttons with their glyphs `aria-hidden`, named from `attachLabel`, `submitLabel` and `stopLabel`. Stop is a distinct control replacing submit rather than a disabled submit, so it announces as "Stop generating" and not as an unavailable send.
+- The dice button is icon-only, named "Random prompt" by `randomizeLabel` with its glyph `aria-hidden`. A fill is announced politely through the same status region as `generating`, saying "Random prompt added" from `randomizedLabel`; typing clears it, and a repeat roll is announced again.
 - The model select is named "Model" by a hard-coded `aria-label`. It is not one of the label props, so a surface picking something other than a model has no way to rename it.
 - The cost chip is inert text in a `dir="ltr"` span. It is not part of any control's name, so the price is reached only by reading through the toolbar, never by tabbing to it.
 
 **Focus**
 
+- Filling from the dice does not move focus. It stays on the dice button, set explicitly because Safari does not focus a button on click, and the textarea is not focused. Tab once to edit the starter.
 - The worst case is the ordinary one. Pressing Enter to submit sets `generating`, which disables the textarea you were typing in; focus is dropped from the disabled element and falls to `<body>`, so the next Tab restarts at the top of the page and Stop — the only live control left — is nowhere near it. Move focus to Stop when you flip the state.
 - `locked` does the same thing more thoroughly, unmounting the whole field. Move focus to the unlock CTA.
 - `autoFocus` is wired to `state === "focused"`, and `autoFocus` only applies at mount: rendering the omnibox already in that state steals focus on arrival, and switching into it later does nothing at all.
@@ -1900,7 +1909,7 @@ Not yet recorded.
 
 ## Composition
 
-- States: `idle`, `focused`, `generating`, `locked`
+- States: `idle`, `focused`, `generating`, `locked`, `randomize`
 - Composes from this registry: cost-chip, mode-tabs
 - shadcn primitives: button, select, textarea
 - npm: lucide-react
@@ -2272,7 +2281,7 @@ Freepik, ElevenLabs Flows, CapCut, Playground, and Runway all converge on the sa
 
 ## When to reach for it
 
-Reach for `presentation="floating"` when the bar sits over a canvas with no other chrome competing for space, `"docked"` as the default anchored composer at the bottom of a generation workspace, and `"node-embedded"` inside a workflow node where the negative prompt has no room and is dropped automatically. Drive `locked` from a real plan/quota check, not from a disabled textarea. Pass `settings` as a composed A7 gen-settings-bar rather than reinventing model/aspect/resolution controls here, and keep the `cost` prop in sync with whatever `settings` currently selects — it should read the same number a user sees at the moment they actually spend it.
+Reach for `presentation="floating"` when the bar sits over a canvas with no other chrome competing for space, `"docked"` as the default anchored composer at the bottom of a generation workspace, and `"node-embedded"` inside a workflow node where the negative prompt has no room and is dropped automatically. To offer the `randomize` state, pass `onRandomize`: it returns a starter string from a pool the host owns, and the dice button fills the prompt with it. Set `randomizeTarget="seed"` for generators that roll a seed instead, which adds a seed field next to the dice. The dice never generates, and returning nothing leaves the field alone. Drive `locked` from a real plan/quota check, not from a disabled textarea. Pass `settings` as a composed A7 gen-settings-bar rather than reinventing model/aspect/resolution controls here, and keep the `cost` prop in sync with whatever `settings` currently selects — it should read the same number a user sees at the moment they actually spend it.
 
 ## Variants
 
@@ -2302,6 +2311,8 @@ Not yet recorded.
 - `media-prompt-bar-negative`: The negative-prompt row, toggled open in place below the main prompt. Never rendered when `presentation` is node-embedded.
 - `media-prompt-bar-toolbar`: The row beneath the textarea: attach, negative-prompt toggle, settings, cost on the left; submit on the right.
 - `media-prompt-bar-attach`: Icon-only attach button, inside the field.
+- `media-prompt-bar-randomize`: Optional dice button, present only when `onRandomize` is passed. Fills the prompt (or the seed) with a host-supplied starter and never generates.
+- `media-prompt-bar-randomize-seed`: Seed field in the action row, present only when `onRandomize` is passed with `randomizeTarget="seed"`.
 - `media-prompt-bar-settings`: Hosts A7 gen-settings-bar. Collapsed automatically when `presentation` is floating.
 - `media-prompt-bar-cost`: Cost chip (M2) — credits at the point of spend, the same number quoted in E1/E5.
 - `media-prompt-bar-submit`: Send button. Replaced by media-prompt-bar-stop while generating.
@@ -2320,6 +2331,7 @@ Not yet recorded.
 - There is no IME guard on the submit key. The handler checks only `event.key === "Enter" && !event.shiftKey`, so the Enter that commits a Japanese, Chinese or Korean composition submits the prompt mid-word. K2 `inline-generate-popup` guards this with `event.nativeEvent.isComposing`; this component does not.
 - `generating` disables the textarea, attach, and both negative-prompt controls, and replaces submit with stop. Stop is the only control in the bar you can reach while a run is in flight.
 - Submit is disabled whenever the trimmed prompt is empty, so an empty bar has one fewer reachable control than a filled one. `locked` collapses the field to two elements, only one of which — the unlock button — is focusable.
+- The dice button, when `onRandomize` is passed, adds one tab stop after attach, and `randomizeTarget="seed"` adds the seed field as another. Both are `disabled` while `generating`. Activating the dice keeps focus on it, so Enter or Space rolls again, and it never generates.
 - Escape does nothing anywhere. It does not close the negative-prompt row and it does not stop a run.
 
 **Screen reader**
@@ -2327,6 +2339,7 @@ Not yet recorded.
 - The prompt field is named twice — an sr-only `<label htmlFor>` and an `aria-label` carrying the same `label` string. `aria-label` wins, so the label element is dead weight rather than a second announcement; the two must not be allowed to drift apart.
 - The root carries `aria-busy` while `generating`, and `media-prompt-bar-status` is a visually hidden `role="status" aria-live="polite"` region announcing `generatingLabel`. It is mounted in every state holding an empty string, which is what makes the first announcement actually fire.
 - Nothing announces the end of a run. The region empties when `generating` goes false, and emptying a live region announces nothing — so "Generating…" is spoken and the finish is silent. Announce the result on the surface that renders it.
+- The dice is icon-only, named "Random prompt" (or "Random seed" for the seed target) by `randomizeLabel`. A fill is announced politely through the same status region as `generating`, with `randomizedLabel` as the text; typing clears it and a repeat roll is announced again. The seed field is named by `seedLabel`.
 - Attach, stop and the negative-prompt collapse are icon-only and named by `attachLabel`, `stopLabel` and `negativePromptCollapseLabel`; every glyph in the bar is `aria-hidden`. Translate those props or the buttons stay in English while the placeholder does not.
 - The negative field has a real visible `<label>` and a matching `aria-label`, but the row holding it is a plain div with no group role — so nothing announces that the second field belongs to the first. A screen reader meets two textareas with different names, not a prompt and its negation.
 - `locked` swaps the whole field out for the paywall with no live region on the change, so a bar that locks while someone is typing in it changes shape silently.
@@ -2334,6 +2347,7 @@ Not yet recorded.
 
 **Focus**
 
+- Filling from the dice does not move focus. It stays on the dice button, set explicitly because Safari does not focus a button on click. Tab once to edit the starter.
 - Starting a run disables the textarea, which is where focus almost certainly was. A disabled element cannot hold focus, so focus falls to `<body>` and the next Tab restarts from the top of the page — at exactly the moment the only useful control is the Stop button that just appeared. Move focus to `media-prompt-bar-stop` in the same handler that sets `generating`.
 - Collapsing the negative prompt unmounts the X that had focus, with nothing restoring it. Same failure, smaller blast radius.
 - Switching `locked` on unmounts the entire field, textarea included, and nothing catches focus on the way past.
@@ -2348,9 +2362,9 @@ Not yet recorded.
 
 ## Composition
 
-- States: `floating`, `docked`, `node-embedded`, `locked`, `negative-prompt`
+- States: `floating`, `docked`, `node-embedded`, `locked`, `negative-prompt`, `randomize`
 - Composes from this registry: cost-chip
-- shadcn primitives: button, textarea
+- shadcn primitives: button, input, textarea
 - npm: lucide-react
 
 ## Evidence
@@ -2371,7 +2385,7 @@ Freepik, Runway, ElevenLabs and CapCut all place typed references above the prom
 
 ## When to reach for it
 
-Reach for it whenever a composer or node accepts more than one typed image input — plain references, or a mix of first frame / last frame / video ref / character. Pass a flat `items` array; give every item a `role` to turn on role labels for the whole strip, or leave `role` off entirely for a plain multi-reference set. Omit `thumbnail` on any item to render that slot as an empty, attachable placeholder rather than leaving it out of the array — that's how a mode advertises a typed slot ('last frame') it accepts but the user hasn't filled yet.
+Reach for it whenever a composer or node accepts more than one typed image input — plain references, or a mix of first frame / last frame / video ref / character. Pass a flat `items` array; give every item a `role` to turn on role labels for the whole strip, or leave `role` off entirely for a plain multi-reference set. Pass `onDescribe` when the host can say what is behind a reference: it receives the slot and resolves to `{ exact?: { prompt?, params? }, inferred? }`, and each chosen prompt comes back through `onUseDescription(text)`. Omit `thumbnail` on any item to render that slot as an empty, attachable placeholder rather than leaving it out of the array — that's how a mode advertises a typed slot ('last frame') it accepts but the user hasn't filled yet.
 
 ## Variants
 
@@ -2386,6 +2400,7 @@ Not yet recorded.
 - Give every typed slot a real text role label, shown below the tile, not just an icon or a colour dot.
 - Keep an unfilled typed slot in the strip as an empty, addable placeholder instead of leaving it out of the data.
 - Wire onRemove per item so a reference is a single, undoable action — never a destructive click on the thumbnail itself.
+- Pass onDescribe only when your product can really expose a prompt, and list in `params` only values that change reproduction, such as model, seed and sampler.
 
 ## Don't
 
@@ -2401,6 +2416,10 @@ Not yet recorded.
 - `reference-strip-role`: The role's own visible text label — never colour- or icon-only.
 - `reference-strip-remove`: Per-slot remove control, in the preview-tile's badge corner.
 - `reference-strip-move`: Per-slot reorder controls; disabled at each end of the strip.
+- `reference-strip-describe`: Per-slot Describe action and its status region. Rendered only on a settled, filled slot, and only when `onDescribe` is passed.
+- `reference-strip-describe-trigger`: The Describe button; its accessible name carries the slot's role, for example `Describe First frame`.
+- `reference-strip-describe-panel`: The popover holding the pending, failed or result view. Extracted values come first, then at most four inferred prompts, each with a Use button (`reference-strip-describe-use`).
+- `reference-strip-describe-status`: Visually hidden `role="status"` text that announces pending and failed politely.
 - `reference-strip-previous`: Visible "scroll left" affordance; also keeps the strip keyboard-reachable.
 - `reference-strip-next`: Visible "scroll right" affordance.
 
@@ -2423,6 +2442,7 @@ Not yet recorded.
 - `thumbnail.alt` is the image's accessible name and the only thing separating two filled slots that share a role. That is why it is required rather than optional.
 - `state="failed"` replaces the image with the words "Couldn't load" inside the frame — words, not colour — but it is not a live region, so a slot that fails after upload announces nothing. `state="loading"` announces nothing either: the skeleton is a plain `<div>` with no busy state on it.
 - An empty slot announces as a toggle button that is not pressed, named "Add" or by its role label. `preview-tile` puts `aria-pressed` on any interactive frame, and attaching a reference is not a toggle.
+- Describe announces through a visually hidden `role="status"` region that stays mounted: pending reads `Describing First frame` and a rejection reads `First frame could not be described`. The finished result is not announced; it appears in the popover the user already opened. The trigger is named `Describe <role>` and each option button `Use prompt: <text>`, so a long inferred prompt makes a long button name.
 - Nothing announces a reorder. After Move right the DOM order changes silently, and the user has to re-read the strip to find where the item went.
 
 **Focus**
@@ -2430,6 +2450,7 @@ Not yet recorded.
 - Reordering to either end disables the button that was just pressed — the last Move right on the last slot, the first Move left on the first — and a focused element that becomes disabled is blurred, so focus drops to `<body>`. Move focus to the sibling move button inside your `onMove`.
 - Removing a slot unmounts its remove button, and removing the last one replaces the whole Carousel with the empty panel. Focus falls to `<body>` in both cases.
 - Previous and Next scroll the strip without moving focus, so the focused slot and the visible slots can disagree — a Tab through the strip will reach slots that are scrolled off screen.
+- Describe adds one tab stop per filled, settled slot, and only when `onDescribe` is passed. It opens a popover: focus moves into it, Escape closes it and returns focus to the button. A pending describe is cancelled by Escape or by the Cancel button, and a result that arrives afterwards is dropped.
 - Every button here is the shared `Button` and carries its focus ring; an empty slot's tile uses `preview-tile`'s own `focus-visible:ring-2` instead.
 
 ## Pitfalls
@@ -2437,12 +2458,14 @@ Not yet recorded.
 - Removing the first frame and letting the next reference silently be promoted into that role — remove is per-slot and must never re-derive a different item's role as a side effect (D2).
 - Hand-rolling a scrolling row with overflow-x-auto instead of the Carousel base — that loses the visible next affordance and the keyboard-reachable region, and axe's scrollable-region-focusable rule has already caught this exact class of bug once in this repo.
 - Forgetting `thumbnail.alt` is required, not optional — these are the only informational images in the strip, so a missing or decorative-sounding alt ("reference") leaves screen reader users unable to tell slots apart.
+- Showing Describe on a host that cannot produce a description. The action renders only when `onDescribe` is passed, so a product that cannot expose prompts should omit it rather than ship a button that always fails.
+- Passing every metadata field as a parameter. `params` is for values that change reproduction, such as model, seed and sampler. File size and dimensions bury the seed in the readout.
 
 ## Composition
 
-- States: `empty`, `filled`, `with-roles`
-- Composes from this registry: preview-tile
-- shadcn primitives: button, carousel
+- States: `empty`, `filled`, `with-roles`, `describe`
+- Composes from this registry: preview-tile, stat-readout
+- shadcn primitives: button, carousel, popover
 - npm: lucide-react, embla-carousel-react
 
 ## Evidence
@@ -2868,6 +2891,195 @@ Google Assistant, Rasa, ServiceNow Horizon
 
 ---
 
+# Prompt Enhancer
+
+> A button that proposes a rewrite of the prompt in the composer next to it. Click Enhance prompt and a panel shows your original and the rewrite side by side, with every word the enhancer added underlined and described. You accept it, edit it first, or dismiss it. Quick refinements such as More concise and Add examples sit behind an Advanced disclosure. After an accept, Revert to original puts back the exact string you started with. It takes the current `value` and an async `onEnhance`, and hands the accepted text to `onAccept`. It never owns the textarea and never submits.
+
+Layer: component · Family: D · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/prompt-enhancer.json` · Contract: `components/super-ai/prompt-enhancer.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/prompt-enhancer
+
+## Why it matters
+
+A rewrite that runs without being read changes what the person asked for. Prompt enhancers in Adobe Firefly, Bolt, Cofounder, Copy.ai, FloraFauna, Leonardo.ai and v0 all end up in the same place: show the proposed text first, mark what the system added, and keep a way back. The marking is what makes review quick, because the person reads the added constraints instead of diffing two paragraphs by eye. The single default action keeps the common path to one click, and the refinements stay out of the way until someone wants them. Because the component only returns text, the same enhancer works beside any composer.
+
+## When to reach for it
+
+Place it beside your composer and pass the field's current text as `value`. `onEnhance(value, refinement?)` returns a promise of the rewritten string; call your model there and nowhere else. `onAccept(next)` receives the text the person accepted, edits included, and you write it into your own field. Revert calls `onRevert(original)` if you pass it, and otherwise calls `onAccept` with the original. The component reads `value` once, when Enhance starts, so typing while a run is in flight does not change what Revert restores. Pass `refinements` to replace the two default chips. Reject the promise on any failure; the panel then says the prompt is unchanged and offers Try again. For tracked changes on long prose use `diff-review`.
+
+## Variants
+
+None: There is one way to enhance: the same button, panel and states everywhere. Differences in what the rewrite does belong in `onEnhance` and `refinements`, not in a visual axis.
+
+## Instead use
+
+- **slot-summary**: You want to show what the system understood from the request before it acts, as structured fields. This component rewrites the prompt text itself.
+- **diff-review**: The AI has edited prose and each change needs its own accept or reject. The enhancer returns one rewrite to take or leave whole.
+- **selection-toolbar**: The person selects text in a document and picks an AI action for that selection. The enhancer works on the whole prompt field.
+- **suggestion-chips**: You offer starter tasks before anything is typed. The enhancer needs a prompt to rewrite and is disabled until there is one.
+
+## Do
+
+- Write the accepted text into your own field from `onAccept`. The component never reaches into the textarea, so the same enhancer works with any composer.
+- Keep Revert one click away after an accept. It restores the exact original, including spacing and line breaks.
+- Reject the promise when the model fails. The panel says the prompt is unchanged, and nothing was written to the field.
+
+## Don't
+
+- Don't overwrite the field with the rewrite. The person never sees what changed and has nothing to compare against.
+- Don't send the prompt as part of enhancing it. The point of the panel is that someone reads the rewrite before it runs.
+
+## Anatomy
+
+- `prompt-enhancer`: The wrapper. Holds the Enhance button, the Revert button after an accept, and the status region. Carries `data-state`.
+- `prompt-enhancer-panel`: The popover that opens on Enhance. It holds the progress line, the comparison or the error, and it carries `data-state` too.
+- `prompt-enhancer-title`: The panel heading: Enhancing your prompt, Suggested rewrite or Enhance failed. It also names the dialog.
+- `prompt-enhancer-original`: The person's own text, exactly as it was when Enhance started.
+- `prompt-enhancer-suggestion`: The rewrite column. A labelled region described by the summary line.
+- `prompt-enhancer-added`: An `ins` element around each run of added words. Underlined and tinted, with hidden start and end markers for screen readers.
+- `prompt-enhancer-summary`: The count of what was added, for example 8 words added in 2 places. It is the accessible description of the rewrite.
+- `prompt-enhancer-advanced`: The disclosure that holds the refinement chips.
+- `prompt-enhancer-revert`: The one-step Revert to original button, shown after an accept.
+- `prompt-enhancer-status`: A polite status region, always mounted, that announces each state change.
+
+## Accessibility
+
+**Keyboard**
+
+- Idle, the component is one tab stop: the Enhance prompt button. Enter or Space starts the run and opens the panel.
+- The panel is a dialog. While enhancing, focus lands on Cancel. When the rewrite arrives, focus moves to Accept; on failure it moves to Try again. The tab order inside the panel is Advanced, then the refinement chips once it is open, then Dismiss, Edit and Accept.
+- Escape or a click outside closes the panel. While a run is in flight that cancels it, and a result that arrives afterwards is dropped. In the suggested and failed states it discards the result.
+- After an accept the panel closes and focus returns to the Enhance button. The Revert to original button is a second tab stop after it. After a revert, focus returns to the Enhance button.
+- Enhance prompt is disabled while the field is empty. Nothing else on the component takes a `disabled` prop. There are no arrow-key or Home and End bindings.
+
+**Screen reader**
+
+- A status region, always mounted, announces politely: Enhancing your prompt. / Suggested rewrite ready. / Enhanced prompt applied. Revert is available. / Original prompt restored. / Enhance failed. Your prompt is unchanged. Idle announces nothing.
+- The panel is a dialog named by its heading. The comparison is two labelled regions, Your prompt and Suggested rewrite. The second is described by the summary, for example 8 words added in 2 places.
+- Added words are real `ins` elements. Each run is wrapped in hidden text, added start and added end, because screen readers do not reliably announce insertion semantics. The underline marks them for sighted readers; colour is only a second cue.
+- Edit mode swaps the marked text for a textarea named Edit the suggested rewrite. The summary updates as the person types but is not a live region, so the new count is read only when someone goes back to it.
+- Enhance prompt and Revert to original are named by their visible text; the icons are hidden. The Original restored note after a revert is hidden from assistive tech because the status region already says it.
+
+**Focus**
+
+- Open: focus moves into the panel, to Cancel while enhancing and to Accept or Try again when the state changes.
+- Accept, dismiss or cancel: the panel closes and focus returns to the Enhance button.
+- Revert: focus moves to the Enhance button, since the Revert button is removed.
+
+## Pitfalls
+
+- Revert restores the string captured when Enhance started, and it overwrites whatever is in the field now. If the person types after accepting and then clicks Revert, those edits are replaced. Call `onRevert` to show your own confirmation if that matters in your product.
+- The added-words marking is a word-level comparison. A reordered sentence shows as added words, and a word with a different spelling or case counts as new. Trailing sentence punctuation is ignored, so 'sea' and 'sea,' match.
+- Closing the panel in the suggested or failed state discards the result. Reopening starts a new run, so a second model call is made.
+- A refinement chip always re-runs from the original text, never from the current suggestion. Refinements do not stack.
+- `onEnhance` has no abort signal. Cancel ignores the eventual result, but your request still runs to the end. Cancel it yourself if it is costly.
+- A rejected promise shows one generic message. The error text is not displayed, so log it in `onEnhance` if you need it.
+- The panel opens at up to 40rem wide, capped to the viewport. The two columns stack on narrow screens.
+
+## Composition
+
+- States: `idle`, `enhancing`, `suggested`, `accepted`, `reverted`, `failed`
+- Composes from this registry: nothing
+- shadcn primitives: badge, button, collapsible, popover, textarea
+- npm: lucide-react
+
+## Evidence
+
+Adobe Firefly, Bolt, Cofounder, Copy.ai, FloraFauna, Leonardo.ai, v0
+
+---
+
+# Prompt Template Form
+
+> A prompt written once with named blanks in it, and a form for filling them. Each blank is a typed variable (free text or a pick from a list) that can be required, carry a template default, or arrive pre-filled from an earlier step. Underneath sits a live preview of the assembled prompt, so the text a person reads is exactly the text that is sent.
+
+Layer: component · Family: D · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/prompt-template-form.json` · Contract: `components/super-ai/prompt-template-form.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/prompt-template-form
+
+## Why it matters
+
+Most people never learn to write a good prompt, and the ones who do keep retyping the same skeleton. A template turns the skeleton into the product's job and leaves the person only the parts that change. The preview keeps the template from becoming a black box: Coda, Copy.ai, Google, Jasper, Relay and Writer all expose some form of fill-in-the-blank prompt, and the ones people trust show what the blanks add up to. The marks matter as much as the blanks. A default the template chose, a value carried from the step before and a blank still waiting on an answer each need to read differently from something the person typed.
+
+## When to reach for it
+
+Reach for it when the same prompt shape is used again and again and only a few nouns change: a brief, a summary, a reply in a given tone. Pass `template` as an array in which a plain string is literal text and an object is a blank. Use `inline` when the template reads as one sentence and the blanks are short; use `stacked` when there are more than three or four blanks, when the values are long, or when the form sits in a narrow column. Put the template's own choices in a blank's `defaultValue` so they wear a Default mark, and put values from an earlier step in `defaultValues` or `values` with `carriedFrom` naming that step. Handle `onRun` to send the prompt it hands you.
+
+## Variants
+
+### layout (default: `stacked`)
+
+- `inline`: The template reads as one sentence and the blanks are a word or two each. The person sees the prompt as they fill it, at the cost of narrow controls.
+- `stacked`: Four or more blanks, long values, or a narrow column. Each blank gets a labelled row of its own, which is easier to scan and to correct.
+
+## Instead use
+
+- **slot-summary**: The system has already understood the request and you are reading its resolved values back before it acts. A prompt template asks the person for the values up front; slot-summary shows what was understood afterwards and lets them correct it.
+- **parameter-panel**: The inputs are generation settings such as temperature, length or seed. Those change how a run behaves, not what the prompt says, and they do not belong in the prompt text.
+- **generation-wizard**: The flow is a multi-step generate dialog with its own steps, review and submit. A multi-step template here is one form per step in a flow you own; the wizard supplies the steps themselves.
+- **onboarding-wizard**: The questions are a first-run survey whose answers shape the product, not a prompt that gets sent.
+
+## Do
+
+- Mark a required blank where it sits and let the run button refuse, rather than disabling the button or raising a toast. Pass `showMissing` when resuming a draft that should open with the gaps already visible.
+- In a multi-step flow, carry earlier answers forward with `carriedFrom` and leave them editable. The mark says where the value came from; the field says it is still the person's to change.
+
+## Don't
+
+- Do not deliver the template's own choice through `defaultValues`. It renders as something the person entered, with no Default mark. Use the blank's `defaultValue`.
+- Do not make a generation setting a blank. Temperature, seed and length are parameters of the run, not words in the prompt; they belong in a parameter panel.
+
+## Anatomy
+
+- `prompt-template-form`: Root. Carries `data-layout` with the active `layout`.
+- `prompt-template-form-step`: The 'Step 2 of 3' line. Renders only when a `step` is passed, for templates that sit inside a longer flow.
+- `prompt-template-form-template`: The group holding every blank: the sentence in `inline`, the stack of field rows in `stacked`.
+- `prompt-template-form-blank`: One blank. Carries `data-source` (default, carried, entered or empty) and `data-missing` while it is flagged, so state is addressable without reading text.
+- `prompt-template-form-mark`: The text beside a blank saying where its value came from or that it is still needed: Default, From a step, Required, Still needed.
+- `prompt-template-form-preview`: The labelled block under the form. Its child `prompt-template-form-preview-text` is the polite live region holding the assembled prompt.
+- `prompt-template-form-run`: The run button. It is never disabled; pressing it with a required blank empty flags the blank instead.
+- `prompt-template-form-blocked`: The '2 still needed' count beside the run button. Appears once missing blanks have been revealed.
+
+## Accessibility
+
+**Keyboard**
+
+- One tab stop per blank in source order, then the run button. Nothing in the preview is focusable. `layout` changes the visual arrangement only, so the tab order is identical in `inline` and `stacked`.
+- A text blank takes typing. A select blank opens with Enter, Space or the arrow keys and moves with the arrows, as any Select does.
+- The run button is never disabled, so it is always reachable. Pressing it with a required blank empty does not call `onRun`; it marks every empty required blank and moves focus to the first one.
+- Enter in a text blank does not run the prompt. There is no form element and no submit shortcut, and Escape does nothing.
+
+**Screen reader**
+
+- Every blank is a labelled control named by its `label` alone. In `inline` the name comes from an `aria-label`, so the words around the blank are never part of it; in `stacked` the name comes from the field row's label element.
+- Required blanks carry `aria-required`. A flagged blank carries `aria-invalid` and is described by its mark, so a screen reader gets the label, the invalid state and the description 'Still needed'. A default or carried blank is described the same way: 'Tone, Default'.
+- The preview is `role="status"` with `aria-live="polite"`, named 'Prompt preview'. It is atomic, so the whole assembled prompt is read again after each change; on a long template with a fast typist that is a lot of speech, and a screen reader may coalesce it.
+- While a required blank is empty the preview shows its label in square brackets in place of a value. Run is blocked exactly then, so a prompt with brackets in it is never sent.
+- The group around the blanks is named 'Prompt template'. The select's popup list is named '<label> choices'.
+- Provenance is carried by text, not colour: Default, From Brief, Required and Still needed are words, and the flagged mark also has an icon marked `aria-hidden`.
+
+**Focus**
+
+- Focus moves once: on a refused run it lands on the first empty required blank. Nothing else moves focus, and editing a blank never steals it.
+- Clearing a required blank flags it immediately without moving focus, so a person correcting their own text is not interrupted.
+
+## Pitfalls
+
+- `defaultValue` on a blank and `defaultValues` on the form are different things. The first is the template's choice and is marked Default until the person edits the blank. The second is initial state for the form, and a value there looks entered. Carrying a value in from an earlier step is the second case, and `carriedFrom` is what marks it.
+- The Default and From marks clear on the first edit and do not come back. Setting a blank back to its default text leaves it marked as entered, because the person has made the choice by then.
+- Controlled use means `values` is the whole truth: the form calls `onValuesChange` with the full next record and shows nothing new until you pass it back. A blank with no key in `values` falls back to its `defaultValue`, so removing a key restores the default and its mark.
+- Whitespace is normalised in the prompt: runs of spaces collapse and the ends are trimmed. An optional blank left empty disappears from the sent text, and a sentence built around it can read oddly. Write templates so each optional blank can vanish.
+- A blank's `id` keys the values record, so two blanks with the same id edit each other. Keep ids unique within a template.
+
+## Composition
+
+- States: `empty`, `partially-filled`, `complete`, `with-defaults`, `missing-required`, `multi-step`
+- Composes from this registry: field-row
+- shadcn primitives: badge, button, input, select
+- npm: lucide-react
+
+## Evidence
+
+Coda, Copy.ai, Google, Jasper, Relay, Writer
+
+---
+
 # Generation Panel
 
 > The left configuration column of a generation tool: upload, directions, presets, settings, then cost and Generate, stacked in that fixed order. Upload and directions are built in, with real drag-and-drop-or-click file intake and a prompt field. Presets, settings and the Generate action are plain ReactNode slots, so the panel arranges them without owning or reimplementing their behavior.
@@ -3147,7 +3359,7 @@ Visual parameters get visual pickers, never dropdowns — Midjourney's style bro
 
 ## When to reach for it
 
-Reach for it for any set of visual presets a user chooses directly rather than by name: styles, palettes, filters, environments. Pass `content` so palette items render their colour as the tile fill instead of a `thumbnail`. Default is single-select (`role="radiogroup"`); pass `multiple` when presets can combine, like stacking an environment with a mood — that switches every tile to `role="checkbox"` and `value`/`onValueChange` to an array. Set `visibleCount` to cap how many tiles show before the rest collapse behind the see-more tile.
+Reach for it for any set of visual presets a user chooses directly rather than by name: styles, palettes, filters, environments. Pass `content` so palette items render their colour as the tile fill instead of a `thumbnail`. Default is single-select (`role="radiogroup"`); pass `multiple` when presets can combine, like stacking an environment with a mood — that switches every tile to `role="checkbox"` and `value`/`onValueChange` to an array. Set `visibleCount` to cap how many tiles show before the rest collapse behind the see-more tile. Mark presets a user or their team made with `source: "personal" | "team"`: they move into a "Your styles" section above the system presets, each showing its source as text. Pass `onSaveCurrent` to put a "Save current" tile at the start of that section. With neither, the grid is unchanged.
 
 ## Variants
 
@@ -3162,6 +3374,7 @@ Not yet recorded.
 - Give every palette item a real, descriptive label ("Sunset orange"), not just a colour — that label is the only thing that tells a screen-reader or colourblind user which swatch is which.
 - Pass `multiple` when presets can combine instead of faking multi-select on top of a single radiogroup — the whole group's role switches with it, not just the visual ring.
 - Let `visibleCount` collapse the rest behind a see-more tile that lives inside the grid, so revealing more presets never reflows what's already on screen.
+- Show where a user preset comes from and give it a way to be saved: a team style and a personal one behave differently when edited, so the source belongs on the tile, as text.
 
 ## Don't
 
@@ -3173,6 +3386,9 @@ Not yet recorded.
 - `preset-grid`: Root — the radiogroup (single-select) or group (multi-select) and the CSS grid live on the same element.
 - `preset-grid-tile`: One option: a role="radio"/"checkbox" button wrapping a preview-tile (A8) for the frame, ring, badge and overlay label.
 - `preset-grid-swatch`: `palette` content only — the colour fill inside a tile. Decorative and aria-hidden; the tile's own label carries the accessible name.
+- `preset-grid-section`: Present only when a preset is `personal` or `team`, or `onSaveCurrent` is set: a "Your styles" section above a "Presets" section, both inside the same radiogroup so there is one selection across them.
+- `preset-grid-source`: The text label on a user preset (Personal, Team, System). Text, not colour, and part of the tile's accessible name.
+- `preset-grid-save-current`: The "Save current" tile at the start of the "Your styles" section. A plain button, not a radio.
 - `preset-grid-see-more`: The overflow affordance — a tile in the grid, in the same role container, never a link rendered below it.
 
 ## Accessibility
@@ -3181,6 +3397,7 @@ Not yet recorded.
 
 - Single-select is a radio group (the vendored radio-group, Base UI): the tiles are one tab stop, landing on the checked tile or the first, and the see-more tile is the next stop after them. Under `multiple` every tile is its own tab stop, as the checkbox-group pattern has it.
 - In single-select the arrow keys move between tiles in DOM order, selecting as they go, and wrap; they do not move by row through the grid. Home and End do nothing. Under `multiple` the arrows do nothing and Tab is the way between checkboxes.
+- The "Save current" tile is a button outside the radio set. It is its own tab stop and the arrow keys skip it; pressing it calls `onSaveCurrent` and never changes the selection.
 - Space and Enter select, because each tile is a native `<button>` underneath its role. In single-select a tile can only ever be turned on — pressing the already-checked tile re-selects it — while under `multiple` the same press toggles it off.
 - There is no `disabled` anywhere in the API. Every tile is focusable and activatable including one whose `state` is `"loading"` or `"failed"`, so a preset that is still resolving is picked exactly as easily as one that finished.
 
@@ -3189,6 +3406,8 @@ Not yet recorded.
 - The root is `role="radiogroup"`, or `role="group"` under `multiple`, and it has no accessible name. Nothing in the component supplies one — pass `aria-label` or `aria-labelledby` yourself. Props you spread land on that root, so this is the one name you can set from outside.
 - A tile's name is read from its whole button subtree in DOM order: any text inside the `thumbnail` you passed, then the `badge`, then the overlay label. A badge reading "New" therefore announces before the preset name — "New Sunset orange, radio button" — which is the reverse of how it is read visually.
 - For `content="palette"` the swatch is `aria-hidden` and `label` is literally the only thing an assistive-tech user gets. "Sunset orange" is a name; "Palette 3" is not, and there is no second chance at it.
+- A preset with a `source` gets an outright accessible name, "Neon noir, Personal", replacing the subtree-derived name, so any `badge` or `thumbnail` text is not read for it. The source is also visible as text on the tile.
+- The "Your styles" and "Presets" headings are plain text inside the radiogroup, not landmarks or headings, so they are read in passing and do not name the sections.
 - The see-more tile is a plain `<button>` sitting inside the radiogroup rather than a radio. Its name comes from `seeMoreLabel` plus an `sr-only` count — "See more — 8 more" — but a radiogroup's only expected children are radios, so it is a non-radio member of a set whose size assistive tech is trying to report.
 - `loading` and `failed` are invisible here. `preview-tile` sets no `aria-busy` and adds no text for either, so all three states announce identically and only the ring and the fill distinguish them.
 
@@ -3201,13 +3420,14 @@ Not yet recorded.
 ## Pitfalls
 
 - Wiring a tile's own onClick straight into preview-tile's `onSelect` prop — that renders preview-tile's internal Frame as a second, nested interactive button with `aria-pressed` toggle semantics, the wrong ARIA for a radio or checkbox. preset-grid deliberately renders preview-tile without `onSelect` and wraps it in its own single `role="radio"`/`role="checkbox"` button instead.
+- Marking a system preset `personal` or `team` and expecting it to stay in place: any item with either source moves into "Your styles", and `visibleCount` then caps only the remaining presets.
 - Passing `multiple` without also reading `value` as an array — a consumer that keeps treating `onValueChange`'s payload as a single string will see every tile after the first look permanently selected or never update at all.
 - Leaving `color` off a palette item and expecting the thumbnail slot to fall back to something visible — palette content ignores `thumbnail` entirely, so a missing `color` renders an empty tile with only the label visible.
 
 ## Composition
 
-- States: `style`, `palette`, `filter`, `environment`, `see-more`
-- Composes from this registry: preview-tile
+- States: `style`, `palette`, `filter`, `environment`, `see-more`, `user-presets`
+- Composes from this registry: preview-tile, section-header
 - shadcn primitives: radio-group
 - npm: lucide-react
 
@@ -3245,16 +3465,19 @@ Not yet recorded.
 - Give Cancel a visible seat right next to the busy trigger the moment a run starts.
 - Spell out the shortfall in numbers when credits are short — "Need 6, you have 2", not a silently disabled button.
 - Swap the locked CTA in for the trigger itself, in the same spot — the same answer hero-omnibox gives for its own locked state.
+- Turn on `draft` when the run is the cheaper, lower-quality one. The label reads "Generate draft" and `finalCost` adds the delta to a final run, so the click is never mistaken for the real one.
 
 ## Don't
 
 - Don't just grey out the trigger when credits are short — a disabled button with no numbers gives the user nothing to act on.
 - Don't gate the feature with a separate banner next to a trigger that still looks live — now two places can disagree about whether the action is locked.
+- Don't run a draft under the plain label with the draft price alone. Users then believe they are paying for the final result.
 
 ## Anatomy
 
 - `run-button`: Root wrapper for every state; carries data-state and aria-busy.
 - `run-button-cost`: CostChip (A2), shown alongside the trigger whenever a cost is known.
+- `run-button-final-delta`: With `draft` on and a `finalCost`, a second CostChip beside the cost showing the extra credits a final run would take. Absent otherwise.
 - `run-button-trigger`: The main action: Generate, Generating…, Run again, or Try again.
 - `run-button-progress`: Progress fill drawn inside the trigger while running — never a separate bar.
 - `run-button-cancel`: Always present next to the trigger while running; a generation you can't stop burns trust.
@@ -3291,6 +3514,7 @@ Not yet recorded.
 
 ## Pitfalls
 
+- Passing `draft` without `finalCost`. The label still says draft, but the delta chip is omitted, so the user sees one price and cannot tell what stepping up would cost. When both costs are numbers the chip shows a signed delta; when either is a pre-formatted string it shows the final price itself.
 - Treating insufficient-credits as a disabled idle button. The point of the state is the number — how much is needed and how much the user has — not just refusing the click.
 - Relabelling the trigger for estimating/running without announcing it. Screen reader users won't pick up a text change on an already-focused button by itself; that's what the sr-only status region and aria-busy are for.
 - Recomputing the cost locally instead of passing through the same number the estimate (A2 cost-chip) and any parent generation panel already agreed on — two different prices for the same action is the exact failure mode the spec calls out.
@@ -3298,7 +3522,7 @@ Not yet recorded.
 
 ## Composition
 
-- States: `idle`, `estimating`, `running`, `done`, `failed`, `insufficient-credits`, `locked`
+- States: `idle`, `estimating`, `running`, `done`, `failed`, `insufficient-credits`, `locked`, `draft`
 - Composes from this registry: cost-chip
 - shadcn primitives: button, button-group, progress
 - npm: lucide-react
@@ -3768,6 +3992,110 @@ Not yet recorded.
 ## Evidence
 
 None recorded.
+
+---
+
+# Voice Profile
+
+> A card for the rules that decide how output sounds. The current voice sits at the top with its source and scope in text, a list of saved voices lets the person switch in one press, and a personal voice is edited as rules: tone, words to use, words to avoid, formatting and an example. An optional preview writes a sample under the rules as they stand. When two voices could apply the card says which wins and why, and one button resets to neutral. A small chip, exported separately, shows the active voice beside the input.
+
+Layer: component · Family: E · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/voice-profile.json` · Contract: `components/super-ai/voice-profile.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/voice-profile
+
+## Why it matters
+
+A voice is only trusted when the person can see which one is speaking and where it applies. Dia, ElevenLabs, Grammarly, Jasper, Midjourney and Tabnine each let a person shape output style, and they differ on whether the active style is visible at the point of writing, whether it follows the person everywhere or stays in one project, and whether a way back to default exists. Shape of AI's voice and tone pattern names the failure this component guards against: a global tone leaking into a project it does not belong to.
+
+## When to reach for it
+
+Pass `voices` and `activeId`, and own both: the component calls `onActiveChange(id)`, `onSave(voice)`, `onScopeChange(id, scope)` and `onReset()` and you update your list. A voice is `{ id, name, source, scope, rules }` where `source` is `"personal"`, `"team"` or `"system"` and `scope` is `"global"` or `{ project }`. Only a personal voice can be edited or re-scoped here. Pass `activeProject` when the person works in projects, so voices held to another project say they are not used. Work out conflicts yourself and pass `conflict` with the winner, the other voice and one sentence of reason. Pass `onPreview(rules)` returning a promise of sample text to enable previews; it receives the unsaved draft while editing. Render `ActiveVoiceChip` next to your composer with the same voice and an `onOpen` that shows this card. Saved visual styles belong in preset-grid and what the assistant knows about the person belongs in memory-manager.
+
+## Variants
+
+None: No variant axis: the seven states are driven by the data and the host, through voices, activeId, activeProject, conflict and defaultEditingId, and by pressing Reset.
+
+## Instead use
+
+- **preset-grid**: The person is picking a saved visual style from a grid of previews. Voice-profile holds rules for how output sounds, not how it looks.
+- **memory-manager**: You need to show what the assistant knows about the person, such as facts and preferences it saved. A voice is rules for style, not recalled information.
+- **mode-tabs**: The choice is a mode of work, such as chat or code, and not a voice. Switching a mode changes what the assistant does; a voice changes how it writes.
+- **parameter-panel**: The person is tuning generation parameters such as length or randomness. Those are numeric settings, not named rules with an example.
+
+## Do
+
+- Show the active voice at the input, with its name, source and scope in text, and let it open the profile.
+- Hold a voice to a project when it only makes sense there, and say so on every row.
+- Name the winner and the reason when two voices could apply.
+- Let the person check the rules against a sample before they trust them.
+- Make reset to neutral one press, and say that saved voices are kept.
+
+## Don't
+
+- Don't reduce a voice to a mood. A tone button says nothing about words, formatting or an example.
+- Don't show a voice without its scope. A global tone that follows the person into the wrong project is the failure this pattern exists to prevent.
+- Don't pick a winner silently. When a second voice is ignored, the person needs to be told which and why.
+
+## Anatomy
+
+- `voice-profile`: The card. A named group, so a screen reader announces the section.
+- `voice-profile-title`: Card title. A heading whose level you set with `headingLevel`.
+- `voice-profile-current`: The active voice's name, or Neutral. Focus lands here after Use and Reset.
+- `voice-profile-current-meta`: Source and scope of the active voice as text, or the neutral and just-reset sentence.
+- `voice-profile-reset`: Reset to neutral. One press, one `onReset` call. Absent while neutral.
+- `voice-profile-conflict`: Names the winning voice, the one it wins over, and the reason. Carries `data-winner`.
+- `voice-profile-rules`: The active voice's rules as a description list. Empty rules are omitted.
+- `voice-profile-scope`: The Applies to select. Only for a personal voice when a project is known.
+- `voice-profile-edit`: Opens the rules editor. Only on a personal voice.
+- `voice-profile-editor`: The editing form: name, tone, words to use, words to avoid, formatting, example, Save and Cancel.
+- `voice-profile-preview`: Preview a sample button and its live output. Present only when you pass `onPreview`.
+- `voice-profile-list`: The saved voices with a labelled header and count.
+- `voice-profile-item`: One voice. Carries `data-source` and `data-active`.
+- `voice-profile-item-meta`: Source and scope beside the row, never inside it, so it never truncates.
+- `voice-profile-use-voice`: Switches to this voice. Replaced by an Active badge on the current one.
+- `voice-profile-status`: Visually hidden live region for switches, saves and resets.
+- `active-voice-chip`: The input-side indicator, a separate export. A button when `onOpen` is passed.
+
+## Accessibility
+
+**Keyboard**
+
+- Tab stops in order: Reset to neutral (only while a voice is active), then for a personal voice the Applies to select, Preview a sample when present, and Edit rules, then Use on each voice that is not active. Enter or Space activates a button; Enter or Space opens the select and arrow keys choose within it.
+- In the editor the name field takes focus on open and Tab reaches each field, then Preview, Save voice and Cancel. Enter inside a single-line field submits the form; Enter inside the example textarea adds a line. Escape cancels the edit and does nothing else.
+- Save voice is natively disabled while the name is empty, which removes it from the tab order. Preview is disabled while a sample is being written. No prop disables the whole card.
+- There is no confirmation step on reset, so Escape and Cancel have nothing to close there. The chip is a tab stop only when `onOpen` is passed; without it the chip is plain text.
+
+**Screen reader**
+
+- The card is a `group` named by its title, and the title is a heading at the level you pass in `headingLevel`. The current voice and the rules each sit in a labelled section.
+- Use is named by its own text plus the voice name through `aria-labelledby`, so the list reads "Use Formal" rather than several identical "Use" buttons. A very long voice name makes a long button name.
+- Rules are a description list, so each term is paired with its value. Source and scope are plain text on every row, never a colour or an icon alone.
+- Switches, saves, resets and scope changes are announced through one polite status region. The sample from a preview is announced through its own polite region, which stays mounted. The conflict block is not a live region: it is read when the person moves to it, so a conflict that appears after a change is announced as nothing.
+- The Applies to select is named by its label plus its current value. `ActiveVoiceChip` has no role of its own; as a button its name is its visible text, such as the voice name, source and scope read in sequence.
+
+**Focus**
+
+- Opening the editor moves focus to the name field. Save or Cancel returns focus to Edit rules.
+- Use and Reset to neutral move focus to the current-voice line, because the button they came from is replaced. That line is focusable by script only and is not a tab stop.
+
+## Pitfalls
+
+- Not updating `activeId` in the handlers. The component is controlled: `onActiveChange` and `onReset` only report the request, so a handler that does nothing leaves the voice unchanged.
+- Expecting `onReset` to delete voices. It means return to neutral; saved voices stay in the list and the card says so.
+- Passing `conflict` for a voice id that is not in `voices`. The card falls back to printing the raw id.
+- Resolving a conflict in your own code and never passing it. If two voices apply and the person is not told which wins, the reply seems to ignore a voice for no reason.
+- Expecting a team or preset voice to be editable. Only `source: "personal"` shows Edit rules and the scope select; the rules of the others are read-only text.
+- Returning a preview that never settles. The Preview button stays disabled while the promise is pending, so reject on timeout.
+- Pairing `text-muted-foreground` with a muted, accent or secondary surface when you wrap the card. The rows are written for the card surface; if you paint the wrapper, rebind `--muted-foreground` on it.
+
+## Composition
+
+- States: `none`, `preset`, `custom`, `editing`, `scoped`, `conflict`, `reset`
+- Composes from this registry: entity-row, section-header
+- shadcn primitives: badge, button, card, input, label, select, textarea
+- npm: lucide-react
+
+## Evidence
+
+Dia, ElevenLabs, Grammarly, Jasper, Midjourney, Tabnine
 
 ---
 
@@ -6961,6 +7289,105 @@ Glean, NotebookLM, Perplexity
 
 ---
 
+# Summary Card
+
+> A card that condenses a named source the reader already has: a document, a thread, a section or a selection. It states what was summarized, links back to it, carries the AI label every time, and lets the reader pick how deep the summary goes. The host generates the text; the card owns the frame, the depth control and the placement of citation markers.
+
+Layer: component · Family: K · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/summary-card.json` · Contract: `components/super-ai/summary-card.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/summary-card
+
+## Why it matters
+
+A summary reads as the source's own voice unless the surface says otherwise, and that is the distortion the Summary pattern in Shape of AI warns about. Apple, Bloomberg, Notion, Perplexity, Slack and Zoom all summarize content the reader owns, and the ones that earn trust say what was summarized and let the reader move between a short version and a longer one. Legal, scientific and contractual text goes one step further: rewording changes the meaning, so the useful summary is the key passages quoted word for word. The card also treats turning summaries off as a real state, so a reader who declined them sees that choice and a way back.
+
+## When to reach for it
+
+Pass the scope, the depth the points were generated at, and the points. The card never holds the depth: when the reader picks another one it calls onDepthChange and you regenerate, then pass the new points and, while you wait, state generating. Use attributed when each point rests on sources: give each point its citation indices and a renderCitation that returns your own marker, so the card decides where it sits and you decide what it opens. Use quote-and-condense for text where rewording is risky, and pass the passages and their locators. Use collapsed for a card in a dense list; it shows the first point and an expand control, and tracks the toggle itself. Use turned-off, with onTurnOn, when the reader has switched automatic summaries off, so the card stays in place and says so.
+
+## Variants
+
+### depth (default: `short`)
+
+- `short`: The reader wants the gist of the source in a line or two, such as a thread they were not in or a preview in a list.
+- `detailed`: The reader wants the argument and the main supporting detail in a few paragraphs, so they can skip the source without losing the thread.
+- `key-points`: The reader wants to scan: short fragments as a list, such as decisions, owners and dates from a meeting or a long document.
+
+## Instead use
+
+- **answer-block**: The text answers a question the reader asked, from sources retrieved for that question. Summary-card condenses one named source the reader already has; answer-block attaches a citation to each claim and reports how much of the answer is sourced.
+- **ai-doc-block**: The generated passage sits inside a document the reader is editing, with keep, edit, regenerate and discard around it. Summary-card is a standalone card about a source, not a passage in the flow of one.
+- **disclaimer-note**: You only need a caveat that the content may be wrong or incomplete. Summary-card carries its own AI label, and a caveat belongs beside it as a note.
+- **source-cards**: The reader needs the set of sources that retrieval found, not a condensed version of one of them.
+
+## Do
+
+- Name the source and link back to it, so the reader can check the summary against the thing it condenses.
+- Give each point its citation indices in the attributed state and fill the marker through renderCitation.
+- Switch to quote-and-condense for clauses where the exact words matter, and give each passage its locator.
+- Keep the card in place when summaries are off and offer the way back with onTurnOn.
+
+## Don't
+
+- Don't paraphrase a contractual clause in a ready summary. A notice period of ninety days written is not about three months of warning.
+- Don't write whole sentences as key points. A list of long sentences is the detailed depth with bullets, and the reader loses the scan the preset promises.
+
+## Anatomy
+
+- `summary-card`: Root, a named group. Carries data-state (the six states) and data-depth (short, detailed or key-points).
+- `ai-label`: The summarized chip from ai-label. Present in every state that shows a summary, and left out of turned-off where nothing was summarized.
+- `summary-card-scope`: The sentence naming what was summarized. Its title is a link back to the source when you pass href, and it is also the group's accessible name.
+- `toggle-group`: The depth control: Short, Detailed and Key points. Hidden while collapsed and while turned off.
+- `summary-card-point`: One point of the summary. Holds the text and, in the attributed state, the markers for its citations.
+- `summary-card-citations`: The span at the end of a point that holds the markers your renderCitation returns.
+- `summary-card-quote`: A verbatim passage with its locator, in the quote-and-condense state.
+- `summary-card-pending`: The polite status shown while generating, with two placeholder lines.
+
+## Accessibility
+
+**Keyboard**
+
+- Tab stops, in order: the link back to the source when href is given, then the depth control as one stop (the three buttons share a roving tab stop, and it rests on the first, Short, whichever depth is selected), then any markers you render, then the expand and turn-off buttons in the footer.
+- Left and Right Arrow move focus between the depth buttons. Enter and Space press the focused one. Pressing the depth that is already selected does nothing, and un-pressing it is ignored, so a summary always has a depth.
+- There is no shortcut for expand or turn-off.
+- In the collapsed state the depth control is not rendered at all, so it leaves the tab order until the card is expanded. In turned-off the only stop is the turn-on button.
+- The card has no disabled prop. Your handlers decide what a press does.
+
+**Screen reader**
+
+- The root is role="group" named by the scope sentence, so a card announces as "Summary of the document leave-policy-emea.docx, group". The name comes from the sentence, so an empty scope title leaves it reading "Summary of the document".
+- The AI label is a note named "Summarized by AI". The depth control is a group named "Summary depth", and its buttons expose aria-pressed.
+- The expand button reads "Show full summary" or "Show less" and carries aria-expanded and aria-controls pointing at the body.
+- While generating, the body has aria-busy and holds a role=status line, "Summarizing the document", which is announced politely. The status line is mounted with the state, so some screen readers announce it only when it appears and not on later changes.
+- When the new summary arrives, nothing announces it: the status region unmounts. If a depth change should be heard, announce it from your own live region.
+- Quote-and-condense uses real blockquote and figure elements. The quotation marks are text inside the blockquote, so they are read aloud by some screen readers.
+- Citation markers are whatever your renderCitation returns. Give each one a name that says what it is; the fallback marker is plain superscript text with no role.
+
+**Focus**
+
+- Nothing here moves focus. After onDepthChange the host regenerates and the card goes to generating, but the depth button the reader pressed stays mounted, so focus stays on it.
+- Expanding a collapsed card keeps focus on the toggle, which changes its label in place. Collapsing again removes the depth buttons but not the toggle.
+- Entering the turned-off state unmounts the depth buttons. If focus was on one of them it falls to the document body, so move it yourself to the turn-on button when you switch the state.
+
+## Pitfalls
+
+- The depth is controlled by you. The card calls onDepthChange and shows whatever depth you pass back, so omitting the handler leaves the buttons looking dead. If regeneration is slow, pass state generating in the meantime, or the old summary stays on screen under the new depth.
+- Citations render only in the attributed state. Points that carry citation indices in a ready card show no markers, so a host that forgets to switch the state ships an unsourced-looking summary.
+- quote-and-condense shows the quotes array, not the points. It shows nothing if you pass points only, and the card does not check that a quote appears in the source, so verbatim is your guarantee to keep.
+- The collapsed state shows only the first point and tracks its own expanded flag. Changing the state prop away from collapsed and back resets nothing, so a card the reader opened stays open. Use onExpandedChange if the host needs to know.
+- Turned-off removes the AI label because nothing was summarized. If the same card goes from ready to turned-off mid-session, the previous points are not kept for the reader to look at.
+
+## Composition
+
+- States: `generating`, `ready`, `attributed`, `quote-and-condense`, `collapsed`, `turned-off`
+- Composes from this registry: ai-label
+- shadcn primitives: button, card, skeleton, toggle-group
+- npm: none
+
+## Evidence
+
+Apple, Bloomberg, Notion, Perplexity, Slack, Zoom, ServiceNow Horizon
+
+---
+
 # Empty State
 
 > The nothing-here surface, in three sizes that share one component: a page takeover for a whole route, a panel state for a sidebar or pane, and an in-grid tile that occupies a single cell so the grid it sits in keeps its columns. It carries a decorative mark, a title, a line of explanation, a caller-supplied call to action, and — for generation tools — a before/after pair that shows what the surface will produce.
@@ -9610,6 +10037,200 @@ Adobe Content Credentials, TikTok, Shutterstock, Snap, Google SynthID
 
 ---
 
+# Memory Manager
+
+> A card listing what the assistant remembers about a person, split into preferences and facts. Each memory shows its scope, when it was added and where it came from, and can be edited in place or deleted. A switch turns memory off and says what stops, and one reset action clears everything behind a confirmation. A small chip, exported separately, tells the person in the conversation that a memory was just saved.
+
+Layer: component · Family: N · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/memory-manager.json` · Contract: `components/super-ai/memory-manager.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/memory-manager
+
+## Why it matters
+
+Memory is only trusted when it can be inspected. ChatGPT, Claude, Gemini, Perplexity and Apple each let a person see saved memories, but they differ on whether a memory shows its source, whether work and personal sets are told apart, and how a wipe is confirmed. Shape of AI's memory pattern asks for the same things this component builds in: visible provenance, scope you can read, per-item control, and a capture moment that does not happen silently.
+
+## When to reach for it
+
+Pass `memories` and own them: the component calls `onEdit(id, text)`, `onDelete(id)` and `onReset()` and you update the list. Give each memory a `scope`, either `"global"` or `{ workspace }`, and pass `activeWorkspace` when the person has more than one memory set so rows held for another workspace say they are not used. Set `source` whenever you know it. Control `enabled` with `onEnabledChange`. When the assistant saves something, render `MemorySavedChip` in the conversation with an `onReview` that opens this card, and pass the new item's id as `justSavedId` so the row is marked. Training and retention belong in data-controls, and a session that remembers nothing belongs in private-session-notice.
+
+## Variants
+
+None: No variant axis: the seven states are driven by the data and the host, through memories, scope, enabled and the justSavedId, defaultEditingId and defaultResetOpen props.
+
+## Instead use
+
+- **data-controls**: The choice is about training on conversations or how long they are retained. That is data handling by the provider, not what the assistant recalls about the person.
+- **private-session-notice**: You need to tell the person this session remembers nothing. Memory-manager only mentions private sessions in one sentence of copy.
+- **settings-dialog**: You need the whole settings surface with navigation and many sections. Memory-manager is one section's worth and lives inside that surface.
+- **asset-library**: The person is managing their own files and uploads. Memory-manager holds what the assistant inferred, not what the person stored.
+
+## Do
+
+- Show scope, date and source on every row, as text, so no memory is a black box.
+- Edit in place with a labelled field and Save/Cancel, so the person corrects a memory without deleting and re-teaching it.
+- Tell the person in the conversation when a memory is saved, with a way to review it.
+- Put reset behind a confirmation that says what it deletes and what it keeps.
+
+## Don't
+
+- Don't list memories as bare sentences. Without a date, a source and a scope, nobody can judge whether to keep one.
+- Don't offer a Clear button that acts at once and does not say what it removes.
+- Don't mix preferences and facts in one pile. How the assistant should write and who the person is get reviewed differently.
+
+## Anatomy
+
+- `memory-manager`: The card. A named group, so a screen reader announces the section.
+- `memory-manager-title`: Card title. A heading whose level you set with `headingLevel`; focus moves here after a delete.
+- `memory-manager-switch`: Turns memory on or off. Described by the statement beside it.
+- `memory-manager-statement`: One sentence on what happens now, and what stops when the switch is off.
+- `memory-manager-private-note`: Names private sessions in copy. It renders no notice.
+- `memory-manager-group`: One group, Preferences or Facts, with a labelled header and count.
+- `memory-manager-item`: One memory. Carries `data-kind`.
+- `memory-manager-text`: The remembered sentence. It names the row's buttons.
+- `memory-manager-meta`: Scope, date added and source, as text. Beside the row, not inside it, so it never truncates.
+- `memory-manager-edit`: Opens the in-place editor for this row.
+- `memory-manager-delete`: Deletes this row only. Calls `onDelete` with its id.
+- `memory-manager-editor`: The editing form: a labelled textarea with Save and Cancel.
+- `memory-manager-reset`: Opens the reset confirmation. Absent when nothing is saved.
+- `memory-manager-reset-dialog`: Alert dialog saying what is deleted and what is kept. `onReset` fires from its confirm button only.
+- `memory-manager-status`: Visually hidden live region for saves, deletes and resets.
+- `memory-saved-chip`: The capture-moment chip, a separate export you place in the chat.
+- `memory-saved-chip-review`: Calls `onReview`. Only present when you pass the handler.
+
+## Accessibility
+
+**Keyboard**
+
+- Tab stops in order: the memory switch, then for each row Edit and Delete, then Reset all memories. Space toggles the switch; Enter or Space activates a button.
+- In the editor the textarea takes focus on open; Tab reaches Save then Cancel. Enter inside the textarea adds a new line, so Save is the button. Escape cancels the edit and does nothing else.
+- Save is natively disabled while the field is empty, which removes it from the tab order.
+- The reset dialog traps focus, Escape closes it without calling `onReset`, and the confirm button is the only way to fire it. The component does not set `disabled` anywhere else; there is no prop that disables the whole card.
+
+**Screen reader**
+
+- The card is a `group` named by its title, and the title is a heading at the level you pass in `headingLevel`. Each memory group is a labelled section whose name includes its count.
+- Edit and Delete are named by their own text plus the memory sentence through `aria-labelledby`, so a list of buttons reads "Delete Use British spelling in documents." rather than ten identical "Delete" buttons. A very long memory makes a long name.
+- The switch is named "Memory" and described by the statement, so the sentence saying what stops is read with the control.
+- Dates are `time` elements with a machine-readable value; scope and source are plain text, never a colour or an icon alone.
+- Saves, deletes and resets are announced through one polite status region. The switch announces its own new state; the changed statement beside it is not in a live region and is read only when the person moves to it.
+- `MemorySavedChip` is `role="status"`, so it is announced when it is inserted. Insert it fresh; one that is already on the page when it first renders is not announced. Its review button is named "Review" plus the chip label.
+
+**Focus**
+
+- Opening the editor moves focus to the textarea. Save or Cancel returns focus to that row's Edit button.
+- Delete and a confirmed reset move focus to the card title, because the row or the Reset button they came from is gone. Cancelling a dialog opened from the Reset button returns focus to that button.
+
+## Pitfalls
+
+- Not updating `memories` in the handlers. The component is controlled: `onEdit`, `onDelete` and `onReset` only report the request, so a handler that does nothing leaves the list unchanged.
+- Rendering `MemorySavedChip` inside this card. It belongs in the conversation, at the moment of capture; the card only marks the row with `justSavedId`.
+- Passing a local-time string as `addedAt` and expecting local dates. Dates are shown as calendar dates in UTC so the text is identical on every machine; pass an ISO date.
+- Putting training or retention controls in this card. They govern the provider's data use, not what the assistant recalls about the person; use data-controls for them.
+- Expecting `enabled={false}` to hide or disable the list. Saved memories stay visible and editable while memory is off, because the person must still be able to delete them.
+- Pairing `text-muted-foreground` with a muted, accent or secondary surface when you wrap the card. The rows are written for the card surface; if you paint the wrapper, rebind `--muted-foreground` on it.
+
+## Composition
+
+- States: `empty`, `populated`, `scoped`, `just-saved`, `editing`, `memory-off`, `reset-confirm`
+- Composes from this registry: entity-row, section-header
+- shadcn primitives: alert-dialog, badge, button, card, label, switch, textarea
+- npm: lucide-react
+
+## Evidence
+
+ChatGPT, Claude, Gemini, Perplexity, Apple
+
+---
+
+# Agent Presence
+
+> A persistent, quiet cue that an agent is active in this surface. It has two parts: a chip for the app chrome that says what the agent is doing and what it can see or use, and a region wrapper that outlines the tab, frame or panel the agent controls. One menu holds Pause or Resume and Take over, and an optional link leads to the agent's steps. It never opens a modal.
+
+Layer: component · Family: N · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/agent-presence.json` · Contract: `components/super-ai/agent-presence.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/agent-presence
+
+## Why it matters
+
+A browsing agent shares your screen, so the person needs to know at a glance whether it is looking, acting, stuck or paused, and which part of the page it can reach. Perplexity Comet, OpenAI Operator and Zapier workflow approvals each show some form of this cue, though the evidence is thin and the third example is the weakest, so treat the pattern as plausible rather than settled. The scope line is there so the boundary is read rather than assumed, and takeover is one menu action so a person is never more than a click from control. Watching is not a safeguard: Shape of AI cites a prompt-injection flaw in exactly this kind of product, which is why no copy here suggests that oversight prevents harm.
+
+## When to reach for it
+
+Put the chip in app chrome, such as a toolbar or tab strip, and wrap the surface the agent controls in AgentPresenceRegion with the same state. The host owns the state: pass it in, and wire onPause, onResume and onTakeOver to your own agent runtime, which then passes the new state back. Write scope as a sentence about reach, for example "Can see and use this tab". In needs-you, pass need with the approval's name and render your permission prompt elsewhere; this component only points at it. Pass onOpenSteps when you have a trace of the agent's steps to link to. Use a task tray when the work outlives the view, a permission prompt for the approval itself, a trace timeline for the steps, and an autonomy selector for how much the agent may do unasked.
+
+## Variants
+
+None: The six states are what the host reports, not a style choice, so there is no variant axis to pick between.
+
+## Instead use
+
+- **task-tray**: Work outlives the current view and needs a place to be tracked, not an ambient cue on this surface.
+- **permission-prompt**: The agent needs a decision from the person; the approval itself belongs there and this chip only names it.
+- **trace-timeline**: The person wants to read the agent's steps in order; link to it with onOpenSteps.
+- **autonomy-selector**: The question is how much the agent may do unasked, a standing policy rather than live presence.
+
+## Do
+
+- Write scope as a sentence about reach, so a person reads what the agent can see and use.
+- Wrap the controlled surface in AgentPresenceRegion with the same state as the chip, so the outline always has its words beside it.
+- In needs-you, pass need so the chip names what the agent is waiting for, and keep the approval controls in your permission prompt.
+
+## Don't
+
+- Don't show the outline without the chip. The outline is a colour and a line style, and says nothing in words.
+- Don't write a vague scope. A one-word scope tells the person nothing about what the agent can reach.
+
+## Anatomy
+
+- `agent-presence`: The chip root. Carries data-state with the current state.
+- `agent-presence-status`: The one persistent role=status element. Its text changes with the state and is announced politely.
+- `agent-presence-badge`: The state in words, with a small dot that pulses while the agent is acting or needs you.
+- `agent-presence-need`: In needs-you only: the approval the agent is waiting for, named in text. The approval itself is not here.
+- `agent-presence-scope`: What the agent can see and use, as a sentence the host supplies.
+- `agent-presence-menu`: The icon button that opens Pause or Resume, Take over and View agent steps. Absent when no item applies.
+- `agent-presence-region`: The wrapper for the controlled tab, frame or panel. Carries data-state.
+- `agent-presence-outline`: The decorative outline over the region. It is aria-hidden and ignores the pointer.
+
+## Accessibility
+
+**Keyboard**
+
+- The chip contributes one tab stop, the Agent controls button, and none when no menu item applies (idle, or taken-over with no steps link).
+- Enter or Space on the button opens the menu, the arrow keys move between items, Enter or Space activates one, and Escape closes it and returns focus to the button.
+- The region adds no tab stops and the outline overlay ignores the pointer, so it never blocks a click on the content underneath.
+- There is no global shortcut for Pause or Take over. A person who cannot reach the chip cannot reach the controls, so place it early in the tab order of the chrome.
+
+**Screen reader**
+
+- One persistent role=status element holds the state sentence, such as "Agent is acting". Changes are announced politely. The element is never unmounted, so every change is read as an update.
+- In needs-you the status also carries the need text, so the approval is announced with the state. Nothing in this component is the approval; a screen reader user still needs a way to reach your permission prompt.
+- The scope sentence sits outside the live region, so it is read when the person reads the chip and not on every state change.
+- The menu button is named "Agent controls". Menu items are named Pause agent, Resume agent, Take over and View agent steps.
+- The dot and the region outline are aria-hidden. The state is carried in words, so nothing depends on colour or line style.
+- The region wrapper has no role and no accessible name. Name the surface it wraps yourself.
+
+**Focus**
+
+- Choosing Pause, Resume or Take over closes the menu and returns focus to the Agent controls button. If your state change removes the chip, for example by taking it out of the chrome when control returns, move focus yourself.
+- When state becomes idle or taken-over the menu button can disappear while it holds focus, which drops focus to the document body. Keep the chip mounted, or move focus in your handler.
+
+## Pitfalls
+
+- State is the host's. The menu only asks: onPause does not change the chip until you pass a new state, so wire the handler to your runtime and render what it reports.
+- Watching is not a safeguard. A visible agent can still be steered by hostile page content, so do not write copy that tells people they are protected because they can see it.
+- The menu items appear only when you pass their callbacks and the state allows them. A chip with no handlers renders as a status with no button.
+- Taken-over has no way back to the agent inside this component. Resume is offered while paused only, so hand control back by passing a new state from your own control.
+- The outline is drawn inside the region's box and follows its border radius. Give the region a radius if the surface has rounded corners, or the outline will draw square ones over it.
+
+## Composition
+
+- States: `idle`, `watching`, `acting`, `needs-you`, `paused`, `taken-over`
+- Composes from this registry: nothing
+- shadcn primitives: badge, button, dropdown-menu
+- npm: lucide-react
+
+## Evidence
+
+Perplexity Comet, OpenAI Operator, Zapier workflow approvals
+
+---
+
 # Home Shell
 
 > The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold, and beneath it the bands that lead back into work you have already done — starters, features, recents, and things worth trying. It is a block, not a component. It owns arrangement and nothing else: nine registry components fill the five regions, and each of them keeps its own props, its own state model and its own accessibility contract.
@@ -11160,6 +11781,99 @@ Not yet recorded.
 ## Evidence
 
 Notion, ClickUp, Airtable
+
+---
+
+# Auto Fill
+
+> One prompt that fills a field across many records. A column-header action opens the configuration, a preview runs the prompt on the first few records and shows each result next to the value already there, and only then does Apply to all write anything. Each generated cell stays marked until a person accepts it or replaces it.
+
+Layer: component · Family: P · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/auto-fill.json` · Contract: `components/super-ai/auto-fill.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/auto-fill
+
+## Why it matters
+
+Filling a column by prompt is a bulk change to data a person owns, so the cost of a bad prompt is a column of wrong values. Attio, Clearfeed, Coda, Linear, LogicGate and Relay all fill fields from a prompt, and LogicGate removes the AI mark when a value is accepted and Linear gives each value a justification. Notion and Zapier show the same trial run on a few records before the full run. That trial run is this component's sample-preview state: Sample response lives here as sample-preview (D29) rather than as its own item.
+
+## When to reach for it
+
+Put `AutoFill` in the header of the column it fills and render the column's cells with `AutoFillCell`. Everything async is yours: `onSample` receives the prompt and the ids of the first few records and returns a value for each, `onApply` receives the prompt and the overwrite choice and does the run, and `progress` is whatever you know about it. Keep the cell status in your own state. The component never writes a value; it tells you what the person chose. It does not import any collection component, so it works in a data-views table, a plain table or a form. Use `AutoFillPanel` instead of `AutoFill` when the flow belongs inline in a side panel.
+
+## Variants
+
+None: The component has one shape. What differs between uses is which phase it is in, which is state the flow owns, not a design choice a caller makes between looks.
+
+## Instead use
+
+- **data-views**: You need the collection itself: the table, board or feed that holds the records. Auto fill is the column action and cell renderer such a view hosts, and it does not draw the collection.
+- **approval-card**: A person is approving one artifact, such as a single draft or a single action, rather than reviewing many generated field values in place.
+- **diff-review**: The change is tracked edits on prose, where the reader accepts or rejects spans inside one document rather than values across many records.
+- **run-button**: One generation is started once and its result lands in one place. Auto fill is for the same prompt across many fields, with a preview in front of it.
+
+## Do
+
+- Run the preview before the full run, and show the result beside the existing value so a person can judge what Apply to all would change.
+- Keep the generated mark on a suggested cell until someone accepts or replaces it, and give the reason when you have one.
+
+## Don't
+
+- Don't render a suggested value as plain text. Without the mark, a person cannot tell which cells they wrote.
+- Don't turn overwrite on for the person or hide how many filled cells it would replace. Human content is skipped unless they choose otherwise.
+
+## Anatomy
+
+- `auto-fill`: The column-header action. A small button that opens the panel in a popover.
+- `auto-fill-panel`: The flow itself: configuring, sample-preview, applying and failed. `data-phase` names the current one.
+- `auto-fill-field`: Target field select.
+- `auto-fill-prompt`: The prompt. A default prompt is shown here and stays editable.
+- `auto-fill-overwrite`: The overwrite switch. Off by default; its text says how many filled cells it would change.
+- `auto-fill-samples`: The preview rows: existing value beside the suggestion, with cost and time.
+- `auto-fill-apply`: Apply to all. The only control that starts a write.
+- `auto-fill-applying`: Progress and Cancel while the run is going.
+- `auto-fill-failed`: The failure message, which always says every existing value was kept.
+- `auto-fill-cell`: The cell renderer. `data-status` is suggested, accepted or overridden.
+- `auto-fill-cell-actions`: Accept and Override, present only while the value is suggested.
+
+## Accessibility
+
+**Keyboard**
+
+- The header action is one tab stop. Enter or Space opens the popover, and Escape closes it and returns focus to the action.
+- Inside the panel the order is field select, prompt, overwrite switch, then the phase button: Preview on first N records, then Apply to all, Run again and Edit prompt. The switch toggles with Space.
+- A suggested cell is two tab stops, Accept and Override. Override opens a small popover with a value field, an optional reason, Save and Cancel. Save is disabled while the value is blank.
+- There is no arrow-key navigation between cells and no shortcut for accepting every suggestion. Accepting a column is a host feature, not something this component provides.
+
+**Screen reader**
+
+- The panel is a labelled section. A visually hidden status line announces when the preview is ready and when the run starts; progress itself is a progressbar with a value text such as 2 of 5 cells.
+- The failure message has role alert, so it is announced as it appears, and it says nothing was written.
+- The generated mark is a note named Generated by AI. Accept and Override carry the cell label in their names, such as Accept suggestion for Northwind Traders, Industry, so a column of cells is not a column of identical buttons. The label prop is yours to write; an empty one degrades every name.
+- The overwrite switch is described by its count sentence, so the number of filled cells it would change is read with the switch.
+- Accepted and overridden cells have no live region. Their change is silent beyond focus moving to the value, so announce it in your own region if the table is long.
+
+**Focus**
+
+- Opening the popover moves focus into it; closing returns it to the header action.
+- Accepting or saving an override removes the buttons that had focus, so focus moves to the cell value. If you replace the cell element entirely when the status changes, that move is lost and focus falls to the page.
+- Cancel and Edit prompt return to the configuring state and leave focus on the page body until the next Tab, because the button that had focus is gone.
+
+## Pitfalls
+
+- Nothing here writes a value. If `onApply` resolves without storing suggestions on your side, the person sees the panel close and the column unchanged.
+- Cancel aborts the signal passed to your callbacks and calls `onCancel`, but the component cannot undo what you already stored. Discard partial results yourself, or the cancelled run leaves suggestions behind.
+- The preview runs on the first records in the order you pass, whether or not they are filled. With overwrite off, a preview row can show a suggestion for a cell the full run will skip; that is the existing value beside the result, working as intended.
+- The failed message states that every existing value was kept. Make that true: stage results on your side and commit them after `onApply` resolves.
+- Per-record cost and time appear only when your sample results include `cost` and `durationMs`. Omit them and the row shows neither, rather than a guess.
+
+## Composition
+
+- States: `configuring`, `sample-preview`, `applying`, `suggested`, `accepted`, `overridden`, `failed`
+- Composes from this registry: ai-label, cost-chip
+- shadcn primitives: button, input, label, popover, progress, select, switch, textarea
+- npm: lucide-react
+
+## Evidence
+
+Attio, Clearfeed, Coda, Linear, LogicGate, Relay, Notion, Zapier
 
 ---
 

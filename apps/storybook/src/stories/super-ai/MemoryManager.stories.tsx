@@ -147,12 +147,13 @@ export const Scoped: Story = {
   },
 };
 
+const onReview = fn();
+
 /**
  * The capture moment. The chip lives in the conversation, so it is drawn above
  * the card the way a host would place it; the card marks the new row. The play
  * clicks Review and reads that the host received the call.
  */
-const onReview = fn();
 export const JustSaved: Story = {
   render: () => (
     <div className="flex w-full max-w-xl flex-col gap-3">
@@ -208,13 +209,14 @@ export const MemoryOff: Story = {
   },
 };
 
+const onReset = fn();
+
 /**
  * Reset all, confirm step open. The copy names what goes (every saved memory,
  * in every workspace) and what stays (the account and the chats). The play
  * cancels first and checks nothing was deleted, then confirms and checks the
  * list is empty.
  */
-const onReset = fn();
 export const ResetConfirm: Story = {
   render: () => <Host defaultResetOpen onReset={onReset} />,
   play: async ({ canvasElement }) => {

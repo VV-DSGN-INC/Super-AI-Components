@@ -93,7 +93,7 @@ Not yet recorded.
 
 - States: `floating`, `docked`, `node-embedded`, `locked`, `negative-prompt`, `randomize`
 - Composes from this registry: cost-chip
-- shadcn primitives: button, textarea
+- shadcn primitives: button, input, textarea
 - npm: lucide-react
 
 ## Evidence

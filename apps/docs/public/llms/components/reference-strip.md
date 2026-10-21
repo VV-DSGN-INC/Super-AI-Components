@@ -89,8 +89,8 @@ Not yet recorded.
 ## Composition
 
 - States: `empty`, `filled`, `with-roles`, `describe`
-- Composes from this registry: preview-tile
-- shadcn primitives: button, carousel
+- Composes from this registry: preview-tile, stat-readout
+- shadcn primitives: button, carousel, popover
 - npm: lucide-react, embla-carousel-react
 
 ## Evidence

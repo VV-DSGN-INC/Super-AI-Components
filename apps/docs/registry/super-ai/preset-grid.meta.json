@@ -94,7 +94,8 @@
   ],
   "regions": [],
   "consumes": [
-    "preview-tile"
+    "preview-tile",
+    "section-header"
   ],
   "shadcn": [
     "radio-group"

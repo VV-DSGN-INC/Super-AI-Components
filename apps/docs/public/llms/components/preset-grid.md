@@ -78,7 +78,7 @@ Not yet recorded.
 ## Composition
 
 - States: `style`, `palette`, `filter`, `environment`, `see-more`, `user-presets`
-- Composes from this registry: preview-tile
+- Composes from this registry: preview-tile, section-header
 - shadcn primitives: radio-group
 - npm: lucide-react
 

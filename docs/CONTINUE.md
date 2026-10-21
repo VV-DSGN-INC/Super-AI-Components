@@ -31,11 +31,12 @@ ledgers moved out to `design-system/wave-history.md` — see §9.
 > pinned by a gate or a test, and this table is prose. Treat it as prose, and
 > re-derive it from `git log origin/main` rather than believing it.
 
-**Catalog progress: 123 shipped. Nothing is planned, nothing is building.**
+**Catalog progress: 130 shipped. Nothing is planned, nothing is building.**
 Wave 14 (2026-10-21, D26) added the Shape of AI trust slice: A13 `ai-label` and N13–N16.
+Waves 15 and 16 (D28, D29) added D8, D9, N17, E11, K9, N18 and P3, plus seven states on six shipped items.
 11 cut (family G's 10 + O5, per decision D9 — do not revive them).
-_(`check:contract` counts **123**, and the numbers are already reconciled:
-the 119 is the A–O count, the 114 freeze plus D26's five, and family P's 2 and family Q's 2 are counted
+_(`check:contract` counts **130**, and the numbers are already reconciled:
+the 125 is the A–O count, the 114 freeze plus D26's five, D28's three and D29's three, and family P's 3 and family Q's 2 are counted
 alongside it rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
 at 114 while later families grow separately" asserts each figure, which is
 what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
@@ -44,7 +45,7 @@ what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
 carried it were folded into the full contract by wave 0 of the story-guarantees
 program (`superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`,
 step 2): states normalized and declared, one story per declared state, a docs
-module, the flag dropped. `check:contract` reports **123 checked / 0 exempt**,
+module, the flag dropped. `check:contract` reports **130 checked / 0 exempt**,
 from 91 / 25 at the program's start. `catalog.manifest.test.ts` pins the empty
 set as a ratchet, so re-exempting any of them fails a dedicated assertion. The
 flag's own branches in `check-contract.mts` and its stale "the 14 pre-Wave-1.5

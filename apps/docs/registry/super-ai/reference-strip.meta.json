@@ -120,11 +120,13 @@
   ],
   "regions": [],
   "consumes": [
-    "preview-tile"
+    "preview-tile",
+    "stat-readout"
   ],
   "shadcn": [
     "button",
-    "carousel"
+    "carousel",
+    "popover"
   ],
   "npm": [
     "lucide-react",

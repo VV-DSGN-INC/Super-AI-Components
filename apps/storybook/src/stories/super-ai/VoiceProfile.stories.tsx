@@ -222,11 +222,12 @@ export const Conflict: Story = {
   },
 };
 
+const onReset = fn();
+
 /**
  * Reset to neutral. One press, one `onReset`, no dialog, and the card says
  * saved voices are kept. The play presses it once and counts the calls.
  */
-const onReset = fn();
 export const Reset: Story = {
   render: () => <Host initialActive="plain" onReset={onReset} />,
   play: async ({ canvasElement }) => {

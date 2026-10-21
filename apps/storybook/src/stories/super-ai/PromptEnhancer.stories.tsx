@@ -185,7 +185,7 @@ export const Failed: Story = {
 
 /* Case stories. See docs/design-system/story-conventions.md. */
 /*
- * case-skip: EmptyLabel — no optional text slot: every string the component shows is fixed copy or the host's `value`, and an empty `refinements` list is the only optional content (grep: `refinements = DEFAULT_REFINEMENTS`)
+ * // case-skip: EmptyLabel — no optional text slot: every string the component shows is fixed copy or the host's `value`, and an empty `refinements` list is the only optional content (grep: `refinements = DEFAULT_REFINEMENTS`)
  */
 
 /**

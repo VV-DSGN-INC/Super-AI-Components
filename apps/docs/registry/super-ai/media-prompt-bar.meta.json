@@ -142,6 +142,7 @@
   ],
   "shadcn": [
     "button",
+    "input",
     "textarea"
   ],
   "npm": [
