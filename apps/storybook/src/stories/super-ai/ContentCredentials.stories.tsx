@@ -104,11 +104,15 @@ export const WithHistory: Story = {
 /* Case stories. See docs/design-system/story-conventions.md. All eight names apply to this component, so none is skipped. */
 
 /**
- * Right-to-left. The panel uses logical properties throughout (`ps-4` on the
- * edit list, grid columns that follow direction), so the list marker and the
- * label column move to the reading edge. The play function asserts the
- * direction reached the panel and that the numbered list indents from the
- * right.
+ * Right-to-left. The mark renders inside the `dir="rtl"` wrapper, so it is the
+ * part this story can judge: its glyph leads from the right edge.
+ *
+ * The panel cannot be judged here, for the reason ModelPicker's RTL story
+ * records: it portals to `document.body`, outside the wrapper, so its computed
+ * direction reads back `ltr`. In a real app `dir` sits on `<html>` and the
+ * portal inherits it. What the story can pin is that the edit list indents
+ * with a logical property (`ps-4`), so a future edit to `pl-4` breaks this
+ * story and nothing else. Opening the panel also puts it under axe.
  */
 export const RTL: Story = {
   args: { credentials: HISTORY },
@@ -117,15 +121,20 @@ export const RTL: Story = {
       <ContentCredentials {...args} />
     </div>
   ),
-  play: async () => {
+  play: async ({ canvasElement }) => {
+    const mark = canvasElement.querySelector<HTMLElement>('[data-slot="content-credentials-mark"]')!;
+    await expect(getComputedStyle(mark).direction).toBe("rtl");
+    const glyph = mark.querySelector<SVGElement>("svg")!;
+    const markBox = mark.getBoundingClientRect();
+    await expect(glyph.getBoundingClientRect().left).toBeGreaterThan(markBox.left + markBox.width / 2);
+
     const list = await waitFor(() => {
       const el = document.querySelector<HTMLElement>('[data-slot="content-credentials-history"] ol');
       if (!el) throw new Error("the panel never opened");
       return el;
     });
-    await expect(getComputedStyle(list).direction).toBe("rtl");
-    await expect(parseFloat(getComputedStyle(list).paddingRight)).toBeGreaterThan(0);
-    await expect(parseFloat(getComputedStyle(list).paddingLeft)).toBe(0);
+    await expect(list).toHaveClass("ps-4");
+    await expect(list).not.toHaveClass("pl-4");
   },
 };
 
@@ -213,7 +222,10 @@ export const Controlled: Story = {
   play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     await userEvent.click(canvas.getByRole("button", { name: /Verified/ }));
-    await waitFor(() => expect(args.onOpenChange).toHaveBeenCalledWith(true));
+    // Base UI passes (open, eventDetails); the open flag is the first argument.
+    await waitFor(() => expect(args.onOpenChange).toHaveBeenCalled());
+    const [openArg] = (args.onOpenChange as ReturnType<typeof fn>).mock.calls[0] as [boolean];
+    await expect(openArg).toBe(true);
     await expect(document.querySelector('[data-slot="content-credentials-panel"]')).toBeNull();
 
     await userEvent.click(canvas.getByRole("button", { name: /Re-render/ }));
