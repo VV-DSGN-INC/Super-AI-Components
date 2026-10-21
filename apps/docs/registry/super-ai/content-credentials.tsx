@@ -257,7 +257,7 @@ function ContentCredentials({
 
 export { ContentCredentials };
 export type {
-  ContentCredentialsEdit,
+  CredentialsEdit,
   ContentCredentialsProps,
   ContentCredentialsRecord,
   CredentialsOrigin,
