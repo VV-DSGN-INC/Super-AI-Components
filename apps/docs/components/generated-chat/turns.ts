@@ -10,6 +10,17 @@ import {
   timedOutOvernight,
   weekSpend,
 } from "./fixtures";
+import {
+  buildFailedRunsView,
+  buildSpendView,
+  FALLBACK_TEXT,
+  READY_PROMPTS,
+  SPEND_VIEW,
+  spendVersion,
+  VIEW,
+} from "./views";
+
+export { READY_PROMPTS, SPEND_VIEW, VIEW };
 
 /** What a turn may read from the page when it plays. */
 export interface DemoContext {
@@ -17,23 +28,6 @@ export interface DemoContext {
   /** The generated spend view exists. */
   spendBuilt: boolean;
 }
-
-export const READY_PROMPTS = [
-  "What failed overnight?",
-  "What's my day?",
-  "How much have we spent this week?",
-];
-
-export const VIEW = { id: "failed-runs", title: "Failed runs this week", kind: "runs" } as const;
-
-/** A view whose body is a generated OpenUI program (see programs.ts). */
-export const SPEND_VIEW = { id: "spend", title: "Spend by project this week", kind: "generated" } as const;
-
-const spendVersion = (n: number, variant: string) => ({
-  label: `v${n} · generated`,
-  mode: "generated",
-  variant,
-});
 
 const text = (value: string): TurnPart => ({ type: "text", text: value });
 const chips = (...items: string[]): TurnPart => ({ type: "data-suggestions", data: { items } });
@@ -90,17 +84,7 @@ export const TURNS: Turn<DemoContext>[] = [
       { type: "data-view", data: { viewId: VIEW.id, title: VIEW.title, kind: VIEW.kind } },
       chips("Make it a board", "What's my day?"),
     ],
-    effects: [
-      {
-        type: "build-view",
-        view: {
-          ...VIEW,
-          scope: "All projects",
-          origin: "Track failed runs",
-          version: { label: "v1 · table", mode: "table" },
-        },
-      },
-    ],
+    effects: [{ type: "build-view", view: buildFailedRunsView("Track failed runs") }],
   },
   {
     id: "make-board",
@@ -161,17 +145,7 @@ TURNS.push(
       { type: "data-view", data: { viewId: SPEND_VIEW.id, title: SPEND_VIEW.title, kind: SPEND_VIEW.kind } },
       chips("Add a daily trend", "What failed overnight?"),
     ],
-    effects: [
-      {
-        type: "build-view",
-        view: {
-          ...SPEND_VIEW,
-          scope: "All projects",
-          origin: "Show spend by project",
-          version: spendVersion(1, "spend-v1"),
-        },
-      },
-    ],
+    effects: [{ type: "build-view", view: buildSpendView("Show spend by project") }],
   },
   {
     id: "spend-trend",
@@ -211,8 +185,5 @@ TURNS.push(
 export const FALLBACK: Turn<DemoContext> = {
   id: "fallback",
   match: [],
-  parts: [
-    text("I answer from this workspace's runs, credits and queue. These are ready to try:"),
-    chips(...READY_PROMPTS),
-  ],
+  parts: [text(FALLBACK_TEXT), chips(...READY_PROMPTS)],
 };

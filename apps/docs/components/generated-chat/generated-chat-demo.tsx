@@ -39,6 +39,7 @@ import {
 } from "@/registry/super-ai/view-frame";
 
 import { failedThisWeek, type Run } from "./fixtures";
+import { createModelTransport } from "./model-transport";
 import { DemoActionsContext, RENDERERS, type DemoActions } from "./renderers";
 import { isProgramId, PROGRAMS, RETRY_PROMPTS, type ProgramId } from "./programs";
 import { FALLBACK, READY_PROMPTS, SPEND_VIEW, TURNS, VIEW, type DemoContext } from "./turns";
@@ -80,6 +81,12 @@ interface GeneratedChatDemoProps {
   className?: string;
   /** Pause between a scripted reply's parts. */
   stepMs?: number;
+  /**
+   * Free text goes to the model at /api/chat; chips and ready prompts stay
+   * scripted. Off by default, and the page turns it on only when the route's
+   * kill switch is on.
+   */
+  model?: boolean;
 }
 
 /**
@@ -88,27 +95,26 @@ interface GeneratedChatDemoProps {
  * `useChat` by the scripted transport. A view a reply builds opens in R3
  * `view-frame` beside the chat on a click, never by itself.
  */
-export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemoProps) {
+export function GeneratedChatDemo({ className, stepMs = 350, model = false }: GeneratedChatDemoProps) {
   const [views, dispatchView] = React.useReducer(viewReducer, initialViewState);
   const [questions, dispatchQuestion] = React.useReducer(questionReducer, initialQuestionState);
   const [draft, setDraft] = React.useState("");
 
-  const transport = React.useMemo(
-    () =>
-      createScriptedTransport<DemoContext>({
-        turns: TURNS,
-        fallback: FALLBACK,
-        stepMs,
-        // A view exists once any reply has posted its card: a pure function
-        // of the conversation, so the transport never reads page state.
-        context: (messages) => {
-          const built = (id: string) =>
-            messages.some((m) => m.parts.some((p) => p.type === "data-view" && p.data.viewId === id));
-          return { viewBuilt: built(VIEW.id), spendBuilt: built(SPEND_VIEW.id) };
-        },
-      }),
-    [stepMs],
-  );
+  const transport = React.useMemo(() => {
+    const scripted = createScriptedTransport<DemoContext>({
+      turns: TURNS,
+      fallback: FALLBACK,
+      stepMs,
+      // A view exists once any reply has posted its card: a pure function
+      // of the conversation, so the transport never reads page state.
+      context: (messages) => {
+        const built = (id: string) =>
+          messages.some((m) => m.parts.some((p) => p.type === "data-view" && p.data.viewId === id));
+        return { viewBuilt: built(VIEW.id), spendBuilt: built(SPEND_VIEW.id) };
+      },
+    });
+    return model ? createModelTransport({ api: "/api/chat", scripted, turns: TURNS }) : scripted;
+  }, [stepMs, model]);
 
   const { messages, sendMessage, setMessages, status, stop } = useChat<GeneratedChatMessage>({
     transport,
@@ -328,7 +334,11 @@ export function GeneratedChatDemo({ className, stepMs = 350 }: GeneratedChatDemo
           onStop: stop,
           onSubmit: (value) => actions.submit(value),
         }}
-        disclaimer="Scripted replies over a fixture workspace. No model is called."
+        disclaimer={
+          model
+            ? "Free-text questions go to a model through Vercel AI Gateway. Chips play scripted replies over a fixture workspace."
+            : "Scripted replies over a fixture workspace. No model is called."
+        }
       />
     </DemoActionsContext.Provider>
   );

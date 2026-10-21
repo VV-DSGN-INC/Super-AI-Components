@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 
 import { GeneratedChatDemo } from "@/components/generated-chat/generated-chat-demo";
+import { modelFromEnv } from "@/components/generated-chat/server/model-from-env";
 
 export const metadata: Metadata = {
   title: "Generated chat",
@@ -8,7 +10,11 @@ export const metadata: Metadata = {
     "A chat whose replies are registry components: run lists, a question before anything that spends credits, widgets and saved views.",
 };
 
-export default function GeneratedChatPage() {
+export default async function GeneratedChatPage() {
+  // Read per request, as the chat route does, so the page and the route can
+  // never disagree about whether the model is on.
+  await connection();
+  const model = modelFromEnv(process.env.GENERATED_CHAT_MODEL) !== null;
   return (
     <article
       data-slot="generated-chat-page"
@@ -23,18 +29,26 @@ export default function GeneratedChatPage() {
           widgets, a question asked before anything that spends credits, and a saved view. One renderer draws
           them from this registry, so a scripted reply and a model&apos;s reply look the same.
         </p>
-        <p className="leading-7">
-          The replies are scripted and the workspace is a fixture: runs, credits and spend for a small team,
-          fixed at Tuesday 20 October 2026, 09:00. No model is called. Ask what failed overnight, then follow
-          the chips.
-        </p>
+        {model ? (
+          <p className="leading-7">
+            The workspace is a fixture: runs, credits and spend for a small team, fixed at Tuesday 20 October
+            2026, 09:00. Chips and the ready prompts play scripted replies. Anything else you type goes to a
+            model through Vercel AI Gateway, which answers with the same parts through three read-only tools.
+          </p>
+        ) : (
+          <p className="leading-7">
+            The replies are scripted and the workspace is a fixture: runs, credits and spend for a small team,
+            fixed at Tuesday 20 October 2026, 09:00. No model is called. Ask what failed overnight, then
+            follow the chips.
+          </p>
+        )}
       </header>
 
       <section aria-labelledby="generated-chat-demo-heading" className="space-y-4">
         <h2 id="generated-chat-demo-heading" className="sr-only">
           Conversation
         </h2>
-        <GeneratedChatDemo className="h-[46rem]" />
+        <GeneratedChatDemo className="h-[46rem]" model={model} />
       </section>
     </article>
   );
