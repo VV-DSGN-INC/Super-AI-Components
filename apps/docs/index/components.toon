@@ -1,4 +1,4 @@
-components[121]{name,layer,family,meta,variants,insteadUse,purpose}:
+components[133]{name,layer,family,meta,variants,insteadUse,purpose}:
   kbd,primitive,A,registry/super-ai/kbd.meta.json,none,shortcuts-sheet,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
   cost-chip,primitive,A,registry/super-ai/cost-chip.meta.json,none,credits-indicator|run-button,"A small pill that prices one action: a coin icon, a number, and the unit that number is counted in."
   date-section,primitive,A,registry/super-ai/date-section.meta.json,none,section-header,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
@@ -11,6 +11,7 @@ components[121]{name,layer,family,meta,variants,insteadUse,purpose}:
   stat-readout,primitive,A,registry/super-ai/stat-readout.meta.json,columns=2/1,field-row|slot-summary|quota-meter,"A description list of label→value rows for the metadata hanging off a result: model, seed, sampler,"
   reset-affordance,primitive,A,registry/super-ai/reset-affordance.meta.json,scope=row/group,field-row|parameter-panel,The small ↺ that sits at the end of an editable row and puts the value back where it started. Three
   section-header,primitive,A,registry/super-ai/section-header.meta.json,size=default/sm,date-section,"One header row for a group of things: a title, an optional count beside it, an optional trailing act"
+  ai-label,primitive,A,registry/super-ai/ai-label.meta.json,variant=generated/edited/summarized/sender/after-handoff/text-tint,disclaimer-note|cost-chip|citation-ref,"A small outlined chip that says what AI did to a piece of content: generated it, edited it, summariz"
   app-sidebar,component,B,registry/super-ai/app-sidebar.meta.json,unwritten,unwritten,"The assembled product sidebar: a workspace switcher, a nav list, an ambient promo card, and a footer"
   workspace-switcher,component,B,registry/super-ai/workspace-switcher.meta.json,unwritten,unwritten,"A dropdown that shows the workspace, org, or product the user is currently in and lets them jump to"
   sidebar-nav,component,B,registry/super-ai/sidebar-nav.meta.json,unwritten,unwritten,A sectioned nav for the primary sidebar: a flat list of icon+label rows grouped under section header
@@ -31,6 +32,8 @@ components[121]{name,layer,family,meta,variants,insteadUse,purpose}:
   quote-reply,component,D,registry/super-ai/quote-reply.meta.json,unwritten,unwritten,"A small quoted block that attaches a selection — a text range, an image region, a table cell, or a t"
   skill-menu,component,D,registry/super-ai/skill-menu.meta.json,unwritten,unwritten,"A two-pane, searchable menu of agent skills: a filterable list of rows on the left and a live previe"
   slot-summary,component,D,registry/super-ai/slot-summary.meta.json,unwritten,unwritten,"The read-back an agent shows just before it acts: one row per parameter it resolved, each row carryi"
+  prompt-enhancer,component,D,registry/super-ai/prompt-enhancer.meta.json,none,slot-summary|diff-review|selection-toolbar|suggestion-chips,A button that proposes a rewrite of the prompt in the composer next to it. Click Enhance prompt and
+  prompt-template-form,component,D,registry/super-ai/prompt-template-form.meta.json,layout=inline/stacked,slot-summary|parameter-panel|generation-wizard|onboarding-wizard,"A prompt written once with named blanks in it, and a form for filling them. Each blank is a typed va"
   generation-panel,component,E,registry/super-ai/generation-panel.meta.json,unwritten,unwritten,"The left configuration column of a generation tool: upload, directions, presets, settings, then cost"
   model-picker,component,E,registry/super-ai/model-picker.meta.json,presentation=dropdown/expanded-cards/node-inline,mode-tabs,"The control for choosing which model a generation runs on, in three container shapes for three surfa"
   parameter-panel,component,E,registry/super-ai/parameter-panel.meta.json,unwritten,unwritten,The stack of rows a generation surface uses to expose the knobs behind a run — sliders with a live n
@@ -41,6 +44,7 @@ components[121]{name,layer,family,meta,variants,insteadUse,purpose}:
   generation-wizard,component,E,registry/super-ai/generation-wizard.meta.json,unwritten,unwritten,A multi-step generate flow with three parts working together: a stepper that shows where you are and
   tts-composer,component,E,registry/super-ai/tts-composer.meta.json,unwritten,unwritten,"A voiceover script editor built out of independently editable, independently regenerable segments —"
   voice-clone-recorder,component,E,registry/super-ai/voice-clone-recorder.meta.json,unwritten,unwritten,A guided flow for recording the voice samples a clone is trained on: read a script aloud while a liv
+  voice-profile,component,E,registry/super-ai/voice-profile.meta.json,none,preset-grid|memory-manager|mode-tabs|parameter-panel,A card for the rules that decide how output sounds. The current voice sits at the top with its sourc
   result-card,component,F,registry/super-ai/result-card.meta.json,unwritten,unwritten,"One generated asset, wherever it appears — a fixed-aspect media frame with an optional prompt excerp"
   generation-grid,component,F,registry/super-ai/generation-grid.meta.json,unwritten,unwritten,"The gallery a batch of results lands in — a responsive grid with three density settings, optional da"
   asset-detail,component,F,registry/super-ai/asset-detail.meta.json,unwritten,unwritten,The lightbox for a single result: the media at full size beside a provenance rail carrying the promp
@@ -75,6 +79,7 @@ components[121]{name,layer,family,meta,variants,insteadUse,purpose}:
   citation-ref,component,K,registry/super-ai/citation-ref.meta.json,unwritten,unwritten,The inline marker that attaches a claim to the passage it came from — a small superscript index besi
   answer-block,component,K,registry/super-ai/answer-block.meta.json,unwritten,unwritten,"The body of a grounded answer: a list of claims, each carrying its own inline citation markers, plus"
   source-cards,component,K,registry/super-ai/source-cards.meta.json,unwritten,unwritten,"The retrieved set behind an answer, as a ranked list of cards. Every document the search returned ge"
+  summary-card,component,K,registry/super-ai/summary-card.meta.json,depth=short/detailed/key-points,answer-block|ai-doc-block|disclaimer-note|source-cards,"A card that condenses a named source the reader already has: a document, a thread, a section or a se"
   empty-state,component,L,registry/super-ai/empty-state.meta.json,size=page/panel/in-grid,generation-queue|onboarding-wizard,"The nothing-here surface, in three sizes that share one component: a page takeover for a whole route"
   coach-mark,component,L,registry/super-ai/coach-mark.meta.json,unwritten,unwritten,"One step of a product tour: a popover anchored to a real element, with a scrim that cuts a hole arou"
   feature-announcement,component,L,registry/super-ai/feature-announcement.meta.json,unwritten,unwritten,The surface that tells a user something in the product changed. One component with four escalation l
@@ -100,6 +105,12 @@ components[121]{name,layer,family,meta,variants,insteadUse,purpose}:
   safety-block,component,N,registry/super-ai/safety-block.meta.json,unwritten,unwritten,A system-voiced notice that a policy stopped something. It comes in two variants because two differe
   escalation-handoff,component,N,registry/super-ai/escalation-handoff.meta.json,unwritten,unwritten,"The card an agent shows when it is handing the conversation to a person. Its subject is the packet,"
   task-tray,component,N,registry/super-ai/task-tray.meta.json,unwritten,unwritten,A slide-over panel listing background work that keeps running after you leave the screen that starte
+  capture-consent,component,N,registry/super-ai/capture-consent.meta.json,form=bar/compact,permission-prompt|trust-dialog|voice-clone-recorder|rate-limit-banner,"The consent gate that comes before an AI capture session (meeting notes, a call transcript, a record"
+  data-controls,component,N,registry/super-ai/data-controls.meta.json,none,settings-dialog|member-gate-row|connection-manager|disclaimer-note,"A settings card for what happens to a person's data: one row for model training, one row for how lon"
+  private-session-notice,component,N,registry/super-ai/private-session-notice.meta.json,form=banner/chip,disclaimer-note|safety-block|feature-announcement|app-topbar,The notice a product shows when a conversation runs in private (incognito) mode. It has two forms: a
+  content-credentials,component,N,registry/super-ai/content-credentials.meta.json,trigger=hover-card/popover,asset-detail|stat-readout|run-inspector|citation-ref,"The provenance panel that opens from an AI mark. It takes one typed `credentials` record, modelled o"
+  memory-manager,component,N,registry/super-ai/memory-manager.meta.json,none,data-controls|private-session-notice|settings-dialog|asset-library,"A card listing what the assistant remembers about a person, split into preferences and facts. Each m"
+  agent-presence,component,N,registry/super-ai/agent-presence.meta.json,none,task-tray|permission-prompt|trace-timeline|autonomy-selector,"A persistent, quiet cue that an agent is active in this surface. It has two parts: a chip for the ap"
   home-shell,block,O,registry/super-ai/home-shell.meta.json,unwritten,unwritten,"The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold,"
   chat-shell,block,O,registry/super-ai/chat-shell.meta.json,none,home-shell|studio-shell,"The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue,"
   studio-shell,block,O,registry/super-ai/studio-shell.meta.json,unwritten,unwritten,"The page shell for a creative studio editor: a vertical modality rail on the far left, an editor top"
@@ -115,6 +126,7 @@ components[121]{name,layer,family,meta,variants,insteadUse,purpose}:
   auth-shell,block,O,registry/super-ai/auth-shell.meta.json,unwritten,unwritten,The page shell for signing in and signing up: a pitch pane beside a card that holds a list of identi
   data-views,component,P,registry/super-ai/data-views.meta.json,unwritten,unwritten,"One collection rendered five ways — feed, board, table, calendar and timeline — from a single config"
   detail-view-shell,component,P,registry/super-ai/detail-view-shell.meta.json,unwritten,unwritten,"The chrome around any record detail, in three opening modes: a centred dialog, a right-docked panel"
+  auto-fill,component,P,registry/super-ai/auto-fill.meta.json,none,data-views|approval-card|diff-review|run-button,"One prompt that fills a field across many records. A column-header action opens the configuration, a"
   browser-frame,component,Q,registry/super-ai/browser-frame.meta.json,tone=surface/inverted,source-cards|citation-ref,"Browser chrome — window dots, back/forward/reload glyphs and an address bar — wrapped around content"
   book-cover,component,Q,registry/super-ai/book-cover.meta.json,variant=plain/stripe/illustrated|tone=paper/ink/muted,preview-tile|artifact-grid,"A cover for a bounded body of knowledge — a docs set, a template pack, a source collection. A portra"
   widget,component,R,registry/super-ai/widget.meta.json,size=small/medium/large,entity-row|stat-readout,A fixed-size tile for one fact among same-sized siblings. It comes in three families: small is one g

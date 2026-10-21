@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
-import { GenSettingsBar, GenSettingsItem } from "./gen-settings-bar";
+import { GenSettingsBar, GenSettingsItem, GenSettingsQuality } from "./gen-settings-bar";
 
 describe("GenSettingsBar", () => {
   it("renders items as a toolbar with data-slots; items fire onClick", async () => {
@@ -55,5 +55,60 @@ describe("GenSettingsBar", () => {
     await user.tab();
     expect(screen.getByRole("button", { name: "after" })).toHaveFocus();
     expect(screen.getByRole("button", { name: "16:9" })).toHaveAttribute("tabindex", "-1");
+  });
+
+  describe("draft quality segment", () => {
+    it("renders only when quality and onQualityChange are both passed", () => {
+      const { rerender } = render(
+        <GenSettingsBar aria-label="Generation settings">
+          <GenSettingsItem>16:9</GenSettingsItem>
+          <GenSettingsQuality quality="draft" />
+        </GenSettingsBar>,
+      );
+      expect(document.querySelector('[data-slot="gen-settings-quality"]')).toBeNull();
+      rerender(
+        <GenSettingsBar aria-label="Generation settings">
+          <GenSettingsItem>16:9</GenSettingsItem>
+          <GenSettingsQuality quality="draft" onQualityChange={() => {}} />
+        </GenSettingsBar>,
+      );
+      expect(screen.getByRole("group", { name: "Quality" })).toBeInTheDocument();
+    });
+
+    it("labels draft as lower quality in text and marks the current option pressed", () => {
+      render(
+        <GenSettingsBar aria-label="Generation settings">
+          <GenSettingsQuality quality="draft" onQualityChange={() => {}} />
+        </GenSettingsBar>,
+      );
+      expect(screen.getByRole("button", { name: "Draft, lower quality" })).toHaveAttribute(
+        "aria-pressed",
+        "true",
+      );
+      expect(screen.getByRole("button", { name: "Final" })).toHaveAttribute("aria-pressed", "false");
+    });
+
+    it("reports the picked quality through the same handler path as any segment (re-estimate)", async () => {
+      const user = userEvent.setup();
+      const reEstimate = vi.fn();
+      render(
+        <GenSettingsBar aria-label="Generation settings">
+          <GenSettingsQuality quality="draft" onQualityChange={reEstimate} />
+        </GenSettingsBar>,
+      );
+      await user.click(screen.getByRole("button", { name: "Final" }));
+      expect(reEstimate).toHaveBeenCalledExactlyOnceWith("final");
+      await user.click(screen.getByRole("button", { name: "Draft, lower quality" }));
+      expect(reEstimate).toHaveBeenLastCalledWith("draft");
+    });
+
+    it("a disabled bar locks the quality segment too", () => {
+      render(
+        <GenSettingsBar disabled aria-label="Generation settings">
+          <GenSettingsQuality quality="final" onQualityChange={() => {}} />
+        </GenSettingsBar>,
+      );
+      expect(screen.getByRole("button", { name: "Final" })).toBeDisabled();
+    });
   });
 });

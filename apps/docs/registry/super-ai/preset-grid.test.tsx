@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
+import { expectAccessibleName } from "@/lib/test-utils";
 import { PresetGrid, type PresetGridItem } from "./preset-grid";
 
 const STYLE_ITEMS: PresetGridItem[] = [
@@ -156,5 +157,91 @@ describe("PresetGrid", () => {
     await user.tab();
     await user.tab();
     expect(screen.getByRole("checkbox", { name: "Anime" })).toHaveFocus();
+  });
+
+  describe("user-presets", () => {
+    const MIXED: PresetGridItem[] = [
+      { id: "anime", label: "Anime" },
+      { id: "mine", label: "Neon noir", source: "personal" },
+      { id: "crew", label: "Studio look", source: "team" },
+      { id: "sketch", label: "Sketch" },
+    ];
+
+    it("renders Your styles above the system presets", () => {
+      render(<PresetGrid items={MIXED} aria-label="Style presets" onSaveCurrent={() => {}} />);
+      const sections = document.querySelectorAll('[data-slot="preset-grid-section"]');
+      expect(sections).toHaveLength(2);
+      expect(sections[0]).toHaveAttribute("data-section", "user");
+      expect(sections[0]).toHaveTextContent("Your styles");
+      expect(sections[0].querySelectorAll('[data-slot="preset-grid-tile"]')).toHaveLength(2);
+      expect(sections[1].querySelectorAll('[data-slot="preset-grid-tile"]')).toHaveLength(2);
+      const order = Array.from(document.querySelectorAll('[data-slot="preset-grid-tile"]')).map(
+        (el) => el.getAttribute("aria-label") ?? el.textContent,
+      );
+      expect(order[0]).toBe("Neon noir, Personal");
+      expect(order[1]).toBe("Studio look, Team");
+    });
+
+    it("shows the source as text and in the accessible name", () => {
+      render(<PresetGrid items={MIXED} aria-label="Style presets" />);
+      expectAccessibleName(screen.getByRole("radio", { name: "Neon noir, Personal" }), "Neon noir, Personal");
+      expectAccessibleName(screen.getByRole("radio", { name: "Studio look, Team" }), "Studio look, Team");
+      const sources = Array.from(document.querySelectorAll('[data-slot="preset-grid-source"]')).map(
+        (el) => el.textContent,
+      );
+      expect(sources).toEqual(["Personal", "Team"]);
+      // System presets without a source keep their plain name.
+      expect(screen.getByRole("radio", { name: "Anime" })).toBeInTheDocument();
+    });
+
+    it("keeps the save tile out of the radio set", async () => {
+      const user = userEvent.setup();
+      const onSaveCurrent = vi.fn();
+      const onValueChange = vi.fn();
+      render(
+        <PresetGrid
+          items={MIXED}
+          aria-label="Style presets"
+          defaultValue="mine"
+          onSaveCurrent={onSaveCurrent}
+          onValueChange={onValueChange}
+        />,
+      );
+      const save = screen.getByRole("button", { name: /save current/i });
+      expect(save).toHaveAttribute("data-slot", "preset-grid-save-current");
+      expect(screen.queryByRole("radio", { name: /save current/i })).not.toBeInTheDocument();
+      expect(screen.getAllByRole("radio")).toHaveLength(4);
+      // It is the first cell of the Your styles grid.
+      const firstCell = document.querySelector('[data-section="user"] [data-slot]:is(button)');
+      expect(firstCell).toBe(save);
+
+      await user.click(save);
+      expect(onSaveCurrent).toHaveBeenCalledTimes(1);
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(screen.getByRole("radio", { name: "Neon noir, Personal" })).toHaveAttribute(
+        "aria-checked",
+        "true",
+      );
+
+      // Arrow keys walk the radios and skip the save tile.
+      await user.click(screen.getByRole("radio", { name: "Neon noir, Personal" }));
+      await user.keyboard("{ArrowLeft}");
+      expect(save).not.toHaveFocus();
+    });
+
+    it("renders exactly as before with no user presets and no save handler", () => {
+      render(<PresetGrid items={STYLE_ITEMS} aria-label="Style presets" />);
+      expect(document.querySelector('[data-slot="preset-grid-section"]')).toBeNull();
+      expect(document.querySelector('[data-slot="preset-grid-save-current"]')).toBeNull();
+      const root = document.querySelector('[data-slot="preset-grid"]')!;
+      expect(root.className).toContain("grid");
+      expect(root.querySelectorAll(':scope > [data-slot="preset-grid-tile"]')).toHaveLength(3);
+    });
+
+    it("offers the save tile on its own when there are no user presets yet", () => {
+      render(<PresetGrid items={STYLE_ITEMS} aria-label="Style presets" onSaveCurrent={() => {}} />);
+      expect(screen.getByRole("button", { name: /save current/i })).toBeInTheDocument();
+      expect(document.querySelector('[data-section="user"]')).toBeInTheDocument();
+    });
   });
 });
