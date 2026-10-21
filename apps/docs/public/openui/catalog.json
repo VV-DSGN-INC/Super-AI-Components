@@ -538,6 +538,103 @@
       ]
     },
     {
+      "name": "Channel Message",
+      "slug": "channel-message",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/channel-message.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/channel-message",
+      "description": "One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots (who it is from, what it says, one question, a few closed answers, a way to stop). The `channel` prop picks the shape: a thread bubble for the app, a lock-screen card for push, a bubble with inline buttons for chat, a sender, subject and one button for email, and a spoken script for phone. The component shows the message and its state in words. It sends nothing and decides nothing.",
+      "variants": [
+        {
+          "prop": "channel",
+          "values": [
+            {
+              "value": "app",
+              "intent": "The record. A thread bubble with the controls under it, always sent first."
+            },
+            {
+              "value": "push",
+              "intent": "An interruption. A lock-screen card that shows who and what kind until unlocked."
+            },
+            {
+              "value": "chat",
+              "intent": "A conversation. A bubble with inline buttons and a command to stop."
+            },
+            {
+              "value": "email",
+              "intent": "Something to read later. A sender, a subject, one button and a footer link."
+            },
+            {
+              "value": "phone",
+              "intent": "Something said aloud. A script that asks once, by voice or keypad."
+            }
+          ]
+        },
+        {
+          "prop": "to",
+          "values": [
+            {
+              "value": "member",
+              "intent": "The person the message is about, who gets the question and the options."
+            },
+            {
+              "value": "second",
+              "intent": "A second recipient such as a caregiver, who gets the summary and no detail."
+            }
+          ],
+          "default": "member"
+        },
+        {
+          "prop": "typeSize",
+          "values": [
+            {
+              "value": "default",
+              "intent": "Most readers. The ordinary type scale."
+            },
+            {
+              "value": "large",
+              "intent": "Readers who need larger text, set once per recipient and not per message."
+            }
+          ],
+          "default": "default"
+        },
+        {
+          "prop": "pace",
+          "values": [
+            {
+              "value": "default",
+              "intent": "The phone script says each fact once."
+            },
+            {
+              "value": "slow",
+              "intent": "The phone script says the key fact twice, for listeners who need the repeat."
+            }
+          ],
+          "default": "default"
+        }
+      ],
+      "notes": [
+        "Don't put an ask on a `ready`, `receipt` or `notice`. The component renders it, because it draws what it is given, and the message then promises nothing and asks something. Use kind `ask`.",
+        "Don't expect more than three actions on a push. The rest are not dropped silently: the card says how many more are in the app.",
+        "Don't pass `onAnswer` and expect buttons in every state. Only a `sent` message can be answered; a withdrawn, expired or pending one shows its options as text.",
+        "The component does not check the message against its kind. A `ready` with an `ask` renders as written. Validate the kind against the slots before you pass it in.",
+        "Only `sent` is answerable. A `failed-check` message was not delivered as written, so its options are text. The template that went out instead is a `sent` message with `path=\"fallback\"`; pass that one when the person can answer.",
+        "`link` is a label for the way back to the app, not an anchor. It is shown as \"Open in the app\" with the address in a `data-link` attribute. Wrap or replace it yourself if you want it to navigate.",
+        "`expires` is printed as you give it. Pass the words a person should read, such as \"Fri 18:00\", not a timestamp.",
+        "Hierarchy comes from size and weight. Do not add `text-muted-foreground` text inside the thread and chat bubbles: they paint `bg-muted`, and the pair measures 4.34:1 against a 4.5:1 minimum.",
+        "`typeSize=\"large\"` changes the type scale of the render, not your page. Give it a container that can wrap; it wraps, it does not scroll."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "chat-shell",
+          "when": "You are building the live conversation itself. Chat-shell is the thread a person types into; channel-message draws one message as it would arrive on a channel, for previews, logs and configurators."
+        }
+      ]
+    },
+    {
       "name": "Chat Shell",
       "slug": "chat-shell",
       "family": "O",
@@ -582,6 +679,31 @@
         {
           "slug": "studio-shell",
           "when": "The work happens on a canvas with a tool panel and a properties inspector. When the editor is the page, the studio shell owns the layout and the conversation is not the spine."
+        }
+      ]
+    },
+    {
+      "name": "Check Report",
+      "slug": "check-report",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/check-report.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/check-report",
+      "description": "The output checks' verdict per rule. Each rule that ran gets a row with the word pass or fail, its name and an optional detail. When a failed check sent the same-kind template instead of the text as written, the report says so. It shows results; it does not run any rule.",
+      "variants": [],
+      "notes": [
+        "Don't leave a failed rule without a detail. \"fail\" alone tells the reader a rule broke and not what to change.",
+        "Don't set `fallback` on a report where nothing failed. It then claims the template was sent for no reason.",
+        "A rule with no entry in `results` is not shown. That is how a switched-off rule behaves, so a report with fewer than eight rows can be correct. A rule that ran and passed still needs its own `pass: true` entry.",
+        "Results are listed in the fixed rule order, not the order you pass them in.",
+        "`fallback` is a statement about what was sent, and the component does not check it against the results. Setting it with no failure reads as a contradiction."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "safety-block",
+          "when": "One request or response was stopped by policy and you are showing that block to a person. Check-report lists every output rule for one message, pass or fail, with the fallback stated."
         }
       ]
     },
@@ -1854,6 +1976,31 @@
         "settings-shell"
       ],
       "insteadUse": []
+    },
+    {
+      "name": "Message Log",
+      "slug": "message-log",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/message-log.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/message-log",
+      "description": "The append-only trace of one message, one sentence per event. Each row has a time as plus minutes from the start and a sentence such as \"Sent on chat, written live\", \"Skipped push: quiet hours until 08:00\" or \"Answered on chat: Read it\". It renders the events in the order you give them and edits nothing.",
+      "variants": [],
+      "notes": [
+        "Don't hand it unsorted events and expect it to order them. It renders what it is given, because an append-only log has no other order.",
+        "Don't leave a skipped event without a reason. The row then says only \"Skipped push\", which is a log that explains nothing.",
+        "`at` is minutes since the first event, not a clock time. Passing a timestamp prints \"+1760000000000 min\".",
+        "The sentence is built from the event type, channel, path, reason and value. An event type the component does not know is a type error, not a fallback row.",
+        "A very long `reason` wraps inside its row. The time column stays the same width, so a reason is never pushed under it."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "trace-timeline",
+          "when": "You are showing the steps of a model run with durations and nesting. Message-log is one sentence per event in one flat list, for the life of a single message."
+        }
+      ]
     },
     {
       "name": "Modality Rail",
@@ -3851,6 +3998,15 @@
       "components": [
         "book-cover",
         "browser-frame"
+      ]
+    },
+    {
+      "family": "R",
+      "title": "Channel renderers",
+      "components": [
+        "channel-message",
+        "check-report",
+        "message-log"
       ]
     }
   ]

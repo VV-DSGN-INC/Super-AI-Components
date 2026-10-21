@@ -130,3 +130,6 @@ Retrieval order: with an item installed, read `components/super-ai/<name>.meta.j
 - [Detail View Shell](https://super-ai-components.vercel.app/llms/components/detail-view-shell.md): The chrome around any record detail, in three opening modes: a centred dialog, a right-docked panel
 - [Browser Frame](https://super-ai-components.vercel.app/llms/components/browser-frame.md): Browser chrome — window dots, back/forward/reload glyphs and an address bar — wrapped around content
 - [Book Cover](https://super-ai-components.vercel.app/llms/components/book-cover.md): A cover for a bounded body of knowledge — a docs set, a template pack, a source collection. A portra
+- [Channel Message](https://super-ai-components.vercel.app/llms/components/channel-message.md): One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots
+- [Message Log](https://super-ai-components.vercel.app/llms/components/message-log.md): The append-only trace of one message, one sentence per event. Each row has a time as plus minutes fr
+- [Check Report](https://super-ai-components.vercel.app/llms/components/check-report.md): The output checks' verdict per rule. Each rule that ran gets a row with the word pass or fail, its n

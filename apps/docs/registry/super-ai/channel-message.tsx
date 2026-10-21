@@ -412,9 +412,7 @@ function ChannelMessage({
         data-slot="channel-message-script"
         className="flex min-w-0 flex-col gap-2 rounded-lg border border-border bg-background px-4 py-3 text-foreground"
       >
-        <p className={cn(scale.small, "font-semibold text-foreground")}>
-          Phone script
-        </p>
+        <p className={cn(scale.small, "font-semibold text-foreground")}>Phone script</p>
         <p className={scale.body}>This is {message.from}.</p>
         {trust && (
           <p data-slot="channel-message-trust" className={scale.body}>

@@ -33,7 +33,7 @@ Read these before writing component code. The first two are contracts:
 
 Specs are normative **including prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
 
-**Catalog status: 118 of 118 shipped**, nothing `building`, no next batch. The `contractExempt` flag is deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
+**Catalog status: 121 of 121 shipped**, nothing `building`, no next batch. The `contractExempt` flag is deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
 
 ## IMPORTANT: The registry is the product
 

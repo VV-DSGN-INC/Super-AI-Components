@@ -10867,3 +10867,263 @@ Use it in a grid or shelf where the reader is choosing what to open, and set hea
 ## Evidence
 
 Vercel Geist — the Book component, positioned there as decorative chrome for marketing pages, documentation landing covers and changelog heroes., No reference-board sighting. Family Q carries no board evidence and does not claim any (see decisions.md D20).
+
+---
+
+# Channel Message
+
+> One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots (who it is from, what it says, one question, a few closed answers, a way to stop). The `channel` prop picks the shape: a thread bubble for the app, a lock-screen card for push, a bubble with inline buttons for chat, a sender, subject and one button for email, and a spoken script for phone. The component shows the message and its state in words. It sends nothing and decides nothing.
+
+Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/channel-message.json` · Contract: `components/super-ai/channel-message.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/channel-message
+
+## Why it matters
+
+A bot that reaches a person on five channels has one voice and five shapes, and a design system built for screens gives the other four no way to say so. Designing Bots pairs Slack message attachments with Messenger templates for the same content (chapter 9) and says that writing once and running everywhere runs at low quality, while separating the logic from the presentation and tuning per platform is better (chapter 20). Notification products already preview one message per channel: Courier holds every channel in one template and renders each variant with test data, Novu previews on every channel's editor, Knock puts a preview pane on each channel step, and Braze previews email, in-app messages and content cards in the composer. This component makes the same move for a bot: one message, five shapes, chosen by a prop, so the five cannot drift apart.
+
+## When to reach for it
+
+Reach for it wherever one message has to be shown as it will arrive: a configurator that previews a message per channel, a delivery log, a support view of what a person saw. Pass the message once and render it per channel with `channel`. Keep the state in your own store and pass it in; the component never changes it. To make the controls work, give `onAnswer`, set `state` to `sent`, and when the callback fires set `state` to `answered` with the `answer` value. Without `onAnswer` the options render as plain text, which is what a screenshot or a static page should show. Use `to="second"` for a second recipient, who reads `summary` and none of the question. Use `locked` on push to choose between the lock screen and the unlocked notification.
+
+## Variants
+
+### channel
+
+- `app`: The record. A thread bubble with the controls under it, always sent first.
+- `push`: An interruption. A lock-screen card that shows who and what kind until unlocked.
+- `chat`: A conversation. A bubble with inline buttons and a command to stop.
+- `email`: Something to read later. A sender, a subject, one button and a footer link.
+- `phone`: Something said aloud. A script that asks once, by voice or keypad.
+
+### to (default: `member`)
+
+- `member`: The person the message is about, who gets the question and the options.
+- `second`: A second recipient such as a caregiver, who gets the summary and no detail.
+
+### typeSize (default: `default`)
+
+- `default`: Most readers. The ordinary type scale.
+- `large`: Readers who need larger text, set once per recipient and not per message.
+
+### pace (default: `default`)
+
+- `default`: The phone script says each fact once.
+- `slow`: The phone script says the key fact twice, for listeners who need the repeat.
+
+## Instead use
+
+- **chat-shell**: You are building the live conversation itself. Chat-shell is the thread a person types into; channel-message draws one message as it would arrive on a channel, for previews, logs and configurators.
+
+## Do
+
+- Let the caller own the state: report the pressed option through `onAnswer`, then pass `state="answered"` and the `answer`. The buttons are replaced by the result and focus moves to it.
+- Leave a push locked unless you are showing the unlocked notification. The lock screen shows who sent it and what kind it is, and nothing from the message.
+- Say why a channel was skipped. A `not-routed` message names its state in words and shows your reason beside it.
+- Keep a `ready` message free of a question. It has nothing to ask, so it needs no options and no deadline.
+
+## Don't
+
+- Don't put an ask on a `ready`, `receipt` or `notice`. The component renders it, because it draws what it is given, and the message then promises nothing and asks something. Use kind `ask`.
+- Don't expect more than three actions on a push. The rest are not dropped silently: the card says how many more are in the app.
+- Don't pass `onAnswer` and expect buttons in every state. Only a `sent` message can be answered; a withdrawn, expired or pending one shows its options as text.
+
+## Anatomy
+
+- `channel-message`: The article. Carries data-channel and data-state, and is named by its channel and sender.
+- `channel-message-from`: Who sent it. The only identity, the same on every channel.
+- `channel-message-kind`: The kind as a badge on app, chat and email, and as the lock-screen phrase on a locked push.
+- `channel-message-what`: The message, or the summary when the recipient is the second person.
+- `channel-message-ask`: The one question. Absent for ready, receipt and notice messages.
+- `channel-message-options`: The closed answers, capped per channel. Buttons while the message is sent and onAnswer is given, inert text otherwise.
+- `channel-message-overflow`: Says how many options did not fit, and that they are in the app.
+- `channel-message-link`: A label for the way back to the app. Never a live link.
+- `channel-message-quiet`: The way to stop these messages, worded for the channel.
+- `channel-message-trust`: The line this channel always carries, such as what the sender never asks for.
+- `channel-message-handoff`: Who takes over and when the person hears from them.
+- `channel-message-state`: The state as a word, announced when it changes.
+- `channel-message-path`: How the text was produced: by code, live, or the fallback template.
+- `channel-message-reason`: Why the state is what it is, when the caller says.
+- `channel-message-answer`: The result that replaces the controls once answered. Takes focus when it arrives.
+- `channel-message-script`: The phone channel's spoken script, as one block of lines.
+
+## Accessibility
+
+**Keyboard**
+
+- With `onAnswer` and `state="sent"`, every option is a real button and a tab stop, in reading order, up to the channel's cap (three on an unlocked push, one on email, five elsewhere). Space and Enter press it. A locked push, an answered message and every other state add no tab stops at all.
+- Nothing is a roving group. Arrow keys do nothing, and there is no shortcut for the options or for the quiet line.
+- The quiet line, the link label and the state are text, not controls. A person using only the keyboard cannot press them, which is the same as what they would see in a render of the channel.
+
+**Screen reader**
+
+- The root is an `article` named "<Channel> message from <sender>". A caller's own `aria-label` replaces it.
+- Each option button is named by its own text. On the phone script the text is the spoken phrase, for example "Press 2 for Not great", so the name carries the digit.
+- The state is a word in a status region, so a change from sent to answered or withdrawn is announced. The state is never conveyed by colour: `Pending`, `Sent`, `Answered`, `Withdrawn`, `Expired`, `Failed check` and `Not routed` are all text.
+- The link label and the quiet line are plain text. The link is not announced as a link because it is not one.
+- A locked push exposes the sender and the kind phrase only. The body and the actions are not in the DOM, so a screen reader cannot read what the lock screen hides.
+
+**Focus**
+
+- When `state` changes to `answered` after the message was on screen, focus moves to the result line (`tabIndex={-1}`), because the button the person pressed has just left the page. A message that first renders already answered does not take focus.
+- A withdrawn or expired message keeps no focus target. If a button had focus when the state changed, the browser puts focus on the page body, so move it in your own handler.
+
+## Pitfalls
+
+- The component does not check the message against its kind. A `ready` with an `ask` renders as written. Validate the kind against the slots before you pass it in.
+- Only `sent` is answerable. A `failed-check` message was not delivered as written, so its options are text. The template that went out instead is a `sent` message with `path="fallback"`; pass that one when the person can answer.
+- `link` is a label for the way back to the app, not an anchor. It is shown as "Open in the app" with the address in a `data-link` attribute. Wrap or replace it yourself if you want it to navigate.
+- `expires` is printed as you give it. Pass the words a person should read, such as "Fri 18:00", not a timestamp.
+- Hierarchy comes from size and weight. Do not add `text-muted-foreground` text inside the thread and chat bubbles: they paint `bg-muted`, and the pair measures 4.34:1 against a 4.5:1 minimum.
+- `typeSize="large"` changes the type scale of the render, not your page. Give it a container that can wrap; it wraps, it does not scroll.
+
+## Composition
+
+- States: `pending`, `sent`, `answered`, `withdrawn`, `expired`, `failed-check`, `not-routed`
+- Composes from this registry: nothing
+- shadcn primitives: badge, button, card
+- npm: none
+
+## Evidence
+
+Courier, Novu, Knock, Braze, Designing Bots (chapters 9 and 20)
+
+---
+
+# Message Log
+
+> The append-only trace of one message, one sentence per event. Each row has a time as plus minutes from the start and a sentence such as "Sent on chat, written live", "Skipped push: quiet hours until 08:00" or "Answered on chat: Read it". It renders the events in the order you give them and edits nothing.
+
+Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/message-log.json` · Contract: `components/super-ai/message-log.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/message-log
+
+## Why it matters
+
+A person checking what a system did with a message needs the trace in words, not event codes and not a diagram. Designing Bots treats the transcript as how a bot is judged: scripts are mockups, and reading the real conversations is how a team finds out where they fail (chapters 17 and 19). The log is the transcript of one message across channels. No product count is claimed for this item; it rests on the book and on the content system's log, and shares the family decision.
+
+## When to reach for it
+
+Pass the events as they happened, oldest first. `at` is minutes since the first event. Add a `reason` to a `message.skipped` event, because a skip without a reason explains nothing; add the failed rule as the `reason` on a fallback `message.sent`. Set `emptyText` when "Nothing sent yet" is the wrong sentence for your screen.
+
+## Variants
+
+None: The log renders every event the same way, as a time and a sentence, because the reader's job is to compare rows and a row styled by type would make them compare styles instead.
+
+## Instead use
+
+- **trace-timeline**: You are showing the steps of a model run with durations and nesting. Message-log is one sentence per event in one flat list, for the life of a single message.
+
+## Do
+
+- Name the reason on every skip. The channel and the reason read as one sentence.
+- Log the withdrawals that follow an answer as their own rows. The log shows them; it does not work them out.
+
+## Don't
+
+- Don't hand it unsorted events and expect it to order them. It renders what it is given, because an append-only log has no other order.
+- Don't leave a skipped event without a reason. The row then says only "Skipped push", which is a log that explains nothing.
+
+## Anatomy
+
+- `message-log`: The ordered list. One item per event, in the order given.
+- `message-log-row`: One event: its time, then one sentence.
+- `message-log-empty`: The only item when there are no events. Says so in words.
+
+## Accessibility
+
+**Keyboard**
+
+- No tab stops. The log is a list of text, and nothing in it is a control.
+- There is no keyboard navigation inside it. A long log is read by moving through the page as ordinary text.
+
+**Screen reader**
+
+- An ordered list (`ol`) with one list item per event, so a screen reader announces the count and the position.
+- Each row reads its time first, as "plus 4 min", then the sentence. Nothing in a row is conveyed by colour.
+- The empty state is a single list item with the empty text, so an empty log is announced as a list with one item and not as nothing.
+- Nothing announces a new event. The list owns no live region, so put one around it if events arrive while the page is open.
+
+## Pitfalls
+
+- `at` is minutes since the first event, not a clock time. Passing a timestamp prints "+1760000000000 min".
+- The sentence is built from the event type, channel, path, reason and value. An event type the component does not know is a type error, not a fallback row.
+- A very long `reason` wraps inside its row. The time column stays the same width, so a reason is never pushed under it.
+
+## Composition
+
+- States: `empty`, `populated`
+- Composes from this registry: nothing
+- shadcn primitives: none
+- npm: none
+
+## Evidence
+
+Designing Bots (chapters 17 and 19)
+
+---
+
+# Check Report
+
+> The output checks' verdict per rule. Each rule that ran gets a row with the word pass or fail, its name and an optional detail. When a failed check sent the same-kind template instead of the text as written, the report says so. It shows results; it does not run any rule.
+
+Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/check-report.json` · Contract: `components/super-ai/check-report.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/check-report
+
+## Why it matters
+
+A message written live by an agent is checked before it goes out, and one that fails is never sent as written. That only builds trust if a reader can see which rule failed and what happened next. Designing Bots asks for a way out of every dead end and a fallback when the bot cannot do what was asked (chapter 8). The rules here are this project's, not an industry standard, and no product count is claimed for this item; it rests on the book and the content system.
+
+## When to reach for it
+
+Run your rules and pass the results. The report lists the rules that appear in `results`, always in the same order: kind on the list, slots filled, one ask, no number in the ask, fits the channel, glossary words, no guilt, readability. A rule you switched off has no result and no row. Set `fallback` when a failure sent the template instead, and `channel` to say which channel the text was written for.
+
+## Variants
+
+None: The report renders every rule one way, as a verdict word beside a name, because the reader's job is to find the rule that failed and a row styled by severity would hide the ones that passed.
+
+## Instead use
+
+- **safety-block**: One request or response was stopped by policy and you are showing that block to a person. Check-report lists every output rule for one message, pass or fail, with the fallback stated.
+
+## Do
+
+- Pass a result for every rule that ran, including the ones that passed. A report that lists only failures cannot show that the others ran.
+- Say what happened after a failure. Set `fallback` so the report states that the template went out instead.
+
+## Don't
+
+- Don't leave a failed rule without a detail. "fail" alone tells the reader a rule broke and not what to change.
+- Don't set `fallback` on a report where nothing failed. It then claims the template was sent for no reason.
+
+## Anatomy
+
+- `check-report`: The region, named "Output checks" or "Output checks for <channel>".
+- `check-report-rule`: One rule that ran: the verdict, the rule's name and the detail.
+- `check-report-verdict`: The word pass or fail, as text in a badge.
+- `check-report-fallback`: The line "Sent the template instead", present only when the fallback was used.
+
+## Accessibility
+
+**Keyboard**
+
+- No tab stops. The report is text, and nothing in it is a control.
+- There is no keyboard navigation inside it. It is read as ordinary text in page order.
+
+**Screen reader**
+
+- A `section` with an `aria-label`, so it is a landmark region named "Output checks" or "Output checks for <channel>".
+- Each rule is a list item that reads the word pass or fail, then the rule's name, then the detail. The verdict is text; the solid badge for fail and the outlined badge for pass are emphasis only.
+- The fallback line is plain text in the same region. Nothing announces a change in the results, so put a live region around it if results arrive while the page is open.
+
+## Pitfalls
+
+- A rule with no entry in `results` is not shown. That is how a switched-off rule behaves, so a report with fewer than eight rows can be correct. A rule that ran and passed still needs its own `pass: true` entry.
+- Results are listed in the fixed rule order, not the order you pass them in.
+- `fallback` is a statement about what was sent, and the component does not check it against the results. Setting it with no failure reads as a contradiction.
+
+## Composition
+
+- States: `all-pass`, `some-fail`
+- Composes from this registry: nothing
+- shadcn primitives: badge
+- npm: none
+
+## Evidence
+
+Designing Bots (chapter 8)
