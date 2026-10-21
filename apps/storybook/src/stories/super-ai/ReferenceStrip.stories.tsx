@@ -4,7 +4,11 @@ import { expect, userEvent, within } from "storybook/test";
 
 import { ContextChip, ContextChips } from "@/registry/super-ai/context-chips";
 import { FrameStrip } from "@/registry/super-ai/frame-strip";
-import { ReferenceStrip, type ReferenceStripItem } from "@/registry/super-ai/reference-strip";
+import {
+  ReferenceStrip,
+  type ReferenceDescription,
+  type ReferenceStripItem,
+} from "@/registry/super-ai/reference-strip";
 import { ReferenceStripDocs } from "@/content/components/reference-strip.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -122,6 +126,76 @@ export const WithRoles: Story = {
     // The unfilled "last frame" slot stays visible and actionable.
     const emptySlot = canvas.getByRole("button", { name: /last frame/i });
     await userEvent.click(emptySlot);
+  },
+};
+
+const DESCRIBED_RESULT: ReferenceDescription = {
+  exact: {
+    prompt: "Lighthouse on a basalt headland at dusk, long exposure",
+    params: [
+      { label: "Model", value: "Image 3" },
+      { label: "Seed", value: "48213" },
+      { label: "Sampler", value: "euler a" },
+    ],
+  },
+  // Six on purpose: the strip shows four and drops the rest.
+  inferred: [
+    "Weathered lighthouse above a rough sea, golden hour light",
+    "Moody coastal landscape, low sun, film grain",
+    "Stone tower on a cliff, wide angle, soft haze",
+    "Seascape with a lone beacon, muted palette",
+    "Fifth option the strip must not show",
+    "Sixth option the strip must not show",
+  ],
+};
+
+function DescribeHarness() {
+  const [used, setUsed] = React.useState<string | null>(null);
+  return (
+    <div className="flex w-[36rem] max-w-full flex-col gap-2">
+      <ReferenceStrip
+        items={ROLE_ITEMS}
+        onAdd={() => {}}
+        onDescribe={() =>
+          new Promise<ReferenceDescription>((resolve) => setTimeout(() => resolve(DESCRIBED_RESULT), 150))
+        }
+        onUseDescription={setUsed}
+      />
+      <p className="text-foreground text-xs">{used ? `Prompt set: ${used}` : "Prompt empty"}</p>
+    </div>
+  );
+}
+
+/**
+ * Describe on a filled slot: what is likely behind the reference. The action
+ * exists only because this story passes `onDescribe`; a host that cannot
+ * expose prompts omits the handler and no slot shows it (the empty "last
+ * frame" slot never does either, since there is nothing to describe).
+ *
+ * The result puts extracted values first (a prompt embedded in the file, then
+ * the parameters that change reproduction) and the inferred options second,
+ * under a heading that says they may not match. The handler here returns six
+ * inferred options and the panel shows four. Each option has one action,
+ * `Use`, that hands its text to `onUseDescription` and closes the panel. While
+ * the promise is pending the panel says so with a Cancel, and a status region
+ * announces it politely; a rejection reads "could not be described" with a
+ * retry.
+ */
+export const Describe: Story = {
+  render: () => <DescribeHarness />,
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await userEvent.click(canvas.getByRole("button", { name: "Describe First frame" }));
+
+    const body = within(document.body);
+    await expect(await body.findByText("Extracted")).toBeInTheDocument();
+    await expect(await body.findByText("Seed")).toBeInTheDocument();
+    // The extracted prompt plus four inferred options; the fifth and sixth are dropped.
+    await expect(body.getAllByRole("button", { name: /^Use prompt:/ })).toHaveLength(5);
+    await expect(body.queryByText(/Fifth option/)).not.toBeInTheDocument();
+
+    await userEvent.click(body.getByRole("button", { name: /^Use prompt: Moody coastal/ }));
+    await expect(canvas.getByText(/Prompt set: Moody coastal/)).toBeInTheDocument();
   },
 };
 

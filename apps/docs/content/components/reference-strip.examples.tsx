@@ -76,3 +76,17 @@ export function ColorOnlyRoleBadge() {
 export function EmptySlotCollapsedAway() {
   return <ReferenceStrip items={[ROLE_ITEMS[0]]} onAdd={() => {}} />;
 }
+
+/** Do: the host can describe, so it passes `onDescribe` and the action appears. */
+export function DescribeWhenHostCanDescribe() {
+  return (
+    <ReferenceStrip
+      items={PLAIN_ITEMS}
+      onDescribe={async () => ({
+        exact: { params: [{ label: "Seed", value: "48213" }] },
+        inferred: ["Weathered lighthouse above a rough sea, golden hour light"],
+      })}
+      onUseDescription={() => {}}
+    />
+  );
+}
