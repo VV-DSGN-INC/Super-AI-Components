@@ -1,0 +1,153 @@
+{
+  "generated": "by `pnpm contract:emit` from content/components/summary-card.docs.tsx. Do not edit.",
+  "name": "summary-card",
+  "title": "Summary Card",
+  "layer": "component",
+  "family": "K",
+  "description": "A labelled summary of a named source at a chosen depth, linked back to it.",
+  "purpose": "A card that condenses a named source the reader already has: a document, a thread, a section or a selection. It states what was summarized, links back to it, carries the AI label every time, and lets the reader pick how deep the summary goes. The host generates the text; the card owns the frame, the depth control and the placement of citation markers.",
+  "whyItMatters": "A summary reads as the source's own voice unless the surface says otherwise, and that is the distortion the Summary pattern in Shape of AI warns about. Apple, Bloomberg, Notion, Perplexity, Slack and Zoom all summarize content the reader owns, and the ones that earn trust say what was summarized and let the reader move between a short version and a longer one. Legal, scientific and contractual text goes one step further: rewording changes the meaning, so the useful summary is the key passages quoted word for word. The card also treats turning summaries off as a real state, so a reader who declined them sees that choice and a way back.",
+  "usage": "Pass the scope, the depth the points were generated at, and the points. The card never holds the depth: when the reader picks another one it calls onDepthChange and you regenerate, then pass the new points and, while you wait, state generating. Use attributed when each point rests on sources: give each point its citation indices and a renderCitation that returns your own marker, so the card decides where it sits and you decide what it opens. Use quote-and-condense for text where rewording is risky, and pass the passages and their locators. Use collapsed for a card in a dense list; it shows the first point and an expand control, and tracks the toggle itself. Use turned-off, with onTurnOn, when the reader has switched automatic summaries off, so the card stays in place and says so.",
+  "evidence": [
+    "Apple",
+    "Bloomberg",
+    "Notion",
+    "Perplexity",
+    "Slack",
+    "Zoom",
+    "ServiceNow Horizon"
+  ],
+  "anatomy": [
+    {
+      "slot": "summary-card",
+      "note": "Root, a named group. Carries data-state (the six states) and data-depth (short, detailed or key-points)."
+    },
+    {
+      "slot": "ai-label",
+      "note": "The summarized chip from ai-label. Present in every state that shows a summary, and left out of turned-off where nothing was summarized."
+    },
+    {
+      "slot": "summary-card-scope",
+      "note": "The sentence naming what was summarized. Its title is a link back to the source when you pass href, and it is also the group's accessible name."
+    },
+    {
+      "slot": "toggle-group",
+      "note": "The depth control: Short, Detailed and Key points. Hidden while collapsed and while turned off."
+    },
+    {
+      "slot": "summary-card-point",
+      "note": "One point of the summary. Holds the text and, in the attributed state, the markers for its citations."
+    },
+    {
+      "slot": "summary-card-citations",
+      "note": "The span at the end of a point that holds the markers your renderCitation returns."
+    },
+    {
+      "slot": "summary-card-quote",
+      "note": "A verbatim passage with its locator, in the quote-and-condense state."
+    },
+    {
+      "slot": "summary-card-pending",
+      "note": "The polite status shown while generating, with two placeholder lines."
+    }
+  ],
+  "variants": [
+    {
+      "prop": "depth",
+      "default": "short",
+      "values": [
+        {
+          "value": "short",
+          "intent": "The reader wants the gist of the source in a line or two, such as a thread they were not in or a preview in a list."
+        },
+        {
+          "value": "detailed",
+          "intent": "The reader wants the argument and the main supporting detail in a few paragraphs, so they can skip the source without losing the thread."
+        },
+        {
+          "value": "key-points",
+          "intent": "The reader wants to scan: short fragments as a list, such as decisions, owners and dates from a meeting or a long document."
+        }
+      ]
+    }
+  ],
+  "insteadUse": [
+    {
+      "component": "answer-block",
+      "when": "The text answers a question the reader asked, from sources retrieved for that question. Summary-card condenses one named source the reader already has; answer-block attaches a citation to each claim and reports how much of the answer is sourced."
+    },
+    {
+      "component": "ai-doc-block",
+      "when": "The generated passage sits inside a document the reader is editing, with keep, edit, regenerate and discard around it. Summary-card is a standalone card about a source, not a passage in the flow of one."
+    },
+    {
+      "component": "disclaimer-note",
+      "when": "You only need a caveat that the content may be wrong or incomplete. Summary-card carries its own AI label, and a caveat belongs beside it as a note."
+    },
+    {
+      "component": "source-cards",
+      "when": "The reader needs the set of sources that retrieval found, not a condensed version of one of them."
+    }
+  ],
+  "dos": [
+    "Name the source and link back to it, so the reader can check the summary against the thing it condenses.",
+    "Give each point its citation indices in the attributed state and fill the marker through renderCitation.",
+    "Switch to quote-and-condense for clauses where the exact words matter, and give each passage its locator.",
+    "Keep the card in place when summaries are off and offer the way back with onTurnOn."
+  ],
+  "donts": [
+    "Don't paraphrase a contractual clause in a ready summary. A notice period of ninety days written is not about three months of warning.",
+    "Don't write whole sentences as key points. A list of long sentences is the detailed depth with bullets, and the reader loses the scan the preset promises."
+  ],
+  "accessibility": {
+    "keyboard": [
+      "Tab stops, in order: the link back to the source when href is given, then the depth control as one stop (the three buttons share a roving tab stop, and it rests on the first, Short, whichever depth is selected), then any markers you render, then the expand and turn-off buttons in the footer.",
+      "Left and Right Arrow move focus between the depth buttons. Enter and Space press the focused one. Pressing the depth that is already selected does nothing, and un-pressing it is ignored, so a summary always has a depth.",
+      "There is no shortcut for expand or turn-off.",
+      "In the collapsed state the depth control is not rendered at all, so it leaves the tab order until the card is expanded. In turned-off the only stop is the turn-on button.",
+      "The card has no disabled prop. Your handlers decide what a press does."
+    ],
+    "screenReader": [
+      "The root is role=\"group\" named by the scope sentence, so a card announces as \"Summary of the document leave-policy-emea.docx, group\". The name comes from the sentence, so an empty scope title leaves it reading \"Summary of the document\".",
+      "The AI label is a note named \"Summarized by AI\". The depth control is a group named \"Summary depth\", and its buttons expose aria-pressed.",
+      "The expand button reads \"Show full summary\" or \"Show less\" and carries aria-expanded and aria-controls pointing at the body.",
+      "While generating, the body has aria-busy and holds a role=status line, \"Summarizing the document\", which is announced politely. The status line is mounted with the state, so some screen readers announce it only when it appears and not on later changes.",
+      "When the new summary arrives, nothing announces it: the status region unmounts. If a depth change should be heard, announce it from your own live region.",
+      "Quote-and-condense uses real blockquote and figure elements. The quotation marks are text inside the blockquote, so they are read aloud by some screen readers.",
+      "Citation markers are whatever your renderCitation returns. Give each one a name that says what it is; the fallback marker is plain superscript text with no role."
+    ],
+    "focus": [
+      "Nothing here moves focus. After onDepthChange the host regenerates and the card goes to generating, but the depth button the reader pressed stays mounted, so focus stays on it.",
+      "Expanding a collapsed card keeps focus on the toggle, which changes its label in place. Collapsing again removes the depth buttons but not the toggle.",
+      "Entering the turned-off state unmounts the depth buttons. If focus was on one of them it falls to the document body, so move it yourself to the turn-on button when you switch the state."
+    ]
+  },
+  "pitfalls": [
+    "The depth is controlled by you. The card calls onDepthChange and shows whatever depth you pass back, so omitting the handler leaves the buttons looking dead. If regeneration is slow, pass state generating in the meantime, or the old summary stays on screen under the new depth.",
+    "Citations render only in the attributed state. Points that carry citation indices in a ready card show no markers, so a host that forgets to switch the state ships an unsourced-looking summary.",
+    "quote-and-condense shows the quotes array, not the points. It shows nothing if you pass points only, and the card does not check that a quote appears in the source, so verbatim is your guarantee to keep.",
+    "The collapsed state shows only the first point and tracks its own expanded flag. Changing the state prop away from collapsed and back resets nothing, so a card the reader opened stays open. Use onExpandedChange if the host needs to know.",
+    "Turned-off removes the AI label because nothing was summarized. If the same card goes from ready to turned-off mid-session, the previous points are not kept for the reader to look at."
+  ],
+  "states": [
+    "generating",
+    "ready",
+    "attributed",
+    "quote-and-condense",
+    "collapsed",
+    "turned-off"
+  ],
+  "regions": [],
+  "consumes": [
+    "ai-label"
+  ],
+  "shadcn": [
+    "button",
+    "card",
+    "skeleton",
+    "toggle-group"
+  ],
+  "npm": [],
+  "source": "content/components/summary-card.docs.tsx",
+  "docs": "https://super-ai-components.vercel.app/components/summary-card"
+}

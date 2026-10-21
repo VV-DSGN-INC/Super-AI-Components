@@ -51,6 +51,10 @@ export const HeroOmniboxDocs: ComponentDocs = {
       note: "The row beneath the textarea: attach, model, cost on the left; submit on the right.",
     },
     { slot: "hero-omnibox-attach", note: "Icon-only attach button, inside the field." },
+    {
+      slot: "hero-omnibox-randomize",
+      note: "Optional dice button after attach, present only when `onRandomize` is passed. Fills the field with a host-supplied starter and never submits.",
+    },
     { slot: "hero-omnibox-model", note: "Optional model select, inside the field." },
     {
       slot: "hero-omnibox-cost",
@@ -72,7 +76,7 @@ export const HeroOmniboxDocs: ComponentDocs = {
     { slot: "hero-omnibox-status", note: "Visually hidden live region that announces the generating state." },
   ],
   usage:
-    "Reach for it as the anchor of an App Home screen — the first thing a user sees when they arrive with no session in progress yet. Drive its `state` prop from real product state (`idle` while empty, `focused` when the field has attention, `generating` while a request is in flight, `locked` once a plan limit is hit) rather than deriving it purely from DOM focus, since `generating` and `locked` are business states, not interaction states. Pass `modes`, `models`, and `cost` only when the surface actually has them — each is optional and the field lays out correctly without any of them.",
+    "Reach for it as the anchor of an App Home screen — the first thing a user sees when they arrive with no session in progress yet. Drive its `state` prop from real product state (`idle` while empty, `focused` when the field has attention, `generating` while a request is in flight, `locked` once a plan limit is hit) rather than deriving it purely from DOM focus, since `generating` and `locked` are business states, not interaction states. Pass `modes`, `models`, and `cost` only when the surface actually has them — each is optional and the field lays out correctly without any of them. To offer the `randomize` state, pass `onRandomize`: it returns a starter string from a pool the host owns, the dice button fills the field with it, and the person edits or sends it. Returning nothing leaves the field alone, and the dice never submits.",
   dos: [
     {
       text: "Swap the textarea for the paywall CTA in place when locked — the composer itself stays the gate.",
@@ -98,6 +102,7 @@ export const HeroOmniboxDocs: ComponentDocs = {
       "Enter submits and Shift+Enter inserts a newline. Submit is a no-op on an empty or whitespace-only value, while `generating` and while `locked` — the same guard the button uses.",
       "The submit button is `disabled` until the field holds non-whitespace content, so the composer gains a tab stop as you type the first character.",
       "`generating` disables the textarea, the attach button, the model select and the mode tabs, leaving Stop as the only focusable control in the card. `locked` unmounts the field entirely, leaving only the paywall CTA.",
+      "The dice button, when `onRandomize` is passed, is one more tab stop after attach and is `disabled` while `generating`. Activating it fills the field and keeps focus on the dice, so Enter or Space can roll again. It never submits; the person still presses Enter or Send.",
       "Mode tabs are one tab stop, not one per mode. The Base UI toggle group underneath does roving focus, so arrow keys move between modes, Home and End jump to the ends, and the set wraps.",
       "Clicking anywhere on the card focuses the field. That is mouse-only — the root is a plain `<div>` with a click handler and no key handler — which is harmless here, because the field it focuses is the next tab stop anyway.",
     ],
@@ -106,10 +111,12 @@ export const HeroOmniboxDocs: ComponentDocs = {
       '`generating` is announced. The `role="status"` region is always mounted and only its text is swapped in, which is what makes the announcement land, and the root also carries `aria-busy`. The end of generating is not announced — the text is emptied, and emptying a live region says nothing.',
       "`locked` announces nothing at all. The field is replaced by the paywall with no live region and no focus move, so a screen-reader user who was typing learns about the limit only by tabbing into it.",
       'Attach, submit and stop are icon-only buttons with their glyphs `aria-hidden`, named from `attachLabel`, `submitLabel` and `stopLabel`. Stop is a distinct control replacing submit rather than a disabled submit, so it announces as "Stop generating" and not as an unavailable send.',
+      'The dice button is icon-only, named "Random prompt" by `randomizeLabel` with its glyph `aria-hidden`. A fill is announced politely through the same status region as `generating`, saying "Random prompt added" from `randomizedLabel`; typing clears it, and a repeat roll is announced again.',
       'The model select is named "Model" by a hard-coded `aria-label`. It is not one of the label props, so a surface picking something other than a model has no way to rename it.',
       'The cost chip is inert text in a `dir="ltr"` span. It is not part of any control\'s name, so the price is reached only by reading through the toolbar, never by tabbing to it.',
     ],
     focus: [
+      "Filling from the dice does not move focus. It stays on the dice button, set explicitly because Safari does not focus a button on click, and the textarea is not focused. Tab once to edit the starter.",
       "The worst case is the ordinary one. Pressing Enter to submit sets `generating`, which disables the textarea you were typing in; focus is dropped from the disabled element and falls to `<body>`, so the next Tab restarts at the top of the page and Stop — the only live control left — is nowhere near it. Move focus to Stop when you flip the state.",
       "`locked` does the same thing more thoroughly, unmounting the whole field. Move focus to the unlock CTA.",
       '`autoFocus` is wired to `state === "focused"`, and `autoFocus` only applies at mount: rendering the omnibox already in that state steals focus on arrival, and switching into it later does nothing at all.',

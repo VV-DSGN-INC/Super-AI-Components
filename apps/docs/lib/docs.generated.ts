@@ -3,6 +3,7 @@ import type { ComponentDocs } from "./component-docs";
 
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { ActionStackDocs } from "@/content/components/action-stack.docs";
+import { AgentPresenceDocs } from "@/content/components/agent-presence.docs";
 import { AiDocBlockDocs } from "@/content/components/ai-doc-block.docs";
 import { AiLabelDocs } from "@/content/components/ai-label.docs";
 import { AiToolsMenuDocs } from "@/content/components/ai-tools-menu.docs";
@@ -15,6 +16,7 @@ import { ArtifactShellDocs } from "@/content/components/artifact-shell.docs";
 import { AssetDetailDocs } from "@/content/components/asset-detail.docs";
 import { AssetLibraryDocs } from "@/content/components/asset-library.docs";
 import { AuthShellDocs } from "@/content/components/auth-shell.docs";
+import { AutoFillDocs } from "@/content/components/auto-fill.docs";
 import { AutonomySelectorDocs } from "@/content/components/autonomy-selector.docs";
 import { BookCoverDocs } from "@/content/components/book-cover.docs";
 import { BrowserFrameDocs } from "@/content/components/browser-frame.docs";
@@ -64,6 +66,7 @@ import { KbdDocs } from "@/content/components/kbd.docs";
 import { LibraryShellDocs } from "@/content/components/library-shell.docs";
 import { MediaPromptBarDocs } from "@/content/components/media-prompt-bar.docs";
 import { MemberGateRowDocs } from "@/content/components/member-gate-row.docs";
+import { MemoryManagerDocs } from "@/content/components/memory-manager.docs";
 import { ModalityRailDocs } from "@/content/components/modality-rail.docs";
 import { ModeTabsDocs } from "@/content/components/mode-tabs.docs";
 import { ModelPickerDocs } from "@/content/components/model-picker.docs";
@@ -77,6 +80,8 @@ import { PreviewTileDocs } from "@/content/components/preview-tile.docs";
 import { PricingTableDocs } from "@/content/components/pricing-table.docs";
 import { PrivateSessionNoticeDocs } from "@/content/components/private-session-notice.docs";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
+import { PromptEnhancerDocs } from "@/content/components/prompt-enhancer.docs";
+import { PromptTemplateFormDocs } from "@/content/components/prompt-template-form.docs";
 import { PropertyInspectorDocs } from "@/content/components/property-inspector.docs";
 import { QuotaMeterDocs } from "@/content/components/quota-meter.docs";
 import { QuoteReplyDocs } from "@/content/components/quote-reply.docs";
@@ -106,6 +111,7 @@ import { StatReadoutDocs } from "@/content/components/stat-readout.docs";
 import { StemMixerDocs } from "@/content/components/stem-mixer.docs";
 import { StudioShellDocs } from "@/content/components/studio-shell.docs";
 import { SuggestionChipsDocs } from "@/content/components/suggestion-chips.docs";
+import { SummaryCardDocs } from "@/content/components/summary-card.docs";
 import { TaskTrayDocs } from "@/content/components/task-tray.docs";
 import { TemplateDetailDocs } from "@/content/components/template-detail.docs";
 import { ThreadListDocs } from "@/content/components/thread-list.docs";
@@ -121,6 +127,7 @@ import { TrustDialogDocs } from "@/content/components/trust-dialog.docs";
 import { TtsComposerDocs } from "@/content/components/tts-composer.docs";
 import { UsageDashboardDocs } from "@/content/components/usage-dashboard.docs";
 import { VoiceCloneRecorderDocs } from "@/content/components/voice-clone-recorder.docs";
+import { VoiceProfileDocs } from "@/content/components/voice-profile.docs";
 import { WaveformEditorDocs } from "@/content/components/waveform-editor.docs";
 import { WhatsNewDocs } from "@/content/components/whats-new.docs";
 import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.docs";
@@ -128,6 +135,7 @@ import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.d
 export const componentDocs: Record<string, ComponentDocs> = {
   "account-menu": AccountMenuDocs,
   "action-stack": ActionStackDocs,
+  "agent-presence": AgentPresenceDocs,
   "ai-doc-block": AiDocBlockDocs,
   "ai-label": AiLabelDocs,
   "ai-tools-menu": AiToolsMenuDocs,
@@ -140,6 +148,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "asset-detail": AssetDetailDocs,
   "asset-library": AssetLibraryDocs,
   "auth-shell": AuthShellDocs,
+  "auto-fill": AutoFillDocs,
   "autonomy-selector": AutonomySelectorDocs,
   "book-cover": BookCoverDocs,
   "browser-frame": BrowserFrameDocs,
@@ -189,6 +198,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "library-shell": LibraryShellDocs,
   "media-prompt-bar": MediaPromptBarDocs,
   "member-gate-row": MemberGateRowDocs,
+  "memory-manager": MemoryManagerDocs,
   "modality-rail": ModalityRailDocs,
   "mode-tabs": ModeTabsDocs,
   "model-picker": ModelPickerDocs,
@@ -202,6 +212,8 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "pricing-table": PricingTableDocs,
   "private-session-notice": PrivateSessionNoticeDocs,
   "promo-card": PromoCardDocs,
+  "prompt-enhancer": PromptEnhancerDocs,
+  "prompt-template-form": PromptTemplateFormDocs,
   "property-inspector": PropertyInspectorDocs,
   "quota-meter": QuotaMeterDocs,
   "quote-reply": QuoteReplyDocs,
@@ -231,6 +243,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "stem-mixer": StemMixerDocs,
   "studio-shell": StudioShellDocs,
   "suggestion-chips": SuggestionChipsDocs,
+  "summary-card": SummaryCardDocs,
   "task-tray": TaskTrayDocs,
   "template-detail": TemplateDetailDocs,
   "thread-list": ThreadListDocs,
@@ -246,6 +259,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "tts-composer": TtsComposerDocs,
   "usage-dashboard": UsageDashboardDocs,
   "voice-clone-recorder": VoiceCloneRecorderDocs,
+  "voice-profile": VoiceProfileDocs,
   "waveform-editor": WaveformEditorDocs,
   "whats-new": WhatsNewDocs,
   "workspace-switcher": WorkspaceSwitcherDocs,

@@ -194,7 +194,7 @@ rests on this read's text summary and the screenshot cards were not opened.
 | ------------------------ | ----- | -------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | `prompt-enhancer` ⚠      | 7     | Adobe Firefly, Bolt, Cofounder, Copy.ai, FloraFauna, Leonardo.ai, v0 | **PASS**, Tuners slice. A popover showing the rewrite before it runs    |
 | `prompt-template-form` ⚠ | 6     | Coda, Copy.ai, Google, Jasper, Relay, Writer                         | **PASS**, Inputs slice (Madlibs). Variables, not parameters             |
-| `memory-manager` ⚠       | 5     | ChatGPT, Claude, Gemini, Microsoft Copilot, Perplexity               | **PASS**, Governors slice. V4's twin; Shape of AI pairs them explicitly |
+| `memory-manager` ⚠       | 5     | ChatGPT, Claude, Gemini, Perplexity, Apple                           | **PASS**, Governors slice. V4's twin; Shape of AI pairs them explicitly |
 | `shared-vision` ⚠        | 3     | Perplexity Comet, OpenAI Operator, Claude computer use               | **PASS at the floor**, agent slice v2. Novel, hard, not for this batch  |
 
 ### States, not components
@@ -371,6 +371,50 @@ and Shape of AI's categories are both legitimate cuts, and consumers arrive spea
 answer "which component is the Caveat pattern" without re-cutting the families. It is a derived
 surface under D23, cheap, and separate from the build. Decide it as its own item, not inside this
 batch.
+
+---
+
+## 8. Wave 15: the non-trust passes, built — 2026-10-21
+
+D30 builds three of the four §4 passes outside Trust builders and four of the §4 states.
+`shared-vision` is held: it passed at exactly 3 and is agent-surface work for its own slice.
+
+| Built                  | As                       | Evidence (named on Shape of AI)                                                      |
+| ---------------------- | ------------------------ | ------------------------------------------------------------------------------------ |
+| `prompt-enhancer`      | D8                       | Adobe Firefly, Bolt, Cofounder, Copy.ai, FloraFauna, Leonardo.ai, v0                 |
+| `prompt-template-form` | D9                       | Coda, Copy.ai, Google, Jasper, Relay, Writer                                         |
+| `memory-manager`       | N17                      | ChatGPT, Claude, Gemini, Perplexity, Apple                                           |
+| Draft mode             | `draft` on A7 and E5     | Firefly, Chronicle, ElevenLabs, Gamma, Jasper, Midjourney, Replit, Runway, Synthesia |
+| Describe               | `describe` on D2         | Midjourney, ChatGPT, Ideogram, Leonardo                                              |
+| Saved styles           | `user-presets` on E4     | ElevenLabs, FloraFauna, Midjourney, Krea                                             |
+| Randomize              | `randomize` on C1 and D1 | Krea, Scenario ⚠ two named; built as a state, below D1's bar for an item             |
+
+Correction to §4: the Memory page names Apple, not Microsoft Copilot. The count is unchanged at 5.
+
+After wave 15 the §3 tally reads 48 of 58 covered. Of the ten left, four are not components
+(Identifiers), one is cut (Chained action, D9), one is held (`shared-vision`), and four wait for
+unsampled slices: Auto-fill, Summary, Sample response, Voice and tone.
+
+---
+
+## 9. Wave 16: the rest, and a correction to §4 — 2026-10-21
+
+**Correction.** §4 deferred Summary, Auto-fill and Voice and tone as thin evidence. That came from
+reading the index one-liners. The full pattern pages name six unrelated products each, so all
+three pass D1 comfortably. Sample response is the one genuinely thin pattern: a single AI product
+(Notion) and one non-AI precedent (Zapier).
+
+| Built            | As                                  | Evidence (named on Shape of AI)                                             |
+| ---------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| `summary-card`   | K9                                  | Apple, Bloomberg, Notion, Perplexity, Slack, Zoom; ServiceNow (agent slice) |
+| `voice-profile`  | E11                                 | Dia, ElevenLabs, Grammarly, Jasper, Midjourney, Tabnine                     |
+| `auto-fill`      | P3                                  | Attio, Clearfeed, Coda, Linear, LogicGate, Relay                            |
+| `agent-presence` | N18                                 | Perplexity Comet, OpenAI Operator, Zapier approvals ⚠ exactly 3             |
+| Sample response  | `sample-preview` on P3, not an item | Notion; Zapier is not an AI product. Below D1, so a state                   |
+
+After wave 16 the §3 tally reads 53 of 58 covered. The five left are four Identifiers, which are
+the consuming product's brand decisions and get docs guidance rather than components, and Chained
+action, which is family G and stays cut by D9.
 
 ---
 

@@ -92,7 +92,9 @@ Wireframes for every entry are on the working board, column 4 — see
 - Changing any segment re-estimates cost, which is why A2 lives inside the bar rather than beside it.
 - G6 `model-bar` is this component with a Run split-button appended — one engine, two presentations.
 
-**Evidence:** CapCut, Freepik, ElevenLabs Flows, Playground and Tripo all ship a variant of exactly this.
+- **`draft` (D30).** A draft/final quality segment. Draft is labelled as lower quality, never only
+  as cheaper, and changing it re-estimates cost like any other segment.
+  **Evidence:** CapCut, Freepik, ElevenLabs Flows, Playground and Tripo all ship a variant of exactly this.
 
 ## A8 `preview-tile` — the load-bearing primitive
 
@@ -295,7 +297,10 @@ Shape of AI, Disclosure; see [shape-of-ai-board-analysis.md](shape-of-ai-board-a
 - Attach, model select and mode chip live inside the field, not above it. Same slot arrangement as D1.
 - Credits sit at the point of spend (M2), never buried in billing.
 
-**Evidence:** Descript, Zapier Copilot, CapCut, Manus, Claude — five of five App Home screens.
+- **`randomize` (D30).** A dice button in the field fills it with a starter from a host-supplied
+  pool. It never runs on click: the person edits or runs it. The host owns the pool, which is how
+  the space stays constrained (Krea, Scenario; two named, recorded in D30).
+  **Evidence:** Descript, Zapier Copilot, CapCut, Manus, Claude — five of five App Home screens.
 
 ## C2 `suggestion-chips`
 
@@ -352,7 +357,9 @@ Shape of AI, Disclosure; see [shape-of-ai-board-analysis.md](shape-of-ai-board-a
 - The settings strip is A7 embedded. Cost re-estimates live as settings change.
 - `locked` replaces the input row in place — gate at the point of creation, not at a billing page.
 
-**Evidence:** Freepik, ElevenLabs Flows, CapCut, Playground, Runway.
+- **`randomize` (D30).** Same rule as C1: the dice fills, never runs. In D1 it can target the
+  prompt or the seed, because audio and image generators randomize both.
+  **Evidence:** Freepik, ElevenLabs Flows, CapCut, Playground, Runway.
 
 ## D2 `reference-strip` `NEW`
 
@@ -362,7 +369,11 @@ Shape of AI, Disclosure; see [shape-of-ai-board-analysis.md](shape-of-ai-board-a
 - Empty slots stay visible rather than collapsing, so the set of possible inputs is discoverable.
 - Reorder and remove are per-slot. Removing a first frame must not silently promote another reference.
 
-**Evidence:** Freepik, Runway, ElevenLabs, CapCut all place typed references ABOVE the prompt.
+- **`describe` (D30).** On a filled slot, Describe returns what is likely behind the reference:
+  exact extracted values first, then at most four inferred prompt options, each one action from the
+  prompt. It renders only when the host can describe (an `onDescribe` handler is passed); a product
+  that cannot expose prompts must not show the action (Midjourney, ChatGPT, Ideogram, Leonardo).
+  **Evidence:** Freepik, Runway, ElevenLabs, CapCut all place typed references ABOVE the prompt.
 
 ## D3 `context-chips`
 
@@ -444,6 +455,44 @@ Rasa `pattern_correction` / `pattern_validate_slot`, ServiceNow Horizon `now-ai-
 Counted at 3 from documentation — verify against the running products before treating this spec as
 settled.
 
+## D8 `prompt-enhancer` `NEW`
+
+**Base:** Popover, Button · **States:** idle · enhancing · suggested · accepted · reverted · failed
+
+- **The rewrite is shown before it runs.** Enhancing never submits. It proposes a rewrite beside the
+  original, and the person accepts, edits or dismisses it.
+- **What was added is marked.** Constraints the enhancer added are visibly distinct from the
+  person's own words, in text as well as style, so review is reading, not diffing by eye.
+- **One default, a drawer for the rest.** "Enhance" is the one action; quick refinements ("More
+  concise", "Add examples") sit in an advanced drawer as chips.
+- **Revert is one step** and restores the exact original text, including after an accept.
+- **It does not own the field.** It takes the current `value` and returns the accepted text through a
+  callback; the composer it sits beside keeps its textarea. That is how C1, D1 and AI Elements'
+  prompt input can all host it.
+- `failed` leaves the original untouched and says so.
+
+**Evidence:** Adobe Firefly, Bolt, Cofounder, Copy.ai, FloraFauna, Leonardo.ai, v0. Shape of AI,
+Prompt enhancer; see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §8.
+
+## D9 `prompt-template-form` `NEW`
+
+**Base:** Input, Select, A6 · **States:** empty · partially-filled · complete · with-defaults ·
+missing-required · multi-step · **Variants:** `layout`: inline · stacked
+
+- **Variables, not parameters.** Each blank is a named slot in a sentence. `inline` reads as the
+  sentence with blanks in it; `stacked` is the same template as a form.
+- **The assembled prompt is always visible.** A live preview shows exactly what will be sent, so a
+  template is never a black box.
+- **Missing is a state on the blank.** A required blank with no value blocks the run and is marked
+  where it sits, never in a toast.
+- **Defaults are marked as defaults**, the way D7 marks a defaulted slot, so a person can tell what
+  they chose from what the template chose.
+- **`multi-step` carries values forward** (brief, then outline, then draft); a carried value shows
+  where it came from and stays editable.
+
+**Evidence:** Coda, Copy.ai, Google, Jasper, Relay, Writer. Shape of AI, Madlibs; see
+[shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §8.
+
 ---
 
 # E · Generation & parameters
@@ -490,7 +539,11 @@ settled.
 - Labels overlay the thumbnail rather than sitting below it, so a dense grid stays a grid.
 - See-more is a tile in the grid, not a link below it — the grid never reflows when expanded.
 
-**Evidence:** Midjourney styles, CapCut filters, Freepik environments, Simplified filters, Fotor text effects.
+- **`user-presets` (D30).** A "Your styles" section sits above the system presets, with
+  save-current as a tile in it. Every preset shows its source (personal, team, system), because a
+  team style and a personal one behave differently when edited (ElevenLabs, FloraFauna,
+  Midjourney, Krea).
+  **Evidence:** Midjourney styles, CapCut filters, Freepik environments, Simplified filters, Fotor text effects.
 
 ## E5 `run-button`
 
@@ -500,7 +553,10 @@ settled.
 - Running state must expose Cancel. A generation you cannot stop burns credits and trust.
 - The cost number here and in E1 / D1 come from one source. Two different prices is the failure mode.
 
-**Evidence:** Freepik "Generate 55", Tripo, Playground, ElevenLabs.
+- **`draft` (D30).** With draft on, the label says so ("Generate draft") and the cost shows the
+  delta to a final run, so the cheaper click is never mistaken for the real one (Firefly,
+  Chronicle, ElevenLabs, Gamma, Jasper, Midjourney, Replit, Runway, Synthesia).
+  **Evidence:** Freepik "Generate 55", Tripo, Playground, ElevenLabs.
 
 ## E6 `generation-queue`
 
@@ -581,6 +637,26 @@ copy it into a new entry until that is settled.
 stretch item in the approved spec, then dropped entirely, then restored. A recovered consolidation
 error rather than a board sample; no per-product screenshots were collected, so implementations use
 `evidence: []` rather than inventing a product list.
+
+## E11 `voice-profile` `NEW`
+
+**Base:** Card, Select, Textarea, Badge · **States:** none · preset · custom · editing · scoped ·
+conflict · reset
+
+- **The entry point is at the input.** The active voice shows beside the composer with its name,
+  source and scope. Export that indicator as its own sub-component so C1 and D1 can host it.
+- **A custom voice is rules, not a mood.** Tone, words to use, words to avoid, formatting and an
+  example, with a preview of a sample output under the current rules.
+- **Scope is visible and switching is one action.** A voice is global (follows the person) or held
+  to a project; global tone leaking into the wrong project is the failure Shape of AI names.
+- **Conflicts are shown, never resolved silently.** When two voices could apply, `conflict` says
+  which one wins and why.
+- **Reset to neutral is always one step.**
+- **Boundary:** E4's `user-presets` are saved visual styles picked from a grid; this is rules for how
+  output sounds. What the AI knows about the person is N17.
+
+**Evidence:** Dia, ElevenLabs, Grammarly, Jasper, Midjourney, Tabnine. Shape of AI, Voice and tone;
+see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
 
 ---
 
@@ -1129,6 +1205,29 @@ Dialog contract's _sourced slots_ obligation for retrieved values.
 **Evidence:** Glean, NotebookLM, Perplexity. Returns the approved spec's dropped `retrieval-inspector`
 in its user-facing form (D16).
 
+## K9 `summary-card` `NEW`
+
+**Base:** Card, Toggle-group, A13 · **States:** generating · ready · attributed · quote-and-condense
+· collapsed · turned-off · **Variants:** `depth`: short · detailed · key-points
+
+- **Scope and source are stated.** The card says what was summarized (a document, thread, section or
+  selection) and links back to it.
+- **Labelled as AI**, through A13 `ai-label`, every time. A summary that reads as the source's own
+  words is the distortion Shape of AI warns about.
+- **Depth is the reader's choice.** Short, detailed and key points are presets; changing depth asks
+  the host to regenerate.
+- **`attributed` puts sources at the claim.** Citation markers are a slot the host fills (K6 is L3
+  and cannot be imported); the card owns their placement, not their popover.
+- **`quote-and-condense`** lists key passages verbatim with light framing, for legal, scientific or
+  contractual text where rewording changes meaning.
+- **Expand, refine or turn off.** Automatic summaries can be switched off, and `turned-off` is a
+  state that says so rather than an absent card.
+- **Boundary:** K7 `answer-block` answers a question from retrieved sources; this condenses a named
+  source the reader already has.
+
+**Evidence:** Apple, Bloomberg, Notion, Perplexity, Slack, Zoom; ServiceNow Horizon from the agent
+slice. Shape of AI, Summary; see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
+
 ---
 
 # L · First-run & onboarding
@@ -1562,6 +1661,49 @@ ai-edited · with-history
 **Evidence:** Adobe Content Credentials, TikTok, Shutterstock, Snap, Google SynthID. Shape of AI,
 Watermark and Footprints; see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §4.
 
+## N17 `memory-manager` `NEW`
+
+**Base:** Card, A9, Switch, Alert-dialog · **States:** empty · populated · scoped · just-saved ·
+editing · memory-off · reset-confirm
+
+- **Never a black box.** Each memory says what it is, when it was added and where it came from.
+- **Preferences and facts are separate groups.** Tone and style are not the same kind of thing as
+  who the person is or where they work, and they are reviewed differently.
+- **Scope is visible.** A memory shows whether it is global or held to a workspace or project, and a
+  person with two memory sets (work and personal) can tell which one is active.
+- **Edit and delete per item; reset is one step** behind a confirm that says what it deletes and what
+  it keeps (the account, the chats).
+- **`just-saved` is the capture moment.** A small "Memory updated" chip with a review action, which
+  the host renders in the conversation; export it as its own sub-component.
+- **`memory-off`** states what stops being remembered. Private sessions are N15's job, named in copy
+  only, never imported.
+- **Boundary:** training and retention belong to N14 `data-controls`, not here.
+
+**Evidence:** ChatGPT, Claude, Gemini, Perplexity, Apple. Shape of AI, Memory; see
+[shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §8.
+
+## N18 `agent-presence` `NEW`
+
+**Base:** Badge, Button, Dropdown-menu · **States:** idle · watching · acting · needs-you · paused ·
+taken-over
+
+- **Ambient, not interrupting.** A persistent cue that an agent is active in this surface: a chip in
+  the chrome and an outline on the region it controls. It never opens a modal on its own.
+- **The boundary is visible.** The cue names what the agent can see or touch (this tab, this app,
+  this frame), so scope is read, not assumed.
+- **Takeover is always one action.** Pause and Take over sit in one menu; `taken-over` says control
+  is back with the person, and `paused` says the agent is waiting.
+- **`needs-you`** draws attention when the agent is blocked, without blocking the page. The approval
+  itself is N8's; this component names it in copy only.
+- **An audit link,** through a host callback, to the agent's steps (N4).
+- **Watching is not security.** No copy implies that oversight prevents harm; Shape of AI cites a
+  prompt-injection flaw in exactly this kind of product.
+- Any glow or pulse has a reduced-motion form that keeps the cue and drops the motion.
+
+**Evidence:** Perplexity Comet, OpenAI Operator, Zapier workflow approvals. ⚠ Exactly 3, and the
+third is the weakest; verify against running products before this spec is treated as settled.
+Shape of AI, Shared vision; see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
+
 ## P1 `data-views` — one config, five collection views
 
 **Family P · v2.** Evidence: [`records-board-analysis.md`](records-board-analysis.md) and D18, both
@@ -1617,6 +1759,30 @@ change means navigating. That single restraint is what lets one shell serve ever
 **Ships four files.** `detail-fields` and `use-container-width` are not imported by the shell —
 they are what a consumer renders into `attributes` and measures with, and a two-column detail body
 without a field list is half a component.
+
+## P3 `auto-fill` `NEW` — one prompt across many fields
+
+**Family P · v2.** Evidence: Attio, Clearfeed, Coda, Linear, LogicGate, Relay (Shape of AI,
+Auto-fill), plus Notion and Zapier for the `sample-preview` state (Shape of AI, Sample response);
+see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
+
+**Base:** Popover, Button, Badge, A13 · **States:** configuring · sample-preview · applying ·
+suggested · accepted · overridden · failed
+
+- **One prompt, many fields.** `configuring` picks the target field and the prompt; any default
+  prompt is visible and editable, never hidden behind a smart column.
+- **`sample-preview` runs first.** The prompt runs on the first few records and the results sit
+  beside the existing values, with per-record cost and time. Nothing is written until "Apply to
+  all". This is Shape of AI's Sample response, carried here as a state because it is below D1 as
+  an item (D31).
+- **Human content is never overwritten without permission.** Filled cells are skipped by default;
+  overwriting is an explicit choice that states how many cells it changes.
+- **Generated values stay marked until a person acts.** A13 marks each suggested cell; accepting
+  removes the mark (LogicGate) and overriding replaces the value.
+- **A reason per cell,** when the host has one (Linear's justification).
+- **`applying` is cancellable** and shows progress; `failed` keeps every existing value.
+- **It plugs into P1, it does not import it.** It ships a column-header action and a cell renderer
+  that P1 `data-views` hosts.
 
 ---
 

@@ -5,16 +5,17 @@ import { shippedItems } from "./manifest-types";
 
 describe("MANIFEST", () => {
   it("carries every catalog row, including the cut records", () => {
-    // 123 active + family G's 10 cut rows + the cut O5 `flow-shell` = 134.
-    // (D26 added A13 and N13–N16, the Shape of AI trust slice; 118 active before it.)
+    // 130 active + family G's 10 cut rows + the cut O5 `flow-shell` = 141.
+    // (D31 added E11, K9, N18 and P3; D30 added D8, D9 and N17; D28 added A13 and N13–N16, the Shape of AI
+    // trust slice; 118 active before both.)
     // (107 + family G/O5 = 118 before PR #14 / D14-D17 added 7 rows: D7
     // `slot-summary`, K7 `answer-block`, K8 `source-cards`, N9
     // `autonomy-selector`, N10 `safety-block`, N11 `escalation-handoff`, N12
     // `task-tray`. D18 then added family P's two items, and D20 family Q's.)
-    expect(MANIFEST).toHaveLength(134);
+    expect(MANIFEST).toHaveLength(141);
   });
 
-  it("holds A–O at 119 (the 114 freeze plus D26's five) while later families grow separately", () => {
+  it("holds A–O at 125 (the 114 freeze plus D28's five, D30's three and D31's three) while later families grow separately", () => {
     // The freeze that matters is per-family, not the grand total: D18 added
     // family P from the second reference board and D20 added family Q from
     // Geist, and the catalog-completion spec's ruling was that such a family is
@@ -28,14 +29,16 @@ describe("MANIFEST", () => {
     // "someone reopened A–O". Naming the range says what the freeze is about,
     // so the next family after Q neither breaks it nor has to edit it.
     //
-    // D26 (2026-10-20) reopened A and N for exactly five items, the Shape of AI
-    // trust slice (A13, N13–N16). 114 + 5 = 119; anything else here is a reopen
+    // D28 (2026-10-20) reopened A and N for exactly five items, the Shape of AI
+    // trust slice (A13, N13–N16). D30 (2026-10-21) added D8, D9 and N17, the
+    // same source's passes outside trust. D31 added E11, K9 and N18 (and P3
+    // in family P). 114 + 5 + 3 + 3 = 125; anything else here is a reopen
     // nobody decided.
     const active = MANIFEST.filter((i) => i.status !== "cut");
-    expect(active.filter((i) => i.family <= "O")).toHaveLength(119);
-    expect(active.filter((i) => i.family === "P")).toHaveLength(2);
+    expect(active.filter((i) => i.family <= "O")).toHaveLength(125);
+    expect(active.filter((i) => i.family === "P")).toHaveLength(3);
     expect(active.filter((i) => i.family === "Q")).toHaveLength(2);
-    expect(active).toHaveLength(123);
+    expect(active).toHaveLength(130);
   });
 
   // The 14 components that shipped before Wave 1.5. They were exempt from the

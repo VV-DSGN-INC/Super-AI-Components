@@ -557,7 +557,7 @@ The one thing a gate cannot tell from oversight is silence, which is why the
 scaffolder seeds both fields with a nine-character reason: a new component is
 red until someone writes the judgment.
 
-### D26 · Shape of AI is a fourth source, and its Trust builders re-open family N — 2026-10-20
+### D28 · Shape of AI is a fourth source, and its Trust builders re-open family N — 2026-10-20
 
 [Shape of AI](https://www.shapeof.ai)'s sixty patterns were audited against the
 catalog ([shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md)).
@@ -583,6 +583,40 @@ carry the other axis, decided separately (analysis §7).
 Checked against the sibling `Minimal Design System`: it has no AI-labelling,
 consent, data-control, private-session or credentials component, so ownership
 is here.
+
+### D30 · Wave 15 builds the Shape of AI passes outside Trust builders — 2026-10-21
+
+Three items that passed D1 in the Shape of AI audit's §4 enter the catalog:
+D8 `prompt-enhancer` (7 products), D9 `prompt-template-form` (6) and N17
+`memory-manager` (5). Four §4 states land on shipped items: `randomize` on C1
+and D1, `describe` on D2, `user-presets` on E4, `draft` on A7 and E5. A–O
+grows from 119 to 122 for exactly these three, the same reopening D28 used.
+
+`shared-vision` passed at exactly 3 and is held for an agent slice: ambient
+"the agent is working here" cues need a host surface this registry does not
+have yet. `randomize` has two named products, Krea and Scenario. It ships as a
+state because D1 governs registry items, not variants, and the count is
+recorded so a re-sample can remove it.
+
+Numbered D30 because D26 and D27 belong to generated chat (#108) and channel
+renderers (#111); D28 is the trust slice and D29 the patterns cross-reference (#107).
+
+### D31 · Wave 16 builds the remaining Shape of AI patterns that can be components — 2026-10-21
+
+Four items enter: K9 `summary-card`, E11 `voice-profile`, N18 `agent-presence`
+and P3 `auto-fill`. A–O grows from 122 to 125 and family P from 2 to 3.
+`agent-presence` passes D1 at exactly 3 and carries the ⚠ until its products
+are checked against real screens.
+
+Sample response does not become an item. One AI product and one non-AI
+precedent is below D1, and both examples are the same shape: try the prompt on
+a few records before the full run. That is P3's `sample-preview` state.
+
+This corrects D30's premise: Summary, Auto-fill and Voice and tone were
+deferred as thin, and their pattern pages name six products each. The four
+Identifiers stay out as brand decisions (D22), and Chained action stays cut
+(D9). That leaves 53 of Shape of AI's 58 patterns covered and the other five
+accounted for.
 
 ### F1 · Monetization cannot be Wave 12
 

@@ -10,7 +10,7 @@ Freepik, ElevenLabs Flows, CapCut, Playground, and Runway all converge on the sa
 
 ## When to reach for it
 
-Reach for `presentation="floating"` when the bar sits over a canvas with no other chrome competing for space, `"docked"` as the default anchored composer at the bottom of a generation workspace, and `"node-embedded"` inside a workflow node where the negative prompt has no room and is dropped automatically. Drive `locked` from a real plan/quota check, not from a disabled textarea. Pass `settings` as a composed A7 gen-settings-bar rather than reinventing model/aspect/resolution controls here, and keep the `cost` prop in sync with whatever `settings` currently selects — it should read the same number a user sees at the moment they actually spend it.
+Reach for `presentation="floating"` when the bar sits over a canvas with no other chrome competing for space, `"docked"` as the default anchored composer at the bottom of a generation workspace, and `"node-embedded"` inside a workflow node where the negative prompt has no room and is dropped automatically. To offer the `randomize` state, pass `onRandomize`: it returns a starter string from a pool the host owns, and the dice button fills the prompt with it. Set `randomizeTarget="seed"` for generators that roll a seed instead, which adds a seed field next to the dice. The dice never generates, and returning nothing leaves the field alone. Drive `locked` from a real plan/quota check, not from a disabled textarea. Pass `settings` as a composed A7 gen-settings-bar rather than reinventing model/aspect/resolution controls here, and keep the `cost` prop in sync with whatever `settings` currently selects — it should read the same number a user sees at the moment they actually spend it.
 
 ## Variants
 
@@ -40,6 +40,8 @@ Not yet recorded.
 - `media-prompt-bar-negative`: The negative-prompt row, toggled open in place below the main prompt. Never rendered when `presentation` is node-embedded.
 - `media-prompt-bar-toolbar`: The row beneath the textarea: attach, negative-prompt toggle, settings, cost on the left; submit on the right.
 - `media-prompt-bar-attach`: Icon-only attach button, inside the field.
+- `media-prompt-bar-randomize`: Optional dice button, present only when `onRandomize` is passed. Fills the prompt (or the seed) with a host-supplied starter and never generates.
+- `media-prompt-bar-randomize-seed`: Seed field in the action row, present only when `onRandomize` is passed with `randomizeTarget="seed"`.
 - `media-prompt-bar-settings`: Hosts A7 gen-settings-bar. Collapsed automatically when `presentation` is floating.
 - `media-prompt-bar-cost`: Cost chip (M2) — credits at the point of spend, the same number quoted in E1/E5.
 - `media-prompt-bar-submit`: Send button. Replaced by media-prompt-bar-stop while generating.
@@ -58,6 +60,7 @@ Not yet recorded.
 - There is no IME guard on the submit key. The handler checks only `event.key === "Enter" && !event.shiftKey`, so the Enter that commits a Japanese, Chinese or Korean composition submits the prompt mid-word. K2 `inline-generate-popup` guards this with `event.nativeEvent.isComposing`; this component does not.
 - `generating` disables the textarea, attach, and both negative-prompt controls, and replaces submit with stop. Stop is the only control in the bar you can reach while a run is in flight.
 - Submit is disabled whenever the trimmed prompt is empty, so an empty bar has one fewer reachable control than a filled one. `locked` collapses the field to two elements, only one of which — the unlock button — is focusable.
+- The dice button, when `onRandomize` is passed, adds one tab stop after attach, and `randomizeTarget="seed"` adds the seed field as another. Both are `disabled` while `generating`. Activating the dice keeps focus on it, so Enter or Space rolls again, and it never generates.
 - Escape does nothing anywhere. It does not close the negative-prompt row and it does not stop a run.
 
 **Screen reader**
@@ -65,6 +68,7 @@ Not yet recorded.
 - The prompt field is named twice — an sr-only `<label htmlFor>` and an `aria-label` carrying the same `label` string. `aria-label` wins, so the label element is dead weight rather than a second announcement; the two must not be allowed to drift apart.
 - The root carries `aria-busy` while `generating`, and `media-prompt-bar-status` is a visually hidden `role="status" aria-live="polite"` region announcing `generatingLabel`. It is mounted in every state holding an empty string, which is what makes the first announcement actually fire.
 - Nothing announces the end of a run. The region empties when `generating` goes false, and emptying a live region announces nothing — so "Generating…" is spoken and the finish is silent. Announce the result on the surface that renders it.
+- The dice is icon-only, named "Random prompt" (or "Random seed" for the seed target) by `randomizeLabel`. A fill is announced politely through the same status region as `generating`, with `randomizedLabel` as the text; typing clears it and a repeat roll is announced again. The seed field is named by `seedLabel`.
 - Attach, stop and the negative-prompt collapse are icon-only and named by `attachLabel`, `stopLabel` and `negativePromptCollapseLabel`; every glyph in the bar is `aria-hidden`. Translate those props or the buttons stay in English while the placeholder does not.
 - The negative field has a real visible `<label>` and a matching `aria-label`, but the row holding it is a plain div with no group role — so nothing announces that the second field belongs to the first. A screen reader meets two textareas with different names, not a prompt and its negation.
 - `locked` swaps the whole field out for the paywall with no live region on the change, so a bar that locks while someone is typing in it changes shape silently.
@@ -72,6 +76,7 @@ Not yet recorded.
 
 **Focus**
 
+- Filling from the dice does not move focus. It stays on the dice button, set explicitly because Safari does not focus a button on click. Tab once to edit the starter.
 - Starting a run disables the textarea, which is where focus almost certainly was. A disabled element cannot hold focus, so focus falls to `<body>` and the next Tab restarts from the top of the page — at exactly the moment the only useful control is the Stop button that just appeared. Move focus to `media-prompt-bar-stop` in the same handler that sets `generating`.
 - Collapsing the negative prompt unmounts the X that had focus, with nothing restoring it. Same failure, smaller blast radius.
 - Switching `locked` on unmounts the entire field, textarea included, and nothing catches focus on the way past.
@@ -86,9 +91,9 @@ Not yet recorded.
 
 ## Composition
 
-- States: `floating`, `docked`, `node-embedded`, `locked`, `negative-prompt`
+- States: `floating`, `docked`, `node-embedded`, `locked`, `negative-prompt`, `randomize`
 - Composes from this registry: cost-chip
-- shadcn primitives: button, textarea
+- shadcn primitives: button, input, textarea
 - npm: lucide-react
 
 ## Evidence
