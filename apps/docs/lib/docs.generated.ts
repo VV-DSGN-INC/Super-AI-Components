@@ -4,6 +4,7 @@ import type { ComponentDocs } from "./component-docs";
 import { AccountMenuDocs } from "@/content/components/account-menu.docs";
 import { ActionStackDocs } from "@/content/components/action-stack.docs";
 import { AiDocBlockDocs } from "@/content/components/ai-doc-block.docs";
+import { AiLabelDocs } from "@/content/components/ai-label.docs";
 import { AiToolsMenuDocs } from "@/content/components/ai-tools-menu.docs";
 import { AnswerBlockDocs } from "@/content/components/answer-block.docs";
 import { AppSidebarDocs } from "@/content/components/app-sidebar.docs";
@@ -17,16 +18,19 @@ import { AuthShellDocs } from "@/content/components/auth-shell.docs";
 import { AutonomySelectorDocs } from "@/content/components/autonomy-selector.docs";
 import { BookCoverDocs } from "@/content/components/book-cover.docs";
 import { BrowserFrameDocs } from "@/content/components/browser-frame.docs";
+import { CaptureConsentDocs } from "@/content/components/capture-consent.docs";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { ChoiceChipsDocs } from "@/content/components/choice-chips.docs";
 import { CitationRefDocs } from "@/content/components/citation-ref.docs";
 import { CoachMarkDocs } from "@/content/components/coach-mark.docs";
 import { CompareViewerDocs } from "@/content/components/compare-viewer.docs";
 import { ConnectionManagerDocs } from "@/content/components/connection-manager.docs";
+import { ContentCredentialsDocs } from "@/content/components/content-credentials.docs";
 import { ContextChipsDocs } from "@/content/components/context-chips.docs";
 import { ContextToolbarDocs } from "@/content/components/context-toolbar.docs";
 import { CostChipDocs } from "@/content/components/cost-chip.docs";
 import { CreditsIndicatorDocs } from "@/content/components/credits-indicator.docs";
+import { DataControlsDocs } from "@/content/components/data-controls.docs";
 import { DataViewsDocs } from "@/content/components/data-views.docs";
 import { DateSectionDocs } from "@/content/components/date-section.docs";
 import { DetailViewShellDocs } from "@/content/components/detail-view-shell.docs";
@@ -71,6 +75,7 @@ import { PermissionPromptDocs } from "@/content/components/permission-prompt.doc
 import { PresetGridDocs } from "@/content/components/preset-grid.docs";
 import { PreviewTileDocs } from "@/content/components/preview-tile.docs";
 import { PricingTableDocs } from "@/content/components/pricing-table.docs";
+import { PrivateSessionNoticeDocs } from "@/content/components/private-session-notice.docs";
 import { PromoCardDocs } from "@/content/components/promo-card.docs";
 import { PropertyInspectorDocs } from "@/content/components/property-inspector.docs";
 import { QuotaMeterDocs } from "@/content/components/quota-meter.docs";
@@ -124,6 +129,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "account-menu": AccountMenuDocs,
   "action-stack": ActionStackDocs,
   "ai-doc-block": AiDocBlockDocs,
+  "ai-label": AiLabelDocs,
   "ai-tools-menu": AiToolsMenuDocs,
   "answer-block": AnswerBlockDocs,
   "app-sidebar": AppSidebarDocs,
@@ -137,16 +143,19 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "autonomy-selector": AutonomySelectorDocs,
   "book-cover": BookCoverDocs,
   "browser-frame": BrowserFrameDocs,
+  "capture-consent": CaptureConsentDocs,
   "chat-shell": ChatShellDocs,
   "choice-chips": ChoiceChipsDocs,
   "citation-ref": CitationRefDocs,
   "coach-mark": CoachMarkDocs,
   "compare-viewer": CompareViewerDocs,
   "connection-manager": ConnectionManagerDocs,
+  "content-credentials": ContentCredentialsDocs,
   "context-chips": ContextChipsDocs,
   "context-toolbar": ContextToolbarDocs,
   "cost-chip": CostChipDocs,
   "credits-indicator": CreditsIndicatorDocs,
+  "data-controls": DataControlsDocs,
   "data-views": DataViewsDocs,
   "date-section": DateSectionDocs,
   "detail-view-shell": DetailViewShellDocs,
@@ -191,6 +200,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "preset-grid": PresetGridDocs,
   "preview-tile": PreviewTileDocs,
   "pricing-table": PricingTableDocs,
+  "private-session-notice": PrivateSessionNoticeDocs,
   "promo-card": PromoCardDocs,
   "property-inspector": PropertyInspectorDocs,
   "quota-meter": QuotaMeterDocs,

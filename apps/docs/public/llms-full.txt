@@ -1029,6 +1029,94 @@ CapCut, Canva, Fotor, Simplified, Spline
 
 ---
 
+# AI Label
+
+> A small outlined chip that says what AI did to a piece of content: generated it, edited it, summarized it, wrote this message, or stopped replying at a handoff. The chip text is one word or two; the accessible name is the full sentence, with the model and the time folded in. A sixth form, `text-tint`, draws no chip at all and instead wraps AI-sourced prose in a reserved tint. The component also owns the glyph for "AI acted here", exported as `AI_LABEL_ICON`, so surfaces stop importing a sparkle icon of their own.
+
+Layer: primitive · Family: A · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/ai-label.json` · Contract: `components/super-ai/ai-label.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/ai-label
+
+## Why it matters
+
+Disclosure only works when it is consistent. Character.ai, Intercom Fin, Productboard, Tactiq, TikTok, Zapier and Zoom each mark AI output somewhere, and each marks it differently, so a reader learns nothing that transfers. iA Writer shows the other half: a quiet tint on AI-sourced text that survives editing. Four components in this registry (`ai-doc-block`, `result-card`, `artifact-grid`, `escalation-handoff`) draw the same mark by hand today; this primitive is the one place the mark, its wording and its accessible name are decided.
+
+## When to reach for it
+
+Pick the variant by what happened to the content: `generated` for text or media the AI produced, `edited` when it changed something a person wrote, `summarized` for a condensation. Pass `by` and `at` when the product knows the model and the time, and `detail` for anything longer. Use `sender` beside the name on a message, comment or notification the AI wrote, and switch the AI's earlier turns to `after-handoff` once a person takes over, so the reader can see where the AI stopped. Wrap AI-sourced prose in `text-tint` when the text itself, not a block, is what needs marking. Override the chip text through `children` if your product says "Rewrote" instead of "Edited"; the shape and the accessible name stay. Reach for a plain Badge when the chip is a status unrelated to AI.
+
+## Variants
+
+### variant (default: `generated`)
+
+- `generated`: The AI produced this content from nothing, such as a draft, an image or a reply you asked for.
+- `edited`: A person wrote it and the AI changed it, so the reader knows the words are no longer only theirs.
+- `summarized`: The content condenses something else, so the reader knows the original is longer and may differ.
+- `sender`: The AI wrote this message, comment or notification, and it sits beside the author's name so it cannot be taken for a person.
+- `after-handoff`: The AI's turns ended at a handoff to a person, and the earlier turns need to show where it stopped.
+- `text-tint`: The text itself, inline in a paragraph, is what came from the AI, and a chip beside it would break the sentence.
+
+## Instead use
+
+- **disclaimer-note**: The point is a caveat about reliability (AI can make mistakes) rather than attributing an action that already happened.
+- **cost-chip**: The chip would carry a number, such as a price in credits. This label holds one or two words and no figures.
+- **citation-ref**: The pointer is to a source the content came from, not to the fact that AI produced it.
+
+## Do
+
+- Say what happened to the content. The default copy names the action, so a reader can tell a draft from a rewrite at a glance.
+- Put `sender` beside the name, and switch the AI's earlier turns to `after-handoff` once a person takes over. The dashed border marks the stop without relying on colour.
+- Wrap AI-sourced prose in `text-tint` and use the tint for nothing else.
+
+## Don't
+
+- Don't reduce the chip to a bare "AI". It says who, not what, and it reads as a brand badge.
+- Don't put a caveat or a source in the chip. A reliability warning belongs to `disclaimer-note`, and a pointer to a source belongs to `citation-ref`; this chip only attributes an action.
+
+## Anatomy
+
+- `ai-label`: The chip, or the `text-tint` wrapper. A `role="note"` carrying the full-sentence `aria-label`; it is the tab stop only when `by`, `at` or `detail` gives the tooltip something to say.
+- `ai-label-icon`: The shared AI glyph, `aria-hidden`. Not present on `text-tint`.
+- `ai-label-text`: The one-or-two-word chip text. `children` replaces it.
+- `ai-label-detail`: The tooltip body: the full sentence, then `detail` as plain text.
+
+## Accessibility
+
+**Keyboard**
+
+- Zero tab stops on a bare chip. The chip is a `role="note"` span with nothing to activate.
+- One tab stop when `by`, `at` or `detail` is set, because the tooltip then has something to show. Focusing the chip opens it; Escape closes it.
+- The chip has no activation key. A link inside the tooltip cannot be reached by keyboard, so `detail` is text only; put any link to credentials on the surrounding surface.
+- `text-tint` is never a tab stop.
+
+**Screen reader**
+
+- The chip is `role="note"` with an `aria-label` holding the full sentence, for example "Generated by AI, Claude, 3 minutes ago". The visible chip text ("Generated") is shorter on purpose and does not form the name.
+- `text-tint` is a `role="group"` whose label announces before the prose: "Text written by AI". Reading the prose itself is unchanged.
+- The glyph is `aria-hidden`.
+- `detail` is announced only when the tooltip opens on focus. It is not part of the accessible name, so anything a reader must not miss belongs in `by` or `at`.
+- Overriding the chip text through `children` does not change the name, so a chip reading "Rewrote" still announces "Edited by AI".
+- There is no live region. A label that appears after the content streams in appears silently.
+
+## Pitfalls
+
+- `text-tint` is a wrapper treatment and is reserved. Applied to anything other than AI-sourced prose it stops meaning anything, and a second component that borrows it makes the signal unreadable.
+- The tint passes contrast by itself, on the page background. Do not place it on a muted or accent surface to "quiet it down": it was measured without one, and a tinted surface behind it changes the result.
+- `sender` must not be mistaken for a person. If the AI's name sits next to a human-looking avatar and no chip, the reader has nothing to tell them apart; keep the chip on every AI turn.
+- The chip carries no model information on screen. If the product wants the model visible without hovering, put it in your own text beside the chip rather than stretching the chip beyond two words.
+- Passing a `data-slot` of your own through the spread replaces `ai-label` and hides that this primitive drew the mark.
+
+## Composition
+
+- States: `generated`, `edited`, `summarized`, `sender`, `after-handoff`, `text-tint`
+- Composes from this registry: nothing
+- shadcn primitives: badge, tooltip
+- npm: lucide-react
+
+## Evidence
+
+Character.ai, Intercom Fin, Productboard, Tactiq, TikTok, Zapier, Zoom, iA Writer
+
+---
+
 # App Sidebar
 
 > The assembled product sidebar: a workspace switcher, a nav list, an ambient promo card, and a footer, stacked in that order inside the vendored shadcn Sidebar shell. It arranges those four slots — it doesn't reimplement the sidebar's own expand, collapse, or mobile-drawer behavior.
@@ -9143,6 +9231,382 @@ Not yet recorded.
 ## Evidence
 
 GitHub Copilot, ChatGPT Workspace Agents, Microsoft Copilot Tasks, Manus
+
+---
+
+# Capture Consent
+
+> The consent gate that comes before an AI capture session (meeting notes, a call transcript, a recorded document) and the indicator that stays on screen while it runs. It tells the initiator who will be notified, keeps recording and sharing as two separate switches, confirms that the other people were told, shows what a decline costs the initiator, and says what is kept and deleted when capture stops.
+
+Layer: component · Family: N · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/capture-consent.json` · Contract: `components/super-ai/capture-consent.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/capture-consent
+
+## Why it matters
+
+Meeting recorders such as Fireflies, Gong, Granola, Limitless, Notion and Zoom AI Companion all started capture first and explained afterwards, and Shape of AI's Consent pattern names that as the failure. The fix is structural: the callback that starts capture is reachable from the notice step only, so a consumer cannot wire a happy path that skips it. Bundling recording, sharing and training into one toggle is the dark pattern Shape of AI's Disclosure page names, so recording and sharing are separate switches here and training is not in this component at all.
+
+## When to reach for it
+
+Render one per capture surface and drive `state` from your own session. Put `form="bar"` on the surface that owns the capture and `form="compact"` in the topbar's privacy slot, so the indicator is on every surface while capturing. Pass `participants` so the notice names real people. Wire `onStartCapture` to whatever opens the microphone or the document tap, and treat it as the only trigger; move to `recording` when your capture actually starts, to `others-notified` when your notice is delivered, and to `declined` when a participant opts out. Pass `consequence` for the declined state in your product's terms, and `kept` and `deleted` for `ended`. If your product trains on captures, point to the control with `dataControlsName`; the setting itself belongs on its own surface.
+
+## Variants
+
+### form (default: `bar`)
+
+- `bar`: The surface that owns the capture: it carries the notice, the two switches, Start and Stop, and the declined and ended explanations.
+- `compact`: A topbar's privacy slot, where the indicator has to stay visible on every other surface. It is a passive chip that reports the state and cannot start or stop anything.
+
+## Instead use
+
+- **permission-prompt**: An agent asks before one side effect, such as writing a file or sending a message. Permission-prompt is a single approve-or-deny decision about an action; capture-consent covers a session that continues to record and has other people in it.
+- **trust-dialog**: The question is whether to run third-party content, such as a folder or a plugin. Trust-dialog confirms that you trust a source; capture-consent is about telling people they are being recorded.
+- **voice-clone-recorder**: The consent is about a person's likeness or voice being cloned. That consent stays in voice-clone-recorder, which carries its own gate for the clone itself.
+- **rate-limit-banner**: You want a banner that counts down and clears itself. Capture-consent never auto-dismisses while recording is on.
+
+## Do
+
+- Name the people who will be told in the pre-notice, and leave Start disabled until the record switch is on.
+- Keep the compact chip on screen for the whole capture, with the state in text.
+- Say what a decline costs the initiator, and what stopping keeps and deletes.
+- State the kept and deleted lines in the ended state in the product's own words.
+
+## Don't
+
+- Don't offer a one-click record button that starts capture without the notice step.
+- Don't announce a recording with a toast that leaves while the recording continues.
+
+## Anatomy
+
+- `capture-consent`: Root wrapper; carries the declared state as data-state and the form as data-form.
+- `capture-consent-status`: The one role=status element. It persists across states, so each change is announced politely. In the compact form it is the chip itself.
+- `capture-consent-notice`: Pre-notice sentence naming who will be told. A chip cannot carry it, which is why the compact pre-notice is passive.
+- `capture-consent-record`: Switch for recording. Starts off, with no prop to pre-set it.
+- `capture-consent-share`: Separate switch for sharing notes. Neither switch implies the other.
+- `capture-consent-start`: The only control that fires onStartCapture, disabled until the record switch is on.
+- `capture-consent-notified`: Confirmation that the other participants were told.
+- `capture-consent-stop`: Stops capture. Bar form only.
+- `capture-consent-declined`: Who declined and what that means for the person who wanted to record.
+- `capture-consent-ended`: What is kept and what is deleted after capture stops.
+
+## Accessibility
+
+**Keyboard**
+
+- Bar form `pre-notice` has three tab stops: the record switch, the share switch, then Start capture. Start is a genuinely disabled button until the record switch is on, so it is skipped until then.
+- `recording` and `others-notified` have two stops in the bar form: the share switch and Stop capture. `declined` and `ended` have none.
+- The compact form has no tab stops at all; it is a status chip, not a control. Stopping is only available from the bar form.
+- Space toggles a focused switch; Enter or Space activates the buttons. Escape does nothing, because nothing here is a popup.
+- There is no `disabled` prop. The one disabled control is Start, derived from the record switch alone.
+
+**Screen reader**
+
+- One `role="status"` element persists across every state of a form and is the only live region, so a change from `pre-notice` to `recording` is announced politely as "Recording started" and `ended` as "Recording stopped". It is mounted before its text changes, which is what makes the announcement reliable.
+- The group is labelled "Capture consent" and deliberately is not an `alert`, so nothing is announced assertively. Each switch is named by its visible text through `aria-labelledby`.
+- Icons are `aria-hidden`; state is carried by text, never by colour or icon alone.
+- `elapsedLabel` sits outside the live region and is never announced; announcing a ticking clock would drown the real changes.
+- The declined consequence, the notified confirmation and the kept and deleted lines are plain text inside the group and are read in order; they are not in a live region, so only the status line announces the state change itself.
+
+**Focus**
+
+- Moving to `recording` unmounts the pre-notice step, including the Start button that had focus, so focus falls to the document body. Move it yourself in the handler that changes `state`, to the Stop button or back to the capture surface.
+- Stopping from the bar unmounts the Stop button in the same way.
+
+## Pitfalls
+
+- Calling `onStartCapture` from a path that did not come through the pre-notice. The component cannot stop you from starting capture elsewhere in your own code; it only guarantees that its own controls fire the callback from one step.
+- Moving to `recording` before your capture has started, or staying in `recording` after it stopped. The indicator renders the state you give it and cannot know the microphone's.
+- Omitting `participants`. The notice falls back to "the other participants", which is a weaker promise than naming people.
+- Omitting `kept` or `deleted` in `ended`. The state renders only the lines you pass, so an empty ended state says nothing about what happened to the capture.
+- Putting a training switch beside this component. Training consent has its own surface; the pre-notice only names where it lives.
+
+## Composition
+
+- States: `pre-notice`, `recording`, `others-notified`, `declined`, `ended`
+- Composes from this registry: nothing
+- shadcn primitives: alert, badge, button, switch
+- npm: lucide-react
+
+## Evidence
+
+Fireflies, Gong, Granola, Limitless, Notion, Zoom AI Companion
+
+---
+
+# Data Controls
+
+> A settings card for what happens to a person's data: one row for model training, one row for how long conversations are kept. Each row has a plain-language description, one sentence saying what happens to the data under the setting as it stands now, and a link to the long policy. Plan limits, admin policies and products that collect nothing are states of the same rows, so the section never silently disappears.
+
+Layer: component · Family: N · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/data-controls.json` · Contract: `components/super-ai/data-controls.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/data-controls
+
+## Why it matters
+
+Data ownership is where users decide whether to trust an AI product, and the reference products handle it unevenly: ChatGPT pitches training as altruism, Claude, Gemini, GitHub, Notion and Perplexity bury the opt-out a few menus deep, Figma and Substack lock it behind plans or workspace admins, and Limitless, which does not train, says so on the page. Shape of AI's data-ownership pattern asks for the same things this component builds in: separate controls, the trade stated on both sides, and the default visible in the interface rather than only in the policy.
+
+## When to reach for it
+
+Pass `training` and, if the product has a retention choice, `retention`. Both are controlled: you own `checked` and `value` and update them in the handlers. Write `effect` for the current value, so it changes when the control does. Put the trade in `description`: what the person gives, and what they get back. Set `kind` on a row only when the setting is not freely editable: `plan-locked` with the plan name and `onUpgrade`, `admin-managed` with the policy and a contact, or `none-collected` with the reason there is nothing to toggle. When the person asks to upgrade, open your own paywall message from `onUpgrade`; this component does not render one.
+
+## Variants
+
+None: No variant axis: the six states are driven by the data, through checked, value and each row's kind.
+
+## Instead use
+
+- **settings-dialog**: You need the whole settings surface with navigation and many sections. Data-controls is one section's worth of rows and lives inside that surface.
+- **member-gate-row**: A single feature is locked behind a plan and has nothing to do with data handling. Data-controls only uses the lock for its own two rows.
+- **connection-manager**: The person is supplying their own API keys or pointing at a local model. That is a connection, not a data-handling choice.
+- **disclaimer-note**: You only need a caveat sentence under an answer or field. A note has no control; data-controls exists to hold one.
+
+## Do
+
+- State what happens to the data right now, in one sentence next to the control, and update that sentence when the control changes.
+- Keep training and retention as two rows with two controls, so changing one cannot change the other.
+- Leave a plan-limited setting in the list with the lock, the plan name and an upgrade action.
+- Render the section even when nothing is collected, and say why there is no switch.
+- Show an administrator-set policy with its value and who to ask, on a row that stays in place.
+
+## Don't
+
+- Don't ship a switch with a label and nothing else. A toggle with no description is a setting nobody changes.
+- Don't fold training and retention into one switch. Turning off training should not delete history, and keeping history should not opt anyone in.
+- Don't hide the section from people who cannot change it. Silence reads as "no controls exist" rather than "your plan or admin sets this".
+
+## Anatomy
+
+- `data-controls`: The card. A named group, so a screen reader announces the section.
+- `data-controls-title`: Section title. A heading whose level you set with `headingLevel`.
+- `data-controls-row`: One setting. Carries `data-row` (training or retention) and `data-kind`.
+- `data-controls-row-label`: The setting's name. It is also the accessible name of the control.
+- `data-controls-row-description`: What the setting trades. Required text, never optional.
+- `data-controls-training-switch`: The training control. Absent in `none-collected`.
+- `data-controls-retention-trigger`: The retention period select. Absent in `none-collected`.
+- `data-controls-effect`: One sentence on what happens to the data right now. A polite live region.
+- `data-controls-link`: Link to the long version of the policy.
+- `data-controls-plan`: Lock and plan name, in text. Only in `plan-locked`.
+- `data-controls-upgrade`: Calls `onUpgrade`. Only in `plan-locked` when you pass the callback.
+- `data-controls-policy`: The administrator's policy and who to ask. Only in `admin-managed`.
+- `data-controls-reason`: Why there is no control. Only in `none-collected`.
+
+## Accessibility
+
+**Keyboard**
+
+- One tab stop per editable control: the switch and the retention select (Enter or Space opens it), then one stop for each row's policy link. In `plan-locked` the Upgrade button is an extra stop.
+- `plan-locked` and `admin-managed` render the switch and select natively disabled, which removes them from the tab order. The policy link and Upgrade button stay reachable, so the explanation is never behind an inert control.
+- `none-collected` has no control to reach; the only stop in that row is the policy link.
+- Space and Enter both toggle the switch. Escape closes the open select and does nothing else.
+
+**Screen reader**
+
+- The section is a `group` named by its title, and the title is a heading at the level you pass in `headingLevel`.
+- The switch and the select are named by `aria-labelledby` pointing at the row label; the select's name also includes its own value, so a closed select reads as "Keep my chats, 30 days".
+- Both controls carry `aria-describedby` pointing at the description and the effect sentence, and in `plan-locked` and `admin-managed` also at the lock or policy line, so the reason a control is inert is announced with it.
+- The effect sentence sits in a polite live region, so flipping the switch announces the new sentence. The select does not move focus, so the new retention sentence is read after the change is committed.
+- The policy link's name is the visible link text plus the row label ("Read the full policy: Keep my chats"), so two rows never expose two identical links. A custom `learnMoreLabel` stays a prefix of that name.
+- The plan and the lock are text ("Pro", "Changing this needs the Pro plan."); the padlock icon is hidden from assistive tech. Disabled controls are not conveyed by dimming alone.
+
+## Pitfalls
+
+- Computing `effect` once. It is a plain string, so if you pass a constant it keeps describing the old setting after the person flips the switch. Derive it from the same value you pass as `checked`.
+- Wiring `onUpgrade` to a modal that this component renders. It renders none: call your own paywall message from the callback.
+- Passing `kind: "plan-locked"` and expecting `onCheckedChange` to fire anyway. The switch is disabled in that state, so the handler never runs; use `onUpgrade`.
+- Putting memory or saved-context controls in this card. They are personal caches rather than data ownership, and belong in their own surface.
+- Pairing `text-muted-foreground` with a muted, accent or secondary surface when you wrap the card. The rows are written for the card surface; if you paint the wrapper, rebind `--muted-foreground` on it.
+
+## Composition
+
+- States: `training-on`, `training-off`, `retention`, `plan-locked`, `none-collected`, `admin-managed`
+- Composes from this registry: entity-row
+- shadcn primitives: badge, button, card, select, switch
+- npm: lucide-react
+
+## Evidence
+
+ChatGPT, Claude, Gemini, GitHub, Notion, Perplexity, Substack, Figma, Limitless
+
+---
+
+# Private Session Notice
+
+> The notice a product shows when a conversation runs in private (incognito) mode. It has two forms: a banner that states what is and is not remembered, and a small persistent chip that tells the person the mode is still on. It also covers the moments around the mode: connectors running with less access, what happens to the session when it ends, and a plan- or admin-gated state where private mode is not available.
+
+Layer: component · Family: N · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/private-session-notice.json` · Contract: `components/super-ai/private-session-notice.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/private-session-notice
+
+## Why it matters
+
+Private mode only helps if the person can tell, at every moment, that it is on and what it does. ChatGPT, Gemini, Perplexity, Dia and Microsoft Copilot all ship it, and the products that get it right pair one plain sentence before the first message with an indicator that never leaves the header. The sentence is supplied by the host because the component cannot know what the product actually enforces, and a notice that promises more than the backend does is worse than no notice.
+
+## When to reach for it
+
+Pass `statement` every time: it has no default, because the component must never claim more than your backend enforces. Show `state="entering"` above the input before the first message, then switch to `active`, which keeps the chip and tucks the statement behind a toggle. Hand `PrivateSessionChip` (or `form="chip"`) to the topbar's privacy slot so the mode stays visible on every screen; the header tint is the host's choice. Use `connectors-reduced` when connectors run with narrower scope, passing each connector with its scope (`off` or `reduced`). Use `exiting` with the retention outcome your product really applies: `retention={{ kind: "deleted-now" }}`, `kind: "deleted-after"` with its `period`, or `kind: "kept-locally"`. Use `unavailable` with `reason="plan"` or `"admin"` when the mode is switched off for this person.
+
+## Variants
+
+### form (default: `banner`)
+
+- `banner`: The statement is the point and there is room for a block: above the input before the first message, in a connectors summary, or at the moment the session ends.
+- `chip`: The mode must stay visible while something else owns the screen. This is the form a topbar slot renders; pick it when only the indicator fits.
+
+## Instead use
+
+- **disclaimer-note**: The text is a caveat about the reliability of AI output ('AI can make mistakes'), not a statement about what is remembered.
+- **safety-block**: A request was stopped by policy. A private session never blocks anything; it only changes what is kept.
+- **feature-announcement**: You are announcing that private mode exists, as a dismissible promo. This notice is permanent and states what the mode does once it is on.
+- **app-topbar**: You are placing the indicator. The topbar owns the privacy slot and renders `PrivateSessionChip` inside it; it is the slot, not the chip.
+
+## Do
+
+- Show the statement above the input before the first message, in plain words, and keep it identical on every screen.
+- Keep the chip in the header for the whole session so the mode is visible after the first screen scrolls away.
+- Name every reduced connector with its scope as text, not just a count.
+- State the retention outcome in the exit state, including the period when it is deleted later.
+
+## Don't
+
+- Don't drop the chip after the first message. Without it nothing on screen says the session is still private.
+- Don't write a statement that promises more than the host enforces. An absolute claim such as 'never stored, anywhere' turns a privacy feature into a liability.
+- Don't override the exit text with a line that omits what happens to the session. The person closing the chat is deciding whether it survives.
+
+## Anatomy
+
+- `private-session-notice`: Root of the banner form. Carries `data-state` and `data-form`.
+- `private-session-chip`: The persistent indicator. Also exported on its own as `PrivateSessionChip`.
+- `private-session-chip-label`: The chip text. Every state has its own words, so colour is never the only signal.
+- `private-session-controls`: Chip plus the on-demand statement toggle, shown in `active` and `connectors-reduced`.
+- `private-session-statement`: The fixed sentence, in a note region. Visible in `entering`, opened on demand elsewhere.
+- `private-session-connectors`: The permissions summary: one entity row per connector, with its scope as text.
+- `private-session-exit`: The retention outcome, stated as a sentence.
+- `private-session-unavailable`: The reason private mode is off, with an optional next step.
+
+## Accessibility
+
+**Keyboard**
+
+- `entering`, `exiting` and `unavailable` have zero tab stops unless you add `action` in `unavailable`. `active` and `connectors-reduced` have one: the toggle that shows the statement. The chip is not focusable unless you give `PrivateSessionChip` an `onClick`, which turns it into a button.
+- Enter and Space activate the toggle. There is no Escape handler and no close control, because the notice never dismisses and never expires.
+- `disabled` does not exist. `unavailable` is a distinct state, not a switched-off version of another one, so nothing in it is focusable by default.
+
+**Screen reader**
+
+- The banner regions are `role="note"` regions, not `role="alert"` (the vendored Alert default is overridden). A persistent statement is not urgent, and an assertive live region would interrupt every time one mounts. `exiting` is `role="status"` so the retention outcome is announced politely when it appears.
+- The toggle is a native button whose name is `statementToggleLabel`; it exposes `aria-expanded` and, while open, `aria-controls` pointing at the statement.
+- The chip is plain text with an `aria-hidden` icon, so its accessible name is its label. Scope on each connector row is the text 'Off' or 'Reduced', never colour or position alone.
+- Changes between states are not announced, apart from `exiting`: switching `entering` to `active` swaps content silently. If the move into private mode matters to your users, announce it from the host.
+- Override strings (`title`, `reasonText`, retention `detail`) replace the English defaults. Keep them as full sentences, since the announcement is the string itself.
+
+**Focus**
+
+- Nothing here moves focus. Opening the statement leaves focus on the toggle, and unmounting a state does not restore it, so the host should keep focus on its own control when it changes `state`.
+
+## Pitfalls
+
+- Treating `statement` as copy you can tune per screen. It is meant to be one fixed sentence; varying it makes the guarantee unreadable and invites claims the backend does not make.
+- Using the banner form inside a topbar. The topbar slot wants the chip; the banner is a block that belongs above the input.
+- Forgetting that `connectors-reduced` shows the rows you pass. If a connector is missing from `connectors`, the notice says nothing about it, so list every connector whose scope differs from normal.
+- Animating the chip in or out, or hiding it on a timer. The component has no motion and no timers; adding them breaks the 'never silently expires' property.
+
+## Composition
+
+- States: `entering`, `active`, `connectors-reduced`, `exiting`, `unavailable`
+- Composes from this registry: entity-row
+- shadcn primitives: alert, badge, button
+- npm: lucide-react
+
+## Evidence
+
+ChatGPT, Google Gemini, Google Chrome, Perplexity, Comet, Dia, Microsoft Copilot, Notion AI, Apple Siri
+
+---
+
+# Content Credentials
+
+> The provenance panel that opens from an AI mark. It takes one typed `credentials` record, modelled on C2PA Content Credentials, and shows who published the content, which model made it, when, and an ordered list of edits with each step attributed. Three signature outcomes are kept apart: `verified`, `unverified` (metadata present, signature failed) and `stripped` (credentials removed). It renders a record you already hold and never parses a file.
+
+Layer: component · Family: N · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/content-credentials.json` · Contract: `components/super-ai/content-credentials.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/content-credentials
+
+## Why it matters
+
+A label that says only 'AI' asks to be trusted. The panel behind it is where a reader, a creator or a researcher can check the claim: the model, the time, the edit trail and whether the signature holds. Adobe Content Credentials, TikTok, Shutterstock, Snap and Google SynthID all converge on a mark that opens a fuller record, and the Shape of AI Watermark and Footprints patterns describe the same pair. The honesty is in the three states. Content whose credentials were removed is a different claim from content a person made, and a failed signature is a different claim from a missing one. Collapsing any two of them into one badge is how a provenance feature starts misleading people.
+
+## When to reach for it
+
+Wrap the AI mark on a result with `trigger="hover-card"` so the panel opens on hover and on keyboard focus, or use `trigger="popover"` where the mark is a click target. Build the `credentials` record from your verifier's output: set `status` from the signature check, `origin` to `ai-generated` or `ai-edited`, and pass `edits` oldest first, because the list is rendered in the order given. Pass the actual publisher string your verifier returned. When credentials are absent, still render the component with `status: "stripped"` rather than hiding the mark, so the reader sees that nothing could be checked. For the whole-asset lightbox with a provenance rail use `asset-detail`; this is the panel that rail and the result tile share.
+
+## Variants
+
+### trigger (default: `hover-card`)
+
+- `hover-card`: The mark sits on a result tile or inline label that readers pass over, and a glance should be enough. It opens on hover and on keyboard focus, and cannot be entered.
+- `popover`: The mark is a deliberate click target (a type badge, a rail entry) or the record needs to be read, selected or reached by touch. It opens on click and takes focus.
+
+## Instead use
+
+- **asset-detail**: The reader wants the whole asset at full size with its prompt, parameters and provenance rail. This panel is one section of that view and the hover state on the tile; it does not show the media.
+- **stat-readout**: You only have plain key-value facts with no verification status and no edit trail. This component composes that grid and adds the trust verdict on top.
+- **run-inspector**: The detail is a trace span: input, output, tokens and cost for a model call. Credentials describe the produced asset, not the run that produced it.
+- **citation-ref**: The popover backs a claim in text with a quoted source passage. Credentials back a piece of media with who made it and how.
+
+## Do
+
+- Render content with no credentials as `stripped`, and let the panel say the credentials are gone. It reports an absence of evidence in both directions.
+- Keep the details visible when the signature fails and mark them as unverified. The reader can still see what was claimed, and the publisher row relabels itself 'Claimed publisher'.
+
+## Don't
+
+- Don't badge missing credentials as human-made. Stripping is routine (screenshots, re-uploads, social platforms), so absence says nothing about who made the content.
+- Don't use the hover-card form as the only route to the record on a touch-first surface. Hover does not exist there, and the keyboard focus path only helps keyboard users.
+
+## Anatomy
+
+- `content-credentials`: The wrapper span. Holds the mark and an sr-only verdict that describes it. Carries `data-trigger`.
+- `content-credentials-mark`: The built-in status chip, used when no `children` are passed. Pass your own mark (an `ai-label`, for example) to replace it.
+- `content-credentials-panel`: The panel body inside the hover-card or popover. Carries `data-status`.
+- `content-credentials-title`: The heading that names the verdict. In the popover form it also names the dialog.
+- `content-credentials-note`: The plain-language sentence for the current status. Different text for each of the three.
+- `stat-readout`: The key-value grid (AI use, publisher, model, generated). Absent when the record has none of those fields or is stripped.
+- `content-credentials-history`: The ordered edit list. Present only when `edits` is non-empty.
+
+## Accessibility
+
+**Keyboard**
+
+- The built-in mark is one tab stop, a real button. In the `hover-card` form, focusing it opens the panel after the primitive's delay and blurring closes it; Escape also closes it.
+- In the `popover` form, Enter or Space opens the panel and focus moves into it. Escape closes it and returns focus to the mark. The panel itself holds no controls, so there is no second tab stop inside it; the A10 copy button is not enabled on these rows.
+- The hover-card panel cannot be entered from the keyboard, so its text cannot be selected or copied that way. Use `popover` where the record needs to be read at leisure.
+- A custom mark passed as `children` must itself be focusable. A non-focusable element opens the panel for pointer users only.
+- The component adds no `disabled` handling; a disabled custom mark cannot receive hover or focus, so its panel is unreachable.
+
+**Screen reader**
+
+- The mark is described by an sr-only sentence rendered next to it, for example 'Content credentials: verified. Generated by AI.', so the verdict is announced without opening anything. The panel is a portal that does not exist while closed, which is why the verdict lives outside it.
+- The built-in mark is named by its visible chip text (Verified, Unverified or No credentials). A custom `children` mark keeps whatever name you gave it; only the description is added.
+- The popover panel is a dialog named by its heading ('Credentials verified'). The hover-card panel has no role and no labelled-by link, so a screen reader reaches it only if it browses to the portal; the description on the mark carries the essential verdict for that case.
+- Status is never colour alone: each verdict has its own shield icon (hidden from assistive tech) and its own heading text.
+- Opening or closing the panel is not announced by a live region. The edit list is a real ordered list, so list position is exposed.
+
+**Focus**
+
+- `popover`: focus moves into the panel on open and returns to the mark on close.
+- `hover-card`: focus stays on the mark; the card never takes focus.
+
+## Pitfalls
+
+- A `stripped` record ignores every other field. If you pass an issuer or model alongside `status: 'stripped'` they are not shown, because a record that was removed cannot vouch for them.
+- `origin` and `status` are independent. A verified signature on `ai-generated` content means the issuer vouches that it is AI-made; it does not mean the content is accurate.
+- Edits render in array order and are never re-sorted. Pass them oldest first or the list will read backwards.
+- Timestamps are shown in UTC in a fixed en-US format so the same record reads the same everywhere. A string that is not a valid date is shown as given.
+- The component renders a record. It does not read, verify or fetch C2PA manifests, so a `verified` status is only as honest as the verifier you ran before it.
+- The panel has a fixed width of 20rem, capped to the viewport. Long publisher or model names wrap rather than truncate.
+
+## Composition
+
+- States: `verified`, `unverified`, `stripped`, `ai-generated`, `ai-edited`, `with-history`
+- Composes from this registry: stat-readout
+- shadcn primitives: hover-card, popover
+- npm: lucide-react
+
+## Evidence
+
+Adobe Content Credentials, TikTok, Shutterstock, Snap, Google SynthID
 
 ---
 

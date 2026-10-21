@@ -1,6 +1,6 @@
 # Catalog
 
-**114 active items: 12 primitives · 89 components · 13 blocks.** Family G (canvas & nodes, incl.
+**119 active items: 13 primitives · 93 components · 13 blocks.** Family G (canvas & nodes, incl.
 the headless `useFlowRunner`) and O5 `flow-shell` were **cut 2026-07-31** — see
 [decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Eight components
 were **restored 2026-08-02** (D12) from the gaps analysis. Per-component requirements are in
@@ -20,7 +20,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 
 ---
 
-## A · Primitives (L2) — 12
+## A · Primitives (L2) — 13
 
 | #   | Name                      | Purpose                                                   | Key states / variants                                                   | shadcn base                   |
 | --- | ------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------- |
@@ -36,6 +36,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | A10 | `stat-readout` `NEW`      | Compact key→value metadata                                | 2-col grid · inline rows · missing-value em-dash                        | —                             |
 | A11 | `reset-affordance` `NEW`  | The ↺ / ◇ beside every editable value                     | modified · at-default · keyframed · group-level · modified-dot          | Button, Tooltip               |
 | A12 | `section-header` `NEW`    | Group title + action + count + collapse                   | plain · with-action · with-count · collapsible                          | Collapsible                   |
+| A13 | `ai-label` `NEW`          | The "AI acted here" chip                                  | generated · edited · summarized · sender · after-handoff · text-tint    | Badge, Tooltip                |
 
 ## B · App shell & navigation — 8
 
@@ -201,28 +202,35 @@ returns as K8 `source-cards`, its user-facing form (D16).
 | M6  | `rate-limit-banner`             | Cooldown countdown                             | your-limit · provider-capacity · live countdown · notify-me                        | Alert                   |
 | M7  | `connection-manager` `RESTORED` | BYO keys and local models                      | not-set · valid · invalid · unreachable; test-connection; download + hardware reqs | Card, Input             |
 
-## N · Feedback, trust & observability — 12
+## N · Feedback, trust & observability — 16
 
-| #   | Name                           | Purpose                                     | Key states / variants                                                                                                               | shadcn base            |
-| --- | ------------------------------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| N1  | `feedback`                     | Thumbs / stars + reason popover             | idle · rating · submitted with undo                                                                                                 | Popover, Button-group  |
-| N2  | `trust-dialog` `NEW`           | Confirm running third-party content         | preview · warning · trust checkbox · Continue split-button with account picker                                                      | Alert-dialog, Checkbox |
-| N3  | `disclaimer-note` `NEW`        | "AI can make mistakes" footnote             | under-composer · in-card · inline                                                                                                   | —                      |
-| N4  | `trace-timeline`               | Waterfall of steps / tool calls / LLM calls | collapsed · expanded · errored · retries as siblings                                                                                | Collapsible            |
-| N5  | `run-inspector`                | Span detail: I/O, tokens, cost, errors      | input · output · metadata · error tabs                                                                                              | Tabs, A10              |
-| N6  | `usage-dashboard`              | Aggregate cost / token / latency            | period select · summary cards with deltas · per-model breakdown                                                                     | Chart, Card            |
-| N7  | `env-status` `RESTORED`        | Per-provider reachability                   | ok · degraded · key-invalid · not-running                                                                                           | Badge, A9              |
-| N8  | `permission-prompt` `RESTORED` | Agent asks before a side effect             | allow once · always allow · deny · **edit-first** (equal weight, D16)                                                               | Alert-dialog           |
-| N9  | `autonomy-selector` `NEW`      | How much the agent may do unasked           | ask every time · auto-approve reads · full auto; per-tool override; **grant list with revoke**; effective mid-run                   | Radio-group, A9        |
-| N10 | `safety-block` `NEW`           | A request or response stopped by policy     | input-blocked · output-blocked; policy named; triggering fragment quoted; sensitive-content blur; appeal/reroute                    | Alert                  |
-| N11 | `escalation-handoff` `NEW`     | Agent hands the conversation to a person    | triggered (user · budget-exhausted · low-confidence · policy) · packet preview · queued with wait estimate · accepted · unavailable | Card, A10, A12         |
-| N12 | `task-tray` `NEW`              | Work that outlives the view that started it | running · needs-input · done · failed; per-task cancel; opt-in completion notification; empty                                       | Sheet, A9              |
+| #   | Name                           | Purpose                                                | Key states / variants                                                                                                               | shadcn base              |
+| --- | ------------------------------ | ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| N1  | `feedback`                     | Thumbs / stars + reason popover                        | idle · rating · submitted with undo                                                                                                 | Popover, Button-group    |
+| N2  | `trust-dialog` `NEW`           | Confirm running third-party content                    | preview · warning · trust checkbox · Continue split-button with account picker                                                      | Alert-dialog, Checkbox   |
+| N3  | `disclaimer-note` `NEW`        | "AI can make mistakes" footnote                        | under-composer · in-card · inline                                                                                                   | —                        |
+| N4  | `trace-timeline`               | Waterfall of steps / tool calls / LLM calls            | collapsed · expanded · errored · retries as siblings                                                                                | Collapsible              |
+| N5  | `run-inspector`                | Span detail: I/O, tokens, cost, errors                 | input · output · metadata · error tabs                                                                                              | Tabs, A10                |
+| N6  | `usage-dashboard`              | Aggregate cost / token / latency                       | period select · summary cards with deltas · per-model breakdown                                                                     | Chart, Card              |
+| N7  | `env-status` `RESTORED`        | Per-provider reachability                              | ok · degraded · key-invalid · not-running                                                                                           | Badge, A9                |
+| N8  | `permission-prompt` `RESTORED` | Agent asks before a side effect                        | allow once · always allow · deny · **edit-first** (equal weight, D16)                                                               | Alert-dialog             |
+| N9  | `autonomy-selector` `NEW`      | How much the agent may do unasked                      | ask every time · auto-approve reads · full auto; per-tool override; **grant list with revoke**; effective mid-run                   | Radio-group, A9          |
+| N10 | `safety-block` `NEW`           | A request or response stopped by policy                | input-blocked · output-blocked; policy named; triggering fragment quoted; sensitive-content blur; appeal/reroute                    | Alert                    |
+| N11 | `escalation-handoff` `NEW`     | Agent hands the conversation to a person               | triggered (user · budget-exhausted · low-confidence · policy) · packet preview · queued with wait estimate · accepted · unavailable | Card, A10, A12           |
+| N12 | `task-tray` `NEW`              | Work that outlives the view that started it            | running · needs-input · done · failed; per-task cancel; opt-in completion notification; empty                                       | Sheet, A9                |
+| N13 | `capture-consent` `NEW`        | Consent before, and an indicator during, AI capture    | pre-notice · recording · others-notified · declined · ended                                                                         | Alert, Badge, Switch     |
+| N14 | `data-controls` `NEW`          | Training and retention as separate, explained controls | training-on · training-off · retention · plan-locked · none-collected · admin-managed                                               | Card, Switch, A9         |
+| N15 | `private-session-notice` `NEW` | Incognito: the statement, the chip, what is off        | entering · active · connectors-reduced · exiting · unavailable                                                                      | Alert, Badge, A9         |
+| N16 | `content-credentials` `NEW`    | The provenance panel behind an AI label                | verified · unverified · stripped · ai-generated · ai-edited · with-history                                                          | Hover-card, Popover, A10 |
 
 **Dropped:** `agent-board`, `eval-board`, `model-compare`, `response-diff`, `review-queue` —
 single-product patterns on this board.
 
 N9–N12 enter by D16 via [agent-board-analysis.md](agent-board-analysis.md), not by the primary
-board. N10 and the `slot-summary` candidate carry a ⚠ in that doc: their counts rest on framework
+board.
+N13–N16, and A13 `ai-label`, enter by D26 via
+[shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md): the Trust builders slice. They
+are the first additions to A and N since the 114 freeze, and the only ones D26 reopens them for. N10 and the `slot-summary` candidate carry a ⚠ in that doc: their counts rest on framework
 documentation rather than observed pixels, and must be verified against the running products before
 their specs are treated as settled. `slot-summary` passed at 3 but is **held** — it is the surface
 the Dialog contract governs, and it waits for the contract's first consumer.
@@ -287,27 +295,27 @@ frame. See D20 for what was deliberately not carried over from Geist.
 
 ## Totals
 
-| Family                              | Count                                                                                |
-| ----------------------------------- | ------------------------------------------------------------------------------------ |
-| A — Primitives (L2)                 | 12                                                                                   |
-| B — App shell & navigation          | 8                                                                                    |
-| C — Home & launcher                 | 5                                                                                    |
-| D — Composer & context              | 7                                                                                    |
-| E — Generation & parameters         | 10                                                                                   |
-| F — Results & assets                | 7                                                                                    |
-| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                            |
-| H — Timeline & transport            | 7                                                                                    |
-| I — Editor surfaces                 | 5                                                                                    |
-| J — Library, filtering & discovery  | 7                                                                                    |
-| K — Documents & knowledge           | 8                                                                                    |
-| L — First-run & onboarding          | 6                                                                                    |
-| M — Account, plan & monetization    | 7                                                                                    |
-| N — Feedback, trust & observability | 12                                                                                   |
-| **B–N subtotal (L3)**               | **89** (88 after D16, 82 before it, 74 before D12, 84 before D9)                     |
-| O — Blocks (L4)                     | 13 (O5 cut)                                                                          |
-| P — Records & views (v2)            | 2                                                                                    |
-| Q — Presentational chrome (Geist)   | 2                                                                                    |
-| **Total registry items**            | **118** (116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| Family                              | Count                                                                                                |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| A — Primitives (L2)                 | 13                                                                                                   |
+| B — App shell & navigation          | 8                                                                                                    |
+| C — Home & launcher                 | 5                                                                                                    |
+| D — Composer & context              | 7                                                                                                    |
+| E — Generation & parameters         | 10                                                                                                   |
+| F — Results & assets                | 7                                                                                                    |
+| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                                            |
+| H — Timeline & transport            | 7                                                                                                    |
+| I — Editor surfaces                 | 5                                                                                                    |
+| J — Library, filtering & discovery  | 7                                                                                                    |
+| K — Documents & knowledge           | 8                                                                                                    |
+| L — First-run & onboarding          | 6                                                                                                    |
+| M — Account, plan & monetization    | 7                                                                                                    |
+| N — Feedback, trust & observability | 16                                                                                                   |
+| **B–N subtotal (L3)**               | **93** (89 before D26, 88 after D16, 82 before it, 74 before D12, 84 before D9)                      |
+| O — Blocks (L4)                     | 13 (O5 cut)                                                                                          |
+| P — Records & views (v2)            | 2                                                                                                    |
+| Q — Presentational chrome (Geist)   | 2                                                                                                    |
+| **Total registry items**            | **123** (118 before D26, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

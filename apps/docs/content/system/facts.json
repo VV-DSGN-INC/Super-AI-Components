@@ -1,7 +1,7 @@
 {
   "generated": "Derived by `cd apps/docs && pnpm facts:emit`. Do not edit by hand.",
   "ciSteps": 12,
-  "contracts": 118,
+  "contracts": 123,
   "ledgers": 4,
   "prosePages": 34,
   "ruleBlockers": 17,
@@ -9,10 +9,10 @@
   "rulesJudgment": 1,
   "rulesRendered": 1,
   "rulesStatic": 18,
-  "shipped": 118,
+  "shipped": 123,
   "shippedBlocks": 13,
-  "shippedComponents": 93,
-  "shippedPrimitives": 12,
+  "shippedComponents": 97,
+  "shippedPrimitives": 13,
   "skills": 4,
-  "storyFiles": 118
+  "storyFiles": 123
 }

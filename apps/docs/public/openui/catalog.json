@@ -97,6 +97,72 @@
       "insteadUse": []
     },
     {
+      "name": "AI Label",
+      "slug": "ai-label",
+      "family": "A",
+      "layer": "primitive",
+      "meta": "registry/super-ai/ai-label.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/ai-label",
+      "description": "A small outlined chip that says what AI did to a piece of content: generated it, edited it, summarized it, wrote this message, or stopped replying at a handoff. The chip text is one word or two; the accessible name is the full sentence, with the model and the time folded in. A sixth form, `text-tint`, draws no chip at all and instead wraps AI-sourced prose in a reserved tint. The component also owns the glyph for \"AI acted here\", exported as `AI_LABEL_ICON`, so surfaces stop importing a sparkle icon of their own.",
+      "variants": [
+        {
+          "prop": "variant",
+          "values": [
+            {
+              "value": "generated",
+              "intent": "The AI produced this content from nothing, such as a draft, an image or a reply you asked for."
+            },
+            {
+              "value": "edited",
+              "intent": "A person wrote it and the AI changed it, so the reader knows the words are no longer only theirs."
+            },
+            {
+              "value": "summarized",
+              "intent": "The content condenses something else, so the reader knows the original is longer and may differ."
+            },
+            {
+              "value": "sender",
+              "intent": "The AI wrote this message, comment or notification, and it sits beside the author's name so it cannot be taken for a person."
+            },
+            {
+              "value": "after-handoff",
+              "intent": "The AI's turns ended at a handoff to a person, and the earlier turns need to show where it stopped."
+            },
+            {
+              "value": "text-tint",
+              "intent": "The text itself, inline in a paragraph, is what came from the AI, and a chip beside it would break the sentence."
+            }
+          ],
+          "default": "generated"
+        }
+      ],
+      "notes": [
+        "Don't reduce the chip to a bare \"AI\". It says who, not what, and it reads as a brand badge.",
+        "Don't put a caveat or a source in the chip. A reliability warning belongs to `disclaimer-note`, and a pointer to a source belongs to `citation-ref`; this chip only attributes an action.",
+        "`text-tint` is a wrapper treatment and is reserved. Applied to anything other than AI-sourced prose it stops meaning anything, and a second component that borrows it makes the signal unreadable.",
+        "The tint passes contrast by itself, on the page background. Do not place it on a muted or accent surface to \"quiet it down\": it was measured without one, and a tinted surface behind it changes the result.",
+        "`sender` must not be mistaken for a person. If the AI's name sits next to a human-looking avatar and no chip, the reader has nothing to tell them apart; keep the chip on every AI turn.",
+        "The chip carries no model information on screen. If the product wants the model visible without hovering, put it in your own text beside the chip rather than stretching the chip beyond two words.",
+        "Passing a `data-slot` of your own through the spread replaces `ai-label` and hides that this primitive drew the mark."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "disclaimer-note",
+          "when": "The point is a caveat about reliability (AI can make mistakes) rather than attributing an action that already happened."
+        },
+        {
+          "slug": "cost-chip",
+          "when": "The chip would carry a number, such as a price in credits. This label holds one or two words and no figures."
+        },
+        {
+          "slug": "citation-ref",
+          "when": "The pointer is to a source the content came from, not to the fact that AI produced it."
+        }
+      ]
+    },
+    {
       "name": "Ai Tools Menu",
       "slug": "ai-tools-menu",
       "family": "I",
@@ -538,6 +604,60 @@
       ]
     },
     {
+      "name": "Capture Consent",
+      "slug": "capture-consent",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/capture-consent.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/capture-consent",
+      "description": "The consent gate that comes before an AI capture session (meeting notes, a call transcript, a recorded document) and the indicator that stays on screen while it runs. It tells the initiator who will be notified, keeps recording and sharing as two separate switches, confirms that the other people were told, shows what a decline costs the initiator, and says what is kept and deleted when capture stops.",
+      "variants": [
+        {
+          "prop": "form",
+          "values": [
+            {
+              "value": "bar",
+              "intent": "The surface that owns the capture: it carries the notice, the two switches, Start and Stop, and the declined and ended explanations."
+            },
+            {
+              "value": "compact",
+              "intent": "A topbar's privacy slot, where the indicator has to stay visible on every other surface. It is a passive chip that reports the state and cannot start or stop anything."
+            }
+          ],
+          "default": "bar"
+        }
+      ],
+      "notes": [
+        "Don't offer a one-click record button that starts capture without the notice step.",
+        "Don't announce a recording with a toast that leaves while the recording continues.",
+        "Calling `onStartCapture` from a path that did not come through the pre-notice. The component cannot stop you from starting capture elsewhere in your own code; it only guarantees that its own controls fire the callback from one step.",
+        "Moving to `recording` before your capture has started, or staying in `recording` after it stopped. The indicator renders the state you give it and cannot know the microphone's.",
+        "Omitting `participants`. The notice falls back to \"the other participants\", which is a weaker promise than naming people.",
+        "Omitting `kept` or `deleted` in `ended`. The state renders only the lines you pass, so an empty ended state says nothing about what happened to the capture.",
+        "Putting a training switch beside this component. Training consent has its own surface; the pre-notice only names where it lives."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "permission-prompt",
+          "when": "An agent asks before one side effect, such as writing a file or sending a message. Permission-prompt is a single approve-or-deny decision about an action; capture-consent covers a session that continues to record and has other people in it."
+        },
+        {
+          "slug": "trust-dialog",
+          "when": "The question is whether to run third-party content, such as a folder or a plugin. Trust-dialog confirms that you trust a source; capture-consent is about telling people they are being recorded."
+        },
+        {
+          "slug": "voice-clone-recorder",
+          "when": "The consent is about a person's likeness or voice being cloned. That consent stays in voice-clone-recorder, which carries its own gate for the clone itself."
+        },
+        {
+          "slug": "rate-limit-banner",
+          "when": "You want a banner that counts down and clears itself. Capture-consent never auto-dismisses while recording is on."
+        }
+      ]
+    },
+    {
       "name": "Chat Shell",
       "slug": "chat-shell",
       "family": "O",
@@ -717,6 +837,63 @@
       "insteadUse": []
     },
     {
+      "name": "Content Credentials",
+      "slug": "content-credentials",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/content-credentials.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/content-credentials",
+      "description": "The provenance panel that opens from an AI mark. It takes one typed `credentials` record, modelled on C2PA Content Credentials, and shows who published the content, which model made it, when, and an ordered list of edits with each step attributed. Three signature outcomes are kept apart: `verified`, `unverified` (metadata present, signature failed) and `stripped` (credentials removed). It renders a record you already hold and never parses a file.",
+      "variants": [
+        {
+          "prop": "trigger",
+          "values": [
+            {
+              "value": "hover-card",
+              "intent": "The mark sits on a result tile or inline label that readers pass over, and a glance should be enough. It opens on hover and on keyboard focus, and cannot be entered."
+            },
+            {
+              "value": "popover",
+              "intent": "The mark is a deliberate click target (a type badge, a rail entry) or the record needs to be read, selected or reached by touch. It opens on click and takes focus."
+            }
+          ],
+          "default": "hover-card"
+        }
+      ],
+      "notes": [
+        "Don't badge missing credentials as human-made. Stripping is routine (screenshots, re-uploads, social platforms), so absence says nothing about who made the content.",
+        "Don't use the hover-card form as the only route to the record on a touch-first surface. Hover does not exist there, and the keyboard focus path only helps keyboard users.",
+        "A `stripped` record ignores every other field. If you pass an issuer or model alongside `status: 'stripped'` they are not shown, because a record that was removed cannot vouch for them.",
+        "`origin` and `status` are independent. A verified signature on `ai-generated` content means the issuer vouches that it is AI-made; it does not mean the content is accurate.",
+        "Edits render in array order and are never re-sorted. Pass them oldest first or the list will read backwards.",
+        "Timestamps are shown in UTC in a fixed en-US format so the same record reads the same everywhere. A string that is not a valid date is shown as given.",
+        "The component renders a record. It does not read, verify or fetch C2PA manifests, so a `verified` status is only as honest as the verifier you ran before it.",
+        "The panel has a fixed width of 20rem, capped to the viewport. Long publisher or model names wrap rather than truncate."
+      ],
+      "consumes": [
+        "stat-readout"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "asset-detail",
+          "when": "The reader wants the whole asset at full size with its prompt, parameters and provenance rail. This panel is one section of that view and the hover state on the tile; it does not show the media."
+        },
+        {
+          "slug": "stat-readout",
+          "when": "You only have plain key-value facts with no verification status and no edit trail. This component composes that grid and adds the trust verdict on top."
+        },
+        {
+          "slug": "run-inspector",
+          "when": "The detail is a trace span: input, output, tokens and cost for a model call. Credentials describe the produced asset, not the run that produced it."
+        },
+        {
+          "slug": "citation-ref",
+          "when": "The popover backs a claim in text with a quoted source passage. Credentials back a piece of media with who made it and how."
+        }
+      ]
+    },
+    {
       "name": "Context Chips",
       "slug": "context-chips",
       "family": "D",
@@ -833,6 +1010,48 @@
         "home-shell"
       ],
       "insteadUse": []
+    },
+    {
+      "name": "Data Controls",
+      "slug": "data-controls",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/data-controls.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/data-controls",
+      "description": "A settings card for what happens to a person's data: one row for model training, one row for how long conversations are kept. Each row has a plain-language description, one sentence saying what happens to the data under the setting as it stands now, and a link to the long policy. Plan limits, admin policies and products that collect nothing are states of the same rows, so the section never silently disappears.",
+      "variants": [],
+      "notes": [
+        "Don't ship a switch with a label and nothing else. A toggle with no description is a setting nobody changes.",
+        "Don't fold training and retention into one switch. Turning off training should not delete history, and keeping history should not opt anyone in.",
+        "Don't hide the section from people who cannot change it. Silence reads as \"no controls exist\" rather than \"your plan or admin sets this\".",
+        "Computing `effect` once. It is a plain string, so if you pass a constant it keeps describing the old setting after the person flips the switch. Derive it from the same value you pass as `checked`.",
+        "Wiring `onUpgrade` to a modal that this component renders. It renders none: call your own paywall message from the callback.",
+        "Passing `kind: \"plan-locked\"` and expecting `onCheckedChange` to fire anyway. The switch is disabled in that state, so the handler never runs; use `onUpgrade`.",
+        "Putting memory or saved-context controls in this card. They are personal caches rather than data ownership, and belong in their own surface.",
+        "Pairing `text-muted-foreground` with a muted, accent or secondary surface when you wrap the card. The rows are written for the card surface; if you paint the wrapper, rebind `--muted-foreground` on it."
+      ],
+      "consumes": [
+        "entity-row"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "settings-dialog",
+          "when": "You need the whole settings surface with navigation and many sections. Data-controls is one section's worth of rows and lives inside that surface."
+        },
+        {
+          "slug": "member-gate-row",
+          "when": "A single feature is locked behind a plan and has nothing to do with data handling. Data-controls only uses the lock for its own two rows."
+        },
+        {
+          "slug": "connection-manager",
+          "when": "The person is supplying their own API keys or pointing at a local model. That is a connection, not a data-handling choice."
+        },
+        {
+          "slug": "disclaimer-note",
+          "when": "You only need a caveat sentence under an answer or field. A note has no control; data-controls exists to hold one."
+        }
+      ]
     },
     {
       "name": "Data Views",
@@ -1119,11 +1338,13 @@
         "auth-shell",
         "autonomy-selector",
         "connection-manager",
+        "data-controls",
         "env-status",
         "feature-card-row",
         "generation-queue",
         "member-gate-row",
         "model-picker",
+        "private-session-notice",
         "skill-menu",
         "source-panel",
         "task-tray",
@@ -2275,6 +2496,62 @@
       "insteadUse": []
     },
     {
+      "name": "Private Session Notice",
+      "slug": "private-session-notice",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/private-session-notice.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/private-session-notice",
+      "description": "The notice a product shows when a conversation runs in private (incognito) mode. It has two forms: a banner that states what is and is not remembered, and a small persistent chip that tells the person the mode is still on. It also covers the moments around the mode: connectors running with less access, what happens to the session when it ends, and a plan- or admin-gated state where private mode is not available.",
+      "variants": [
+        {
+          "prop": "form",
+          "values": [
+            {
+              "value": "banner",
+              "intent": "The statement is the point and there is room for a block: above the input before the first message, in a connectors summary, or at the moment the session ends."
+            },
+            {
+              "value": "chip",
+              "intent": "The mode must stay visible while something else owns the screen. This is the form a topbar slot renders; pick it when only the indicator fits."
+            }
+          ],
+          "default": "banner"
+        }
+      ],
+      "notes": [
+        "Don't drop the chip after the first message. Without it nothing on screen says the session is still private.",
+        "Don't write a statement that promises more than the host enforces. An absolute claim such as 'never stored, anywhere' turns a privacy feature into a liability.",
+        "Don't override the exit text with a line that omits what happens to the session. The person closing the chat is deciding whether it survives.",
+        "Treating `statement` as copy you can tune per screen. It is meant to be one fixed sentence; varying it makes the guarantee unreadable and invites claims the backend does not make.",
+        "Using the banner form inside a topbar. The topbar slot wants the chip; the banner is a block that belongs above the input.",
+        "Forgetting that `connectors-reduced` shows the rows you pass. If a connector is missing from `connectors`, the notice says nothing about it, so list every connector whose scope differs from normal.",
+        "Animating the chip in or out, or hiding it on a timer. The component has no motion and no timers; adding them breaks the 'never silently expires' property."
+      ],
+      "consumes": [
+        "entity-row"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "disclaimer-note",
+          "when": "The text is a caveat about the reliability of AI output ('AI can make mistakes'), not a statement about what is remembered."
+        },
+        {
+          "slug": "safety-block",
+          "when": "A request was stopped by policy. A private session never blocks anything; it only changes what is kept."
+        },
+        {
+          "slug": "feature-announcement",
+          "when": "You are announcing that private mode exists, as a dismissible promo. This notice is permanent and states what the mode does once it is on."
+        },
+        {
+          "slug": "app-topbar",
+          "when": "You are placing the indicator. The topbar owns the privacy slot and renders `PrivateSessionChip` inside it; it is the slot, not the chip."
+        }
+      ]
+    },
+    {
       "name": "Promo Card",
       "slug": "promo-card",
       "family": "B",
@@ -3074,6 +3351,7 @@
       "consumes": [],
       "consumedBy": [
         "asset-detail",
+        "content-credentials",
         "escalation-handoff",
         "run-inspector",
         "source-panel",
@@ -3643,6 +3921,7 @@
       "family": "A",
       "title": "Primitives",
       "components": [
+        "ai-label",
         "choice-chips",
         "cost-chip",
         "date-section",
@@ -3805,11 +4084,15 @@
       "title": "Feedback, trust & observability",
       "components": [
         "autonomy-selector",
+        "capture-consent",
+        "content-credentials",
+        "data-controls",
         "disclaimer-note",
         "env-status",
         "escalation-handoff",
         "feedback",
         "permission-prompt",
+        "private-session-notice",
         "run-inspector",
         "safety-block",
         "task-tray",
