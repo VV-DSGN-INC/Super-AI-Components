@@ -102,6 +102,9 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
           // A closed tab or a stopped reply stops the model too.
           abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(DEADLINE_MS)]),
           stopWhen: isStepCount(MAX_STEPS),
+          // The first step must call a tool. Left free, the model sometimes
+          // writes "the card below" without ever showing the card.
+          prepareStep: ({ stepNumber }) => (stepNumber === 0 ? { toolChoice: "required" } : {}),
           tools: {
             show_card: tool({
               description:
@@ -144,6 +147,7 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
         });
 
         let failed = false;
+        let cause: unknown;
         const openText = new Set<string>();
         try {
           for await (const part of result.stream) {
@@ -158,18 +162,22 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
               writer.write({ type: "text-end", id: part.id });
             } else if (part.type === "error" || part.type === "abort") {
               failed = true;
+              cause = part.type === "error" ? part.error : "aborted";
               break;
             }
           }
-        } catch {
+        } catch (error) {
           failed = true;
+          cause = error;
         }
         // Nobody is listening once the caller has gone.
         if (req.signal.aborted) return;
         // A sentence cut off mid-stream ends where it stopped, never left streaming.
         for (const id of openText) writer.write({ type: "text-end", id });
         if (failed) {
-          console.error("[generated-chat] the model failed; sending the fallback reply");
+          // Name and message only: enough to tell a timeout from a rate limit, never the request.
+          const reason = cause instanceof Error ? `${cause.name}: ${cause.message}` : String(cause);
+          console.error(`[generated-chat] the model failed (${reason}); sending the fallback reply`);
           chips = [];
         }
 

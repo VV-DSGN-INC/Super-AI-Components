@@ -183,6 +183,9 @@ Calls made while building it, each overridable:
   The client transport does the same for a refusal, an unreachable route or a stream that breaks,
   keeping what arrived.
 - **Auth is the deployment's OIDC token.** No gateway key is created or stored.
+- **The first step must call a tool.** Left free, the model sometimes wrote "the card below"
+  without showing the card (34/36 in two runs). With a required first tool call it passed 72/72
+  over two consecutive runs.
 
 ## 5. Phase 2: `chat-shell` answers in parts
 
@@ -276,8 +279,9 @@ Approved as drafted (Nick, 2026-10-20).
 1. Should `widget` expose `size` as a prop the grid also reads, or should the grid item own the
    span alone? Proposed: both carry it, and a test fails when they disagree.
 2. Does wave 2 deploy to production with the model on, or stay on preview until a live eval?
-   Answered 2026-10-21: preview first. `scripts/eval-generated-chat.mts` passed 36/36 on
-   `anthropic/claude-haiku-5.5`. Production stays scripted until Nick sets the variable there.
+   Answered 2026-10-21: preview first. `scripts/eval-generated-chat.mts` passed 72/72 over two
+   consecutive runs on `anthropic/claude-haiku-5.5`. Production stays scripted until Nick sets
+   the variable there.
 
 ## Changelog
 
