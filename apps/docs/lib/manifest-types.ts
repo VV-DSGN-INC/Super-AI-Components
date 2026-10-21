@@ -24,6 +24,97 @@ export type FamilyId =
   // See D20.
   | "Q";
 
+/**
+ * Shape of AI's six categories and the pattern names under each, taken from the
+ * §3 audit tables in docs/design-system/shape-of-ai-board-analysis.md (D28).
+ * Kebab-case, one entry per pattern the audit lists, including the ones the
+ * catalog does not carry yet, so a pattern the audit named can be mapped the
+ * day an item arrives. A manifest `patterns` value is `<category>/<pattern>`;
+ * the template-literal type below makes a typo a typecheck error.
+ */
+export const SHAPE_OF_AI_PATTERNS = {
+  wayfinders: [
+    "example-gallery",
+    "follow-up",
+    "initial-cta",
+    "nudges",
+    "prompt-details",
+    "randomize",
+    "suggestions",
+    "templates",
+  ],
+  inputs: [
+    "prompt-actions",
+    "auto-fill",
+    "chained-action",
+    "describe",
+    "expand",
+    "inline-action",
+    "inpainting",
+    "madlibs",
+    "open-input",
+    "regenerate",
+    "restructure",
+    "restyle",
+    "summary",
+    "synthesis",
+    "transform",
+  ],
+  tuners: [
+    "attachments",
+    "connectors",
+    "filters",
+    "model-management",
+    "modes",
+    "parameters",
+    "preset-styles",
+    "prompt-enhancer",
+    "saved-styles",
+    "voice-and-tone",
+  ],
+  governors: [
+    "action-plan",
+    "branches",
+    "citations",
+    "controls",
+    "cost-estimates",
+    "draft-mode",
+    "memory",
+    "references",
+    "sample-response",
+    "shared-vision",
+    "stream-of-thought",
+    "variations",
+    "verification",
+  ],
+  "trust-builders": [
+    "caveat",
+    "consent",
+    "data-ownership",
+    "disclosure",
+    "footprints",
+    "incognito-mode",
+    "watermark",
+  ],
+  identifiers: ["avatar", "color", "iconography", "name", "personality"],
+} as const;
+
+export type ShapeOfAiCategory = keyof typeof SHAPE_OF_AI_PATTERNS;
+
+export type ShapeOfAiPattern = {
+  [C in ShapeOfAiCategory]: `${C}/${(typeof SHAPE_OF_AI_PATTERNS)[C][number]}`;
+}[ShapeOfAiCategory];
+
+/** Display names for the six categories, as Shape of AI writes them. */
+export const SHAPE_OF_AI_CATEGORY_TITLES: Record<ShapeOfAiCategory, string> = {
+  wayfinders: "Wayfinders",
+  inputs: "Inputs",
+  tuners: "Tuners",
+  governors: "Governors",
+  "trust-builders": "Trust builders",
+  identifiers: "Identifiers",
+};
+
 export type ManifestStatus = "planned" | "building" | "shipped" | "cut";
 
 /**
@@ -93,6 +184,13 @@ export interface ManifestItem {
   states: string[];
   /** Anchor into component-specs.md. */
   specAnchor: string;
+  /**
+   * Shape of AI patterns this item carries, as `<category>/<pattern>`. A
+   * derived cross-reference for the docs site (D29): it never feeds the
+   * registry build or the shipped contract. Set only where the audit
+   * (shape-of-ai-board-analysis.md §3) maps the item; absent otherwise.
+   */
+  patterns?: ShapeOfAiPattern[];
   /**
    * Registry-level CSS custom properties this component's code depends on,
    * beyond stock shadcn (e.g. the `--warning` token used by near-limit /

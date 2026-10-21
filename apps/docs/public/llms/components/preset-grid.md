@@ -10,7 +10,7 @@ Visual parameters get visual pickers, never dropdowns — Midjourney's style bro
 
 ## When to reach for it
 
-Reach for it for any set of visual presets a user chooses directly rather than by name: styles, palettes, filters, environments. Pass `content` so palette items render their colour as the tile fill instead of a `thumbnail`. Default is single-select (`role="radiogroup"`); pass `multiple` when presets can combine, like stacking an environment with a mood — that switches every tile to `role="checkbox"` and `value`/`onValueChange` to an array. Set `visibleCount` to cap how many tiles show before the rest collapse behind the see-more tile.
+Reach for it for any set of visual presets a user chooses directly rather than by name: styles, palettes, filters, environments. Pass `content` so palette items render their colour as the tile fill instead of a `thumbnail`. Default is single-select (`role="radiogroup"`); pass `multiple` when presets can combine, like stacking an environment with a mood — that switches every tile to `role="checkbox"` and `value`/`onValueChange` to an array. Set `visibleCount` to cap how many tiles show before the rest collapse behind the see-more tile. Mark presets a user or their team made with `source: "personal" | "team"`: they move into a "Your styles" section above the system presets, each showing its source as text. Pass `onSaveCurrent` to put a "Save current" tile at the start of that section. With neither, the grid is unchanged.
 
 ## Variants
 
@@ -25,6 +25,7 @@ Not yet recorded.
 - Give every palette item a real, descriptive label ("Sunset orange"), not just a colour — that label is the only thing that tells a screen-reader or colourblind user which swatch is which.
 - Pass `multiple` when presets can combine instead of faking multi-select on top of a single radiogroup — the whole group's role switches with it, not just the visual ring.
 - Let `visibleCount` collapse the rest behind a see-more tile that lives inside the grid, so revealing more presets never reflows what's already on screen.
+- Show where a user preset comes from and give it a way to be saved: a team style and a personal one behave differently when edited, so the source belongs on the tile, as text.
 
 ## Don't
 
@@ -36,6 +37,9 @@ Not yet recorded.
 - `preset-grid`: Root — the radiogroup (single-select) or group (multi-select) and the CSS grid live on the same element.
 - `preset-grid-tile`: One option: a role="radio"/"checkbox" button wrapping a preview-tile (A8) for the frame, ring, badge and overlay label.
 - `preset-grid-swatch`: `palette` content only — the colour fill inside a tile. Decorative and aria-hidden; the tile's own label carries the accessible name.
+- `preset-grid-section`: Present only when a preset is `personal` or `team`, or `onSaveCurrent` is set: a "Your styles" section above a "Presets" section, both inside the same radiogroup so there is one selection across them.
+- `preset-grid-source`: The text label on a user preset (Personal, Team, System). Text, not colour, and part of the tile's accessible name.
+- `preset-grid-save-current`: The "Save current" tile at the start of the "Your styles" section. A plain button, not a radio.
 - `preset-grid-see-more`: The overflow affordance — a tile in the grid, in the same role container, never a link rendered below it.
 
 ## Accessibility
@@ -44,6 +48,7 @@ Not yet recorded.
 
 - Single-select is a radio group (the vendored radio-group, Base UI): the tiles are one tab stop, landing on the checked tile or the first, and the see-more tile is the next stop after them. Under `multiple` every tile is its own tab stop, as the checkbox-group pattern has it.
 - In single-select the arrow keys move between tiles in DOM order, selecting as they go, and wrap; they do not move by row through the grid. Home and End do nothing. Under `multiple` the arrows do nothing and Tab is the way between checkboxes.
+- The "Save current" tile is a button outside the radio set. It is its own tab stop and the arrow keys skip it; pressing it calls `onSaveCurrent` and never changes the selection.
 - Space and Enter select, because each tile is a native `<button>` underneath its role. In single-select a tile can only ever be turned on — pressing the already-checked tile re-selects it — while under `multiple` the same press toggles it off.
 - There is no `disabled` anywhere in the API. Every tile is focusable and activatable including one whose `state` is `"loading"` or `"failed"`, so a preset that is still resolving is picked exactly as easily as one that finished.
 
@@ -52,6 +57,8 @@ Not yet recorded.
 - The root is `role="radiogroup"`, or `role="group"` under `multiple`, and it has no accessible name. Nothing in the component supplies one — pass `aria-label` or `aria-labelledby` yourself. Props you spread land on that root, so this is the one name you can set from outside.
 - A tile's name is read from its whole button subtree in DOM order: any text inside the `thumbnail` you passed, then the `badge`, then the overlay label. A badge reading "New" therefore announces before the preset name — "New Sunset orange, radio button" — which is the reverse of how it is read visually.
 - For `content="palette"` the swatch is `aria-hidden` and `label` is literally the only thing an assistive-tech user gets. "Sunset orange" is a name; "Palette 3" is not, and there is no second chance at it.
+- A preset with a `source` gets an outright accessible name, "Neon noir, Personal", replacing the subtree-derived name, so any `badge` or `thumbnail` text is not read for it. The source is also visible as text on the tile.
+- The "Your styles" and "Presets" headings are plain text inside the radiogroup, not landmarks or headings, so they are read in passing and do not name the sections.
 - The see-more tile is a plain `<button>` sitting inside the radiogroup rather than a radio. Its name comes from `seeMoreLabel` plus an `sr-only` count — "See more — 8 more" — but a radiogroup's only expected children are radios, so it is a non-radio member of a set whose size assistive tech is trying to report.
 - `loading` and `failed` are invisible here. `preview-tile` sets no `aria-busy` and adds no text for either, so all three states announce identically and only the ring and the fill distinguish them.
 
@@ -64,13 +71,14 @@ Not yet recorded.
 ## Pitfalls
 
 - Wiring a tile's own onClick straight into preview-tile's `onSelect` prop — that renders preview-tile's internal Frame as a second, nested interactive button with `aria-pressed` toggle semantics, the wrong ARIA for a radio or checkbox. preset-grid deliberately renders preview-tile without `onSelect` and wraps it in its own single `role="radio"`/`role="checkbox"` button instead.
+- Marking a system preset `personal` or `team` and expecting it to stay in place: any item with either source moves into "Your styles", and `visibleCount` then caps only the remaining presets.
 - Passing `multiple` without also reading `value` as an array — a consumer that keeps treating `onValueChange`'s payload as a single string will see every tile after the first look permanently selected or never update at all.
 - Leaving `color` off a palette item and expecting the thumbnail slot to fall back to something visible — palette content ignores `thumbnail` entirely, so a missing `color` renders an empty tile with only the label visible.
 
 ## Composition
 
-- States: `style`, `palette`, `filter`, `environment`, `see-more`
-- Composes from this registry: preview-tile
+- States: `style`, `palette`, `filter`, `environment`, `see-more`, `user-presets`
+- Composes from this registry: preview-tile, section-header
 - shadcn primitives: radio-group
 - npm: lucide-react
 

@@ -108,4 +108,45 @@ describe("HeroOmnibox", () => {
     render(<HeroOmnibox className="test-class" />);
     expect(document.querySelector('[data-slot="hero-omnibox"]')!.className).toContain("test-class");
   });
+
+  it("randomize: the dice fills the field with the host's starter and never submits", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const onValueChange = vi.fn();
+    const onRandomize = vi.fn(() => "Explain this error log");
+    render(<HeroOmnibox onRandomize={onRandomize} onSubmit={onSubmit} onValueChange={onValueChange} />);
+
+    const dice = screen.getByRole("button", { name: "Random prompt" });
+    expect(document.querySelector('[data-slot="hero-omnibox-randomize"]')).toBe(dice);
+    await user.click(dice);
+
+    expect(onRandomize).toHaveBeenCalledOnce();
+    const field = screen.getByRole("textbox", { name: /what can i help you with/i });
+    expect(field).toHaveValue("Explain this error log");
+    expect(onValueChange).toHaveBeenCalledWith("Explain this error log");
+    expect(onSubmit).not.toHaveBeenCalled();
+    // Focus stays on the dice, and the fill is announced politely.
+    expect(dice).toHaveFocus();
+    expect(screen.getByRole("status")).toHaveTextContent("Random prompt added");
+
+    // The starter is a draft: typing edits it and clears the announcement.
+    await user.type(field, "!");
+    expect(field).toHaveValue("Explain this error log!");
+    expect(screen.getByRole("status")).toHaveTextContent("");
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("randomize: absent without onRandomize, inert while generating, and a nothing result leaves the field alone", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(<HeroOmnibox />);
+    expect(screen.queryByRole("button", { name: "Random prompt" })).not.toBeInTheDocument();
+
+    const onRandomize = vi.fn(() => undefined);
+    rerender(<HeroOmnibox value="keep me" onRandomize={onRandomize} />);
+    await user.click(screen.getByRole("button", { name: "Random prompt" }));
+    expect(screen.getByRole("textbox", { name: /what can i help you with/i })).toHaveValue("keep me");
+
+    rerender(<HeroOmnibox state="generating" onRandomize={onRandomize} />);
+    expect(screen.getByRole("button", { name: "Random prompt" })).toBeDisabled();
+  });
 });
