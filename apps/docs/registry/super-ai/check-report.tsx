@@ -36,7 +36,7 @@ const RULES: { rule: CheckRule; label: string }[] = [
 /**
  * The output checks' verdict per rule, with the fallback stated.
  *
- * Spec: docs/design-system/component-specs.md#r3-check-report
+ * Spec: docs/design-system/component-specs.md#s3-check-report
  * States: all-pass · some-fail
  */
 function CheckReport({ results, fallback, channel, className, ...props }: CheckReportProps) {

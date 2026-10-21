@@ -2362,16 +2362,16 @@ export const MANIFEST: ManifestItem[] = [
     states: ["plain", "stripe", "illustrated", "textured", "tone"],
     specAnchor: "component-specs.md#q2-book-cover",
   },
-  // Family R — channel renderers, from Designing Bots and the LifeOS content
+  // Family S — channel renderers, from Designing Bots and the LifeOS content
   // system rather than from a reference board. Kept apart from A–Q for the
-  // reason D27 gives; the letter is distinct from gaps.md's R-numbers.
+  // reason D27 gives; the letter is distinct from gaps.md's R-numbers and from generated chat's R.
   {
-    id: "R1",
+    id: "S1",
     name: "channel-message",
     title: "Channel Message",
     description:
       "One message drawn in the shape of the channel it is sent on: app, push, chat, email or phone.",
-    family: "R",
+    family: "S",
     layer: "component",
     status: "shipped",
     wave: 14,
@@ -2380,14 +2380,14 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: ["pending", "sent", "answered", "withdrawn", "expired", "failed-check", "not-routed"],
-    specAnchor: "component-specs.md#r1-channel-message",
+    specAnchor: "component-specs.md#s1-channel-message",
   },
   {
-    id: "R2",
+    id: "S2",
     name: "message-log",
     title: "Message Log",
     description: "The append-only trace of one message, one sentence per event.",
-    family: "R",
+    family: "S",
     layer: "component",
     status: "shipped",
     wave: 14,
@@ -2396,14 +2396,14 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: ["empty", "populated"],
-    specAnchor: "component-specs.md#r2-message-log",
+    specAnchor: "component-specs.md#s2-message-log",
   },
   {
-    id: "R3",
+    id: "S3",
     name: "check-report",
     title: "Check Report",
     description: "The output checks' verdict per rule, with the fallback stated.",
-    family: "R",
+    family: "S",
     layer: "component",
     status: "shipped",
     wave: 14,
@@ -2412,6 +2412,6 @@ export const MANIFEST: ManifestItem[] = [
     consumes: [],
     npm: [],
     states: ["all-pass", "some-fail"],
-    specAnchor: "component-specs.md#r3-check-report",
+    specAnchor: "component-specs.md#s3-check-report",
   },
 ];

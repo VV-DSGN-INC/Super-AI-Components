@@ -2,7 +2,7 @@
 
 > One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots (who it is from, what it says, one question, a few closed answers, a way to stop). The `channel` prop picks the shape: a thread bubble for the app, a lock-screen card for push, a bubble with inline buttons for chat, a sender, subject and one button for email, and a spoken script for phone. The component shows the message and its state in words. It sends nothing and decides nothing.
 
-Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/channel-message.json` · Contract: `components/super-ai/channel-message.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/channel-message
+Layer: component · Family: S · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/channel-message.json` · Contract: `components/super-ai/channel-message.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/channel-message
 
 ## Why it matters
 

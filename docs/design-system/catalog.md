@@ -285,23 +285,23 @@ frame. See D20 for what was deliberately not carried over from Geist.
 
 ---
 
-## R · Channel renderers (Designing Bots), 3
+## S · Channel renderers (Designing Bots), 3
 
 The first family from a **fourth source**: Amir Shevat's _Designing Bots_ (chapters 9 and 20) and the
 LifeOS content system, which keeps one message and draws it in the shape of each channel it is sent
 on. Not a reference board. Counted separately for the reason families P and Q are: the A–O subtotals
-do not move because family R exists. The letter is not [`gaps.md`](gaps.md)'s R-numbers, which number
-restore items; D27 says which is meant.
+do not move because family S exists. The letter is not R, which is generated chat (D26), and it is not [`gaps.md`](gaps.md)'s
+R-numbers, which number restore items; D27 says so.
 
 All three render the same object, a message with a kind and a handful of slots, at different points
-in its life: the message itself in a channel's shape (R1), the trace of what happened to it (R2) and
-the output checks that gate what is sent (R3).
+in its life: the message itself in a channel's shape (S1), the trace of what happened to it (S2) and
+the output checks that gate what is sent (S3).
 
 | #   | Name                    | Purpose                                            | Key states / variants                                                       | shadcn base         |
 | --- | ----------------------- | -------------------------------------------------- | --------------------------------------------------------------------------- | ------------------- |
-| R1  | `channel-message` `NEW` | One message in the shape of one channel            | pending · sent · answered · withdrawn · expired · failed-check · not-routed | Card, Badge, Button |
-| R2  | `message-log` `NEW`     | The append-only trace of one message, in sentences | empty · populated                                                           | none                |
-| R3  | `check-report` `NEW`    | Output checks' verdict per rule, with the fallback | all-pass · some-fail                                                        | Badge               |
+| S1  | `channel-message` `NEW` | One message in the shape of one channel            | pending · sent · answered · withdrawn · expired · failed-check · not-routed | Card, Badge, Button |
+| S2  | `message-log` `NEW`     | The append-only trace of one message, in sentences | empty · populated                                                           | none                |
+| S3  | `check-report` `NEW`    | Output checks' verdict per rule, with the fallback | all-pass · some-fail                                                        | Badge               |
 
 ---
 
@@ -327,7 +327,7 @@ the output checks that gate what is sent (R3).
 | O — Blocks (L4)                     | 13 (O5 cut)                                                                                          |
 | P — Records & views (v2)            | 2                                                                                                    |
 | Q — Presentational chrome (Geist)   | 2                                                                                                    |
-| R - Channel renderers               | 3                                                                                                    |
+| S - Channel renderers               | 3                                                                                                    |
 | **Total registry items**            | **121** (118 before D27, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept

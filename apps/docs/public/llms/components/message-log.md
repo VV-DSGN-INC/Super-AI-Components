@@ -2,7 +2,7 @@
 
 > The append-only trace of one message, one sentence per event. Each row has a time as plus minutes from the start and a sentence such as "Sent on chat, written live", "Skipped push: quiet hours until 08:00" or "Answered on chat: Read it". It renders the events in the order you give them and edits nothing.
 
-Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/message-log.json` · Contract: `components/super-ai/message-log.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/message-log
+Layer: component · Family: S · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/message-log.json` · Contract: `components/super-ai/message-log.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/message-log
 
 ## Why it matters
 

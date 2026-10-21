@@ -10,7 +10,7 @@ import {
 } from "./channel-message.examples";
 
 /**
- * Seeded from docs/design-system/component-specs.md#r1-channel-message.
+ * Seeded from docs/design-system/component-specs.md#s1-channel-message.
  *
  * No "use client" here: this module is plain data read by a Server Component
  * (component-docs.tsx). Every live example that needs a handler lives in the

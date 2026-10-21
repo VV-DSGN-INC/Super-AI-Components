@@ -2,7 +2,7 @@ import type { ComponentDocs } from "@/lib/component-docs";
 import { CheckReport, type CheckRule } from "@/registry/super-ai/check-report";
 
 /**
- * Seeded from docs/design-system/component-specs.md#r3-check-report.
+ * Seeded from docs/design-system/component-specs.md#s3-check-report.
  *
  * No "use client" here, and no event handlers: check-report is a plain
  * function component, so its examples can sit in this module directly.

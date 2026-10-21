@@ -10874,7 +10874,7 @@ Vercel Geist — the Book component, positioned there as decorative chrome for m
 
 > One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots (who it is from, what it says, one question, a few closed answers, a way to stop). The `channel` prop picks the shape: a thread bubble for the app, a lock-screen card for push, a bubble with inline buttons for chat, a sender, subject and one button for email, and a spoken script for phone. The component shows the message and its state in words. It sends nothing and decides nothing.
 
-Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/channel-message.json` · Contract: `components/super-ai/channel-message.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/channel-message
+Layer: component · Family: S · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/channel-message.json` · Contract: `components/super-ai/channel-message.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/channel-message
 
 ## Why it matters
 
@@ -10992,7 +10992,7 @@ Courier, Novu, Knock, Braze, Designing Bots (chapters 9 and 20)
 
 > The append-only trace of one message, one sentence per event. Each row has a time as plus minutes from the start and a sentence such as "Sent on chat, written live", "Skipped push: quiet hours until 08:00" or "Answered on chat: Read it". It renders the events in the order you give them and edits nothing.
 
-Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/message-log.json` · Contract: `components/super-ai/message-log.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/message-log
+Layer: component · Family: S · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/message-log.json` · Contract: `components/super-ai/message-log.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/message-log
 
 ## Why it matters
 
@@ -11063,7 +11063,7 @@ Designing Bots (chapters 17 and 19)
 
 > The output checks' verdict per rule. Each rule that ran gets a row with the word pass or fail, its name and an optional detail. When a failed check sent the same-kind template instead of the text as written, the report says so. It shows results; it does not run any rule.
 
-Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/check-report.json` · Contract: `components/super-ai/check-report.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/check-report
+Layer: component · Family: S · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/check-report.json` · Contract: `components/super-ai/check-report.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/check-report
 
 ## Why it matters
 

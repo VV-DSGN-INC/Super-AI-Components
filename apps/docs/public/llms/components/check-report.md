@@ -2,7 +2,7 @@
 
 > The output checks' verdict per rule. Each rule that ran gets a row with the word pass or fail, its name and an optional detail. When a failed check sent the same-kind template instead of the text as written, the report says so. It shows results; it does not run any rule.
 
-Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/check-report.json` · Contract: `components/super-ai/check-report.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/check-report
+Layer: component · Family: S · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/check-report.json` · Contract: `components/super-ai/check-report.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/check-report
 
 ## Why it matters
 

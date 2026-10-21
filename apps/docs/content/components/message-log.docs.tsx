@@ -2,7 +2,7 @@ import type { ComponentDocs } from "@/lib/component-docs";
 import { MessageLog } from "@/registry/super-ai/message-log";
 
 /**
- * Seeded from docs/design-system/component-specs.md#r2-message-log.
+ * Seeded from docs/design-system/component-specs.md#s2-message-log.
  *
  * No "use client" here, and no event handlers: message-log is a plain function
  * component, so its examples can sit in this module directly.

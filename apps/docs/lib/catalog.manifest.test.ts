@@ -10,7 +10,7 @@ describe("MANIFEST", () => {
     // `slot-summary`, K7 `answer-block`, K8 `source-cards`, N9
     // `autonomy-selector`, N10 `safety-block`, N11 `escalation-handoff`, N12
     // `task-tray`. D18 then added family P's two items, D20 family Q's and D27
-    // family R's three.)
+    // family S's three.)
     expect(MANIFEST).toHaveLength(132);
   });
 
@@ -31,7 +31,7 @@ describe("MANIFEST", () => {
     expect(active.filter((i) => i.family <= "O")).toHaveLength(114);
     expect(active.filter((i) => i.family === "P")).toHaveLength(2);
     expect(active.filter((i) => i.family === "Q")).toHaveLength(2);
-    expect(active.filter((i) => i.family === "R")).toHaveLength(3);
+    expect(active.filter((i) => i.family === "S")).toHaveLength(3);
     expect(active).toHaveLength(121);
   });
 

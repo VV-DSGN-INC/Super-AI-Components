@@ -540,7 +540,7 @@
     {
       "name": "Channel Message",
       "slug": "channel-message",
-      "family": "R",
+      "family": "S",
       "layer": "component",
       "meta": "registry/super-ai/channel-message.meta.json",
       "docs": "https://super-ai-components.vercel.app/components/channel-message",
@@ -685,7 +685,7 @@
     {
       "name": "Check Report",
       "slug": "check-report",
-      "family": "R",
+      "family": "S",
       "layer": "component",
       "meta": "registry/super-ai/check-report.meta.json",
       "docs": "https://super-ai-components.vercel.app/components/check-report",
@@ -1980,7 +1980,7 @@
     {
       "name": "Message Log",
       "slug": "message-log",
-      "family": "R",
+      "family": "S",
       "layer": "component",
       "meta": "registry/super-ai/message-log.meta.json",
       "docs": "https://super-ai-components.vercel.app/components/message-log",
@@ -4001,7 +4001,7 @@
       ]
     },
     {
-      "family": "R",
+      "family": "S",
       "title": "Channel renderers",
       "components": [
         "channel-message",

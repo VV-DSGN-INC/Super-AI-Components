@@ -1560,9 +1560,9 @@ sighting; see D20.
 
 ---
 
-# R · Channel renderers (Designing Bots)
+# S · Channel renderers (Designing Bots)
 
-## R1 `channel-message` `NEW`
+## S1 `channel-message` `NEW`
 
 **Base:** Card, Badge, Button · **States:** pending · sent · answered · withdrawn · expired · failed-check · not-routed
 
@@ -1610,7 +1610,7 @@ cards and banners). OneSignal, Customer.io, Iterable and Twilio Content Template
 not cited: their public documentation did not show a per-channel preview of one message. Four
 products meet D1's three; the plan's five is not reached and is not padded. See D27.
 
-## R2 `message-log` `NEW`
+## S2 `message-log` `NEW`
 
 **Base:** none, a list · **States:** empty · populated
 
@@ -1632,7 +1632,7 @@ bot is judged. The log is the transcript of one message. No product count is cla
 item; it rests on the book and the LifeOS content system's message log, and shares the family
 decision. See D27.
 
-## R3 `check-report` `NEW`
+## S3 `check-report` `NEW`
 
 **Base:** Badge · **States:** all-pass · some-fail
 
@@ -1651,5 +1651,5 @@ decision. See D27.
 
 **Evidence:** Designing Bots, chapter 8 on error handling and fallback, and the LifeOS content
 system's output checks. The rule list belongs to this project; no industry standard sets it. Product
-precedent for a per-rule verdict list is thin in the notification products named under R1, so this
+precedent for a per-rule verdict list is thin in the notification products named under S1, so this
 entry rests on the book and the content system, and says so. See D27.

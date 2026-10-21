@@ -180,7 +180,7 @@ function Options({ channel, options, spoken, answerable, onAnswer, scale, classN
 /**
  * One message drawn in the shape of the channel it is sent on.
  *
- * Spec: docs/design-system/component-specs.md#r1-channel-message
+ * Spec: docs/design-system/component-specs.md#s1-channel-message
  * States: pending · sent · answered · withdrawn · expired · failed-check · not-routed
  */
 function ChannelMessage({

@@ -69,7 +69,7 @@ function sentence(event: MessageLogEvent): string {
 /**
  * The append-only trace of one message, one sentence per event.
  *
- * Spec: docs/design-system/component-specs.md#r2-message-log
+ * Spec: docs/design-system/component-specs.md#s2-message-log
  * States: empty · populated
  */
 function MessageLog({ events, emptyText = "Nothing sent yet", className, ...props }: MessageLogProps) {
