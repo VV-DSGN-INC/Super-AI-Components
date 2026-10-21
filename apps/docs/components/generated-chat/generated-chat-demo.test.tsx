@@ -1,6 +1,6 @@
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { GeneratedChatDemo } from "./generated-chat-demo";
 
@@ -130,6 +130,43 @@ describe("GeneratedChatDemo", () => {
     const fallback = view.querySelector<HTMLElement>('[data-slot="generated-body-fallback"]')!;
     expect(within(fallback).getByText("Onboarding video")).toBeInTheDocument();
     expect(within(view).queryByText("Mon 19 Oct")).toBeNull();
+  });
+
+  describe("with the model on", () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    it("sends free text to the chat route and keeps chips scripted", async () => {
+      const body = [
+        { type: "start" },
+        { type: "text-start", id: "t" },
+        { type: "text-delta", id: "t", delta: "Video took most of it." },
+        { type: "text-end", id: "t" },
+        { type: "data-suggestions", data: { items: ["Show spend by project"] } },
+        { type: "finish" },
+      ]
+        .map((chunk) => `data: ${JSON.stringify(chunk)}\n\n`)
+        .join("");
+      const fetch = vi.fn(
+        async () => new Response(body, { headers: { "content-type": "text/event-stream" } }),
+      );
+      vi.stubGlobal("fetch", fetch);
+      const user = userEvent.setup();
+      render(<GeneratedChatDemo stepMs={0} model />);
+      expect(screen.getByText(/Free-text questions go to a model/)).toBeInTheDocument();
+
+      await user.type(screen.getByRole("textbox"), "where did the credits go{Enter}");
+      expect(await within(stream()).findByText("Video took most of it.")).toBeInTheDocument();
+      expect(fetch).toHaveBeenCalledTimes(1);
+
+      await user.click(await waitFor(() => lastButton("Show spend by project")));
+      expect(await within(stream()).findByText(/I built a view of this week's spend/)).toBeInTheDocument();
+      expect(fetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it("says no model is called when the model is off", () => {
+    render(<GeneratedChatDemo stepMs={0} />);
+    expect(screen.getByText(/No model is called/)).toBeInTheDocument();
   });
 
   it("answers anything unscripted with the ready prompts", async () => {
