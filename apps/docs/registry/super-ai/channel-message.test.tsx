@@ -76,8 +76,26 @@ describe("ChannelMessage states", () => {
     expect(document.activeElement).toBe(document.body);
   });
 
-  it("only a sent message can be answered", () => {
-    for (const state of ["pending", "withdrawn", "expired", "failed-check"] as const) {
+  it("a failed check can be answered: the template of the same kind went out", () => {
+    const onAnswer = vi.fn();
+    render(
+      <ChannelMessage
+        channel="chat"
+        message={ASK}
+        state="failed-check"
+        path="fallback"
+        onAnswer={onAnswer}
+      />,
+    );
+    expect(screen.getAllByRole("button").map((b) => b.textContent)).toEqual([
+      "Fine",
+      "Not great",
+      "Skip today",
+    ]);
+  });
+
+  it("only a sent or failed-check message can be answered", () => {
+    for (const state of ["pending", "withdrawn", "expired"] as const) {
       const { unmount } = render(
         <ChannelMessage channel="chat" message={ASK} state={state} onAnswer={() => {}} />,
       );

@@ -201,7 +201,8 @@ function ChannelMessage({
 }: ChannelMessageProps) {
   const scale = typeScale(typeSize === "large");
   const second = to === "second";
-  const answerable = state === "sent";
+  // A failed check sends the template of the same kind, so the person has a copy to answer.
+  const answerable = state === "sent" || state === "failed-check";
   const options = !second && message.options?.length ? message.options : undefined;
   const ask = second ? undefined : message.ask;
   const handoff = second ? undefined : message.handoff;

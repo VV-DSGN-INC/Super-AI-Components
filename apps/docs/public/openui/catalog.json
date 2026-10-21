@@ -617,9 +617,9 @@
       "notes": [
         "Don't put an ask on a `ready`, `receipt` or `notice`. The component renders it, because it draws what it is given, and the message then promises nothing and asks something. Use kind `ask`.",
         "Don't expect more than three actions on a push. The rest are not dropped silently: the card says how many more are in the app.",
-        "Don't pass `onAnswer` and expect buttons in every state. Only a `sent` message can be answered; a withdrawn, expired or pending one shows its options as text.",
+        "Don't pass `onAnswer` and expect buttons in every state. Only a `sent` or `failed-check` message can be answered; a withdrawn, expired or pending one shows its options as text.",
         "The component does not check the message against its kind. A `ready` with an `ask` renders as written. Validate the kind against the slots before you pass it in.",
-        "Only `sent` is answerable. A `failed-check` message was not delivered as written, so its options are text. The template that went out instead is a `sent` message with `path=\"fallback\"`; pass that one when the person can answer.",
+        "Only `sent` and `failed-check` are answerable. A `failed-check` message was not delivered as written, but the template of the same kind went out in its place, so the person has a copy to answer and its options are buttons. Pending, withdrawn, expired and not-routed messages show their options as text.",
         "`link` is text and never an anchor, and it follows each channel's habit. Push prints \"Tap to open in the app\", chat and email print \"Open in the app\", and the app thread and the phone script (\"It is in your app too.\") print no label. The address sits in a `data-link` attribute on the push, chat and email labels only. The component has no prop for navigation; open the address from your own handler.",
         "`expires` is printed as you give it. Pass the words a person should read, such as \"Fri 18:00\", not a timestamp.",
         "Hierarchy comes from size and weight. Do not add `text-muted-foreground` text inside the thread and chat bubbles: they paint `bg-muted`, and the pair measures 4.34:1 against a 4.5:1 minimum.",

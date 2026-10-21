@@ -1583,11 +1583,12 @@ sighting; see D20.
 - **`answered` replaces the controls with the result.** The options become the chosen value as
   text, and focus moves to it. A render that keeps the buttons after an answer invites a second
   tap on a question that is already closed.
-- **Buttons need `onAnswer` and a `sent` message.** Without the callback the options render as
-  inert text, so a static page or a screenshot never shows a control that does nothing. Only a
-  `sent` message can be answered: a pending, withdrawn, expired, failed-check or not-routed
-  message shows its options as text even when `onAnswer` is given. The link is text too, never a
-  control.
+- **Buttons need `onAnswer` and a message the person can answer.** Without the callback the
+  options render as inert text, so a static page or a screenshot never shows a control that does
+  nothing. A `sent` message can be answered, and so can a `failed-check` one: a failed check sends
+  the template of the same kind, so the person has a copy to answer. A pending, withdrawn, expired
+  or not-routed message shows its options as text even when `onAnswer` is given. The link is text
+  too, never a control.
 - **A second recipient gets the summary.** `to: "second"` renders `summary` as the body and omits
   the ask, the options and the handoff line: status and next step, no detail.
 - **Trust, type size and pace each have one visible effect.** `trust` is a line the channel always

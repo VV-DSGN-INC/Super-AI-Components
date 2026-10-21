@@ -112,8 +112,9 @@ export const Expired: Story = {
 
 /**
  * Live text for the phone failed a check, so it was not read out as written.
- * The state says so and the reason names the rule; the template that went out
- * instead is a separate `sent` message with `path="fallback"`.
+ * The state says so and the reason names the rule. The template of the same
+ * kind went out instead, so the person has a copy to answer: the options are
+ * buttons, like `Sent`.
  */
 export const FailedCheck: Story = {
   args: {
@@ -123,6 +124,11 @@ export const FailedCheck: Story = {
     path: "live",
     reason: "no-guilt failed",
     trust: "We never ask for codes.",
+    onAnswer: fn(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("button", { name: "Press 1 for Fine" })).toBeInTheDocument();
   },
 };
 
