@@ -1649,7 +1649,7 @@ LTX Studio, CapCut, Canva, Spline, Freepik, and Descript all put a single persis
 
 ## When to reach for it
 
-Reach for it as the one top bar for a shell and pick `context` based on what's underneath it: `document` for anything read top-to-bottom (docs, pages, notes) where breadcrumb + privacy matter most; `editor` for anything manipulated on a canvas or timeline (design files, video, 3D) where zoom + history matter most. Pass `savedLabel` as a finished sentence, not a timestamp to format — the component never guesses relative time for you. For a chat surface, use the same component with just `title` and `actions` filled in; don't reach for a separate chat-header component.
+Reach for it as the one top bar for a shell and pick `context` based on what's underneath it: `document` for anything read top-to-bottom (docs, pages, notes) where breadcrumb + privacy matter most; `editor` for anything manipulated on a canvas or timeline (design files, video, 3D) where zoom + history matter most. Pass `savedLabel` as a finished sentence, not a timestamp to format — the component never guesses relative time for you. For a chat surface, use the same component with just `title` and `actions` filled in; don't reach for a separate chat-header component. The privacy slot's vocabulary comes from two neighbours rather than from free text: pass N15 `private-session-notice`'s `PrivateSessionChip` for a private session and N13 `capture-consent` in its `compact` form while capture runs, as an element, or both in a fragment. Keep the `{ label, icon }` form for the document's own visibility word, such as "Team" or "Private".
 
 ## Variants
 
@@ -1664,6 +1664,7 @@ Not yet recorded.
 - Render saved-state as a finished sentence — "Last saved 5 days ago" answers the question a status glyph only raises.
 - Let editor context lead with zoom + history instead of a breadcrumb — it's the same component, just the other configuration.
 - Pair the privacy chip's icon with a visible label — the icon alone is decoration, the text is the signal.
+- Pass N15's `PrivateSessionChip` into `privacy` for a private session, with N13's `compact` recording chip beside it while capture runs, instead of writing your own label for either.
 
 ## Don't
 
@@ -1678,7 +1679,7 @@ Not yet recorded.
 - `app-topbar-zoom`: Editor context: zoom-out / level / zoom-in button group.
 - `app-topbar-history`: Editor context: undo / redo button group.
 - `app-topbar-title`: Document or scene name — shown when there's no breadcrumb, or alongside zoom/history.
-- `app-topbar-privacy`: Icon + text status chip. Available in either context.
+- `app-topbar-privacy`: The bar's own icon + text chip, drawn from the `{ label, icon }` form for the document's visibility. Available in either context. An element passed to `privacy` renders in its place and keeps its own slots, as N15's chip does.
 - `app-topbar-trailing`: Right-aligned group holding saved-state and actions.
 - `app-topbar-saved`: Saved-state as plain readable text, e.g. "Last saved 5 days ago".
 - `app-topbar-actions`: Consumer-supplied trailing controls (share, export, presence, …).
@@ -1687,7 +1688,7 @@ Not yet recorded.
 
 **Keyboard**
 
-- Document context has one tab stop per breadcrumb crumb that carries an `href`, and none otherwise. The final crumb is deliberately not a link, a crumb without `href` renders as plain text, and the title, privacy chip and saved-state line are never focusable.
+- Document context has one tab stop per breadcrumb crumb that carries an `href`, and none otherwise. The final crumb is deliberately not a link, a crumb without `href` renders as plain text, and the title, the bar's own privacy chip and saved-state line are never focusable. An element you pass to `privacy` keeps its own tab stops: N15's `PrivateSessionChip` with `onClick` is one button.
 - Editor context is always four tab stops before your `actions` — Zoom out, Zoom in, Undo, Redo — and they render whether or not you passed the matching handler. An editor topbar with no `onUndo` still presents an enabled, focusable Undo button that does nothing.
 - `canUndo` and `canRedo` default to `true`, so `disabled` only appears when you say so. Omitting them is not the same as having no history.
 - The button groups have no roving tabindex and no arrow-key navigation — they are `role="group"` wrappers, so each control is its own stop.
@@ -1702,6 +1703,7 @@ Not yet recorded.
 - The zoom level is rendered as ordinary text between the two buttons, with no `aria-live` and no relationship to either. Pressing Zoom in changes the number silently, so a screen-reader user gets no feedback that the press did anything.
 - The saved-state line is the same shape: plain text, no live region. "Last saved 5 days ago" becoming "Saving…" is a change nobody is told about.
 - The privacy chip announces as its label text; its optional glyph is wrapped `aria-hidden`, which is what makes the visible word rather than the icon the actual signal.
+- An element passed to `privacy` brings its own semantics, and the bar adds none around it. N15's `PrivateSessionChip` is a plain chip read as its words, or a button when you give it `onClick`, which adds a tab stop to the bar. N13's `compact` chip is a `role="status"`, so starting or stopping capture is announced politely from the topbar.
 
 **Focus**
 
@@ -1713,11 +1715,12 @@ Not yet recorded.
 
 - Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.
 - Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing ("5 days ago") before handing it over.
+- Writing "Private session" or "Recording" into the `{ label }` form. Those two states have owners, N15 and N13, whose chips carry the fixed copy, the icon and, for capture, the live region; a hand-written label drifts from them and announces nothing. The bar renders their element as given and imports neither.
 - Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.
 
 ## Composition
 
-- States: `document-context`, `editor-context`, `privacy-chip`, `saved-state`
+- States: `document-context`, `editor-context`, `privacy-chip`, `saved-state`, `private-session`
 - Composes from this registry: nothing
 - shadcn primitives: badge, breadcrumb, button, button-group
 - npm: lucide-react
@@ -3783,7 +3786,7 @@ Generation is slow and results arrive out of order, so a gallery spends most of 
 
 ## When to reach for it
 
-Render the card the moment a generation is requested, in `idle` or `queued`, so the slot exists at its final aspect ratio before any pixels do — then move it through `streaming` to `done`, `failed` or `locked` by updating `state`. Pass the media as children; the card treats it as opaque, so an image, a video, a waveform or a block of generated text all work without a variant. Put the prompt excerpt in `label` (it renders as an overlay, costing no layout) and cost, provenance and per-result actions in `footer`. Supply `onRetry` for failures and `lockedAction` for paywalled results. Leave `selectable` off for ordinary browsing; F2 `generation-grid` turns it on for every card at once when the user enters select mode.
+Render the card the moment a generation is requested, in `idle` or `queued`, so the slot exists at its final aspect ratio before any pixels do — then move it through `streaming` to `done`, `failed` or `locked` by updating `state`. Pass the media as children; the card treats it as opaque, so an image, a video, a waveform or a block of generated text all work without a variant. Put the prompt excerpt in `label` (it renders as an overlay, costing no layout) and cost, provenance and per-result actions in `footer`. Supply `onRetry` for failures and `lockedAction` for paywalled results. Set `watermark` to draw A13 `ai-label` on a finished asset, `generated` or `edited`; to open the provenance panel from it, pass `renderWatermark={(mark) => <ContentCredentials credentials={record}>{mark}</ContentCredentials>}`. The card cannot import N16 `content-credentials` itself, because components in this registry never depend on each other, so the host does the wrapping. Leave `selectable` off for ordinary browsing; F2 `generation-grid` turns it on for every card at once when the user enters select mode.
 
 ## Variants
 
@@ -3797,6 +3800,7 @@ Not yet recorded.
 
 - Change `state` on one card rather than swapping components — the box is identical in every state, which is the whole point.
 - Give `locked` the shape of what would have been made plus a CTA, never an empty box with a padlock.
+- Mark generated media on the asset with `watermark`, and hand N16 `content-credentials` in through `renderWatermark` so the panel opens from that same mark.
 
 ## Don't
 
@@ -3811,6 +3815,7 @@ Not yet recorded.
 - `result-card-progress`: The streaming progress bar, pinned over the top of the frame so it contributes no layout.
 - `result-card-select`: The select-mode checkbox. Present only when `selectable` is set.
 - `result-card-actions`: Hover actions, revealed on hover or keyboard focus. Suppressed whenever the checkbox is present.
+- `result-card-watermark`: The `watermarked` mark: A13 `ai-label` at the frame's bottom-end corner, over the media and outside the tile button. Rendered in `done` only. Holds whatever `renderWatermark` returns, which is where N16 `content-credentials` goes.
 - `result-card-retry`: Retry, rendered inside the failed treatment rather than anywhere else.
 - `result-card-footer`: Actions, cost and provenance. Always rendered, with a reserved minimum height, even when empty.
 - `result-card-status`: A visually hidden live region announcing each lifecycle transition.
@@ -3823,6 +3828,7 @@ Not yet recorded.
 - So the tab order rearranges itself under a keyboard user as results resolve — a focusable tile becomes an inert frame with a Retry button the instant a generation fails.
 - Hover actions are mounted at `opacity-0` and revealed by `group-focus-within`, so Tab reaches them and they become visible when it does. They are suppressed outright in select mode, which is the intended exclusivity rather than a keyboard gap.
 - The tile is focusable and pressable while `streaming`, before there is any result. If `onSelect` opens a lightbox, guard it on `state === "done"` yourself.
+- `watermark` alone adds no tab stop: the A13 chip is a note, not a control. With `renderWatermark` the chip takes `tabIndex={0}`, after the tile and any actions in DOM order, so a hover-card trigger such as N16's opens on focus as well as on hover.
 - Space and Enter activate everything; Space toggles the checkbox. There is no Escape, no Delete, and no arrow-key movement — anything grid-shaped belongs to F2 `generation-grid`.
 
 **Screen reader**
@@ -3833,6 +3839,7 @@ Not yet recorded.
 - Each card renders its own sr-only `role="status"` region carrying the lifecycle word: "Queued", "Generating", "Result ready", "Generation failed", "Locked". A grid of twenty is twenty polite live regions competing as results land.
 - While `streaming` with a numeric `progress`, that region reads "Generating, 42%" and its text changes on every update you push, so every tick is queued for announcement. M6 `rate-limit-banner` solves the same problem by bucketing its live text to whole minutes; this one does not, so the throttling has to happen in your polling.
 - The progress bar is a real `progressbar` named "Generation progress" by an sr-only label — the same name on every card — and it is not a live region, so its value stays silent until navigated to.
+- The watermark is A13 `ai-label`: a `role="note"` named "Generated by AI" or "Edited by AI", with its glyph `aria-hidden`. It sits outside the tile button, so it never joins the tile's name. N16 adds an `aria-describedby` carrying its verdict when it wraps the mark.
 - The failed treatment is an `aria-hidden` icon plus the words "Generation failed", so nothing rests on colour. The Retry button inside it is named "Retry" and nothing more, identically across the grid.
 
 **Focus**
@@ -3848,11 +3855,13 @@ Not yet recorded.
 - `onSelect` means two different things depending on `selectable`: with it off, the tile itself becomes a button and reports `aria-pressed`; with it on, the tile stays inert and the checkbox is the only control. Passing `selectable` without `onSelect` gives you a checkbox that cannot be checked.
 - The footer inherits `text-foreground`, not muted text, on purpose. Dropping a component in that sets its own muted foreground over a muted background reintroduces the 4.34:1 contrast failure this registry keeps hitting — A2 `cost-chip` currently still does exactly that.
 - `progress` is ignored outside `streaming`. If your bar never appears, check the state before checking the number.
+- `watermark` is ignored outside `done`: the mark is a claim about an asset that exists, so a queued, failed or locked card never carries it. Set it with the result rather than toggling it on later.
+- Don't import N16 into a fork of this card to wire credentials. `renderWatermark` is the boundary: the card owns the mark and its place on the asset, the host owns the panel. Returning something that drops the `mark` you were handed removes the A13 chip and with it the visible half of the Watermark pattern.
 
 ## Composition
 
-- States: `idle`, `queued`, `streaming`, `done`, `failed`, `locked`, `media-types`
-- Composes from this registry: preview-tile, cost
+- States: `idle`, `queued`, `streaming`, `done`, `failed`, `locked`, `media-types`, `watermarked`
+- Composes from this registry: ai-label, preview-tile, cost
 - shadcn primitives: button, card, checkbox, progress
 - npm: lucide-react
 
@@ -5864,7 +5873,7 @@ Claude Artifacts and the Manus Library are the reference implementations, and bo
 
 ## When to reach for it
 
-Reach for it for any "your artifacts", "library" or "documents" surface where the items are text the assistant wrote — docs, code, tables, charts-as-data. Pass `sessions`, each with a label and its items; only `id`, `type` and `excerpt` are required per item. The facet row appears on its own once more than one type is present, and `activeType` / `onActiveTypeChange` let you lift filtering into a URL or a shared filter bar. Set `collapsibleSessions` when a long archive needs folding down. This is not the component for thumbnail-first content — if the item is an image, a video or a 3D scene, use a grid built on preview-tile instead.
+Reach for it for any "your artifacts", "library" or "documents" surface where the items are text the assistant wrote — docs, code, tables, charts-as-data. Pass `sessions`, each with a label and its items; only `id`, `type` and `excerpt` are required per item. Set `aiLabel` on an item to say what the AI did to it (`generated`, `edited` or `summarized`), which draws A13 `ai-label` beside the type badge; leave it off for an artifact a person wrote. The facet row appears on its own once more than one type is present, and `activeType` / `onActiveTypeChange` let you lift filtering into a URL or a shared filter bar. Set `collapsibleSessions` when a long archive needs folding down. This is not the component for thumbnail-first content — if the item is an image, a video or a 3D scene, use a grid built on preview-tile instead.
 
 ## Variants
 
@@ -5893,6 +5902,7 @@ Not yet recorded.
 - `artifact-grid-items`: The responsive card grid inside a session.
 - `artifact-grid-card`: One artifact. Carries data-artifact-id and data-artifact-type.
 - `artifact-grid-type`: The type badge. Its text is derived from item.type, never passed separately.
+- `ai-label`: A13 `ai-label`, directly after the type badge, when the item sets `aiLabel`. Always the bare chip, never the tooltip form.
 - `artifact-grid-excerpt`: The load-bearing field: the largest text on the card and the accessible name of its link.
 - `artifact-grid-title`: The optional, deliberately secondary title line. Small and quiet, because it is usually auto-generated.
 - `artifact-grid-edited-ago`: Recency text. Omitted entirely when the item has none.
@@ -5905,7 +5915,7 @@ Not yet recorded.
 
 **Keyboard**
 
-- Each card is exactly one tab stop — the excerpt's link or button — and zero when the item has neither `href` nor `onOpen`. Nothing else on the card is focusable, so a 24-artifact index is 24 Tab presses with no way to skip a session.
+- Each card is exactly one tab stop — the excerpt's link or button — and zero when the item has neither `href` nor `onOpen`. Nothing else on the card is focusable, the A13 chip included, so a 24-artifact index is 24 Tab presses with no way to skip a session.
 - `href` wins over `onOpen`: pass both and the handler is silently dropped, leaving a link where you expected a button.
 - The facet row is A4 `choice-chips`, a radio group: one tab stop however many types there are ("All" included), and the arrow keys move between facets and filter as they go.
 - With `collapsibleSessions`, each session header is one more tab stop, activated with Space or Enter. There is no expand-all and no key that collapses every session at once.
@@ -5916,6 +5926,7 @@ Not yet recorded.
 - Each session is a `<section>` named by its label, so sessions are navigable as regions. The section header itself is not a heading element, so heading navigation skips the whole index — regions are the only structure on offer.
 - The card link's accessible name is exactly the excerpt, by design: the stretched pseudo-element keeps the badge, the recency line, the privacy word and the view count out of it. The cost is that a links-list pass hears only excerpts — nothing tells the reader which artifact is Public, and privacy is reachable only by reading each card in browse mode.
 - `line-clamp-4` clips the excerpt visually and not in the accessible tree, so a long first paragraph becomes a very long link name that is read in full.
+- The A13 chip is a `role="note"` named by its sentence ("Generated by AI", "Edited by AI", "Summarized by AI"), with its glyph `aria-hidden`. It sits outside the link, so the link's name stays exactly the excerpt and a links-list pass does not hear which artifacts a model wrote.
 - The type badge, the recency line and the footer are plain text with no roles. The privacy word and the view unit are real visible text — never `sr-only` suffixes — because adjacent text concatenates without a separator.
 - A facet chip's name fuses its count in with no separator at all — measured, it is "Markdown3" rather than "Markdown 3", because the gap you see is a margin and a margin is invisible to name computation. So `getByRole("radio", { name: "Document 1" })` finds nothing while `"Document1"` finds the chip. It is this page's own fourth pitfall (the "1,204views" warning) happening to the component itself. The "All" chip has no count, so it announces as a bare word beside fused siblings.
 - The empty message carries `role="status"`, but it is mounted at the same moment its text appears rather than sitting in the DOM beforehand — the opposite of the always-mounted pattern this registry uses elsewhere. Treat its announcement as unreliable and put a stable live region on the surface if the count matters.
@@ -5933,13 +5944,14 @@ Not yet recorded.
 - Adding a `typeLabel` prop so a caller can restyle one badge. The badge and the facet are two renders of one value; the moment they can drift, a card reads "Spreadsheet" while its facet says "Table" and the filter silently returns nothing.
 - Wrapping the whole card in an anchor to make it clickable. Everything inside then fuses into one accessible name — badge, title, excerpt, edited-ago, privacy word and view count read as a single run-on string. The card uses a stretched pseudo-element on the excerpt link instead, so the whole surface is clickable while the link's name stays exactly the excerpt.
 - Giving the privacy state an `sr-only` suffix next to a visible glyph. Screen readers concatenate adjacent text with no separator, so a visible "1,204" beside an sr-only " views" can announce as "1,204views". Both the privacy word and the view unit are real visible text here for that reason.
+- Passing `by` or `at` through to the chip by forking the card. The tooltip form of A13 is a focusable trigger, and the stretched link covers the whole card, so a pointer never reaches it and the keyboard gets a second stop per card. Show the model and the time on the artifact's own page, where the tooltip form has room and nothing covers it.
 - Sorting the grid by title. Titles are the least reliable field on the card; recency and session order are what people actually navigate by.
 - Leaving empty session groups on screen after a filter runs. Sessions with no surviving items are dropped, and a fully empty view announces itself through a role="status" message rather than silently blanking.
 
 ## Composition
 
-- States: `type-badge`, `excerpt`, `edited-ago`, `view-count`, `privacy-icon`
-- Composes from this registry: choice-chips, section-header
+- States: `type-badge`, `excerpt`, `edited-ago`, `view-count`, `privacy-icon`, `ai-label`
+- Composes from this registry: ai-label, choice-chips, section-header
 - shadcn primitives: badge, card
 - npm: lucide-react
 
@@ -6253,7 +6265,7 @@ This is the shape Notion AI, Manus reports, Spellbook drafting and Claude artifa
 
 ## When to reach for it
 
-Reach for it whenever a model writes into a document the user already owns — a summary dropped under a heading, a clause drafted into a contract, a section expanded in a report. Pass the prose as children in ordinary markup and keep it in your document model; the component only supplies the frame, the attribution and the verbs. Drive `state` from your host: `streaming` while tokens arrive, `approval-verbs` once they stop, `editable` when Edit is pressed, `re-promptable` when Regenerate is. Every verb is optional and shows up only when you supply its handler, but the order is not yours to choose. For a generation that has not landed anywhere yet, use K2 `inline-generate-popup` — the popover generates, this block commits.
+Reach for it whenever a model writes into a document the user already owns — a summary dropped under a heading, a clause drafted into a contract, a section expanded in a report. Pass the prose as children in ordinary markup and keep it in your document model; the component only supplies the frame, the attribution and the verbs. Drive `state` from your host: `streaming` while tokens arrive, `approval-verbs` once they stop, `editable` when Edit is pressed, `re-promptable` when Regenerate is. Every verb is optional and shows up only when you supply its handler, but the order is not yours to choose. The attribution is A13 `ai-label`: leave `label` unset for its own word, Generated, or override it with one or two words of your own; the chip clips anything longer. For a generation that has not landed anywhere yet, use K2 `inline-generate-popup` — the popover generates, this block commits.
 
 ## Variants
 
@@ -6277,8 +6289,8 @@ Not yet recorded.
 ## Anatomy
 
 - `ai-doc-block`: The document node itself. Same element in every state — it never unmounts and never moves.
-- `ai-doc-block-header`: Attribution row: the generated-by label, plus the streaming indicator when text is arriving.
-- `ai-doc-block-label`: Says in words that the passage was generated. Not a colour, not a border.
+- `ai-doc-block-header`: Attribution row: the A13 `ai-label` chip, plus the streaming indicator when text is arriving.
+- `ai-label`: A13 `ai-label` in its `generated` variant. Says in words that the passage was generated, not with a colour or a border. `label` replaces its chip text and never its accessible name.
 - `ai-doc-block-streaming`: Spinner and the word "Streaming", shown only while text is arriving.
 - `ai-doc-block-content`: The prose. Your markup, unwrapped — this is the part a document model saves and exports.
 - `ai-doc-block-editor`: The textarea that replaces the prose in the editable state.
@@ -6300,8 +6312,8 @@ Not yet recorded.
 **Screen reader**
 
 - There is one persistent `role="status"` line, present in the DOM in every state, whose text changes with `state` — "Generating this block…", "This block is open for editing.", and so on. That is what makes a state change audible rather than merely visible.
-- The block itself is a plain `div`. It is not a region, the attribution line is not a heading, and nothing marks where the generated passage starts or ends: in browse mode the label reads as one more run of text before the prose. With several blocks in a document there is no landmark or heading to move between them.
-- The attribution comes from `label` as real text, and the sparkle beside it is `aria-hidden`. Streaming is announced the same way — the spinner is hidden and the word "Streaming" carries it — plus `aria-busy` on the content slot.
+- The block itself is a plain `div`. It is not a region, the attribution chip is a `note` rather than a heading, and nothing marks where the generated passage starts or ends: in browse mode the chip reads as one short note before the prose. With several blocks in a document there is no landmark or heading to move between them.
+- The attribution is A13 `ai-label`: a `role="note"` chip named "Generated by AI" whatever `label` says, with its glyph `aria-hidden`. An empty `label` falls back to the chip's own word, so a sighted reader never gets the glyph alone. Streaming is announced the way the attribution is — the spinner is hidden and the word "Streaming" carries it — plus `aria-busy` on the content slot.
 - The edit field is named by `editLabel`, which defaults to the generic "Edit generated text". Two open editors in one document announce identically; pass a per-block name.
 - The instruction field has a real `<label>`, so its name survives typing — the placeholder is an example, not the name.
 - The verbs are named by their visible words only; their icons are `aria-hidden`. Those names are the same on every block, so "Discard, button" says nothing about which passage it discards.
@@ -6318,13 +6330,14 @@ Not yet recorded.
 - Unmounting the block to re-prompt it — remounting a fresh block under a new key reflows the document under the user's cursor while they are typing an instruction into it. Change `state` and swap `children`; the same DOM node stays between the same two paragraphs.
 - Wrapping the children in your own layout div before passing them in. The content slot deliberately renders them unwrapped so your document model gets back exactly the markup it gave; an extra wrapper ends up in the export.
 - Hiding the verbs while streaming instead of disabling them. It reads as a smaller component that suddenly grows, and it hides the fact that a decision is coming.
-- Treating the frame as the only signal that a passage is generated. The attribution line is text for a reason — a border colour does not survive a high-contrast theme, a greyscale print, or an export to plain HTML.
+- Treating the frame as the only signal that a passage is generated. The attribution is a text chip for a reason — a border colour does not survive a high-contrast theme, a greyscale print, or an export to plain HTML.
+- Writing a sentence into `label`. It is A13's chip text, which stays one word or two and clips past that; the block lets the chip shrink so the streaming indicator keeps its place, so a long label loses its end rather than wrapping.
 - Leaving `value` undefined in the editable state. The edit field is controlled; pair `value` with `onValueChange` and keep it in step with the prose you pass as children.
 
 ## Composition
 
 - States: `streaming`, `editable`, `re-promptable`, `approval-verbs`
-- Composes from this registry: nothing
+- Composes from this registry: ai-label
 - shadcn primitives: button, button-group, card, label, textarea
 - npm: lucide-react
 
@@ -9068,7 +9081,7 @@ Handoff is the strongest result in the agent slice of the reference board: five 
 
 ## When to reach for it
 
-Reach for it at the moment the agent stops and a person starts: the user asked for someone, the repair loop has run out of road, confidence is too low for a high-stakes action, or policy requires a human review. Pick the `trigger` that is actually true — the four reasons produce four different messages, and "you asked for a person" and "policy requires a person" are not interchangeable claims about the conversation. Keep `state` in your own state and advance it as the handoff progresses; the component renders what you give it and never moves itself. Show `preview` first so the user can read and edit the packet before it travels, because it is their conversation being forwarded.
+Reach for it at the moment the agent stops and a person starts: the user asked for someone, the repair loop has run out of road, confidence is too low for a high-stakes action, or policy requires a human review. Pick the `trigger` that is actually true — the four reasons produce four different messages, and "you asked for a person" and "policy requires a person" are not interchangeable claims about the conversation. Keep `state` in your own state and advance it as the handoff progresses; the component renders what you give it and never moves itself. Show `preview` first so the user can read and edit the packet before it travels, because it is their conversation being forwarded. The packet carries A13 `ai-label`, summarized until `accepted` and after-handoff from then on; give the earlier AI turns in your own thread the same switch, sender before the handoff and after-handoff after, so the reader can see where the AI stopped.
 
 ## Variants
 
@@ -9097,6 +9110,7 @@ Not yet recorded.
 - `escalation-handoff-wait`: Queue copy, in the `queued` state only. Prints an honest fallback when `wait` is absent.
 - `escalation-handoff-availability`: The closed-door message, in the `unavailable` state only. `availability` appends the window people are back.
 - `escalation-handoff-packet`: The packet section — summary, the resolved frame, what was already tried. Rendered in every state.
+- `ai-label`: A13 `ai-label` on the packet's header: summarized while the packet is the AI's summary waiting for a person, after-handoff once one has accepted. Not overridable, because the switch is the point.
 - `escalation-handoff-request`: The specific ask. Optional in the API, but an escalation without one is just a forward.
 
 ## Accessibility
@@ -9111,6 +9125,7 @@ Not yet recorded.
 **Screen reader**
 
 - The card has no heading anywhere. "Handing this to a person" renders through `CardTitle`, which is a `div`, and "What they'll see" comes from `SectionHeader` in its non-collapsible shape, which is a `span` — so neither is reachable by heading navigation and the packet is a block of text with nothing to jump to inside it.
+- The packet header carries A13 `ai-label`, a `role="note"` named "Summarized by AI" until `accepted` and "AI replies ended here, a person took over" from then on, so the packet says who wrote it. The switch is not a live region either: it is read when the reader reaches it.
 - The trigger copy is ordinary text, announced in reading order after the title. All four strings are module constants, so what is announced is exactly one of the four and nothing here is assembled from your props.
 - `state` is reflected only as `data-state`. Moving from `preview` to `queued` to `accepted` swaps the card's content with no live region anywhere in the component, so the transition this card exists to model — the moment the handoff is actually sent — is announced as nothing at all. Put a live region on the surface hosting the card.
 - Every copy button in the packet is named "Copy" and nothing more. Four copyable slots means four identically-named buttons, and which is which is carried only by the label sitting beside it.
@@ -9129,13 +9144,14 @@ Not yet recorded.
 - In `preview` and `unavailable` the footer element renders even when you pass no handlers at all, leaving an empty action bar under the packet. Pass at least one action, or the card ends in a blank strip.
 - `wait` being absent is not the same as passing an empty string: the component prints "We don't have a wait time yet." on purpose. That fallback is the honest answer when queue depth is unknown — don't pass an invented estimate to avoid it.
 - The four trigger strings are a module constant, not props. You cannot reword them per surface; if none of the four fits, the situation probably is not an escalation.
+- Switching the packet's label without switching the thread. The card marks the packet after-handoff on `accepted`, but it does not render the conversation: if your message list keeps the AI's turns at sender, the thread still reads as if the AI were answering. Drive both from the same `state`.
 - The component models no return path. `accepted` is where it stops — there is no prop for resuming the conversation or closing it out, so the host owns whatever happens after a person picks it up.
 - Under `dir="rtl"` the card mirrors correctly, but the "Already tried" bullets use a right-pointing arrow that does not flip. Cosmetic rather than blocking, and tracked as a gap.
 
 ## Composition
 
 - States: `packet-preview`, `queued`, `accepted`, `unavailable`
-- Composes from this registry: section-header, stat-readout
+- Composes from this registry: ai-label, section-header, stat-readout
 - shadcn primitives: card, button
 - npm: lucide-react
 

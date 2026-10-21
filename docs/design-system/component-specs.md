@@ -169,7 +169,8 @@ text-tint
   content ("Rewrote with AI"), never a bare "AI". A consumer may override the copy, not the shape.
 - **One glyph.** This primitive owns the icon that means "AI acted here"; consumers stop importing
   `Sparkles` themselves. K1 `ai-doc-block`, F1 `result-card`, J4 `artifact-grid` and N11
-  `escalation-handoff` are the four that draw it today, which is why this is A13 and not N13.
+  `escalation-handoff` are the four that compose it, which is why this is A13 and not N13. Of the
+  four, only K1 drew a mark of its own before; F1, J4 and N11 gained one when they were wired.
 - **The treatment is reserved.** Whatever `text-tint` applies to AI-sourced prose (iA Writer's grey)
   is applied to nothing else in the registry. The tint must clear 4.5:1 on its own; a tint that
   needs the surrounding surface to pass is the contrast trap in a11y-baseline.md.
@@ -262,6 +263,12 @@ Shape of AI, Disclosure; see [shape-of-ai-board-analysis.md](shape-of-ai-board-a
 - Saved-state is text, not an icon. "Last saved 5 days ago" answers a question a cloud glyph only
   raises.
 - Absorbs the spec's `chat-header` — a chat title bar is this with fewer slots filled.
+- **The privacy slot has a vocabulary, and it belongs to N15 and N13.** A private session is N15
+  `private-session-notice`'s `PrivateSessionChip`; capture in progress is N13 `capture-consent` in
+  its `compact` form. The host passes either, or both in a fragment, as an element, and the bar
+  renders it as given. B7 imports neither (D3). The `{ label, icon }` form stays for the document's
+  own visibility word ("Team", "Private"), and is not the place to write "Private session" or
+  "Recording" by hand. State `private-session`.
 
 **Evidence:** LTX Studio, CapCut, Canva, Spline, Freepik, Descript.
 
@@ -581,7 +588,8 @@ error rather than a board sample; no per-product screenshots were collected, so 
 
 ## F1 `result-card` `NEW`
 
-**Built on:** A8 · **Base:** Card · **States:** idle · streaming · done · failed · locked
+**Built on:** A8, A13 · **Base:** Card · **States:** idle · streaming · done · failed · locked ·
+watermarked
 
 - Card geometry is identical in all states. Only the media slot and footer change, so grids never
   reflow when a result resolves.
@@ -589,8 +597,18 @@ error rather than a board sample; no per-product screenshots were collected, so 
   the association.
 - `locked` shows the shape of what would have been made, then the CTA — never an empty box with a
   padlock.
+- **`watermarked` puts a visible mark on the asset itself**, the Watermark pattern's visible half.
+  The mark is A13 `ai-label` (`generated` or `edited`), drawn over the frame at the bottom-end corner
+  like every other overlay, so it costs no layout, and only in `done`, because it is a claim about
+  an asset that exists. It sits outside the tile button, never inside it.
+- **The panel behind the mark is N16 `content-credentials`, and F1 cannot import it** (L3 items
+  never depend on each other, D3). `renderWatermark` is the boundary: it receives the A13 mark and
+  returns what renders in its place, which is where the host wraps N16 around it. The mark becomes
+  a tab stop exactly when it is wrapped, because N16 needs a focusable trigger.
 
 **Evidence:** Absorbs the spec's `video-gen-card`, queue slots and failed-card variants.
+`watermarked` is Shape of AI's Watermark overlay, recorded as a state on this item rather than a
+component; see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §4.
 
 ## F2 `generation-grid`
 
@@ -955,12 +973,16 @@ sample. No per-product screenshots were collected, so implementations should use
 
 ## J4 `artifact-grid` `NEW`
 
-**Base:** Card
+**Base:** Card, A13
 
 - Excerpt is the load-bearing field. Auto-generated titles are unreliable; first lines are not.
 - Type badge is a filter facet as well as a label, driven by the same value in both places.
 - Privacy icon and view count sit together in the footer.
 - Not an A8 consumer: this is a text card. The excerpt is the content, not a thumbnail.
+- **What the AI did to an artifact is A13 `ai-label`**, beside the type badge: `generated`,
+  `edited` or `summarized`, per item, and absent for an artifact a person wrote. Always the bare
+  chip: the stretched excerpt link covers the card, so A13's tooltip form would be unreachable by
+  pointer and a second tab stop per card. State `ai-label`.
 
 **Evidence:** Claude Artifacts, Manus Library. A new archetype with no equivalent in the spec.
 
@@ -1008,11 +1030,15 @@ sample. No per-product screenshots were collected, so implementations should use
 
 ## K1 `ai-doc-block`
 
-**Base:** Card, Textarea
+**Base:** Card, Textarea, A13
 
 - A real document node, not an overlay. Must survive save, reload and export as ordinary content.
 - The four verbs are the approval contract applied to prose.
 - Re-prompting keeps the block in place and swaps its content, so structure never moves.
+- **The attribution is A13 `ai-label` in `generated`**, not a glyph and label of K1's own. `label`
+  overrides the chip text and never the accessible name; an empty `label` falls back to A13's word.
+  A13 clips past one or two words, so K1 lets the chip shrink rather than push the streaming
+  indicator out of the card.
 
 **Evidence:** Notion AI, Manus reports, Spellbook drafting, Claude artifacts.
 
@@ -1399,7 +1425,8 @@ this spec as settled.
 
 ## N11 `escalation-handoff` `NEW`
 
-**Base:** Card, A10, A12 · **States:** triggered · packet preview · queued · accepted · unavailable
+**Base:** Card, A10, A12, A13 · **States:** triggered · packet preview · queued · accepted ·
+unavailable
 
 - **The packet is the component; the button is not.** What the receiving human gets — transcript
   summary, the resolved frame (slots and their sources), actions already attempted, and the specific
@@ -1414,6 +1441,11 @@ this spec as settled.
   window, offer the asynchronous path, and say what happens next.
 - **Design the return path.** After the human resolves it, the conversation resumes with state intact
   or it is explicitly closed. A thread that silently dies at handoff is the most common failure.
+- **The AI's identity survives the handoff** (Intercom Fin). The packet is the AI's summary, so it
+  carries A13 `ai-label`: `summarized` until a person accepts, `after-handoff` once one has, so the
+  reader can see where the AI stopped. N11 does not render the thread; the host's message list
+  gives the AI's earlier turns the same switch, `sender` before and `after-handoff` after, driven
+  by the same `state`.
 
 **Evidence:** Sierra (auto-generated handoff summary), Decagon (history + attempted actions +
 customer data + issue summary), Intercom Fin, Voiceflow, Rasa `pattern_human_handoff`. The strongest
