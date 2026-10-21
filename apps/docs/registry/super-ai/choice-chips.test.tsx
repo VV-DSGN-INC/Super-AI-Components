@@ -45,4 +45,68 @@ describe("ChoiceChips", () => {
     expect(onValueChange).toHaveBeenCalledWith("b");
     expect(onClick).toHaveBeenCalledOnce();
   });
+
+  describe("keyboard — the ARIA radio pattern", () => {
+    function Group({ disabledValue }: { disabledValue?: string }) {
+      return (
+        <>
+          <button type="button">before</button>
+          <ChoiceChips aria-label="Aspect ratio" defaultValue="4:5">
+            {["1:1", "4:5", "16:9", "21:9"].map((v) => (
+              <ChoiceChip key={v} value={v} disabled={v === disabledValue}>
+                {v}
+              </ChoiceChip>
+            ))}
+          </ChoiceChips>
+          <button type="button">after</button>
+        </>
+      );
+    }
+
+    it("is one tab stop, landing on the checked chip", async () => {
+      const user = userEvent.setup();
+      render(<Group />);
+      await user.tab();
+      expect(screen.getByRole("button", { name: "before" })).toHaveFocus();
+      await user.tab();
+      expect(screen.getByRole("radio", { name: "4:5" })).toHaveFocus();
+      await user.tab();
+      expect(screen.getByRole("button", { name: "after" })).toHaveFocus();
+    });
+
+    it("arrow keys move focus and selection together, and wrap", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <ChoiceChips aria-label="Aspect ratio" defaultValue="1:1" onValueChange={onValueChange}>
+          <ChoiceChip value="1:1">1:1</ChoiceChip>
+          <ChoiceChip value="16:9">16:9</ChoiceChip>
+        </ChoiceChips>,
+      );
+      await user.tab();
+      await user.keyboard("{ArrowRight}");
+      const wide = screen.getByRole("radio", { name: "16:9" });
+      expect(wide).toHaveFocus();
+      expect(wide).toHaveAttribute("aria-checked", "true");
+      expect(onValueChange).toHaveBeenLastCalledWith("16:9");
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("radio", { name: "1:1" })).toHaveAttribute("aria-checked", "true");
+      await user.keyboard("{ArrowLeft}");
+      expect(wide).toHaveAttribute("aria-checked", "true");
+    });
+
+    it("arrows skip a disabled chip, which never takes the selection", async () => {
+      const user = userEvent.setup();
+      render(<Group disabledValue="16:9" />);
+      const disabled = screen.getByRole("radio", { name: "16:9" });
+      expect(disabled).toHaveAttribute("data-disabled");
+      await user.tab();
+      await user.tab();
+      await user.keyboard("{ArrowRight}");
+      expect(screen.getByRole("radio", { name: "21:9" })).toHaveFocus();
+      expect(disabled).toHaveAttribute("aria-checked", "false");
+      await user.click(disabled);
+      expect(disabled).toHaveAttribute("aria-checked", "false");
+    });
+  });
 });

@@ -52,6 +52,37 @@ function transitiveConsumes(name: string, seen = new Set<string>()): string[] {
   return (item?.consumes ?? []).flatMap((c) => [c, ...transitiveConsumes(c, seen)]);
 }
 
+/** Theme colours this registry adds beyond stock shadcn — every `color-X`
+ *  key any manifest item declares under `cssVars.theme`. A utility built on
+ *  one (`bg-warning`, `text-warning-foreground`) reads no `var()` in source,
+ *  so `readsOf` cannot see it, and the docs app's own `globals.css` defines
+ *  the token, so resolving against `STOCK_CSS` would pass it anyway. A
+ *  consumer's app has neither: Tailwind v4 emits nothing for an undefined
+ *  utility, and the state renders colourless. */
+const registryThemeColors = [
+  ...new Set(
+    shipped.flatMap((i) =>
+      Object.keys(i.cssVars?.theme ?? {})
+        .filter((k) => k.startsWith("color-"))
+        .map((k) => k.slice("color-".length)),
+    ),
+  ),
+];
+
+const UTILITY_PREFIX =
+  "(?:bg|text|border|ring|outline|fill|stroke|divide|from|via|to|accent|caret|decoration|shadow)";
+
+function themeColorUtilitiesOf(source: string): Set<string> {
+  const code = stripComments(source);
+  const out = new Set<string>();
+  for (const color of registryThemeColors) {
+    const escaped = color.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp(`(?<![\\w-])${UTILITY_PREFIX}(?:-[trblxyse])?-${escaped}(?:/\\d+)?(?![\\w-])`);
+    if (re.test(code)) out.add(`color-${color}`);
+  }
+  return out;
+}
+
 const baseline: string[] = existsSync(BASELINE) ? JSON.parse(readFileSync(BASELINE, "utf8")) : [];
 
 /** Computed once, at module scope — both `it`s below read this same result
@@ -72,7 +103,25 @@ function computeFailures(): string[] {
     for (const v of reads) {
       if (!resolvable.has(v)) out.push(`${item.name}:${v} (read, resolves nowhere)`);
     }
+    const shippedTheme = new Set([
+      ...cssVarKeys(item),
+      ...transitiveConsumes(item.name).flatMap((c) => cssVarKeys(byName.get(c))),
+    ]);
+    const utilities = new Set(sources.flatMap((s) => [...themeColorUtilitiesOf(s)]));
+    for (const key of utilities) {
+      if (!shippedTheme.has(key)) out.push(`${item.name}:${key} (utility used, no cssVars ships it)`);
+    }
+    // A utility reads its theme key, and the theme key's value reads the
+    // light/dark vars it points at (`color-warning` -> `var(--warning)`).
+    const readViaUtilities = new Set<string>();
+    for (const key of utilities) {
+      readViaUtilities.add(key);
+      for (const m of (item.cssVars?.theme?.[key] ?? "").matchAll(/var\(--([a-zA-Z0-9-]+)\)/g)) {
+        readViaUtilities.add(m[1]);
+      }
+    }
     for (const key of cssVarKeys(item)) {
+      if (readViaUtilities.has(key)) continue;
       // Boundary-guarded: `--warning` must not count as read just because
       // `--warning-foreground` appears. Comment-stripped: a `--key` mentioned
       // only in a comment (not live code) is not a read either.

@@ -64,6 +64,8 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -101,6 +103,12 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
+  /* Mirrors apps/docs/app/globals.css. Without it every `*-warning` utility
+     painted nothing here, so axe never measured a warning state. The registry
+     ships the same values to consumers through the manifest's
+     WARNING_CSS_VARS. */
+  --warning: oklch(0.76 0.16 70);
+  --warning-foreground: oklch(0.26 0.05 70);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
@@ -136,14 +144,21 @@
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  --warning: oklch(0.82 0.14 72);
+  --warning-foreground: oklch(0.24 0.05 70);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  /* The light ramp's lightness, inverted: chart-1 stays the step nearest the
+     background and chart-5 the furthest, in both themes. Every step clears 3:1
+     against the dark --background (chart-1 is about 4.2:1); the light values
+     copied here put chart-4 and chart-5 at 1.6:1 and 1.2:1.
+     Pinned by apps/docs/lib/chart-ramp.test.ts. */
+  --chart-1: oklch(0.556 0 0);
+  --chart-2: oklch(0.648 0 0);
+  --chart-3: oklch(0.739 0 0);
+  --chart-4: oklch(0.831 0 0);
+  --chart-5: oklch(0.922 0 0);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);

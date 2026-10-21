@@ -189,7 +189,13 @@ function ActionStack({
                 // would be getting — but it cannot be chosen.
                 disabled={!actionable}
                 onClick={actionable ? () => onAction?.(action.id) : undefined}
-                className="p-0 focus:bg-transparent"
+                // The primitive's `focus:bg-accent` is the row's only focus
+                // indicator, so it stays. A9's description is muted text, and
+                // muted on accent measures 4.34:1, so the variable is rebound
+                // on focus — A9's own hover idiom — rather than the surface
+                // being dropped, which left the focused row distinguishable
+                // by title colour alone.
+                className="p-0 focus:[--muted-foreground:var(--accent-foreground)]"
               >
                 <ActionRow action={action} interactive={false} />
               </DropdownMenuItem>

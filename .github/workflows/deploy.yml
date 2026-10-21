@@ -1,0 +1,63 @@
+# Production deploy, after CI is green on main.
+#
+# Builds on the GitHub runner and uploads the prebuilt output, so Vercel's build
+# machine never runs (no Build CPU Minutes). Needs one repository secret:
+#   VERCEL_TOKEN  — a Vercel account token scoped to the nick-vyhouskis-projects team
+# The org and project ids below are the same ones apps/docs/.vercel/project.json holds.
+#
+# The last step is the post-deploy check: `pnpm prod:diff` compares every item in
+# public/r against the live /r/<name>.json (code and .meta.json) and /llms.txt must
+# answer 200. A red step here means production does not match main.
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  VERCEL_ORG_ID: team_a028ZfIo8cWgn1t63MHMUVfw
+  VERCEL_PROJECT_ID: prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_CLI: vercel@64.3.1
+
+jobs:
+  production:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Require the Vercel token
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN is not set. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: pnpm/action-setup@v4
+        with: { version: 11.1.0 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 24, cache: pnpm }
+      - run: pnpm install --frozen-lockfile
+      - name: Pull production settings
+        run: pnpm dlx $VERCEL_CLI pull --yes --environment=production --token="$VERCEL_TOKEN"
+      - name: Build on the runner
+        run: pnpm dlx $VERCEL_CLI build --prod --token="$VERCEL_TOKEN"
+      - name: Deploy the prebuilt output to production
+        run: pnpm dlx $VERCEL_CLI deploy --prebuilt --prod --archive=tgz --token="$VERCEL_TOKEN" | tee deploy-url.txt
+      - name: Post-deploy check (registry, contracts, llms.txt)
+        working-directory: apps/docs
+        run: |
+          curl -fsS -o /dev/null https://super-ai-components.vercel.app/llms.txt
+          pnpm prod:diff

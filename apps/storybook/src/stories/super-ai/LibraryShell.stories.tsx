@@ -512,7 +512,7 @@ export const ReducedMotion: Story = {
 };
 
 /**
- * Twenty stops, in a fixture chosen so every *kind* of stop appears once. The
+ * Eighteen stops, in a fixture chosen so every *kind* of stop appears once. The
  * order is rail → header → grid, which is the reading order in LTR and the
  * mirrored reading order in RTL, and it holds because the shell's regions are
  * in that DOM order rather than because anything manages focus.
@@ -540,21 +540,15 @@ export const ReducedMotion: Story = {
  * questions.** `settledFocusRing` asks whether anything is painted;
  * a `focusTreatmentSignature` differential — read on the *next* stop while
  * focus is still on the previous one, so no blur disturbs the sequence — asks
- * whether focus is what painted it. Nineteen stops satisfy both.
+ * whether focus is what painted it. All eighteen satisfy both.
  *
- * **The twentieth is excluded by name and recorded rather than asserted.** The
- * selected thumbnail-size chip ("Small", because the archive opens dense)
- * carries `choice-chips`' permanent `ring-2 ring-ring border-ring`, and its
- * `focus-visible:ring-2 focus-visible:ring-ring` is the same width at the same
- * colour, so focus changes nothing that can be seen. Measured across the tab
- * that focuses it: `oklch(0.708 0 0) 0px 0px 0px 2px` and a border-colour of
- * `oklch(0.708 0 0)` before and after, byte-identical — and `outline-style`
- * reads `none` throughout, so the user-agent outline that distinguishes the
- * two pane stops is not there to help either. J2 `filter-panel` measured the
- * same thing in wave 5 on the same primitive. The fix belongs to
- * `choice-chips`, and pinning the measurement here would turn that fix into a
- * failure in this file. Confirmed live rather than assumed: dropping the
- * exclusion makes this story fail on that stop and no other.
+ * The thumbnail-size control is one of them, and one stop: A4 `choice-chips`
+ * is a real radio group now, so Small, Medium and Large are crossed with the
+ * arrows and Tab lands only on the checked chip ("Small", because the archive
+ * opens dense). That chip used to be excluded here, because `choice-chips`
+ * drew selection with the same `ring-2 ring-ring` as focus and focus changed
+ * nothing measurable on it (J2 `filter-panel` found the same). Selection is a
+ * fill and a border colour now, so focus is what paints the ring.
  *
  * Recorded and not asserted for the same reason: removing the last applied
  * facet unmounts the chip that had focus and nothing restores it, so focus
@@ -586,9 +580,8 @@ export const KeyboardOrder: Story = {
     const stops: HTMLElement[] = [
       rail,
       canvas.getByRole("button", { name: "Clear all filters" }),
+      // One stop for the density group: the checked radio.
       canvas.getByRole("radio", { name: "Small" }),
-      canvas.getByRole("radio", { name: "Medium" }),
-      canvas.getByRole("radio", { name: "Large" }),
       canvas.getByRole("button", { name: /Upscaled keepers/ }),
       canvas.getByRole("button", { name: /^Type/ }),
       canvas.getByRole("checkbox", { name: "Image 1284" }),
@@ -609,9 +602,7 @@ export const KeyboardOrder: Story = {
     ];
     await expect(new Set(stops).size).toBe(stops.length);
 
-    // The one stop whose treatment focus does not change; see the description.
-    const selectedDensityChip = stops[2];
-    await expect(selectedDensityChip).toHaveAttribute("aria-checked", "true");
+    await expect(stops[2]).toHaveAttribute("aria-checked", "true");
 
     for (const stop of stops) {
       // Baseline taken while focus is still on the previous stop — no blur, so
@@ -626,9 +617,7 @@ export const KeyboardOrder: Story = {
       // on Tailwind's present-but-transparent off-state ring.
       await settledFocusRing(focused, waitFor);
 
-      if (stop !== selectedDensityChip) {
-        await expect(focusTreatmentSignature(stop)).not.toBe(before);
-      }
+      await expect(focusTreatmentSignature(stop)).not.toBe(before);
     }
 
     // The two pane stops are real and thin, not absent — the docs correction.

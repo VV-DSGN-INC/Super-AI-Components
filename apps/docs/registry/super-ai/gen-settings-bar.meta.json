@@ -52,7 +52,7 @@
   ],
   "accessibility": {
     "keyboard": [
-      "Every segment is its own tab stop. The bar renders role=\"toolbar\" but has not implemented the roving tabindex that role promises — there is a TODO in the source — so crossing a five-segment strip costs five Tabs, and Left/Right do nothing.",
+      "The bar is one tab stop. It renders role=\"toolbar\" on Base UI's Toolbar, so Left and Right move between segments and wrap. A disabled segment is natively disabled and the arrows step over it.",
       "Segments are real buttons, so Space and Enter open whatever control the segment fronts. There is no Escape handler here; dismissing that control is the control's own business.",
       "`disabled` on the bar reaches every segment through context and removes all of them from the tab order at once, which is what makes it safe to lock the strip during a run. A segment opts back in with `disabled={false}` on itself — omitting the prop falls through to the bar's value."
     ],
@@ -68,7 +68,7 @@
     ]
   },
   "pitfalls": [
-    "The bar announces role=\"toolbar\" but does not yet implement the arrow-key roving tabindex that role promises — see the TODO in the source. Today every segment is its own tab stop, so a keyboard user pays one Tab per segment to cross the strip and arrow keys do nothing. Keep the strip to the five or six segments the pattern was drawn for until that lands.",
+    "Only `GenSettingsItem`s join the arrow walk. A plain `<button>` placed inside the bar is not a toolbar item, so it keeps a tab stop of its own and the arrows pass it by; wrap any segment in `GenSettingsItem` (or render it through one) to keep the strip one stop.",
     "There is no value API. `GenSettingsItem` is a plain button: the value it shows is its `children`, and `onClick` hands you a MouseEvent rather than a new value, so each segment needs its own handler and the values are owned entirely upstream. Nothing here can report \"resolution changed to 1080p\" generically — the catalog naming Select and Toggle-group as the base describes the controls you open, not what this component ships.",
     "`disabled` travels through React context, so a segment inside a disabled bar is disabled even though nothing in its own JSX says so. To keep one segment live during a run, pass `disabled={false}` on it explicitly — leaving it off falls through to the bar's value.",
     "Nothing wraps, truncates or scrolls. The strip is an inline-flex that grows to fit, so a long model name widens it until it overruns its parent; in a composer's settings slot the caller owns the decision about what gives, and the honest fix is usually a shorter label rather than a wider bar.",
@@ -85,7 +85,9 @@
   "regions": [],
   "consumes": [],
   "shadcn": [],
-  "npm": [],
+  "npm": [
+    "@base-ui/react"
+  ],
   "source": "content/components/gen-settings-bar.docs.tsx",
   "docs": "https://super-ai-components.vercel.app/components/gen-settings-bar"
 }

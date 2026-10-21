@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { ChoiceChip, ChoiceChips } from "@/registry/super-ai/choice-chips";
@@ -9,6 +9,7 @@ import { PresetGrid, type PresetGridItem } from "@/registry/super-ai/preset-grid
 import { PreviewTile } from "@/registry/super-ai/preview-tile";
 import { ChoiceChipsDocs } from "@/content/components/choice-chips.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { hasVisibleFocusRing, settledFocusRing } from "@/lib/focus-ring";
 
 const meta: Meta<typeof ChoiceChips> = {
   title: "Super AI/Choice Chips",
@@ -90,17 +91,15 @@ export const PreviewContent: Story = {
 
 /**
  * An option that exists but is not available — the plan-gated resolution, the
- * model that is out of credits. `ChoiceChip` spreads onto a native button, so
- * `disabled` is a real disabled button: it leaves the tab order and cannot
- * take the selection, which is what the play function pins.
+ * model that is out of credits. `ChoiceChip` renders a native button, so
+ * `disabled` is a real disabled button, and it carries the registry's disabled
+ * idiom (`data-disabled:opacity-50 data-disabled:pointer-events-none`, the
+ * same pair entity-row and gen-settings-bar use).
  *
- * **Defect, recorded not fixed:** the chip carries no disabled styling, so
- * the unavailable option is pixel-identical to an available one. The registry
- * already has a house idiom for this (`disabled:opacity-50
- * disabled:pointer-events-none`, six components deep) but applying it is a
- * visual decision that belongs to one integrator, not to fourteen concurrent
- * retrofits. Until it lands, a disabled chip is only discoverable by trying
- * it, and callers should prefer omitting the option and saying why.
+ * This story used to record the opposite: the disabled chip was
+ * pixel-identical to an available one. The play pins all three halves now —
+ * it is disabled, it is drawn at half opacity, and the arrow keys step over
+ * it, so the selection cannot land on it from the keyboard either.
  */
 export const DisabledChip: Story = {
   render: (args) => (
@@ -115,14 +114,20 @@ export const DisabledChip: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     const fourK = canvas.getByRole("radio", { name: "4K" });
+    const fullHd = canvas.getByRole("radio", { name: "1080p" });
     await expect(fourK).toBeDisabled();
+    // Dictated by a class, so portable (D21).
+    await expect(getComputedStyle(fourK).opacity).toBe("0.5");
+    await expect(getComputedStyle(fullHd).opacity).toBe("1");
 
-    // The contract is that the selection cannot land on it, not that the
-    // click is swallowed somewhere in this component — a native disabled
-    // button never fires one.
-    await userEvent.click(fourK);
+    // From the checked chip, ArrowRight skips the disabled one and wraps.
+    await userEvent.tab();
+    await waitFor(() => expect(document.activeElement).toBe(fullHd));
+    await userEvent.keyboard("{ArrowRight}");
+    const hd = canvas.getByRole("radio", { name: "720p" });
+    await waitFor(() => expect(document.activeElement).toBe(hd));
     await expect(fourK).toHaveAttribute("aria-checked", "false");
-    await expect(canvas.getByRole("radio", { name: "1080p" })).toHaveAttribute("aria-checked", "true");
+    await expect(hd).toHaveAttribute("aria-checked", "true");
   },
 };
 
@@ -143,7 +148,7 @@ export const DisabledChip: Story = {
 
 /**
  * Right-to-left. The group itself is direction-clean — `flex flex-wrap gap-2`
- * flips its start edge for free and the selection ring is drawn on all four
+ * flips its start edge for free and the selection border and fill are on all four
  * sides — so the thing worth rendering is the chip content, where both
  * shipped consumers put a count after the label.
  *
@@ -205,22 +210,19 @@ export const ReducedMotion: Story = {
 };
 
 /**
- * Tab traversal, deliberately with nothing selected so that every ring the
- * assertion sees is a focus ring rather than the selection ring.
+ * The ARIA radio pattern, which this story used to record as missing (Tab per
+ * chip, arrows inert, and focus drawn with the same ring as selection). The
+ * group now composes the vendored `ui/radio-group`, so Base UI supplies it:
  *
- * **Defect, recorded not fixed:** the ARIA radiogroup pattern says a group is
- * one tab stop and arrow keys move the selection inside it. v1 ships Tab per
- * chip and no arrow handling — the `TODO` in `choice-chips.tsx` names it, and
- * `preset-grid.tsx` carries the same accepted gap by reference. So a ten-chip
- * facet row is ten tab stops on the way past it. The play function asserts
- * only what is true today (each stop is genuinely `:focus-visible` and paints
- * a ring); it deliberately does not assert the stop count, which would pin
- * the gap in place and make fixing it a test failure.
- *
- * Second thing this story makes visible: focus and selection are drawn with
- * the same `ring-ring ring-2`. A focused chip and a selected chip are the
- * same picture, which is why the assertion below has to go through
- * `:focus-visible` rather than through the computed ring.
+ * 1. **The group is one tab stop.** With nothing selected, Tab lands on the
+ *    first chip and the next Tab leaves the canvas.
+ * 2. **Arrows move focus and selection together, one chip per press, and
+ *    wrap.** Asserted as a cycle, each stop new, then back to the start.
+ * 3. **Every stop paints a settled focus ring** (`settledFocusRing`, not the
+ *    `boxShadow !== "none"` string check).
+ * 4. **Selection is no longer drawn as the ring.** Once focus leaves, the
+ *    checked chip paints no ring at all and is told apart by its fill, which
+ *    differs from an unchecked chip's. Focus and selection are two pictures.
  */
 export const KeyboardOrder: Story = {
   render: (args) => (
@@ -234,20 +236,49 @@ export const KeyboardOrder: Story = {
   ),
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getAllByRole("radio")).toHaveLength(3);
+    const chips = canvas.getAllByRole("radio");
+    await expect(chips).toHaveLength(3);
+    await expect(chips.filter((chip) => chip.tabIndex === 0)).toHaveLength(1);
 
+    // 1. One tab stop.
     await userEvent.tab();
-    let stops = 0;
-    while (document.activeElement && canvasElement.contains(document.activeElement)) {
+    await waitFor(() => expect(document.activeElement).toBe(chips[0]));
+    await userEvent.tab();
+    await expect(`inside after one tab=${canvasElement.contains(document.activeElement)}`).toBe(
+      "inside after one tab=false",
+    );
+    await userEvent.tab({ shift: true });
+    await waitFor(() => expect(document.activeElement).toBe(chips[0]));
+    const start = document.activeElement as HTMLElement;
+    await settledFocusRing(start, waitFor);
+
+    // 2 and 3. One lap, settling on departure from each stop.
+    const seen = new Set<Element>([start]);
+    let previous: Element = start;
+    for (let i = 1; i < chips.length; i += 1) {
+      await userEvent.keyboard("{ArrowRight}");
+      await waitFor(() => expect(document.activeElement).not.toBe(previous));
       const focused = document.activeElement as HTMLElement;
+      await expect(`${focused.textContent} repeat=${seen.has(focused)}`).toBe(
+        `${focused.textContent} repeat=false`,
+      );
+      await expect(focused).toHaveAttribute("aria-checked", "true");
       await expect(focused.matches(":focus-visible")).toBe(true);
-      const style = getComputedStyle(focused);
-      await expect(style.boxShadow !== "none" || style.outlineStyle !== "none").toBe(true);
-      stops += 1;
-      await userEvent.tab();
+      await settledFocusRing(focused, waitFor);
+      seen.add(focused);
+      previous = focused;
     }
-    // At least one stop, so the loop above cannot pass by never running.
-    await expect(stops).toBeGreaterThan(0);
+    await userEvent.keyboard("{ArrowRight}");
+    await waitFor(() => expect(document.activeElement).toBe(start));
+    await expect(start).toHaveAttribute("aria-checked", "true");
+
+    // 4. Off focus, the checked chip has a fill and no ring.
+    await userEvent.tab();
+    await waitFor(() => expect(canvasElement.contains(document.activeElement)).toBe(false));
+    await waitFor(() => expect(hasVisibleFocusRing(start)).toBe(false));
+    await expect(getComputedStyle(start).backgroundColor).not.toBe(
+      getComputedStyle(chips[1]).backgroundColor,
+    );
   },
 };
 

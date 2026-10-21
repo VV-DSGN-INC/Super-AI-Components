@@ -271,33 +271,20 @@ export const ReducedMotion: Story = {
  * 6. Escape closes the menu **and returns focus to the trigger** — the AI
  *    entry on the toolbar, which is where the next selection is made.
  *
- * **Defect this story found, recorded rather than pinned: a keyboard-focused
- * row in menu mode has no perceptible focus treatment.** Measured here, the
- * focused row and a resting row differ in exactly one computed value:
- *
- *     focused   background rgba(0, 0, 0, 0)   outline none   box-shadow none   title oklch(0.205 0 0)
- *     resting   background rgba(0, 0, 0, 0)   outline none   box-shadow none   title oklch(0.145 0 0)
- *
- * Two near-black greys on the same popover surface. `DropdownMenuItem`
- * normally paints `focus:bg-accent`, which is the treatment `account-menu`
- * measures its own walk against; this component overrides it with
- * `focus:bg-transparent` so A9's composed `text-muted-foreground` description
- * is never left sitting on an accent surface. What survives the override is
- * `focus:text-accent-foreground` on the item's descendants, and that is a text
- * colour, not a focus indicator.
- *
- * The measurement is worth taking rather than reading off the class list,
- * because `outline-hidden` leaves a decoy behind. `outline-style` reads `none`
- * on the focused row and on the resting one, while `outline-width` reads `1px`
- * focused against `3px` resting — a difference that paints nothing, since the
- * style is `none` either way. Anything checking a width, or checking that the
- * classes are present, would report a treatment here. The walk below asserts
- * `:focus-visible` and stops there, because the honest alternative is an
- * assertion that expects the wrong thing.
- *
- * F4 `action-stack` carries the identical override on the identical row, so
- * this is one decision for both — the shared row the docs module's last
- * pitfall already asks for, not a change to this file.
+ * 7. **Every focused row paints a surface.** This story used to record the
+ *    opposite. `focus:bg-transparent` on the `DropdownMenuItem` overrode the
+ *    primitive's `focus:bg-accent`, so a focused row and a resting one
+ *    differed in exactly one computed value, title colour, oklch 0.205
+ *    against 0.145: two near-black greys on the same popover. The override is
+ *    gone; the muted description is kept legible on the accent surface by
+ *    rebinding `--muted-foreground` on focus, A9's own hover idiom. The walk
+ *    reads each row's `background-color` before focus reaches it and asserts
+ *    it changed, because `focusTreatmentSignature` reads outline, box-shadow
+ *    and border colour only and cannot see this treatment, and because
+ *    `outline-hidden` leaves a decoy (`outline-width` 1px focused against 3px
+ *    resting, at `outline-style: none` both ways) that a width check would
+ *    report as a ring. F4 `action-stack` shared the override and asserts the
+ *    same.
  */
 export const KeyboardOrder: Story = {
   args: {
@@ -386,9 +373,16 @@ export const KeyboardOrder: Story = {
       return document.activeElement as HTMLElement;
     };
 
+    const surface = (el: Element) => getComputedStyle(el).backgroundColor;
+    const restingSurface = surface(stops[stops.length - 1]);
+    await expect(`resting surface=${restingSurface}`).toBe("resting surface=rgba(0, 0, 0, 0)");
+
     const start = await settledStop();
     await expect(`${nameOf(start)} focusVisible=${start.matches(":focus-visible")}`).toBe(
       `${nameOf(start)} focusVisible=true`,
+    );
+    await expect(`${nameOf(start)} surface changed=${surface(start) !== restingSurface}`).toBe(
+      `${nameOf(start)} surface changed=true`,
     );
 
     const seen = new Set<HTMLElement>([start]);
@@ -399,6 +393,9 @@ export const KeyboardOrder: Story = {
       await expect(`${nameOf(focused)} repeat=${seen.has(focused)}`).toBe(`${nameOf(focused)} repeat=false`);
       await expect(`${nameOf(focused)} focusVisible=${focused.matches(":focus-visible")}`).toBe(
         `${nameOf(focused)} focusVisible=true`,
+      );
+      await expect(`${nameOf(focused)} surface changed=${surface(focused) !== restingSurface}`).toBe(
+        `${nameOf(focused)} surface changed=true`,
       );
       seen.add(focused);
       previous = focused;

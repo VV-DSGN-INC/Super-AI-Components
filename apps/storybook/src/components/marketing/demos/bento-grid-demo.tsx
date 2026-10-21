@@ -7,7 +7,7 @@ export default function BentoGridDemo() {
   return (
     <BentoGrid className="max-w-2xl">
       <BentoCard
-        className="col-span-2"
+        className="sm:col-span-2"
         name="Batteries included"
         description="Auth, billing, and analytics wired on day one."
         icon={<Layers />}
@@ -16,7 +16,7 @@ export default function BentoGridDemo() {
       <BentoCard name="Fast by default" description="Edge-rendered, everywhere." icon={<Zap />} />
       <BentoCard name="Own your stack" description="Eject anything, anytime." icon={<Cpu />} />
       <BentoCard
-        className="col-span-2"
+        className="sm:col-span-2"
         name="Scales quietly"
         description="From side project to seed round without a rewrite."
         icon={<Layers />}

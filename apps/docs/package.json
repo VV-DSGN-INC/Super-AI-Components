@@ -16,6 +16,7 @@
     "story-coverage:report": "tsx scripts/story-coverage-report.mts",
     "contract:emit": "CONTRACT_EMIT=1 vitest run scripts/lib/contract-emit.test.ts",
     "facts:emit": "FACTS_EMIT=1 vitest run scripts/lib/system-facts.test.ts",
+    "openui:emit": "OPENUI_EMIT=1 vitest run scripts/lib/openui-catalog.test.ts",
     "contract-coverage:baseline": "tsx scripts/contract-coverage-baseline.mts",
     "gen:wiring": "tsx scripts/gen-wiring.mts",
     "new:component": "tsx scripts/new-component.mts",
@@ -46,6 +47,8 @@
     "use-stick-to-bottom": "^1.1.6"
   },
   "devDependencies": {
+    "@openuidev/lang-core": "^0.3.2",
+    "@openuidev/react-lang": "^0.3.2",
     "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
@@ -67,6 +70,7 @@
     "tsx": "^4.22.4",
     "typescript": "^5",
     "vite": "^7.3.6",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.8",
+    "zod": "^4.4.3"
   }
 }

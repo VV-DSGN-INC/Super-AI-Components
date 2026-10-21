@@ -10,7 +10,7 @@ import {
   type ViewMode,
 } from "@/registry/super-ai/data-views";
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   owner: string;
@@ -24,7 +24,7 @@ interface Task {
 const ANCHOR = new Date(2026, 7, 3);
 const day = (offset: number) => new Date(2026, 7, ANCHOR.getDate() + offset);
 
-const TASKS: Task[] = [
+export const TASKS: Task[] = [
   { id: "1", title: "Draft the migration plan", owner: "Ada", bucket: "doing", start: day(0), end: day(4) },
   { id: "2", title: "Audit the token contract", owner: "Rex", bucket: "review", start: day(2), end: day(5) },
   { id: "3", title: "Ship the switcher", owner: "Ada", bucket: "todo", start: day(6) },
@@ -32,7 +32,7 @@ const TASKS: Task[] = [
   { id: "5", title: "Write the runbook", owner: "Wu", bucket: "doing", start: day(5), end: day(9) },
 ];
 
-const GROUPS: ViewGroup<Task>[] = [
+export const GROUPS: ViewGroup<Task>[] = [
   { id: "todo", label: "To do", match: (t) => t.bucket === "todo" },
   { id: "doing", label: "In progress", tone: "info", match: (t) => t.bucket === "doing" },
   { id: "review", label: "In review", tone: "warning", match: (t) => t.bucket === "review" },

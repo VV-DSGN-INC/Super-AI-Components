@@ -433,8 +433,9 @@ export const ReducedMotion: Story = {
  * The shell binds no keys and owns exactly one focusable — the canvas — so the
  * only fact it can prove is the sequence, and the sequence is the fact its docs
  * page asserts: topbar trailing, then every open stage of the config panel, then
- * the pinned cost row, then the canvas. Twelve stops here with two presets and
- * no see-more tile; the shipped `Tool` args reach fifteen. There is no skip
+ * the pinned cost row, then the canvas. Eleven stops here with two presets and
+ * no see-more tile; the preset grid is one stop however many presets it shows
+ * (E4 is a radio group), plus its see-more tile when it has one. There is no skip
  * link, so the canvas — and therefore the first result — is behind every control
  * in the panel, which is the cost of the layout and the reason the assertion is
  * an ordered list rather than a set.
@@ -490,8 +491,13 @@ export const KeyboardOrder: Story = {
       ["Directions stage", at('[data-slot="generation-panel-section-trigger"]', 0)],
       ["directions textarea", at('[data-slot="generation-panel-directions-textarea"]')],
       ["Presets stage", at('[data-slot="generation-panel-section-trigger"]', 1)],
-      ["preset tile 1", at('[data-slot="preset-grid-tile"]', 0)],
-      ["preset tile 2", at('[data-slot="preset-grid-tile"]', 1)],
+      // One stop for the preset grid: the radio holding the roving tabindex.
+      [
+        "preset grid",
+        Array.from(shell.querySelectorAll<HTMLElement>('[data-slot="preset-grid-tile"]')).find(
+          (tile) => tile.tabIndex === 0,
+        )!,
+      ],
       ["Settings stage", at('[data-slot="generation-panel-section-trigger"]', 2)],
       ["model trigger (E2)", at('[data-slot="model-picker-trigger"]')],
       ["slider thumb input", shell.querySelector<HTMLElement>('[data-slot="parameter-slider-thumb"] input')!],
@@ -534,7 +540,7 @@ export const KeyboardOrder: Story = {
     }
 
     // The exempted stop, measured rather than waved past.
-    const thumbInput = stops[8][1];
+    const thumbInput = stops[7][1];
     await expect(hasVisibleFocusRing(thumbInput)).toBe(false);
     await expect(getComputedStyle(thumbInput).clipPath).toBe("inset(50%)");
 

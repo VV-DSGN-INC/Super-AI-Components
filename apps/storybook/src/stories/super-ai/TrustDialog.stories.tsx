@@ -77,18 +77,11 @@ export const AccountPicker: Story = {
  * author-supplied copy in every one of them, and has two near-twins in the
  * catalog.
  *
- * One thing to know before reading any of them. The manifest gives this item
- * `cssVars: WARNING_CSS_VARS`, and `apps/storybook/src/index.css` defines
- * neither `--warning` nor `--color-warning`. Tailwind v4 emits nothing for an
- * undefined utility rather than failing, so the warning block's
- * `border-warning/40 bg-warning/5` and its `text-warning` icon render
- * **unpainted** in every story below — the border falls back to the vendored
- * Alert's own `border`, the tint is absent, and the icon inherits
- * `currentColor`. Every green axe pass in this file is therefore a pass on a
- * colourless warning, and says nothing about the contrast of the surface this
- * component ships to a consumer who installs the token. `CONTINUE.md` §8 and
- * `a11y-baseline.md` ("Gate hole") carry the mechanism and the six components
- * in this position.
+ * The manifest gives this item `cssVars: WARNING_CSS_VARS`, and since
+ * 2026-10-16 `apps/storybook/src/index.css` defines the same token, so the
+ * warning block's `border-warning/40 bg-warning/5` and its `text-warning` icon
+ * render with the colours a consumer installs, and axe measures them. Before
+ * that, every story here rendered the warning colourless.
  */
 
 /**

@@ -432,18 +432,16 @@ export const RTL: Story = {
 };
 
 /**
- * Every stop in the grid, walked once, and the walk is the finding: this
- * surface is flat. Eleven stops here — five facet chips, then per session a
- * header trigger and one link per card — and each is reached with Tab and only
- * with Tab. Nothing responds to an arrow key, Home, End or Escape.
+ * Every stop in the grid, walked once. Seven stops here: the facet row, then
+ * per session a header trigger and one link per card. Below the facet row
+ * everything is reached with Tab and only with Tab; nothing there responds to
+ * an arrow key, Home, End or Escape.
  *
- * Five of those eleven are a deviation the composed primitive owns and this
- * story records rather than endorses. `choice-chips` declares
- * `role="radiogroup"` but gives every chip its own tab stop instead of the
- * roving tabindex the ARIA radio pattern expects — there is a `TODO` saying so
- * at `choice-chips.tsx:55`. A seven-type library therefore costs eight Tab
- * presses before the first card. The order below is asserted as it ships; if
- * `choice-chips` gains roving tabindex this story fails, which is the point.
+ * The facet row is one stop, however many types it lists. `choice-chips` is a
+ * real radio group now (it used to give every chip its own tab stop, which
+ * this story recorded as five stops before the first card), so Tab lands on
+ * the checked "All" chip and the arrow keys move between facets, filtering as
+ * they go. The walk asserts the one stop and one arrow press.
  *
  * The ring is `settledFocusRing`, not the `boxShadow !== "none"` string check
  * 63 older files still carry: Tailwind's `ring-*` composes shadow layers that
@@ -486,7 +484,10 @@ export const KeyboardOrder: Story = {
     const sections = Array.from(
       canvasElement.querySelectorAll<HTMLElement>('[data-slot="artifact-grid-session"]'),
     );
-    const stops: HTMLElement[] = [...chips];
+    // One stop for the whole facet row: the roving radio that holds tabindex 0.
+    const chipStops = chips.filter((chip) => chip.tabIndex === 0);
+    await expect(chipStops.map((c) => c.textContent)).toEqual(["All"]);
+    const stops: HTMLElement[] = [...chipStops];
     for (const section of sections) {
       stops.push(section.querySelector<HTMLElement>('[data-slot="section-header-trigger"]')!);
       stops.push(...Array.from(section.querySelectorAll<HTMLElement>('[data-slot="artifact-grid-card"] a')));
@@ -502,7 +503,7 @@ export const KeyboardOrder: Story = {
       "Data table1",
       "Chart1",
     ]);
-    await expect(stops).toHaveLength(11);
+    await expect(stops).toHaveLength(7);
 
     stops[0].focus();
     for (let i = 0; i < stops.length; i++) {
@@ -519,12 +520,18 @@ export const KeyboardOrder: Story = {
     // Collapsing a session removes its cards from the tab order entirely, and
     // focus stays on the trigger that did it — nothing is stranded, which is
     // the one focus guarantee this component actually makes.
-    const trigger = stops[5];
+    const trigger = stops[1];
     trigger.focus();
     await userEvent.keyboard("{Enter}");
     await waitFor(() => expect(trigger.getAttribute("aria-expanded")).toBe("false"));
     await expect(document.activeElement).toBe(trigger);
     await expect(canvasElement.querySelectorAll('[data-slot="artifact-grid-card"] a')).toHaveLength(1);
+
+    // Inside the facet row the arrows move, and moving selects.
+    chips[0].focus();
+    await userEvent.keyboard("{ArrowRight}");
+    await waitFor(() => expect(document.activeElement).toBe(chips[1]));
+    await expect(chips[1]).toHaveAttribute("aria-checked", "true");
   },
 };
 

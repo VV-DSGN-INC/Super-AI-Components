@@ -49,53 +49,18 @@ export const Ok: Story = {
 /**
  * Slower than usual, but succeeding. The remedy is to wait — never to touch a credential.
  *
- * **This state has never actually been measured, and a green axe pass here is
- * not evidence about it.** `degraded` is the one state drawn entirely in
- * `--warning`: `border-warning/40` on the row and `text-warning` on both the
- * icon and the badge. That token is defined in `apps/docs/app/globals.css` and
- * in *neither* the `@theme inline` block nor the `:root` block of
- * `apps/storybook/src/index.css`, and Tailwind v4 emits no rule at all for a
- * utility whose theme key does not exist rather than failing. So under the gate
- * that renders every story in this file, all three warning classes are dead
- * text in a `class` attribute.
+ * `degraded` is the state drawn in `--warning`: `border-warning/40` on the row,
+ * an amber `Clock` icon, and a solid `bg-warning text-warning-foreground`
+ * badge (about 7:1). The badge used to be `text-warning` on the outline badge,
+ * 2.2:1 against the page, and no run caught it because Storybook defined no
+ * `--warning` until 2026-10-16: every warning class compiled to nothing and axe
+ * measured the fallback grey. With the token defined, this story's axe pass
+ * failed on the old badge and passes on the solid one.
  *
- * Measured in this file's own gate run, reading `getComputedStyle` off the LTR
- * half of the four-state list `RTL` renders, with `key-invalid` as the control
- * that proves the probe works:
- *
- * | | border | badge text | icon |
- * | --- | --- | --- | --- |
- * | `ok` (untinted) | `oklch(0.922 0 0)` | `oklch(0.205 0 0)` | `oklch(0.145 0 0)` |
- * | `degraded` | `oklch(0.922 0 0)` | `oklch(0.145 0 0)` | `oklch(0.556 0 0)` |
- * | `key-invalid` | `oklab(0.577 0.218 0.112 / 0.4)` | `oklch(1 0 0)` | `oklch(0.577 0.245 27.325)` |
- *
- * The degraded border is byte-identical to the row with no tone class at all,
- * while `border-destructive/40` on the next row resolves in the same paint — so
- * the token is missing rather than the measurement being wrong.
- *
- * The icon is the sharpest reading. `text-warning` not resolving does not leave
- * the glyph at the foreground colour: it falls through to
- * `entity-row-icon`'s own `text-muted-foreground`, `oklch(0.556 0 0)` — the
- * same grey as the timestamp beneath it. So under this gate the one state that
- * is supposed to draw attention renders *less* emphasised than `ok` and
- * `not-running`, which both resolve `text-foreground` at `oklch(0.145 0 0)`.
- * That is the same inversion `credits-indicator`'s `low` story records, reached
- * through a different fallback.
- *
- * Nothing here says the shipped colour is safe either. Where `--warning` does
- * resolve, in the docs app, `text-warning` on the page background measures
- * about 2.2:1 against a 4.5:1 minimum — so the axe pass on this story is
- * evidence about the fallback grey and about nothing else.
- *
- * What survives the hole is the reason the component is built this way: the
- * badge word "Degraded" and both sentences below the row are real text, so the
- * state still reads correctly with every warning class inert. Under this gate
- * the words are not the belt-and-braces channel — they are the only one that
- * works, which is why `RTL` pins the four badge words rather than any colour.
- *
- * Recorded rather than repaired. Defining `--warning` in the Storybook
- * stylesheet turns several components red at once and picking its value is a
- * design decision — `a11y-baseline.md`, "Gate hole", and `CONTINUE.md` §8.
+ * The icon keeps its hue on purpose. It is `aria-hidden`, and the badge word
+ * "Degraded" plus both sentences below the row carry the state as real text,
+ * so the amber is an accent, not the signal (data-views-shared's "colour on
+ * the icon only" rule).
  */
 export const Degraded: Story = {
   args: {

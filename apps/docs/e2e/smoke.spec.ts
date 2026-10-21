@@ -118,3 +118,39 @@ test.describe("below md", () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 });
+
+test.describe("/openui", () => {
+  for (const width of [1280, 375]) {
+    test(`streams, opens the form and submits it at ${width}px without console errors or sideways scroll`, async ({
+      page,
+    }) => {
+      const errors: string[] = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      page.on("console", (m) => {
+        if (m.type() === "error") errors.push(m.text());
+      });
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/openui");
+      await expect(page.locator('[data-slot="openui-page-title"]')).toHaveText("OpenUI");
+
+      // The first turn streams on load: its table and its Button arrive.
+      const stream = page.locator('[data-region="message-stream"]');
+      await expect(stream.getByRole("cell", { name: "Draft the migration plan" })).toBeVisible();
+      await stream.getByRole("button", { name: "Add a task" }).click();
+
+      // The Button produced the form turn; the form submits through onAction.
+      await stream.getByRole("textbox", { name: "Task" }).fill("Review the catalog emitter");
+      await stream.getByRole("radio", { name: "Wu" }).click();
+      await stream.getByRole("radio", { name: "To do" }).click();
+      await stream.getByRole("button", { name: "Add task" }).click();
+      await expect(stream.getByText("New task")).toBeVisible();
+      await expect(stream.getByText("Review the catalog emitter").first()).toBeVisible();
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+      expect(errors).toEqual([]);
+    });
+  }
+});
