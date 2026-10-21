@@ -398,10 +398,18 @@ export const Mobile: Story = {
       .getBoundingClientRect();
     const actions = canvasElement.querySelector('[data-slot="view-frame-actions"]')!.getBoundingClientRect();
     await expect(actions.top).toBeGreaterThanOrEqual(description.bottom - 1);
+    // Wait on the measurement itself: in CI the phone sizes can land a frame
+    // after the media query reports a match. A real regression never reaches 44.
     for (const name of ["Rerun", "Pin", "Close"]) {
-      const rect = canvas.getByRole("button", { name }).getBoundingClientRect();
-      await expect(rect.width).toBe(44);
-      await expect(rect.height).toBe(44);
+      const button = canvas.getByRole("button", { name });
+      await waitFor(
+        () => {
+          const rect = button.getBoundingClientRect();
+          expect(rect.width).toBe(44);
+          expect(rect.height).toBe(44);
+        },
+        { timeout: 3000 },
+      );
     }
   },
 };
