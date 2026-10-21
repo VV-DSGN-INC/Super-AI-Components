@@ -600,6 +600,23 @@ recorded so a re-sample can remove it.
 
 Numbered D28 because D27 is taken on PR #107 (the patterns cross-reference).
 
+### D29 · Wave 16 builds the remaining Shape of AI patterns that can be components — 2026-10-21
+
+Four items enter: K9 `summary-card`, E11 `voice-profile`, N18 `agent-presence`
+and P3 `auto-fill`. A–O grows from 122 to 125 and family P from 2 to 3.
+`agent-presence` passes D1 at exactly 3 and carries the ⚠ until its products
+are checked against real screens.
+
+Sample response does not become an item. One AI product and one non-AI
+precedent is below D1, and both examples are the same shape: try the prompt on
+a few records before the full run. That is P3's `sample-preview` state.
+
+This corrects D28's premise: Summary, Auto-fill and Voice and tone were
+deferred as thin, and their pattern pages name six products each. The four
+Identifiers stay out as brand decisions (D22), and Chained action stays cut
+(D9). That leaves 53 of Shape of AI's 58 patterns covered and the other five
+accounted for.
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is

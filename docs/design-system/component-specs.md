@@ -631,6 +631,26 @@ stretch item in the approved spec, then dropped entirely, then restored. A recov
 error rather than a board sample; no per-product screenshots were collected, so implementations use
 `evidence: []` rather than inventing a product list.
 
+## E11 `voice-profile` `NEW`
+
+**Base:** Card, Select, Textarea, Badge · **States:** none · preset · custom · editing · scoped ·
+conflict · reset
+
+- **The entry point is at the input.** The active voice shows beside the composer with its name,
+  source and scope. Export that indicator as its own sub-component so C1 and D1 can host it.
+- **A custom voice is rules, not a mood.** Tone, words to use, words to avoid, formatting and an
+  example, with a preview of a sample output under the current rules.
+- **Scope is visible and switching is one action.** A voice is global (follows the person) or held
+  to a project; global tone leaking into the wrong project is the failure Shape of AI names.
+- **Conflicts are shown, never resolved silently.** When two voices could apply, `conflict` says
+  which one wins and why.
+- **Reset to neutral is always one step.**
+- **Boundary:** E4's `user-presets` are saved visual styles picked from a grid; this is rules for how
+  output sounds. What the AI knows about the person is N17.
+
+**Evidence:** Dia, ElevenLabs, Grammarly, Jasper, Midjourney, Tabnine. Shape of AI, Voice and tone;
+see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
+
 ---
 
 # F · Results & assets
@@ -1159,6 +1179,29 @@ Dialog contract's _sourced slots_ obligation for retrieved values.
 **Evidence:** Glean, NotebookLM, Perplexity. Returns the approved spec's dropped `retrieval-inspector`
 in its user-facing form (D16).
 
+## K9 `summary-card` `NEW`
+
+**Base:** Card, Toggle-group, A13 · **States:** generating · ready · attributed · quote-and-condense
+· collapsed · turned-off · **Variants:** `depth`: short · detailed · key-points
+
+- **Scope and source are stated.** The card says what was summarized (a document, thread, section or
+  selection) and links back to it.
+- **Labelled as AI**, through A13 `ai-label`, every time. A summary that reads as the source's own
+  words is the distortion Shape of AI warns about.
+- **Depth is the reader's choice.** Short, detailed and key points are presets; changing depth asks
+  the host to regenerate.
+- **`attributed` puts sources at the claim.** Citation markers are a slot the host fills (K6 is L3
+  and cannot be imported); the card owns their placement, not their popover.
+- **`quote-and-condense`** lists key passages verbatim with light framing, for legal, scientific or
+  contractual text where rewording changes meaning.
+- **Expand, refine or turn off.** Automatic summaries can be switched off, and `turned-off` is a
+  state that says so rather than an absent card.
+- **Boundary:** K7 `answer-block` answers a question from retrieved sources; this condenses a named
+  source the reader already has.
+
+**Evidence:** Apple, Bloomberg, Notion, Perplexity, Slack, Zoom; ServiceNow Horizon from the agent
+slice. Shape of AI, Summary; see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
+
 ---
 
 # L · First-run & onboarding
@@ -1607,6 +1650,28 @@ editing · memory-off · reset-confirm
 **Evidence:** ChatGPT, Claude, Gemini, Perplexity, Apple. Shape of AI, Memory; see
 [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §8.
 
+## N18 `agent-presence` `NEW`
+
+**Base:** Badge, Button, Dropdown-menu · **States:** idle · watching · acting · needs-you · paused ·
+taken-over
+
+- **Ambient, not interrupting.** A persistent cue that an agent is active in this surface: a chip in
+  the chrome and an outline on the region it controls. It never opens a modal on its own.
+- **The boundary is visible.** The cue names what the agent can see or touch (this tab, this app,
+  this frame), so scope is read, not assumed.
+- **Takeover is always one action.** Pause and Take over sit in one menu; `taken-over` says control
+  is back with the person, and `paused` says the agent is waiting.
+- **`needs-you`** draws attention when the agent is blocked, without blocking the page. The approval
+  itself is N8's; this component names it in copy only.
+- **An audit link,** through a host callback, to the agent's steps (N4).
+- **Watching is not security.** No copy implies that oversight prevents harm; Shape of AI cites a
+  prompt-injection flaw in exactly this kind of product.
+- Any glow or pulse has a reduced-motion form that keeps the cue and drops the motion.
+
+**Evidence:** Perplexity Comet, OpenAI Operator, Zapier workflow approvals. ⚠ Exactly 3, and the
+third is the weakest; verify against running products before this spec is treated as settled.
+Shape of AI, Shared vision; see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
+
 ## P1 `data-views` — one config, five collection views
 
 **Family P · v2.** Evidence: [`records-board-analysis.md`](records-board-analysis.md) and D18, both
@@ -1662,6 +1727,30 @@ change means navigating. That single restraint is what lets one shell serve ever
 **Ships four files.** `detail-fields` and `use-container-width` are not imported by the shell —
 they are what a consumer renders into `attributes` and measures with, and a two-column detail body
 without a field list is half a component.
+
+## P3 `auto-fill` `NEW` — one prompt across many fields
+
+**Family P · v2.** Evidence: Attio, Clearfeed, Coda, Linear, LogicGate, Relay (Shape of AI,
+Auto-fill), plus Notion and Zapier for the `sample-preview` state (Shape of AI, Sample response);
+see [shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md) §9.
+
+**Base:** Popover, Button, Badge, A13 · **States:** configuring · sample-preview · applying ·
+suggested · accepted · overridden · failed
+
+- **One prompt, many fields.** `configuring` picks the target field and the prompt; any default
+  prompt is visible and editable, never hidden behind a smart column.
+- **`sample-preview` runs first.** The prompt runs on the first few records and the results sit
+  beside the existing values, with per-record cost and time. Nothing is written until "Apply to
+  all". This is Shape of AI's Sample response, carried here as a state because it is below D1 as
+  an item (D29).
+- **Human content is never overwritten without permission.** Filled cells are skipped by default;
+  overwriting is an explicit choice that states how many cells it changes.
+- **Generated values stay marked until a person acts.** A13 marks each suggested cell; accepting
+  removes the mark (LogicGate) and overriding replaces the value.
+- **A reason per cell,** when the host has one (Linear's justification).
+- **`applying` is cancellable** and shows progress; `failed` keeps every existing value.
+- **It plugs into P1, it does not import it.** It ships a column-header action and a cell renderer
+  that P1 `data-views` hosts.
 
 ---
 

@@ -397,6 +397,27 @@ unsampled slices: Auto-fill, Summary, Sample response, Voice and tone.
 
 ---
 
+## 9. Wave 16: the rest, and a correction to §4 — 2026-10-21
+
+**Correction.** §4 deferred Summary, Auto-fill and Voice and tone as thin evidence. That came from
+reading the index one-liners. The full pattern pages name six unrelated products each, so all
+three pass D1 comfortably. Sample response is the one genuinely thin pattern: a single AI product
+(Notion) and one non-AI precedent (Zapier).
+
+| Built            | As                                  | Evidence (named on Shape of AI)                                             |
+| ---------------- | ----------------------------------- | --------------------------------------------------------------------------- |
+| `summary-card`   | K9                                  | Apple, Bloomberg, Notion, Perplexity, Slack, Zoom; ServiceNow (agent slice) |
+| `voice-profile`  | E11                                 | Dia, ElevenLabs, Grammarly, Jasper, Midjourney, Tabnine                     |
+| `auto-fill`      | P3                                  | Attio, Clearfeed, Coda, Linear, LogicGate, Relay                            |
+| `agent-presence` | N18                                 | Perplexity Comet, OpenAI Operator, Zapier approvals ⚠ exactly 3             |
+| Sample response  | `sample-preview` on P3, not an item | Notion; Zapier is not an AI product. Below D1, so a state                   |
+
+After wave 16 the §3 tally reads 53 of 58 covered. The five left are four Identifiers, which are
+the consuming product's brand decisions and get docs guidance rather than components, and Chained
+action, which is family G and stays cut by D9.
+
+---
+
 ## Sources
 
 - [Shape of AI, pattern index](https://www.shapeof.ai/)
