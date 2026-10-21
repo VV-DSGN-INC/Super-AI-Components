@@ -3,6 +3,9 @@ apps/docs/public/r/
 apps/docs/.next/
 apps/storybook/storybook-static/
 node_modules/
+
+# Nested session worktrees are excluded via .git/info/exclude, which prettier does not read.
+.claude/worktrees/
 .turbo/
 playwright-report/
 test-results/
