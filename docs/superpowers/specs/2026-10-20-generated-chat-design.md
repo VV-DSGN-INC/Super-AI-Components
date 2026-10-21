@@ -184,8 +184,12 @@ Calls made while building it, each overridable:
   keeping what arrived.
 - **Auth is the deployment's OIDC token.** No gateway key is created or stored.
 - **The first step must call a tool.** Left free, the model sometimes wrote "the card below"
-  without showing the card (34/36 in two runs). With a required first tool call it passed 72/72
-  over two consecutive runs.
+  without showing the card (34/36 in two runs).
+- **Words come before cards.** The route holds cards until the words are done, so a model reply
+  reads like a scripted one: words, cards, chips. The view is still built before its card.
+- **Plain words for what the reader sees.** Tool results and the prompt describe cards by what
+  they show; the eval fails a reply that names a card by its ID or points above or below. With
+  these rules the eval passed 72/72 over two consecutive runs.
 
 ## 5. Phase 2: `chat-shell` answers in parts
 

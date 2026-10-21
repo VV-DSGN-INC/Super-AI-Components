@@ -98,6 +98,8 @@ function universal(r: Reply): string[] {
     problems.push("chip outside the set");
   if (r.chunks.some((c) => c.type === "error")) problems.push("error chunk");
   if (CLAIMED_ACTION.test(r.text)) problems.push("claimed an action");
+  if (/failed-runs|week-spend|\b(above|below)\b/i.test(r.text))
+    problems.push("names a card by ID or position");
   return problems;
 }
 

@@ -26,4 +26,9 @@ describe("systemPrompt", () => {
   it("forbids claiming an action, since the tools only show things", () => {
     expect(prompt).toMatch(/never say you retried, queued, deleted or changed anything/i);
   });
+
+  it("asks for cards to be named by what they show, not by their IDs or position", () => {
+    expect(prompt).toMatch(/never write a tool name or an ID/i);
+    expect(prompt).toMatch(/never write above or below/i);
+  });
 });

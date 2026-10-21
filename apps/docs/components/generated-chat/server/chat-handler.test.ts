@@ -273,4 +273,23 @@ describe("createChatHandler", () => {
     expect(calls[0]!.toolChoice).toEqual({ type: "required" });
     expect(calls[1]!.toolChoice?.type).not.toBe("required");
   });
+
+  it("puts words before cards, as a scripted reply does, while the view still exists before its card", async () => {
+    const { model } = scriptedModel(
+      [
+        call("c1", "show_card", { card: "failed-runs" }),
+        call("c2", "build_view", { view: "failed-runs" }),
+        finish("tool-calls"),
+      ],
+      [...text("t1", "Three failed."), finish("stop")],
+    );
+    const chunks = await chunksOf(
+      await createChatHandler({ model, limiter: open() })(ask("which runs broke?")),
+    );
+    const at = (type: string) => chunks.findIndex((c) => c.type === type);
+    expect(at("text-delta")).toBeLessThan(at("data-card"));
+    expect(at("text-delta")).toBeLessThan(at("data-view"));
+    expect(at("data-effect")).toBeLessThan(at("data-view"));
+    expect(at("data-card")).toBeLessThan(at("data-suggestions"));
+  });
 });

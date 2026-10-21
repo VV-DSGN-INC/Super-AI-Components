@@ -91,6 +91,9 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
       execute: async ({ writer }) => {
         let chips: string[] = [];
         let wroteText = false;
+        // Cards wait for the words, so a model reply reads like a scripted one:
+        // words, then cards, then chips.
+        const held: Parameters<typeof writer.write>[0][] = [];
         // The scripted transport opens and closes each reply the same way.
         writer.write({ type: "start" });
 
@@ -111,8 +114,10 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
                 "Show a card in the reply: failed-runs lists the failed runs, week-spend shows this week's spend.",
               inputSchema: z.object({ card: z.enum(["failed-runs", "week-spend"]) }),
               execute: async ({ card }) => {
-                writer.write({ type: "data-card", data: { type: card } });
-                return `Showed the ${card} card.`;
+                held.push({ type: "data-card", data: { type: card } });
+                return card === "failed-runs"
+                  ? "The reader now sees the list of failed runs, with a Retry button that asks first."
+                  : "The reader now sees this week's spend by kind.";
               },
             }),
             build_view: tool({
@@ -127,11 +132,11 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
                   data: { type: "build-view", view: input },
                   transient: true,
                 });
-                writer.write({
+                held.push({
                   type: "data-view",
                   data: { viewId: input.id, title: input.title, kind: input.kind },
                 });
-                return `Built the view ${input.title}. The person opens it from its card.`;
+                return `The reader can now open the view "${input.title}" from the chat.`;
               },
             }),
             suggest_followups: tool({
@@ -140,7 +145,7 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
               inputSchema: z.object({ items: z.array(z.enum(CHIPS)).min(1).max(3) }),
               execute: async ({ items }) => {
                 chips = items;
-                return "The chips will appear after your words.";
+                return "The follow-ups will appear after your words.";
               },
             }),
           },
@@ -186,6 +191,7 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
           writer.write({ type: "text-delta", id: "fallback", delta: FALLBACK_TEXT });
           writer.write({ type: "text-end", id: "fallback" });
         }
+        for (const part of held) writer.write(part);
         writer.write({ type: "data-suggestions", data: { items: chips.length > 0 ? chips : READY_PROMPTS } });
         writer.write({ type: "finish" });
       },
