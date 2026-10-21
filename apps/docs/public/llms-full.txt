@@ -9437,7 +9437,7 @@ Private mode only helps if the person can tell, at every moment, that it is on a
 
 ## When to reach for it
 
-Pass `statement` every time: it has no default, because the component must never claim more than your backend enforces. Show `state="entering"` above the input before the first message, then switch to `active`, which keeps the chip and tucks the statement behind a toggle. Hand `PrivateSessionChip` (or `form="chip"`) to the topbar's privacy slot so the mode stays visible on every screen; the header tint is the host's choice. Use `connectors-reduced` when connectors run with narrower scope, passing each connector with its scope (`off` or `reduced`). Use `exiting` with the retention outcome your product really applies: `deleted-now`, `deleted-after` with the period, or `kept-locally`. Use `unavailable` with `reason="plan"` or `"admin"` when the mode is switched off for this person.
+Pass `statement` every time: it has no default, because the component must never claim more than your backend enforces. Show `state="entering"` above the input before the first message, then switch to `active`, which keeps the chip and tucks the statement behind a toggle. Hand `PrivateSessionChip` (or `form="chip"`) to the topbar's privacy slot so the mode stays visible on every screen; the header tint is the host's choice. Use `connectors-reduced` when connectors run with narrower scope, passing each connector with its scope (`off` or `reduced`). Use `exiting` with the retention outcome your product really applies: `retention={{ kind: "deleted-now" }}`, `kind: "deleted-after"` with its `period`, or `kind: "kept-locally"`. Use `unavailable` with `reason="plan"` or `"admin"` when the mode is switched off for this person.
 
 ## Variants
 
