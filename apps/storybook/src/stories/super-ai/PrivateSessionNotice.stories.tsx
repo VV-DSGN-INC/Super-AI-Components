@@ -277,6 +277,7 @@ export const Boundary: Story = {
           stage="New"
           title="Private sessions"
           description="Chats you start in private mode are not saved to history."
+          onDismiss={() => {}}
         />
       </section>
     </div>
