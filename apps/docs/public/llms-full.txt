@@ -12061,3 +12061,262 @@ Use it in a grid or shelf where the reader is choosing what to open, and set hea
 ## Evidence
 
 Vercel Geist — the Book component, positioned there as decorative chrome for marketing pages, documentation landing covers and changelog heroes., No reference-board sighting. Family Q carries no board evidence and does not claim any (see decisions.md D20).
+
+---
+
+# Widget
+
+> A fixed-size tile for one fact among same-sized siblings. It comes in three families: small is one grid cell, medium is two wide, large is two by two. A tile has an icon, a title, a short meta, one header action or a whole-tile open button, a body that clips, and a skeleton for the loading moment. It sets no width of its own and fills the cell its grid item gives it.
+
+Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/widget.json` · Contract: `components/super-ai/widget.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/widget
+
+## Why it matters
+
+A glance surface only works when every tile is the same shape. Apple WidgetKit declares small, medium and large families instead of a free dimension, and analytics and workspace home screens tile their numbers the same way. Declaring the family makes each size a layout you can test at its exact size, where an elastic tile has no size to test. A tile that is also the entry to a bigger answer (open it, ask a follow-up) needs one control that covers it, and one name that carries the fact for a screen reader.
+
+## When to reach for it
+
+Place a widget in a grid item that sets its width and height, and choose the family the content fills. Ship a type in only the sizes its content can fill: a single number belongs in small, a short list in medium, a list with progress in large. Give the tile either onOpen with an openLabel or a header action, never both. Pass loading while the data is on its way so the tile keeps its shape when it lands.
+
+## Variants
+
+### size
+
+- `small`: One number or one status with a caption. Fits one grid cell.
+- `medium`: A figure with one supporting line or a short bar. Two cells wide.
+- `large`: A short list, such as runs with progress. Two cells wide and two tall.
+
+## Instead use
+
+- **entity-row**: The item is one row in a list of many. A widget is a same-sized tile among siblings, while entity-row is the icon, title and description row that lists use.
+- **stat-readout**: The facts are label and value pairs inside a panel. Stat-readout is a definition list with no tile, size family or open affordance.
+
+## Do
+
+- Write openLabel as the fact plus the follow-up it opens, because it is the only text a screen reader hears for the tile.
+- Use a header action for one direct command and name it through the label prop. The tooltip repeats the name visually.
+- Pass loading and keep the same size. Only the body becomes a skeleton, so the tile does not change shape when data arrives.
+- With the header hidden, the action floats over the body and the body keeps clearance for it.
+- Pick the family that fills the content: three rows with progress want a large tile.
+
+## Don't
+
+- Don't repeat the title as openLabel. A reader then hears the title and never the number the tile exists to show.
+- Don't fit a list into a medium tile and expect it to scroll. The body clips, so the third run is lost; move to large or open a view.
+
+## Anatomy
+
+- `widget`: The tile: a small card with data-size set to small, medium or large. Fills its grid cell.
+- `widget-header`: Icon, title, meta and the header action. Becomes screen-reader-only with hideHeader.
+- `widget-title`: The fact's name. One line, truncates, never wraps.
+- `widget-meta`: A short qualifier beside the title, such as a period or a count.
+- `widget-action`: The one control, a WidgetAction icon button named by its label.
+- `widget-content`: The body. Clips at the tile edge and never scrolls.
+- `widget-open`: The whole-tile button, present only with onOpen. Overlays the card, first in tab order.
+
+## Accessibility
+
+**Keyboard**
+
+- An openable tile is one tab stop, the open button, and it comes first in the tile. Enter and Space activate it.
+- A tile with an action is one tab stop, the action button, inside the header (or floated over the body when the header is hidden).
+- A tile with neither is not focusable. Nothing in the body is reachable because the body clips and does not scroll.
+- There are no arrow-key shortcuts between tiles. Each tile is its own tab stop, so a grid of twelve openable tiles is twelve stops.
+
+**Screen reader**
+
+- The tile is a group named by its title through aria-labelledby, so the name survives hideHeader.
+- With onOpen, the button's accessible name is openLabel alone. The header and body are aria-hidden so the fact is not read twice; only the group name (the title) is read first.
+- WidgetAction's name is its label prop through aria-label. The tooltip appears on hover and focus and is never the only source of the name; the icon is aria-hidden.
+- While loading the tile sets aria-busy and renders a status region reading Loading plus the title. When the body arrives nothing is announced, so a caller that needs the result read out supplies its own live region. With onOpen the status sits under aria-hidden and is not announced.
+
+**Focus**
+
+- Opening a tile moves focus wherever your onOpen sends it. The widget does not restore focus to the tile on return; the caller returns focus to the tile that opened the view.
+
+## Pitfalls
+
+- A body that runs past the tile is clipped silently. There is no scrollbar and no fade, so test the longest content you can really emit at the exact size.
+- The open overlay covers the whole card, which is why onOpen and action exclude each other in the type. Content that needs its own links or buttons belongs in a view, not a tile.
+- Width and breakpoint classes on the tile fight the grid. Size the grid item and let the tile fill it.
+- With onOpen the body is hidden from assistive tech. Whatever the body shows must be in openLabel, or a screen reader user never learns it.
+- The header action is 24px square, the system's compact icon button. Keep one per tile and keep it away from the tile edge it floats on.
+
+## Composition
+
+- States: `small`, `medium`, `large`, `loading`, `openable`, `header-hidden`
+- Composes from this registry: nothing
+- shadcn primitives: button, card, skeleton, tooltip
+- npm: none
+
+## Evidence
+
+Apple WidgetKit, Analytics dashboard tiles, Workspace home screens
+
+---
+
+# Widget Grid
+
+> A grid that places fixed-size widget tiles two columns wide in a narrow space and four columns wide in a roomy one. It answers to its own width through a container query, so the same code lays out a widget row in a chat column and on a full-width home page. Rows are as tall as the columns are wide, which keeps a small tile square and makes a large one four squares.
+
+Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/widget-grid.json` · Contract: `components/super-ai/widget-grid.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/widget-grid
+
+## Why it matters
+
+Home-screen widget systems such as WidgetKit define a size family as a whole number of grid cells, so a tile's size is a layout you can reason about and test, not a measurement each screen negotiates. The grid is what holds that promise: spans come from the tile's size, and the row height is derived from the same spacing value as the gap, so the two cannot drift apart and leave tiles out of square. Keying the columns off the grid's own width, not the window's, is what lets one component serve both a chat thread and a page.
+
+## When to reach for it
+
+Wrap the tiles in WidgetGrid and give each one a WidgetGridItem with a size: small is 1 column by 1 row, medium is 2 by 1, large is 2 by 2. Below 43.5rem of the grid's own width there are two columns, from there four. Put one tile directly inside each item and let it fill the cell. Tiles flow in DOM order, so put the ones that matter first; the grid does not reorder to close gaps, because a visual order that differs from the reading order breaks keyboard navigation.
+
+## Variants
+
+### WidgetGridItem · size
+
+- `small`: Choose small for a single figure or status that reads at a glance, like a count or a balance. It is 1 column by 1 row, always square.
+- `medium`: Choose medium for a tile that needs a line of text or a short list beside its figure. It is 2 columns by 1 row and takes a full row in the two-column layout.
+- `large`: Choose large for the one tile on the page that carries a body of content, like a live list of running work. It is 2 columns by 2 rows, four squares.
+
+## Instead use
+
+- **recent-grid**: The items are thumbnails of things to reopen, each with a title and recency text, rather than fixed-size glanceable tiles.
+- **artifact-grid**: The items are documents grouped under the session that produced them and need a type filter, not a uniform tile size.
+
+## Do
+
+- Pick each tile's size from the three-size family and let the grid do the sizing. A tile that needs a different shape is a different tile, not a custom span.
+- Name each grid's region yourself when a page has more than one, with a heading or an aria-label on a wrapper you own.
+
+## Don't
+
+- Don't add horizontal padding or margin to the grid. The row height is worked out from the container's width, so a narrower grid inside it leaves every tile taller than it is wide. Pad the parent instead.
+- Don't put content taller than its cell inside an item. The cell is fixed by the grid; content that ignores it spills over the row below.
+
+## Anatomy
+
+- `widget-grid`: The grid itself, inside an unnamed container wrapper. className and other props land here.
+- `widget-grid-item`: The span for one tile. Carries data-size, and sets the column and row span from size.
+
+## Accessibility
+
+**Keyboard**
+
+- The grid adds no tab stops. Tab order is the DOM order of whatever interactive controls the tiles contain, so a tile with one button is one stop.
+- Arrow keys do nothing: this is a layout, not a role="grid", and there is no roving tabindex.
+- Because tiles are not reordered visually, the order a keyboard user tabs in matches the order a sighted user reads in, one row at a time.
+- Nothing here can be disabled. Disabled state belongs to the tile.
+
+**Screen reader**
+
+- Plain divs with no role and no aria attributes. There is no list semantics, so a screen reader does not announce a count of tiles; they read in DOM order like any other content.
+- data-size is a styling and test hook only and is not exposed to assistive technology.
+- The grid has no accessible name. A page with more than one grid names each region itself, for example with role="region" and an aria-label, or a section labelled by a heading, as the second Do shows.
+- Resizing across the 43.5rem threshold changes columns, not order or content, so nothing is announced and nothing needs to be.
+
+## Pitfalls
+
+- Reading the columns from the viewport. The switch is a container query on the grid's own wrapper, so a grid in a narrow chat column stays at two columns on a wide window.
+- Putting padding on the grid and wondering why tiles are no longer square. Pad the parent.
+- Expecting a medium or large tile to fill a hole. A medium tile after three small ones in a four-column row moves to the next row and leaves a gap. Order the tiles for the four-column case, since two columns never leaves one.
+- Rebuilding the threshold in your own CSS. Import FOUR_COLUMN_MIN_REM when a test or sibling layout needs the number; it is a literal because it is the size model's contract, not a design token.
+
+## Composition
+
+- States: `two-column`, `four-column`, `mixed-sizes`
+- Composes from this registry: nothing
+- shadcn primitives: none
+- npm: none
+
+## Evidence
+
+WidgetKit
+
+---
+
+# View Frame
+
+> The fixed chrome around a generated view: a header with a title, a scope and freshness line and a row of actions, one scrolling body, an optional slot for an ask bar, and a footer naming where the view came from and which version it is. A model or script writes the body. Everything around it keeps the same shape every time.
+
+Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/view-frame.json` · Contract: `components/super-ai/view-frame.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/view-frame
+
+## Why it matters
+
+ChatGPT's canvas and Claude's artifacts panel both open generated work beside the conversation in a surface with its own title, version and actions. The frame is what makes a generated view feel like a place rather than a longer message: the same controls sit in the same spots whatever the body holds, and a view that fails or reruns changes only the body. Keeping view logic out of the frame is what lets one chrome serve a table today and a board tomorrow.
+
+## When to reach for it
+
+Give the frame a container with a height and nothing else: a narrow pane beside the chat column for the docked view, the full width for a page. Pass `title` so the section has a name, and draw the visible heading with ViewFrameTitle. Render mode tabs, Undo, Rerun, Pin and Close yourself inside ViewFrameActions, using ViewFrameAction for the icon buttons. Put the view in ViewFrameContent, a skeleton there while it reruns, an alert with a Retry button there when it fails. Put an ask bar in ViewFrameFoot only when the view takes questions.
+
+## Variants
+
+None: The frame has no look to choose. Docked and page are the container the caller supplies, not a prop, and mode tabs, rerunning and failed are children the caller renders in slots the frame already has.
+
+## Instead use
+
+- **browser-frame**: The content is a page the agent visited, shown as external. Browser frame marks its content as not ours; view frame wraps a view this product generated and keeps its actions.
+- **artifact-shell**: You need the index of everything generated, with a sidebar and a grid. View frame holds one generated view, not the library of them.
+
+## Do
+
+- Render mode tabs panelless inside the actions. The frame has no idea which mode is showing.
+- Keep the chrome on failure and put the alert and Retry inside the body, so Close and Undo still work.
+- Put the ask bar in the foot, in flow, so it never covers the last row.
+
+## Don't
+
+- Don't float the ask bar over the body. It hides the rows it sits on and the body has no idea it is there.
+- Don't nest a second scroller inside the body. The body already scrolls, and two scrollbars mean two tab stops.
+
+## Anatomy
+
+- `view-frame`: Root section. Fills its container's height, with a card surface.
+- `view-frame-header`: Wraps. Holds the title, the description and the actions.
+- `view-frame-title`: The visible heading. Never narrower than a 14rem floor, so actions wrap below it first.
+- `view-frame-description`: Scope and freshness, for example the projects covered and when it last ran.
+- `view-frame-actions`: End-aligned. Full width and wrapping below 768px, beside the title from 768px.
+- `button`: A ViewFrameAction: a ghost icon button with a required label, 44px below 768px.
+- `view-frame-content`: The one scroll region. Focusable and named.
+- `view-frame-foot`: In-flow slot for an ask bar. Renders nothing without children.
+- `view-frame-footer`: Origin text at one end, version label at the other. The origin truncates.
+
+## Accessibility
+
+**Keyboard**
+
+- The frame adds one tab stop of its own: the content region, which is focusable so a keyboard user can scroll it with the arrow keys. Tab order is the header's controls in source order, then the content region and whatever is inside it, then the foot, then the footer, which has no controls.
+- Each ViewFrameAction is a native button: Enter and Space activate it. A disabled action leaves the tab order.
+- Escape does nothing. The frame does not close itself, and it does not move focus when it opens or closes.
+- Arrow keys scroll the content region only while it has focus. Mode tabs you render in the actions bring their own arrow key behaviour.
+
+**Screen reader**
+
+- The root is a section with a name, so it is a region landmark. The name comes from `title`, or from your `aria-labelledby` when you pass one, which replaces `title` entirely. With neither, the section is unnamed and is not exposed as a landmark.
+- ViewFrameTitle is an h2. The level is fixed. If the frame sits under an h2 on your page, render your own heading in the header instead of ViewFrameTitle.
+- Each ViewFrameAction is named by `label` through aria-label, and `label` is also set as the title for sighted hover. The name never depends on the tooltip.
+- The content region is a named region, "View content" by default. Two frames on one page both announce that name, so pass an `aria-label` that says what the body holds.
+- No live region wraps the body. A rerun that swaps in a skeleton, and a failure that swaps in an alert, are announced only if the content you render carries role status or role alert. The vendored Alert has role alert; a skeleton set has nothing, so give it a status.
+- The footer is a footer element inside a section, which exposes no landmark. Its two text parts read in order: origin, then version.
+
+**Focus**
+
+- Nothing in the frame moves focus. When a view closes, return focus to whatever opened it, which is usually the card in the thread.
+- When a rerun replaces the body, focus on the Rerun button stays where it is. If you unmount the button while it runs, focus falls to the document.
+
+## Pitfalls
+
+- The frame fills its container with h-full. Give it a parent with a definite height, or the body stops scrolling and the frame grows with its content.
+- Do not add overflow to anything inside the body unless you remove it from the body. Two scroll regions inside each other trap the wheel and double the tab stops.
+- ViewFrameFoot renders nothing at all without children, not an empty bar. A falsy child such as `false` or `null` counts as no children, but an empty fragment does not.
+- A long title wraps rather than truncates, and the actions wrap onto their own row first. Keep titles short anyway. The title is the only thing naming the view.
+- ViewFrameAction takes a single icon as its child. Putting text in it makes a wide button on a 44px target and the label is no longer the only name.
+
+## Composition
+
+- States: `docked`, `page`, `with-modes`, `with-ask-bar`, `rerunning`, `failed`
+- Composes from this registry: nothing
+- shadcn primitives: button
+- npm: none
+
+## Evidence
+
+ChatGPT canvas, Claude artifacts panel

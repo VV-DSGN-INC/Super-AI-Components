@@ -1,0 +1,1216 @@
+<title>Generated Chat Draft</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+/>
+<style>
+  /* Layout: chat column alone until a view is shown; then the view is the page and the chat docks right. Tokens are the docs site's own neutral set. */
+  :root {
+    --bg: oklch(1 0 0);
+    --fg: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-fg: oklch(0.985 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-fg: oklch(0.48 0 0);
+    --border: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --sheet: oklch(0.985 0 0);
+    --radius: 0.625rem;
+    --font: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: oklch(0.145 0 0);
+      --fg: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-fg: oklch(0.205 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-fg: oklch(0.74 0 0);
+      --border: oklch(1 0 0 / 12%);
+      --ring: oklch(0.556 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --sheet: oklch(0.18 0 0);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: oklch(0.145 0 0);
+    --fg: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-fg: oklch(0.205 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-fg: oklch(0.74 0 0);
+    --border: oklch(1 0 0 / 12%);
+    --ring: oklch(0.556 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --sheet: oklch(0.18 0 0);
+    color-scheme: dark;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  html,
+  body {
+    height: 100%;
+  }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 14px/1.5 var(--font);
+    margin: 0;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  .app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-block: 10px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    border-bottom: 1px solid var(--border);
+  }
+  .bar h1 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .bar .note {
+    color: var(--muted-fg);
+    font-size: 13px;
+    margin-left: auto;
+    text-align: right;
+  }
+  .panes {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+  .view-pane {
+    flex: 1;
+    min-width: 0;
+    padding: 12px;
+    background: var(--sheet);
+    display: none;
+  }
+  .has-view .view-pane {
+    display: flex;
+  }
+  .chat-pane {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .has-view .chat-pane {
+    flex: 0 0 380px;
+    border-left: 1px solid var(--border);
+  }
+  .log {
+    flex: 1;
+    overflow-y: auto;
+    padding-block: 24px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .col {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .empty {
+    text-align: center;
+    padding-top: 12vh;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+  .empty h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .empty p {
+    color: var(--muted-fg);
+    margin: 0;
+    max-width: 46ch;
+  }
+  .user {
+    align-self: flex-end;
+    background: var(--muted);
+    padding: 8px 14px;
+    border-radius: 18px;
+    max-width: 80%;
+  }
+  .reply {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+  .reply p {
+    margin: 0;
+    max-width: 65ch;
+  }
+  .tool {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted-fg);
+    font-size: 13px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.4);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 5%);
+  }
+  .card-h {
+    padding: 14px 16px 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .card-h h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+  }
+  .card-h .meta {
+    color: var(--muted-fg);
+    font-size: 13px;
+  }
+  .card-b {
+    padding: 6px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .card-f {
+    border-top: 1px solid var(--border);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .slot {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+  .thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--muted);
+    display: grid;
+    place-items: center;
+    color: var(--fg);
+  }
+  .slot .t {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .slot .s {
+    color: var(--muted-fg);
+    font-size: 13px;
+  }
+  .slot > div {
+    min-width: 0;
+  }
+  .state {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .state svg {
+    color: var(--destructive);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: calc(var(--radius) * 0.8);
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background-color 0.15s ease-out;
+  }
+  .btn:hover {
+    background: var(--muted);
+  }
+  .btn.primary {
+    background: var(--primary);
+    color: var(--primary-fg);
+    border-color: var(--primary);
+  }
+  .btn.primary:hover {
+    opacity: 0.9;
+  }
+  .btn.ghost {
+    border-color: transparent;
+    background: transparent;
+  }
+  .btn.ghost:hover {
+    background: var(--muted);
+  }
+  .btn[disabled],
+  .btn[disabled]:hover {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .btn.icon {
+    width: 32px;
+    padding: 0;
+    justify-content: center;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip {
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.15s ease-out;
+  }
+  .chip:hover {
+    background: var(--muted);
+  }
+  .cost {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .q.open {
+    box-shadow: 0 4px 16px oklch(0 0 0 / 8%);
+  }
+  .q .sum {
+    margin: 0;
+  }
+  .resolved {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .grid {
+    container-type: inline-size;
+  }
+  .grid-in {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: minmax(150px, auto);
+    gap: 12px;
+  }
+  @container (min-width: 43.5rem) {
+    .grid-in {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .w {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    aspect-ratio: auto;
+  }
+  .w.s {
+    grid-column: span 1;
+  }
+  .w.m {
+    grid-column: span 2;
+  }
+  .w-h {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 12px 0;
+    color: var(--muted-fg);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .w-b {
+    flex: 1;
+    padding: 8px 12px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    min-height: 0;
+  }
+  .big {
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .sub {
+    color: var(--muted-fg);
+    font-size: 12px;
+  }
+  .meter {
+    height: 6px;
+    border-radius: 999px;
+    background: var(--muted);
+    overflow: hidden;
+  }
+  .meter i {
+    display: block;
+    height: 100%;
+    background: var(--fg);
+    border-radius: inherit;
+  }
+  .w-open {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: inherit;
+  }
+  .w-open:hover {
+    background: oklch(0.5 0 0 / 4%);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 44px;
+    gap: 8px;
+    align-items: center;
+    font-size: 13px;
+  }
+  .row .t {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row .pct {
+    text-align: right;
+    color: var(--muted-fg);
+    font-variant-numeric: tabular-nums;
+  }
+  .vc {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  .vc .ic {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--muted);
+    display: grid;
+    place-items: center;
+    flex: none;
+  }
+  .vc .tx {
+    flex: 1;
+    min-width: 0;
+  }
+  .vc .tx b {
+    font-weight: 500;
+    display: block;
+  }
+  .vc .tx span {
+    color: var(--muted-fg);
+    font-size: 13px;
+  }
+  .showing {
+    font-size: 12px;
+    color: var(--muted-fg);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+  }
+  .stats div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 2px;
+  }
+  .stats dt {
+    color: var(--muted-fg);
+    font-size: 13px;
+  }
+  .stats dd {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .composer {
+    padding-block: 12px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  .composer form {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.8);
+    padding: 8px 8px 8px 14px;
+    background: var(--card);
+  }
+  .composer textarea {
+    flex: 1;
+    resize: none;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    min-height: 24px;
+    max-height: 120px;
+    padding: 4px 0;
+    outline: none;
+  }
+  .frame {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 1.4);
+    overflow: hidden;
+  }
+  .fh {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ft {
+    flex: 1 1 14rem;
+    min-width: 0;
+  }
+  .ft b {
+    font-weight: 600;
+    display: block;
+  }
+  .ft span {
+    color: var(--muted-fg);
+    font-size: 13px;
+  }
+  .fa {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .tabs {
+    display: inline-flex;
+    padding: 3px;
+    border-radius: calc(var(--radius) * 0.8);
+    background: var(--muted);
+  }
+  .tab {
+    height: 26px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: calc(var(--radius) * 0.6);
+    background: transparent;
+    cursor: pointer;
+    font-size: 13px;
+  }
+  .tab[aria-selected="true"] {
+    background: var(--card);
+    box-shadow: 0 1px 2px oklch(0 0 0 / 8%);
+  }
+  .fc {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 14px;
+  }
+  .ff {
+    border-top: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--muted-fg);
+    font-size: 12px;
+  }
+  .ff span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted-fg);
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 8px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  td.n {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(180px, 1fr));
+    gap: 12px;
+    min-width: 560px;
+  }
+  .lane {
+    background: var(--muted);
+    border-radius: var(--radius);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .lane h4 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+  }
+  .tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) * 0.8);
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+  .tile span {
+    display: block;
+    color: var(--muted-fg);
+    font-size: 12px;
+  }
+  .skel {
+    height: 14px;
+    border-radius: 6px;
+    background: var(--muted);
+    margin: 10px 0;
+  }
+  .mobile-switch {
+    display: none;
+  }
+  @media (max-width: 760px) {
+    .has-view .chat-pane {
+      flex: 1;
+      border-left: 0;
+    }
+    .has-view.show-chat .view-pane {
+      display: none;
+    }
+    .has-view:not(.show-chat) .chat-pane {
+      display: none;
+    }
+    .has-view .mobile-switch {
+      display: inline-flex;
+    }
+    .bar .note {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+    }
+  }
+</style>
+
+<div class="app" id="app">
+  <header class="bar">
+    <h1>Generated chat</h1>
+    <div class="tabs mobile-switch" role="tablist" aria-label="Pane">
+      <button class="tab" role="tab" id="sw-chat" aria-selected="false">Chat</button>
+      <button class="tab" role="tab" id="sw-view" aria-selected="true">View</button>
+    </div>
+    <span class="note">Draft for review · scripted replies · fixture workspace, Tue 20 Oct 2026, 09:00</span>
+  </header>
+  <div class="panes">
+    <section class="view-pane" aria-label="View"><div class="frame" id="frame"></div></section>
+    <section class="chat-pane" aria-label="Chat">
+      <div class="log" id="log" role="log" aria-live="polite"><div class="col" id="col"></div></div>
+      <div class="composer">
+        <form id="form">
+          <label
+            for="input"
+            style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)"
+            >Ask about this workspace</label
+          >
+          <textarea id="input" rows="1" placeholder="Ask about runs, credits or the queue"></textarea>
+          <button class="btn primary icon" id="send" type="submit" aria-label="Send" disabled>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m5 12 7-7 7 7" />
+              <path d="M12 19V5" />
+            </svg>
+          </button>
+        </form>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  const I = {
+    alert:
+      '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>',
+    refresh:
+      '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    pin: '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+    x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    table:
+      '<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+    video:
+      '<path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/>',
+    image:
+      '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+    audio:
+      '<path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/>',
+    coins: '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/>',
+    activity:
+      '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
+    read: '<path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M4.268 21a2 2 0 0 0 1.727 1H18a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><circle cx="5" cy="14" r="3"/><path d="m9 18-1.5-1.5"/>',
+    eye: '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+  };
+  const ic = (n, s = 16) =>
+    `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]}</svg>`;
+  const esc = (s) =>
+    String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  /* Fixture: records only. Every number below is derived from these. */
+  const PLAN = { credits: 2000, used: 1640, resetsOn: "Nov 1", resetsInDays: 12 };
+  const RUNS = [
+    {
+      id: "r1",
+      when: "Tue 02:14",
+      kind: "video",
+      project: "Onboarding video",
+      prompt: "Scene 3: dashboard tour, slow pan",
+      model: "Video HD",
+      status: "failed",
+      reason: "Timed out",
+      credits: 40,
+      overnight: true,
+    },
+    {
+      id: "r2",
+      when: "Tue 02:31",
+      kind: "video",
+      project: "Onboarding video",
+      prompt: "Scene 4: settings walkthrough",
+      model: "Video HD",
+      status: "failed",
+      reason: "Timed out",
+      credits: 40,
+      overnight: true,
+    },
+    {
+      id: "r3",
+      when: "Mon 23:05",
+      kind: "image",
+      project: "Spring campaign",
+      prompt: "Poster variant B, crowd at night",
+      model: "Image XL",
+      status: "failed",
+      reason: "Content filter",
+      credits: 4,
+      overnight: true,
+    },
+    {
+      id: "r4",
+      when: "Sun 16:40",
+      kind: "image",
+      project: "Spring campaign",
+      prompt: "Hero banner, rooftop garden at golden hour",
+      model: "Image XL",
+      status: "failed",
+      reason: "Timed out",
+      credits: 4,
+      overnight: false,
+    },
+    {
+      id: "r5",
+      when: "Sat 11:12",
+      kind: "audio",
+      project: "Podcast intro",
+      prompt: "Voice take 2, warm and slow",
+      model: "Voice Studio",
+      status: "failed",
+      reason: "Provider error",
+      credits: 6,
+      overnight: false,
+    },
+  ];
+  const OVERNIGHT_TOTAL = 26;
+  const RUNNING = [
+    { title: "Podcast intro, music bed", pct: 64 },
+    { title: "Spring campaign, poster variant C", pct: 30 },
+    { title: "Onboarding video, scene 5", pct: 12 },
+  ];
+  const WEEK = { video: 420, image: 150, audio: 40 };
+  const failedOvernight = RUNS.filter((r) => r.overnight && r.status === "failed");
+  const timedOut = failedOvernight.filter((r) => r.reason === "Timed out");
+  const retryCost = timedOut.reduce((a, r) => a + r.credits, 0);
+  const left = PLAN.credits - PLAN.used;
+  const weekTotal = WEEK.video + WEEK.image + WEEK.audio;
+  const fmt = (n) => n.toLocaleString("en-US");
+
+  /* Turns: exact match after normalising. */
+  const norm = (t) =>
+    t
+      .toLowerCase()
+      .replace(/[^a-z0-9 ]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  const READY = ["What failed overnight?", "What's my day?", "How much have we spent this week?"];
+  const TURNS = {
+    "what failed overnight": () => [
+      { t: "tool", text: `Read ${OVERNIGHT_TOTAL} runs from last night` },
+      {
+        t: "text",
+        text: `${failedOvernight.length} of ${OVERNIGHT_TOTAL} runs failed overnight. Both video runs timed out on Video HD, and one image was blocked by the content filter.`,
+      },
+      { t: "failed" },
+      { t: "chips", items: ["Track failed runs", "Why was the poster blocked?", "What's my day?"] },
+    ],
+    "why was the poster blocked": () => [
+      {
+        t: "text",
+        text: "The content filter flagged the crowd scene in poster variant B. The run was stopped before it spent more than its 4 credits, and nothing was stored. Rewording the prompt is the usual fix; a retry with the same prompt will be blocked again.",
+      },
+      { t: "chips", items: ["Track failed runs", "What's my day?"] },
+    ],
+    "track failed runs": () => [
+      {
+        t: "text",
+        text: "I built a view of this week's failed runs. It reruns on current data every time you open it.",
+      },
+      { t: "view" },
+      { t: "chips", items: ["Make it a board", "What's my day?"] },
+    ],
+    "make it a board": () =>
+      view.built
+        ? [
+            {
+              t: "text",
+              text: "Done. The view is now a board grouped by reason, saved as version 2. Undo in its header goes back to the table.",
+            },
+            { t: "effect", fx: "board" },
+            { t: "chips", items: ["What's my day?"] },
+          ]
+        : [
+            { t: "text", text: "There is no view yet. Ask to track failed runs first." },
+            { t: "chips", items: ["Track failed runs"] },
+          ],
+    "what s my day": () => [
+      { t: "text", text: "Here is today at a glance." },
+      { t: "widgets" },
+      { t: "chips", items: ["What failed overnight?", "How much have we spent this week?"] },
+    ],
+    "how much have we spent this week": () => [
+      {
+        t: "text",
+        text: `${fmt(weekTotal)} credits this week, two thirds of it on video. ${fmt(left)} of ${fmt(PLAN.credits)} are left until the plan resets on ${PLAN.resetsOn}.`,
+      },
+      { t: "stats" },
+      { t: "chips", items: ["What failed overnight?"] },
+    ],
+  };
+  const FALLBACK = () => [
+    { t: "text", text: "I answer from this workspace's runs, credits and queue. These are ready to try:" },
+    { t: "chips", items: READY },
+  ];
+
+  /* State */
+  const col = document.getElementById("col"),
+    log = document.getElementById("log");
+  const question = { status: "none", timer: null, remaining: 0 };
+  const view = { built: false, shown: false, versions: [], current: -1, rerunning: false, pinned: false };
+  let busy = false;
+
+  function scroll() {
+    log.scrollTop = log.scrollHeight;
+  }
+  function el(html) {
+    const d = document.createElement("div");
+    d.innerHTML = html.trim();
+    return d.firstElementChild;
+  }
+
+  function renderEmpty() {
+    col.innerHTML = "";
+    const e = el(
+      `<div class="empty"><h2>What should we look at?</h2><p>Answers come back as the components this registry ships: run lists, questions before anything that spends credits, widgets and saved views.</p><div class="chips"></div></div>`,
+    );
+    READY.forEach((p) => e.querySelector(".chips").append(chip(p)));
+    col.append(e);
+  }
+  function chip(text) {
+    const b = el(`<button class="chip" type="button">${esc(text)}</button>`);
+    b.onclick = () => ask(text);
+    return b;
+  }
+
+  function ask(text) {
+    if (busy) return;
+    if (col.querySelector(".empty")) col.innerHTML = "";
+    col.append(el(`<div class="user">${esc(text)}</div>`));
+    const turn = TURNS[norm(text)] || FALLBACK;
+    play(turn());
+  }
+  function play(parts) {
+    busy = true;
+    const reply = el(`<div class="reply"></div>`);
+    col.append(reply);
+    scroll();
+    let i = 0;
+    const step = () => {
+      if (i >= parts.length) {
+        busy = false;
+        return;
+      }
+      const node = part(parts[i++]);
+      if (node) {
+        reply.append(node);
+        scroll();
+      }
+      setTimeout(step, 350);
+    };
+    step();
+  }
+  function part(p) {
+    switch (p.t) {
+      case "text":
+        return el(`<p>${esc(p.text)}</p>`);
+      case "tool":
+        return el(`<div class="tool">${ic("read", 14)}<span>${esc(p.text)}</span></div>`);
+      case "chips": {
+        const c = el(`<div class="chips"></div>`);
+        p.items.forEach((x) => c.append(chip(x)));
+        return c;
+      }
+      case "failed":
+        return failedCard();
+      case "view":
+        view.built = true;
+        view.versions = [{ mode: "table", label: "v1 · table" }];
+        view.current = 0;
+        return viewCard();
+      case "effect":
+        if (p.fx === "board") {
+          view.versions = view.versions
+            .slice(0, view.current + 1)
+            .concat({ mode: "board", label: "v2 · board" });
+          view.current++;
+          renderFrame();
+          refreshViewCards();
+        }
+        return null;
+      case "widgets":
+        return widgets();
+      case "stats":
+        return el(
+          `<div class="card"><div class="card-h"><h3>Credits this week</h3><span class="meta">Mon 19 to Tue 20 Oct</span></div><div class="card-b"><dl class="stats"><div><dt>Video</dt><dd>${fmt(WEEK.video)}</dd></div><div><dt>Image</dt><dd>${fmt(WEEK.image)}</dd></div><div><dt>Audio</dt><dd>${fmt(WEEK.audio)}</dd></div></dl></div></div>`,
+        );
+      case "question":
+        return questionCard();
+    }
+  }
+
+  function failedCard() {
+    const rows = failedOvernight
+      .map(
+        (r) =>
+          `<div class="slot"><div class="thumb">${ic(r.kind)}</div><div><div class="t">${esc(r.project)}: ${esc(r.prompt)}</div><div class="s">${esc(r.model)} · ${esc(r.when)}</div></div><span class="state">${ic("alert", 14)}${esc(r.reason)}</span></div>`,
+      )
+      .join("");
+    const c = el(
+      `<div class="card"><div class="card-h"><h3>Failed overnight</h3><span class="meta">${failedOvernight.length} of ${OVERNIGHT_TOTAL} runs</span></div><div class="card-b">${rows}</div><div class="card-f"><button class="btn primary" type="button">${ic("refresh", 14)}Retry ${timedOut.length} timed-out runs</button></div></div>`,
+    );
+    c.querySelector(".btn").onclick = (e) => {
+      if (question.status === "requested" || question.status === "approved") return;
+      e.currentTarget.disabled = true;
+      play([{ t: "question" }]);
+    };
+    return c;
+  }
+
+  function questionCard() {
+    question.status = "requested";
+    const c = el(
+      `<div class="card q open" data-state="pending"><div class="card-h"><h3>Retry ${timedOut.length} video runs?</h3></div><div class="card-b"><p class="sum">Queues both runs again on Video HD with the same settings. <span class="cost">${ic("coins", 12)}${retryCost} credits</span> ${fmt(left - retryCost)} left this month after.</p><div class="acts" style="display:flex;gap:8px"><button class="btn primary" type="button" data-a="confirm">${ic("check", 14)}Confirm</button><button class="btn" type="button" data-a="skip">Skip</button></div></div><span role="status" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Awaiting your decision</span></div>`,
+    );
+    c.querySelector('[data-a="confirm"]').onclick = () => resolve(c, "confirmed");
+    c.querySelector('[data-a="skip"]').onclick = () => resolve(c, "skipped");
+    return c;
+  }
+  function resolve(c, how) {
+    question.status = how === "confirmed" ? "approved" : "rejected";
+    c.classList.remove("open");
+    c.dataset.state = "resolved";
+    const acts = c.querySelector(".acts");
+    if (how === "skipped") {
+      acts.outerHTML = `<div class="resolved">${ic("check", 14)}<span>Skipped. Nothing was queued.</span></div>`;
+      c.querySelector('[role="status"]').textContent = "Skipped";
+      return;
+    }
+    question.remaining = 10;
+    acts.outerHTML = `<div class="resolved">${ic("check", 14)}<span>Queued ${timedOut.length} runs.</span><button class="btn" type="button" data-a="undo">${ic("undo", 14)}Undo <span class="cd">(${question.remaining}s)</span></button></div>`;
+    c.querySelector('[role="status"]').textContent = "Confirmed";
+    const undo = c.querySelector('[data-a="undo"]');
+    undo.onclick = () => {
+      clearInterval(question.timer);
+      question.status = "undone";
+      undo.parentElement.innerHTML = `${ic("undo", 14)}<span>Undone. The runs stay failed.</span>`;
+    };
+    question.timer = setInterval(() => {
+      question.remaining--;
+      const cd = c.querySelector(".cd");
+      if (cd) cd.textContent = `(${question.remaining}s)`;
+      if (question.remaining <= 0) {
+        clearInterval(question.timer);
+        const u = c.querySelector('[data-a="undo"]');
+        if (u) u.remove();
+      }
+    }, 1000);
+    setTimeout(
+      () =>
+        play([
+          {
+            t: "text",
+            text: `Queued. Both runs should finish in about six minutes, and ${fmt(left - retryCost)} credits are left.`,
+          },
+          { t: "chips", items: ["Track failed runs", "What's my day?"] },
+        ]),
+      400,
+    );
+  }
+
+  function widgets() {
+    const used = Math.round((PLAN.used / PLAN.credits) * 100);
+    const g = el(`<div class="grid"><div class="grid-in">
+    <div class="card w s"><div class="w-h">${ic("coins", 14)}Credits left</div><div class="w-b"><span class="big">${fmt(left)}</span><div class="meter" role="img" aria-label="${used} percent of the plan used"><i style="width:${used}%"></i></div><span class="sub">of ${fmt(PLAN.credits)} · resets ${PLAN.resetsOn}</span></div><button class="w-open" type="button" aria-label="Credits left, ${fmt(left)} of ${fmt(PLAN.credits)}. Ask how much was spent this week"></button></div>
+    <div class="card w s"><div class="w-h">${ic("alert", 14)}Failed overnight</div><div class="w-b"><span class="big">${failedOvernight.length}</span><span class="sub">of ${OVERNIGHT_TOTAL} runs · ${timedOut.length} timed out</span></div><button class="w-open" type="button" aria-label="Failed overnight, ${failedOvernight.length} of ${OVERNIGHT_TOTAL}. Ask what failed"></button></div>
+    <div class="card w m"><div class="w-h">${ic("activity", 14)}Running now <span style="margin-left:auto">${RUNNING.length}</span></div><div class="w-b" style="justify-content:flex-start;padding-top:12px">${RUNNING.map((r) => `<div class="row"><span class="t">${esc(r.title)}</span><span class="pct">${r.pct}%</span></div><div class="meter"><i style="width:${r.pct}%"></i></div>`).join("")}</div></div>
+  </div></div>`);
+    const opens = g.querySelectorAll(".w-open");
+    opens[0].onclick = () => ask("How much have we spent this week?");
+    opens[1].onclick = () => ask("What failed overnight?");
+    return g;
+  }
+
+  function viewCard() {
+    const c = el(
+      `<div class="card vc" data-view-card><div class="ic">${ic("table")}</div><div class="tx"><b>Failed runs this week</b><span data-sub></span></div><button class="btn" type="button">${ic("eye", 14)}Show</button></div>`,
+    );
+    c.querySelector(".btn").onclick = () => showView();
+    setTimeout(refreshViewCards, 0);
+    return c;
+  }
+  function refreshViewCards() {
+    document.querySelectorAll("[data-view-card]").forEach((c) => {
+      const v = view.versions[view.current];
+      c.querySelector("[data-sub]").textContent = `All projects · ${RUNS.length} runs · ${v ? v.label : ""}`;
+      const b = c.querySelector(".btn");
+      if (view.shown && b) {
+        b.outerHTML = `<span class="showing">${ic("eye", 12)}Showing</span>`;
+      }
+    });
+  }
+  function showView() {
+    view.shown = true;
+    document.getElementById("app").classList.add("has-view");
+    document.getElementById("app").classList.remove("show-chat");
+    setPaneTabs();
+    renderFrame();
+    refreshViewCards();
+    document.querySelector(".fh b").focus();
+  }
+  function closeView() {
+    view.shown = false;
+    document.getElementById("app").classList.remove("has-view");
+    document.querySelectorAll("[data-view-card] .showing").forEach((s) => {
+      s.outerHTML = `<button class="btn" type="button">${ic("eye", 14)}Show</button>`;
+    });
+    document.querySelectorAll("[data-view-card] .btn").forEach((b) => (b.onclick = () => showView()));
+  }
+  function renderFrame() {
+    if (!view.shown) return;
+    const v = view.versions[view.current];
+    const f = document.getElementById("frame");
+    const body = view.rerunning
+      ? `<div class="skel" style="width:60%"></div><div class="skel"></div><div class="skel" style="width:80%"></div><div class="skel"></div>`
+      : v.mode === "table"
+        ? tableBody()
+        : boardBody();
+    f.innerHTML = `
+    <div class="fh">
+      <div class="ft"><b tabindex="-1">Failed runs this week</b><span>All projects · ${view.rerunning ? "rerunning" : "updated just now"}</span></div>
+      <div class="fa">
+        <div class="tabs" role="tablist" aria-label="View mode"><button class="tab" role="tab" aria-selected="${v.mode === "table"}" data-m="table">Table</button><button class="tab" role="tab" aria-selected="${v.mode === "board"}" data-m="board">Board</button></div>
+        <button class="btn ghost icon" type="button" aria-label="Undo" data-a="undo" ${view.current > 0 ? "" : "disabled"}>${ic("undo")}</button>
+        <button class="btn ghost icon" type="button" aria-label="Rerun" data-a="rerun">${ic("refresh")}</button>
+        <button class="btn ${view.pinned ? "" : "ghost"} icon" type="button" aria-label="Pin" aria-pressed="${view.pinned}" data-a="pin">${ic("pin")}</button>
+        <button class="btn ghost icon" type="button" aria-label="Close view" data-a="close">${ic("x")}</button>
+      </div>
+    </div>
+    <div class="fc" tabindex="0" aria-label="View content">${body}</div>
+    <div class="ff"><span>Made in chat: Track failed runs</span><span>${v.label}</span></div>`;
+    f.querySelectorAll("[data-m]").forEach(
+      (b) =>
+        (b.onclick = () => {
+          const m = b.dataset.m;
+          if (m === v.mode) return;
+          view.versions = view.versions
+            .slice(0, view.current + 1)
+            .concat({ mode: m, label: `v${view.current + 2} · ${m}` });
+          view.current++;
+          renderFrame();
+          refreshViewCards();
+        }),
+    );
+    f.querySelector('[data-a="undo"]').onclick = () => {
+      if (view.current > 0) {
+        view.current--;
+        renderFrame();
+        refreshViewCards();
+      }
+    };
+    f.querySelector('[data-a="rerun"]').onclick = () => {
+      view.rerunning = true;
+      renderFrame();
+      setTimeout(() => {
+        view.rerunning = false;
+        renderFrame();
+      }, 900);
+    };
+    f.querySelector('[data-a="pin"]').onclick = () => {
+      view.pinned = !view.pinned;
+      renderFrame();
+    };
+    f.querySelector('[data-a="close"]').onclick = closeView;
+  }
+  function tableBody() {
+    return `<div style="overflow-x:auto"><table><thead><tr><th>When</th><th>Project</th><th>Prompt</th><th>Model</th><th>Reason</th><th>Credits</th></tr></thead><tbody>${RUNS.map((r) => `<tr><td class="n">${esc(r.when)}</td><td>${esc(r.project)}</td><td>${esc(r.prompt)}</td><td>${esc(r.model)}</td><td>${esc(r.reason)}</td><td class="n">${r.credits}</td></tr>`).join("")}</tbody></table></div>`;
+  }
+  function boardBody() {
+    const lanes = ["Timed out", "Content filter", "Provider error"];
+    return `<div style="overflow-x:auto"><div class="board">${lanes
+      .map((l) => {
+        const rs = RUNS.filter((r) => r.reason === l);
+        return `<div class="lane"><h4><span>${l}</span><span>${rs.length}</span></h4>${rs.map((r) => `<div class="tile">${esc(r.prompt)}<span>${esc(r.project)} · ${esc(r.when)}</span></div>`).join("")}</div>`;
+      })
+      .join("")}</div></div>`;
+  }
+
+  function setPaneTabs() {
+    const chatOn = document.getElementById("app").classList.contains("show-chat");
+    document.getElementById("sw-chat").setAttribute("aria-selected", String(chatOn));
+    document.getElementById("sw-view").setAttribute("aria-selected", String(!chatOn));
+  }
+  document.getElementById("sw-chat").onclick = () => {
+    document.getElementById("app").classList.add("show-chat");
+    setPaneTabs();
+  };
+  document.getElementById("sw-view").onclick = () => {
+    document.getElementById("app").classList.remove("show-chat");
+    setPaneTabs();
+  };
+
+  const input = document.getElementById("input"),
+    send = document.getElementById("send");
+  input.addEventListener("input", () => {
+    send.disabled = input.value.trim() === "";
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      document.getElementById("form").requestSubmit();
+    }
+  });
+  document.getElementById("form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const t = input.value.trim();
+    if (!t || busy) return;
+    input.value = "";
+    send.disabled = true;
+    ask(t);
+  });
+
+  renderEmpty();
+</script>

@@ -154,3 +154,37 @@ test.describe("/openui", () => {
     });
   }
 });
+
+test.describe("/generated-chat", () => {
+  for (const width of [1280, 375]) {
+    test(`plays the hero path to a shown view at ${width}px without console errors or sideways scroll`, async ({
+      page,
+    }) => {
+      const errors: string[] = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      page.on("console", (m) => {
+        if (m.type() === "error") errors.push(m.text());
+      });
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/generated-chat");
+      await expect(page.locator('[data-slot="generated-chat-page-title"]')).toHaveText("Generated chat");
+
+      const stream = page.locator('[data-region="message-stream"]');
+      await page.getByRole("button", { name: "What failed overnight?" }).click();
+      await stream.getByRole("button", { name: "Retry 2 timed-out runs" }).click();
+      await stream.getByRole("button", { name: "Confirm" }).click();
+      await expect(stream.getByText(/^Queued\. Both runs/)).toBeVisible();
+
+      await stream.getByRole("button", { name: "Track failed runs" }).last().click();
+      await stream.getByRole("button", { name: "Show Failed runs this week" }).click();
+      const view = page.getByRole("region", { name: "Failed runs this week" });
+      await expect(view.getByText("Hero banner, rooftop garden at golden hour")).toBeVisible();
+
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+      expect(errors).toEqual([]);
+    });
+  }
+});
