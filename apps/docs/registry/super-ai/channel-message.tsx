@@ -159,7 +159,7 @@ function Options({ channel, options, spoken, answerable, onAnswer, scale, classN
                 className={cn(
                   itemClass,
                   "inline-flex min-h-7 items-center rounded-lg border border-border bg-background px-2.5 py-1 text-foreground",
-                  scale.button ? "" : "text-[0.8rem]",
+                  scale.button ? "" : "text-xs",
                 )}
               >
                 {label(option, index)}
@@ -412,7 +412,7 @@ function ChannelMessage({
         data-slot="channel-message-script"
         className="flex min-w-0 flex-col gap-2 rounded-lg border border-border bg-background px-4 py-3 text-foreground"
       >
-        <p className={cn(scale.small, "font-semibold uppercase tracking-wide text-foreground")}>
+        <p className={cn(scale.small, "font-semibold text-foreground")}>
           Phone script
         </p>
         <p className={scale.body}>This is {message.from}.</p>
