@@ -361,7 +361,9 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["badge", "breadcrumb", "button", "button-group"],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["document-context", "editor-context", "privacy-chip", "saved-state"],
+    // `private-session` (D26): the host passing N15's PrivateSessionChip into
+    // the privacy slot. B7 imports nothing for it; the state forces the story.
+    states: ["document-context", "editor-context", "privacy-chip", "saved-state", "private-session"],
     specAnchor: "component-specs.md#b7-app-topbar",
   },
   {
@@ -811,14 +813,17 @@ export const MANIFEST: ManifestItem[] = [
     // `cost` is the registry:lib contract module — F1 takes only the
     // GenerationState union from it, but the dependency is real and a consumer
     // installing result-card needs the file.
-    consumes: ["preview-tile", "cost"],
+    consumes: ["ai-label", "preview-tile", "cost"],
     npm: ["lucide-react"],
     // catalog.md's raw states mixed one media-type axis ("image/video/audio/
     // text/3D") into the lifecycle list and omitted `queued`. Normalised to the
     // six-name GenerationState union the State contract fixes
     // (concept-model.md:108, wave-4 spec §1.6 — F1 "uses it verbatim"), with
     // the media-type axis kept as its own story rather than dropped.
-    states: ["idle", "queued", "streaming", "done", "failed", "locked", "media-types"],
+    // `watermarked` (D26, Shape of AI Watermark) is not a lifecycle state and
+    // does not join GenerationState: it is the `watermark` prop drawing A13 on
+    // a `done` asset, declared here so its story is forced through the gate.
+    states: ["idle", "queued", "streaming", "done", "failed", "locked", "media-types", "watermarked"],
     specAnchor: "component-specs.md#f1-result-card",
   },
   {
@@ -1348,9 +1353,11 @@ export const MANIFEST: ManifestItem[] = [
     wave: 7,
     base: ["card"],
     shadcn: ["badge", "card"],
-    consumes: ["choice-chips", "section-header"],
+    consumes: ["ai-label", "choice-chips", "section-header"],
     npm: ["lucide-react"],
-    states: ["type-badge", "excerpt", "edited-ago", "view-count", "privacy-icon"],
+    // `ai-label` (D26): the per-item A13 chip, a field-shaped state like the
+    // other five.
+    states: ["type-badge", "excerpt", "edited-ago", "view-count", "privacy-icon", "ai-label"],
     specAnchor: "component-specs.md#j4-artifact-grid",
   },
   {
@@ -1412,7 +1419,7 @@ export const MANIFEST: ManifestItem[] = [
     wave: 8,
     base: ["card", "textarea"],
     shadcn: ["button", "button-group", "card", "label", "textarea"],
-    consumes: [],
+    consumes: ["ai-label"],
     npm: ["lucide-react"],
     states: ["streaming", "editable", "re-promptable", "approval-verbs"],
     specAnchor: "component-specs.md#k1-ai-doc-block",
@@ -1954,7 +1961,7 @@ export const MANIFEST: ManifestItem[] = [
     wave: 11,
     base: ["card", "a10", "a12"],
     shadcn: ["card", "button"],
-    consumes: ["section-header", "stat-readout"],
+    consumes: ["ai-label", "section-header", "stat-readout"],
     npm: ["lucide-react"],
     // The trigger reasons (user / budget-exhausted / low-confidence / policy)
     // are an axis, not states — they are the `trigger` prop, rendered across

@@ -67,4 +67,42 @@ describe("AppTopbar", () => {
     render(<AppTopbar context="document" title="Q3 Roadmap" className="test-class" />);
     expect(document.querySelector('[data-slot="app-topbar"]')!.className).toContain("test-class");
   });
+
+  it("renders the private-session state: an element passed to privacy renders as given", () => {
+    // A stand-in for N15's PrivateSessionChip: B7 imports no sibling, so its
+    // own test does not either. The story renders the real chip.
+    render(
+      <AppTopbar
+        context="document"
+        title="Q3 Roadmap"
+        privacy={
+          <span data-slot="private-session-chip" data-state="active">
+            Private session
+          </span>
+        }
+      />,
+    );
+    const leading = document.querySelector('[data-slot="app-topbar-leading"]')!;
+    expect(leading.querySelector('[data-slot="private-session-chip"]')).toHaveTextContent("Private session");
+    // The element replaces B7's own chip rather than nesting inside it.
+    expect(document.querySelector('[data-slot="app-topbar-privacy"]')).toBeNull();
+  });
+
+  it("lets two chips share the slot as a fragment", () => {
+    render(
+      <AppTopbar
+        context="editor"
+        title="Standup notes"
+        privacy={
+          <>
+            <span data-slot="private-session-chip">Private session</span>
+            <span data-slot="capture-consent">Recording</span>
+          </>
+        }
+      />,
+    );
+    const leading = document.querySelector('[data-slot="app-topbar-leading"]')!;
+    expect(leading.querySelector('[data-slot="private-session-chip"]')).toBeInTheDocument();
+    expect(leading.querySelector('[data-slot="capture-consent"]')).toBeInTheDocument();
+  });
 });

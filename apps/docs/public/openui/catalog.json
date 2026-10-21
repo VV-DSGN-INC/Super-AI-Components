@@ -126,10 +126,13 @@
         "Unmounting the block to re-prompt it — remounting a fresh block under a new key reflows the document under the user's cursor while they are typing an instruction into it. Change `state` and swap `children`; the same DOM node stays between the same two paragraphs.",
         "Wrapping the children in your own layout div before passing them in. The content slot deliberately renders them unwrapped so your document model gets back exactly the markup it gave; an extra wrapper ends up in the export.",
         "Hiding the verbs while streaming instead of disabling them. It reads as a smaller component that suddenly grows, and it hides the fact that a decision is coming.",
-        "Treating the frame as the only signal that a passage is generated. The attribution line is text for a reason — a border colour does not survive a high-contrast theme, a greyscale print, or an export to plain HTML.",
+        "Treating the frame as the only signal that a passage is generated. The attribution is a text chip for a reason — a border colour does not survive a high-contrast theme, a greyscale print, or an export to plain HTML.",
+        "Writing a sentence into `label`. It is A13's chip text, which stays one word or two and clips past that; the block lets the chip shrink so the streaming indicator keeps its place, so a long label loses its end rather than wrapping.",
         "Leaving `value` undefined in the editable state. The edit field is controlled; pair `value` with `onValueChange` and keep it in step with the prose you pass as children."
       ],
-      "consumes": [],
+      "consumes": [
+        "ai-label"
+      ],
       "consumedBy": [
         "artifact-shell"
       ],
@@ -186,7 +189,11 @@
       ],
       "consumes": [],
       "consumedBy": [
+        "ai-doc-block",
+        "artifact-grid",
         "auto-fill",
+        "escalation-handoff",
+        "result-card",
         "summary-card"
       ],
       "insteadUse": [
@@ -317,6 +324,7 @@
         "Don't signal privacy with a bare coloured dot — it disappears for colorblind users and screen readers alike.",
         "Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.",
         "Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing (\"5 days ago\") before handing it over.",
+        "Writing \"Private session\" or \"Recording\" into the `{ label }` form. Those two states have owners, N15 and N13, whose chips carry the fixed copy, the icon and, for capture, the live region; a hand-written label drifts from them and announces nothing. The bar renders their element as given and imports neither.",
         "Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state."
       ],
       "consumes": [],
@@ -366,10 +374,12 @@
         "Adding a `typeLabel` prop so a caller can restyle one badge. The badge and the facet are two renders of one value; the moment they can drift, a card reads \"Spreadsheet\" while its facet says \"Table\" and the filter silently returns nothing.",
         "Wrapping the whole card in an anchor to make it clickable. Everything inside then fuses into one accessible name — badge, title, excerpt, edited-ago, privacy word and view count read as a single run-on string. The card uses a stretched pseudo-element on the excerpt link instead, so the whole surface is clickable while the link's name stays exactly the excerpt.",
         "Giving the privacy state an `sr-only` suffix next to a visible glyph. Screen readers concatenate adjacent text with no separator, so a visible \"1,204\" beside an sr-only \" views\" can announce as \"1,204views\". Both the privacy word and the view unit are real visible text here for that reason.",
+        "Passing `by` or `at` through to the chip by forking the card. The tooltip form of A13 is a focusable trigger, and the stretched link covers the whole card, so a pointer never reaches it and the keyboard gets a second stop per card. Show the model and the time on the artifact's own page, where the tooltip form has room and nothing covers it.",
         "Sorting the grid by title. Titles are the least reliable field on the card; recency and session order are what people actually navigate by.",
         "Leaving empty session groups on screen after a filter runs. Sessions with no surviving items are dropped, and a fully empty view announces itself through a role=\"status\" message rather than silently blanking."
       ],
       "consumes": [
+        "ai-label",
         "choice-chips",
         "section-header"
       ],
@@ -1494,10 +1504,12 @@
         "In `preview` and `unavailable` the footer element renders even when you pass no handlers at all, leaving an empty action bar under the packet. Pass at least one action, or the card ends in a blank strip.",
         "`wait` being absent is not the same as passing an empty string: the component prints \"We don't have a wait time yet.\" on purpose. That fallback is the honest answer when queue depth is unknown — don't pass an invented estimate to avoid it.",
         "The four trigger strings are a module constant, not props. You cannot reword them per surface; if none of the four fits, the situation probably is not an escalation.",
+        "Switching the packet's label without switching the thread. The card marks the packet after-handoff on `accepted`, but it does not render the conversation: if your message list keeps the AI's turns at sender, the thread still reads as if the AI were answering. Drive both from the same `state`.",
         "The component models no return path. `accepted` is where it stops — there is no prop for resuming the conversation or closing it out, so the host owns whatever happens after a person picks it up.",
         "Under `dir=\"rtl\"` the card mirrors correctly, but the \"Already tried\" bullets use a right-pointing arrow that does not flip. Cosmetic rather than blocking, and tracked as a gap."
       ],
       "consumes": [
+        "ai-label",
         "section-header",
         "stat-readout"
       ],
@@ -3162,9 +3174,12 @@
         "The card renders a `role=\"status\"` region per instance. In a grid of twenty that is twenty live regions, and updating `progress` on every server tick makes each one announce again — throttle progress updates to every 5–10% rather than forwarding every event.",
         "`onSelect` means two different things depending on `selectable`: with it off, the tile itself becomes a button and reports `aria-pressed`; with it on, the tile stays inert and the checkbox is the only control. Passing `selectable` without `onSelect` gives you a checkbox that cannot be checked.",
         "The footer inherits `text-foreground`, not muted text, on purpose. Dropping a component in that sets its own muted foreground over a muted background reintroduces the 4.34:1 contrast failure this registry keeps hitting — A2 `cost-chip` currently still does exactly that.",
-        "`progress` is ignored outside `streaming`. If your bar never appears, check the state before checking the number."
+        "`progress` is ignored outside `streaming`. If your bar never appears, check the state before checking the number.",
+        "`watermark` is ignored outside `done`: the mark is a claim about an asset that exists, so a queued, failed or locked card never carries it. Set it with the result rather than toggling it on later.",
+        "Don't import N16 into a fork of this card to wire credentials. `renderWatermark` is the boundary: the card owns the mark and its place on the asset, the host owns the panel. Returning something that drops the `mark` you were handed removes the A13 chip and with it the visible half of the Watermark pattern."
       ],
       "consumes": [
+        "ai-label",
         "preview-tile",
         "cost"
       ],

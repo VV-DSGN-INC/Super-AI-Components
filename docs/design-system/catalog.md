@@ -48,7 +48,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | B4  | `modality-rail` `NEW` | Vertical icon+label tool switcher for editors | 8–14 items · overflow · active · badge · bottom-pinned                 | Toggle-group, Tooltip      |
 | B5  | `promo-card`          | Sidebar CTA card                              | upgrade · invite/refer · update-available · quota warning              | Card                       |
 | B6  | `thread-list` `KEEP`  | Date-grouped conversations/tasks              | pin · inline rename · delete-confirm · active · unread · running       | Sidebar, Dropdown-menu     |
-| B7  | `app-topbar` `NEW`    | Breadcrumb + title + status + actions         | document context · editor context; privacy chip; saved-state           | Breadcrumb, Button-group   |
+| B7  | `app-topbar` `NEW`    | Breadcrumb + title + status + actions         | document · editor context; privacy chip; private session; saved-state  | Breadcrumb, Button-group   |
 | B8  | `account-menu` `NEW`  | Avatar menu with nested appearance submenu    | theme radio · background swatches · shortcut hints                     | Dropdown-menu, Radio-group |
 
 **Dropped from the spec:** `chat-header` (absorbed by B7), `credits-indicator` (moved to M2).
@@ -98,15 +98,15 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 
 ## F · Results & assets — 7
 
-| #   | Name                 | Purpose                                  | Key states / variants                                                          | shadcn base        |
-| --- | -------------------- | ---------------------------------------- | ------------------------------------------------------------------------------ | ------------------ |
-| F1  | `result-card` `NEW`  | One generated asset, anywhere it appears | image/video/audio/text/3D · idle · streaming · done · failed · locked          | Card, Aspect-ratio |
-| F2  | `generation-grid`    | Batch gallery of results                 | date sections · density · select-mode · empty                                  | F1 + A3            |
-| F3  | `asset-detail` `NEW` | Lightbox: media + provenance rail        | prompt with highlighted spans · params grid · Copy/Remix/Edit · more-like-this | Dialog, A10        |
-| F4  | `action-stack` `NEW` | Cross-tool handoff on a result           | Extend → Upscale → Use in Lip sync; cost per action                            | Dropdown-menu, A9  |
-| F5  | `compare-viewer`     | Labelled panes                           | side · single · wipe; synced zoom and transport                                | Resizable          |
-| F6  | `render-queue`       | Staged jobs: inputs → preview → export   | per-row spec · progress · retry · cancel · download                            | Table, Progress    |
-| F7  | `approval-card`      | Single-artifact approval                 | Confirm · Edit · Regenerate · Skip; submitting; resolved with undo             | Card, Button-group |
+| #   | Name                 | Purpose                                  | Key states / variants                                                               | shadcn base        |
+| --- | -------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------- | ------------------ |
+| F1  | `result-card` `NEW`  | One generated asset, anywhere it appears | image/video/audio/text/3D · idle · streaming · done · failed · locked · watermarked | Card, Aspect-ratio |
+| F2  | `generation-grid`    | Batch gallery of results                 | date sections · density · select-mode · empty                                       | F1 + A3            |
+| F3  | `asset-detail` `NEW` | Lightbox: media + provenance rail        | prompt with highlighted spans · params grid · Copy/Remix/Edit · more-like-this      | Dialog, A10        |
+| F4  | `action-stack` `NEW` | Cross-tool handoff on a result           | Extend → Upscale → Use in Lip sync; cost per action                                 | Dropdown-menu, A9  |
+| F5  | `compare-viewer`     | Labelled panes                           | side · single · wipe; synced zoom and transport                                     | Resizable          |
+| F6  | `render-queue`       | Staged jobs: inputs → preview → export   | per-row spec · progress · retry · cancel · download                                 | Table, Progress    |
+| F7  | `approval-card`      | Single-artifact approval                 | Confirm · Edit · Regenerate · Skip; submitting; resolved with undo                  | Card, Button-group |
 
 ## G · Canvas & nodes — CUT 2026-07-31
 
@@ -160,7 +160,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | J1  | `asset-library`         | Header actions, search, chips, list/grid, folders | file · folder · mixed · empty · selection mode                                       | Table, Toggle-group   |
 | J2  | `filter-panel`          | Faceted rail                                      | checkbox groups with counts · see-more · collapsible · saved searches · view options | Checkbox, Collapsible |
 | J3  | `explore-gallery`       | Masonry community feed                            | sort tabs · type pills · infinite · docked prompt                                    | —                     |
-| J4  | `artifact-grid` `NEW`   | Document/artifact cards grouped by session        | type badge · excerpt · edited-ago · view count · privacy icon                        | Card                  |
+| J4  | `artifact-grid` `NEW`   | Document/artifact cards grouped by session        | type badge · excerpt · edited-ago · view count · privacy icon · AI label             | Card                  |
 | J5  | `record-list` `NEW`     | Project / scenario rows                           | app-icon cluster · metadata · enable toggle · run status · overflow                  | Table, Switch         |
 | J6  | `template-detail` `NEW` | Template preview modal                            | preview + thumbnail strip · option selects · author + follow · more-like-this        | Dialog, Carousel      |
 | J7  | `track-list` `RESTORED` | Music library rows                                | artwork · tags · inline waveform · BPM · key                                         | Table                 |
