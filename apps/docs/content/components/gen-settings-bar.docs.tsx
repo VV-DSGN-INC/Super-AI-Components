@@ -1,6 +1,8 @@
 import type { ComponentDocs } from "@/lib/component-docs";
 import {
   LockedWhileRunning,
+  DraftNamedAsLowerQuality,
+  DraftNamedOnlyAsCheaper,
   SegmentsFollowTheModel,
   SegmentsRepeatTheirOwnLabels,
   StripUsedToNarrowAList,
@@ -32,6 +34,10 @@ export const GenSettingsBarDocs: ComponentDocs = {
       slot: "gen-settings-item",
       note: "One segment. A real button whose children are the current value — that text is also its entire accessible name. It reads `disabled` from the bar through context, and takes its own `disabled` to override that either way.",
     },
+    {
+      slot: "gen-settings-quality",
+      note: "Optional draft or final segment (`GenSettingsQuality`). Renders only when you pass both `quality` and `onQualityChange`; otherwise it is absent from the DOM. A labelled group of two toggle items, `gen-settings-quality-draft` and `gen-settings-quality-final`, each a `GenSettingsItem` with `aria-pressed`.",
+    },
   ],
   usage:
     "Reach for it wherever a run is about to be launched and its parameters must stay visible while the prompt is being written: under a composer, along the top of a generation panel, in the settings slot of `media-prompt-bar`. Compose it from `GenSettingsItem`s you place yourself — the bar only supplies the strip and the shared lock. Which segments exist is a decision about the selected model, not about the surface: an image model has no duration, so it gets no duration segment. When a parameter needs a label, a hint or a reset beside it, it has outgrown this strip and belongs in a `field-row` inside a panel; when the control narrows a list already on screen, you want `filter-bar` instead.",
@@ -44,6 +50,10 @@ export const GenSettingsBarDocs: ComponentDocs = {
       text: "Let the selected model decide which segments exist, and drop the ones it does not have rather than leaving a dead segment on the strip.",
       example: <SegmentsFollowTheModel />,
     },
+    {
+      text: 'Name the draft option as lower quality in its text ("Draft, lower quality"), and re-estimate cost from `onQualityChange` the way you do for any other segment.',
+      example: <DraftNamedAsLowerQuality />,
+    },
   ],
   donts: [
     {
@@ -53,6 +63,10 @@ export const GenSettingsBarDocs: ComponentDocs = {
     {
       text: "Don't prefix each segment with the parameter it sets. The value names itself, the strip has no room for both, and nothing here truncates — the labels just push the bar past the edge of whatever holds it.",
       example: <SegmentsRepeatTheirOwnLabels />,
+    },
+    {
+      text: 'Don\'t sell the draft option on price alone. A label such as "Cheaper" hides the trade, and the lower quality arrives as a surprise.',
+      example: <DraftNamedOnlyAsCheaper />,
     },
   ],
   accessibility: {
@@ -65,6 +79,7 @@ export const GenSettingsBarDocs: ComponentDocs = {
       'The bar announces as a toolbar with no name unless you give it one — nothing inside it says what is being configured. Pass an `aria-label` such as "Generation settings", and note that the announced role then promises arrow-key navigation this component does not have.',
       'A segment\'s accessible name is its children and nothing else, so the value is the name: a segment reads "1080p", never "Resolution, 1080p". An icon-only segment ships an unlabeled button unless you add an `aria-label`.',
       'Changing a parameter rewrites a button\'s own label under the user. The bar owns no live region, so nothing announces "resolution is now 1080p" — and a name that changes while its element still holds focus is not reliably re-announced.',
+      'The quality segment is a named group ("Quality") of two buttons whose state is `aria-pressed`, so "Draft, lower quality, pressed" is spoken. Like every segment it relabels nothing and announces nothing on change.',
       "`data-disabled` on the bar is a styling hook only. The programmatic state lives on the segments' own `disabled` attributes; the toolbar element itself carries no `aria-disabled`.",
     ],
     focus: [
@@ -73,6 +88,7 @@ export const GenSettingsBarDocs: ComponentDocs = {
     ],
   },
   pitfalls: [
+    '`GenSettingsQuality` is controlled and optional. Pass `quality` ("draft" or "final") together with `onQualityChange`; with either missing it renders nothing, so a host that does not support drafts shows no dead segment. The bar does not re-estimate cost itself, so `onQualityChange` is where you update the settings and request the new estimate, exactly as for any other segment.',
     "Only `GenSettingsItem`s join the arrow walk. A plain `<button>` placed inside the bar is not a toolbar item, so it keeps a tab stop of its own and the arrows pass it by; wrap any segment in `GenSettingsItem` (or render it through one) to keep the strip one stop.",
     'There is no value API. `GenSettingsItem` is a plain button: the value it shows is its `children`, and `onClick` hands you a MouseEvent rather than a new value, so each segment needs its own handler and the values are owned entirely upstream. Nothing here can report "resolution changed to 1080p" generically — the catalog naming Select and Toggle-group as the base describes the controls you open, not what this component ships.',
     "`disabled` travels through React context, so a segment inside a disabled bar is disabled even though nothing in its own JSX says so. To keep one segment live during a run, pass `disabled={false}` on it explicitly — leaving it off falls through to the bar's value.",

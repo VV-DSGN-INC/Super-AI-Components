@@ -1,6 +1,6 @@
 # Catalog
 
-**114 active items: 12 primitives · 89 components · 13 blocks.** Family G (canvas & nodes, incl.
+**125 active items: 13 primitives · 99 components · 13 blocks.** Family G (canvas & nodes, incl.
 the headless `useFlowRunner`) and O5 `flow-shell` were **cut 2026-07-31** — see
 [decisions.md](decisions.md) D9; their tables remain below, marked, as a record. Eight components
 were **restored 2026-08-02** (D12) from the gaps analysis. Per-component requirements are in
@@ -20,7 +20,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 
 ---
 
-## A · Primitives (L2) — 12
+## A · Primitives (L2) — 13
 
 | #   | Name                      | Purpose                                                   | Key states / variants                                                   | shadcn base                   |
 | --- | ------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------- |
@@ -36,6 +36,7 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | A10 | `stat-readout` `NEW`      | Compact key→value metadata                                | 2-col grid · inline rows · missing-value em-dash                        | —                             |
 | A11 | `reset-affordance` `NEW`  | The ↺ / ◇ beside every editable value                     | modified · at-default · keyframed · group-level · modified-dot          | Button, Tooltip               |
 | A12 | `section-header` `NEW`    | Group title + action + count + collapse                   | plain · with-action · with-count · collapsible                          | Collapsible                   |
+| A13 | `ai-label` `NEW`          | The "AI acted here" chip                                  | generated · edited · summarized · sender · after-handoff · text-tint    | Badge, Tooltip                |
 
 ## B · App shell & navigation — 8
 
@@ -62,32 +63,35 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | C4  | `recent-grid` `NEW`         | Recent projects with thumbnails                | grid/list · duration badge · edited-ago · in-grid empty · hover actions | Card, Aspect-ratio                 |
 | C5  | `recommendation-card` `NEW` | "Recommended for you" with apps + steps        | collapsed row · expanded detail · dismissible · save-for-later          | Card, Dialog                       |
 
-## D · Composer & context — 7
+## D · Composer & context — 9
 
-| #   | Name                    | Purpose                                            | Key states / variants                                                                                                        | shadcn base            |
-| --- | ----------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| D1  | `media-prompt-bar`      | The media-gen omnibox                              | floating · docked · node-embedded · locked · negative-prompt                                                                 | Textarea, Button-group |
-| D2  | `reference-strip` `NEW` | Typed attachment slots above the prompt            | empty · filled; roles: reference / first frame / last frame / video ref / character                                          | Aspect-ratio           |
-| D3  | `context-chips`         | Removable entity/range/file references             | file · selection · url · @-mention · overflow; resolved/resolving/unresolved                                                 | Badge                  |
-| D4  | `mode-tabs` `NEW`       | Ask/Design/Build · Chat/Cowork · Standard/Director | 2–5 modes · with-icon · with-tooltip                                                                                         | Toggle-group           |
-| D5  | `quote-reply`           | Select content → quoted block in composer          | text range · image region · table cell · timeline range                                                                      | Card                   |
-| D6  | `skill-menu` `NEW`      | Select-with-preview menu of agent skills           | search · hover preview · new-skill footer                                                                                    | Command, Popover       |
-| D7  | `slot-summary` `NEW`    | What the system understood, before it acts         | per-slot source (stated · inferred · defaulted · retrieved) · low-confidence flag · correct in place · missing · confirm/act | A9, Badge              |
+| #   | Name                         | Purpose                                            | Key states / variants                                                                                                        | shadcn base            |
+| --- | ---------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
+| D1  | `media-prompt-bar`           | The media-gen omnibox                              | floating · docked · node-embedded · locked · negative-prompt                                                                 | Textarea, Button-group |
+| D2  | `reference-strip` `NEW`      | Typed attachment slots above the prompt            | empty · filled; roles: reference / first frame / last frame / video ref / character                                          | Aspect-ratio           |
+| D3  | `context-chips`              | Removable entity/range/file references             | file · selection · url · @-mention · overflow; resolved/resolving/unresolved                                                 | Badge                  |
+| D4  | `mode-tabs` `NEW`            | Ask/Design/Build · Chat/Cowork · Standard/Director | 2–5 modes · with-icon · with-tooltip                                                                                         | Toggle-group           |
+| D5  | `quote-reply`                | Select content → quoted block in composer          | text range · image region · table cell · timeline range                                                                      | Card                   |
+| D6  | `skill-menu` `NEW`           | Select-with-preview menu of agent skills           | search · hover preview · new-skill footer                                                                                    | Command, Popover       |
+| D7  | `slot-summary` `NEW`         | What the system understood, before it acts         | per-slot source (stated · inferred · defaulted · retrieved) · low-confidence flag · correct in place · missing · confirm/act | A9, Badge              |
+| D8  | `prompt-enhancer` `NEW`      | Shows the rewrite of a prompt before it runs       | idle · enhancing · suggested · accepted · reverted · failed                                                                  | Popover, Button        |
+| D9  | `prompt-template-form` `NEW` | Fill-in-the-blank prompt template (Madlibs)        | empty · partially-filled · complete · with-defaults · missing-required · multi-step                                          | Input, Select, A6      |
 
-## E · Generation & parameters — 10
+## E · Generation & parameters — 11
 
-| #   | Name                              | Purpose                                              | Key states / variants                                                       | shadcn base            |
-| --- | --------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------- | ---------------------- |
-| E1  | `generation-panel`                | The left config column of a tool app                 | dropzone → directions → presets → settings → cost + Generate                | Card, Collapsible      |
-| E2  | `model-picker`                    | Choose a model; drives dynamic settings              | dropdown · expanded-cards · node-inline; price, capability, runtime badges  | Select, Popover, Card  |
-| E3  | `parameter-panel`                 | Generation params with plain-language ends           | slider+unit · segmented · tabbed · reset-all · inline education             | Field, Slider, Tabs    |
-| E4  | `preset-grid` `NEW`               | Visual preset chooser with labelled thumbnails       | style · palette · filter · environment · avatar; single/multi; see-more     | built on A8            |
-| E5  | `run-button`                      | Trigger + cost + progress in one control             | idle · estimating · running · done · failed · insufficient-credits · locked | Button, Progress       |
-| E6  | `generation-queue`                | Pending slots with progress                          | queued · running % · done · failed · cancel                                 | Skeleton, Progress     |
-| E7  | `member-gate-row` `NEW`           | Feature row locked behind a plan                     | locked+badge · unlocked · trial-available · inline upsell                   | Switch, Badge          |
-| E8  | `generation-wizard` `NEW`         | Multi-step generate dialog                           | stepper · preview pane · Skip / Back / primary                              | Dialog, Tabs           |
-| E9  | `tts-composer` `RESTORED`         | Script editor with per-segment voice, emotion, speed | per-segment regenerate · segment select · whole-script play                 | Textarea, A6           |
-| E10 | `voice-clone-recorder` `RESTORED` | Guided sample recording                              | prompt script · level metering · retake · consent capture                   | Progress, Alert-dialog |
+| #   | Name                              | Purpose                                                      | Key states / variants                                                       | shadcn base                   |
+| --- | --------------------------------- | ------------------------------------------------------------ | --------------------------------------------------------------------------- | ----------------------------- |
+| E1  | `generation-panel`                | The left config column of a tool app                         | dropzone → directions → presets → settings → cost + Generate                | Card, Collapsible             |
+| E2  | `model-picker`                    | Choose a model; drives dynamic settings                      | dropdown · expanded-cards · node-inline; price, capability, runtime badges  | Select, Popover, Card         |
+| E3  | `parameter-panel`                 | Generation params with plain-language ends                   | slider+unit · segmented · tabbed · reset-all · inline education             | Field, Slider, Tabs           |
+| E4  | `preset-grid` `NEW`               | Visual preset chooser with labelled thumbnails               | style · palette · filter · environment · avatar; single/multi; see-more     | built on A8                   |
+| E5  | `run-button`                      | Trigger + cost + progress in one control                     | idle · estimating · running · done · failed · insufficient-credits · locked | Button, Progress              |
+| E6  | `generation-queue`                | Pending slots with progress                                  | queued · running % · done · failed · cancel                                 | Skeleton, Progress            |
+| E7  | `member-gate-row` `NEW`           | Feature row locked behind a plan                             | locked+badge · unlocked · trial-available · inline upsell                   | Switch, Badge                 |
+| E8  | `generation-wizard` `NEW`         | Multi-step generate dialog                                   | stepper · preview pane · Skip / Back / primary                              | Dialog, Tabs                  |
+| E9  | `tts-composer` `RESTORED`         | Script editor with per-segment voice, emotion, speed         | per-segment regenerate · segment select · whole-script play                 | Textarea, A6                  |
+| E10 | `voice-clone-recorder` `RESTORED` | Guided sample recording                                      | prompt script · level metering · retake · consent capture                   | Progress, Alert-dialog        |
+| E11 | `voice-profile` `NEW`             | Saved rules for how output sounds, and which voice is active | none · preset · custom · editing · scoped · conflict · reset                | Card, Select, Textarea, Badge |
 
 **Consolidation:** E1–E5 replace the spec's `style-picker`, `palette-picker`, `tone-selector`,
 `shot-controls`, `music-brief` and `brush-controls`.
@@ -161,18 +165,19 @@ were **restored 2026-08-02** (D12) from the gaps analysis. Per-component require
 | J6  | `template-detail` `NEW` | Template preview modal                            | preview + thumbnail strip · option selects · author + follow · more-like-this        | Dialog, Carousel      |
 | J7  | `track-list` `RESTORED` | Music library rows                                | artwork · tags · inline waveform · BPM · key                                         | Table                 |
 
-## K · Documents & knowledge — 8
+## K · Documents & knowledge — 9
 
-| #   | Name                    | Purpose                                     | Key states / variants                                                              | shadcn base       |
-| --- | ----------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------- |
-| K1  | `ai-doc-block`          | Generated text block inside a document      | streaming · editable · re-promptable · Keep/Edit/Regenerate/Discard                | Card, Textarea    |
-| K2  | `inline-generate-popup` | Click empty space → prompt popover          | idle · generating · cancel                                                         | Popover, Textarea |
-| K3  | `diff-review`           | Track changes with per-change rationale     | word-level · per-change accept/reject · accept-all/reject-all                      | —                 |
-| K4  | `selection-toolbar`     | The ✨ menu on selected text                | improve · shorten · expand · tone submenu · custom prompt                          | I3                |
-| K5  | `source-panel` `NEW`    | Ingested sources with pipeline status       | parsing → chunking → embedding → ready/failed; chunk counts; empty                 | A9, Progress      |
-| K6  | `citation-ref` `NEW`    | Inline citation → source popover            | resolved · loading · unresolved; jump-to-source; copy quote                        | Hover-card        |
-| K7  | `answer-block` `NEW`    | Grounded answer with citations at the claim | streaming · cited · partially-cited · uncited-warning; retrieved-but-uncited shown | K6, A9            |
-| K8  | `source-cards` `NEW`    | The retrieved set behind an answer          | ranked · relevance shown · used vs retrieved-unused · permission-filtered · empty  | Card, A10         |
+| #   | Name                    | Purpose                                                 | Key states / variants                                                              | shadcn base             |
+| --- | ----------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------- | ----------------------- |
+| K1  | `ai-doc-block`          | Generated text block inside a document                  | streaming · editable · re-promptable · Keep/Edit/Regenerate/Discard                | Card, Textarea          |
+| K2  | `inline-generate-popup` | Click empty space → prompt popover                      | idle · generating · cancel                                                         | Popover, Textarea       |
+| K3  | `diff-review`           | Track changes with per-change rationale                 | word-level · per-change accept/reject · accept-all/reject-all                      | —                       |
+| K4  | `selection-toolbar`     | The ✨ menu on selected text                            | improve · shorten · expand · tone submenu · custom prompt                          | I3                      |
+| K5  | `source-panel` `NEW`    | Ingested sources with pipeline status                   | parsing → chunking → embedding → ready/failed; chunk counts; empty                 | A9, Progress            |
+| K6  | `citation-ref` `NEW`    | Inline citation → source popover                        | resolved · loading · unresolved; jump-to-source; copy quote                        | Hover-card              |
+| K7  | `answer-block` `NEW`    | Grounded answer with citations at the claim             | streaming · cited · partially-cited · uncited-warning; retrieved-but-uncited shown | K6, A9                  |
+| K8  | `source-cards` `NEW`    | The retrieved set behind an answer                      | ranked · relevance shown · used vs retrieved-unused · permission-filtered · empty  | Card, A10               |
+| K9  | `summary-card` `NEW`    | A labelled summary of a named source, at a chosen depth | generating · ready · attributed · quote-and-condense · collapsed · turned-off      | Card, Toggle-group, A13 |
 
 **Dropped:** `rewrite-panel`, `outline-builder`, `inline-suggestion`, `chunk-highlighter`,
 `memory-viewer` — single-product patterns. `retrieval-inspector` was dropped by the approved spec and
@@ -201,28 +206,38 @@ returns as K8 `source-cards`, its user-facing form (D16).
 | M6  | `rate-limit-banner`             | Cooldown countdown                             | your-limit · provider-capacity · live countdown · notify-me                        | Alert                   |
 | M7  | `connection-manager` `RESTORED` | BYO keys and local models                      | not-set · valid · invalid · unreachable; test-connection; download + hardware reqs | Card, Input             |
 
-## N · Feedback, trust & observability — 12
+## N · Feedback, trust & observability — 18
 
-| #   | Name                           | Purpose                                     | Key states / variants                                                                                                               | shadcn base            |
-| --- | ------------------------------ | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------- |
-| N1  | `feedback`                     | Thumbs / stars + reason popover             | idle · rating · submitted with undo                                                                                                 | Popover, Button-group  |
-| N2  | `trust-dialog` `NEW`           | Confirm running third-party content         | preview · warning · trust checkbox · Continue split-button with account picker                                                      | Alert-dialog, Checkbox |
-| N3  | `disclaimer-note` `NEW`        | "AI can make mistakes" footnote             | under-composer · in-card · inline                                                                                                   | —                      |
-| N4  | `trace-timeline`               | Waterfall of steps / tool calls / LLM calls | collapsed · expanded · errored · retries as siblings                                                                                | Collapsible            |
-| N5  | `run-inspector`                | Span detail: I/O, tokens, cost, errors      | input · output · metadata · error tabs                                                                                              | Tabs, A10              |
-| N6  | `usage-dashboard`              | Aggregate cost / token / latency            | period select · summary cards with deltas · per-model breakdown                                                                     | Chart, Card            |
-| N7  | `env-status` `RESTORED`        | Per-provider reachability                   | ok · degraded · key-invalid · not-running                                                                                           | Badge, A9              |
-| N8  | `permission-prompt` `RESTORED` | Agent asks before a side effect             | allow once · always allow · deny · **edit-first** (equal weight, D16)                                                               | Alert-dialog           |
-| N9  | `autonomy-selector` `NEW`      | How much the agent may do unasked           | ask every time · auto-approve reads · full auto; per-tool override; **grant list with revoke**; effective mid-run                   | Radio-group, A9        |
-| N10 | `safety-block` `NEW`           | A request or response stopped by policy     | input-blocked · output-blocked; policy named; triggering fragment quoted; sensitive-content blur; appeal/reroute                    | Alert                  |
-| N11 | `escalation-handoff` `NEW`     | Agent hands the conversation to a person    | triggered (user · budget-exhausted · low-confidence · policy) · packet preview · queued with wait estimate · accepted · unavailable | Card, A10, A12         |
-| N12 | `task-tray` `NEW`              | Work that outlives the view that started it | running · needs-input · done · failed; per-task cancel; opt-in completion notification; empty                                       | Sheet, A9              |
+| #   | Name                           | Purpose                                                             | Key states / variants                                                                                                               | shadcn base                    |
+| --- | ------------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| N1  | `feedback`                     | Thumbs / stars + reason popover                                     | idle · rating · submitted with undo                                                                                                 | Popover, Button-group          |
+| N2  | `trust-dialog` `NEW`           | Confirm running third-party content                                 | preview · warning · trust checkbox · Continue split-button with account picker                                                      | Alert-dialog, Checkbox         |
+| N3  | `disclaimer-note` `NEW`        | "AI can make mistakes" footnote                                     | under-composer · in-card · inline                                                                                                   | —                              |
+| N4  | `trace-timeline`               | Waterfall of steps / tool calls / LLM calls                         | collapsed · expanded · errored · retries as siblings                                                                                | Collapsible                    |
+| N5  | `run-inspector`                | Span detail: I/O, tokens, cost, errors                              | input · output · metadata · error tabs                                                                                              | Tabs, A10                      |
+| N6  | `usage-dashboard`              | Aggregate cost / token / latency                                    | period select · summary cards with deltas · per-model breakdown                                                                     | Chart, Card                    |
+| N7  | `env-status` `RESTORED`        | Per-provider reachability                                           | ok · degraded · key-invalid · not-running                                                                                           | Badge, A9                      |
+| N8  | `permission-prompt` `RESTORED` | Agent asks before a side effect                                     | allow once · always allow · deny · **edit-first** (equal weight, D16)                                                               | Alert-dialog                   |
+| N9  | `autonomy-selector` `NEW`      | How much the agent may do unasked                                   | ask every time · auto-approve reads · full auto; per-tool override; **grant list with revoke**; effective mid-run                   | Radio-group, A9                |
+| N10 | `safety-block` `NEW`           | A request or response stopped by policy                             | input-blocked · output-blocked; policy named; triggering fragment quoted; sensitive-content blur; appeal/reroute                    | Alert                          |
+| N11 | `escalation-handoff` `NEW`     | Agent hands the conversation to a person                            | triggered (user · budget-exhausted · low-confidence · policy) · packet preview · queued with wait estimate · accepted · unavailable | Card, A10, A12                 |
+| N12 | `task-tray` `NEW`              | Work that outlives the view that started it                         | running · needs-input · done · failed; per-task cancel; opt-in completion notification; empty                                       | Sheet, A9                      |
+| N13 | `capture-consent` `NEW`        | Consent before, and an indicator during, AI capture                 | pre-notice · recording · others-notified · declined · ended                                                                         | Alert, Badge, Switch           |
+| N14 | `data-controls` `NEW`          | Training and retention as separate, explained controls              | training-on · training-off · retention · plan-locked · none-collected · admin-managed                                               | Card, Switch, A9               |
+| N15 | `private-session-notice` `NEW` | Incognito: the statement, the chip, what is off                     | entering · active · connectors-reduced · exiting · unavailable                                                                      | Alert, Badge, A9               |
+| N16 | `content-credentials` `NEW`    | The provenance panel behind an AI label                             | verified · unverified · stripped · ai-generated · ai-edited · with-history                                                          | Hover-card, Popover, A10       |
+| N17 | `memory-manager` `NEW`         | What the AI remembers, and the controls to change it                | empty · populated · scoped · just-saved · editing · memory-off · reset-confirm                                                      | Card, A9, Switch, Alert-dialog |
+| N18 | `agent-presence` `NEW`         | Ambient sign an agent is acting here, with its scope and a takeover | idle · watching · acting · needs-you · paused · taken-over                                                                          | Badge, Button, Dropdown-menu   |
 
 **Dropped:** `agent-board`, `eval-board`, `model-compare`, `response-diff`, `review-queue` —
 single-product patterns on this board.
 
 N9–N12 enter by D16 via [agent-board-analysis.md](agent-board-analysis.md), not by the primary
-board. N10 and the `slot-summary` candidate carry a ⚠ in that doc: their counts rest on framework
+board.
+N13–N16, and A13 `ai-label`, enter by D28 via
+[shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md): the Trust builders slice. They
+are the first additions to A and N since the 114 freeze, and the only ones D28 reopens them for.
+D8, D9 and N17 enter by D30, the same source's passes outside Trust builders. E11, K9 and N18 enter by D31. N10 and the `slot-summary` candidate carry a ⚠ in that doc: their counts rest on framework
 documentation rather than observed pixels, and must be verified against the running products before
 their specs are treated as settled. `slot-summary` passed at 3 but is **held** — it is the surface
 the Dialog contract governs, and it waits for the contract's first consumer.
@@ -248,7 +263,7 @@ the Dialog contract governs, and it waits for the contract's first consumer.
 
 ---
 
-## P · Records & views (v2) — 2
+## P · Records & views (v2) — 3
 
 The first family from the **second reference board**, which
 [`2026-08-07-catalog-completion-design.md`](../superpowers/specs/2026-08-07-catalog-completion-design.md)
@@ -260,10 +275,11 @@ Evidence is [`records-board-analysis.md`](records-board-analysis.md) and D18, bo
 seven products read from public documentation, no screens seen. Family P is justified to build and
 does not reach A–O's evidentiary footing until the screens are verified.
 
-| #   | Name                      | Purpose                                           | Key states / variants                                                       | shadcn base         |
-| --- | ------------------------- | ------------------------------------------------- | --------------------------------------------------------------------------- | ------------------- |
-| P1  | `data-views` `NEW`        | One config, five interchangeable collection views | feed · board · table · calendar · timeline; group tone by mark              | Table, Toggle-group |
-| P2  | `detail-view-shell` `NEW` | One record, three opening modes                   | popup · overlay · fullscreen; two-column · collapsed tabs · collapsed stack | Dialog, Tabs        |
+| #   | Name                      | Purpose                                                         | Key states / variants                                                                | shadcn base                 |
+| --- | ------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------- |
+| P1  | `data-views` `NEW`        | One config, five interchangeable collection views               | feed · board · table · calendar · timeline; group tone by mark                       | Table, Toggle-group         |
+| P2  | `detail-view-shell` `NEW` | One record, three opening modes                                 | popup · overlay · fullscreen; two-column · collapsed tabs · collapsed stack          | Dialog, Tabs                |
+| P3  | `auto-fill` `NEW`         | One prompt across many fields, previewed on a few records first | configuring · sample-preview · applying · suggested · accepted · overridden · failed | Popover, Button, Badge, A13 |
 
 ---
 
@@ -305,28 +321,28 @@ The engine those pieces serve ships as the `generated-chat` `registry:lib` contr
 
 ## Totals
 
-| Family                              | Count                                                                                                |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| A — Primitives (L2)                 | 12                                                                                                   |
-| B — App shell & navigation          | 8                                                                                                    |
-| C — Home & launcher                 | 5                                                                                                    |
-| D — Composer & context              | 7                                                                                                    |
-| E — Generation & parameters         | 10                                                                                                   |
-| F — Results & assets                | 7                                                                                                    |
-| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                                            |
-| H — Timeline & transport            | 7                                                                                                    |
-| I — Editor surfaces                 | 5                                                                                                    |
-| J — Library, filtering & discovery  | 7                                                                                                    |
-| K — Documents & knowledge           | 8                                                                                                    |
-| L — First-run & onboarding          | 6                                                                                                    |
-| M — Account, plan & monetization    | 7                                                                                                    |
-| N — Feedback, trust & observability | 12                                                                                                   |
-| **B–N subtotal (L3)**               | **89** (88 after D16, 82 before it, 74 before D12, 84 before D9)                                     |
-| O — Blocks (L4)                     | 13 (O5 cut)                                                                                          |
-| P — Records & views (v2)            | 2                                                                                                    |
-| Q — Presentational chrome (Geist)   | 2                                                                                                    |
-| R — Generated chat                  | 3                                                                                                    |
-| **Total registry items**            | **121** (118 before D26, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| Family                              | Count                                                                                                                                                           |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A — Primitives (L2)                 | 13                                                                                                                                                              |
+| B — App shell & navigation          | 8                                                                                                                                                               |
+| C — Home & launcher                 | 5                                                                                                                                                               |
+| D — Composer & context              | 9                                                                                                                                                               |
+| E — Generation & parameters         | 11                                                                                                                                                              |
+| F — Results & assets                | 7                                                                                                                                                               |
+| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                                                                                                       |
+| H — Timeline & transport            | 7                                                                                                                                                               |
+| I — Editor surfaces                 | 5                                                                                                                                                               |
+| J — Library, filtering & discovery  | 7                                                                                                                                                               |
+| K — Documents & knowledge           | 9                                                                                                                                                               |
+| L — First-run & onboarding          | 6                                                                                                                                                               |
+| M — Account, plan & monetization    | 7                                                                                                                                                               |
+| N — Feedback, trust & observability | 18                                                                                                                                                              |
+| **B–N subtotal (L3)**               | **99** (96 before D31, 93 before D30, 89 before D28, 88 after D16, 82 before it, 74 before D12, 84 before D9)                                                   |
+| O — Blocks (L4)                     | 13 (O5 cut)                                                                                                                                                     |
+| P — Records & views (v2)            | 3                                                                                                                                                               |
+| Q — Presentational chrome (Geist)   | 2                                                                                                                                                               |
+| R — Generated chat                  | 3                                                                                                                                                               |
+| **Total registry items**            | **133** (130 before D26's family R, 126 before D31, 123 before D30, 118 before D28, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109
