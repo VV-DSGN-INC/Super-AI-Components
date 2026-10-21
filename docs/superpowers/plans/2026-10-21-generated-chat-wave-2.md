@@ -31,35 +31,43 @@
 ## Tasks
 
 ### Task 1: server-safe view catalog
+
 - Create `components/generated-chat/views.ts`: `READY_PROMPTS`, `VIEW`, `SPEND_VIEW`, `spendVersion(n, variant)`, `buildFailedRunsView(origin)`, `buildSpendView(origin)` returning `ViewInput`, and `CHIPS` (every chip phrase any turn offers, plus the ready prompts).
 - `turns.ts` imports these; behaviour unchanged.
 - Test `views.test.ts`: every chip in every scripted turn's suggestions is in `CHIPS`, and every `CHIPS` entry has a script (`hasScript`).
 
 ### Task 2: rate limiter
+
 - `components/generated-chat/server/rate-limit.ts`: `createRateLimiter({ limit, windowMs })` → `{ check(key: string, now: number): boolean }`.
 - Tests: allows `limit` calls, refuses the next, allows again after the window, keys are independent, old keys are pruned.
 
 ### Task 3: system prompt and part conversion
+
 - `server/system-prompt.ts`: `systemPrompt()` built from the fixtures (overnight runs, failures, credits, plan, spend by project, the views it can build, the tool rules).
 - `server/model-messages.ts`: `toModelMessages(messages)`: the last 12, data parts converted to short text (`[Showed the failed-runs card]`, `[Built the view Failed runs this week]`, `[Asked: Retry 2 video runs?]`), suggestions dropped.
 - Tests: numbers in the prompt come from the fixture functions; conversion keeps 12 and converts each data part.
 
 ### Task 4: chat handler
+
 - `server/chat-handler.ts`: `createChatHandler({ model: LanguageModel | null, limiter, now? })` → `(req: Request) => Promise<Response>`.
 - Tests (node environment, `MockLanguageModelV4`): 503 with no model; 413 over the cap; 400 on bad JSON; 429 when the limiter refuses; a `show_card` call streams a `data-card`; a `build_view` call streams a transient `data-effect` then a `data-view`; `suggest_followups` streams `data-suggestions`; no chips from the model adds the ready prompts; no text adds the fallback sentence; the model sees at most 12 messages and `maxOutputTokens` 800.
 
 ### Task 5: route
+
 - `app/api/chat/route.ts`: `POST = createChatHandler({ model: modelFromEnv(process.env.GENERATED_CHAT_MODEL), limiter })`, `maxDuration = 30`. `modelFromEnv` in `server/model-from-env.ts`, tested.
 
 ### Task 6: client transport
+
 - `components/generated-chat/model-transport.ts`: `createModelTransport({ api, scripted, turns, fetch? })`.
 - Tests: a scripted phrase never fetches; free text fetches the route and streams its parts; a 503 or a thrown fetch plays the fallback turn; an error chunk mid-stream appends the fallback parts and finishes.
 
 ### Task 7: demo and page
+
 - `GeneratedChatDemo` takes `model?: boolean`; the page passes `modelEnabled()` and its copy says which mode is on; the composer note follows.
 - Tests: model off keeps every existing test green; model on sends free text to the route and keeps chips scripted.
 
 ### Task 8: evals, spec, gates, preview
+
 - `scripts/eval-generated-chat.mts`: six samples of each hero free-text question against the live gateway model; checks words, chips, the expected tool and no claimed actions.
 - Spec 4.4 and open question 2 updated with the rulings.
 - Full CI order, rendered sweep, preview deploy with the env set for that deployment only, live check, PR stacked on #110.

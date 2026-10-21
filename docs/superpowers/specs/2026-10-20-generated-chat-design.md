@@ -167,6 +167,23 @@ failure, before or during the stream, falls back to the scripted reply. Limits: 
 body cap, the last 12 messages, an output cap, a per-address rate limit and a kill switch.
 Wave 2 needs a gateway credential on the docs project and Nick's go before it deploys.
 
+Built 2026-10-21 after Nick's go (plan `docs/superpowers/plans/2026-10-21-generated-chat-wave-2.md`).
+Calls made while building it, each overridable:
+
+- **Scripted first.** A message that matches a scripted turn plays the script; only free text
+  reaches the model. Every chip and ready prompt therefore behaves the same with the model on or
+  off, and the hero path never depends on a model call.
+- **Chips are an enum.** `suggest_followups` takes only phrases that have a scripted turn, so a
+  chip the model offers always resolves.
+- **The kill switch is the model ID.** `GENERATED_CHAT_MODEL` names a gateway `provider/model`;
+  unset, blank or `off` keeps the route at 503 and the page scripted. No model ID is in code.
+- **Limits:** a 32 KB body, the last 12 messages, 800 output tokens, four model steps, and 20
+  requests per address per 10 minutes, counted per instance.
+- **Fallback in two places.** The route turns a model failure into the scripted fallback reply.
+  The client transport does the same for a refusal, an unreachable route or a stream that breaks,
+  keeping what arrived.
+- **Auth is the deployment's OIDC token.** No gateway key is created or stored.
+
 ## 5. Phase 2: `chat-shell` answers in parts
 
 Approved as drafted (Nick, 2026-10-20). The phase 1 demo had to build the docked view around O2,
@@ -259,9 +276,11 @@ Approved as drafted (Nick, 2026-10-20).
 1. Should `widget` expose `size` as a prop the grid also reads, or should the grid item own the
    span alone? Proposed: both carry it, and a test fails when they disagree.
 2. Does wave 2 deploy to production with the model on, or stay on preview until a live eval?
-   Proposed: preview until six-sample evals of the hero questions pass.
+   Answered 2026-10-21: preview first. `scripts/eval-generated-chat.mts` passed 36/36 on
+   `anthropic/claude-haiku-5.5`. Production stays scripted until Nick sets the variable there.
 
 ## Changelog
 
 - 2026-10-20: first version, after Nick picked phase 1, then 2 and 3.
 - 2026-10-20: §5 and §6 detailed after Nick approved the phase 2 and 3 draft as drawn.
+- 2026-10-21: §4.4 built; calls made while building it recorded there; open question 2 answered.
