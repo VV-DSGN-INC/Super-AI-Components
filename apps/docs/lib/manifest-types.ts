@@ -22,7 +22,11 @@ export type FamilyId =
   // evidence A–O rests on, and folding it into F or K would quietly claim it
   // did. Sorting past N also leaves check-contract's B–N subtotal untouched.
   // See D20.
-  | "Q";
+  | "Q"
+  // R is generated chat: the tiles and the view frame a reply composes. Its
+  // evidence is desk research plus a private concept study, not a reference
+  // board, so it is counted apart for the reason P and Q are. See D26.
+  | "R";
 
 /**
  * Shape of AI's six categories and the pattern names under each, taken from the

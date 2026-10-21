@@ -126,10 +126,13 @@ import { TransportControlsDocs } from "@/content/components/transport-controls.d
 import { TrustDialogDocs } from "@/content/components/trust-dialog.docs";
 import { TtsComposerDocs } from "@/content/components/tts-composer.docs";
 import { UsageDashboardDocs } from "@/content/components/usage-dashboard.docs";
+import { ViewFrameDocs } from "@/content/components/view-frame.docs";
 import { VoiceCloneRecorderDocs } from "@/content/components/voice-clone-recorder.docs";
 import { VoiceProfileDocs } from "@/content/components/voice-profile.docs";
 import { WaveformEditorDocs } from "@/content/components/waveform-editor.docs";
 import { WhatsNewDocs } from "@/content/components/whats-new.docs";
+import { WidgetDocs } from "@/content/components/widget.docs";
+import { WidgetGridDocs } from "@/content/components/widget-grid.docs";
 import { WorkspaceSwitcherDocs } from "@/content/components/workspace-switcher.docs";
 
 export const componentDocs: Record<string, ComponentDocs> = {
@@ -258,9 +261,12 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "trust-dialog": TrustDialogDocs,
   "tts-composer": TtsComposerDocs,
   "usage-dashboard": UsageDashboardDocs,
+  "view-frame": ViewFrameDocs,
   "voice-clone-recorder": VoiceCloneRecorderDocs,
   "voice-profile": VoiceProfileDocs,
   "waveform-editor": WaveformEditorDocs,
   "whats-new": WhatsNewDocs,
+  "widget": WidgetDocs,
+  "widget-grid": WidgetGridDocs,
   "workspace-switcher": WorkspaceSwitcherDocs,
 };
