@@ -557,6 +557,27 @@ The one thing a gate cannot tell from oversight is silence, which is why the
 scaffolder seeds both fields with a nine-character reason: a new component is
 red until someone writes the judgment.
 
+### D27 · The Shape of AI cross-reference is catalog metadata, not contract — 2026-10-20
+
+The manifest gains an optional `patterns` field on `ManifestItem`, values shaped
+`<category>/<pattern>` (`trust-builders/caveat`), checked against a typed
+vocabulary of Shape of AI's six categories and the pattern names in the D26
+audit. The docs site reads it to filter the components index by category and to
+show chips on each component page; families stay the primary axis. `patterns`
+does **not** enter the shipped `.meta.json`. The contract is usage judgment
+written once in the guidance module and installed beside the code (D23, D24):
+variants, insteadUse, what the component refuses to do. A pattern tag is a
+statement about how a third party's library is cut, it changes when that
+library changes, and an agent using the component gets nothing from it that the
+contract does not already say. Putting it in the contract would also put a
+catalog reorganisation into every consumer's installed copy. If a later need
+shows an agent routing by Shape of AI vocabulary, it enters through the
+guidance module and `pnpm contract:emit`, never by editing a `.meta.json`.
+
+Only mappings the audit states are filled, for Covered and Partial rows. State
+rows (Randomize, Describe, Draft mode, Saved styles) are not mapped, because
+the pattern lands on an item only once the state ships.
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is
