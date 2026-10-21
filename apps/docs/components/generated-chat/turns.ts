@@ -10,7 +10,15 @@ import {
   timedOutOvernight,
   weekSpend,
 } from "./fixtures";
-import { buildFailedRunsView, buildSpendView, READY_PROMPTS, SPEND_VIEW, spendVersion, VIEW } from "./views";
+import {
+  buildFailedRunsView,
+  buildSpendView,
+  FALLBACK_TEXT,
+  READY_PROMPTS,
+  SPEND_VIEW,
+  spendVersion,
+  VIEW,
+} from "./views";
 
 export { READY_PROMPTS, SPEND_VIEW, VIEW };
 
@@ -177,8 +185,5 @@ TURNS.push(
 export const FALLBACK: Turn<DemoContext> = {
   id: "fallback",
   match: [],
-  parts: [
-    text("I answer from this workspace's runs, credits and queue. These are ready to try:"),
-    chips(...READY_PROMPTS),
-  ],
+  parts: [text(FALLBACK_TEXT), chips(...READY_PROMPTS)],
 };

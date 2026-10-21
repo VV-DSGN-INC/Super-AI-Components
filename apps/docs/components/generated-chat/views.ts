@@ -11,6 +11,10 @@ export const READY_PROMPTS = [
   "How much have we spent this week?",
 ];
 
+/** What the fallback reply says before offering the ready prompts. */
+export const FALLBACK_TEXT =
+  "I answer from this workspace's runs, credits and queue. These are ready to try:";
+
 export const VIEW = { id: "failed-runs", title: "Failed runs this week", kind: "runs" } as const;
 
 /** A view whose body is a generated OpenUI program (see programs.ts). */
