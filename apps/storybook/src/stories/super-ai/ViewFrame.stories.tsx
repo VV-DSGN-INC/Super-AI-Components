@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CircleAlert, Pin, RotateCw, Undo2, X } from "lucide-react";
 import * as React from "react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -386,6 +386,9 @@ export const Mobile: Story = {
   play: async ({ canvasElement }) => {
     const { page } = await import("vitest/browser");
     await page.viewport(375, 812);
+    // The resize lands after this call returns. Measuring before it does reads
+    // the desktop button size, so wait for the phone media query first.
+    await waitFor(() => expect(window.matchMedia("(max-width: 767px)").matches).toBe(true));
     const canvas = within(canvasElement);
     const wrap = canvasElement.querySelector<HTMLElement>('[data-testid="mobile-frame"]')!;
     await expect(wrap.getBoundingClientRect().right).toBeLessThanOrEqual(window.innerWidth);
