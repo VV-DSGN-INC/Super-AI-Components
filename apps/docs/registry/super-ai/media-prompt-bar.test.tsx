@@ -137,4 +137,62 @@ describe("MediaPromptBar", () => {
     render(<MediaPromptBar className="test-class" />);
     expect(document.querySelector('[data-slot="media-prompt-bar"]')!.className).toContain("test-class");
   });
+
+  it("randomize: the dice fills the prompt with the host's starter and never submits", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const onValueChange = vi.fn();
+    render(
+      <MediaPromptBar
+        onRandomize={() => "A paper boat drifting down a gutter"}
+        onSubmit={onSubmit}
+        onValueChange={onValueChange}
+      />,
+    );
+
+    const dice = screen.getByRole("button", { name: "Random prompt" });
+    expect(document.querySelector('[data-slot="media-prompt-bar-randomize"]')).toBe(dice);
+    await user.click(dice);
+
+    expect(screen.getByRole("textbox", { name: "Prompt" })).toHaveValue(
+      "A paper boat drifting down a gutter",
+    );
+    expect(onValueChange).toHaveBeenCalledWith("A paper boat drifting down a gutter");
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(dice).toHaveFocus();
+    expect(screen.getByRole("status")).toHaveTextContent("Random prompt added");
+  });
+
+  it("randomize: target seed fills the seed field and leaves the prompt alone", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const onSeedChange = vi.fn();
+    render(
+      <MediaPromptBar
+        randomizeTarget="seed"
+        onRandomize={() => "482913"}
+        onSeedChange={onSeedChange}
+        onSubmit={onSubmit}
+      />,
+    );
+
+    expect(screen.queryByRole("button", { name: "Random prompt" })).not.toBeInTheDocument();
+    const dice = screen.getByRole("button", { name: "Random seed" });
+    await user.click(dice);
+
+    expect(screen.getByRole("textbox", { name: "Seed" })).toHaveValue("482913");
+    expect(onSeedChange).toHaveBeenCalledWith("482913");
+    expect(screen.getByRole("textbox", { name: "Prompt" })).toHaveValue("");
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(dice).toHaveFocus();
+    expect(screen.getByRole("status")).toHaveTextContent("Random seed added");
+  });
+
+  it("randomize: absent without onRandomize, and inert while generating", () => {
+    const { rerender } = render(<MediaPromptBar />);
+    expect(screen.queryByRole("button", { name: /random/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "Seed" })).not.toBeInTheDocument();
+    rerender(<MediaPromptBar generating onRandomize={() => "x"} />);
+    expect(screen.getByRole("button", { name: "Random prompt" })).toBeDisabled();
+  });
 });

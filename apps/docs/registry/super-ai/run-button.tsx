@@ -47,6 +47,18 @@ interface RunButtonProps extends Omit<React.ComponentProps<"div">, "onError"> {
   /** 0–100. Omit for an indeterminate fill while running. */
   progress?: number;
   label?: string;
+  /**
+   * Draft run (D30). The trigger label gains " draft" ("Generate draft", or
+   * "<label> draft" for a custom label) so the cheaper click is never
+   * mistaken for the final one. Controlled by the host, like `state`.
+   */
+  draft?: boolean;
+  /**
+   * What a final run costs. With `draft` on, the cost chip is followed by the
+   * delta to this number. Same single-source rule as `cost`: pass the figure
+   * your estimator returned, never one computed here.
+   */
+  finalCost?: number | string;
   estimatingLabel?: string;
   runningLabel?: string;
   /** Shown on the button once a run completes; re-triggers `onRun`. */
@@ -75,6 +87,8 @@ function RunButton({
   balance,
   progress,
   label = "Generate",
+  draft = false,
+  finalCost,
   estimatingLabel = "Estimating cost…",
   runningLabel = "Generating…",
   doneLabel = "Run again",
@@ -103,12 +117,19 @@ function RunButton({
       ? `Need ${cost} ${unit}, you have ${balance}`
       : `Not enough ${unit}`);
 
+  const triggerLabel = draft ? `${label} draft` : label;
+
+  // Numeric costs give a signed delta; anything else (a formatted string) is
+  // shown as the final price itself, since no honest subtraction exists.
+  const finalDelta = typeof cost === "number" && typeof finalCost === "number" ? finalCost - cost : undefined;
+
   const showCostChip = cost !== undefined && (state === "idle" || state === "done" || state === "failed");
 
   return (
     <div
       data-slot="run-button"
       data-state={state}
+      data-draft={draft || undefined}
       aria-busy={isBusy || undefined}
       className={cn("inline-flex flex-col items-start gap-1.5", className)}
       {...props}
@@ -140,6 +161,19 @@ function RunButton({
           {showCostChip ? (
             <div data-slot="run-button-cost">
               <CostChip amount={cost} unit={unit} />
+            </div>
+          ) : null}
+
+          {showCostChip && draft && finalCost !== undefined ? (
+            <div data-slot="run-button-final-delta">
+              {finalDelta !== undefined ? (
+                <CostChip
+                  amount={finalDelta > 0 ? `+${finalDelta}` : finalDelta}
+                  unit={`${unit} for final`}
+                />
+              ) : (
+                <CostChip amount={finalCost} unit={`${unit} for final`} />
+              )}
             </div>
           ) : null}
 
@@ -207,7 +241,7 @@ function RunButton({
                       ? failedLabel
                       : isRunning
                         ? runningLabel
-                        : label}
+                        : triggerLabel}
                 </span>
               </Button>
             </div>

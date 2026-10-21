@@ -557,6 +557,89 @@ The one thing a gate cannot tell from oversight is silence, which is why the
 scaffolder seeds both fields with a nine-character reason: a new component is
 red until someone writes the judgment.
 
+### D26 · Generated chat is family R — 2026-10-20
+
+Four components ship as **family R, `Generated chat`**: R1 `widget`, R2 `widget-grid`, R3
+`view-frame` and R4 `generated-body` (phase 3), with the engine they serve as the `generated-chat` `registry:lib` contract. Spec:
+[`2026-10-20-generated-chat-design.md`](../superpowers/specs/2026-10-20-generated-chat-design.md).
+
+**Why a new family.** Their evidence is desk research (WidgetKit's size families, ChatGPT's canvas,
+Claude's artifacts panel) and a private client concept study whose architecture is cited and whose
+code is not. Filing them under F, J or K would lend them reference-board footing they lack, the
+failure D18 and D20 created families P and Q to avoid. R sorts past N, so the B–N subtotal and the
+A–O freeze are untouched. The grand total moves 130 to 134, counted after D28, D30 and D31, which landed first.
+
+**Why "view" and not "artifact".** In this registry an artifact is a generated document (J4, O9).
+A view is a saved question rerun on open, so its chrome is `view-frame`.
+
+**Why the question card is not a fourth item.** F7 `approval-card` is the Approval contract, and a
+second implementation is the fork the block brief forbids. Its verbs are fixed, so the title and
+summary carry the outcome.
+
+**Naming collision:** `gaps.md` uses "R" for recovered omissions. Different file, different
+namespace, as D20 recorded for Q.
+
+### D28 · Shape of AI is a fourth source, and its Trust builders re-open family N — 2026-10-20
+
+[Shape of AI](https://www.shapeof.ai)'s sixty patterns were audited against the
+catalog ([shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md)).
+Five of its six categories are covered or a state away. Trust builders is not:
+one of seven covered. Family N's label says trust and its contents are
+oversight, which Shape of AI files under Governors. Five items pass D1 at five
+or more named products: `ai-label`, `capture-consent`, `data-controls`,
+`private-session-notice`, `content-credentials` (gaps.md §9). They are the next
+N batch, and the family is reopened for exactly them.
+
+`ai-label` is proposed as primitive **A13**, not N13: K1, F1, J4 and N11 all
+draw the same "AI acted here" piece today, and the promotion rule says a piece
+two L3 components need moves up. Its evidence is its own eight products, not
+its consumers' say-so, which is the condition the agent slice set before
+promoting a primitive again.
+
+Rejected: renaming family N to match its contents. Every spec anchor and the
+docs site's family map would churn for a label. Rejected: re-cutting the
+catalog along Shape of AI's categories; both axes are valid and the catalog's
+is by surface. A `patterns` cross-reference on the manifest is the cheap way to
+carry the other axis, decided separately (analysis §7).
+
+Checked against the sibling `Minimal Design System`: it has no AI-labelling,
+consent, data-control, private-session or credentials component, so ownership
+is here.
+
+### D30 · Wave 15 builds the Shape of AI passes outside Trust builders — 2026-10-21
+
+Three items that passed D1 in the Shape of AI audit's §4 enter the catalog:
+D8 `prompt-enhancer` (7 products), D9 `prompt-template-form` (6) and N17
+`memory-manager` (5). Four §4 states land on shipped items: `randomize` on C1
+and D1, `describe` on D2, `user-presets` on E4, `draft` on A7 and E5. A–O
+grows from 119 to 122 for exactly these three, the same reopening D28 used.
+
+`shared-vision` passed at exactly 3 and is held for an agent slice: ambient
+"the agent is working here" cues need a host surface this registry does not
+have yet. `randomize` has two named products, Krea and Scenario. It ships as a
+state because D1 governs registry items, not variants, and the count is
+recorded so a re-sample can remove it.
+
+Numbered D30 because D26 and D27 belong to generated chat (#108) and channel
+renderers (#111); D28 is the trust slice and D29 the patterns cross-reference (#107).
+
+### D31 · Wave 16 builds the remaining Shape of AI patterns that can be components — 2026-10-21
+
+Four items enter: K9 `summary-card`, E11 `voice-profile`, N18 `agent-presence`
+and P3 `auto-fill`. A–O grows from 122 to 125 and family P from 2 to 3.
+`agent-presence` passes D1 at exactly 3 and carries the ⚠ until its products
+are checked against real screens.
+
+Sample response does not become an item. One AI product and one non-AI
+precedent is below D1, and both examples are the same shape: try the prompt on
+a few records before the full run. That is P3's `sample-preview` state.
+
+This corrects D30's premise: Summary, Auto-fill and Voice and tone were
+deferred as thin, and their pattern pages name six products each. The four
+Identifiers stay out as brand decisions (D22), and Chained action stays cut
+(D9). That leaves 53 of Shape of AI's 58 patterns covered and the other five
+accounted for.
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is
@@ -586,28 +669,6 @@ NotebookLM's three simultaneously-empty panes make this concrete. The approved s
 `empty-state` component at all, which means every one of the 84 components would invent its own.
 
 ---
-
-### D26 · Generated chat is family R — 2026-10-20
-
-Four components ship as **family R, `Generated chat`**: R1 `widget`, R2 `widget-grid`, R3
-`view-frame` and R4 `generated-body` (phase 3), with the engine they serve as the `generated-chat` `registry:lib` contract. Spec:
-[`2026-10-20-generated-chat-design.md`](../superpowers/specs/2026-10-20-generated-chat-design.md).
-
-**Why a new family.** Their evidence is desk research (WidgetKit's size families, ChatGPT's canvas,
-Claude's artifacts panel) and a private client concept study whose architecture is cited and whose
-code is not. Filing them under F, J or K would lend them reference-board footing they lack, the
-failure D18 and D20 created families P and Q to avoid. R sorts past N, so the B–N subtotal and the
-A–O freeze are untouched. The grand total moves 118 to 122.
-
-**Why "view" and not "artifact".** In this registry an artifact is a generated document (J4, O9).
-A view is a saved question rerun on open, so its chrome is `view-frame`.
-
-**Why the question card is not a fourth item.** F7 `approval-card` is the Approval contract, and a
-second implementation is the fork the block brief forbids. Its verbs are fixed, so the title and
-summary carry the outcome.
-
-**Naming collision:** `gaps.md` uses "R" for recovered omissions. Different file, different
-namespace, as D20 recorded for Q.
 
 ## 5. Revised sequencing proposal
 
