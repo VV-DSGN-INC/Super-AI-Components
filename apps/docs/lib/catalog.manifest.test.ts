@@ -5,15 +5,16 @@ import { shippedItems } from "./manifest-types";
 
 describe("MANIFEST", () => {
   it("carries every catalog row, including the cut records", () => {
-    // 118 active + family G's 10 cut rows + the cut O5 `flow-shell` = 129.
+    // 123 active + family G's 10 cut rows + the cut O5 `flow-shell` = 134.
+    // (D26 added A13 and N13–N16, the Shape of AI trust slice; 118 active before it.)
     // (107 + family G/O5 = 118 before PR #14 / D14-D17 added 7 rows: D7
     // `slot-summary`, K7 `answer-block`, K8 `source-cards`, N9
     // `autonomy-selector`, N10 `safety-block`, N11 `escalation-handoff`, N12
     // `task-tray`. D18 then added family P's two items, and D20 family Q's.)
-    expect(MANIFEST).toHaveLength(129);
+    expect(MANIFEST).toHaveLength(134);
   });
 
-  it("holds the A–O freeze at 114 while later families grow separately", () => {
+  it("holds A–O at 119 (the 114 freeze plus D26's five) while later families grow separately", () => {
     // The freeze that matters is per-family, not the grand total: D18 added
     // family P from the second reference board and D20 added family Q from
     // Geist, and the catalog-completion spec's ruling was that such a family is
@@ -26,11 +27,15 @@ describe("MANIFEST", () => {
     // part of the frozen 114 and reported a count mismatch, which reads as
     // "someone reopened A–O". Naming the range says what the freeze is about,
     // so the next family after Q neither breaks it nor has to edit it.
+    //
+    // D26 (2026-10-20) reopened A and N for exactly five items, the Shape of AI
+    // trust slice (A13, N13–N16). 114 + 5 = 119; anything else here is a reopen
+    // nobody decided.
     const active = MANIFEST.filter((i) => i.status !== "cut");
-    expect(active.filter((i) => i.family <= "O")).toHaveLength(114);
+    expect(active.filter((i) => i.family <= "O")).toHaveLength(119);
     expect(active.filter((i) => i.family === "P")).toHaveLength(2);
     expect(active.filter((i) => i.family === "Q")).toHaveLength(2);
-    expect(active).toHaveLength(118);
+    expect(active).toHaveLength(123);
   });
 
   // The 14 components that shipped before Wave 1.5. They were exempt from the

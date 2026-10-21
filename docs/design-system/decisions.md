@@ -557,6 +557,33 @@ The one thing a gate cannot tell from oversight is silence, which is why the
 scaffolder seeds both fields with a nine-character reason: a new component is
 red until someone writes the judgment.
 
+### D26 · Shape of AI is a fourth source, and its Trust builders re-open family N — 2026-10-20
+
+[Shape of AI](https://www.shapeof.ai)'s sixty patterns were audited against the
+catalog ([shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md)).
+Five of its six categories are covered or a state away. Trust builders is not:
+one of seven covered. Family N's label says trust and its contents are
+oversight, which Shape of AI files under Governors. Five items pass D1 at five
+or more named products: `ai-label`, `capture-consent`, `data-controls`,
+`private-session-notice`, `content-credentials` (gaps.md §9). They are the next
+N batch, and the family is reopened for exactly them.
+
+`ai-label` is proposed as primitive **A13**, not N13: K1, F1, J4 and N11 all
+draw the same "AI acted here" piece today, and the promotion rule says a piece
+two L3 components need moves up. Its evidence is its own eight products, not
+its consumers' say-so, which is the condition the agent slice set before
+promoting a primitive again.
+
+Rejected: renaming family N to match its contents. Every spec anchor and the
+docs site's family map would churn for a label. Rejected: re-cutting the
+catalog along Shape of AI's categories; both axes are valid and the catalog's
+is by surface. A `patterns` cross-reference on the manifest is the cheap way to
+carry the other axis, decided separately (analysis §7).
+
+Checked against the sibling `Minimal Design System`: it has no AI-labelling,
+consent, data-control, private-session or credentials component, so ownership
+is here.
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is
