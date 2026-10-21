@@ -1,41 +1,166 @@
 import type { ComponentDocs } from "@/lib/component-docs";
 
+import { AiLabel } from "@/registry/super-ai/ai-label";
+
 /**
- * Seeded from docs/design-system/component-specs.md#a13-ai-label.
- * Translate the spec's internal voice into consumer-facing guidance — do not
- * ship the seed text verbatim.
- *
- * No "use client" here: this module is plain data read by a Server
- * Component (component-docs.tsx), which destructures `docs.whatItIs`,
- * `docs.evidence`, etc. directly. If a Do/Don't needs a live example,
- * define a zero-prop component in a sibling "ai-label.examples.tsx"
- * client module ("use client" at the top of that file, not this one) and
- * reference it here as an element with no props, e.g.:
- *
- * // import { GoodExample } from "./ai-label.examples";
- * // dos: [{ text: "...", example: <GoodExample /> }]
- *
- * An inline handler on an element created in *this* file — e.g.
- * `<AiLabel onSelect={() => {}} />` passed straight into `dos`/`donts` —
- * cannot be serialized across the server/client boundary and breaks the
- * static export.
+ * No "use client" here: this module is plain data read by a Server Component.
+ * Every example below is static markup and the label exposes no callbacks, so
+ * there is no ./ai-label.examples sidecar.
  */
 export const AiLabelDocs: ComponentDocs = {
-  whatItIs: "The "AI acted here" chip: what AI did to this content, in one word or two.",
-  whyItMatters: "",
-  evidence: [],
-  anatomy: [],
-  usage: "",
-  dos: [],
-  donts: [],
+  whatItIs:
+    'A small outlined chip that says what AI did to a piece of content: generated it, edited it, summarized it, wrote this message, or stopped replying at a handoff. The chip text is one word or two; the accessible name is the full sentence, with the model and the time folded in. A sixth form, `text-tint`, draws no chip at all and instead wraps AI-sourced prose in a reserved tint. The component also owns the glyph for "AI acted here", exported as `AI_LABEL_ICON`, so surfaces stop importing a sparkle icon of their own.',
+  whyItMatters:
+    "Disclosure only works when it is consistent. Character.ai, Intercom Fin, Productboard, Tactiq, TikTok, Zapier and Zoom each mark AI output somewhere, and each marks it differently, so a reader learns nothing that transfers. iA Writer shows the other half: a quiet tint on AI-sourced text that survives editing. Four components in this registry (`ai-doc-block`, `result-card`, `artifact-grid`, `escalation-handoff`) draw the same mark by hand today; this primitive is the one place the mark, its wording and its accessible name are decided.",
+  evidence: [
+    "Character.ai",
+    "Intercom Fin",
+    "Productboard",
+    "Tactiq",
+    "TikTok",
+    "Zapier",
+    "Zoom",
+    "iA Writer",
+  ],
+  anatomy: [
+    {
+      slot: "ai-label",
+      note: 'The chip, or the `text-tint` wrapper. A `role="note"` carrying the full-sentence `aria-label`; it is the tab stop only when `by`, `at` or `detail` gives the tooltip something to say.',
+    },
+    {
+      slot: "ai-label-icon",
+      note: "The shared AI glyph, `aria-hidden`. Not present on `text-tint`.",
+    },
+    {
+      slot: "ai-label-text",
+      note: "The one-or-two-word chip text. `children` replaces it.",
+    },
+    {
+      slot: "ai-label-detail",
+      note: "The tooltip body: the full sentence, then `detail` as plain text.",
+    },
+  ],
+  usage:
+    'Pick the variant by what happened to the content: `generated` for text or media the AI produced, `edited` when it changed something a person wrote, `summarized` for a condensation. Pass `by` and `at` when the product knows the model and the time, and `detail` for anything longer. Use `sender` beside the name on a message, comment or notification the AI wrote, and switch the AI\'s earlier turns to `after-handoff` once a person takes over, so the reader can see where the AI stopped. Wrap AI-sourced prose in `text-tint` when the text itself, not a block, is what needs marking. Override the chip text through `children` if your product says "Rewrote" instead of "Edited"; the shape and the accessible name stay. Reach for a plain Badge when the chip is a status unrelated to AI.',
+  dos: [
+    {
+      text: "Say what happened to the content. The default copy names the action, so a reader can tell a draft from a rewrite at a glance.",
+      example: (
+        <div className="flex gap-2">
+          <AiLabel variant="generated" />
+          <AiLabel variant="edited" />
+          <AiLabel variant="summarized" />
+        </div>
+      ),
+    },
+    {
+      text: "Put `sender` beside the name, and switch the AI's earlier turns to `after-handoff` once a person takes over. The dashed border marks the stop without relying on colour.",
+      example: (
+        <div className="flex flex-col gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Support assistant</span>
+            <AiLabel variant="after-handoff" by="Claude" at="12:41" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-medium">Priya</span>
+            <span>Picking this up from here.</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      text: "Wrap AI-sourced prose in `text-tint` and use the tint for nothing else.",
+      example: (
+        <p className="max-w-xs text-sm">
+          Notes from the call:{" "}
+          <AiLabel variant="text-tint">the team agreed to ship the beta on Friday.</AiLabel>
+        </p>
+      ),
+    },
+  ],
+  donts: [
+    {
+      text: 'Don\'t reduce the chip to a bare "AI". It says who, not what, and it reads as a brand badge.',
+      example: <AiLabel variant="generated">AI</AiLabel>,
+    },
+    {
+      text: "Don't put a caveat or a source in the chip. A reliability warning belongs to `disclaimer-note`, and a pointer to a source belongs to `citation-ref`; this chip only attributes an action.",
+      example: <AiLabel variant="summarized">May contain errors</AiLabel>,
+    },
+  ],
   accessibility: {
-    keyboard: [],
-    screenReader: [],
+    keyboard: [
+      'Zero tab stops on a bare chip. The chip is a `role="note"` span with nothing to activate.',
+      "One tab stop when `by`, `at` or `detail` is set, because the tooltip then has something to show. Focusing the chip opens it; Escape closes it.",
+      "The chip has no activation key. A link inside the tooltip cannot be reached by keyboard, so `detail` is text only; put any link to credentials on the surrounding surface.",
+      "`text-tint` is never a tab stop.",
+    ],
+    screenReader: [
+      'The chip is `role="note"` with an `aria-label` holding the full sentence, for example "Generated by AI, Claude, 3 minutes ago". The visible chip text ("Generated") is shorter on purpose and does not form the name.',
+      '`text-tint` is a `role="group"` whose label announces before the prose: "Text written by AI". Reading the prose itself is unchanged.',
+      "The glyph is `aria-hidden`.",
+      "`detail` is announced only when the tooltip opens on focus. It is not part of the accessible name, so anything a reader must not miss belongs in `by` or `at`.",
+      'Overriding the chip text through `children` does not change the name, so a chip reading "Rewrote" still announces "Edited by AI".',
+      "There is no live region. A label that appears after the content streams in appears silently.",
+    ],
   },
-  pitfalls: [],
-  // Both fields are the contract's machine half (spec 2026-09-14 §4). Replace
-  // the seed with a list, or keep { none } and write the reason: the schema
-  // gate rejects anything under 20 characters.
-  variants: { none: "unwritten" },
-  insteadUse: { none: "unwritten" },
+  pitfalls: [
+    "`text-tint` is a wrapper treatment and is reserved. Applied to anything other than AI-sourced prose it stops meaning anything, and a second component that borrows it makes the signal unreadable.",
+    'The tint passes contrast by itself, on the page background. Do not place it on a muted or accent surface to "quiet it down": it was measured without one, and a tinted surface behind it changes the result.',
+    "`sender` must not be mistaken for a person. If the AI's name sits next to a human-looking avatar and no chip, the reader has nothing to tell them apart; keep the chip on every AI turn.",
+    "The chip carries no model information on screen. If the product wants the model visible without hovering, put it in your own text beside the chip rather than stretching the chip beyond two words.",
+    "Passing a `data-slot` of your own through the spread replaces `ai-label` and hides that this primitive drew the mark.",
+  ],
+  variants: [
+    {
+      prop: "variant",
+      default: "generated",
+      values: [
+        {
+          value: "generated",
+          intent:
+            "The AI produced this content from nothing, such as a draft, an image or a reply you asked for.",
+        },
+        {
+          value: "edited",
+          intent:
+            "A person wrote it and the AI changed it, so the reader knows the words are no longer only theirs.",
+        },
+        {
+          value: "summarized",
+          intent:
+            "The content condenses something else, so the reader knows the original is longer and may differ.",
+        },
+        {
+          value: "sender",
+          intent:
+            "The AI wrote this message, comment or notification, and it sits beside the author's name so it cannot be taken for a person.",
+        },
+        {
+          value: "after-handoff",
+          intent:
+            "The AI's turns ended at a handoff to a person, and the earlier turns need to show where it stopped.",
+        },
+        {
+          value: "text-tint",
+          intent:
+            "The text itself, inline in a paragraph, is what came from the AI, and a chip beside it would break the sentence.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "disclaimer-note",
+      when: "The point is a caveat about reliability (AI can make mistakes) rather than attributing an action that already happened.",
+    },
+    {
+      component: "cost-chip",
+      when: "The chip would carry a number, such as a price in credits. This label holds one or two words and no figures.",
+    },
+    {
+      component: "citation-ref",
+      when: "The pointer is to a source the content came from, not to the fact that AI produced it.",
+    },
+  ],
 };
