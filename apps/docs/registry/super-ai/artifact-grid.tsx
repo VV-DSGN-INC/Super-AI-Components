@@ -6,6 +6,7 @@ import * as React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { AiLabel } from "@/registry/super-ai/ai-label";
 import { ChoiceChip, ChoiceChips } from "@/registry/super-ai/choice-chips";
 import { SectionHeader } from "@/registry/super-ai/section-header";
 
@@ -13,13 +14,18 @@ import { SectionHeader } from "@/registry/super-ai/section-header";
  * Artifact Grid — Document/artifact cards grouped by session
  *
  * Spec: docs/design-system/component-specs.md#j4-artifact-grid
- * States: type-badge · excerpt · edited-ago · view-count · privacy-icon
+ * States: type-badge · excerpt · edited-ago · view-count · privacy-icon · ai-label
  *
  * Deliberately NOT a preview-tile (A8) consumer. A8 exists to fix a media
  * frame around a thumbnail; here the excerpt *is* the content, so a thumbnail
  * frame would be an empty box above the only field anyone reads. If a future
  * change makes these cards look "inconsistent with the other grids", that
  * inconsistency is the point — this is a text card, per the spec.
+ *
+ * What the AI did to an artifact is A13 `ai-label`, beside the type badge,
+ * never a glyph of this component's own. It is always the bare chip: the card
+ * is covered by its stretched link, so a tooltip trigger under it would be
+ * unreachable by pointer and a second tab stop per card for the keyboard.
  */
 
 type ArtifactVisibility = "private" | "shared" | "public";
@@ -70,6 +76,12 @@ interface ArtifactGridItem {
   type: string;
   /** Optional and deliberately secondary — see `excerpt`. */
   title?: string;
+  /**
+   * What the AI did to this artifact, drawn as A13 `ai-label` beside the type
+   * badge: `generated` it from a prompt, `edited` a person's document, or
+   * `summarized` a source. Omit it for an artifact no model touched.
+   */
+  aiLabel?: "generated" | "edited" | "summarized";
   /** e.g. "Edited 2 hours ago". Recency, not a raw timestamp. */
   editedAgo?: string;
   viewCount?: number;
@@ -140,7 +152,7 @@ function ArtifactViewCount({ viewCount }: { viewCount: number }) {
 }
 
 function ArtifactCard({ item }: { item: ArtifactGridItem }) {
-  const { id, excerpt, type, title, editedAgo, viewCount, visibility, href, onOpen } = item;
+  const { id, excerpt, type, title, aiLabel, editedAgo, viewCount, visibility, href, onOpen } = item;
 
   // A stretched pseudo-element, not a link wrapped around the whole card. If
   // the card itself were the link, the badge, the edited-ago line, the view
@@ -160,6 +172,7 @@ function ArtifactCard({ item }: { item: ArtifactGridItem }) {
     >
       <CardHeader className="flex flex-row items-center gap-2">
         <ArtifactTypeBadge type={type} />
+        {aiLabel ? <AiLabel variant={aiLabel} /> : null}
         {title ? (
           <span data-slot="artifact-grid-title" className="text-muted-foreground min-w-0 truncate text-xs">
             {title}

@@ -73,9 +73,33 @@ const COVERED_ITEMS = [
   "N2",
   // Trust builders
   "N3",
+  // Built after the §3 audit (analysis §8 and §9; D28, D30, D31)
+  "A13",
+  "N13",
+  "N14",
+  "N15",
+  "N16",
+  "D8",
+  "D9",
+  "N17",
+  "K9",
+  "E11",
+  "P3",
+  "N18",
 ];
 
-describe("MANIFEST patterns (Shape of AI cross-reference, D27)", () => {
+// Patterns the analysis accounts for without a component: the four Identifiers
+// that are the consuming product's brand decisions (D22), and Chained action,
+// which is family G and cut by D9. Everything else must map to a shipped item.
+const NOT_COMPONENTS = new Set([
+  "identifiers/avatar",
+  "identifiers/color",
+  "identifiers/name",
+  "identifiers/personality",
+  "inputs/chained-action",
+]);
+
+describe("MANIFEST patterns (Shape of AI cross-reference, D29)", () => {
   it("only uses values from the typed vocabulary", () => {
     const unknown = MANIFEST.flatMap((i) => (i.patterns ?? []).map((p) => [i.id, p] as const)).filter(
       ([, p]) => !VOCABULARY.has(p),
@@ -101,6 +125,13 @@ describe("MANIFEST patterns (Shape of AI cross-reference, D27)", () => {
       return !item || item.status !== "shipped" || !item.patterns?.length;
     });
     expect(missing).toEqual([]);
+  });
+
+  it("maps every Shape of AI pattern that can be a component to at least one shipped item", () => {
+    const mapped = new Set(MANIFEST.filter((i) => i.status === "shipped").flatMap((i) => i.patterns ?? []));
+    const unmapped = [...VOCABULARY].filter((p) => !NOT_COMPONENTS.has(p) && !mapped.has(p));
+    expect(unmapped).toEqual([]);
+    expect(VOCABULARY.size - NOT_COMPONENTS.size).toBe(53);
   });
 
   it("answers the motivating question: Caveat is disclaimer-note", () => {

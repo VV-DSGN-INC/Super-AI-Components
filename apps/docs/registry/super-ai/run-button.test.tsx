@@ -139,4 +139,47 @@ describe("RunButton", () => {
     render(<RunButton className="test-class" />);
     expect(document.querySelector('[data-slot="run-button"]')!.className).toContain("test-class");
   });
+
+  describe("draft", () => {
+    it("reads Generate draft and flags the root", () => {
+      render(<RunButton draft cost={2} />);
+      expect(screen.getByRole("button", { name: "Generate draft" })).toBeInTheDocument();
+      expect(document.querySelector('[data-slot="run-button"]')).toHaveAttribute("data-draft", "true");
+    });
+
+    it("appends draft to a customised label", () => {
+      render(<RunButton draft label="Render" />);
+      expect(screen.getByRole("button", { name: "Render draft" })).toBeInTheDocument();
+    });
+
+    it("shows the delta to a final run beside the cost, as a cost chip", () => {
+      render(<RunButton draft cost={2} finalCost={8} />);
+      expect(screen.getByText(/^2\s*credits$/)).toBeInTheDocument();
+      const delta = document.querySelector('[data-slot="run-button-final-delta"]')!;
+      expect(delta.querySelector('[data-slot="cost-chip"]')).toHaveTextContent("+6 credits for final");
+    });
+
+    it("shows the final price itself when the costs are not both numbers", () => {
+      render(<RunButton draft cost="2" finalCost="8" />);
+      expect(document.querySelector('[data-slot="run-button-final-delta"]')).toHaveTextContent(
+        "8 credits for final",
+      );
+    });
+
+    it("has no delta without draft or without finalCost, and the label stays plain", () => {
+      const { rerender } = render(<RunButton cost={2} finalCost={8} />);
+      expect(document.querySelector('[data-slot="run-button-final-delta"]')).toBeNull();
+      expect(screen.getByRole("button", { name: "Generate" })).toBeInTheDocument();
+      rerender(<RunButton draft cost={2} />);
+      expect(document.querySelector('[data-slot="run-button-final-delta"]')).toBeNull();
+    });
+
+    it("still runs on click", async () => {
+      const user = userEvent.setup();
+      const onRun = vi.fn();
+      render(<RunButton draft cost={2} finalCost={8} onRun={onRun} />);
+      await user.click(screen.getByRole("button", { name: "Generate draft" }));
+      expect(onRun).toHaveBeenCalledOnce();
+    });
+  });
 });

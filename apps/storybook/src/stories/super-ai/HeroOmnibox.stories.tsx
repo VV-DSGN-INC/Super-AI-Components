@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
@@ -87,6 +87,34 @@ export const Locked: Story = {
     lockedDescription: "Upgrade to keep generating.",
     lockedCtaLabel: "Upgrade",
     onUnlock: () => {},
+  },
+};
+
+/**
+ * `onRandomize` passed: a dice button joins the action row, after attach. One
+ * click asks the host for a starter and fills the field with it. The fill is a
+ * draft, so the person edits it or sends it; the dice never submits, and the
+ * play function asserts `onSubmit` stayed silent. Focus stays on the dice, set
+ * explicitly because Safari does not focus a button on click, and the fill is
+ * announced politely through the status region. The host owns the pool, which
+ * is how the starter space stays constrained.
+ */
+export const Randomize: Story = {
+  args: {
+    ...Idle.args,
+    onSubmit: fn(),
+    onRandomize: fn(() => "Draft a reply to the vendor that asks for a revised timeline"),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const dice = canvas.getByRole("button", { name: "Random prompt" });
+    await userEvent.click(dice);
+    await expect(canvas.getByRole("textbox", { name: "What can I help you with?" })).toHaveValue(
+      "Draft a reply to the vendor that asks for a revised timeline",
+    );
+    await expect(args.onSubmit).not.toHaveBeenCalled();
+    await expect(dice).toHaveFocus();
+    await expect(canvas.getByRole("status")).toHaveTextContent("Random prompt added");
   },
 };
 

@@ -12,7 +12,7 @@ const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 const CATEGORIES = Object.keys(SHAPE_OF_AI_CATEGORY_TITLES) as ShapeOfAiCategory[];
 
 /** Family sections with a text filter and a Shape of AI category filter.
- *  Families stay the primary axis (D27): the category filter narrows items
+ *  Families stay the primary axis (D29): the category filter narrows items
  *  inside their family sections instead of regrouping. Text filtering is by
  *  name, title, description and pattern, so "caveat" finds `disclaimer-note`; a family with no match disappears rather than showing an empty
  *  heading. The count line is live so a screen reader hears the narrowing. */

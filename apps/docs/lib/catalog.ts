@@ -14,7 +14,7 @@ export interface CatalogItem {
   description: string;
   family: FamilyId;
   group: "Primitives" | "Components" | "Blocks";
-  /** Shape of AI cross-reference (D27); empty when the audit maps nothing. */
+  /** Shape of AI cross-reference (D29); empty when the audit maps nothing. */
   patterns: ShapeOfAiPattern[];
 }
 

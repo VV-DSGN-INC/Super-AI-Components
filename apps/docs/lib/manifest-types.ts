@@ -26,7 +26,7 @@ export type FamilyId =
 
 /**
  * Shape of AI's six categories and the pattern names under each, taken from the
- * §3 audit tables in docs/design-system/shape-of-ai-board-analysis.md (D26).
+ * §3 audit tables in docs/design-system/shape-of-ai-board-analysis.md (D28).
  * Kebab-case, one entry per pattern the audit lists, including the ones the
  * catalog does not carry yet, so a pattern the audit named can be mapped the
  * day an item arrives. A manifest `patterns` value is `<category>/<pattern>`;
@@ -186,7 +186,7 @@ export interface ManifestItem {
   specAnchor: string;
   /**
    * Shape of AI patterns this item carries, as `<category>/<pattern>`. A
-   * derived cross-reference for the docs site (D27): it never feeds the
+   * derived cross-reference for the docs site (D29): it never feeds the
    * registry build or the shipped contract. Set only where the audit
    * (shape-of-ai-board-analysis.md §3) maps the item; absent otherwise.
    */
