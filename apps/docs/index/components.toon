@@ -1,4 +1,4 @@
-components[118]{name,layer,family,meta,variants,insteadUse,purpose}:
+components[123]{name,layer,family,meta,variants,insteadUse,purpose}:
   kbd,primitive,A,registry/super-ai/kbd.meta.json,none,shortcuts-sheet,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
   cost-chip,primitive,A,registry/super-ai/cost-chip.meta.json,none,credits-indicator|run-button,"A small pill that prices one action: a coin icon, a number, and the unit that number is counted in."
   date-section,primitive,A,registry/super-ai/date-section.meta.json,none,section-header,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
@@ -11,6 +11,7 @@ components[118]{name,layer,family,meta,variants,insteadUse,purpose}:
   stat-readout,primitive,A,registry/super-ai/stat-readout.meta.json,columns=2/1,field-row|slot-summary|quota-meter,"A description list of label→value rows for the metadata hanging off a result: model, seed, sampler,"
   reset-affordance,primitive,A,registry/super-ai/reset-affordance.meta.json,scope=row/group,field-row|parameter-panel,The small ↺ that sits at the end of an editable row and puts the value back where it started. Three
   section-header,primitive,A,registry/super-ai/section-header.meta.json,size=default/sm,date-section,"One header row for a group of things: a title, an optional count beside it, an optional trailing act"
+  ai-label,primitive,A,registry/super-ai/ai-label.meta.json,variant=generated/edited/summarized/sender/after-handoff/text-tint,disclaimer-note|cost-chip|citation-ref,"A small outlined chip that says what AI did to a piece of content: generated it, edited it, summariz"
   app-sidebar,component,B,registry/super-ai/app-sidebar.meta.json,unwritten,unwritten,"The assembled product sidebar: a workspace switcher, a nav list, an ambient promo card, and a footer"
   workspace-switcher,component,B,registry/super-ai/workspace-switcher.meta.json,unwritten,unwritten,"A dropdown that shows the workspace, org, or product the user is currently in and lets them jump to"
   sidebar-nav,component,B,registry/super-ai/sidebar-nav.meta.json,unwritten,unwritten,A sectioned nav for the primary sidebar: a flat list of icon+label rows grouped under section header
@@ -100,6 +101,10 @@ components[118]{name,layer,family,meta,variants,insteadUse,purpose}:
   safety-block,component,N,registry/super-ai/safety-block.meta.json,unwritten,unwritten,A system-voiced notice that a policy stopped something. It comes in two variants because two differe
   escalation-handoff,component,N,registry/super-ai/escalation-handoff.meta.json,unwritten,unwritten,"The card an agent shows when it is handing the conversation to a person. Its subject is the packet,"
   task-tray,component,N,registry/super-ai/task-tray.meta.json,unwritten,unwritten,A slide-over panel listing background work that keeps running after you leave the screen that starte
+  capture-consent,component,N,registry/super-ai/capture-consent.meta.json,form=bar/compact,permission-prompt|trust-dialog|voice-clone-recorder|rate-limit-banner,"The consent gate that comes before an AI capture session (meeting notes, a call transcript, a record"
+  data-controls,component,N,registry/super-ai/data-controls.meta.json,none,settings-dialog|member-gate-row|connection-manager|disclaimer-note,"A settings card for what happens to a person's data: one row for model training, one row for how lon"
+  private-session-notice,component,N,registry/super-ai/private-session-notice.meta.json,form=banner/chip,disclaimer-note|safety-block|feature-announcement|app-topbar,The notice a product shows when a conversation runs in private (incognito) mode. It has two forms: a
+  content-credentials,component,N,registry/super-ai/content-credentials.meta.json,trigger=hover-card/popover,asset-detail|stat-readout|run-inspector|citation-ref,"The provenance panel that opens from an AI mark. It takes one typed `credentials` record, modelled o"
   home-shell,block,O,registry/super-ai/home-shell.meta.json,unwritten,unwritten,"The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold,"
   chat-shell,block,O,registry/super-ai/chat-shell.meta.json,none,home-shell|studio-shell,"The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue,"
   studio-shell,block,O,registry/super-ai/studio-shell.meta.json,unwritten,unwritten,"The page shell for a creative studio editor: a vertical modality rail on the far left, an editor top"

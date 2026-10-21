@@ -24,6 +24,7 @@ Retrieval order: with an item installed, read `components/super-ai/<name>.meta.j
 - [Stat Readout](https://super-ai-components.vercel.app/llms/components/stat-readout.md): A description list of label→value rows for the metadata hanging off a result: model, seed, sampler,
 - [Reset Affordance](https://super-ai-components.vercel.app/llms/components/reset-affordance.md): The small ↺ that sits at the end of an editable row and puts the value back where it started. Three
 - [Section Header](https://super-ai-components.vercel.app/llms/components/section-header.md): One header row for a group of things: a title, an optional count beside it, an optional trailing act
+- [AI Label](https://super-ai-components.vercel.app/llms/components/ai-label.md): A small outlined chip that says what AI did to a piece of content: generated it, edited it, summariz
 - [App Sidebar](https://super-ai-components.vercel.app/llms/components/app-sidebar.md): The assembled product sidebar: a workspace switcher, a nav list, an ambient promo card, and a footer
 - [Workspace Switcher](https://super-ai-components.vercel.app/llms/components/workspace-switcher.md): A dropdown that shows the workspace, org, or product the user is currently in and lets them jump to
 - [Sidebar Nav](https://super-ai-components.vercel.app/llms/components/sidebar-nav.md): A sectioned nav for the primary sidebar: a flat list of icon+label rows grouped under section header
@@ -113,6 +114,10 @@ Retrieval order: with an item installed, read `components/super-ai/<name>.meta.j
 - [Safety Block](https://super-ai-components.vercel.app/llms/components/safety-block.md): A system-voiced notice that a policy stopped something. It comes in two variants because two differe
 - [Escalation Handoff](https://super-ai-components.vercel.app/llms/components/escalation-handoff.md): The card an agent shows when it is handing the conversation to a person. Its subject is the packet,
 - [Task Tray](https://super-ai-components.vercel.app/llms/components/task-tray.md): A slide-over panel listing background work that keeps running after you leave the screen that starte
+- [Capture Consent](https://super-ai-components.vercel.app/llms/components/capture-consent.md): The consent gate that comes before an AI capture session (meeting notes, a call transcript, a record
+- [Data Controls](https://super-ai-components.vercel.app/llms/components/data-controls.md): A settings card for what happens to a person's data: one row for model training, one row for how lon
+- [Private Session Notice](https://super-ai-components.vercel.app/llms/components/private-session-notice.md): The notice a product shows when a conversation runs in private (incognito) mode. It has two forms: a
+- [Content Credentials](https://super-ai-components.vercel.app/llms/components/content-credentials.md): The provenance panel that opens from an AI mark. It takes one typed `credentials` record, modelled o
 - [Home Shell](https://super-ai-components.vercel.app/llms/components/home-shell.md): The page shell for an app home or launcher: a sidebar, a title bar, a large composer above the fold,
 - [Chat Shell](https://super-ai-components.vercel.app/llms/components/chat-shell.md): The page shell for a chat or agent workspace: a thread list on the left that doubles as a job queue,
 - [Studio Shell](https://super-ai-components.vercel.app/llms/components/studio-shell.md): The page shell for a creative studio editor: a vertical modality rail on the far left, an editor top

@@ -3,7 +3,7 @@ import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { DisclaimerNote } from "@/registry/super-ai/disclaimer-note";
 import { FeatureAnnouncement } from "@/registry/super-ai/feature-announcement";
-import { PrivateSessionChip, PrivateSessionNotice } from "@/registry/super-ai/private-session-notice";
+import { PrivateSessionNotice } from "@/registry/super-ai/private-session-notice";
 import { SafetyBlock } from "@/registry/super-ai/safety-block";
 import { PrivateSessionNoticeDocs } from "@/content/components/private-session-notice.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
@@ -40,7 +40,7 @@ type Story = StoryObj<typeof PrivateSessionNotice>;
  * would regret, so it is shown rather than offered.
  */
 export const Entering: Story = {
-  args: { state: "entering", statement: STATEMENT },
+  args: { state: "entering", form: "banner", statement: STATEMENT },
 };
 
 /**
@@ -213,7 +213,12 @@ export const Mobile: Story = {
       <PrivateSessionNotice state="entering" statement={STATEMENT} />
       <div className="flex items-center justify-between rounded-lg border px-3 py-2">
         <span className="text-sm font-medium">Untitled chat</span>
-        <PrivateSessionChip state="connectors-reduced" />
+        <PrivateSessionNotice
+          form="chip"
+          state="connectors-reduced"
+          statement={STATEMENT}
+          connectors={CONNECTORS}
+        />
       </div>
       <PrivateSessionNotice state="connectors-reduced" statement={STATEMENT} connectors={CONNECTORS} />
       <PrivateSessionNotice state="exiting" statement={STATEMENT} retention={{ kind: "kept-locally" }} />

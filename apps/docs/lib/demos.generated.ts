@@ -4,6 +4,7 @@ import type { ComponentType } from "react";
 import AccountMenuDemo from "@/components/demos/account-menu-demo";
 import ActionStackDemo from "@/components/demos/action-stack-demo";
 import AiDocBlockDemo from "@/components/demos/ai-doc-block-demo";
+import AiLabelDemo from "@/components/demos/ai-label-demo";
 import AiToolsMenuDemo from "@/components/demos/ai-tools-menu-demo";
 import AnswerBlockDemo from "@/components/demos/answer-block-demo";
 import AppSidebarDemo from "@/components/demos/app-sidebar-demo";
@@ -17,16 +18,19 @@ import AuthShellDemo from "@/components/demos/auth-shell-demo";
 import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import BookCoverDemo from "@/components/demos/book-cover-demo";
 import BrowserFrameDemo from "@/components/demos/browser-frame-demo";
+import CaptureConsentDemo from "@/components/demos/capture-consent-demo";
 import ChatShellDemo from "@/components/demos/chat-shell-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import CoachMarkDemo from "@/components/demos/coach-mark-demo";
 import CompareViewerDemo from "@/components/demos/compare-viewer-demo";
 import ConnectionManagerDemo from "@/components/demos/connection-manager-demo";
+import ContentCredentialsDemo from "@/components/demos/content-credentials-demo";
 import ContextChipsDemo from "@/components/demos/context-chips-demo";
 import ContextToolbarDemo from "@/components/demos/context-toolbar-demo";
 import CostChipDemo from "@/components/demos/cost-chip-demo";
 import CreditsIndicatorDemo from "@/components/demos/credits-indicator-demo";
+import DataControlsDemo from "@/components/demos/data-controls-demo";
 import DataViewsDemo from "@/components/demos/data-views-demo";
 import DateSectionDemo from "@/components/demos/date-section-demo";
 import DetailViewShellDemo from "@/components/demos/detail-view-shell-demo";
@@ -71,6 +75,7 @@ import PermissionPromptDemo from "@/components/demos/permission-prompt-demo";
 import PresetGridDemo from "@/components/demos/preset-grid-demo";
 import PreviewTileDemo from "@/components/demos/preview-tile-demo";
 import PricingTableDemo from "@/components/demos/pricing-table-demo";
+import PrivateSessionNoticeDemo from "@/components/demos/private-session-notice-demo";
 import PromoCardDemo from "@/components/demos/promo-card-demo";
 import PropertyInspectorDemo from "@/components/demos/property-inspector-demo";
 import QuotaMeterDemo from "@/components/demos/quota-meter-demo";
@@ -124,6 +129,7 @@ export const demos: Record<string, ComponentType> = {
   "account-menu": AccountMenuDemo,
   "action-stack": ActionStackDemo,
   "ai-doc-block": AiDocBlockDemo,
+  "ai-label": AiLabelDemo,
   "ai-tools-menu": AiToolsMenuDemo,
   "answer-block": AnswerBlockDemo,
   "app-sidebar": AppSidebarDemo,
@@ -137,16 +143,19 @@ export const demos: Record<string, ComponentType> = {
   "autonomy-selector": AutonomySelectorDemo,
   "book-cover": BookCoverDemo,
   "browser-frame": BrowserFrameDemo,
+  "capture-consent": CaptureConsentDemo,
   "chat-shell": ChatShellDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
   "coach-mark": CoachMarkDemo,
   "compare-viewer": CompareViewerDemo,
   "connection-manager": ConnectionManagerDemo,
+  "content-credentials": ContentCredentialsDemo,
   "context-chips": ContextChipsDemo,
   "context-toolbar": ContextToolbarDemo,
   "cost-chip": CostChipDemo,
   "credits-indicator": CreditsIndicatorDemo,
+  "data-controls": DataControlsDemo,
   "data-views": DataViewsDemo,
   "date-section": DateSectionDemo,
   "detail-view-shell": DetailViewShellDemo,
@@ -191,6 +200,7 @@ export const demos: Record<string, ComponentType> = {
   "preset-grid": PresetGridDemo,
   "preview-tile": PreviewTileDemo,
   "pricing-table": PricingTableDemo,
+  "private-session-notice": PrivateSessionNoticeDemo,
   "promo-card": PromoCardDemo,
   "property-inspector": PropertyInspectorDemo,
   "quota-meter": QuotaMeterDemo,
