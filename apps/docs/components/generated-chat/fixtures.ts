@@ -30,11 +30,21 @@ export interface Run {
 
 export const PLAN = { credits: 2000, used: 1640, resetsOn: "Nov 1", resetsInDays: 12 } as const;
 
-/** Credits spent per day this week, Monday onward. */
-export const SPEND = [
-  { day: "Mon 19 Oct", video: 260, image: 96, audio: 22 },
-  { day: "Tue 20 Oct", video: 160, image: 54, audio: 18 },
-] as const;
+/**
+ * Credits spent this week, one line per day, project and kind. Every spend
+ * figure on the page (by kind, by project, by day) is summed from these.
+ */
+export const SPEND_LINES = [
+  { day: "Mon 19 Oct", project: "Onboarding video", kind: "video", credits: 240 },
+  { day: "Mon 19 Oct", project: "Onboarding video", kind: "image", credits: 20 },
+  { day: "Mon 19 Oct", project: "Spring campaign", kind: "video", credits: 20 },
+  { day: "Mon 19 Oct", project: "Spring campaign", kind: "image", credits: 76 },
+  { day: "Mon 19 Oct", project: "Podcast intro", kind: "audio", credits: 22 },
+  { day: "Tue 20 Oct", project: "Onboarding video", kind: "video", credits: 140 },
+  { day: "Tue 20 Oct", project: "Spring campaign", kind: "video", credits: 20 },
+  { day: "Tue 20 Oct", project: "Spring campaign", kind: "image", credits: 54 },
+  { day: "Tue 20 Oct", project: "Podcast intro", kind: "audio", credits: 18 },
+] as const satisfies readonly { day: string; project: string; kind: RunKind; credits: number }[];
 
 const CREDITS: Record<RunKind, number> = { image: 4, video: 40, audio: 6 };
 const MODEL: Record<RunKind, string> = { image: "Image XL", video: "Video HD", audio: "Voice Studio" };
@@ -128,10 +138,21 @@ export const retryCost = (runs: Run[]) => runs.reduce((sum, r) => sum + r.credit
 export const creditsLeft = () => PLAN.credits - PLAN.used;
 
 export function weekSpend() {
-  const sum = (kind: RunKind) => SPEND.reduce((total, day) => total + day[kind], 0);
+  const sum = (kind: RunKind) =>
+    SPEND_LINES.filter((l) => l.kind === kind).reduce((t, l) => t + l.credits, 0);
   const spend = { video: sum("video"), image: sum("image"), audio: sum("audio") };
   return { ...spend, total: spend.video + spend.image + spend.audio };
 }
+
+/** Sums the lines by a key, keeping first-seen order. */
+function sumBy<K extends "project" | "day">(key: K) {
+  const totals = new Map<string, number>();
+  for (const line of SPEND_LINES) totals.set(line[key], (totals.get(line[key]) ?? 0) + line.credits);
+  return [...totals];
+}
+
+export const projectSpend = () => sumBy("project").map(([project, credits]) => ({ project, credits }));
+export const dailySpend = () => sumBy("day").map(([day, credits]) => ({ day, credits }));
 
 /** "2,000": the en-US grouping every figure on the page uses. */
 export const fmt = (n: number) => n.toLocaleString("en-US");

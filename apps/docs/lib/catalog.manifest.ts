@@ -2693,4 +2693,21 @@ export const MANIFEST: ManifestItem[] = [
     states: ["docked", "page", "with-modes", "with-ask-bar", "rerunning", "failed"],
     specAnchor: "component-specs.md#r3-view-frame",
   },
+  {
+    id: "R4",
+    name: "generated-body",
+    title: "Generated Body",
+    description:
+      "The body of a view written as an OpenUI program: streamed, with the last good version kept when a new one fails.",
+    family: "R",
+    layer: "component",
+    status: "shipped",
+    wave: 14,
+    base: ["alert", "button"],
+    shadcn: ["alert", "button"],
+    consumes: [],
+    npm: ["@openuidev/react-lang", "lucide-react"],
+    states: ["streaming", "rendered", "failed-with-fallback", "failed-without-fallback"],
+    specAnchor: "component-specs.md#r4-generated-body",
+  },
 ];

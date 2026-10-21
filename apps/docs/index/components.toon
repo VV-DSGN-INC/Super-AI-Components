@@ -1,4 +1,4 @@
-components[133]{name,layer,family,meta,variants,insteadUse,purpose}:
+components[134]{name,layer,family,meta,variants,insteadUse,purpose}:
   kbd,primitive,A,registry/super-ai/kbd.meta.json,none,shortcuts-sheet,"The small monospace keycap used to print a keyboard shortcut in the interface — one chip per key, op"
   cost-chip,primitive,A,registry/super-ai/cost-chip.meta.json,none,credits-indicator|run-button,"A small pill that prices one action: a coin icon, a number, and the unit that number is counted in."
   date-section,primitive,A,registry/super-ai/date-section.meta.json,none,section-header,"The bucket header that groups a list by when — a small label above the rows it names, wrapping them"
@@ -132,3 +132,4 @@ components[133]{name,layer,family,meta,variants,insteadUse,purpose}:
   widget,component,R,registry/super-ai/widget.meta.json,size=small/medium/large,entity-row|stat-readout,A fixed-size tile for one fact among same-sized siblings. It comes in three families: small is one g
   widget-grid,component,R,registry/super-ai/widget-grid.meta.json,size=small/medium/large,recent-grid|artifact-grid,A grid that places fixed-size widget tiles two columns wide in a narrow space and four columns wide
   view-frame,component,R,registry/super-ai/view-frame.meta.json,none,browser-frame|artifact-shell,"The fixed chrome around a generated view: a header with a title, a scope and freshness line and a ro"
+  generated-body,component,R,registry/super-ai/generated-body.meta.json,none,answer-block|view-frame,The body of a view written as an OpenUI Lang program. You hand it the text that has arrived so far a

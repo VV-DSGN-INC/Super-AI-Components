@@ -188,3 +188,32 @@ test.describe("/generated-chat", () => {
     });
   }
 });
+
+test.describe("/generated-chat generated view", () => {
+  for (const width of [1280, 375]) {
+    test(`a failed version keeps the last good one and Retry recovers at ${width}px`, async ({ page }) => {
+      const errors: string[] = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      page.on("console", (m) => {
+        if (m.type() === "error") errors.push(m.text());
+      });
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/generated-chat");
+      const stream = page.locator('[data-region="message-stream"]');
+      await page.getByRole("textbox", { name: "Ask about this workspace" }).fill("Show spend by project");
+      await page.keyboard.press("Enter");
+      await stream.getByRole("button", { name: "Show Spend by project this week" }).click();
+      const view = page.getByRole("region", { name: "Spend by project this week" });
+      await expect(view.getByText("Onboarding video")).toBeVisible();
+      await stream.getByRole("button", { name: "Add a daily trend" }).last().click();
+      await expect(view.getByText("This version did not render.")).toBeVisible();
+      await view.getByRole("button", { name: "Retry" }).click();
+      await expect(view.getByText("Mon 19 Oct")).toBeVisible();
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+      expect(errors).toEqual([]);
+    });
+  }
+});

@@ -14,6 +14,8 @@ import {
 /** What a turn may read from the page when it plays. */
 export interface DemoContext {
   viewBuilt: boolean;
+  /** The generated spend view exists. */
+  spendBuilt: boolean;
 }
 
 export const READY_PROMPTS = [
@@ -23,6 +25,15 @@ export const READY_PROMPTS = [
 ];
 
 export const VIEW = { id: "failed-runs", title: "Failed runs this week", kind: "runs" } as const;
+
+/** A view whose body is a generated OpenUI program (see programs.ts). */
+export const SPEND_VIEW = { id: "spend", title: "Spend by project this week", kind: "generated" } as const;
+
+const spendVersion = (n: number, variant: string) => ({
+  label: `v${n} · generated`,
+  mode: "generated",
+  variant,
+});
 
 const text = (value: string): TurnPart => ({ type: "text", text: value });
 const chips = (...items: string[]): TurnPart => ({ type: "data-suggestions", data: { items } });
@@ -134,10 +145,68 @@ export const TURNS: Turn<DemoContext>[] = [
         `${fmt(weekSpend().total)} credits this week, most of it on video. ${fmt(creditsLeft())} of ${fmt(PLAN.credits)} are left until the plan resets on ${PLAN.resetsOn}.`,
       ),
       { type: "data-card", data: { type: "week-spend" } },
-      chips("What failed overnight?"),
+      chips("Show spend by project", "What failed overnight?"),
     ],
   },
 ];
+
+TURNS.push(
+  {
+    id: "spend-view",
+    match: ["show spend by project"],
+    parts: [
+      text(
+        "I built a view of this week's spend by project. Its body is generated, so it can change shape when you ask.",
+      ),
+      { type: "data-view", data: { viewId: SPEND_VIEW.id, title: SPEND_VIEW.title, kind: SPEND_VIEW.kind } },
+      chips("Add a daily trend", "What failed overnight?"),
+    ],
+    effects: [
+      {
+        type: "build-view",
+        view: {
+          ...SPEND_VIEW,
+          scope: "All projects",
+          origin: "Show spend by project",
+          version: spendVersion(1, "spend-v1"),
+        },
+      },
+    ],
+  },
+  {
+    id: "spend-trend",
+    match: ["add a daily trend"],
+    parts: (ctx) =>
+      ctx.spendBuilt
+        ? [
+            text("Adding a daily trend to the spend view, as version 2."),
+            chips("Show the daily trend as a table"),
+          ]
+        : [
+            text("There is no spend view yet. Ask to show spend by project first."),
+            chips("Show spend by project"),
+          ],
+    effects: (ctx) =>
+      ctx.spendBuilt
+        ? [{ type: "edit-view", id: SPEND_VIEW.id, version: spendVersion(2, "spend-v2-chart") }]
+        : [],
+  },
+  {
+    id: "spend-trend-table",
+    match: ["show the daily trend as a table"],
+    parts: (ctx) =>
+      ctx.spendBuilt
+        ? [text("Here is the daily trend as a table, as version 3."), chips("What failed overnight?")]
+        : [
+            text("There is no spend view yet. Ask to show spend by project first."),
+            chips("Show spend by project"),
+          ],
+    effects: (ctx) =>
+      ctx.spendBuilt
+        ? [{ type: "edit-view", id: SPEND_VIEW.id, version: spendVersion(3, "spend-v3-table") }]
+        : [],
+  },
+);
 
 export const FALLBACK: Turn<DemoContext> = {
   id: "fallback",
