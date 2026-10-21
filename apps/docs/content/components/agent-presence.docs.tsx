@@ -1,41 +1,132 @@
 import type { ComponentDocs } from "@/lib/component-docs";
+import {
+  ChipNamesItsScope,
+  NeedsYouNamesTheApproval,
+  OutlineWithoutChip,
+  RegionWithChip,
+  VagueScope,
+} from "./agent-presence.examples";
 
 /**
  * Seeded from docs/design-system/component-specs.md#n18-agent-presence.
- * Translate the spec's internal voice into consumer-facing guidance — do not
- * ship the seed text verbatim.
  *
- * No "use client" here: this module is plain data read by a Server
- * Component (component-docs.tsx), which destructures `docs.whatItIs`,
- * `docs.evidence`, etc. directly. If a Do/Don't needs a live example,
- * define a zero-prop component in a sibling "agent-presence.examples.tsx"
- * client module ("use client" at the top of that file, not this one) and
- * reference it here as an element with no props, e.g.:
- *
- * // import { GoodExample } from "./agent-presence.examples";
- * // dos: [{ text: "...", example: <GoodExample /> }]
- *
- * An inline handler on an element created in *this* file — e.g.
- * `<AgentPresence onSelect={() => {}} />` passed straight into `dos`/`donts` —
- * cannot be serialized across the server/client boundary and breaks the
- * static export.
+ * No "use client" here: this module is plain data read by a Server Component.
+ * The live examples sit in ./agent-presence.examples (a client module) and are
+ * referenced as zero-prop elements, because the handlers they carry cannot
+ * cross the server boundary from this file.
  */
 export const AgentPresenceDocs: ComponentDocs = {
-  whatItIs: "An ambient sign that an agent is acting here, with its scope and a one-step takeover.",
-  whyItMatters: "",
-  evidence: [],
-  anatomy: [],
-  usage: "",
-  dos: [],
-  donts: [],
+  whatItIs:
+    "A persistent, quiet cue that an agent is active in this surface. It has two parts: a chip for the app chrome that says what the agent is doing and what it can see or use, and a region wrapper that outlines the tab, frame or panel the agent controls. One menu holds Pause or Resume and Take over, and an optional link leads to the agent's steps. It never opens a modal.",
+  whyItMatters:
+    "A browsing agent shares your screen, so the person needs to know at a glance whether it is looking, acting, stuck or paused, and which part of the page it can reach. Perplexity Comet, OpenAI Operator and Zapier workflow approvals each show some form of this cue, though the evidence is thin and the third example is the weakest, so treat the pattern as plausible rather than settled. The scope line is there so the boundary is read rather than assumed, and takeover is one menu action so a person is never more than a click from control. Watching is not a safeguard: Shape of AI cites a prompt-injection flaw in exactly this kind of product, which is why no copy here suggests that oversight prevents harm.",
+  evidence: ["Perplexity Comet", "OpenAI Operator", "Zapier workflow approvals"],
+  anatomy: [
+    {
+      slot: "agent-presence",
+      note: "The chip root. Carries data-state with the current state.",
+    },
+    {
+      slot: "agent-presence-status",
+      note: "The one persistent role=status element. Its text changes with the state and is announced politely.",
+    },
+    {
+      slot: "agent-presence-badge",
+      note: "The state in words, with a small dot that pulses while the agent is acting or needs you.",
+    },
+    {
+      slot: "agent-presence-need",
+      note: "In needs-you only: the approval the agent is waiting for, named in text. The approval itself is not here.",
+    },
+    {
+      slot: "agent-presence-scope",
+      note: "What the agent can see and use, as a sentence the host supplies.",
+    },
+    {
+      slot: "agent-presence-menu",
+      note: "The icon button that opens Pause or Resume, Take over and View agent steps. Absent when no item applies.",
+    },
+    {
+      slot: "agent-presence-region",
+      note: "The wrapper for the controlled tab, frame or panel. Carries data-state.",
+    },
+    {
+      slot: "agent-presence-outline",
+      note: "The decorative outline over the region. It is aria-hidden and ignores the pointer.",
+    },
+  ],
+  usage:
+    "Put the chip in app chrome, such as a toolbar or tab strip, and wrap the surface the agent controls in AgentPresenceRegion with the same state. The host owns the state: pass it in, and wire onPause, onResume and onTakeOver to your own agent runtime, which then passes the new state back. Write scope as a sentence about reach, for example \"Can see and use this tab\". In needs-you, pass need with the approval's name and render your permission prompt elsewhere; this component only points at it. Pass onOpenSteps when you have a trace of the agent's steps to link to. Use a task tray when the work outlives the view, a permission prompt for the approval itself, a trace timeline for the steps, and an autonomy selector for how much the agent may do unasked.",
+  dos: [
+    {
+      text: "Write scope as a sentence about reach, so a person reads what the agent can see and use.",
+      example: <ChipNamesItsScope />,
+    },
+    {
+      text: "Wrap the controlled surface in AgentPresenceRegion with the same state as the chip, so the outline always has its words beside it.",
+      example: <RegionWithChip />,
+    },
+    {
+      text: "In needs-you, pass need so the chip names what the agent is waiting for, and keep the approval controls in your permission prompt.",
+      example: <NeedsYouNamesTheApproval />,
+    },
+  ],
+  donts: [
+    {
+      text: "Don't show the outline without the chip. The outline is a colour and a line style, and says nothing in words.",
+      example: <OutlineWithoutChip />,
+    },
+    {
+      text: "Don't write a vague scope. A one-word scope tells the person nothing about what the agent can reach.",
+      example: <VagueScope />,
+    },
+  ],
   accessibility: {
-    keyboard: [],
-    screenReader: [],
+    keyboard: [
+      "The chip contributes one tab stop, the Agent controls button, and none when no menu item applies (idle, or taken-over with no steps link).",
+      "Enter or Space on the button opens the menu, the arrow keys move between items, Enter or Space activates one, and Escape closes it and returns focus to the button.",
+      "The region adds no tab stops and the outline overlay ignores the pointer, so it never blocks a click on the content underneath.",
+      "There is no global shortcut for Pause or Take over. A person who cannot reach the chip cannot reach the controls, so place it early in the tab order of the chrome.",
+    ],
+    screenReader: [
+      'One persistent role=status element holds the state sentence, such as "Agent is acting". Changes are announced politely. The element is never unmounted, so every change is read as an update.',
+      "In needs-you the status also carries the need text, so the approval is announced with the state. Nothing in this component is the approval; a screen reader user still needs a way to reach your permission prompt.",
+      "The scope sentence sits outside the live region, so it is read when the person reads the chip and not on every state change.",
+      'The menu button is named "Agent controls". Menu items are named Pause agent, Resume agent, Take over and View agent steps.',
+      "The dot and the region outline are aria-hidden. The state is carried in words, so nothing depends on colour or line style.",
+      "The region wrapper has no role and no accessible name. Name the surface it wraps yourself.",
+    ],
+    focus: [
+      "Choosing Pause, Resume or Take over closes the menu and returns focus to the Agent controls button. If your state change removes the chip, for example by taking it out of the chrome when control returns, move focus yourself.",
+      "When state becomes idle or taken-over the menu button can disappear while it holds focus, which drops focus to the document body. Keep the chip mounted, or move focus in your handler.",
+    ],
   },
-  pitfalls: [],
-  // Both fields are the contract's machine half (spec 2026-09-14 §4). Replace
-  // the seed with a list, or keep { none } and write the reason: the schema
-  // gate rejects anything under 20 characters.
-  variants: { none: "unwritten" },
-  insteadUse: { none: "unwritten" },
+  pitfalls: [
+    "State is the host's. The menu only asks: onPause does not change the chip until you pass a new state, so wire the handler to your runtime and render what it reports.",
+    "Watching is not a safeguard. A visible agent can still be steered by hostile page content, so do not write copy that tells people they are protected because they can see it.",
+    "The menu items appear only when you pass their callbacks and the state allows them. A chip with no handlers renders as a status with no button.",
+    "Taken-over has no way back to the agent inside this component. Resume is offered while paused only, so hand control back by passing a new state from your own control.",
+    "The outline is drawn inside the region's box and follows its border radius. Give the region a radius if the surface has rounded corners, or the outline will draw square ones over it.",
+  ],
+  variants: {
+    none: "The six states are what the host reports, not a style choice, so there is no variant axis to pick between.",
+  },
+  insteadUse: [
+    {
+      component: "task-tray",
+      when: "Work outlives the current view and needs a place to be tracked, not an ambient cue on this surface.",
+    },
+    {
+      component: "permission-prompt",
+      when: "The agent needs a decision from the person; the approval itself belongs there and this chip only names it.",
+    },
+    {
+      component: "trace-timeline",
+      when: "The person wants to read the agent's steps in order; link to it with onOpenSteps.",
+    },
+    {
+      component: "autonomy-selector",
+      when: "The question is how much the agent may do unasked, a standing policy rather than live presence.",
+    },
+  ],
 };
