@@ -164,6 +164,57 @@ export const NotRouted: Story = {
  * ---------------------------------------------------------------------- */
 
 /**
+ * A text message. The sender's name opens the text, because a text arrives
+ * from a number and the name is the identity. The options are numbered
+ * replies; they are buttons because the message is `sent` and `onAnswer` is
+ * given. SMS is its own channel, separate from `chat`, which is the assistant.
+ */
+export const SmsAnswerable: Story = {
+  args: {
+    channel: "sms",
+    message: CHECK_IN,
+    state: "sent",
+    trust: "We never ask for codes.",
+    onAnswer: fn(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(
+      canvasElement.querySelector('[data-slot="channel-message-what"]')!.parentElement!.textContent,
+    ).toBe("Dr O'Body: Your blood pressure reading is due.");
+    await expect(canvas.getByRole("button", { name: "Reply 2 Not great" })).toBeInTheDocument();
+    await expect(canvas.getByText("Reply STOP: Stop asking")).toBeInTheDocument();
+  },
+};
+
+/**
+ * The same text once a reply has come in. The numbered replies give way to the
+ * result, as on every channel.
+ */
+export const SmsAnswered: Story = {
+  args: { channel: "sms", message: CHECK_IN, state: "answered", answer: "Not great", onAnswer: fn() },
+  play: async ({ canvasElement }) => {
+    await expect(within(canvasElement).queryAllByRole("button")).toHaveLength(0);
+    await expect(canvasElement.querySelector('[data-slot="channel-message-answer"]')!.textContent).toBe(
+      "Answered: Not great",
+    );
+  },
+};
+
+/**
+ * No consent for texts, so nothing was sent. The state and the reason are the
+ * whole render.
+ */
+export const SmsNotRouted: Story = {
+  args: { channel: "sms", message: CHECK_IN, state: "not-routed", reason: "no consent for SMS" },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText("Not routed")).toBeInTheDocument();
+    await expect(canvas.getByText("no consent for SMS")).toBeInTheDocument();
+  },
+};
+
+/**
  * The phone script, slowed. `pace="slow"` says the key fact twice, and the
  * trust line opens the script. The options are read aloud with a keypad digit
  * and, with `onAnswer`, are the buttons a listener's keypad press stands for.
@@ -346,7 +397,7 @@ export const LongContent: Story = {
 };
 
 /**
- * A real 375x812 viewport with the larger type scale, all five channels one
+ * A real 375x812 viewport with the larger type scale, all six channels one
  * under the other (Review Focus 4). `page.viewport` resizes the iframe, so the
  * page's own scroll width is a fair measure: nothing may push it past 375.
  * Every element must also stay inside its card's right edge, which is a
@@ -357,7 +408,7 @@ export const LongContent: Story = {
 export const Mobile: Story = {
   render: () => (
     <div data-testid="mobile-frame" className="flex w-[375px] max-w-full flex-col gap-6 p-4">
-      {(["app", "push", "chat", "email", "phone"] as const).map((channel) => (
+      {(["app", "push", "chat", "sms", "email", "phone"] as const).map((channel) => (
         <ChannelMessage
           key={channel}
           channel={channel}

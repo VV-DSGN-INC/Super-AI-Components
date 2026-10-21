@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-type Channel = "app" | "push" | "chat" | "email" | "phone";
+type Channel = "app" | "push" | "chat" | "email" | "phone" | "sms";
 type LogEventType =
   | "message.created"
   | "message.sent"

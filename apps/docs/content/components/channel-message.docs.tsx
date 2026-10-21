@@ -19,9 +19,9 @@ import {
  */
 export const ChannelMessageDocs: ComponentDocs = {
   whatItIs:
-    "One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots (who it is from, what it says, one question, a few closed answers, a way to stop). The `channel` prop picks the shape: a thread bubble for the app, a lock-screen card for push, a bubble with inline buttons for chat, a sender, subject and one button for email, and a spoken script for phone. The component shows the message and its state in words. It sends nothing and decides nothing.",
+    "One message drawn in the shape of the channel it is sent on. The message is a kind plus a few slots (who it is from, what it says, one question, a few closed answers, a way to stop). The `channel` prop picks the shape: a thread bubble for the app, a lock-screen card for push, a bubble with inline buttons for chat, a text bubble that opens with the sender\'s name and offers numbered replies for SMS, a sender, subject and one button for email, and a spoken script for phone. The component shows the message and its state in words. It sends nothing and decides nothing.",
   whyItMatters:
-    "A bot that reaches a person on five channels has one voice and five shapes, and a design system built for screens gives the other four no way to say so. Designing Bots pairs Slack message attachments with Messenger templates for the same content (chapter 9) and says that writing once and running everywhere runs at low quality, while separating the logic from the presentation and tuning per platform is better (chapter 20). Notification products already preview one message per channel: Courier holds every channel in one template and renders each variant with test data, Novu previews on every channel's editor, Knock puts a preview pane on each channel step, and Braze documents a composer preview for email, in-app messages, content cards and banners. This component makes the same move for a bot: one message, five shapes, chosen by a prop, so the five cannot drift apart.",
+    "A bot that reaches a person on five channels has one voice and six shapes, and a design system built for screens gives most of them no way to say so. Designing Bots pairs Slack message attachments with Messenger templates for the same content (chapter 9) and says that writing once and running everywhere runs at low quality, while separating the logic from the presentation and tuning per platform is better (chapter 20). Notification products already preview one message per channel: Courier holds every channel in one template and renders each variant with test data, Novu previews on every channel's editor, Knock puts a preview pane on each channel step, and Braze documents a composer preview for email, in-app messages, content cards and banners. This component makes the same move for a bot: one message, five shapes, chosen by a prop, so the five cannot drift apart.",
   evidence: ["Courier", "Novu", "Knock", "Braze", "Designing Bots (chapters 9 and 20)"],
   anatomy: [
     {
@@ -104,7 +104,7 @@ export const ChannelMessageDocs: ComponentDocs = {
   ],
   accessibility: {
     keyboard: [
-      'With `onAnswer` and `state="sent"`, every option is a real button and a tab stop, in reading order, up to the channel\'s cap (three on an unlocked push, one on email, five elsewhere). Space and Enter press it. A locked push, an answered message and every other state add no tab stops at all.',
+      'With `onAnswer` and `state="sent"`, every option is a real button and a tab stop, in reading order, up to the channel\'s cap (three on an unlocked push, one on email, five elsewhere, as numbered replies on SMS). Space and Enter press it. A locked push, an answered message and every other state add no tab stops at all.',
       "Nothing is a roving group. Arrow keys do nothing, and there is no shortcut for the options or for the quiet line.",
       "The quiet line, the link label and the state are text, not controls. A person using only the keyboard cannot press them, which is the same as what they would see in a render of the channel.",
     ],
@@ -123,7 +123,7 @@ export const ChannelMessageDocs: ComponentDocs = {
   pitfalls: [
     "The component does not check the message against its kind. A `ready` with an `ask` renders as written. Validate the kind against the slots before you pass it in.",
     "Only `sent` and `failed-check` are answerable. A `failed-check` message was not delivered as written, but the template of the same kind went out in its place, so the person has a copy to answer and its options are buttons. Pending, withdrawn, expired and not-routed messages show their options as text.",
-    '`link` is text and never an anchor, and it follows each channel\'s habit. Push prints "Tap to open in the app", chat and email print "Open in the app", and the app thread and the phone script ("It is in your app too.") print no label. The address sits in a `data-link` attribute on the push, chat and email labels only. The component has no prop for navigation; open the address from your own handler.',
+    '`link` is text and never an anchor, and it follows each channel\'s habit. Push prints "Tap to open in the app", chat, SMS and email print "Open in the app", and the app thread and the phone script ("It is in your app too.") print no label. The address sits in a `data-link` attribute on the push, chat and email labels only. The component has no prop for navigation; open the address from your own handler.',
     '`expires` is printed as you give it. Pass the words a person should read, such as "Fri 18:00", not a timestamp.',
     "Hierarchy comes from size and weight. Do not add `text-muted-foreground` text inside the thread and chat bubbles: they paint `bg-muted`, and the pair measures 4.34:1 against a 4.5:1 minimum.",
     '`typeSize="large"` changes the type scale inside the render only. Give it a container that can wrap; text and options wrap onto further lines and never scroll sideways.',
@@ -141,7 +141,14 @@ export const ChannelMessageDocs: ComponentDocs = {
           value: "push",
           intent: "An interruption. A lock-screen card that shows who and what kind until unlocked.",
         },
-        { value: "chat", intent: "A conversation. A bubble with inline buttons and a command to stop." },
+        {
+          value: "chat",
+          intent: "A conversation with the assistant. A bubble with inline buttons and a command to stop.",
+        },
+        {
+          value: "sms",
+          intent: "A text message. The sender's name opens the text, and the options are numbered replies.",
+        },
         {
           value: "email",
           intent: "Something to read later. A sender, a subject, one button and a footer link.",

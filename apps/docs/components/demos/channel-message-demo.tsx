@@ -14,7 +14,7 @@ const WEEKLY_REVIEW: ChannelMessageData = {
   quiet: "Stop asking",
 };
 
-const CHANNELS: Channel[] = ["app", "push", "chat", "email", "phone"];
+const CHANNELS: Channel[] = ["app", "push", "chat", "sms", "email", "phone"];
 
 export default function ChannelMessageDemo() {
   const [locked, setLocked] = React.useState(true);

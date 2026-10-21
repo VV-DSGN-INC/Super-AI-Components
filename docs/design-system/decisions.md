@@ -568,7 +568,7 @@ channel it is sent on. The registry has nothing that says so. Chat shells and me
 draw one surface.
 
 What this adds is a channel as a prop. `channel-message` takes the message and a `channel` of
-`app`, `push`, `chat`, `email` or `phone`, and renders five shapes from one component. `message-log`
+`app`, `push`, `chat`, `sms`, `email` or `phone`, and renders six shapes from one component. `message-log`
 lists what happened to the message in sentences. `check-report` lists the output checks' verdict
 per rule and states the fallback.
 

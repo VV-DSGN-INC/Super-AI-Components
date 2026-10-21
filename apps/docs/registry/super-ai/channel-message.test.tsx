@@ -192,7 +192,7 @@ describe("ChannelMessage controls", () => {
 
   it("without onAnswer the controls are inert text, never a dead button", () => {
     // Review Focus 2.
-    for (const channel of ["app", "push", "chat", "email", "phone"] as Channel[]) {
+    for (const channel of ["app", "push", "chat", "email", "phone", "sms"] as Channel[]) {
       const { unmount } = render(
         <ChannelMessage channel={channel} locked={false} message={ASK} state="sent" />,
       );
@@ -236,7 +236,7 @@ describe("ChannelMessage email, answered and path", () => {
   });
 
   it("answered replaces the controls on every channel", () => {
-    for (const channel of ["app", "push", "chat", "email", "phone"] as Channel[]) {
+    for (const channel of ["app", "push", "chat", "email", "phone", "sms"] as Channel[]) {
       const { unmount } = render(
         <ChannelMessage
           channel={channel}
@@ -372,7 +372,7 @@ describe("ChannelMessage content", () => {
   });
 
   it("carries the quiet slot on every channel", () => {
-    for (const channel of ["app", "push", "chat", "email", "phone"] as Channel[]) {
+    for (const channel of ["app", "push", "chat", "email", "phone", "sms"] as Channel[]) {
       const { unmount } = render(
         <ChannelMessage channel={channel} locked={false} message={READY} state="sent" />,
       );
@@ -382,7 +382,7 @@ describe("ChannelMessage content", () => {
   });
 
   it("keeps the full text of the message in every channel", () => {
-    for (const channel of ["app", "chat", "email", "phone"] as Channel[]) {
+    for (const channel of ["app", "chat", "email", "phone", "sms"] as Channel[]) {
       const { unmount } = render(<ChannelMessage channel={channel} message={ASK} state="sent" />);
       expect(root().textContent, channel).toContain(ASK.what);
       expect(root().textContent, channel).toContain(ASK.ask!);
@@ -402,6 +402,7 @@ describe("ChannelMessage content", () => {
     expect(say("default", "phone")).toBe(1);
     expect(say("slow", "phone")).toBe(2);
     expect(say("slow", "chat")).toBe(1);
+    expect(say("slow", "sms")).toBe(1);
   });
 
   it("the phone script opens with the trust line", () => {
@@ -436,5 +437,109 @@ describe("ChannelMessage content", () => {
   it("passes className through", () => {
     render(<ChannelMessage className="test-class" channel="chat" message={READY} state="sent" />);
     expect(root().className).toContain("test-class");
+  });
+});
+
+describe("ChannelMessage sms", () => {
+  it("opens the text with the sender's name, inside the text", () => {
+    render(<ChannelMessage channel="sms" message={ASK} state="sent" />);
+    const text = slot("what")!.parentElement!.textContent!;
+    expect(text.startsWith("Dr O'Body: Your blood pressure reading is due.")).toBe(true);
+    expect(slot("from")!.textContent).toBe("Dr O'Body");
+  });
+
+  it("puts the ask after the body", () => {
+    render(<ChannelMessage channel="sms" message={ASK} state="sent" />);
+    const text = root().textContent!;
+    expect(text.indexOf(ASK.what)).toBeLessThan(text.indexOf(ASK.ask!));
+  });
+
+  it("numbers the options as replies, and they are buttons when sent and answerable", async () => {
+    const onAnswer = vi.fn();
+    render(<ChannelMessage channel="sms" message={ASK} state="sent" onAnswer={onAnswer} />);
+    expect(screen.getAllByRole("button").map((b) => b.textContent)).toEqual([
+      "Reply 1 Fine",
+      "Reply 2 Not great",
+      "Reply 3 Skip today",
+    ]);
+    const second = screen.getByRole("button", { name: "Reply 2 Not great" });
+    expectAccessibleName(second, "Reply 2 Not great");
+    await userEvent.click(second);
+    expect(onAnswer).toHaveBeenCalledExactlyOnceWith("Not great");
+  });
+
+  it("a failed check can be answered on sms, like the other channels", () => {
+    render(
+      <ChannelMessage channel="sms" message={ASK} state="failed-check" path="fallback" onAnswer={() => {}} />,
+    );
+    expect(screen.getAllByRole("button")).toHaveLength(3);
+  });
+
+  it("shows the numbered replies as inert text without onAnswer, and when not answerable", () => {
+    const { unmount } = render(<ChannelMessage channel="sms" message={ASK} state="sent" />);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(slot("options")!.textContent).toContain("Reply 1 Fine");
+    unmount();
+    render(<ChannelMessage channel="sms" message={ASK} state="withdrawn" onAnswer={() => {}} />);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+  });
+
+  it("answered replaces the numbered replies with the result", () => {
+    render(<ChannelMessage channel="sms" message={ASK} state="answered" answer="Fine" onAnswer={() => {}} />);
+    expect(screen.queryAllByRole("button")).toHaveLength(0);
+    expect(slot("options")).toBeNull();
+    expect(slot("answer")!.textContent).toBe("Answered: Fine");
+  });
+
+  it("carries one link, the opt-out line, the trust line and the deadline", () => {
+    render(<ChannelMessage channel="sms" message={ASK} trust="We never ask for codes." state="sent" />);
+    expect(root().querySelectorAll('[data-slot="channel-message-link"]')).toHaveLength(1);
+    expect(slot("link")!.textContent).toBe("Open in the app");
+    expect(slot("quiet")!.textContent).toBe("Reply STOP: Stop asking");
+    expect(slot("trust")!.textContent).toBe("We never ask for codes.");
+    expect(root().textContent).toContain("Expires Fri 18:00");
+  });
+
+  it("caps the numbered replies at five and counts the rest", () => {
+    const six = ["One", "Two", "Three", "Four", "Five", "Six"];
+    render(
+      <ChannelMessage channel="sms" message={{ ...ASK, options: six }} state="sent" onAnswer={() => {}} />,
+    );
+    expect(within(slot("options") as HTMLElement).getAllByRole("button")).toHaveLength(5);
+    expect(slot("overflow")!.textContent).toBe("and 1 more in the app");
+  });
+
+  it("not-routed names sms in words and draws no text", () => {
+    render(<ChannelMessage channel="sms" message={ASK} state="not-routed" reason="no consent for SMS" />);
+    expect(slot("state")!.textContent).toBe("Not routed");
+    expect(slot("reason")!.textContent).toBe("no consent for SMS");
+    expect(root().textContent).toContain("Nothing was sent on SMS.");
+    expect(screen.queryByText(ASK.what)).toBeNull();
+  });
+
+  it("a second recipient gets the summary after the sender's name", () => {
+    render(
+      <ChannelMessage
+        channel="sms"
+        to="second"
+        message={{ ...ASK, summary: "Her case needs one document." }}
+        state="sent"
+        onAnswer={() => {}}
+      />,
+    );
+    expect(slot("what")!.parentElement!.textContent).toBe("Dr O'Body: Her case needs one document.");
+    expect(slot("options")).toBeNull();
+  });
+
+  it("is named by channel and sender, and is the same article shape", () => {
+    render(<ChannelMessage channel="sms" message={READY} state="sent" />);
+    expect(screen.getByRole("article", { name: "SMS message from Lifey" })).toBeInTheDocument();
+    expect(root().dataset.channel).toBe("sms");
+  });
+
+  it("large type switches the scale on sms", () => {
+    render(<ChannelMessage channel="sms" typeSize="large" message={ASK} state="sent" onAnswer={() => {}} />);
+    expect(slot("what")!.className).toContain("text-lg");
+    for (const button of screen.getAllByRole("button")) expect(button.className).toContain("min-h-9");
   });
 });

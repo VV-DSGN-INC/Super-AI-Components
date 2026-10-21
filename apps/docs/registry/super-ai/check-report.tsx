@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-type Channel = "app" | "push" | "chat" | "email" | "phone";
+type Channel = "app" | "push" | "chat" | "email" | "phone" | "sms";
 type CheckRule =
   | "kind-on-list"
   | "slots-filled"

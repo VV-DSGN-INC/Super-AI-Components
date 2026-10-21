@@ -63,6 +63,21 @@ describe("MessageLog", () => {
     expect(rows()[0]).toMatch(/^\+4 min/);
   });
 
+  it("names sms as a channel", () => {
+    render(
+      <MessageLog
+        events={[
+          { id: "1", at: 0, type: "message.sent", channel: "sms", path: "code" },
+          { id: "2", at: 4, type: "message.answered", channel: "sms", value: "Reply 1" },
+        ]}
+      />,
+    );
+    expect(rows().map((r) => r.replace(/^\+\d+ min/, ""))).toEqual([
+      "Sent on sms, written by code",
+      "Answered on sms: Reply 1",
+    ]);
+  });
+
   it("keeps the order it was given", () => {
     render(
       <MessageLog

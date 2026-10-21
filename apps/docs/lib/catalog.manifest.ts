@@ -2370,7 +2370,7 @@ export const MANIFEST: ManifestItem[] = [
     name: "channel-message",
     title: "Channel Message",
     description:
-      "One message drawn in the shape of the channel it is sent on: app, push, chat, email or phone.",
+      "One message drawn in the shape of the channel it is sent on: app, push, chat, SMS, email or phone.",
     family: "S",
     layer: "component",
     status: "shipped",

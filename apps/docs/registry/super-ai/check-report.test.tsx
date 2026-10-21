@@ -86,6 +86,11 @@ describe("CheckReport", () => {
     expect(screen.getByRole("region", { name: "Output checks for chat" })).toBeInTheDocument();
   });
 
+  it("names sms as the channel it checked for", () => {
+    render(<CheckReport results={allPass} channel="sms" />);
+    expect(screen.getByRole("region", { name: "Output checks for sms" })).toBeInTheDocument();
+  });
+
   it("is a labelled region without a channel", () => {
     render(<CheckReport results={allPass} />);
     expect(screen.getByRole("region", { name: "Output checks" })).toBeInTheDocument();

@@ -1566,12 +1566,19 @@ sighting; see D20.
 
 **Base:** Card, Badge, Button · **States:** pending · sent · answered · withdrawn · expired · failed-check · not-routed
 
-- **One message, five shapes, chosen by a prop.** `channel` is `app`, `push`, `chat`, `email` or
-  `phone`; the message (`kind` plus slots: `from`, `what`, `ask`, `options`, `link`, `expires`,
-  `quiet`, optional `handoff` and `summary`) never changes. Five components would let the five
-  channels drift apart, which is the failure the component exists to make visible.
-- **Caps are per channel and overflow is stated.** Push shows three actions, chat five, email one,
-  the app thread up to five. Options past the cap are not dropped silently: the channel renders
+- **One message, six shapes, chosen by a prop.** `channel` is `app`, `push`, `chat`, `sms`,
+  `email` or `phone`; the message (`kind` plus slots: `from`, `what`, `ask`, `options`, `link`,
+  `expires`, `quiet`, optional `handoff` and `summary`) never changes. Six components would let the
+  six channels drift apart, which is the failure the component exists to make visible.
+- **`sms` is a text, and `chat` is the assistant.** The two are separate channels. An SMS opens
+  with the sender's name inside the text, because a text arrives from a number and the name is the
+  identity. The body is `what`, then the `ask`. Options become numbered replies ("Reply 1 Yes"),
+  buttons only when the copy is answerable and `onAnswer` is given, plain text otherwise. It
+  carries at most one link, the `quiet` slot as the opt-out line ("Reply STOP: ..."), and the
+  `trust` and `expires` lines when given. It shows no kind badge, and `pace` and `locked` do not
+  apply.
+- **Caps are per channel and overflow is stated.** Push shows three actions, chat five, SMS five, email
+  one, the app thread up to five. Options past the cap are not dropped silently: the channel renders
   "and N more in the app". The app is the record, so the rest are always reachable there.
 - **The push lock screen shows who and what kind, never what.** While `locked` (the default), the
   card carries `from` and a phrase for `kind` ("has a check-in"), and nothing from `what`. The

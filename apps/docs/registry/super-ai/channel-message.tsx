@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-type Channel = "app" | "push" | "chat" | "email" | "phone";
+type Channel = "app" | "push" | "chat" | "email" | "phone" | "sms";
 type MessageKind = "ask" | "due" | "ready" | "receipt" | "notice";
 type ChannelMessageState =
   | "pending"
@@ -68,7 +68,7 @@ interface ChannelMessageProps extends Omit<React.ComponentProps<"article">, "chi
  * Caps per channel. Options past the cap are not dropped silently: the render says how many more
  * are in the app. Phone has no stated cap in the spec; it takes the app's five.
  */
-const OPTION_CAP: Record<Channel, number> = { app: 5, push: 3, chat: 5, email: 1, phone: 5 };
+const OPTION_CAP: Record<Channel, number> = { app: 5, push: 3, chat: 5, email: 1, phone: 5, sms: 5 };
 
 const STATE_WORD: Record<ChannelMessageState, string> = {
   pending: "Pending",
@@ -86,6 +86,7 @@ const CHANNEL_WORD: Record<Channel, string> = {
   chat: "Chat",
   email: "Email",
   phone: "Phone",
+  sms: "SMS",
 };
 
 const PATH_WORD: Record<NonNullable<ChannelMessageProps["path"]>, string> = {
@@ -128,20 +129,23 @@ interface OptionsProps {
   options: string[];
   /** Phone options are read aloud with a keypad digit. */
   spoken?: boolean;
+  /** SMS options are numbered replies: "Reply 1 Yes". */
+  reply?: boolean;
   answerable: boolean;
   onAnswer?: (value: string) => void;
   scale: Scale;
   className?: string;
 }
 
-function Options({ channel, options, spoken, answerable, onAnswer, scale, className }: OptionsProps) {
+function Options({ channel, options, spoken, reply, answerable, onAnswer, scale, className }: OptionsProps) {
   const shown = options.slice(0, OPTION_CAP[channel]);
   const more = options.length - shown.length;
-  const label = (option: string, index: number) => (spoken ? `Press ${index + 1} for ${option}` : option);
+  const label = (option: string, index: number) =>
+    spoken ? `Press ${index + 1} for ${option}` : reply ? `Reply ${index + 1} ${option}` : option;
   const itemClass = cn("min-w-0 break-words", scale.button);
   return (
     <div data-slot="channel-message-options" className={cn("flex flex-col gap-1.5", className)}>
-      <ul className={cn("flex min-w-0 list-none flex-wrap gap-1.5 p-0", spoken && "flex-col")}>
+      <ul className={cn("flex min-w-0 list-none flex-wrap gap-1.5 p-0", (spoken || reply) && "flex-col")}>
         {shown.map((option, index) => (
           <li key={option} className="min-w-0 max-w-full">
             {answerable && onAnswer ? (
@@ -234,6 +238,7 @@ function ChannelMessage({
         channel={channel}
         options={options}
         spoken={channel === "phone"}
+        reply={channel === "sms"}
         answerable={answerable}
         onAnswer={onAnswer}
         scale={scale}
@@ -316,7 +321,7 @@ function ChannelMessage({
     // the whole render; the footer below carries them.
     frame = (
       <p className={cn(scale.body, "text-foreground")}>
-        Nothing was sent on {CHANNEL_WORD[channel].toLowerCase()}.
+        Nothing was sent on {channel === "sms" ? "SMS" : CHANNEL_WORD[channel].toLowerCase()}.
       </p>
     );
   } else if (channel === "app") {
@@ -383,6 +388,31 @@ function ChannelMessage({
         {optionList}
         <p className={cn(scale.small, "text-foreground")}>[ {linkLabel} ]</p>
         {quiet("/quiet: ")}
+      </div>
+    );
+  } else if (channel === "sms") {
+    // A text arrives from a number, so the sender's name is part of the text and never only a
+    // header. There is no kind badge: nothing in a text message says what kind it is.
+    frame = (
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <div className="flex min-w-0 flex-col gap-1.5 rounded-2xl rounded-ss-sm bg-muted px-3 py-2.5 text-foreground">
+          <p className="min-w-0 break-words text-foreground">
+            <span data-slot="channel-message-from" className={cn(scale.what, "font-semibold")}>
+              {message.from}
+            </span>
+            {": "}
+            <span data-slot="channel-message-what" className={scale.what}>
+              {body ?? lockPhrase}
+            </span>
+          </p>
+          {askLine}
+          {expiresLine}
+          {handoffLine}
+        </div>
+        {answerLine}
+        {optionList}
+        <p className={cn(scale.small, "text-foreground")}>{linkLabel}</p>
+        {quiet("Reply STOP: ")}
       </div>
     );
   } else if (channel === "email") {
