@@ -584,6 +584,22 @@ Checked against the sibling `Minimal Design System`: it has no AI-labelling,
 consent, data-control, private-session or credentials component, so ownership
 is here.
 
+### D28 · Wave 15 builds the Shape of AI passes outside Trust builders — 2026-10-21
+
+Three items that passed D1 in the Shape of AI audit's §4 enter the catalog:
+D8 `prompt-enhancer` (7 products), D9 `prompt-template-form` (6) and N17
+`memory-manager` (5). Four §4 states land on shipped items: `randomize` on C1
+and D1, `describe` on D2, `user-presets` on E4, `draft` on A7 and E5. A–O
+grows from 119 to 122 for exactly these three, the same reopening D26 used.
+
+`shared-vision` passed at exactly 3 and is held for an agent slice: ambient
+"the agent is working here" cues need a host surface this registry does not
+have yet. `randomize` has two named products, Krea and Scenario. It ships as a
+state because D1 governs registry items, not variants, and the count is
+recorded so a re-sample can remove it.
+
+Numbered D28 because D27 is taken on PR #107 (the patterns cross-reference).
+
 ### F1 · Monetization cannot be Wave 12
 
 The approved spec defers the entire monetization kit to the last wave. The board shows the paywall is
