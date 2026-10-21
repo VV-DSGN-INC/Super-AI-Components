@@ -69,6 +69,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["per-action", "rate", "currency", "with-qualifier"],
     specAnchor: "component-specs.md#a2-cost-chip",
+    patterns: ["governors/cost-estimates"],
   },
   {
     id: "A3",
@@ -117,6 +118,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["unfiltered", "toggle-chips", "removable-chips", "disabled"],
     specAnchor: "component-specs.md#a5-filter-bar",
+    patterns: ["tuners/filters"],
   },
   {
     id: "A6",
@@ -139,6 +141,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["slider-unit", "select", "toggle", "colour", "xy-pair", "with-hint", "with-reset", "disabled"],
     specAnchor: "component-specs.md#a6-field-row",
+    patterns: ["tuners/parameters"],
   },
   {
     id: "A7",
@@ -155,6 +158,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["@base-ui/react"],
     states: ["video-model", "image-model", "running", "partially-locked", "draft"],
     specAnchor: "component-specs.md#a7-gen-settings-bar",
+    patterns: ["tuners/model-management", "tuners/parameters", "governors/draft-mode"],
   },
   {
     id: "A8",
@@ -203,6 +207,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["label-beside-value", "label-above-value", "copyable-value", "missing-value"],
     specAnchor: "component-specs.md#a10-stat-readout",
+    patterns: ["wayfinders/prompt-details"],
   },
   {
     id: "A11",
@@ -251,6 +256,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["generated", "edited", "summarized", "sender", "after-handoff", "text-tint"],
     specAnchor: "component-specs.md#a13-ai-label",
+    patterns: ["trust-builders/disclosure", "identifiers/iconography"],
   },
   {
     id: "B1",
@@ -331,6 +337,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["upgrade", "invite", "update-available", "quota-warning", "dismissed"],
     specAnchor: "component-specs.md#b5-promo-card",
+    patterns: ["wayfinders/nudges"],
   },
   {
     id: "B6",
@@ -361,8 +368,11 @@ export const MANIFEST: ManifestItem[] = [
     shadcn: ["badge", "breadcrumb", "button", "button-group"],
     consumes: [],
     npm: ["lucide-react"],
-    states: ["document-context", "editor-context", "privacy-chip", "saved-state"],
+    // `private-session` (D28): the host passing N15's PrivateSessionChip into
+    // the privacy slot. B7 imports nothing for it; the state forces the story.
+    states: ["document-context", "editor-context", "privacy-chip", "saved-state", "private-session"],
     specAnchor: "component-specs.md#b7-app-topbar",
+    patterns: ["trust-builders/incognito-mode"],
   },
   {
     id: "B8",
@@ -395,6 +405,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["idle", "focused", "generating", "locked", "randomize"],
     specAnchor: "component-specs.md#c1-hero-omnibox",
+    patterns: ["inputs/open-input", "wayfinders/initial-cta", "wayfinders/randomize"],
   },
   {
     id: "C2",
@@ -418,6 +429,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["plain", "with-icon", "with-thumbnail", "overflow-link"],
     specAnchor: "component-specs.md#c2-suggestion-chips",
+    patterns: ["wayfinders/suggestions"],
   },
   {
     id: "C3",
@@ -434,6 +446,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["embla-carousel-react"],
     states: ["icon-title-desc", "with-thumbnail", "horizontal-scroll"],
     specAnchor: "component-specs.md#c3-feature-card-row",
+    patterns: ["wayfinders/templates"],
   },
   {
     id: "C4",
@@ -482,6 +495,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["floating", "docked", "node-embedded", "locked", "negative-prompt", "randomize"],
     specAnchor: "component-specs.md#d1-media-prompt-bar",
+    patterns: ["inputs/open-input", "wayfinders/randomize"],
   },
   {
     id: "D2",
@@ -498,6 +512,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react", "embla-carousel-react"],
     states: ["empty", "filled", "with-roles", "describe"],
     specAnchor: "component-specs.md#d2-reference-strip",
+    patterns: ["tuners/attachments", "inputs/describe"],
   },
   {
     id: "D3",
@@ -514,6 +529,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["file", "selection", "url", "mention", "overflow", "unresolved"],
     specAnchor: "component-specs.md#d3-context-chips",
+    patterns: ["governors/references", "tuners/attachments"],
   },
   {
     id: "D4",
@@ -530,6 +546,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["text-only", "with-icon", "with-tooltip"],
     specAnchor: "component-specs.md#d4-mode-tabs",
+    patterns: ["tuners/modes"],
   },
   {
     id: "D5",
@@ -546,6 +563,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["text-range", "image-region", "table-cell", "timeline-range"],
     specAnchor: "component-specs.md#d5-quote-reply",
+    patterns: ["inputs/inline-action", "inputs/inpainting", "inputs/restructure"],
   },
   {
     id: "D6",
@@ -562,6 +580,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react", "cmdk"],
     states: ["search", "hover-preview", "new-skill-footer"],
     specAnchor: "component-specs.md#d6-skill-menu",
+    patterns: ["inputs/prompt-actions"],
   },
   {
     id: "D7",
@@ -584,6 +603,7 @@ export const MANIFEST: ManifestItem[] = [
       "confirm-ready",
     ],
     specAnchor: "component-specs.md#d7-slot-summary",
+    patterns: ["governors/action-plan", "wayfinders/follow-up"],
   },
   {
     id: "D8",
@@ -600,6 +620,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["idle", "enhancing", "suggested", "accepted", "reverted", "failed"],
     specAnchor: "component-specs.md#d8-prompt-enhancer",
+    patterns: ["tuners/prompt-enhancer"],
   },
   {
     id: "D9",
@@ -616,6 +637,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["empty", "partially-filled", "complete", "with-defaults", "missing-required", "multi-step"],
     specAnchor: "component-specs.md#d9-prompt-template-form",
+    patterns: ["inputs/madlibs"],
   },
   {
     id: "E1",
@@ -632,6 +654,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["dropzone", "directions", "presets", "settings", "cost-and-generate"],
     specAnchor: "component-specs.md#e1-generation-panel",
+    patterns: ["governors/cost-estimates"],
   },
   {
     id: "E2",
@@ -648,6 +671,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["dropdown", "expanded-cards", "node-inline"],
     specAnchor: "component-specs.md#e2-model-picker",
+    patterns: ["tuners/model-management"],
   },
   {
     id: "E3",
@@ -664,6 +688,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["slider-unit", "segmented", "tabbed", "reset-all", "inline-education"],
     specAnchor: "component-specs.md#e3-parameter-panel",
+    patterns: ["tuners/parameters"],
   },
   {
     id: "E4",
@@ -680,6 +705,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["style", "palette", "filter", "environment", "see-more", "user-presets"],
     specAnchor: "component-specs.md#e4-preset-grid",
+    patterns: ["inputs/restyle", "tuners/preset-styles", "tuners/saved-styles"],
   },
   {
     id: "E5",
@@ -696,6 +722,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["idle", "estimating", "running", "done", "failed", "insufficient-credits", "locked", "draft"],
     specAnchor: "component-specs.md#e5-run-button",
+    patterns: ["governors/controls", "governors/cost-estimates", "governors/draft-mode"],
   },
   {
     id: "E6",
@@ -712,6 +739,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["queued", "running", "done", "failed", "cancel"],
     specAnchor: "component-specs.md#e6-generation-queue",
+    patterns: ["governors/controls", "governors/variations"],
   },
   {
     id: "E7",
@@ -744,6 +772,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["stepper", "preview-pane", "skip-back-primary"],
     specAnchor: "component-specs.md#e8-generation-wizard",
+    patterns: ["governors/sample-response", "inputs/madlibs", "wayfinders/templates"],
   },
   {
     id: "E9",
@@ -760,6 +789,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["segment-select", "per-segment-regenerate", "whole-script-play"],
     specAnchor: "component-specs.md#e9-tts-composer",
+    patterns: ["inputs/regenerate", "tuners/voice-and-tone"],
   },
   {
     id: "E10",
@@ -776,6 +806,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["prompt-script", "level-metering", "retake", "consent-capture"],
     specAnchor: "component-specs.md#e10-voice-clone-recorder",
+    patterns: ["trust-builders/consent"],
   },
   {
     id: "E11",
@@ -792,6 +823,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["none", "preset", "custom", "editing", "scoped", "conflict", "reset"],
     specAnchor: "component-specs.md#e11-voice-profile",
+    patterns: ["tuners/voice-and-tone"],
   },
   {
     id: "F1",
@@ -811,14 +843,17 @@ export const MANIFEST: ManifestItem[] = [
     // `cost` is the registry:lib contract module — F1 takes only the
     // GenerationState union from it, but the dependency is real and a consumer
     // installing result-card needs the file.
-    consumes: ["preview-tile", "cost"],
+    consumes: ["ai-label", "preview-tile", "cost"],
     npm: ["lucide-react"],
     // catalog.md's raw states mixed one media-type axis ("image/video/audio/
     // text/3D") into the lifecycle list and omitted `queued`. Normalised to the
     // six-name GenerationState union the State contract fixes
     // (concept-model.md:108, wave-4 spec §1.6 — F1 "uses it verbatim"), with
     // the media-type axis kept as its own story rather than dropped.
-    states: ["idle", "queued", "streaming", "done", "failed", "locked", "media-types"],
+    // `watermarked` (D28, Shape of AI Watermark) is not a lifecycle state and
+    // does not join GenerationState: it is the `watermark` prop drawing A13 on
+    // a `done` asset, declared here so its story is forced through the gate.
+    states: ["idle", "queued", "streaming", "done", "failed", "locked", "media-types", "watermarked"],
     specAnchor: "component-specs.md#f1-result-card",
   },
   {
@@ -842,6 +877,7 @@ export const MANIFEST: ManifestItem[] = [
     // "date sections" carried a space, which cannot become a story export.
     states: ["date-sections", "density", "select-mode", "empty"],
     specAnchor: "component-specs.md#f2-generation-grid",
+    patterns: ["governors/branches", "governors/variations"],
   },
   {
     id: "F3",
@@ -859,6 +895,12 @@ export const MANIFEST: ManifestItem[] = [
     // Spaces and a slash-joined verb list, none of which survive as export names.
     states: ["highlighted-spans", "params-grid", "handoff-verbs", "more-like-this"],
     specAnchor: "component-specs.md#f3-asset-detail",
+    patterns: [
+      "governors/branches",
+      "inputs/restructure",
+      "trust-builders/footprints",
+      "wayfinders/prompt-details",
+    ],
   },
   {
     id: "F4",
@@ -878,6 +920,7 @@ export const MANIFEST: ManifestItem[] = [
     // the two row conditions that change what a row can do.
     states: ["menu", "inline", "cost-per-action", "locked-rows"],
     specAnchor: "component-specs.md#f4-action-stack",
+    patterns: ["inputs/restructure", "inputs/restyle", "inputs/transform"],
   },
   {
     id: "F5",
@@ -900,6 +943,7 @@ export const MANIFEST: ManifestItem[] = [
     // property of the media the caller supplies, not a fourth mode.
     states: ["side", "single", "wipe"],
     specAnchor: "component-specs.md#f5-compare-viewer",
+    patterns: ["governors/variations"],
   },
   {
     id: "F6",
@@ -936,6 +980,7 @@ export const MANIFEST: ManifestItem[] = [
     // gets the other three.
     states: ["pending", "submitting", "resolved", "verb-order"],
     specAnchor: "component-specs.md#f7-approval-card",
+    patterns: ["governors/sample-response", "governors/verification", "inputs/regenerate"],
   },
   {
     id: "G1",
@@ -1160,6 +1205,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["word-select", "speaker-labels", "media-chips", "strikethrough"],
     specAnchor: "component-specs.md#h4-transcript-editor",
+    patterns: ["inputs/transform"],
   },
   {
     id: "H5",
@@ -1256,6 +1302,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["text", "image", "shape", "media", "overflow"],
     specAnchor: "component-specs.md#i3-context-toolbar",
+    patterns: ["inputs/inline-action", "wayfinders/nudges"],
   },
   {
     id: "I4",
@@ -1272,6 +1319,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["grouped-rows", "cost-chips", "destructive-group"],
     specAnchor: "component-specs.md#i4-ai-tools-menu",
+    patterns: ["inputs/prompt-actions"],
   },
   {
     id: "I5",
@@ -1288,6 +1336,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["tool-rail", "shape-rail", "brush-controls", "swatch-grid", "mask-mode"],
     specAnchor: "component-specs.md#i5-drawing-tools",
+    patterns: ["inputs/inpainting"],
   },
   {
     id: "J1",
@@ -1320,6 +1369,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["facet-counts", "see-more", "collapsed-section", "saved-searches", "view-options"],
     specAnchor: "component-specs.md#j2-filter-panel",
+    patterns: ["tuners/filters"],
   },
   {
     id: "J3",
@@ -1336,6 +1386,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["sort-tabs", "type-pills", "infinite-scroll", "docked-prompt"],
     specAnchor: "component-specs.md#j3-explore-gallery",
+    patterns: ["wayfinders/example-gallery"],
   },
   {
     id: "J4",
@@ -1348,9 +1399,11 @@ export const MANIFEST: ManifestItem[] = [
     wave: 7,
     base: ["card"],
     shadcn: ["badge", "card"],
-    consumes: ["choice-chips", "section-header"],
+    consumes: ["ai-label", "choice-chips", "section-header"],
     npm: ["lucide-react"],
-    states: ["type-badge", "excerpt", "edited-ago", "view-count", "privacy-icon"],
+    // `ai-label` (D28): the per-item A13 chip, a field-shaped state like the
+    // other five.
+    states: ["type-badge", "excerpt", "edited-ago", "view-count", "privacy-icon", "ai-label"],
     specAnchor: "component-specs.md#j4-artifact-grid",
   },
   {
@@ -1384,6 +1437,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["preview-strip", "option-selects", "author-follow", "more-like-this"],
     specAnchor: "component-specs.md#j6-template-detail",
+    patterns: ["wayfinders/example-gallery", "wayfinders/templates"],
   },
   {
     id: "J7",
@@ -1412,10 +1466,11 @@ export const MANIFEST: ManifestItem[] = [
     wave: 8,
     base: ["card", "textarea"],
     shadcn: ["button", "button-group", "card", "label", "textarea"],
-    consumes: [],
+    consumes: ["ai-label"],
     npm: ["lucide-react"],
     states: ["streaming", "editable", "re-promptable", "approval-verbs"],
     specAnchor: "component-specs.md#k1-ai-doc-block",
+    patterns: ["inputs/regenerate", "trust-builders/disclosure"],
   },
   {
     id: "K2",
@@ -1432,6 +1487,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["idle", "generating", "cancelled"],
     specAnchor: "component-specs.md#k2-inline-generate-popup",
+    patterns: ["inputs/inline-action"],
   },
   {
     id: "K3",
@@ -1464,6 +1520,14 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["improve", "shorten", "expand", "tone-submenu", "custom-prompt"],
     specAnchor: "component-specs.md#k4-selection-toolbar",
+    patterns: [
+      "inputs/expand",
+      "inputs/inline-action",
+      "inputs/prompt-actions",
+      "inputs/restyle",
+      "inputs/summary",
+      "tuners/voice-and-tone",
+    ],
   },
   {
     id: "K5",
@@ -1480,6 +1544,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["parsing", "chunking", "embedding", "ready", "failed", "empty"],
     specAnchor: "component-specs.md#k5-source-panel",
+    patterns: ["governors/references", "tuners/connectors"],
   },
   {
     id: "K6",
@@ -1496,6 +1561,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["resolved", "jump-to-source", "loading", "unresolved", "disabled"],
     specAnchor: "component-specs.md#k6-citation-ref",
+    patterns: ["governors/citations", "trust-builders/footprints"],
   },
   {
     id: "K7",
@@ -1512,6 +1578,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["streaming", "cited", "partially-cited", "uncited", "retrieved-unused", "citation-unresolved"],
     specAnchor: "component-specs.md#k7-answer-block",
+    patterns: ["governors/citations", "inputs/synthesis", "trust-builders/footprints"],
   },
   {
     id: "K8",
@@ -1535,6 +1602,7 @@ export const MANIFEST: ManifestItem[] = [
       "not-yet-run",
     ],
     specAnchor: "component-specs.md#k8-source-cards",
+    patterns: ["governors/references", "trust-builders/footprints", "tuners/filters"],
   },
   {
     id: "K9",
@@ -1551,6 +1619,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["generating", "ready", "attributed", "quote-and-condense", "collapsed", "turned-off"],
     specAnchor: "component-specs.md#k9-summary-card",
+    patterns: ["inputs/summary"],
   },
   {
     id: "L1",
@@ -1583,6 +1652,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: [],
     states: ["spotlight", "no-spotlight", "step-counter", "arrow-flip"],
     specAnchor: "component-specs.md#l2-coach-mark",
+    patterns: ["wayfinders/nudges"],
   },
   {
     id: "L3",
@@ -1599,6 +1669,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["modal", "anchored", "inline-card", "dismissible-chip", "stage-badge"],
     specAnchor: "component-specs.md#l3-feature-announcement",
+    patterns: ["wayfinders/nudges"],
   },
   {
     id: "L4",
@@ -1763,6 +1834,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["not-set", "valid", "invalid", "unreachable", "local-model"],
     specAnchor: "component-specs.md#m7-connection-manager",
+    patterns: ["tuners/connectors"],
   },
   {
     id: "N1",
@@ -1795,6 +1867,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["preview", "warning", "trust-checkbox", "account-picker"],
     specAnchor: "component-specs.md#n2-trust-dialog",
+    patterns: ["governors/verification"],
     // The warning Alert is `border-warning/40 bg-warning/5` with a
     // `text-warning` icon — same silently-colourless failure as M2/M3/M4.
     cssVars: WARNING_CSS_VARS,
@@ -1814,6 +1887,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["under-composer", "in-card", "inline"],
     specAnchor: "component-specs.md#n3-disclaimer-note",
+    patterns: ["trust-builders/caveat"],
   },
   {
     id: "N4",
@@ -1830,6 +1904,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["collapsed", "expanded", "errored", "retry-siblings"],
     specAnchor: "component-specs.md#n4-trace-timeline",
+    patterns: ["governors/stream-of-thought", "trust-builders/footprints"],
   },
   {
     id: "N5",
@@ -1846,6 +1921,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["input-tab", "output-tab", "metadata-tab", "error-tab"],
     specAnchor: "component-specs.md#n5-run-inspector",
+    patterns: ["trust-builders/footprints"],
   },
   {
     id: "N6",
@@ -1884,6 +1960,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["ok", "degraded", "key-invalid", "not-running"],
     specAnchor: "component-specs.md#n7-env-status",
+    patterns: ["tuners/connectors"],
     // `degraded` is the whole point of the four-state split and it is drawn
     // entirely in `border-warning/40 text-warning`.
     cssVars: WARNING_CSS_VARS,
@@ -1903,6 +1980,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["allow-once", "always-allow", "deny", "edit-first"],
     specAnchor: "component-specs.md#n8-permission-prompt",
+    patterns: ["governors/verification"],
   },
   {
     id: "N9",
@@ -1954,7 +2032,7 @@ export const MANIFEST: ManifestItem[] = [
     wave: 11,
     base: ["card", "a10", "a12"],
     shadcn: ["card", "button"],
-    consumes: ["section-header", "stat-readout"],
+    consumes: ["ai-label", "section-header", "stat-readout"],
     npm: ["lucide-react"],
     // The trigger reasons (user / budget-exhausted / low-confidence / policy)
     // are an axis, not states — they are the `trigger` prop, rendered across
@@ -1977,6 +2055,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["running", "needs-input", "done", "failed", "empty", "per-task-cancel", "notify-opt-in"],
     specAnchor: "component-specs.md#n12-task-tray",
+    patterns: ["governors/controls"],
   },
   {
     id: "N13",
@@ -1993,6 +2072,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["pre-notice", "recording", "others-notified", "declined", "ended"],
     specAnchor: "component-specs.md#n13-capture-consent",
+    patterns: ["trust-builders/consent"],
   },
   {
     id: "N14",
@@ -2009,6 +2089,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["training-on", "training-off", "retention", "plan-locked", "none-collected", "admin-managed"],
     specAnchor: "component-specs.md#n14-data-controls",
+    patterns: ["trust-builders/data-ownership"],
   },
   {
     id: "N15",
@@ -2025,6 +2106,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["entering", "active", "connectors-reduced", "exiting", "unavailable"],
     specAnchor: "component-specs.md#n15-private-session-notice",
+    patterns: ["trust-builders/incognito-mode"],
   },
   {
     id: "N16",
@@ -2042,6 +2124,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["verified", "unverified", "stripped", "ai-generated", "ai-edited", "with-history"],
     specAnchor: "component-specs.md#n16-content-credentials",
+    patterns: ["trust-builders/watermark", "trust-builders/footprints"],
   },
   {
     id: "N17",
@@ -2058,6 +2141,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["empty", "populated", "scoped", "just-saved", "editing", "memory-off", "reset-confirm"],
     specAnchor: "component-specs.md#n17-memory-manager",
+    patterns: ["governors/memory"],
   },
   {
     id: "N18",
@@ -2074,6 +2158,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["idle", "watching", "acting", "needs-you", "paused", "taken-over"],
     specAnchor: "component-specs.md#n18-agent-presence",
+    patterns: ["governors/shared-vision"],
   },
   {
     id: "O1",
@@ -2303,6 +2388,7 @@ export const MANIFEST: ManifestItem[] = [
     regions: ["rail", "docked-prompt-bar", "sort-tabs", "masonry-feed"],
     states: [],
     specAnchor: "block-specs.md#o8-explore-shell",
+    patterns: ["wayfinders/example-gallery"],
   },
   {
     id: "O9",
@@ -2433,6 +2519,7 @@ export const MANIFEST: ManifestItem[] = [
     regions: ["sources", "chat", "composer", "studio-outputs"],
     states: [],
     specAnchor: "block-specs.md#o13-notebook-shell",
+    patterns: ["inputs/synthesis"],
   },
   {
     id: "O14",
@@ -2519,6 +2606,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["configuring", "sample-preview", "applying", "suggested", "accepted", "overridden", "failed"],
     specAnchor: "component-specs.md#p3-auto-fill",
+    patterns: ["inputs/auto-fill", "governors/sample-response"],
   },
   // Family Q — read from Vercel's Geist, not from a reference board. Kept
   // separate from A–P for the reason D20 gives; sorting past N also leaves
@@ -2538,6 +2626,7 @@ export const MANIFEST: ManifestItem[] = [
     npm: ["lucide-react"],
     states: ["page", "minimal", "inverted", "long-address", "loading"],
     specAnchor: "component-specs.md#q1-browser-frame",
+    patterns: ["governors/shared-vision"],
   },
   {
     id: "Q2",

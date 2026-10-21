@@ -606,6 +606,31 @@ Checked against the sibling `Minimal Design System`: it has no AI-labelling,
 consent, data-control, private-session or credentials component, so ownership
 is here.
 
+### D29 · The Shape of AI cross-reference is catalog metadata, not contract — 2026-10-20
+
+The manifest gains an optional `patterns` field on `ManifestItem`, values shaped
+`<category>/<pattern>` (`trust-builders/caveat`), checked against a typed
+vocabulary of Shape of AI's six categories and the pattern names in the D28
+audit. The docs site reads it to filter the components index by category and to
+show chips on each component page; families stay the primary axis. `patterns`
+does **not** enter the shipped `.meta.json`. The contract is usage judgment
+written once in the guidance module and installed beside the code (D23, D24):
+variants, insteadUse, what the component refuses to do. A pattern tag is a
+statement about how a third party's library is cut, it changes when that
+library changes, and an agent using the component gets nothing from it that the
+contract does not already say. Putting it in the contract would also put a
+catalog reorganisation into every consumer's installed copy. If a later need
+shows an agent routing by Shape of AI vocabulary, it enters through the
+guidance module and `pnpm contract:emit`, never by editing a `.meta.json`.
+
+Only mappings the audit states are filled, for Covered and Partial rows. State
+rows (Randomize, Describe, Draft mode, Saved styles) are not mapped, because
+the pattern lands on an item only once the state ships.
+
+Identifiers (Avatar, Color, Name, Personality) are brand decisions with no
+catalog item, so selecting that category on the index shows a note instead of
+an empty list. Iconography maps to `ai-label`, which owns the one glyph for AI actions (D28).
+
 ### D30 · Wave 15 builds the Shape of AI passes outside Trust builders — 2026-10-21
 
 Three items that passed D1 in the Shape of AI audit's §4 enter the catalog:
