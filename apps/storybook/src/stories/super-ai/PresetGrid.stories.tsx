@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { ChoiceChip, ChoiceChips } from "@/registry/super-ai/choice-chips";
@@ -302,6 +302,67 @@ export const ReducedMotion: Story = {
     // while it resolves.
     canvas.getByRole("radio", { name: "Sketch" });
     canvas.getByRole("radio", { name: "Watercolor" });
+  },
+};
+
+/**
+ * User presets (D28): `source: "personal" | "team"` lifts a preset into a
+ * "Your styles" section above the system presets, and `onSaveCurrent` puts a
+ * "Save current" tile first in that section. Each user preset shows its source
+ * as text and carries it in its accessible name ("Neon noir, Personal"), so
+ * a team style and a personal one are told apart without colour.
+ *
+ * The save tile is a button, not a radio, and the keyboard assertion pins the
+ * consequence: the radios stay one tab stop with arrow keys that wrap across
+ * both sections, and arrowing back from the first user preset lands on the last
+ * system preset, never on the save tile. Tab reaches the save tile as its own
+ * stop. Pressing it calls the handler and leaves the selection where it was.
+ */
+export const UserPresets: Story = {
+  args: {
+    items: [
+      { id: "neon-noir", label: "Neon noir", source: "personal" },
+      { id: "studio-look", label: "Studio look", source: "team" },
+      ...STYLE_ITEMS.slice(0, 3),
+    ],
+    content: "style",
+    "aria-label": "Style presets",
+    defaultValue: "neon-noir",
+    onSaveCurrent: fn(),
+  },
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const grid = canvas.getByRole("radiogroup", { name: "Style presets" });
+    const sections = grid.querySelectorAll('[data-slot="preset-grid-section"]');
+    await expect(sections).toHaveLength(2);
+    await expect(sections[0]).toHaveTextContent("Your styles");
+
+    const noir = canvas.getByRole("radio", { name: "Neon noir, Personal" });
+    await expect(noir).toHaveAttribute("aria-checked", "true");
+    await expect(canvas.getByRole("radio", { name: "Studio look, Team" })).toBeInTheDocument();
+    await expect(within(noir).getByText("Personal")).toBeVisible();
+
+    const save = canvas.getByRole("button", { name: "Save current" });
+    await expect(canvas.queryByRole("radio", { name: /save current/i })).toBeNull();
+    const radios = canvas.getAllByRole("radio");
+    await expect(radios).toHaveLength(5);
+
+    // Tab: the save tile first, then the one radio stop.
+    await userEvent.tab();
+    await waitFor(() => expect(document.activeElement).toBe(save));
+    await userEvent.tab();
+    await waitFor(() => expect(document.activeElement).toBe(noir));
+
+    // Arrows leave the save tile alone: back from the first radio wraps to the last.
+    await userEvent.keyboard("{ArrowLeft}");
+    await waitFor(() => expect(document.activeElement).toBe(radios[radios.length - 1]));
+    await userEvent.keyboard("{ArrowRight}");
+    await waitFor(() => expect(document.activeElement).toBe(noir));
+
+    // The save tile acts without touching the selection.
+    await userEvent.click(save);
+    await expect(args.onSaveCurrent).toHaveBeenCalledTimes(1);
+    await expect(noir).toHaveAttribute("aria-checked", "true");
   },
 };
 
