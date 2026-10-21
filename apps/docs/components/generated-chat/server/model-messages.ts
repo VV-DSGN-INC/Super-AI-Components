@@ -4,6 +4,8 @@ import type { GeneratedChatMessage } from "@/registry/super-ai/generated-chat";
 
 /** How many messages the model sees. Older ones are dropped. */
 export const MAX_MESSAGES = 12;
+/** The longest a single message may be when the model reads it. */
+export const MAX_MESSAGE_CHARS = 1000;
 
 type Part = GeneratedChatMessage["parts"][number];
 
@@ -39,7 +41,8 @@ export function toModelMessages(messages: GeneratedChatMessage[]): ModelMessage[
       .map(describe)
       .filter((text): text is string => text !== null)
       .join("\n");
-    if (content) out.push({ role: message.role, content });
+    const capped = content.length > MAX_MESSAGE_CHARS ? `${content.slice(0, MAX_MESSAGE_CHARS)}…` : content;
+    if (capped) out.push({ role: message.role, content: capped });
   }
   const window = out.slice(-MAX_MESSAGES);
   while (window.length > 0 && window[0]!.role !== "user") window.shift();

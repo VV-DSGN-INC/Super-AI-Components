@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { GeneratedChatMessage } from "@/registry/super-ai/generated-chat";
 
-import { toModelMessages } from "./model-messages";
+import { MAX_MESSAGE_CHARS, toModelMessages } from "./model-messages";
 
 const user = (id: string, text: string): GeneratedChatMessage => ({
   id,
@@ -73,5 +73,10 @@ describe("toModelMessages", () => {
       { id: "a1", role: "assistant", parts: [{ type: "data-suggestions", data: { items: ["x"] } }] },
     ];
     expect(toModelMessages(messages)).toEqual([{ role: "user", content: "hi" }]);
+  });
+
+  it("cuts a message longer than the cap", () => {
+    const [only] = toModelMessages([user("u1", "x".repeat(MAX_MESSAGE_CHARS * 5))]);
+    expect((only!.content as string).length).toBeLessThanOrEqual(MAX_MESSAGE_CHARS + 1);
   });
 });

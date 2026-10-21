@@ -22,12 +22,16 @@ const sse = (chunks: object[], status = 200) =>
     headers: { "content-type": "text/event-stream", "x-vercel-ai-ui-message-stream": "v1" },
   });
 
-async function send(transport: ReturnType<typeof createModelTransport>, text: string): Promise<Chunk[]> {
+async function send(
+  transport: ReturnType<typeof createModelTransport>,
+  text: string,
+  abortSignal?: AbortSignal,
+): Promise<Chunk[]> {
   const messages: GeneratedChatMessage[] = [{ id: "u1", role: "user", parts: [{ type: "text", text }] }];
   const stream = await transport.sendMessages({
     chatId: "c",
     messages,
-    abortSignal: undefined,
+    abortSignal,
     trigger: "submit-message",
     messageId: undefined,
   });
@@ -110,5 +114,40 @@ describe("createModelTransport", () => {
     expect(textOf(chunks)).toBe(`Video took ${FALLBACK_TEXT}`);
     expect(chipsOf(chunks)).toEqual([READY_PROMPTS]);
     expect(chunks.at(-1)?.type).toBe("finish");
+  });
+
+  it("treats a stream that ends without finishing as broken", async () => {
+    const fetch = vi.fn(async () =>
+      sse([
+        { type: "start" },
+        { type: "text-start", id: "t" },
+        { type: "text-delta", id: "t", delta: "Video took " },
+      ]),
+    );
+    const chunks = await send(
+      createModelTransport({ api: "/api/chat", scripted, turns: TURNS, fetch }),
+      "where did credits go",
+    );
+    expect(chunks.filter((c) => c.type === "text-end").map((c) => c.id)).toContain("t");
+    expect(textOf(chunks)).toBe(`Video took ${FALLBACK_TEXT}`);
+    expect(chunks.at(-1)?.type).toBe("finish");
+  });
+
+  it("adds nothing after the reader stops a model reply", async () => {
+    const stop = new AbortController();
+    const fetch = vi.fn(async () => {
+      stop.abort();
+      return sse([
+        { type: "start" },
+        { type: "text-start", id: "t" },
+        { type: "text-delta", id: "t", delta: "Video took " },
+      ]);
+    });
+    const chunks = await send(
+      createModelTransport({ api: "/api/chat", scripted, turns: TURNS, fetch }),
+      "where did credits go",
+      stop.signal,
+    );
+    expect(textOf(chunks)).not.toContain(FALLBACK_TEXT);
   });
 });

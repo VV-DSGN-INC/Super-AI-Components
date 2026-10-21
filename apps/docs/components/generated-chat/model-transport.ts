@@ -29,10 +29,12 @@ function lastUserText(messages: GeneratedChatMessage[]): string {
 function withFallback(
   model: ReadableStream<UIMessageChunk>,
   fallback: () => Promise<ReadableStream<UIMessageChunk>>,
+  abortSignal: AbortSignal | undefined,
 ): ReadableStream<UIMessageChunk> {
   return new ReadableStream<UIMessageChunk>({
     async start(controller) {
       let started = false;
+      let finished = false;
       const openText = new Set<string>();
       let broke = false;
       const reader = model.getReader();
@@ -45,6 +47,7 @@ function withFallback(
             break;
           }
           if (value.type === "start") started = true;
+          if (value.type === "finish") finished = true;
           if (value.type === "text-start") openText.add(value.id);
           if (value.type === "text-end") openText.delete(value.id);
           controller.enqueue(value);
@@ -52,7 +55,9 @@ function withFallback(
       } catch {
         broke = true;
       }
-      if (broke) {
+      // A stream that ends without finishing was cut off, unless the reader stopped it.
+      if (!finished) broke = true;
+      if (broke && !abortSignal?.aborted) {
         void reader.cancel().catch(() => {});
         for (const id of openText) controller.enqueue({ type: "text-end", id });
         const rest = (await fallback()).getReader();
@@ -92,7 +97,7 @@ export function createModelTransport<C>({
       } catch {
         return playScript(options);
       }
-      return withFallback(stream, () => playScript(options));
+      return withFallback(stream, () => playScript(options), options.abortSignal);
     },
     async reconnectToStream() {
       return null;

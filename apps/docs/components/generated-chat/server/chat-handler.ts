@@ -17,10 +17,24 @@ import { systemPrompt } from "./system-prompt";
 
 /** The largest request body the route reads, in bytes. */
 export const BODY_LIMIT = 32 * 1024;
-/** The most the model may write in one reply. */
-export const MAX_OUTPUT_TOKENS = 800;
+/** The most the model may write in one step; a reply has at most MAX_STEPS. */
+export const MAX_OUTPUT_TOKENS = 400;
 /** Model calls per reply: room for a card, a view and the chips, then words. */
 const MAX_STEPS = 4;
+/** A reply that takes longer than this is cut off and gets the fallback. */
+const DEADLINE_MS = 25_000;
+
+/** The shape the route accepts. Anything else is a 400, never a crash. */
+const Body = z.object({
+  messages: z
+    .array(
+      z.looseObject({
+        role: z.string(),
+        parts: z.array(z.looseObject({ type: z.string() })),
+      }),
+    )
+    .min(1),
+});
 
 interface ChatHandlerOptions {
   /** The gateway model, or null when the kill switch is off. */
@@ -60,16 +74,17 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
     const declared = Number(req.headers.get("content-length") ?? 0);
     if (declared > BODY_LIMIT) return refuse(413, "The conversation is too long to send.");
     const raw = await req.text();
-    if (raw.length > BODY_LIMIT) return refuse(413, "The conversation is too long to send.");
+    if (new TextEncoder().encode(raw).length > BODY_LIMIT)
+      return refuse(413, "The conversation is too long to send.");
 
     let messages: GeneratedChatMessage[];
     try {
-      messages = (JSON.parse(raw) as { messages?: GeneratedChatMessage[] }).messages ?? [];
+      const parsed = Body.safeParse(JSON.parse(raw));
+      if (!parsed.success) return refuse(400, "There is no question to answer.");
+      messages = parsed.data.messages as unknown as GeneratedChatMessage[];
     } catch {
       return refuse(400, "The request could not be read.");
     }
-    if (!Array.isArray(messages) || messages.length === 0)
-      return refuse(400, "There is no question to answer.");
     const question = lastUserText(messages).slice(0, 80) || "Chat";
 
     const stream = createUIMessageStream<GeneratedChatMessage>({
@@ -84,6 +99,8 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
           system: systemPrompt(),
           messages: toModelMessages(messages),
           maxOutputTokens: MAX_OUTPUT_TOKENS,
+          // A closed tab or a stopped reply stops the model too.
+          abortSignal: AbortSignal.any([req.signal, AbortSignal.timeout(DEADLINE_MS)]),
           stopWhen: isStepCount(MAX_STEPS),
           tools: {
             show_card: tool({
@@ -127,14 +144,19 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
         });
 
         let failed = false;
+        const openText = new Set<string>();
         try {
           for await (const part of result.stream) {
-            if (part.type === "text-start") writer.write({ type: "text-start", id: part.id });
-            else if (part.type === "text-delta") {
+            if (part.type === "text-start") {
+              openText.add(part.id);
+              writer.write({ type: "text-start", id: part.id });
+            } else if (part.type === "text-delta") {
               if (part.text.trim()) wroteText = true;
               writer.write({ type: "text-delta", id: part.id, delta: part.text });
-            } else if (part.type === "text-end") writer.write({ type: "text-end", id: part.id });
-            else if (part.type === "error") {
+            } else if (part.type === "text-end") {
+              openText.delete(part.id);
+              writer.write({ type: "text-end", id: part.id });
+            } else if (part.type === "error" || part.type === "abort") {
               failed = true;
               break;
             }
@@ -142,6 +164,10 @@ export function createChatHandler({ model, limiter, now = Date.now }: ChatHandle
         } catch {
           failed = true;
         }
+        // Nobody is listening once the caller has gone.
+        if (req.signal.aborted) return;
+        // A sentence cut off mid-stream ends where it stopped, never left streaming.
+        for (const id of openText) writer.write({ type: "text-end", id });
         if (failed) {
           console.error("[generated-chat] the model failed; sending the fallback reply");
           chips = [];

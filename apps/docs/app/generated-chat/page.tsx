@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 
 import { GeneratedChatDemo } from "@/components/generated-chat/generated-chat-demo";
 import { modelFromEnv } from "@/components/generated-chat/server/model-from-env";
@@ -9,9 +10,10 @@ export const metadata: Metadata = {
     "A chat whose replies are registry components: run lists, a question before anything that spends credits, widgets and saved views.",
 };
 
-export default function GeneratedChatPage() {
-  // The same kill switch the chat route reads: without it the page says, and
-  // stays, scripted.
+export default async function GeneratedChatPage() {
+  // Read per request, as the chat route does, so the page and the route can
+  // never disagree about whether the model is on.
+  await connection();
   const model = modelFromEnv(process.env.GENERATED_CHAT_MODEL) !== null;
   return (
     <article
