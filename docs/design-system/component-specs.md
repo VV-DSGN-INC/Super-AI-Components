@@ -1872,3 +1872,80 @@ cover for a bounded body of knowledge — a docs set, a template pack, a source 
 library can distinguish what you read from what you generated. It carries **no AI-interface
 semantics**, and its docs page says so plainly rather than dressing it up. No reference-board
 sighting; see D20.
+
+---
+
+# R · Generated chat
+
+Desk research plus a private concept study, not a reference board; see D26. These are the
+pieces a chat reply composes when it answers in components. The engine they serve is the
+`generated-chat` `registry:lib` contract. None of the three knows about chat: each is props-only
+and works anywhere a dashboard tile, a tile grid or a generated view's chrome is needed.
+
+## R1 `widget` — one fact, one tile
+
+**Base:** Card, Button, Skeleton, Tooltip · **States:** small · medium · large · loading · openable · header-hidden
+
+- **Three fixed size families, never one elastic tile.** Small is one grid cell, medium two
+  wide, large two by two. Each size is a layout that can be tested at its exact size; a tile
+  that stretches to fit has no size to test. A type ships only the sizes its content fills.
+- **Parts:** `widget` (the tile, a small Card), `widget-header` (icon, title, meta, action),
+  `widget-title` (truncates, never wraps), `widget-meta`, `widget-action` (the one control),
+  `widget-content` (clips, never scrolls), `widget-open` (the whole-tile button).
+- **Whole-tile open is one native button**, an overlay covering the card, first in the tab order,
+  named by `openLabel`, its focus ring drawn on itself so the card's clip cannot cut it.
+  `onOpen` and a header `action` are mutually exclusive in the type: the overlay would swallow
+  the action's clicks.
+- **`openLabel` carries the tile's fact**, not its title alone ("Credits left, 360 of 2,000.
+  Ask how much was spent this week"). It is the only text a screen reader hears for the tile.
+- **The body clips.** A tile is a glance; content that needs scrolling belongs in a view.
+- **`hideHeader` moves the header to `sr-only`**, never removes it, so the title is still
+  announced. A floated action keeps clearance in the body.
+- **Loading swaps the body only** for a layout-matched skeleton; the header renders at once so
+  the tile never changes shape when data lands.
+- **Height is `h-full`.** The grid item sizes the tile; a fixed height clips or leaves dead space.
+
+**Evidence:** Apple WidgetKit's small, medium and large families on iOS and macOS, where size is
+a declared family rather than a free dimension; the dashboard tiles of analytics and workspace
+home screens. Desk research; no board sighting (D26).
+
+## R2 `widget-grid` — square tiles, two or four across
+
+**States:** two-column · four-column · mixed-sizes
+
+- **The grid answers to its own width**, through a container query: two columns below 43.5rem,
+  four from there. A widget row in a narrow chat column and on a wide home page lay out from the
+  same code.
+- **Rows match the column width**, so a small tile is square and a large one is four squares. The
+  row height reads the same spacing token as the gap, so the two cannot drift.
+- **Parts:** `widget-grid` (the container and the grid), `widget-grid-item` (the span for one
+  tile, set by `size`).
+- **The measured literals are exported** (`FOUR_COLUMN_MIN_REM`) rather than tokens, because they
+  are the size model's contract, and callers and tests read one source.
+- **Plain `div`s.** No list semantics: tiles are read in DOM order. A page with more than one grid
+  names each region itself.
+
+**Evidence:** WidgetKit's home-screen grid, where a size family is a whole number of cells.
+Desk research (D26).
+
+## R3 `view-frame` — the chrome around a generated view
+
+**Base:** Button · **States:** docked · page · with-modes · with-ask-bar · rerunning · failed
+
+- **The frame is fixed; only the body is generated.** A model or a script writes the content;
+  the title, the actions, the scroll region and the footer never change shape.
+- **Parts:** `view-frame` (the card, full height), `view-frame-header` (wraps),
+  `view-frame-title` (a `basis-56` floor), `view-frame-description` (scope, freshness),
+  `view-frame-actions` (end-aligned, full width and wrapping below 768px),
+  `view-frame-action` (a ghost icon button with a required `label`, 44px below 768px),
+  `view-frame-content` (the one scroll region), `view-frame-foot` (an in-flow slot for an ask
+  bar, absent without children), `view-frame-footer` (origin on one end, version on the other).
+- **The frame owns no view logic.** Mode tabs, Undo, Pin, Share and Rerun are children the caller
+  renders from library primitives. `rerunning` and `failed` are the caller's skeleton and the
+  caller's alert with Retry, inside the content part.
+- **The section is named** by `title`, or by `aria-labelledby` pointing at a heading inside it.
+  The caller returns focus to whatever opened the view when it closes.
+
+**Evidence:** ChatGPT's canvas and Claude's artifacts panel: a generated surface beside the
+conversation with its own title, version and actions, opened from a card in the thread. Desk
+research (D26).

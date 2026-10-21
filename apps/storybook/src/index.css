@@ -200,6 +200,10 @@
    app, outside Tailwind's same-package detection, so a class used only there
    would reach the DOM and compile to no CSS rule. */
 @source "../../docs/components/system";
+/* ...and the docs modules' examples, which stories import for shared
+   fixtures (widget's grid cells): a class used only in an examples file
+   would otherwise reach the DOM and compile to no CSS rule. */
+@source "../../docs/content";
 
 body {
   background-color: var(--background);

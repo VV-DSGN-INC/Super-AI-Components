@@ -301,29 +301,48 @@ frame. See D20 for what was deliberately not carried over from Geist.
 
 ---
 
+## R · Generated chat — 3
+
+The pieces a chat reply composes when it answers in components rather than text: a tile family
+for one fact among same-sized siblings, the grid that places it, and the frame around a view a
+reply builds. Counted separately for the reason P and Q are: the evidence is desk research and a
+private concept study, not a reference board. See D26.
+
+The engine those pieces serve ships as the `generated-chat` `registry:lib` contract, beside
+`cost`, so it is not a row here.
+
+| #   | Name                | Purpose                                           | Key states / variants                                          | shadcn base                     |
+| --- | ------------------- | ------------------------------------------------- | -------------------------------------------------------------- | ------------------------------- |
+| R1  | `widget` `NEW`      | One fact as a fixed-size tile                     | small · medium · large · loading · openable · header-hidden    | Card, Button, Skeleton, Tooltip |
+| R2  | `widget-grid` `NEW` | Two or four columns of square tiles, by own width | two-column · four-column · mixed-sizes                         | —                               |
+| R3  | `view-frame` `NEW`  | The chrome of a generated view                    | docked · page · with-modes · with-ask-bar · rerunning · failed | Button                          |
+
+---
+
 ## Totals
 
-| Family                              | Count                                                                                                                                |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| A — Primitives (L2)                 | 13                                                                                                                                   |
-| B — App shell & navigation          | 8                                                                                                                                    |
-| C — Home & launcher                 | 5                                                                                                                                    |
-| D — Composer & context              | 9                                                                                                                                    |
-| E — Generation & parameters         | 11                                                                                                                                   |
-| F — Results & assets                | 7                                                                                                                                    |
-| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                                                                            |
-| H — Timeline & transport            | 7                                                                                                                                    |
-| I — Editor surfaces                 | 5                                                                                                                                    |
-| J — Library, filtering & discovery  | 7                                                                                                                                    |
-| K — Documents & knowledge           | 9                                                                                                                                    |
-| L — First-run & onboarding          | 6                                                                                                                                    |
-| M — Account, plan & monetization    | 7                                                                                                                                    |
-| N — Feedback, trust & observability | 18                                                                                                                                   |
-| **B–N subtotal (L3)**               | **99** (96 before D31, 93 before D30, 89 before D28, 88 after D16, 82 before it, 74 before D12, 84 before D9)                        |
-| O — Blocks (L4)                     | 13 (O5 cut)                                                                                                                          |
-| P — Records & views (v2)            | 3                                                                                                                                    |
-| Q — Presentational chrome (Geist)   | 2                                                                                                                                    |
-| **Total registry items**            | **130** (126 before D31, 123 before D30, 118 before D28, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| Family                              | Count                                                                                                                                                           |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A — Primitives (L2)                 | 13                                                                                                                                                              |
+| B — App shell & navigation          | 8                                                                                                                                                               |
+| C — Home & launcher                 | 5                                                                                                                                                               |
+| D — Composer & context              | 9                                                                                                                                                               |
+| E — Generation & parameters         | 11                                                                                                                                                              |
+| F — Results & assets                | 7                                                                                                                                                               |
+| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                                                                                                       |
+| H — Timeline & transport            | 7                                                                                                                                                               |
+| I — Editor surfaces                 | 5                                                                                                                                                               |
+| J — Library, filtering & discovery  | 7                                                                                                                                                               |
+| K — Documents & knowledge           | 9                                                                                                                                                               |
+| L — First-run & onboarding          | 6                                                                                                                                                               |
+| M — Account, plan & monetization    | 7                                                                                                                                                               |
+| N — Feedback, trust & observability | 18                                                                                                                                                              |
+| **B–N subtotal (L3)**               | **99** (96 before D31, 93 before D30, 89 before D28, 88 after D16, 82 before it, 74 before D12, 84 before D9)                                                   |
+| O — Blocks (L4)                     | 13 (O5 cut)                                                                                                                                                     |
+| P — Records & views (v2)            | 3                                                                                                                                                               |
+| Q — Presentational chrome (Geist)   | 2                                                                                                                                                               |
+| R — Generated chat                  | 3                                                                                                                                                               |
+| **Total registry items**            | **133** (130 before D26's family R, 126 before D31, 123 before D30, 118 before D28, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109
