@@ -37,12 +37,14 @@ Not yet recorded.
 - `app-topbar`: Root `<header>` landmark spanning the shell width.
 - `app-topbar-leading`: Context-specific lead group plus the privacy chip.
 - `app-topbar-breadcrumb`: Document context: path to the current document.
+- `app-topbar-breadcrumb-overflow`: Document context, below 28rem of bar width, three or more crumbs: the ellipsis button standing in for the middle crumbs, named "Show hidden path". In the DOM at every width, painted only below the rung.
+- `app-topbar-breadcrumb-overflow-menu`: The menu that button opens: the hidden crumbs in path order, a link row for each crumb with an `href` and a disabled row for one without.
 - `app-topbar-zoom`: Editor context: zoom-out / level / zoom-in button group.
 - `app-topbar-history`: Editor context: undo / redo button group.
 - `app-topbar-title`: Document or scene name — shown when there's no breadcrumb, or alongside zoom/history.
 - `app-topbar-privacy`: The bar's own icon + text chip, drawn from the `{ label, icon }` form for the document's visibility. Available in either context. An element passed to `privacy` renders in its place and keeps its own slots, as N15's chip does.
 - `app-topbar-trailing`: Right-aligned group holding saved-state and actions.
-- `app-topbar-saved`: Saved-state as plain readable text, e.g. "Last saved 5 days ago".
+- `app-topbar-saved`: Saved-state as plain readable text, e.g. "Last saved 5 days ago". Below 28rem of bar width it is `sr-only`: read, not painted.
 - `app-topbar-actions`: Consumer-supplied trailing controls (share, export, presence, …).
 
 ## Accessibility
@@ -50,6 +52,7 @@ Not yet recorded.
 **Keyboard**
 
 - Document context has one tab stop per breadcrumb crumb that carries an `href`, and none otherwise. The final crumb is deliberately not a link, a crumb without `href` renders as plain text, and the title, the bar's own privacy chip and saved-state line are never focusable. An element you pass to `privacy` keeps its own tab stops: N15's `PrivateSessionChip` with `onClick` is one button.
+- Below 28rem of the bar's own width, a path of three or more crumbs trades its middle crumbs for one stop: the ellipsis button between the first crumb and the current one. Enter, Space or ArrowDown opens a menu of the hidden crumbs, the arrow keys move through it (a crumb without `href` is a disabled row the arrows still visit), Enter follows a link row, and Escape closes the menu and returns focus to the button. Above the rung the button is `display: none` and is not a stop, and the middle crumbs are stops instead. The tab count therefore changes with the bar's width, the one place in this component where it does.
 - Editor context is always four tab stops before your `actions` — Zoom out, Zoom in, Undo, Redo — and they render whether or not you passed the matching handler. An editor topbar with no `onUndo` still presents an enabled, focusable Undo button that does nothing.
 - `canUndo` and `canRedo` default to `true`, so `disabled` only appears when you say so. Omitting them is not the same as having no history.
 - The button groups have no roving tabindex and no arrow-key navigation — they are `role="group"` wrappers, so each control is its own stop.
@@ -59,11 +62,13 @@ Not yet recorded.
 
 - The root is a `<header>`, which is a banner landmark only when it is not inside another landmark. Nested in a shell's `<main>` it is a generic container instead, and either way it carries no `aria-label` — two topbars on one page are indistinguishable.
 - The breadcrumb is a `<nav aria-label="breadcrumb">`; the final crumb announces as a disabled link with `aria-current="page"`, and each separator is `role="presentation"` so it is not read.
+- Below 28rem of bar width the middle crumbs of a path of three or more, and their separators, are `display: none`, so they leave the accessibility tree rather than merely the screen. In their place is a `button` named "Show hidden path" with `aria-haspopup="menu"`; the menu it opens lists them as `menuitem` rows in path order, a crumb with an `href` as a link row and one without as `aria-disabled="true"`. Nothing in the path is announced twice at either width, and the button's name is hard-coded English like the zoom and history labels.
 - In document context with a `breadcrumb`, the `title` prop renders nowhere at all — the last crumb's label is what appears. If the two ever differ, the name a screen reader hears is the crumb's, not the title's.
 - Zoom and history are icon-only buttons named entirely by `aria-label` — "Zoom out", "Zoom in", "Undo", "Redo". Those strings are hard-coded and not localisable through this component.
 - The zoom level is rendered as ordinary text between the two buttons, with no `aria-live` and no relationship to either. Pressing Zoom in changes the number silently, so a screen-reader user gets no feedback that the press did anything.
 - The saved-state line is the same shape: plain text, no live region. "Last saved 5 days ago" becoming "Saving…" is a change nobody is told about.
 - The privacy chip announces as its label text; its optional glyph is wrapped `aria-hidden`, which is what makes the visible word rather than the icon the actual signal.
+- Below 28rem of the bar's own width — a container query on the root, not a viewport breakpoint — the saved-state line is `sr-only`: it keeps its full text and its place in the read order and stops being painted. A sighted phone user loses the saved state first and the middle of the path second (into the ellipsis menu); the document's name keeps a 4rem floor and the privacy chip never shrinks. The ellipsis button is the one role that comes and goes with the bar's width; every other role and name is the same at every width.
 - An element passed to `privacy` brings its own semantics, and the bar adds none around it. N15's `PrivateSessionChip` is a plain chip read as its words, or a button when you give it `onClick`, which adds a tab stop to the bar. N13's `compact` chip is a `role="status"`, so starting or stopping capture is announced politely from the topbar.
 
 **Focus**
@@ -78,12 +83,14 @@ Not yet recorded.
 - Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing ("5 days ago") before handing it over.
 - Writing "Private session" or "Recording" into the `{ label }` form. Those two states have owners, N15 and N13, whose chips carry the fixed copy, the icon and, for capture, the live region; a hand-written label drifts from them and announces nothing. The bar renders their element as given and imports neither.
 - Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.
+- Putting something that must stay visible at every width into `savedLabel`: it is the first thing the row gives up, going `sr-only` below 28rem of bar width. At the same rung a path of three or more crumbs collapses to the first crumb, an ellipsis menu holding the middle crumbs, and the current crumb. The current crumb keeps a 4rem floor and truncates (an empty title reserves nothing); the first crumb has no floor and is the next thing cut. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.
+- Expecting a two-level path to collapse: there is no middle to hide, so `Projects / Q3 Roadmap` renders inline at every width and only truncates. And give a middle crumb an `href` when it is a place: without one it becomes a disabled row in the overflow menu, present in the path but not a destination.
 
 ## Composition
 
 - States: `document-context`, `editor-context`, `privacy-chip`, `saved-state`, `private-session`
 - Composes from this registry: nothing
-- shadcn primitives: badge, breadcrumb, button, button-group
+- shadcn primitives: badge, breadcrumb, button, button-group, dropdown-menu
 - npm: lucide-react
 
 ## Evidence

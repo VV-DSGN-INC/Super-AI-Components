@@ -325,7 +325,9 @@
         "Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.",
         "Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing (\"5 days ago\") before handing it over.",
         "Writing \"Private session\" or \"Recording\" into the `{ label }` form. Those two states have owners, N15 and N13, whose chips carry the fixed copy, the icon and, for capture, the live region; a hand-written label drifts from them and announces nothing. The bar renders their element as given and imports neither.",
-        "Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state."
+        "Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.",
+        "Putting something that must stay visible at every width into `savedLabel`: it is the first thing the row gives up, going `sr-only` below 28rem of bar width. At the same rung a path of three or more crumbs collapses to the first crumb, an ellipsis menu holding the middle crumbs, and the current crumb. The current crumb keeps a 4rem floor and truncates (an empty title reserves nothing); the first crumb has no floor and is the next thing cut. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.",
+        "Expecting a two-level path to collapse: there is no middle to hide, so `Projects / Q3 Roadmap` renders inline at every width and only truncates. And give a middle crumb an `href` when it is a place: without one it becomes a disabled row in the overflow menu, present in the path but not a destination."
       ],
       "consumes": [],
       "consumedBy": [

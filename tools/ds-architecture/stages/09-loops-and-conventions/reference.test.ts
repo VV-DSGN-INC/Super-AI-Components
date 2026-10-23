@@ -12,9 +12,9 @@ import { tmpdir } from "node:os"
 const DIR = path.resolve(process.cwd(), "stages/09-loops-and-conventions")
 
 describe("stage 09 documents", () => {
-  it("declares all three profiles and its four claims", () => {
+  it("declares all three profiles and its six claims", () => {
     expect(readAppliesTo(path.join(DIR, "ACCEPTANCE.md"))).toHaveLength(3)
-    expect(readClaims(path.join(DIR, "ACCEPTANCE.md"))).toEqual(["09.1", "09.2", "09.3", "09.4"])
+    expect(readClaims(path.join(DIR, "ACCEPTANCE.md"))).toEqual(["09.1", "09.2", "09.3", "09.4", "09.5", "09.6"])
   })
 
   it("SPEC.md carries decisions and rejected alternatives", () => {
@@ -34,6 +34,7 @@ describe("stage 09 documents", () => {
       path.join(dir, "ds-architecture.config.json")
     )
     const { results } = probe(dir, { profile: "component-library", adoption: "greenfield", scopeRoles: {} })
-    expect(results.every((r: any) => r.status === STATUS.MET)).toBe(true)
+    // 09.6 is declared unchecked on every run; the section cannot meet it.
+    expect(results.filter((r: any) => r.claim !== "09.6").every((r: any) => r.status === STATUS.MET)).toBe(true)
   })
 })
