@@ -1,0 +1,15 @@
+export const TOKENS = [
+  "--color-bg",
+  "--color-text",
+  "--color-text-secondary",
+  "--color-accent",
+  "--color-rule",
+  "--color-border",
+  "--hairline",
+  "--color-background",
+  "--color-foreground",
+  "--color-text-muted",
+  "--color-brand",
+  "--color-divider",
+  "--color-border-line",
+] as const

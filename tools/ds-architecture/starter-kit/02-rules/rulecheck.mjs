@@ -4,7 +4,7 @@ import path from "node:path"
 import { pathToFileURL } from "node:url"
 
 /** Reads the emitted catalogue and reports violations plus what it could not
- *  check. Stdlib only: it runs from a PreToolUse hook, from vitest, and from a
+ *  check. Stdlib only: it runs from a PostToolUse hook, from vitest, and from a
  *  shell, none of which should need a build step.
  *
  *  It never assigns severity and never invents a rule — there is exactly one

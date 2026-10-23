@@ -15,7 +15,11 @@ const AXES = [
 ]
 
 /** Each axis contributes its values PLUS the unset state, which is a real cell
- *  that ships. Two axes of two values is nine cells, not four. */
+ *  that ships. Two axes of two values is nine cells, not four.
+ *
+ *  Keyed by attribute, which is correct for data-* axes. An axis on `class`
+ *  (`html.dark`) sets one class, and two class axes share the attribute, so with
+ *  more than one of them append to the class list here instead of overwriting. */
 function cells() {
   return AXES.reduce<Record<string, string>[]>(
     (acc, axis) =>

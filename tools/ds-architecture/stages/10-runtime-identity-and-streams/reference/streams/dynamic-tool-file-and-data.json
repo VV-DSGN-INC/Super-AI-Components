@@ -1,0 +1,151 @@
+{
+  "id": "dynamic-tool-file-and-data",
+  "title": "A data part, a dynamic tool, a generated file and a closing answer",
+  "recordedWith": "ai@6.0.235: streamText + toUIMessageStream over a scripted MockLanguageModelV3. The chunk protocol is the SDK's; the words are written.",
+  "partTypes": [
+    "data-plan",
+    "dynamic-tool",
+    "file",
+    "step-start",
+    "text"
+  ],
+  "chunks": [
+    {
+      "type": "data-plan",
+      "id": "plan-1",
+      "data": {
+        "steps": [
+          "Look up the token",
+          "Draw the swatch"
+        ]
+      }
+    },
+    {
+      "type": "start-step"
+    },
+    {
+      "type": "tool-input-start",
+      "toolCallId": "call-3",
+      "toolName": "get_tokens",
+      "dynamic": true
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-3",
+      "inputTextDelta": "{\"component\":\"bu"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-3",
+      "inputTextDelta": "tton\"}"
+    },
+    {
+      "type": "tool-input-available",
+      "toolCallId": "call-3",
+      "toolName": "get_tokens",
+      "input": {
+        "component": "button"
+      },
+      "dynamic": true
+    },
+    {
+      "type": "tool-output-available",
+      "toolCallId": "call-3",
+      "output": {
+        "tokens": [
+          "button-primary",
+          "text-on-accent"
+        ]
+      },
+      "dynamic": true
+    },
+    {
+      "type": "finish-step"
+    },
+    {
+      "type": "start-step"
+    },
+    {
+      "type": "file",
+      "mediaType": "image/svg+xml",
+      "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIvPg=="
+    },
+    {
+      "type": "text-start",
+      "id": "tx-4"
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-4",
+      "delta": "Here is the swatch for "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-4",
+      "delta": "the primary button's "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-4",
+      "delta": "fill."
+    },
+    {
+      "type": "text-end",
+      "id": "tx-4"
+    },
+    {
+      "type": "finish-step"
+    },
+    {
+      "type": "finish",
+      "finishReason": "stop"
+    }
+  ],
+  "message": {
+    "id": "",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "data-plan",
+        "id": "plan-1",
+        "data": {
+          "steps": [
+            "Look up the token",
+            "Draw the swatch"
+          ]
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "dynamic-tool",
+        "toolName": "get_tokens",
+        "toolCallId": "call-3",
+        "state": "output-available",
+        "input": {
+          "component": "button"
+        },
+        "output": {
+          "tokens": [
+            "button-primary",
+            "text-on-accent"
+          ]
+        }
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "file",
+        "mediaType": "image/svg+xml",
+        "url": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIvPg=="
+      },
+      {
+        "type": "text",
+        "text": "Here is the swatch for the primary button's fill.",
+        "state": "done"
+      }
+    ]
+  }
+}
