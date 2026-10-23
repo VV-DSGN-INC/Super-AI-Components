@@ -64,7 +64,7 @@ Parallel agents are the throughput mechanism, not an optimization — one agent 
 - **Give each agent its own git worktree.** They otherwise share a working tree and each runs a repo-root `pnpm typecheck`; concurrent runs race on `tsbuildinfo` and typecheck against each other's half-written files. Take your own port and browser tab too — a sibling worktree's dev server on the same port will serve _its_ build while your preview reports success.
 - **Check the worktree's base commit.** An isolated worktree may be cut from `main` rather than from your integration branch, so it will not carry your prep. Verify rather than assume, and check incoming files against any in-flight refactor before landing them.
 
-→ `CONTINUE.md` §3.4, and §8 for the current gap backlog.
+→ `CONTINUE.md` §3.4.
 
 ## Commands
 
@@ -121,14 +121,6 @@ in the PR body, and say which schema it assumes.
 
 Twelve steps. The last three are the ones that actually exercise the product; they run in their own job so a red `gates` step no longer hides them, and within a job a red step still hides every step after it. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
 
-`format:check` joined the list on 2026-09-07, when the tree was made
-prettier-clean. The bash hook used to deny a repo-wide format on the grounds
-that `check-contract.mts`'s guidance regexes could not survive re-wrapping;
-measured, they can — `\s*` spans newlines and prettier never splits a string
-literal. The only real breakage was the two `gen-wiring.mts` outputs being
-reformatted out of byte-agreement with their generator, and they are now
-prettier-ignored.
-
 One quirk worth knowing: `docs/design-system/story-conventions.md` needs three
 `--write` passes to converge, because reformatting its widest table changes the
 column widths that decide the wrapping. If `format:check` fails immediately
@@ -140,13 +132,13 @@ after a format, run the format again before assuming something else is wrong.
 - Components are grouped into families and shipped in waves (`feat(wave-1.5): batch 3 — family E`). Keep a batch's components in one PR so the family reads as a set.
 - Semantic roles over presentation: prefer a correct `role`/`aria-*` on a primitive to a visually equivalent div. Past fixes in this repo have been exactly this (`pin role="note"` so a checkbox story stops reading as an open gate).
 - Branch per task; never commit to `main` directly. Deploys are manual, from `apps/docs`, and need the `weeeha` GitHub account — nothing deploys on merge.
-- Review budget: rounds 1-2 fix everything; from round 3 only a blocker holds the PR. A blocker is a listed class: contract prose the change made false, and a change that weakens an existing test or gate without a reason the requirements support, are two of them. → `docs/design-system/review-rounds.md`
+- Review budget: rounds 1-2 fix everything; from round 3 only a blocker holds the PR. → `docs/design-system/review-rounds.md`
 
 ## Loops
 
-- **Build loop**, on a component change: manifest, scaffold, then the co-located files (implementation, story, registry entry, tests), then the gates. `build-component` is the executable order.
+- **Build loop**, on a component change: manifest, scaffold, then the co-located files (implementation, story, registry entry, tests), then the gates. `build-component` runs it.
 - **Audit loop**, on every pull request and again on merge: the token gate, the contract check, the story run. `gate-run` runs it locally.
-- **Human gate**: review approves judgment, not syntax. A rejection is not finished when the instance is fixed; encode it back into a rule in `packages/ds-rules` so it cannot recur.
+- **Human gate**: review approves judgment, not syntax. A rejection is finished only once it is a rule in `packages/ds-rules`, so it cannot recur.
 
 ## Open decisions — flag, don't silently pick
 
