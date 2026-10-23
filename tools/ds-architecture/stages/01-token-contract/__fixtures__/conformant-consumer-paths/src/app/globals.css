@@ -1,0 +1,15 @@
+:root {
+  --color-bg: #ffffff;
+  --color-text: #1f2124;
+  --color-text-secondary: #535a68;
+  --color-accent: #2f6f5e;
+  --color-rule: #d9dce1;
+}
+
+@theme inline {
+  --color-background: var(--color-bg);
+  --color-foreground: var(--color-text);
+  --color-text-muted: var(--color-text-secondary);
+  --color-brand: var(--color-accent);
+  --color-divider: var(--color-rule);
+}

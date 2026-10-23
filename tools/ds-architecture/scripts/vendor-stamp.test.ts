@@ -1,8 +1,10 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs"
+import { tmpdir } from "node:os"
 import path from "node:path"
 
 import { describe, expect, it } from "vitest"
 
-import { formatStamp, readVendorStamp } from "./vendor-stamp.mjs"
+import { formatStamp, readInstalledPackage, readVendorStamp } from "./vendor-stamp.mjs"
 
 describe("readVendorStamp", () => {
   it("reads every vendored artifact row from VENDOR.md", () => {
@@ -33,5 +35,25 @@ describe("formatStamp", () => {
   it("names each artifact with its sha and date", () => {
     expect(formatStamp([{ artifact: "design-spec", upstreamPath: "x", sha: "abc1234", date: "2026-08-21" }]))
       .toBe("vendored: design-spec@abc1234 (2026-08-21)")
+  })
+})
+
+describe("installed as a package", () => {
+  it("is not reported for a vendored or source checkout", () => {
+    expect(readInstalledPackage(process.cwd())).toBeNull()
+  })
+
+  it("is reported when the root sits under node_modules", () => {
+    const root = mkdtempSync(path.join(tmpdir(), "ds-stamp-"))
+    const pkg = path.join(root, "node_modules", "ds-architecture")
+    mkdirSync(pkg, { recursive: true })
+    writeFileSync(path.join(pkg, "package.json"), JSON.stringify({ name: "ds-architecture", version: "1.2.3" }))
+    expect(readInstalledPackage(pkg)).toEqual({ name: "ds-architecture", version: "1.2.3" })
+  })
+
+  it("says it is the installed package rather than a vendored copy", () => {
+    expect(formatStamp([], { name: "ds-architecture", version: "1.2.3" })).toBe(
+      "installed package: ds-architecture@1.2.3 (not vendored)"
+    )
   })
 })
