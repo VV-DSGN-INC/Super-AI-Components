@@ -22,17 +22,28 @@ const BROKEN = [
   ["nonconformant/no-five-files", "09.2"],
   ["nonconformant/no-round-budget", "09.3"],
   ["nonconformant/no-worktree-rule", "09.4"],
+  ["nonconformant/no-test-gate-class", "09.5"],
 ] as const
 
 describe("stage 09 probe", () => {
-  it("emits exactly the four claims ACCEPTANCE.md declares", () => {
+  it("emits exactly the six claims ACCEPTANCE.md declares", () => {
     const { stage, results } = run("conformant")
     expect(stage).toBe("09")
-    expect(results.map((r: any) => r.claim).sort()).toEqual(["09.1", "09.2", "09.3", "09.4"])
+    expect(results.map((r: any) => r.claim).sort()).toEqual(["09.1", "09.2", "09.3", "09.4", "09.5", "09.6"])
   })
 
-  it("meets every claim on the conformant fixture", () => {
-    expect(run("conformant").results.every((r: any) => r.status === STATUS.MET)).toBe(true)
+  it("meets every checkable claim on the conformant fixture and declares 09.6 unchecked", () => {
+    const { results } = run("conformant")
+    expect(results.filter((r: any) => r.claim !== "09.6").every((r: any) => r.status === STATUS.MET)).toBe(true)
+    const declared = claimOf(results, "09.6")
+    expect(declared.status).toBe(STATUS.UNCHECKED)
+    expect(declared.reason).toMatch(/review-process behaviour/)
+  })
+
+  it("keeps 09.6 unchecked even when 09.5 is met, so a met taxonomy never stands in for a read report", () => {
+    const { results } = run("conformant")
+    expect(claimOf(results, "09.5").status).toBe(STATUS.MET)
+    expect(claimOf(results, "09.6").status).toBe(STATUS.UNCHECKED)
   })
 
   it.each(BROKEN)("%s breaks %s", (fixture, claim) => {

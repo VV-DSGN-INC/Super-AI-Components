@@ -24,3 +24,8 @@ when the instance is fixed — encode it back into a rule so it cannot recur.
 
 Every concurrent agent session works in its own git worktree. One checkout has one HEAD.
 Every checkout needs its own dependency install, including worktrees.
+
+## Tests and contracts
+
+A change that weakens an existing test or gate, or leaves contract prose false, goes back
+to its author.

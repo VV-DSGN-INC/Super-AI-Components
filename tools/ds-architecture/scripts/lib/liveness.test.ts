@@ -59,8 +59,64 @@ describe("deadTokens", () => {
     expect(deadTokens(CSS, ["--elevation-card"], sources)).toEqual([])
   })
 
+  /** A one-side border is a real colour reader. Minimal DS's next-step-card
+   *  draws its accent stripe as `border-l-accent-bold` on top of a full
+   *  border, and that stripe was the token's only consumer: the walk derived
+   *  `border-accent-bold` and nothing else, so it called a live token dead. */
+  const COLOR_CSS = `
+:root { --accent-bold: #171717; }
+@theme inline { --color-accent-bold: var(--accent-bold); }
+`
+  it.each(["t", "r", "b", "l", "x", "y", "s", "e"])(
+    "counts a directional border-%s- utility as a colour consumer",
+    (side) => {
+      const sources = [`export const X = () => <div className="border border-${side}-accent-bold" />`]
+      expect(deadTokens(COLOR_CSS, ["--accent-bold"], sources)).toEqual([])
+    },
+  )
+
+  it("does not read a one-side width as a colour consumer", () => {
+    const sources = [`export const X = () => <div className="border-l-4 border-l-[#000]" />`]
+    expect(deadTokens(COLOR_CSS, ["--accent-bold"], sources)).toEqual(["--accent-bold"])
+  })
+
   it("returns tokens sorted, so output is stable between runs", () => {
     const tokens = ["--elevation-orphan", "--elevation-ghost"]
     expect(deadTokens(CSS, tokens, [])).toEqual([...deadTokens(CSS, tokens, [])].sort())
+  })
+})
+
+/** The second consumer path. A site that paints with `style={{ color:
+ *  "var(--color-text)" }}` or a CSS module reading the token never writes the
+ *  utility, and the utility-only walk called seven live tokens dead on one. */
+describe("deadTokens with direct var() readers", () => {
+  it("counts a direct var() read as a consumer when no utility is written", () => {
+    const readers = [`.card { box-shadow: var(--elevation-card); }`]
+    expect(deadTokens(CSS, ["--elevation-card"], readers)).toEqual([])
+  })
+
+  it("counts a var() read that carries a fallback", () => {
+    const readers = [`export const X = () => <div style={{ boxShadow: "var(--elevation-card, none)" }} />`]
+    expect(deadTokens(CSS, ["--elevation-card"], readers)).toEqual([])
+  })
+
+  it("counts a var() read with whitespace inside the parentheses", () => {
+    const readers = [`.card { box-shadow: var( --elevation-card ); }`]
+    expect(deadTokens(CSS, ["--elevation-card"], readers)).toEqual([])
+  })
+
+  it("does not let a longer token's read rescue a shorter one", () => {
+    const readers = [`.card { box-shadow: var(--elevation-card-raised); }`]
+    expect(deadTokens(CSS, ["--elevation-card"], readers)).toEqual(["--elevation-card"])
+  })
+
+  it("does not count a bare mention of the name outside var()", () => {
+    const readers = [`const name = "--elevation-card"`]
+    expect(deadTokens(CSS, ["--elevation-card"], readers)).toEqual(["--elevation-card"])
+  })
+
+  it("takes utility writers and var() readers in one list", () => {
+    const sources = [...COMPONENTS, `.x { box-shadow: var(--elevation-orphan); }`]
+    expect(deadTokens(CSS, ["--elevation-card", "--elevation-orphan"], sources)).toEqual([])
   })
 })

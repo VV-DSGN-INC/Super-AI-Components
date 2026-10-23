@@ -6,16 +6,28 @@ normal sweep — an automatic sync would let an unexercised stage travel.
 
 | Artifact        | Upstream path                      | SHA     | Date       |
 | --------------- | ---------------------------------- | ------- | ---------- |
-| ds-architecture | scripts/, src/, stages/, LADDER.md | 396bab6 | 2026-08-22 |
+| ds-architecture | scripts/, src/, stages/, starter-kit/, LADDER.md | 1afb173 | 2026-10-20 |
 
-- **Source:** the `ds-architecture` repo (now `weeeha/ds-architecture`, private), commit `396bab6`
-  (2026-08-22, "feat: ladder integration across three stages"). Stages built
-  upstream at that commit: 00, 01, 09.
-- **Vendored here:** 2026-08-22 at stage 00; refreshed to the commit above on
-  2026-09-14, runtime only (scripts/, src/, stages/, LADDER.md). MANUAL.md,
-  DESIGN.md and README.md stay upstream — one copy of the rule book.
-- **Stage 01 and 09 at refresh: unmet, recorded rather than fixed.** The
-  refresh is what made these visible; closing them is separate work, sized in
+- **Source:** the `ds-architecture` repo (now `weeeha/ds-architecture`, private), commit `1afb173`
+  (2026-10-20, "Merge pull request #7 from weeeha/feat/stage-10-runtime-identity"). Stages built
+  upstream at that commit: 00, 01, 09, 10.
+- **Vendored here:** 2026-08-22 at stage 00; refreshed to `396bab6` on 2026-09-14,
+  runtime only (scripts/, src/, stages/, LADDER.md); refreshed to `1afb173` on
+  2026-10-21 (the same set plus starter-kit/, and the checker's own `tsconfig.json`
+  and `vitest.config.ts`, which its suite now needs: the tsconfig excludes
+  `stages/10-runtime-identity-and-streams/reference/record-streams.ts`, a template that
+  imports `ai`, and the vitest config collects two starter-kit tests). MANUAL.md,
+  DESIGN.md, ARCHITECTURE.md, README.md, `gates/` and `harness/` stay upstream — one copy
+  of the rule book.
+- **Stage 10 declared 2026-10-21.** `runtime.systemId` is `super-ai`, written onto
+  `<html>` by `apps/docs/components/theme-provider.tsx` (added to the `components` role
+  for that reason, and exempt from `data-slot` because it renders no DOM of its own). Four
+  registry files and one primitive are `slotExempt`, each with its reason in the config.
+  `10.3` and `10.4` are not applicable: no `runtime.partsRenderer` is declared.
+- **Stage 01 and 09 at the 2026-09-14 refresh: unmet, recorded rather than fixed.**
+  (`01.2` and `09.1` closed on 2026-10-21 with the flat name contract in
+  `packages/ds-rules/src/tokens.ts` and the Loops section of `CLAUDE.md`; `01.3` and
+  `01.6` stay open, see that PR.) The refresh is what made these visible; closing them is separate work, sized in
   `CONTINUE.md` §8. `highestContiguous` is therefore **00**, which is the
   honest number and not the one the agentic-contracts spec first predicted.
 
@@ -32,7 +44,9 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   claims stay unmet, so `highestContiguous` is still **00**.
 
 - **Local changes:** `@types/node` added to devDependencies (its typecheck
-  fails without it; found while verifying the archive).
+  fails without it; found while verifying the archive). `package.json` is otherwise the
+  2026-09-14 one: upstream's `bin`, `files` and `harness:*` entries serve its npm
+  package and are not needed by a copied tree.
 - **Inherited open questions** (upstream's, deliberately not fixed here):
   1. A stage directory missing its probe reports `unchecked` but the run still
      exits 0 — "could not tell" collapses into "conformant" for a structurally
@@ -43,8 +57,8 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   / 11 harvested; the kit's own README correctly enumerates 16 / 10.
 - **Not wired into CI.** `pnpm check:ladder` is informational; only stage 00
   is scoreable today. This directory is not a pnpm workspace; to run its own
-  test suite: `cd tools/ds-architecture && npm install && npm test` (130
-  tests; node_modules is gitignored).
+  test suite: `cd tools/ds-architecture && npm install && npm test` (294
+  tests in 24 files at `1afb173`; node_modules is gitignored).
 - **Staying outside the workspace is deliberate, re-confirmed 2026-09-07.**
   Wave 0 of the post-case-story remediation considered adding `tools/*` to
   `pnpm-workspace.yaml` so this suite would run on a plain `pnpm install`, and
@@ -71,3 +85,9 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   and stage 01's reference test no longer lists the brand name among the words the
   reference CSS must not contain. No behaviour changed: these files are not part of the
   pnpm workspace and nothing in this repo runs their tests. Upstream is unchanged.
+- **2026-10-21, superseded.** Upstream made the same scrub itself on 2026-10-16
+  (`7345397`, "drop the reference repo's name and its owner from every tracked file"),
+  with `@acme/ui` where this copy had `@your-org/ui`. The `1afb173` refresh takes
+  upstream's wording verbatim, so the copy carries no local edit beyond `package.json`.
+  Re-checked at refresh: no client brand, client repo name, personal npm scope or
+  absolute path from a developer machine anywhere under `tools/ds-architecture/`.
