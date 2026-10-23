@@ -1,12 +1,14 @@
 {
   "hooks": {
-    "PreToolUse": [
+    "PostToolUse": [
       {
         "matcher": "Write|Edit",
         "hooks": [
           {
             "type": "command",
-            "command": "node ${CLAUDE_PROJECT_DIR}/scripts/rulecheck.mjs --files \"$CLAUDE_FILE_PATHS\" --severity blocker || true"
+            "command": "node \"${CLAUDE_PROJECT_DIR:-.}/scripts/rulecheck-hook.mjs\"",
+            "timeout": 15,
+            "statusMessage": "Checking the edited file against the rule catalogue"
           }
         ]
       }

@@ -5,10 +5,17 @@ import { themeAliases } from "./css-tokens.mjs"
  *  written `rounded-x`. Deriving the utility from the alias name alone reported
  *  every colour token in a conformant system as dead, which is how this table
  *  earned its place. Longest namespace wins, so `--transition-duration-*` is
- *  not read as the `transition` namespace. */
+ *  not read as the `transition` namespace.
+ *
+ *  The one-side border colours are listed too. A card stripe written
+ *  `border-l-accent-bold` over a full border was its token's only reader in
+ *  Minimal DS, and with `border` alone the walk called that token dead. */
 const NAMESPACE_UTILITIES = {
   color: [
-    "bg", "text", "border", "ring", "fill", "stroke", "outline",
+    "bg", "text", "border",
+    "border-t", "border-r", "border-b", "border-l",
+    "border-x", "border-y", "border-s", "border-e",
+    "ring", "fill", "stroke", "outline",
     "decoration", "accent", "caret", "divide", "shadow", "from", "via", "to",
   ],
   radius: ["rounded"],
@@ -69,26 +76,38 @@ function writesUtility(source, utility) {
   return new RegExp(`(^|[^\\w-])-?${escaped}(?![\\w-])`).test(source)
 }
 
+/** A direct `var(--token)` read, with or without a fallback. The right edge is
+ *  the closing paren or the fallback comma, so `var(--x-raised)` is not a read
+ *  of `--x`. A bare mention of the name outside var() is not a read either: a
+ *  string listing token names paints nothing. */
+function readsVar(source, token) {
+  const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  return new RegExp(`var\\(\\s*${escaped}\\s*[,)]`).test(source)
+}
+
 /** Tokens that reach no consumer. Both broken links produce the same verdict on
  *  purpose — a token is dead whether it has no alias or has one nobody writes,
  *  and distinguishing them here would invite fixing the cheaper half.
  *
- *  `componentSources` is the caller's business: it must be SHIPPED component
- *  source, never stories or tests. A story that writes the utility proves the
- *  utility can be typed, not that any shipped component renders it — which is
- *  exactly how a dead token survives a green suite. */
-export function deadTokens(css, tokens, componentSources) {
+ *  A token has two ways to reach a consumer: a source writes its utility, or a
+ *  source reads it with `var()`. The second path exists because a site painting
+ *  through inline styles and CSS modules never writes the utility at all.
+ *
+ *  `consumerSources` is the caller's business, and it must be SHIPPED source,
+ *  never stories or tests. A story that writes the utility proves the utility
+ *  can be typed, not that any shipped component renders it — which is exactly
+ *  how a dead token survives a green suite. It must also leave out the style
+ *  entry points: an alias chain there reads the token with var() while
+ *  painting nothing, and counting it would make every token that feeds an
+ *  alias look alive. */
+export function deadTokens(css, tokens, consumerSources) {
   const dead = []
   for (const token of tokens) {
-    const utilities = utilitiesFor(css, token)
-    if (utilities.length === 0) {
-      dead.push(token)
-      continue
-    }
-    const written = utilities.some((utility) =>
-      componentSources.some((src) => writesUtility(src, utility))
+    const written = utilitiesFor(css, token).some((utility) =>
+      consumerSources.some((src) => writesUtility(src, utility))
     )
-    if (!written) dead.push(token)
+    const read = consumerSources.some((src) => readsVar(src, token))
+    if (!written && !read) dead.push(token)
   }
   return dead.sort()
 }
