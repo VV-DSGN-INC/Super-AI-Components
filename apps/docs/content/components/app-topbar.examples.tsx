@@ -3,6 +3,8 @@
 import { Cloud, Lock } from "lucide-react";
 
 import { AppTopbar } from "@/registry/super-ai/app-topbar";
+import { CaptureConsent } from "@/registry/super-ai/capture-consent";
+import { PrivateSessionChip } from "@/registry/super-ai/private-session-notice";
 
 /**
  * Live examples for app-topbar.docs.tsx.
@@ -58,6 +60,27 @@ export function PrivacyChipWithIconAndLabel() {
       title="Q3 Roadmap"
       breadcrumb={[{ label: "Projects" }, { label: "Q3 Roadmap" }]}
       privacy={{ label: "Private", icon: <Lock /> }}
+    />
+  );
+}
+
+/**
+ * The privacy slot's vocabulary comes from N15 and N13, not from this bar.
+ * The host hands N15's `PrivateSessionChip` in as an element, with N13's
+ * `compact` recording chip beside it in a fragment while capture runs.
+ */
+export function PrivacySlotFromPrivateSession() {
+  return (
+    <AppTopbar
+      context="document"
+      title="Q3 Roadmap"
+      breadcrumb={[{ label: "Projects" }, { label: "Q3 Roadmap" }]}
+      privacy={
+        <>
+          <PrivateSessionChip state="active" />
+          <CaptureConsent form="compact" state="recording" />
+        </>
+      }
     />
   );
 }

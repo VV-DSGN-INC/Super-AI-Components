@@ -1,10 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Shuffle, Volume2 } from "lucide-react";
+import * as React from "react";
 import { expect, userEvent, waitFor, within } from "storybook/test";
 
 import { FieldRow, UnitInput } from "@/registry/super-ai/field-row";
 import { AddFilterChip, FilterBar, FilterChip, FiltersButton } from "@/registry/super-ai/filter-bar";
-import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
+import {
+  GenSettingsBar,
+  GenSettingsItem,
+  GenSettingsQuality,
+  type GenQuality,
+} from "@/registry/super-ai/gen-settings-bar";
 import { GenSettingsBarDocs } from "@/content/components/gen-settings-bar.docs";
 import { settledFocusRing } from "@/lib/focus-ring";
 import { componentDocsPage } from "@/lib/component-docs-page";
@@ -97,6 +103,37 @@ export const PartiallyLocked: Story = {
       </GenSettingsItem>
     </GenSettingsBar>
   ),
+};
+
+/**
+ * The optional draft/final quality segment, shown because the host passed
+ * `quality` and `onQualityChange`. Draft is named as lower quality in text
+ * ("Draft, lower quality"), never only as cheaper, so the trade is visible
+ * before the run. Picking an option calls the same handler every segment
+ * reports through; in a product that handler updates the settings and
+ * re-estimates cost, so the price shown beside Run follows the choice.
+ * Leave either prop off and the segment is not rendered at all.
+ */
+export const Draft: Story = {
+  render: (args) => {
+    const [quality, setQuality] = React.useState<GenQuality>("draft");
+    return (
+      <GenSettingsBar aria-label="Generation settings" {...args}>
+        <GenSettingsItem onClick={() => {}}>Veo 3.1 Fast</GenSettingsItem>
+        <GenSettingsItem onClick={() => {}}>720p</GenSettingsItem>
+        <GenSettingsQuality quality={quality} onQualityChange={setQuality} />
+      </GenSettingsBar>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const draft = canvas.getByRole("button", { name: "Draft, lower quality" });
+    const final = canvas.getByRole("button", { name: "Final" });
+    await expect(draft).toHaveAttribute("aria-pressed", "true");
+    await userEvent.click(final);
+    await expect(final).toHaveAttribute("aria-pressed", "true");
+    await expect(draft).toHaveAttribute("aria-pressed", "false");
+  },
 };
 
 /* -------------------------------------------------------------------------

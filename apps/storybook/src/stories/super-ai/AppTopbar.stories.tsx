@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { AccountMenu } from "@/registry/super-ai/account-menu";
 import { AppTopbar } from "@/registry/super-ai/app-topbar";
 import { ContextToolbar, type ContextToolbarAction } from "@/registry/super-ai/context-toolbar";
+import { PrivateSessionChip } from "@/registry/super-ai/private-session-notice";
 import { SectionHeader } from "@/registry/super-ai/section-header";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
@@ -80,6 +81,32 @@ export const SavedState: Story = {
     title: "Q3 Roadmap",
     breadcrumb: [{ label: "Projects", href: "#" }, { label: "Q3 Roadmap" }],
     savedLabel: "Last saved 5 days ago",
+  },
+};
+
+/**
+ * The privacy slot's vocabulary is not this bar's. A private session is N15's
+ * `PrivateSessionChip`, passed in as an element; B7 renders it as given and
+ * imports nothing from N15 (L3 items never depend on each other, D3). N13
+ * `capture-consent` in its `compact` form shares the slot the same way, in a
+ * fragment beside it while capture runs; the docs page shows that pairing,
+ * because a second bar here would be a second banner landmark. The
+ * `{ label, icon }` form above stays for the document's own visibility word.
+ */
+export const PrivateSession: Story = {
+  args: {
+    context: "document",
+    title: "Q3 Roadmap",
+    breadcrumb: [{ label: "Projects", href: "#" }, { label: "Q3 Roadmap" }],
+    privacy: <PrivateSessionChip state="active" />,
+  },
+  play: async ({ canvasElement }) => {
+    const leading = canvasElement.querySelector('[data-slot="app-topbar-leading"]')!;
+    await expect(leading.querySelector('[data-slot="private-session-chip"]')).toHaveTextContent(
+      "Private session",
+    );
+    // The element takes the slot; B7's own chip is not drawn around it.
+    await expect(canvasElement.querySelector('[data-slot="app-topbar-privacy"]')).toBeNull();
   },
 };
 

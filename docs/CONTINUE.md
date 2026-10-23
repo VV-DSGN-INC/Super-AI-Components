@@ -31,10 +31,12 @@ ledgers moved out to `design-system/wave-history.md` — see §9.
 > pinned by a gate or a test, and this table is prose. Treat it as prose, and
 > re-derive it from `git log origin/main` rather than believing it.
 
-**Catalog progress: 118 shipped. Nothing is planned, nothing is building.**
+**Catalog progress: 130 shipped. Nothing is planned, nothing is building.**
+Wave 14 (2026-10-21, D28) added the Shape of AI trust slice: A13 `ai-label` and N13–N16.
+Waves 15 and 16 (D30, D31) added D8, D9, N17, E11, K9, N18 and P3, plus seven states on six shipped items.
 11 cut (family G's 10 + O5, per decision D9 — do not revive them).
-_(`check:contract` counts **118**, and the two numbers are already reconciled:
-the 114 is the frozen A–O count, and family P's 2 and family Q's 2 are counted
+_(`check:contract` counts **130**, and the numbers are already reconciled:
+the 125 is the A–O count, the 114 freeze plus D28's five, D30's three and D31's three, and family P's 3 and family Q's 2 are counted
 alongside it rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
 at 114 while later families grow separately" asserts each figure, which is
 what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
@@ -43,7 +45,7 @@ what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
 carried it were folded into the full contract by wave 0 of the story-guarantees
 program (`superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`,
 step 2): states normalized and declared, one story per declared state, a docs
-module, the flag dropped. `check:contract` reports **118 checked / 0 exempt**,
+module, the flag dropped. `check:contract` reports **130 checked / 0 exempt**,
 from 91 / 25 at the program's start. `catalog.manifest.test.ts` pins the empty
 set as a ratchet, so re-exempting any of them fails a dedicated assertion. The
 flag's own branches in `check-contract.mts` and its stale "the 14 pre-Wave-1.5
@@ -390,8 +392,11 @@ for n in <names>; do
 done
 
 # 2. Set shadcn / consumes / npm from that output, flip status to "shipped".
-# 3. Regenerate wiring and run every gate.
+# 3. Regenerate wiring, re-emit the derived files, and run every gate.
 pnpm gen:wiring
+pnpm contract:emit
+pnpm facts:emit
+pnpm openui:emit   # public/openui/catalog.json goes stale when the catalog changes, and `pnpm test` fails on it
 pnpm check:contract
 cd ../.. && pnpm typecheck && pnpm lint && pnpm check:tokens && pnpm test && pnpm build
 cd apps/storybook && rm -rf node_modules/.cache/storybook && pnpm test:stories
@@ -520,11 +525,15 @@ composing Base UI directly is sometimes correct — say so when you do.
 session's stash. Use `git show HEAD:path > /tmp/copy` instead. Agents are told
 never to run git write commands at all.
 
-**Vercel project linking.** A fresh worktree has no `.vercel`, and
-`vercel deploy` will silently create a _new_ project. Ensure
-`apps/docs/.vercel/project.json` contains:
-`{"projectId":"prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy","orgId":"team_a028ZfIo8cWgn1t63MHMUVfw"}`.
-A stray project named `docs` exists from this mistake and can be deleted.
+**Vercel project linking.** With the project's root directory set to
+`apps/docs`, `vercel deploy` from `apps/docs` fails with a doubled path, and
+from the repo root it uploads the local `.claude/worktrees` folders (about
+31,000 files, over the 15,000 limit) and has no `.vercel` link. Deploy from a
+clean checkout instead, naming the project by environment variable, so no link
+file is needed and no new project gets created (§7):
+`VERCEL_ORG_ID=team_a028ZfIo8cWgn1t63MHMUVfw VERCEL_PROJECT_ID=prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy vercel deploy --yes`.
+A stray project named `docs` exists from the old link-in-`apps/docs` mistake and
+can be deleted.
 
 **`react/no-unescaped-entities` is an error here, not a warning.** Guidance prose
 quotes things; every literal `'`/`"` in JSX text must be escaped. Broke the lint
@@ -889,10 +898,19 @@ unless everything is identical, so it doubles as the post-deploy check.
 `PROD_URL=<preview url>` points it at a preview. The rules are in
 `scripts/lib/prod-diff.ts` and unit-tested; `--report-only` always exits 0.
 
-Deploys are manual, from `apps/docs`, with the `weeeha` GitHub account:
-`vercel --prod`. The Vercel project is `super-ai-components`, root directory
-`apps/docs`, and `.vercel/project.json` must already name it (§4, "Vercel project
-linking") or the CLI creates a new project.
+Deploys are manual, with the `weeeha` GitHub account. The Vercel project is
+`super-ai-components` with root directory `apps/docs`, so deploy from the root
+of a clean checkout, not from `apps/docs` (doubled path) and not from a working
+checkout (it uploads `.claude/worktrees`, over the file limit):
+
+```bash
+git worktree add --detach ../deploy-tmp <commit>
+cd ../deploy-tmp
+VERCEL_ORG_ID=team_a028ZfIo8cWgn1t63MHMUVfw VERCEL_PROJECT_ID=prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy vercel deploy --yes   # add --prod for production
+```
+
+The two IDs stand in for a `.vercel` link, which a fresh checkout lacks (§4,
+"Vercel project linking").
 
 Last measurement, 2026-09-20, against `main` at `530ebba`. The registry items
 compared are byte-identical to `main`'s; the `llms*.txt` corpus compared is this
