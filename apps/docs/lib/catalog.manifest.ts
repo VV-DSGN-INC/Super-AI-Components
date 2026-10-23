@@ -365,7 +365,7 @@ export const MANIFEST: ManifestItem[] = [
     status: "shipped",
     wave: 2,
     base: ["breadcrumb", "button-group"],
-    shadcn: ["badge", "breadcrumb", "button", "button-group"],
+    shadcn: ["badge", "breadcrumb", "button", "button-group", "dropdown-menu"],
     consumes: [],
     npm: ["lucide-react"],
     // `private-session` (D28): the host passing N15's PrivateSessionChip into

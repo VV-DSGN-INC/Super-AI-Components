@@ -11,6 +11,7 @@ import { PrivateSessionChip } from "@/registry/super-ai/private-session-notice";
 import { SectionHeader } from "@/registry/super-ai/section-header";
 import { AppTopbarDocs } from "@/content/components/app-topbar.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
+import { settledFocusRing } from "@/lib/focus-ring";
 
 const meta: Meta<typeof AppTopbar> = {
   title: "Super AI/App Topbar",
@@ -115,24 +116,30 @@ export const PrivateSession: Story = {
  * opposed to the prop combinations above. See
  * docs/design-system/story-conventions.md for which of the eight apply.
  *
- * Not written for this component, deliberately:
- *
- * // case-skip: ReducedMotion — the bar declares no motion; the only movement in the tree is the shared Button primitive's 1px press
- * `app-topbar.tsx` contains no `animate-*`, no keyframe, no transform and no
- * `transition-*` anywhere. Two vendored primitives it composes carry timed
- * declarations: `BreadcrumbLink`'s `transition-colors` on hover, which is a
- * colour cross-fade that moves nothing (the `reset-affordance` precedent
- * this convention already records), and `Button`'s `transition-all` paired
- * with `active:not-aria-[haspopup]:translate-y-px` — a one-pixel press
- * depression that lasts only while the pointer is down. Suppressing the
- * latter would mean adding `motion-reduce:transition-none` to this
- * component's four zoom/history buttons alone, which does not document a
- * branch B7 owns; it makes one component's press feedback differ from every
- * other button in the registry. A story here would render identically to
- * `EditorContext`.
+ * All eight are true for this component, so there are no `case-skip` lines.
+ * `ReducedMotion` was skipped until the crumb collapse landed: `app-topbar.tsx`
+ * declared no motion, and the two timed declarations in the primitives it
+ * composed (`BreadcrumbLink`'s colour cross-fade on hover, `Button`'s
+ * one-pixel press while the pointer is down) moved nothing a story could
+ * document. The collapse composes a vendored `DropdownMenuContent`, which
+ * animates open, so the branch now exists and the story below reads it back.
  * ---------------------------------------------------------------------- */
 
 const CRUMBS = [{ label: "Projects", href: "#" }, { label: "Marketing", href: "#" }, { label: "Q3 Roadmap" }];
+
+/**
+ * A path with a middle to hide: three crumbs between the first and the
+ * current one, among them "Campaigns", a grouping with no page of its own and
+ * therefore no `href`. That is the shape a workspace tree really produces,
+ * and it is what exercises the disabled row in the overflow menu.
+ */
+const DEEP_CRUMBS = [
+  { label: "Projects", href: "#" },
+  { label: "Marketing", href: "#" },
+  { label: "Campaigns" },
+  { label: "Q3 planning", href: "#" },
+  { label: "Q3 Roadmap" },
+];
 
 /**
  * B8 `account-menu` needs a host for its theme/background pair, so the
@@ -290,6 +297,13 @@ export const RTL: Story = {
  * restate document order — the same claim wearing a disguise
  * (`CONTINUE.md`'s note on `gen-settings-bar`).
  *
+ * One control in the bar is never a stop at this width. The crumb collapse's
+ * ellipsis button is in the DOM for every path of three or more crumbs and
+ * is `display: none` above 28rem of bar width, and this box is 512px. A tab
+ * never lands on an unpainted control, so the stop list is filtered to
+ * painted ones and the unpainted button is asserted as such. `Mobile` is
+ * where it becomes the second stop.
+ *
  * The last segment is the composed-child half. B8 `account-menu` is a Base
  * UI dropdown, so it portals out of the canvas and installs a focus trap;
  * its stops belong to B8's own story, not this one. What B7 is answerable
@@ -330,7 +344,16 @@ export const KeyboardOrder: Story = {
     }
 
     // Derived from the DOM, not hardcoded: whatever is actually reachable.
-    const stops = Array.from(bar.querySelectorAll<HTMLElement>("a[href], button:not([disabled])"));
+    // Painted, too: the crumb collapse's ellipsis button is in the tree at
+    // every width and `display: none` above 28rem of bar width, so at 512px
+    // it is a control a tab can never land on.
+    const more = bar.querySelector<HTMLElement>('[data-slot="app-topbar-breadcrumb-overflow"]');
+    await expect(
+      `overflow trigger in DOM: ${more !== null}, painted: ${(more?.getClientRects().length ?? 0) > 0}`,
+    ).toBe("overflow trigger in DOM: true, painted: false");
+    const stops = Array.from(bar.querySelectorAll<HTMLElement>("a[href], button:not([disabled])")).filter(
+      (el) => el.getClientRects().length > 0,
+    );
     await expect(stops.length).toBeGreaterThan(0);
 
     const nameOf = (el: Element | null) =>
@@ -569,13 +592,15 @@ export const EmptyLabel: Story = {
  * itself. The two ancestors would each have fitted whole in a sliver of the
  * space the title is holding, and they are cut anyway.
  *
- * The thing to notice is what *does not* happen: shadcn ships
- * `BreadcrumbEllipsis` for exactly this, and B7 does not use it. There is no
- * "Projects / … / Q3 Roadm…" collapse, no priority order, no rule that the
- * page you are on should survive at the expense of its ancestors. Three
- * proportionally-clipped crumbs is the shipped behaviour, and it is a
- * composition gap rather than a decision — recorded here because this story
- * is the only place it is visible.
+ * The thing to notice is what happens here and what does not. This box is
+ * 512px, above the 28rem (448px) rung where the bar enters its narrow mode,
+ * so the crumb collapse does not engage: there is no "Projects / … / Q3
+ * Roadm…" here, no priority order, no rule that the page you are on should
+ * survive at the expense of its ancestors. Three proportionally clipped
+ * crumbs is the shipped behaviour above the rung, recorded here because this
+ * story is the only place it is visible. Below the rung the same path renders
+ * as Projects / … / Q3 Roadm…, with Marketing behind the ellipsis; `Mobile`
+ * carries that half.
  *
  * The other half of the row is the asymmetry: `app-topbar-trailing` is
  * `shrink-0` and the privacy `Badge` is `shrink-0` and `whitespace-nowrap`,
@@ -601,39 +626,58 @@ export const LongContent: Story = {
 };
 
 /**
- * 375px, carrying what a real shell hands it: a three-crumb path, a privacy
+ * 375px, carrying what a real shell hands it: a five-crumb path, a privacy
  * chip, a saved-state string and two trailing actions.
  *
- * **Two rules decide what gives way, and this story is where they were found
- * missing.** As first shipped, nothing in B7 could collapse: `app-topbar-
- * leading` was `min-w-0 flex-1`, `app-topbar-trailing` was `shrink-0`, the
- * privacy `Badge` was `shrink-0`, and the breadcrumb absorbed the entire
- * deficit. Measured here before the fix: the trailing group took 235 of the
- * bar's 375px, the chip 58 of the 104 left, and all three crumbs rendered at
- * **zero width** — two chevrons and the word "Private", about a document the
- * bar could no longer name. O2 `chat-shell` showed the other symptom at the
- * same width: the chip painting over the saved-state text.
+ * **Three rules decide what gives way, and this story is where the first two
+ * were found missing.** As first shipped, nothing in B7 could collapse:
+ * `app-topbar-leading` was `min-w-0 flex-1`, `app-topbar-trailing` was
+ * `shrink-0`, the privacy `Badge` was `shrink-0`, and the breadcrumb absorbed
+ * the entire deficit. Measured here before the fix, with a three-crumb path:
+ * the trailing group took 235 of the bar's 375px, the chip 58 of the 104
+ * left, and all three crumbs rendered at **zero width**, two chevrons and the
+ * word "Private" about a document the bar could no longer name. O2
+ * `chat-shell` showed the other symptom at the same width: the chip painting
+ * over the saved-state text.
  *
- * Now the current crumb (or the plain `title`) keeps a `min-w-16` floor and
- * truncates inside it, so the document's name survives; and below `@md`
- * (28rem) of the bar's own width the saved-state line goes `sr-only` — still
- * in the read order with its full text, no longer painted. That second rule
- * is a container query on the bar, not a viewport breakpoint, which is why
- * this story's `w-[375px]` wrapper is enough to reach it where a `max-sm:`
- * would have rendered the desktop layout inside the box (mechanical fact 2).
+ * Below `@md` (28rem) of the bar's own width the bar is in its narrow mode:
  *
- * Asserted as relationships rather than pixels (D21): the current crumb has
- * width, the chip ends before the trailing group begins, the saved label is
- * out of paint and still in the tree, and nothing scrolls sideways. Ancestor
- * crumbs still shrink first and can still reach zero. That is the priority
- * order rather than a defect, and it is left unpinned so a
- * `BreadcrumbEllipsis` collapse can land later without failing this story.
+ * 1. The current crumb (or the plain `title`) keeps a `min-w-16` floor and
+ *    truncates inside it, so the document's name survives.
+ * 2. The saved-state line goes `sr-only`: still in the read order with its
+ *    full text, no longer painted.
+ * 3. A path of three or more crumbs collapses to first, ellipsis, current.
+ *    The middle crumbs and their separators are `display: none`, which takes
+ *    them out of the accessibility tree and the tab order together, and the
+ *    ellipsis is a 28px ghost button that opens a menu listing them in path
+ *    order: a link row for a crumb with an `href`, a disabled row for one
+ *    without. A touch user taps the ellipsis, a keyboard user tabs to it and
+ *    arrows through the menu, and a screen-reader user hears a button named
+ *    "Show hidden path" where the crumbs used to be. Nobody loses the path
+ *    and nobody hears it twice.
  *
- * **Nothing becomes unreachable.** The cut is `truncate`, which is
- * `overflow: hidden` and not `display: none`: the ancestor crumbs keep their
- * full accessible names, keep their `href`s and keep their place in the tab
- * order, so a keyboard or screen-reader user loses nothing a sighted pointer
- * user does not. The first crumb is still reachable by name on the first tab.
+ * All three are container queries on the bar, not viewport breakpoints,
+ * which is why this story's `w-[375px]` wrapper is enough to reach them where
+ * a `max-sm:` would have rendered the desktop layout inside the box
+ * (mechanical fact 2). The collapse is depth-blind: a three-crumb path
+ * collapses too, into a one-row menu, because one rung is easier to hold
+ * than a rung per depth.
+ *
+ * What still gives way, in order, in a bar narrower than this fixture: the
+ * first crumb has no floor and truncates next, to zero in a narrow enough
+ * bar; then the current crumb truncates to its floor. Trailing `actions` and
+ * the chip never shrink. Both forms of the path are in the DOM at every width
+ * and CSS picks one.
+ *
+ * Asserted as relationships rather than pixels (D21): no sideways scroll; the
+ * first and current crumbs have width and the middle three have none and are
+ * out of the tree; the ellipsis sits between the first and current crumbs, is
+ * the second tab stop and paints a ring; the menu lists exactly the hidden
+ * crumbs with their `href`s (the rows are never activated, mechanical fact
+ * 6); Escape puts focus back on the ellipsis inside the bar; the chip ends
+ * before the trailing group; the saved label is out of paint and still in
+ * the tree. Every collapse assertion was watched failing against the PR 104
+ * source, where the middle crumbs were inline links and no button existed.
  */
 export const Mobile: Story = {
   render: () => (
@@ -641,7 +685,7 @@ export const Mobile: Story = {
       <AppTopbar
         context="document"
         title="Q3 Roadmap"
-        breadcrumb={CRUMBS}
+        breadcrumb={DEEP_CRUMBS}
         privacy={{ label: "Private" }}
         savedLabel="Last saved 5 days ago"
         actions={<TopbarActions />}
@@ -664,6 +708,64 @@ export const Mobile: Story = {
       "current crumb has width: true",
     );
 
+    // Rule 3: the path is first, ellipsis, current. The first crumb is
+    // painted and the three middle crumbs are not. `display: none` is what
+    // keeps them out of the tree: a role query excludes them, so the empty
+    // query is the accessibility-tree half of the claim and the empty rect
+    // list is the paint half.
+    const first = canvas.getByRole("link", { name: "Projects" });
+    await expect(`first crumb has width: ${first.getBoundingClientRect().width > 0}`).toBe(
+      "first crumb has width: true",
+    );
+    const items = Array.from(bar.querySelectorAll<HTMLElement>('[data-slot="breadcrumb-item"]'));
+    const unpainted = items
+      .filter((item) => item.getClientRects().length === 0)
+      .map((item) => item.textContent);
+    await expect(unpainted).toEqual(["Marketing", "Campaigns", "Q3 planning"]);
+    for (const name of ["Marketing", "Q3 planning"]) {
+      await expect(`${name} inline: ${canvas.queryByRole("link", { name }) !== null}`).toBe(
+        `${name} inline: false`,
+      );
+    }
+
+    // The ellipsis is a real button in the path, between the first crumb and
+    // the current one, and it is the second tab stop.
+    const more = canvas.getByRole("button", { name: "Show hidden path" });
+    await expect(more).toHaveAttribute("aria-haspopup", "menu");
+    const firstRect = first.getBoundingClientRect();
+    const moreRect = more.getBoundingClientRect();
+    const currentRect = current.getBoundingClientRect();
+    await expect(
+      `ellipsis between first and current: ${firstRect.right <= moreRect.left && moreRect.right <= currentRect.left}`,
+    ).toBe("ellipsis between first and current: true");
+
+    await userEvent.tab();
+    await expect(document.activeElement).toBe(first);
+    await userEvent.tab();
+    await waitFor(() => expect(document.activeElement).toBe(more));
+    await settledFocusRing(more, waitFor);
+
+    // The menu lists exactly the hidden crumbs, in path order. A crumb with
+    // an `href` is a link row; "Campaigns" has none and is a disabled row.
+    // Nothing here is activated: following a real `href` closes the test
+    // browser (mechanical fact 6).
+    await userEvent.keyboard("{Enter}");
+    const menu = await within(document.body).findByRole("menu");
+    const rows = within(menu).getAllByRole("menuitem");
+    await expect(rows.map((row) => row.textContent)).toEqual(["Marketing", "Campaigns", "Q3 planning"]);
+    await expect(rows[0]).toHaveAttribute("href", "#");
+    await expect(rows[2]).toHaveAttribute("href", "#");
+    await expect(rows[1]).not.toHaveAttribute("href");
+    await expect(rows[1]).toHaveAttribute("aria-disabled", "true");
+
+    // Escape closes the menu and puts focus back on the ellipsis, inside the
+    // bar. Settle before reading (mechanical fact 4), and leave nothing
+    // mid-dismissal for axe to measure.
+    await userEvent.keyboard("{Escape}");
+    await waitFor(() => expect(within(document.body).queryByRole("menu")).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(more));
+    await expect(bar.contains(document.activeElement)).toBe(true);
+
     // Nothing overlaps: the chip ends before the trailing group starts. This
     // is the O2 symptom, measured where the fix lives.
     const chip = bar.querySelector<HTMLElement>('[data-slot="app-topbar-privacy"]')!;
@@ -672,7 +774,7 @@ export const Mobile: Story = {
       `chip clear of trailing: ${chip.getBoundingClientRect().right <= trailing.getBoundingClientRect().left}`,
     ).toBe("chip clear of trailing: true");
 
-    // Rule 2: the saved-state line is out of paint and still in the tree —
+    // Rule 2: the saved-state line is out of paint and still in the tree.
     // `sr-only` takes it out of flow and clips it to a pixel, and its text is
     // untouched.
     const saved = bar.querySelector<HTMLElement>('[data-slot="app-topbar-saved"]')!;
@@ -683,11 +785,43 @@ export const Mobile: Story = {
     await expect(`saved label painted: ${saved.getBoundingClientRect().width > 1}`).toBe(
       "saved label painted: false",
     );
+  },
+};
 
-    // Truncation is visual only: the path is still named and still reachable.
-    const projects = canvas.getByRole("link", { name: "Projects" });
-    await userEvent.tab();
-    await expect(document.activeElement).toBe(projects);
+/**
+ * The one thing in the bar that animates, and the branch that stops it.
+ *
+ * `app-topbar.tsx` itself declares no motion, and the earlier `case-skip`
+ * here said so. The crumb collapse changes that: below 28rem the ellipsis
+ * opens a vendored `DropdownMenuContent`, which enters through
+ * `data-open:animate-in` and zooms from 95%. The call site restates
+ * `motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none`
+ * on the popup, because a bare `motion-reduce:animate-none` is inert against
+ * the `data-*` variants (mechanical fact 3), and because a consumer's
+ * `shadcn add` resolves `dropdown-menu` to upstream rather than to this
+ * repo's vendored copy, so the call site's pair is the only one they install.
+ *
+ * `vitest.config.ts` emulates `prefers-reduced-motion: reduce` for every
+ * test, so the assertion is the rendered result: `animation-name` reads
+ * `none` on the open popup. Against the bare class it reads `enter`. The menu
+ * is left open so axe measures its rows, the disabled one included.
+ */
+export const ReducedMotion: Story = {
+  render: () => (
+    <div className="w-[375px] max-w-full">
+      <AppTopbar
+        context="document"
+        title="Q3 Roadmap"
+        breadcrumb={DEEP_CRUMBS}
+        privacy={{ label: "Private" }}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement }) => {
+    await userEvent.click(within(canvasElement).getByRole("button", { name: "Show hidden path" }));
+    const menu = await within(document.body).findByRole("menu");
+    await expect(menu).toHaveAttribute("data-open");
+    await expect(getComputedStyle(menu).animationName).toBe("none");
   },
 };
 
