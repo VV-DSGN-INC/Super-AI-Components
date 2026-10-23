@@ -10,7 +10,7 @@ LTX Studio, CapCut, Canva, Spline, Freepik, and Descript all put a single persis
 
 ## When to reach for it
 
-Reach for it as the one top bar for a shell and pick `context` based on what's underneath it: `document` for anything read top-to-bottom (docs, pages, notes) where breadcrumb + privacy matter most; `editor` for anything manipulated on a canvas or timeline (design files, video, 3D) where zoom + history matter most. Pass `savedLabel` as a finished sentence, not a timestamp to format — the component never guesses relative time for you. For a chat surface, use the same component with just `title` and `actions` filled in; don't reach for a separate chat-header component.
+Reach for it as the one top bar for a shell and pick `context` based on what's underneath it: `document` for anything read top-to-bottom (docs, pages, notes) where breadcrumb + privacy matter most; `editor` for anything manipulated on a canvas or timeline (design files, video, 3D) where zoom + history matter most. Pass `savedLabel` as a finished sentence, not a timestamp to format — the component never guesses relative time for you. For a chat surface, use the same component with just `title` and `actions` filled in; don't reach for a separate chat-header component. The privacy slot's vocabulary comes from two neighbours rather than from free text: pass N15 `private-session-notice`'s `PrivateSessionChip` for a private session and N13 `capture-consent` in its `compact` form while capture runs, as an element, or both in a fragment. Keep the `{ label, icon }` form for the document's own visibility word, such as "Team" or "Private".
 
 ## Variants
 
@@ -25,6 +25,7 @@ Not yet recorded.
 - Render saved-state as a finished sentence — "Last saved 5 days ago" answers the question a status glyph only raises.
 - Let editor context lead with zoom + history instead of a breadcrumb — it's the same component, just the other configuration.
 - Pair the privacy chip's icon with a visible label — the icon alone is decoration, the text is the signal.
+- Pass N15's `PrivateSessionChip` into `privacy` for a private session, with N13's `compact` recording chip beside it while capture runs, instead of writing your own label for either.
 
 ## Don't
 
@@ -41,7 +42,7 @@ Not yet recorded.
 - `app-topbar-zoom`: Editor context: zoom-out / level / zoom-in button group.
 - `app-topbar-history`: Editor context: undo / redo button group.
 - `app-topbar-title`: Document or scene name — shown when there's no breadcrumb, or alongside zoom/history.
-- `app-topbar-privacy`: Icon + text status chip. Available in either context.
+- `app-topbar-privacy`: The bar's own icon + text chip, drawn from the `{ label, icon }` form for the document's visibility. Available in either context. An element passed to `privacy` renders in its place and keeps its own slots, as N15's chip does.
 - `app-topbar-trailing`: Right-aligned group holding saved-state and actions.
 - `app-topbar-saved`: Saved-state as plain readable text, e.g. "Last saved 5 days ago". Below 28rem of bar width it is `sr-only`: read, not painted.
 - `app-topbar-actions`: Consumer-supplied trailing controls (share, export, presence, …).
@@ -50,7 +51,7 @@ Not yet recorded.
 
 **Keyboard**
 
-- Document context has one tab stop per breadcrumb crumb that carries an `href`, and none otherwise. The final crumb is deliberately not a link, a crumb without `href` renders as plain text, and the title, privacy chip and saved-state line are never focusable.
+- Document context has one tab stop per breadcrumb crumb that carries an `href`, and none otherwise. The final crumb is deliberately not a link, a crumb without `href` renders as plain text, and the title, the bar's own privacy chip and saved-state line are never focusable. An element you pass to `privacy` keeps its own tab stops: N15's `PrivateSessionChip` with `onClick` is one button.
 - Below 28rem of the bar's own width, a path of three or more crumbs trades its middle crumbs for one stop: the ellipsis button between the first crumb and the current one. Enter, Space or ArrowDown opens a menu of the hidden crumbs, the arrow keys move through it (a crumb without `href` is a disabled row the arrows still visit), Enter follows a link row, and Escape closes the menu and returns focus to the button. Above the rung the button is `display: none` and is not a stop, and the middle crumbs are stops instead. The tab count therefore changes with the bar's width, the one place in this component where it does.
 - Editor context is always four tab stops before your `actions` — Zoom out, Zoom in, Undo, Redo — and they render whether or not you passed the matching handler. An editor topbar with no `onUndo` still presents an enabled, focusable Undo button that does nothing.
 - `canUndo` and `canRedo` default to `true`, so `disabled` only appears when you say so. Omitting them is not the same as having no history.
@@ -68,6 +69,7 @@ Not yet recorded.
 - The saved-state line is the same shape: plain text, no live region. "Last saved 5 days ago" becoming "Saving…" is a change nobody is told about.
 - The privacy chip announces as its label text; its optional glyph is wrapped `aria-hidden`, which is what makes the visible word rather than the icon the actual signal.
 - Below 28rem of the bar's own width — a container query on the root, not a viewport breakpoint — the saved-state line is `sr-only`: it keeps its full text and its place in the read order and stops being painted. A sighted phone user loses the saved state first and the middle of the path second (into the ellipsis menu); the document's name keeps a 4rem floor and the privacy chip never shrinks. The ellipsis button is the one role that comes and goes with the bar's width; every other role and name is the same at every width.
+- An element passed to `privacy` brings its own semantics, and the bar adds none around it. N15's `PrivateSessionChip` is a plain chip read as its words, or a button when you give it `onClick`, which adds a tab stop to the bar. N13's `compact` chip is a `role="status"`, so starting or stopping capture is announced politely from the topbar.
 
 **Focus**
 
@@ -79,13 +81,14 @@ Not yet recorded.
 
 - Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.
 - Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing ("5 days ago") before handing it over.
+- Writing "Private session" or "Recording" into the `{ label }` form. Those two states have owners, N15 and N13, whose chips carry the fixed copy, the icon and, for capture, the live region; a hand-written label drifts from them and announces nothing. The bar renders their element as given and imports neither.
 - Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.
 - Putting something that must stay visible at every width into `savedLabel`: it is the first thing the row gives up, going `sr-only` below 28rem of bar width. At the same rung a path of three or more crumbs collapses to the first crumb, an ellipsis menu holding the middle crumbs, and the current crumb. The current crumb keeps a 4rem floor and truncates (an empty title reserves nothing); the first crumb has no floor and is the next thing cut. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.
 - Expecting a two-level path to collapse: there is no middle to hide, so `Projects / Q3 Roadmap` renders inline at every width and only truncates. And give a middle crumb an `href` when it is a place: without one it becomes a disabled row in the overflow menu, present in the path but not a destination.
 
 ## Composition
 
-- States: `document-context`, `editor-context`, `privacy-chip`, `saved-state`
+- States: `document-context`, `editor-context`, `privacy-chip`, `saved-state`, `private-session`
 - Composes from this registry: nothing
 - shadcn primitives: badge, breadcrumb, button, button-group, dropdown-menu
 - npm: lucide-react

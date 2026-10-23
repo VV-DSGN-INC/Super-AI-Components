@@ -37,6 +37,7 @@ Not yet recorded.
 - `thread-list`: The list root. It renders a <nav>, so it is a landmark — give it an aria-label, because a product with this component almost always has a second nav on screen.
 - `date-section`: One date bucket. ThreadListSection deliberately renders date-section rather than a slot of its own, so address a bucket with [data-slot="date-section"].
 - `thread-list-item`: One row. Carries data-active when it is the open thread and data-renaming while the title is being edited in place — the row's markup is completely different in that second case.
+- `thread-icon`: The optional mark before the title, decorative and hidden from assistive tech. Inside a sidebar collapsed to its icon rail it is all the row shows; the title stays as screen-reader text, so the row keeps its name.
 - `thread-unread`: The leading dot on a thread with activity you have not seen. It is part of the row button's accessible name, so an unread row announces as “Unread ‹title›”.
 
 ## Accessibility
@@ -70,6 +71,7 @@ Not yet recorded.
 
 ## Pitfalls
 
+- In a sidebar collapsed to its icon rail, a row with no `icon` is dropped from the rail rather than drawn as an empty button, and every row's actions menu hides. Give each thread an icon if the rail should list it, and keep rename, pin and delete reachable by expanding the sidebar.
 - Rename and delete-confirm are internal state with no prop to force them. There is no `renaming` prop, no `open` prop on the confirmation and no imperative handle — to reach either state in a test, open the row's actions menu and choose the item, the same way a person does.
 - The two resolve differently, and only one of them is safe. Cancelling the delete confirmation puts focus back on the row's actions button, as it should. Committing a rename does not: the input unmounts and focus falls to the document body, so a keyboard user who presses Enter loses their place in the list entirely. Move focus back to the row yourself after you persist the new title.
 - Every row's actions button is named "Thread actions for <title>", so the name is only as useful as the title you pass — a sidebar of threads all called "New chat" is still a list of identical buttons to a screen-reader user, which is the real reason the row title is worth keeping short and distinct. It used to be a constant "Thread actions" for every row; if you query it in a test, match the interpolated name.

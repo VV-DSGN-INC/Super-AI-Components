@@ -88,7 +88,7 @@ export default function ${Comp}Demo() {
  * static export.
  */
 export const ${Comp}Docs: ComponentDocs = {
-  whatItIs: "${item.description}",
+  whatItIs: ${JSON.stringify(item.description)},
   whyItMatters: "",
   evidence: [],
   anatomy: [],

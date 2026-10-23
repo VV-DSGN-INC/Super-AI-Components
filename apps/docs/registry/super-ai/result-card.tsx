@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress, ProgressLabel } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { AiLabel } from "@/registry/super-ai/ai-label";
 import type { GenerationState } from "@/registry/super-ai/cost";
 import { PreviewTile, type PreviewTileAspect, type PreviewTileState } from "@/registry/super-ai/preview-tile";
 
@@ -15,7 +16,7 @@ import { PreviewTile, type PreviewTileAspect, type PreviewTileState } from "@/re
  * Result Card — one generated asset, anywhere it appears.
  *
  * Spec: docs/design-system/component-specs.md#f1-result-card
- * States: idle · queued · streaming · done · failed · locked
+ * States: idle · queued · streaming · done · failed · locked · watermarked
  *
  * The load-bearing property is that **the box is identical in all six states**.
  * Everything that varies is either inside A8 `preview-tile`'s fixed-aspect
@@ -27,6 +28,13 @@ import { PreviewTile, type PreviewTileAspect, type PreviewTileState } from "@/re
  * component specifically ("locked shows the shape of what would have been
  * made, then the CTA", preview-tile.tsx:81-82) and already guarantees stable
  * geometry across its four states.
+ *
+ * `watermarked` is the Watermark pattern's visible half: A13 `ai-label` drawn
+ * on the asset itself, over the frame like every other overlay here, so it
+ * costs no layout. The panel that opens from it is N16 `content-credentials`,
+ * and this file cannot import it: L3 items never depend on each other (D3).
+ * The host passes N16 in through `renderWatermark` instead, which receives the
+ * mark and returns what renders in its place.
  */
 
 /**
@@ -84,6 +92,19 @@ interface ResultCardProps extends Omit<React.ComponentProps<"div">, "onSelect"> 
   onRetry?: () => void;
   /** `locked` only. M5-shaped, but never an M5 import — M5 is a layer above. */
   lockedAction?: React.ReactNode;
+  /**
+   * Draws A13 `ai-label` on the asset: `generated` for media the model made,
+   * `edited` for a person's media the model changed. Rendered in `done` only,
+   * because the mark is a claim about an asset that exists.
+   */
+  watermark?: "generated" | "edited";
+  /**
+   * Wraps the watermark, for N16 `content-credentials`, which this component
+   * cannot import:
+   * `(mark) => <ContentCredentials credentials={record}>{mark}</ContentCredentials>`.
+   * When present, the mark becomes a tab stop so the panel opens on focus.
+   */
+  renderWatermark?: (mark: React.ReactElement) => React.ReactNode;
   /** The media. Opaque, exactly as A8 treats it. */
   children?: React.ReactNode;
 }
@@ -101,6 +122,8 @@ function ResultCard({
   onSelect,
   onRetry,
   lockedAction,
+  watermark,
+  renderWatermark,
   className,
   children,
   ...props
@@ -145,6 +168,18 @@ function ResultCard({
     ) : state === "locked" ? (
       lockedAction
     ) : null;
+
+  // A bare A13 chip takes no tab stop, which is right for a mark nothing opens.
+  // N16 needs a focusable trigger, or its panel opens for pointer users only,
+  // so the mark becomes one exactly when a host hands it something to open.
+  const mark = watermark ? (
+    <AiLabel
+      variant={watermark}
+      tabIndex={renderWatermark ? 0 : undefined}
+      // A flat surface of its own, so the chip clears contrast over any media.
+      className="bg-background"
+    />
+  ) : null;
 
   return (
     <Card
@@ -203,6 +238,20 @@ function ResultCard({
               className="absolute top-2 start-2 opacity-0 transition-opacity group-hover/card:opacity-100 group-focus-within/card:opacity-100"
             >
               {actions}
+            </div>
+          ) : null}
+
+          {mark && state === "done" ? (
+            // A sibling of the tile, never inside it: in `done` the tile is a
+            // button whenever `onSelect` exists, and a focusable mark inside
+            // it would nest one interactive in another. Bottom-end, where
+            // watermarks sit, lifted clear of A8's label bar (text-xs line
+            // plus py-1, 1.5rem) when there is one.
+            <div
+              data-slot="result-card-watermark"
+              className={cn("absolute end-2", label ? "bottom-8" : "bottom-2")}
+            >
+              {renderWatermark ? renderWatermark(mark) : mark}
             </div>
           ) : null}
         </div>

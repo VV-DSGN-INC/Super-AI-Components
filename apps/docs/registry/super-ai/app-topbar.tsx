@@ -25,12 +25,19 @@ import { cn } from "@/lib/utils";
  * App Topbar — Breadcrumb + title + status + actions
  *
  * Spec: docs/design-system/component-specs.md#b7-app-topbar
- * States: document-context · editor-context · privacy-chip · saved-state
+ * States: document-context · editor-context · privacy-chip · saved-state · private-session
  *
  * One component, two configurations: document context leads with breadcrumb
  * + privacy; editor context leads with zoom + history. Also absorbs the
  * spec's old `chat-header` — a chat title bar is this with fewer slots
  * filled (just `title` + `actions`).
+ *
+ * The privacy slot has a vocabulary, and it is not this file's. A private
+ * session is N15's `PrivateSessionChip`; capture in progress is N13
+ * `capture-consent` in its `compact` form. The host passes either, or both in
+ * a fragment, as an element; this component imports neither, because L3 items
+ * never depend on each other (D3). The `{ label, icon }` object stays for the
+ * document's own visibility word ("Team", "Private").
  */
 
 /**
@@ -100,8 +107,13 @@ interface AppTopbarProps extends Omit<React.ComponentProps<"header">, "title"> {
   title: string;
   /** Document context only — omit to fall back to a plain title. */
   breadcrumb?: AppTopbarCrumb[];
-  /** Text-first status chip — never colour alone. Available in either context. */
-  privacy?: AppTopbarPrivacy;
+  /**
+   * The privacy slot, in either context. An element renders as given: N15's
+   * `PrivateSessionChip`, N13's `compact` capture-consent chip, or both in a
+   * fragment. The `{ label, icon }` object draws this bar's own text-first
+   * chip for the document's visibility. Never colour alone, in either form.
+   */
+  privacy?: AppTopbarPrivacy | React.ReactElement;
   /** Rendered verbatim as text, e.g. "Last saved 5 days ago" — a cloud glyph only raises the question this answers. */
   savedLabel?: string;
   /** Editor context — current zoom, shown as text between the in/out controls. */
@@ -270,7 +282,8 @@ function AppTopbar({
             </span>
           </>
         )}
-        {privacy ? <AppTopbarPrivacyChip {...privacy} /> : null}
+        {React.isValidElement(privacy) ? privacy : null}
+        {privacy && !React.isValidElement(privacy) ? <AppTopbarPrivacyChip {...privacy} /> : null}
       </div>
 
       <div data-slot="app-topbar-trailing" className="flex shrink-0 items-center gap-3">

@@ -72,6 +72,45 @@
       ]
     },
     {
+      "name": "Agent Presence",
+      "slug": "agent-presence",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/agent-presence.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/agent-presence",
+      "description": "A persistent, quiet cue that an agent is active in this surface. It has two parts: a chip for the app chrome that says what the agent is doing and what it can see or use, and a region wrapper that outlines the tab, frame or panel the agent controls. One menu holds Pause or Resume and Take over, and an optional link leads to the agent's steps. It never opens a modal.",
+      "variants": [],
+      "notes": [
+        "Don't show the outline without the chip. The outline is a colour and a line style, and says nothing in words.",
+        "Don't write a vague scope. A one-word scope tells the person nothing about what the agent can reach.",
+        "State is the host's. The menu only asks: onPause does not change the chip until you pass a new state, so wire the handler to your runtime and render what it reports.",
+        "Watching is not a safeguard. A visible agent can still be steered by hostile page content, so do not write copy that tells people they are protected because they can see it.",
+        "The menu items appear only when you pass their callbacks and the state allows them. A chip with no handlers renders as a status with no button.",
+        "Taken-over has no way back to the agent inside this component. Resume is offered while paused only, so hand control back by passing a new state from your own control.",
+        "The outline is drawn inside the region's box and follows its border radius. Give the region a radius if the surface has rounded corners, or the outline will draw square ones over it."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "task-tray",
+          "when": "Work outlives the current view and needs a place to be tracked, not an ambient cue on this surface."
+        },
+        {
+          "slug": "permission-prompt",
+          "when": "The agent needs a decision from the person; the approval itself belongs there and this chip only names it."
+        },
+        {
+          "slug": "trace-timeline",
+          "when": "The person wants to read the agent's steps in order; link to it with onOpenSteps."
+        },
+        {
+          "slug": "autonomy-selector",
+          "when": "The question is how much the agent may do unasked, a standing policy rather than live presence."
+        }
+      ]
+    },
+    {
       "name": "Ai Doc Block",
       "slug": "ai-doc-block",
       "family": "K",
@@ -87,14 +126,90 @@
         "Unmounting the block to re-prompt it — remounting a fresh block under a new key reflows the document under the user's cursor while they are typing an instruction into it. Change `state` and swap `children`; the same DOM node stays between the same two paragraphs.",
         "Wrapping the children in your own layout div before passing them in. The content slot deliberately renders them unwrapped so your document model gets back exactly the markup it gave; an extra wrapper ends up in the export.",
         "Hiding the verbs while streaming instead of disabling them. It reads as a smaller component that suddenly grows, and it hides the fact that a decision is coming.",
-        "Treating the frame as the only signal that a passage is generated. The attribution line is text for a reason — a border colour does not survive a high-contrast theme, a greyscale print, or an export to plain HTML.",
+        "Treating the frame as the only signal that a passage is generated. The attribution is a text chip for a reason — a border colour does not survive a high-contrast theme, a greyscale print, or an export to plain HTML.",
+        "Writing a sentence into `label`. It is A13's chip text, which stays one word or two and clips past that; the block lets the chip shrink so the streaming indicator keeps its place, so a long label loses its end rather than wrapping.",
         "Leaving `value` undefined in the editable state. The edit field is controlled; pair `value` with `onValueChange` and keep it in step with the prose you pass as children."
       ],
-      "consumes": [],
+      "consumes": [
+        "ai-label"
+      ],
       "consumedBy": [
         "artifact-shell"
       ],
       "insteadUse": []
+    },
+    {
+      "name": "AI Label",
+      "slug": "ai-label",
+      "family": "A",
+      "layer": "primitive",
+      "meta": "registry/super-ai/ai-label.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/ai-label",
+      "description": "A small outlined chip that says what AI did to a piece of content: generated it, edited it, summarized it, wrote this message, or stopped replying at a handoff. The chip text is one word or two; the accessible name is the full sentence, with the model and the time folded in. A sixth form, `text-tint`, draws no chip at all and instead wraps AI-sourced prose in a reserved tint. The component also owns the glyph for \"AI acted here\", exported as `AI_LABEL_ICON`, so surfaces stop importing a sparkle icon of their own.",
+      "variants": [
+        {
+          "prop": "variant",
+          "values": [
+            {
+              "value": "generated",
+              "intent": "The AI produced this content from nothing, such as a draft, an image or a reply you asked for."
+            },
+            {
+              "value": "edited",
+              "intent": "A person wrote it and the AI changed it, so the reader knows the words are no longer only theirs."
+            },
+            {
+              "value": "summarized",
+              "intent": "The content condenses something else, so the reader knows the original is longer and may differ."
+            },
+            {
+              "value": "sender",
+              "intent": "The AI wrote this message, comment or notification, and it sits beside the author's name so it cannot be taken for a person."
+            },
+            {
+              "value": "after-handoff",
+              "intent": "The AI's turns ended at a handoff to a person, and the earlier turns need to show where it stopped."
+            },
+            {
+              "value": "text-tint",
+              "intent": "The text itself, inline in a paragraph, is what came from the AI, and a chip beside it would break the sentence."
+            }
+          ],
+          "default": "generated"
+        }
+      ],
+      "notes": [
+        "Don't reduce the chip to a bare \"AI\". It says who, not what, and it reads as a brand badge.",
+        "Don't put a caveat or a source in the chip. A reliability warning belongs to `disclaimer-note`, and a pointer to a source belongs to `citation-ref`; this chip only attributes an action.",
+        "`text-tint` is a wrapper treatment and is reserved. Applied to anything other than AI-sourced prose it stops meaning anything, and a second component that borrows it makes the signal unreadable.",
+        "The tint passes contrast by itself, on the page background. Do not place it on a muted or accent surface to \"quiet it down\": it was measured without one, and a tinted surface behind it changes the result.",
+        "`sender` must not be mistaken for a person. If the AI's name sits next to a human-looking avatar and no chip, the reader has nothing to tell them apart; keep the chip on every AI turn.",
+        "The chip carries no model information on screen. If the product wants the model visible without hovering, put it in your own text beside the chip rather than stretching the chip beyond two words.",
+        "Passing a `data-slot` of your own through the spread replaces `ai-label` and hides that this primitive drew the mark."
+      ],
+      "consumes": [],
+      "consumedBy": [
+        "ai-doc-block",
+        "artifact-grid",
+        "auto-fill",
+        "escalation-handoff",
+        "result-card",
+        "summary-card"
+      ],
+      "insteadUse": [
+        {
+          "slug": "disclaimer-note",
+          "when": "The point is a caveat about reliability (AI can make mistakes) rather than attributing an action that already happened."
+        },
+        {
+          "slug": "cost-chip",
+          "when": "The chip would carry a number, such as a price in credits. This label holds one or two words and no figures."
+        },
+        {
+          "slug": "citation-ref",
+          "when": "The pointer is to a source the content came from, not to the fact that AI produced it."
+        }
+      ]
     },
     {
       "name": "Ai Tools Menu",
@@ -209,6 +324,7 @@
         "Don't signal privacy with a bare coloured dot — it disappears for colorblind users and screen readers alike.",
         "Building a second header component for editor surfaces instead of switching `context` — the whole point of B7 is that document and editor bars are one component, so title, saved-state, and actions stay wired the same way in both.",
         "Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing (\"5 days ago\") before handing it over.",
+        "Writing \"Private session\" or \"Recording\" into the `{ label }` form. Those two states have owners, N15 and N13, whose chips carry the fixed copy, the icon and, for capture, the live region; a hand-written label drifts from them and announces nothing. The bar renders their element as given and imports neither.",
         "Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.",
         "Putting something that must stay visible at every width into `savedLabel`: it is the first thing the row gives up, going `sr-only` below 28rem of bar width. At the same rung a path of three or more crumbs collapses to the first crumb, an ellipsis menu holding the middle crumbs, and the current crumb. The current crumb keeps a 4rem floor and truncates (an empty title reserves nothing); the first crumb has no floor and is the next thing cut. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.",
         "Expecting a two-level path to collapse: there is no middle to hide, so `Projects / Q3 Roadmap` renders inline at every width and only truncates. And give a middle crumb an `href` when it is a place: without one it becomes a disabled row in the overflow menu, present in the path but not a destination."
@@ -260,10 +376,12 @@
         "Adding a `typeLabel` prop so a caller can restyle one badge. The badge and the facet are two renders of one value; the moment they can drift, a card reads \"Spreadsheet\" while its facet says \"Table\" and the filter silently returns nothing.",
         "Wrapping the whole card in an anchor to make it clickable. Everything inside then fuses into one accessible name — badge, title, excerpt, edited-ago, privacy word and view count read as a single run-on string. The card uses a stretched pseudo-element on the excerpt link instead, so the whole surface is clickable while the link's name stays exactly the excerpt.",
         "Giving the privacy state an `sr-only` suffix next to a visible glyph. Screen readers concatenate adjacent text with no separator, so a visible \"1,204\" beside an sr-only \" views\" can announce as \"1,204views\". Both the privacy word and the view unit are real visible text here for that reason.",
+        "Passing `by` or `at` through to the chip by forking the card. The tooltip form of A13 is a focusable trigger, and the stretched link covers the whole card, so a pointer never reaches it and the keyboard gets a second stop per card. Show the model and the time on the artifact's own page, where the tooltip form has room and nothing covers it.",
         "Sorting the grid by title. Titles are the least reliable field on the card; recency and session order are what people actually navigate by.",
         "Leaving empty session groups on screen after a filter runs. Sessions with no surviving items are dropped, and a fully empty view announces itself through a role=\"status\" message rather than silently blanking."
       ],
       "consumes": [
+        "ai-label",
         "choice-chips",
         "section-header"
       ],
@@ -403,6 +521,48 @@
       "insteadUse": []
     },
     {
+      "name": "Auto Fill",
+      "slug": "auto-fill",
+      "family": "P",
+      "layer": "component",
+      "meta": "registry/super-ai/auto-fill.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/auto-fill",
+      "description": "One prompt that fills a field across many records. A column-header action opens the configuration, a preview runs the prompt on the first few records and shows each result next to the value already there, and only then does Apply to all write anything. Each generated cell stays marked until a person accepts it or replaces it.",
+      "variants": [],
+      "notes": [
+        "Don't render a suggested value as plain text. Without the mark, a person cannot tell which cells they wrote.",
+        "Don't turn overwrite on for the person or hide how many filled cells it would replace. Human content is skipped unless they choose otherwise.",
+        "Nothing here writes a value. If `onApply` resolves without storing suggestions on your side, the person sees the panel close and the column unchanged.",
+        "Cancel aborts the signal passed to your callbacks and calls `onCancel`, but the component cannot undo what you already stored. Discard partial results yourself, or the cancelled run leaves suggestions behind.",
+        "The preview runs on the first records in the order you pass, whether or not they are filled. With overwrite off, a preview row can show a suggestion for a cell the full run will skip; that is the existing value beside the result, working as intended.",
+        "The failed message states that every existing value was kept. Make that true: stage results on your side and commit them after `onApply` resolves.",
+        "Per-record cost and time appear only when your sample results include `cost` and `durationMs`. Omit them and the row shows neither, rather than a guess."
+      ],
+      "consumes": [
+        "ai-label",
+        "cost-chip"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "data-views",
+          "when": "You need the collection itself: the table, board or feed that holds the records. Auto fill is the column action and cell renderer such a view hosts, and it does not draw the collection."
+        },
+        {
+          "slug": "approval-card",
+          "when": "A person is approving one artifact, such as a single draft or a single action, rather than reviewing many generated field values in place."
+        },
+        {
+          "slug": "diff-review",
+          "when": "The change is tracked edits on prose, where the reader accepts or rejects spans inside one document rather than values across many records."
+        },
+        {
+          "slug": "run-button",
+          "when": "One generation is started once and its result lands in one place. Auto fill is for the same prompt across many fields, with a preview in front of it."
+        }
+      ]
+    },
+    {
       "name": "Autonomy Selector",
       "slug": "autonomy-selector",
       "family": "N",
@@ -540,6 +700,60 @@
       ]
     },
     {
+      "name": "Capture Consent",
+      "slug": "capture-consent",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/capture-consent.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/capture-consent",
+      "description": "The consent gate that comes before an AI capture session (meeting notes, a call transcript, a recorded document) and the indicator that stays on screen while it runs. It tells the initiator who will be notified, keeps recording and sharing as two separate switches, confirms that the other people were told, shows what a decline costs the initiator, and says what is kept and deleted when capture stops.",
+      "variants": [
+        {
+          "prop": "form",
+          "values": [
+            {
+              "value": "bar",
+              "intent": "The surface that owns the capture: it carries the notice, the two switches, Start and Stop, and the declined and ended explanations."
+            },
+            {
+              "value": "compact",
+              "intent": "A topbar's privacy slot, where the indicator has to stay visible on every other surface. It is a passive chip that reports the state and cannot start or stop anything."
+            }
+          ],
+          "default": "bar"
+        }
+      ],
+      "notes": [
+        "Don't offer a one-click record button that starts capture without the notice step.",
+        "Don't announce a recording with a toast that leaves while the recording continues.",
+        "Calling `onStartCapture` from a path that did not come through the pre-notice. The component cannot stop you from starting capture elsewhere in your own code; it only guarantees that its own controls fire the callback from one step.",
+        "Moving to `recording` before your capture has started, or staying in `recording` after it stopped. The indicator renders the state you give it and cannot know the microphone's.",
+        "Omitting `participants`. The notice falls back to \"the other participants\", which is a weaker promise than naming people.",
+        "Omitting `kept` or `deleted` in `ended`. The state renders only the lines you pass, so an empty ended state says nothing about what happened to the capture.",
+        "Putting a training switch beside this component. Training consent has its own surface; the pre-notice only names where it lives."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "permission-prompt",
+          "when": "An agent asks before one side effect, such as writing a file or sending a message. Permission-prompt is a single approve-or-deny decision about an action; capture-consent covers a session that continues to record and has other people in it."
+        },
+        {
+          "slug": "trust-dialog",
+          "when": "The question is whether to run third-party content, such as a folder or a plugin. Trust-dialog confirms that you trust a source; capture-consent is about telling people they are being recorded."
+        },
+        {
+          "slug": "voice-clone-recorder",
+          "when": "The consent is about a person's likeness or voice being cloned. That consent stays in voice-clone-recorder, which carries its own gate for the clone itself."
+        },
+        {
+          "slug": "rate-limit-banner",
+          "when": "You want a banner that counts down and clears itself. Capture-consent never auto-dismisses while recording is on."
+        }
+      ]
+    },
+    {
       "name": "Chat Shell",
       "slug": "chat-shell",
       "family": "O",
@@ -551,6 +765,8 @@
       "notes": [
         "Don't let a spinner be the whole signal — a turning glyph has no accessible name and says nothing about what is running.",
         "Don't move artifacts to their own tab; the conversation stops being the index of its own output the moment you do.",
+        "The shell owns the sidebar's open state so a docked view can collapse it and give it back. `defaultSidebarOpen` is read once, on mount; a view arriving collapses the sidebar, and its leaving restores what the sidebar was just before, including a toggle the user made in between. Do not try to drive the sidebar from outside while a view is open.",
+        "A thread with no `icon` gets a speech-bubble glyph in the collapsed rail. Pass `icon` on each thread when the rail should tell them apart; the title stays the row's accessible name either way.",
         "AI Elements is written against Radix-flavoured shadcn and this registry is Base UI, so the vendored `message` needed two local `asChild` → `render=` edits to typecheck. Installing chat-shell through shadcn fetches AI Elements' file from its own registry, not this repo's patched copy — in a Base UI project, expect to make the same two edits.",
         "`use-stick-to-bottom` owns an element between the conversation root and its content, and sets no overflow on it. Without a `scrollClassName` the stream does not scroll at all, it just grows — and because that element is not yours, the region's accessible name and tab stop have to live on the conversation root instead.",
         "The vendored sidebar's desktop container is `fixed inset-y-0 h-svh`, which is right only when the shell owns the viewport. The root sets `contain: layout` so the shell stays embeddable in a panel, a preview or an app region — if you re-wrap or restyle the root, keep that containment or the sidebar will pin itself to the browser's left edge. The root also constrains that container to the shell's own height, which is what makes `sidebarPromo` and `sidebarFooter` usable in an embedded shell; before that they were bottom-anchored below the visible edge, invisible and still in the tab order.",
@@ -719,6 +935,63 @@
       "insteadUse": []
     },
     {
+      "name": "Content Credentials",
+      "slug": "content-credentials",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/content-credentials.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/content-credentials",
+      "description": "The provenance panel that opens from an AI mark. It takes one typed `credentials` record, modelled on C2PA Content Credentials, and shows who published the content, which model made it, when, and an ordered list of edits with each step attributed. Three signature outcomes are kept apart: `verified`, `unverified` (metadata present, signature failed) and `stripped` (credentials removed). It renders a record you already hold and never parses a file.",
+      "variants": [
+        {
+          "prop": "trigger",
+          "values": [
+            {
+              "value": "hover-card",
+              "intent": "The mark sits on a result tile or inline label that readers pass over, and a glance should be enough. It opens on hover and on keyboard focus, and cannot be entered."
+            },
+            {
+              "value": "popover",
+              "intent": "The mark is a deliberate click target (a type badge, a rail entry) or the record needs to be read, selected or reached by touch. It opens on click and takes focus."
+            }
+          ],
+          "default": "hover-card"
+        }
+      ],
+      "notes": [
+        "Don't badge missing credentials as human-made. Stripping is routine (screenshots, re-uploads, social platforms), so absence says nothing about who made the content.",
+        "Don't use the hover-card form as the only route to the record on a touch-first surface. Hover does not exist there, and the keyboard focus path only helps keyboard users.",
+        "A `stripped` record ignores every other field. If you pass an issuer or model alongside `status: 'stripped'` they are not shown, because a record that was removed cannot vouch for them.",
+        "`origin` and `status` are independent. A verified signature on `ai-generated` content means the issuer vouches that it is AI-made; it does not mean the content is accurate.",
+        "Edits render in array order and are never re-sorted. Pass them oldest first or the list will read backwards.",
+        "Timestamps are shown in UTC in a fixed en-US format so the same record reads the same everywhere. A string that is not a valid date is shown as given.",
+        "The component renders a record. It does not read, verify or fetch C2PA manifests, so a `verified` status is only as honest as the verifier you ran before it.",
+        "The panel has a fixed width of 20rem, capped to the viewport. Long publisher or model names wrap rather than truncate."
+      ],
+      "consumes": [
+        "stat-readout"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "asset-detail",
+          "when": "The reader wants the whole asset at full size with its prompt, parameters and provenance rail. This panel is one section of that view and the hover state on the tile; it does not show the media."
+        },
+        {
+          "slug": "stat-readout",
+          "when": "You only have plain key-value facts with no verification status and no edit trail. This component composes that grid and adds the trust verdict on top."
+        },
+        {
+          "slug": "run-inspector",
+          "when": "The detail is a trace span: input, output, tokens and cost for a model call. Credentials describe the produced asset, not the run that produced it."
+        },
+        {
+          "slug": "citation-ref",
+          "when": "The popover backs a claim in text with a quoted source passage. Credentials back a piece of media with who made it and how."
+        }
+      ]
+    },
+    {
       "name": "Context Chips",
       "slug": "context-chips",
       "family": "D",
@@ -788,6 +1061,7 @@
       "consumedBy": [
         "action-stack",
         "ai-tools-menu",
+        "auto-fill",
         "generation-panel",
         "generation-shell",
         "hero-omnibox",
@@ -835,6 +1109,48 @@
         "home-shell"
       ],
       "insteadUse": []
+    },
+    {
+      "name": "Data Controls",
+      "slug": "data-controls",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/data-controls.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/data-controls",
+      "description": "A settings card for what happens to a person's data: one row for model training, one row for how long conversations are kept. Each row has a plain-language description, one sentence saying what happens to the data under the setting as it stands now, and a link to the long policy. Plan limits, admin policies and products that collect nothing are states of the same rows, so the section never silently disappears.",
+      "variants": [],
+      "notes": [
+        "Don't ship a switch with a label and nothing else. A toggle with no description is a setting nobody changes.",
+        "Don't fold training and retention into one switch. Turning off training should not delete history, and keeping history should not opt anyone in.",
+        "Don't hide the section from people who cannot change it. Silence reads as \"no controls exist\" rather than \"your plan or admin sets this\".",
+        "Computing `effect` once. It is a plain string, so if you pass a constant it keeps describing the old setting after the person flips the switch. Derive it from the same value you pass as `checked`.",
+        "Wiring `onUpgrade` to a modal that this component renders. It renders none: call your own paywall message from the callback.",
+        "Passing `kind: \"plan-locked\"` and expecting `onCheckedChange` to fire anyway. The switch is disabled in that state, so the handler never runs; use `onUpgrade`.",
+        "Putting memory or saved-context controls in this card. They are personal caches rather than data ownership, and belong in their own surface.",
+        "Pairing `text-muted-foreground` with a muted, accent or secondary surface when you wrap the card. The rows are written for the card surface; if you paint the wrapper, rebind `--muted-foreground` on it."
+      ],
+      "consumes": [
+        "entity-row"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "settings-dialog",
+          "when": "You need the whole settings surface with navigation and many sections. Data-controls is one section's worth of rows and lives inside that surface."
+        },
+        {
+          "slug": "member-gate-row",
+          "when": "A single feature is locked behind a plan and has nothing to do with data handling. Data-controls only uses the lock for its own two rows."
+        },
+        {
+          "slug": "connection-manager",
+          "when": "The person is supplying their own API keys or pointing at a local model. That is a connection, not a data-handling choice."
+        },
+        {
+          "slug": "disclaimer-note",
+          "when": "You only need a caveat sentence under an answer or field. A note has no control; data-controls exists to hold one."
+        }
+      ]
     },
     {
       "name": "Data Views",
@@ -1121,16 +1437,20 @@
         "auth-shell",
         "autonomy-selector",
         "connection-manager",
+        "data-controls",
         "env-status",
         "feature-card-row",
         "generation-queue",
         "member-gate-row",
+        "memory-manager",
         "model-picker",
+        "private-session-notice",
         "skill-menu",
         "source-panel",
         "task-tray",
         "trust-dialog",
         "tts-composer",
+        "voice-profile",
         "workspace-switcher"
       ],
       "insteadUse": [
@@ -1188,10 +1508,12 @@
         "In `preview` and `unavailable` the footer element renders even when you pass no handlers at all, leaving an empty action bar under the packet. Pass at least one action, or the card ends in a blank strip.",
         "`wait` being absent is not the same as passing an empty string: the component prints \"We don't have a wait time yet.\" on purpose. That fallback is the honest answer when queue depth is unknown — don't pass an invented estimate to avoid it.",
         "The four trigger strings are a module constant, not props. You cannot reword them per surface; if none of the four fits, the situation probably is not an escalation.",
+        "Switching the packet's label without switching the thread. The card marks the packet after-handoff on `accepted`, but it does not render the conversation: if your message list keeps the AI's turns at sender, the thread still reads as if the AI were answering. Drive both from the same `state`.",
         "The component models no return path. `accepted` is where it stops — there is no prop for resuming the conversation or closing it out, so the host owns whatever happens after a person picks it up.",
         "Under `dir=\"rtl\"` the card mirrors correctly, but the \"Already tried\" bullets use a right-pointing arrow that does not flip. Cosmetic rather than blocking, and tracked as a gap."
       ],
       "consumes": [
+        "ai-label",
         "section-header",
         "stat-readout"
       ],
@@ -1361,6 +1683,7 @@
       ],
       "consumedBy": [
         "parameter-panel",
+        "prompt-template-form",
         "property-inspector",
         "template-detail",
         "tts-composer",
@@ -1484,6 +1807,8 @@
       "notes": [
         "Don't use it to narrow something already on screen. A segment here changes the next run, not the current view — a strip whose clicks filter a library is a `filter-bar` wearing the wrong component.",
         "Don't prefix each segment with the parameter it sets. The value names itself, the strip has no room for both, and nothing here truncates — the labels just push the bar past the edge of whatever holds it.",
+        "Don't sell the draft option on price alone. A label such as \"Cheaper\" hides the trade, and the lower quality arrives as a surprise.",
+        "`GenSettingsQuality` is controlled and optional. Pass `quality` (\"draft\" or \"final\") together with `onQualityChange`; with either missing it renders nothing, so a host that does not support drafts shows no dead segment. The bar does not re-estimate cost itself, so `onQualityChange` is where you update the settings and request the new estimate, exactly as for any other segment.",
         "Only `GenSettingsItem`s join the arrow walk. A plain `<button>` placed inside the bar is not a toolbar item, so it keeps a tab stop of its own and the arrows pass it by; wrap any segment in `GenSettingsItem` (or render it through one) to keep the strip one stop.",
         "There is no value API. `GenSettingsItem` is a plain button: the value it shows is its `children`, and `onClick` hands you a MouseEvent rather than a new value, so each segment needs its own handler and the values are owned entirely upstream. Nothing here can report \"resolution changed to 1080p\" generically — the catalog naming Select and Toggle-group as the base describes the controls you open, not what this component ships.",
         "`disabled` travels through React context, so a segment inside a disabled bar is disabled even though nothing in its own JSX says so. To keep one segment live during a run, pass `disabled={false}` on it explicitly — leaving it off falls through to the bar's value.",
@@ -1506,6 +1831,39 @@
         {
           "slug": "model-picker",
           "when": "The segment being built is itself the control that changes which model runs, not a value shown beside the prompt. A `GenSettingsItem` has no value API and no grouping to offer it, which is why model-picker's own docs call out reaching for its `node-inline` presentation there instead of a plain settings-bar button."
+        }
+      ]
+    },
+    {
+      "name": "Generated Body",
+      "slug": "generated-body",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/generated-body.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/generated-body",
+      "description": "The body of a view written as an OpenUI Lang program. You hand it the text that has arrived so far and your own library; it renders what the library allows, line by line as the stream grows. When a finished program does not render, it says so, names the reason, offers Retry if you gave it a handler, and shows the last version that did render underneath. It keeps no history and runs no timers: you stream the program in and you keep the versions.",
+      "variants": [],
+      "notes": [
+        "Don't set `streaming` to false before the last line has arrived. A program cut off mid-stream leaves references undefined, and a finished program is judged as it stands.",
+        "Don't mark a stream finished to see a partial result. While `streaming` is true the same cut-off program draws what has arrived and reports nothing.",
+        "Don't expect the valid part of a broken program to show. With no `fallbackProgram` the alert is the whole body.",
+        "An unknown component name does not blank the program. The parser keeps the rest, which is why the body checks the parse errors and not only the root: a check on the root alone would paint the valid half of a broken program.",
+        "Do not judge on the first render of a stream. Undefined references and unfinished lines are normal while lines are still coming, so the body reports nothing until `streaming` is false.",
+        "`onRender` fires once per finished program. Changing the callback or re-rendering does not fire it again, but a new stream that ends with the same text does. Record versions by the program you passed, not by call count.",
+        "The fallback is rendered with the same library and no streaming. If the library changed since that version rendered, the fallback can fail too, and it is drawn as it parses without a second alert.",
+        "In development, @openuidev/react-lang mounts its inspector panel by itself unless `globalThis[Symbol.for(\"openui.devtools.autoMount\")]` is set before the package loads. The registry item does not set it for you.",
+        "On pnpm 11 the install stops with ERR_PNPM_IGNORED_BUILDS until @openuidev/lang-core is listed under allowBuilds. Its postinstall only sends telemetry, so set it to false, as this repo does. The registry pins @openuidev/react-lang to the 0.3 line the failure rules were measured against."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "answer-block",
+          "when": "The reply is prose with sources, not a view. Answer-block puts citations at the claim and needs no program or library, while generated-body is for layouts a model composes from your components."
+        },
+        {
+          "slug": "view-frame",
+          "when": "You need the chrome (title, actions, footer) rather than the body. View-frame is fixed and never generated; generated-body goes inside its content area."
         }
       ]
     },
@@ -1858,6 +2216,50 @@
       "insteadUse": []
     },
     {
+      "name": "Memory Manager",
+      "slug": "memory-manager",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/memory-manager.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/memory-manager",
+      "description": "A card listing what the assistant remembers about a person, split into preferences and facts. Each memory shows its scope, when it was added and where it came from, and can be edited in place or deleted. A switch turns memory off and says what stops, and one reset action clears everything behind a confirmation. A small chip, exported separately, tells the person in the conversation that a memory was just saved.",
+      "variants": [],
+      "notes": [
+        "Don't list memories as bare sentences. Without a date, a source and a scope, nobody can judge whether to keep one.",
+        "Don't offer a Clear button that acts at once and does not say what it removes.",
+        "Don't mix preferences and facts in one pile. How the assistant should write and who the person is get reviewed differently.",
+        "Not updating `memories` in the handlers. The component is controlled: `onEdit`, `onDelete` and `onReset` only report the request, so a handler that does nothing leaves the list unchanged.",
+        "Rendering `MemorySavedChip` inside this card. It belongs in the conversation, at the moment of capture; the card only marks the row with `justSavedId`.",
+        "Passing a local-time string as `addedAt` and expecting local dates. Dates are shown as calendar dates in UTC so the text is identical on every machine; pass an ISO date.",
+        "Putting training or retention controls in this card. They govern the provider's data use, not what the assistant recalls about the person; use data-controls for them.",
+        "Expecting `enabled={false}` to hide or disable the list. Saved memories stay visible and editable while memory is off, because the person must still be able to delete them.",
+        "Pairing `text-muted-foreground` with a muted, accent or secondary surface when you wrap the card. The rows are written for the card surface; if you paint the wrapper, rebind `--muted-foreground` on it."
+      ],
+      "consumes": [
+        "entity-row",
+        "section-header"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "data-controls",
+          "when": "The choice is about training on conversations or how long they are retained. That is data handling by the provider, not what the assistant recalls about the person."
+        },
+        {
+          "slug": "private-session-notice",
+          "when": "You need to tell the person this session remembers nothing. Memory-manager only mentions private sessions in one sentence of copy."
+        },
+        {
+          "slug": "settings-dialog",
+          "when": "You need the whole settings surface with navigation and many sections. Memory-manager is one section's worth and lives inside that surface."
+        },
+        {
+          "slug": "asset-library",
+          "when": "The person is managing their own files and uploads. Memory-manager holds what the assistant inferred, not what the person stored."
+        }
+      ]
+    },
+    {
       "name": "Modality Rail",
       "slug": "modality-rail",
       "family": "B",
@@ -2137,11 +2539,13 @@
         "Don't render a palette swatch with no visible label — colour alone conveys nothing to assistive tech and nothing to a colourblind user either.",
         "Don't put a \"Show more\" link below the grid — a separate element outside the grid's own layout reflows everything beneath it when it expands, instead of just adding cells in place.",
         "Wiring a tile's own onClick straight into preview-tile's `onSelect` prop — that renders preview-tile's internal Frame as a second, nested interactive button with `aria-pressed` toggle semantics, the wrong ARIA for a radio or checkbox. preset-grid deliberately renders preview-tile without `onSelect` and wraps it in its own single `role=\"radio\"`/`role=\"checkbox\"` button instead.",
+        "Marking a system preset `personal` or `team` and expecting it to stay in place: any item with either source moves into \"Your styles\", and `visibleCount` then caps only the remaining presets.",
         "Passing `multiple` without also reading `value` as an array — a consumer that keeps treating `onValueChange`'s payload as a single string will see every tile after the first look permanently selected or never update at all.",
         "Leaving `color` off a palette item and expecting the thumbnail slot to fall back to something visible — palette content ignores `thumbnail` entirely, so a missing `color` renders an empty tile with only the label visible."
       ],
       "consumes": [
-        "preview-tile"
+        "preview-tile",
+        "section-header"
       ],
       "consumedBy": [
         "generation-shell",
@@ -2277,6 +2681,62 @@
       "insteadUse": []
     },
     {
+      "name": "Private Session Notice",
+      "slug": "private-session-notice",
+      "family": "N",
+      "layer": "component",
+      "meta": "registry/super-ai/private-session-notice.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/private-session-notice",
+      "description": "The notice a product shows when a conversation runs in private (incognito) mode. It has two forms: a banner that states what is and is not remembered, and a small persistent chip that tells the person the mode is still on. It also covers the moments around the mode: connectors running with less access, what happens to the session when it ends, and a plan- or admin-gated state where private mode is not available.",
+      "variants": [
+        {
+          "prop": "form",
+          "values": [
+            {
+              "value": "banner",
+              "intent": "The statement is the point and there is room for a block: above the input before the first message, in a connectors summary, or at the moment the session ends."
+            },
+            {
+              "value": "chip",
+              "intent": "The mode must stay visible while something else owns the screen. This is the form a topbar slot renders; pick it when only the indicator fits."
+            }
+          ],
+          "default": "banner"
+        }
+      ],
+      "notes": [
+        "Don't drop the chip after the first message. Without it nothing on screen says the session is still private.",
+        "Don't write a statement that promises more than the host enforces. An absolute claim such as 'never stored, anywhere' turns a privacy feature into a liability.",
+        "Don't override the exit text with a line that omits what happens to the session. The person closing the chat is deciding whether it survives.",
+        "Treating `statement` as copy you can tune per screen. It is meant to be one fixed sentence; varying it makes the guarantee unreadable and invites claims the backend does not make.",
+        "Using the banner form inside a topbar. The topbar slot wants the chip; the banner is a block that belongs above the input.",
+        "Forgetting that `connectors-reduced` shows the rows you pass. If a connector is missing from `connectors`, the notice says nothing about it, so list every connector whose scope differs from normal.",
+        "Animating the chip in or out, or hiding it on a timer. The component has no motion and no timers; adding them breaks the 'never silently expires' property."
+      ],
+      "consumes": [
+        "entity-row"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "disclaimer-note",
+          "when": "The text is a caveat about the reliability of AI output ('AI can make mistakes'), not a statement about what is remembered."
+        },
+        {
+          "slug": "safety-block",
+          "when": "A request was stopped by policy. A private session never blocks anything; it only changes what is kept."
+        },
+        {
+          "slug": "feature-announcement",
+          "when": "You are announcing that private mode exists, as a dismissible promo. This notice is permanent and states what the mode does once it is on."
+        },
+        {
+          "slug": "app-topbar",
+          "when": "You are placing the indicator. The topbar owns the privacy slot and renders `PrivateSessionChip` inside it; it is the slot, not the chip."
+        }
+      ]
+    },
+    {
       "name": "Promo Card",
       "slug": "promo-card",
       "family": "B",
@@ -2295,6 +2755,103 @@
       "consumes": [],
       "consumedBy": [],
       "insteadUse": []
+    },
+    {
+      "name": "Prompt Enhancer",
+      "slug": "prompt-enhancer",
+      "family": "D",
+      "layer": "component",
+      "meta": "registry/super-ai/prompt-enhancer.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/prompt-enhancer",
+      "description": "A button that proposes a rewrite of the prompt in the composer next to it. Click Enhance prompt and a panel shows your original and the rewrite side by side, with every word the enhancer added underlined and described. You accept it, edit it first, or dismiss it. Quick refinements such as More concise and Add examples sit behind an Advanced disclosure. After an accept, Revert to original puts back the exact string you started with. It takes the current `value` and an async `onEnhance`, and hands the accepted text to `onAccept`. It never owns the textarea and never submits.",
+      "variants": [],
+      "notes": [
+        "Don't overwrite the field with the rewrite. The person never sees what changed and has nothing to compare against.",
+        "Don't send the prompt as part of enhancing it. The point of the panel is that someone reads the rewrite before it runs.",
+        "Revert restores the string captured when Enhance started, and it overwrites whatever is in the field now. If the person types after accepting and then clicks Revert, those edits are replaced. Call `onRevert` to show your own confirmation if that matters in your product.",
+        "The added-words marking is a word-level comparison. A reordered sentence shows as added words, and a word with a different spelling or case counts as new. Trailing sentence punctuation is ignored, so 'sea' and 'sea,' match.",
+        "Closing the panel in the suggested or failed state discards the result. Reopening starts a new run, so a second model call is made.",
+        "A refinement chip always re-runs from the original text, never from the current suggestion. Refinements do not stack.",
+        "`onEnhance` has no abort signal. Cancel ignores the eventual result, but your request still runs to the end. Cancel it yourself if it is costly.",
+        "A rejected promise shows one generic message. The error text is not displayed, so log it in `onEnhance` if you need it.",
+        "The panel opens at up to 40rem wide, capped to the viewport. The two columns stack on narrow screens."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "slot-summary",
+          "when": "You want to show what the system understood from the request before it acts, as structured fields. This component rewrites the prompt text itself."
+        },
+        {
+          "slug": "diff-review",
+          "when": "The AI has edited prose and each change needs its own accept or reject. The enhancer returns one rewrite to take or leave whole."
+        },
+        {
+          "slug": "selection-toolbar",
+          "when": "The person selects text in a document and picks an AI action for that selection. The enhancer works on the whole prompt field."
+        },
+        {
+          "slug": "suggestion-chips",
+          "when": "You offer starter tasks before anything is typed. The enhancer needs a prompt to rewrite and is disabled until there is one."
+        }
+      ]
+    },
+    {
+      "name": "Prompt Template Form",
+      "slug": "prompt-template-form",
+      "family": "D",
+      "layer": "component",
+      "meta": "registry/super-ai/prompt-template-form.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/prompt-template-form",
+      "description": "A prompt written once with named blanks in it, and a form for filling them. Each blank is a typed variable (free text or a pick from a list) that can be required, carry a template default, or arrive pre-filled from an earlier step. Underneath sits a live preview of the assembled prompt, so the text a person reads is exactly the text that is sent.",
+      "variants": [
+        {
+          "prop": "layout",
+          "values": [
+            {
+              "value": "inline",
+              "intent": "The template reads as one sentence and the blanks are a word or two each. The person sees the prompt as they fill it, at the cost of narrow controls."
+            },
+            {
+              "value": "stacked",
+              "intent": "Four or more blanks, long values, or a narrow column. Each blank gets a labelled row of its own, which is easier to scan and to correct."
+            }
+          ],
+          "default": "stacked"
+        }
+      ],
+      "notes": [
+        "Do not deliver the template's own choice through `defaultValues`. It renders as something the person entered, with no Default mark. Use the blank's `defaultValue`.",
+        "Do not make a generation setting a blank. Temperature, seed and length are parameters of the run, not words in the prompt; they belong in a parameter panel.",
+        "`defaultValue` on a blank and `defaultValues` on the form are different things. The first is the template's choice and is marked Default until the person edits the blank. The second is initial state for the form, and a value there looks entered. Carrying a value in from an earlier step is the second case, and `carriedFrom` is what marks it.",
+        "The Default and From marks clear on the first edit and do not come back. Setting a blank back to its default text leaves it marked as entered, because the person has made the choice by then.",
+        "Controlled use means `values` is the whole truth: the form calls `onValuesChange` with the full next record and shows nothing new until you pass it back. A blank with no key in `values` falls back to its `defaultValue`, so removing a key restores the default and its mark.",
+        "Whitespace is normalised in the prompt: runs of spaces collapse and the ends are trimmed. An optional blank left empty disappears from the sent text, and a sentence built around it can read oddly. Write templates so each optional blank can vanish.",
+        "A blank's `id` keys the values record, so two blanks with the same id edit each other. Keep ids unique within a template."
+      ],
+      "consumes": [
+        "field-row"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "slot-summary",
+          "when": "The system has already understood the request and you are reading its resolved values back before it acts. A prompt template asks the person for the values up front; slot-summary shows what was understood afterwards and lets them correct it."
+        },
+        {
+          "slug": "parameter-panel",
+          "when": "The inputs are generation settings such as temperature, length or seed. Those change how a run behaves, not what the prompt says, and they do not belong in the prompt text."
+        },
+        {
+          "slug": "generation-wizard",
+          "when": "The flow is a multi-step generate dialog with its own steps, review and submit. A multi-step template here is one form per step in a flow you own; the wizard supplies the steps themselves."
+        },
+        {
+          "slug": "onboarding-wizard",
+          "when": "The questions are a first-run survey whose answers shape the product, not a prompt that gets sent."
+        }
+      ]
     },
     {
       "name": "Property Inspector",
@@ -2549,10 +3106,13 @@
         "Don't drop a slot from the array once its image is removed — an empty first/last frame slot that disappears makes the set of accepted inputs undiscoverable.",
         "Removing the first frame and letting the next reference silently be promoted into that role — remove is per-slot and must never re-derive a different item's role as a side effect (D2).",
         "Hand-rolling a scrolling row with overflow-x-auto instead of the Carousel base — that loses the visible next affordance and the keyboard-reachable region, and axe's scrollable-region-focusable rule has already caught this exact class of bug once in this repo.",
-        "Forgetting `thumbnail.alt` is required, not optional — these are the only informational images in the strip, so a missing or decorative-sounding alt (\"reference\") leaves screen reader users unable to tell slots apart."
+        "Forgetting `thumbnail.alt` is required, not optional — these are the only informational images in the strip, so a missing or decorative-sounding alt (\"reference\") leaves screen reader users unable to tell slots apart.",
+        "Showing Describe on a host that cannot produce a description. The action renders only when `onDescribe` is passed, so a product that cannot expose prompts should omit it rather than ship a button that always fails.",
+        "Passing every metadata field as a parameter. `params` is for values that change reproduction, such as model, seed and sampler. File size and dimensions bury the seed in the readout."
       ],
       "consumes": [
-        "preview-tile"
+        "preview-tile",
+        "stat-readout"
       ],
       "consumedBy": [],
       "insteadUse": []
@@ -2651,9 +3211,12 @@
         "The card renders a `role=\"status\"` region per instance. In a grid of twenty that is twenty live regions, and updating `progress` on every server tick makes each one announce again — throttle progress updates to every 5–10% rather than forwarding every event.",
         "`onSelect` means two different things depending on `selectable`: with it off, the tile itself becomes a button and reports `aria-pressed`; with it on, the tile stays inert and the checkbox is the only control. Passing `selectable` without `onSelect` gives you a checkbox that cannot be checked.",
         "The footer inherits `text-foreground`, not muted text, on purpose. Dropping a component in that sets its own muted foreground over a muted background reintroduces the 4.34:1 contrast failure this registry keeps hitting — A2 `cost-chip` currently still does exactly that.",
-        "`progress` is ignored outside `streaming`. If your bar never appears, check the state before checking the number."
+        "`progress` is ignored outside `streaming`. If your bar never appears, check the state before checking the number.",
+        "`watermark` is ignored outside `done`: the mark is a claim about an asset that exists, so a queued, failed or locked card never carries it. Set it with the result rather than toggling it on later.",
+        "Don't import N16 into a fork of this card to wire credentials. `renderWatermark` is the boundary: the card owns the mark and its place on the asset, the host owns the panel. Returning something that drops the `mark` you were handed removes the A13 chip and with it the visible half of the Watermark pattern."
       ],
       "consumes": [
+        "ai-label",
         "preview-tile",
         "cost"
       ],
@@ -2676,6 +3239,8 @@
       "notes": [
         "Don't just grey out the trigger when credits are short — a disabled button with no numbers gives the user nothing to act on.",
         "Don't gate the feature with a separate banner next to a trigger that still looks live — now two places can disagree about whether the action is locked.",
+        "Don't run a draft under the plain label with the draft price alone. Users then believe they are paying for the final result.",
+        "Passing `draft` without `finalCost`. The label still says draft, but the delta chip is omitted, so the user sees one price and cannot tell what stepping up would cost. When both costs are numbers the chip shows a signed delta; when either is a pre-formatted string it shows the final price itself.",
         "Treating insufficient-credits as a disabled idle button. The point of the state is the number — how much is needed and how much the user has — not just refusing the click.",
         "Relabelling the trigger for estimating/running without announcing it. Screen reader users won't pick up a text change on an already-focused button by itself; that's what the sr-only status region and aria-busy are for.",
         "Recomputing the cost locally instead of passing through the same number the estimate (A2 cost-chip) and any parent generation panel already agreed on — two different prices for the same action is the exact failure mode the spec calls out.",
@@ -2780,10 +3345,13 @@
         "filter-panel",
         "generation-wizard",
         "home-shell",
+        "memory-manager",
         "model-picker",
+        "preset-grid",
         "property-inspector",
         "sidebar-nav",
-        "tool-panel"
+        "tool-panel",
+        "voice-profile"
       ],
       "insteadUse": [
         {
@@ -3076,7 +3644,9 @@
       "consumes": [],
       "consumedBy": [
         "asset-detail",
+        "content-credentials",
         "escalation-handoff",
+        "reference-strip",
         "run-inspector",
         "source-panel",
         "waveform-editor"
@@ -3187,6 +3757,66 @@
       ]
     },
     {
+      "name": "Summary Card",
+      "slug": "summary-card",
+      "family": "K",
+      "layer": "component",
+      "meta": "registry/super-ai/summary-card.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/summary-card",
+      "description": "A card that condenses a named source the reader already has: a document, a thread, a section or a selection. It states what was summarized, links back to it, carries the AI label every time, and lets the reader pick how deep the summary goes. The host generates the text; the card owns the frame, the depth control and the placement of citation markers.",
+      "variants": [
+        {
+          "prop": "depth",
+          "values": [
+            {
+              "value": "short",
+              "intent": "The reader wants the gist of the source in a line or two, such as a thread they were not in or a preview in a list."
+            },
+            {
+              "value": "detailed",
+              "intent": "The reader wants the argument and the main supporting detail in a few paragraphs, so they can skip the source without losing the thread."
+            },
+            {
+              "value": "key-points",
+              "intent": "The reader wants to scan: short fragments as a list, such as decisions, owners and dates from a meeting or a long document."
+            }
+          ],
+          "default": "short"
+        }
+      ],
+      "notes": [
+        "Don't paraphrase a contractual clause in a ready summary. A notice period of ninety days written is not about three months of warning.",
+        "Don't write whole sentences as key points. A list of long sentences is the detailed depth with bullets, and the reader loses the scan the preset promises.",
+        "The depth is controlled by you. The card calls onDepthChange and shows whatever depth you pass back, so omitting the handler leaves the buttons looking dead. If regeneration is slow, pass state generating in the meantime, or the old summary stays on screen under the new depth.",
+        "Citations render only in the attributed state. Points that carry citation indices in a ready card show no markers, so a host that forgets to switch the state ships an unsourced-looking summary.",
+        "quote-and-condense shows the quotes array, not the points. It shows nothing if you pass points only, and the card does not check that a quote appears in the source, so verbatim is your guarantee to keep.",
+        "The collapsed state shows only the first point and tracks its own expanded flag. Changing the state prop away from collapsed and back resets nothing, so a card the reader opened stays open. Use onExpandedChange if the host needs to know.",
+        "Turned-off removes the AI label because nothing was summarized. If the same card goes from ready to turned-off mid-session, the previous points are not kept for the reader to look at."
+      ],
+      "consumes": [
+        "ai-label"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "answer-block",
+          "when": "The text answers a question the reader asked, from sources retrieved for that question. Summary-card condenses one named source the reader already has; answer-block attaches a citation to each claim and reports how much of the answer is sourced."
+        },
+        {
+          "slug": "ai-doc-block",
+          "when": "The generated passage sits inside a document the reader is editing, with keep, edit, regenerate and discard around it. Summary-card is a standalone card about a source, not a passage in the flow of one."
+        },
+        {
+          "slug": "disclaimer-note",
+          "when": "You only need a caveat that the content may be wrong or incomplete. Summary-card carries its own AI label, and a caveat belongs beside it as a note."
+        },
+        {
+          "slug": "source-cards",
+          "when": "The reader needs the set of sources that retrieval found, not a condensed version of one of them."
+        }
+      ]
+    },
+    {
       "name": "Task Tray",
       "slug": "task-tray",
       "family": "N",
@@ -3252,6 +3882,7 @@
         "Don't leave a pinned thread inside its date bucket wearing a pin icon. It still moves as the buckets re-bucket overnight, so the pin advertises a position the list does not keep.",
         "Don't let the list fill with the same generated placeholder. The title is the only thing that distinguishes one row from another to a screen reader, because every row's actions button carries an identical name.",
         "Don't reach for this when the rows are the product's own destinations rather than the user's content. If nobody can rename or delete a row, you want `sidebar-nav`; if the rows need columns of metadata, you want `record-list`.",
+        "In a sidebar collapsed to its icon rail, a row with no `icon` is dropped from the rail rather than drawn as an empty button, and every row's actions menu hides. Give each thread an icon if the rail should list it, and keep rename, pin and delete reachable by expanding the sidebar.",
         "Rename and delete-confirm are internal state with no prop to force them. There is no `renaming` prop, no `open` prop on the confirmation and no imperative handle — to reach either state in a test, open the row's actions menu and choose the item, the same way a person does.",
         "The two resolve differently, and only one of them is safe. Cancelling the delete confirmation puts focus back on the row's actions button, as it should. Committing a rename does not: the input unmounts and focus falls to the document body, so a keyboard user who presses Enter loses their place in the list entirely. Move focus back to the row yourself after you persist the new title.",
         "Every row's actions button is named \"Thread actions for <title>\", so the name is only as useful as the title you pass — a sidebar of threads all called \"New chat\" is still a list of identical buttons to a screen-reader user, which is the real reason the row title is worth keeping short and distinct. It used to be a constant \"Thread actions\" for every row; if you query it in a test, match the interpolated name.",
@@ -3547,6 +4178,37 @@
       "insteadUse": []
     },
     {
+      "name": "View Frame",
+      "slug": "view-frame",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/view-frame.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/view-frame",
+      "description": "The fixed chrome around a generated view: a header with a title, a scope and freshness line and a row of actions, one scrolling body, an optional slot for an ask bar, and a footer naming where the view came from and which version it is. A model or script writes the body. Everything around it keeps the same shape every time.",
+      "variants": [],
+      "notes": [
+        "Don't float the ask bar over the body. It hides the rows it sits on and the body has no idea it is there.",
+        "Don't nest a second scroller inside the body. The body already scrolls, and two scrollbars mean two tab stops.",
+        "The frame fills its container with h-full. Give it a parent with a definite height, or the body stops scrolling and the frame grows with its content.",
+        "Do not add overflow to anything inside the body unless you remove it from the body. Two scroll regions inside each other trap the wheel and double the tab stops.",
+        "ViewFrameFoot renders nothing at all without children, not an empty bar. A falsy child such as `false` or `null` counts as no children, but an empty fragment does not.",
+        "A long title wraps rather than truncates, and the actions wrap onto their own row first. Keep titles short anyway. The title is the only thing naming the view.",
+        "ViewFrameAction takes a single icon as its child. Putting text in it makes a wide button on a 44px target and the label is no longer the only name."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "browser-frame",
+          "when": "The content is a page the agent visited, shown as external. Browser frame marks its content as not ours; view frame wraps a view this product generated and keeps its actions."
+        },
+        {
+          "slug": "artifact-shell",
+          "when": "You need the index of everything generated, with a sidebar and a grid. View frame holds one generated view, not the library of them."
+        }
+      ]
+    },
+    {
       "name": "Voice Clone Recorder",
       "slug": "voice-clone-recorder",
       "family": "E",
@@ -3568,6 +4230,51 @@
       ],
       "consumedBy": [],
       "insteadUse": []
+    },
+    {
+      "name": "Voice Profile",
+      "slug": "voice-profile",
+      "family": "E",
+      "layer": "component",
+      "meta": "registry/super-ai/voice-profile.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/voice-profile",
+      "description": "A card for the rules that decide how output sounds. The current voice sits at the top with its source and scope in text, a list of saved voices lets the person switch in one press, and a personal voice is edited as rules: tone, words to use, words to avoid, formatting and an example. An optional preview writes a sample under the rules as they stand. When two voices could apply the card says which wins and why, and one button resets to neutral. A small chip, exported separately, shows the active voice beside the input.",
+      "variants": [],
+      "notes": [
+        "Don't reduce a voice to a mood. A tone button says nothing about words, formatting or an example.",
+        "Don't show a voice without its scope. A global tone that follows the person into the wrong project is the failure this pattern exists to prevent.",
+        "Don't pick a winner silently. When a second voice is ignored, the person needs to be told which and why.",
+        "Not updating `activeId` in the handlers. The component is controlled: `onActiveChange` and `onReset` only report the request, so a handler that does nothing leaves the voice unchanged.",
+        "Expecting `onReset` to delete voices. It means return to neutral; saved voices stay in the list and the card says so.",
+        "Passing `conflict` for a voice id that is not in `voices`. The card falls back to printing the raw id.",
+        "Resolving a conflict in your own code and never passing it. If two voices apply and the person is not told which wins, the reply seems to ignore a voice for no reason.",
+        "Expecting a team or preset voice to be editable. Only `source: \"personal\"` shows Edit rules and the scope select; the rules of the others are read-only text.",
+        "Returning a preview that never settles. The Preview button stays disabled while the promise is pending, so reject on timeout.",
+        "Pairing `text-muted-foreground` with a muted, accent or secondary surface when you wrap the card. The rows are written for the card surface; if you paint the wrapper, rebind `--muted-foreground` on it."
+      ],
+      "consumes": [
+        "entity-row",
+        "section-header"
+      ],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "preset-grid",
+          "when": "The person is picking a saved visual style from a grid of previews. Voice-profile holds rules for how output sounds, not how it looks."
+        },
+        {
+          "slug": "memory-manager",
+          "when": "You need to show what the assistant knows about the person, such as facts and preferences it saved. A voice is rules for style, not recalled information."
+        },
+        {
+          "slug": "mode-tabs",
+          "when": "The choice is a mode of work, such as chat or code, and not a voice. Switching a mode changes what the assistant does; a voice changes how it writes."
+        },
+        {
+          "slug": "parameter-panel",
+          "when": "The person is tuning generation parameters such as length or randomness. Those are numeric settings, not named rules with an example."
+        }
+      ]
     },
     {
       "name": "Waveform Editor",
@@ -3617,6 +4324,103 @@
       "insteadUse": []
     },
     {
+      "name": "Widget",
+      "slug": "widget",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/widget.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/widget",
+      "description": "A fixed-size tile for one fact among same-sized siblings. It comes in three families: small is one grid cell, medium is two wide, large is two by two. A tile has an icon, a title, a short meta, one header action or a whole-tile open button, a body that clips, and a skeleton for the loading moment. It sets no width of its own and fills the cell its grid item gives it.",
+      "variants": [
+        {
+          "prop": "size",
+          "values": [
+            {
+              "value": "small",
+              "intent": "One number or one status with a caption. Fits one grid cell."
+            },
+            {
+              "value": "medium",
+              "intent": "A figure with one supporting line or a short bar. Two cells wide."
+            },
+            {
+              "value": "large",
+              "intent": "A short list, such as runs with progress. Two cells wide and two tall."
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Don't repeat the title as openLabel. A reader then hears the title and never the number the tile exists to show.",
+        "Don't fit a list into a medium tile and expect it to scroll. The body clips, so the third run is lost; move to large or open a view.",
+        "A body that runs past the tile is clipped silently. There is no scrollbar and no fade, so test the longest content you can really emit at the exact size.",
+        "The open overlay covers the whole card, which is why onOpen and action exclude each other in the type. Content that needs its own links or buttons belongs in a view, not a tile.",
+        "Width and breakpoint classes on the tile fight the grid. Size the grid item and let the tile fill it.",
+        "With onOpen the body is hidden from assistive tech. Whatever the body shows must be in openLabel, or a screen reader user never learns it.",
+        "The header action is 24px square, the system's compact icon button. Keep one per tile and keep it away from the tile edge it floats on."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "entity-row",
+          "when": "The item is one row in a list of many. A widget is a same-sized tile among siblings, while entity-row is the icon, title and description row that lists use."
+        },
+        {
+          "slug": "stat-readout",
+          "when": "The facts are label and value pairs inside a panel. Stat-readout is a definition list with no tile, size family or open affordance."
+        }
+      ]
+    },
+    {
+      "name": "Widget Grid",
+      "slug": "widget-grid",
+      "family": "R",
+      "layer": "component",
+      "meta": "registry/super-ai/widget-grid.meta.json",
+      "docs": "https://super-ai-components.vercel.app/components/widget-grid",
+      "description": "A grid that places fixed-size widget tiles two columns wide in a narrow space and four columns wide in a roomy one. It answers to its own width through a container query, so the same code lays out a widget row in a chat column and on a full-width home page. Rows are as tall as the columns are wide, which keeps a small tile square and makes a large one four squares.",
+      "variants": [
+        {
+          "prop": "size",
+          "values": [
+            {
+              "value": "small",
+              "intent": "Choose small for a single figure or status that reads at a glance, like a count or a balance. It is 1 column by 1 row, always square."
+            },
+            {
+              "value": "medium",
+              "intent": "Choose medium for a tile that needs a line of text or a short list beside its figure. It is 2 columns by 1 row and takes a full row in the two-column layout."
+            },
+            {
+              "value": "large",
+              "intent": "Choose large for the one tile on the page that carries a body of content, like a live list of running work. It is 2 columns by 2 rows, four squares."
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Don't add horizontal padding or margin to the grid. The row height is worked out from the container's width, so a narrower grid inside it leaves every tile taller than it is wide. Pad the parent instead.",
+        "Don't put content taller than its cell inside an item. The cell is fixed by the grid; content that ignores it spills over the row below.",
+        "Reading the columns from the viewport. The switch is a container query on the grid's own wrapper, so a grid in a narrow chat column stays at two columns on a wide window.",
+        "Putting padding on the grid and wondering why tiles are no longer square. Pad the parent.",
+        "Expecting a medium or large tile to fill a hole. A medium tile after three small ones in a four-column row moves to the next row and leaves a gap. Order the tiles for the four-column case, since two columns never leaves one.",
+        "Rebuilding the threshold in your own CSS. Import FOUR_COLUMN_MIN_REM when a test or sibling layout needs the number; it is a literal because it is the size model's contract, not a design token."
+      ],
+      "consumes": [],
+      "consumedBy": [],
+      "insteadUse": [
+        {
+          "slug": "recent-grid",
+          "when": "The items are thumbnails of things to reopen, each with a title and recency text, rather than fixed-size glanceable tiles."
+        },
+        {
+          "slug": "artifact-grid",
+          "when": "The items are documents grouped under the session that produced them and need a type filter, not a uniform tile size."
+        }
+      ]
+    },
+    {
       "name": "Workspace Switcher",
       "slug": "workspace-switcher",
       "family": "B",
@@ -3645,6 +4449,7 @@
       "family": "A",
       "title": "Primitives",
       "components": [
+        "ai-label",
         "choice-chips",
         "cost-chip",
         "date-section",
@@ -3691,6 +4496,8 @@
         "context-chips",
         "media-prompt-bar",
         "mode-tabs",
+        "prompt-enhancer",
+        "prompt-template-form",
         "quote-reply",
         "reference-strip",
         "skill-menu",
@@ -3710,7 +4517,8 @@
         "preset-grid",
         "run-button",
         "tts-composer",
-        "voice-clone-recorder"
+        "voice-clone-recorder",
+        "voice-profile"
       ]
     },
     {
@@ -3774,7 +4582,8 @@
         "inline-generate-popup",
         "selection-toolbar",
         "source-cards",
-        "source-panel"
+        "source-panel",
+        "summary-card"
       ]
     },
     {
@@ -3806,12 +4615,18 @@
       "family": "N",
       "title": "Feedback, trust & observability",
       "components": [
+        "agent-presence",
         "autonomy-selector",
+        "capture-consent",
+        "content-credentials",
+        "data-controls",
         "disclaimer-note",
         "env-status",
         "escalation-handoff",
         "feedback",
+        "memory-manager",
         "permission-prompt",
+        "private-session-notice",
         "run-inspector",
         "safety-block",
         "task-tray",
@@ -3843,6 +4658,7 @@
       "family": "P",
       "title": "Records & views",
       "components": [
+        "auto-fill",
         "data-views",
         "detail-view-shell"
       ]
@@ -3853,6 +4669,16 @@
       "components": [
         "book-cover",
         "browser-frame"
+      ]
+    },
+    {
+      "family": "R",
+      "title": "Generated chat",
+      "components": [
+        "generated-body",
+        "view-frame",
+        "widget",
+        "widget-grid"
       ]
     }
   ]
