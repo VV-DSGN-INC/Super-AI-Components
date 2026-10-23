@@ -345,9 +345,16 @@ export const KeyboardOrder: Story = {
     // Non-modal: the next tab leaves the panel rather than wrapping inside it,
     // and the panel closes behind you — focus lands on the trigger, not on
     // whatever the portal put next in the document.
+    //
+    // Wait on the end state, not on the first stop after Submit. Leaving the
+    // panel is several moves: the trailing focus guard redirects, the popover
+    // sees focus leave and closes, and only then does Base UI's focus return
+    // put focus on the trigger. `settled(submit)` resolves on the first stop
+    // that is not Submit, which on a slow runner is the prompt the guard bounced
+    // through, so asserting there raced the close.
     await userEvent.tab();
-    await expect(await settled(submit)).toBe(trigger);
     await waitFor(() => expect(body.queryByRole("dialog")).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(trigger));
 
     // Re-open for the run. Enter in the prompt sends, and the field stays
     // readable — `readOnly`, not `disabled` — so it keeps its stop, its
