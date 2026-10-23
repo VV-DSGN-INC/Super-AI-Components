@@ -696,6 +696,16 @@ pre-existing.
 
 ---
 
+### Why `format:check` is safe to run repo-wide (moved from CLAUDE.md, 2026-10-23)
+
+`format:check` joined the list on 2026-09-07, when the tree was made
+prettier-clean. The bash hook used to deny a repo-wide format on the grounds
+that `check-contract.mts`'s guidance regexes could not survive re-wrapping;
+measured, they can — `\s*` spans newlines and prettier never splits a string
+literal. The only real breakage was the two `gen-wiring.mts` outputs being
+reformatted out of byte-agreement with their generator, and they are now
+prettier-ignored.
+
 ## 5. Open decisions — these need a human, don't guess
 
 1. **RESOLVED — C2 `suggestion-chips` shipped via a cross-registry dependency.**

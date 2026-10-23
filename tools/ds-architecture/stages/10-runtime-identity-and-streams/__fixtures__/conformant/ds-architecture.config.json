@@ -1,0 +1,32 @@
+{
+  "profile": "component-library",
+  "adoption": "greenfield",
+  "scopeRoles": {
+    "components": [
+      "src/components/**"
+    ],
+    "stories": [
+      "src/**/*.stories.tsx"
+    ]
+  },
+  "paths": {
+    "nameContract": "src/tokens.ts",
+    "styleEntry": [
+      "src/styles/globals.css"
+    ]
+  },
+  "axes": [],
+  "commands": {
+    "test": "vitest run"
+  },
+  "runtime": {
+    "systemId": "fixture-ds",
+    "slotExempt": [
+      {
+        "file": "src/components/provider.tsx",
+        "reason": "renders no DOM of its own; writes data-ds onto <html>"
+      }
+    ],
+    "partsRenderer": "src/components/ai/message-parts.tsx"
+  }
+}
