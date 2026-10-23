@@ -320,30 +320,51 @@ The engine those pieces serve ships as the `generated-chat` `registry:lib` contr
 
 ---
 
+## S · Channel renderers (Designing Bots), 3
+
+The first family from a **fifth source**: Amir Shevat's _Designing Bots_ (chapters 9 and 20) and the
+LifeOS content system, which keeps one message and draws it in the shape of each channel it is sent
+on. Not a reference board. Counted separately for the reason families P and Q are: the A–O subtotals
+do not move because family S exists. The letter is not R, which is generated chat (D26), and it is not [`gaps.md`](gaps.md)'s
+R-numbers, which number restore items; D27 says so.
+
+All three render the same object, a message with a kind and a handful of slots, at different points
+in its life: the message itself in a channel's shape (S1), the trace of what happened to it (S2) and
+the output checks that gate what is sent (S3).
+
+| #   | Name                    | Purpose                                            | Key states / variants                                                       | shadcn base         |
+| --- | ----------------------- | -------------------------------------------------- | --------------------------------------------------------------------------- | ------------------- |
+| S1  | `channel-message` `NEW` | One message in the shape of one channel            | pending · sent · answered · withdrawn · expired · failed-check · not-routed | Card, Badge, Button |
+| S2  | `message-log` `NEW`     | The append-only trace of one message, in sentences | empty · populated                                                           | none                |
+| S3  | `check-report` `NEW`    | Output checks' verdict per rule, with the fallback | all-pass · some-fail                                                        | Badge               |
+
+---
+
 ## Totals
 
-| Family                              | Count                                                                                                                                                           |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| A — Primitives (L2)                 | 13                                                                                                                                                              |
-| B — App shell & navigation          | 8                                                                                                                                                               |
-| C — Home & launcher                 | 5                                                                                                                                                               |
-| D — Composer & context              | 9                                                                                                                                                               |
-| E — Generation & parameters         | 11                                                                                                                                                              |
-| F — Results & assets                | 7                                                                                                                                                               |
-| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                                                                                                       |
-| H — Timeline & transport            | 7                                                                                                                                                               |
-| I — Editor surfaces                 | 5                                                                                                                                                               |
-| J — Library, filtering & discovery  | 7                                                                                                                                                               |
-| K — Documents & knowledge           | 9                                                                                                                                                               |
-| L — First-run & onboarding          | 6                                                                                                                                                               |
-| M — Account, plan & monetization    | 7                                                                                                                                                               |
-| N — Feedback, trust & observability | 18                                                                                                                                                              |
-| **B–N subtotal (L3)**               | **99** (96 before D31, 93 before D30, 89 before D28, 88 after D16, 82 before it, 74 before D12, 84 before D9)                                                   |
-| O — Blocks (L4)                     | 13 (O5 cut)                                                                                                                                                     |
-| P — Records & views (v2)            | 3                                                                                                                                                               |
-| Q — Presentational chrome (Geist)   | 2                                                                                                                                                               |
-| R — Generated chat                  | 4                                                                                                                                                               |
-| **Total registry items**            | **134** (130 before D26's family R, 126 before D31, 123 before D30, 118 before D28, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
+| Family                              | Count                                                                                                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| A — Primitives (L2)                 | 13                                                                                                                                                                                         |
+| B — App shell & navigation          | 8                                                                                                                                                                                          |
+| C — Home & launcher                 | 5                                                                                                                                                                                          |
+| D — Composer & context              | 9                                                                                                                                                                                          |
+| E — Generation & parameters         | 11                                                                                                                                                                                         |
+| F — Results & assets                | 7                                                                                                                                                                                          |
+| G — Canvas & nodes                  | ~~9 + `useFlowRunner` = 10~~ 0 · cut (D9)                                                                                                                                                  |
+| H — Timeline & transport            | 7                                                                                                                                                                                          |
+| I — Editor surfaces                 | 5                                                                                                                                                                                          |
+| J — Library, filtering & discovery  | 7                                                                                                                                                                                          |
+| K — Documents & knowledge           | 9                                                                                                                                                                                          |
+| L — First-run & onboarding          | 6                                                                                                                                                                                          |
+| M — Account, plan & monetization    | 7                                                                                                                                                                                          |
+| N — Feedback, trust & observability | 18                                                                                                                                                                                         |
+| **B–N subtotal (L3)**               | **99** (96 before D31, 93 before D30, 89 before D28, 88 after D16, 82 before it, 74 before D12, 84 before D9)                                                                              |
+| O — Blocks (L4)                     | 13 (O5 cut)                                                                                                                                                                                |
+| P — Records & views (v2)            | 3                                                                                                                                                                                          |
+| Q — Presentational chrome (Geist)   | 2                                                                                                                                                                                          |
+| R — Generated chat                  | 4                                                                                                                                                                                          |
+| S — Channel renderers               | 3                                                                                                                                                                                          |
+| **Total registry items**            | **137** (134 before D27's family S, 130 before D26's family R, 126 before D31, 123 before D30, 118 before D28, 116 before D20, 113 after D16, 107 before it, 99 before D12, 110 before D9) |
 
 The Figma boards still carry the G-family and `flow-shell` cards — drawn before the D9 cut, kept
 as records. (`useFlowRunner` was headless with no wireframe, which is why column 4 carries 109

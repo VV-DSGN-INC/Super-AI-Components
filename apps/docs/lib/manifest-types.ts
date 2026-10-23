@@ -26,7 +26,13 @@ export type FamilyId =
   // R is generated chat: the tiles and the view frame a reply composes. Its
   // evidence is desk research plus a private concept study, not a reference
   // board, so it is counted apart for the reason P and Q are. See D26.
-  | "R";
+  | "R"
+  // S is the first family from a fifth source — Designing Bots and the LifeOS
+  // content system — and holds the channel renderers: one message drawn in the
+  // shape of each channel it is sent on. Kept apart from N (oversight and trust
+  // builders) for the reason D27 gives. R is taken by generated chat (D26); S
+  // is also not gaps.md's R-numbers, which number restore items.
+  | "S";
 
 /**
  * Shape of AI's six categories and the pattern names under each, taken from the

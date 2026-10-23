@@ -21,7 +21,9 @@ import { AutonomySelectorDocs } from "@/content/components/autonomy-selector.doc
 import { BookCoverDocs } from "@/content/components/book-cover.docs";
 import { BrowserFrameDocs } from "@/content/components/browser-frame.docs";
 import { CaptureConsentDocs } from "@/content/components/capture-consent.docs";
+import { ChannelMessageDocs } from "@/content/components/channel-message.docs";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
+import { CheckReportDocs } from "@/content/components/check-report.docs";
 import { ChoiceChipsDocs } from "@/content/components/choice-chips.docs";
 import { CitationRefDocs } from "@/content/components/citation-ref.docs";
 import { CoachMarkDocs } from "@/content/components/coach-mark.docs";
@@ -68,6 +70,7 @@ import { LibraryShellDocs } from "@/content/components/library-shell.docs";
 import { MediaPromptBarDocs } from "@/content/components/media-prompt-bar.docs";
 import { MemberGateRowDocs } from "@/content/components/member-gate-row.docs";
 import { MemoryManagerDocs } from "@/content/components/memory-manager.docs";
+import { MessageLogDocs } from "@/content/components/message-log.docs";
 import { ModalityRailDocs } from "@/content/components/modality-rail.docs";
 import { ModeTabsDocs } from "@/content/components/mode-tabs.docs";
 import { ModelPickerDocs } from "@/content/components/model-picker.docs";
@@ -157,7 +160,9 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "book-cover": BookCoverDocs,
   "browser-frame": BrowserFrameDocs,
   "capture-consent": CaptureConsentDocs,
+  "channel-message": ChannelMessageDocs,
   "chat-shell": ChatShellDocs,
+  "check-report": CheckReportDocs,
   "choice-chips": ChoiceChipsDocs,
   "citation-ref": CitationRefDocs,
   "coach-mark": CoachMarkDocs,
@@ -204,6 +209,7 @@ export const componentDocs: Record<string, ComponentDocs> = {
   "media-prompt-bar": MediaPromptBarDocs,
   "member-gate-row": MemberGateRowDocs,
   "memory-manager": MemoryManagerDocs,
+  "message-log": MessageLogDocs,
   "modality-rail": ModalityRailDocs,
   "mode-tabs": ModeTabsDocs,
   "model-picker": ModelPickerDocs,

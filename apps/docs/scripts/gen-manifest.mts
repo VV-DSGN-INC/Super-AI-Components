@@ -59,6 +59,8 @@ const WAVE_BY_FAMILY: Record<FamilyId, number> = {
   Q: 13,
   // R is generated chat (D26), shipped after Q as its own wave.
   R: 14,
+  // S is channel renderers (D27), shipped beside R in wave 14.
+  S: 14,
 };
 
 /**

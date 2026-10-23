@@ -21,7 +21,9 @@ import AutonomySelectorDemo from "@/components/demos/autonomy-selector-demo";
 import BookCoverDemo from "@/components/demos/book-cover-demo";
 import BrowserFrameDemo from "@/components/demos/browser-frame-demo";
 import CaptureConsentDemo from "@/components/demos/capture-consent-demo";
+import ChannelMessageDemo from "@/components/demos/channel-message-demo";
 import ChatShellDemo from "@/components/demos/chat-shell-demo";
+import CheckReportDemo from "@/components/demos/check-report-demo";
 import ChoiceChipsDemo from "@/components/demos/choice-chips-demo";
 import CitationRefDemo from "@/components/demos/citation-ref-demo";
 import CoachMarkDemo from "@/components/demos/coach-mark-demo";
@@ -68,6 +70,7 @@ import LibraryShellDemo from "@/components/demos/library-shell-demo";
 import MediaPromptBarDemo from "@/components/demos/media-prompt-bar-demo";
 import MemberGateRowDemo from "@/components/demos/member-gate-row-demo";
 import MemoryManagerDemo from "@/components/demos/memory-manager-demo";
+import MessageLogDemo from "@/components/demos/message-log-demo";
 import ModalityRailDemo from "@/components/demos/modality-rail-demo";
 import ModeTabsDemo from "@/components/demos/mode-tabs-demo";
 import ModelPickerDemo from "@/components/demos/model-picker-demo";
@@ -157,7 +160,9 @@ export const demos: Record<string, ComponentType> = {
   "book-cover": BookCoverDemo,
   "browser-frame": BrowserFrameDemo,
   "capture-consent": CaptureConsentDemo,
+  "channel-message": ChannelMessageDemo,
   "chat-shell": ChatShellDemo,
+  "check-report": CheckReportDemo,
   "choice-chips": ChoiceChipsDemo,
   "citation-ref": CitationRefDemo,
   "coach-mark": CoachMarkDemo,
@@ -204,6 +209,7 @@ export const demos: Record<string, ComponentType> = {
   "media-prompt-bar": MediaPromptBarDemo,
   "member-gate-row": MemberGateRowDemo,
   "memory-manager": MemoryManagerDemo,
+  "message-log": MessageLogDemo,
   "modality-rail": ModalityRailDemo,
   "mode-tabs": ModeTabsDemo,
   "model-picker": ModelPickerDemo,
