@@ -5,6 +5,7 @@
 **Goal:** Split `CLAUDE.md` into an `AGENTS.md` map of one-line stubs over one costed body per rule, and give the repo an indexed exceptions ledger with a per-PR delta.
 
 **Architecture:**
+
 - `AGENTS.md` keeps the map prose (overview, commands, CI list) plus one stub per rule. Each stub points at a thin body in `docs/agent-rules/`, which links to the long account that already exists elsewhere in `docs/`. `CLAUDE.md` becomes `@AGENTS.md`.
 - Size and provenance tests replace `claude-md.test.ts`.
 - Every allowance list stays where its gate reads it. A registry names each list, an emit test derives `apps/docs/index/exceptions.json` with reason, commit and PR per entry, and a never-failing CI job diffs it against the PR base.
@@ -14,6 +15,7 @@
 **Spec:** `docs/superpowers/specs/2026-10-20-agentic-infra-port-design.md` in the Minimal Design System repo, on branch `claude/agentic-infra-port`, sections P3, P4 and P6, 3a and 3b. Read it with `git -C "/Users/nickv/ClaudeCode Projects/Minimal Design System" show claude/agentic-infra-port:docs/superpowers/specs/2026-10-20-agentic-infra-port-design.md`.
 
 **Port sources:**
+
 - "REBUILD" means `/Users/nickv/ClaudeCode Projects/design-system-rebuild` at `origin/main` `e3c031ae`. Read it with `git -C <rebuild> show e3c031ae:<path>`.
 - "MDS" means `/Users/nickv/ClaudeCode Projects/Minimal Design System` at `origin/main` `1bd692d`.
 - Every PR body names the paths and commits it ported from, the client scrub it applied, and that it assumes the Super-AI rule schema (`packages/ds-rules/src/schema.ts`).
@@ -51,6 +53,7 @@
    - "worktree" and "install".
 
    Pinned in Task 2.
+
 2. **The claims that pin `CLAUDE.md` text.** `claims.ts` matches "Twelve steps. The last three" and "Catalog status: N of N shipped" in `CLAUDE.md`. Both move to `AGENTS.md`, and the step word changes to Thirteen in Task 7. Pinned in Tasks 2 and 7.
 3. **A rule bullet with `*` in its bold text** (`llms*`). The old bold-text regex skipped it. The new parser must find it by its body path. Pinned in Task 1.
 4. **A swapped allowance** (one glob out, another in, the same count). The delta must show one added and one removed, never a net zero. Pinned in Task 7.
@@ -61,9 +64,11 @@
 ### Task 1: The stub parser and the two tests
 
 **Files:**
+
 - Create: `apps/docs/scripts/lib/agents-stubs.ts`, `apps/docs/scripts/lib/agents-size.test.ts`, `apps/docs/scripts/lib/agents-provenance.test.ts`
 
 **Interfaces:**
+
 - Produces:
   - `type AgentStub = { body: string; gates: string[]; line: number }`
   - `parseAgentStubs(text: string): AgentStub[]`
@@ -73,6 +78,7 @@
 Port MDS `scripts/agents-stubs.mjs` to TS unchanged. A body is the backticked `` `docs/agent-rules/<name>.md` `` on a stub line, and gates are the backticked items after `Gate:` on the same line. Gate paths are repo-relative.
 
 Port MDS `scripts/agents-size.test.ts` and `scripts/agents-provenance.test.ts`, keeping SAC's two size checks:
+
 - `CEILING` and `HEADROOM = 2_000`. The size must be at or under `CEILING` and above `CEILING - HEADROOM`.
 - `PRE_SPLIT_BYTES = 14_499`, with a CONTROL that it would fail the new ceiling.
 - Provenance has no `UNGATED` constant. It reads the table in `UNGATED.md`, which Task 3 rekeys by body path.
@@ -84,6 +90,7 @@ Port MDS `scripts/agents-size.test.ts` and `scripts/agents-provenance.test.ts`, 
 ### Task 2: AGENTS.md map and stubs, CLAUDE.md as an import
 
 **Files:**
+
 - Create: `AGENTS.md`
 - Modify:
   - `CLAUDE.md` (the single line `@AGENTS.md`)
@@ -93,6 +100,7 @@ Port MDS `scripts/agents-size.test.ts` and `scripts/agents-provenance.test.ts`, 
 - Delete: `apps/docs/scripts/lib/claude-md.test.ts`
 
 `AGENTS.md` holds, in this order:
+
 - the map prose from today's `CLAUDE.md`, made true. The production line says production deploys from `main` after CI through `.github/workflows/deploy.yml`, which needs the `VERCEL_TOKEN` secret. The four ladder strings from Review Focus 1 stay.
 - one `### <topic>` heading per group of stubs, with one stub per body from Task 3. Stub shape: `- **<trigger>** Read \`docs/agent-rules/<name>.md\`. Gate: \`<path>\`.`, and no `Gate:` clause for the three UNGATED rules.
 
@@ -107,10 +115,12 @@ The token gate section and the "Parallel builds" section become bodies (Task 3) 
 ### Task 3: One costed body per rule
 
 **Files:**
+
 - Create: the 13 files under `docs/agent-rules/` listed below
 - Modify: `docs/design-system/UNGATED.md` (the table key column becomes the body path)
 
 Each body is shaped like this:
+
 - `# <Title>`;
 - one sentence starting "This rule protects";
 - the rule in a short paragraph;
@@ -119,21 +129,21 @@ Each body is shaped like this:
 
 Write the bodies from the existing docs. Do not invent incidents.
 
-| body | from | gate (or UNGATED) |
-|---|---|---|
-| `catalog-manifest.md` | `CONTINUE.md` §3.2 | `apps/docs/lib/catalog.manifest.test.ts` |
-| `reconcile-deps.md` | `CONTINUE.md` §3.5 | `apps/docs/scripts/reconcile-deps.mts` |
-| `gate-list-mirrors-ci.md` | `CONTINUE.md` §1, gate-run `SKILL.md` | UNGATED |
-| `green-proves-nothing.md` | `CONTINUE.md` (the build-before-smoke passage), gate-run `SKILL.md` | UNGATED |
-| `storybook-compiles-docs.md` | `CONTINUE.md` §4 | `apps/docs/scripts/turbo-inputs.test.ts` |
-| `ratchets-only-shrink.md` | `a11y-baseline.md`, `story-conventions.md` | `apps/docs/scripts/lib/a11y-ratchet.test.ts`, `apps/docs/scripts/lib/story-coverage.test.ts` |
-| `muted-on-muted.md` | `a11y-baseline.md` | `packages/ds-rules/rulecheck.mjs` |
-| `blocks-compose.md` | `block-build-brief.md` | UNGATED |
-| `no-default-state.md` | `CONTINUE.md` §3.2 | `apps/docs/scripts/new-component.test.ts` |
-| `family-g-cut.md` | `decisions.md` D9 | `apps/docs/lib/catalog.manifest.test.ts` |
-| `contracts-derive.md` | `2026-09-14-agentic-contracts-design.md` | `apps/docs/scripts/lib/contract-emit.test.ts` |
-| `token-gate.md` | the `CLAUDE.md` token gate section, including both documented limitations and the MDS schema note | `packages/ds-rules/rulecheck.mjs` |
-| `parallel-builds.md` | the `CLAUDE.md` "Parallel builds" section, `CONTINUE.md` §3.4 | UNGATED |
+| body                         | from                                                                                              | gate (or UNGATED)                                                                            |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `catalog-manifest.md`        | `CONTINUE.md` §3.2                                                                                | `apps/docs/lib/catalog.manifest.test.ts`                                                     |
+| `reconcile-deps.md`          | `CONTINUE.md` §3.5                                                                                | `apps/docs/scripts/reconcile-deps.mts`                                                       |
+| `gate-list-mirrors-ci.md`    | `CONTINUE.md` §1, gate-run `SKILL.md`                                                             | UNGATED                                                                                      |
+| `green-proves-nothing.md`    | `CONTINUE.md` (the build-before-smoke passage), gate-run `SKILL.md`                               | UNGATED                                                                                      |
+| `storybook-compiles-docs.md` | `CONTINUE.md` §4                                                                                  | `apps/docs/scripts/turbo-inputs.test.ts`                                                     |
+| `ratchets-only-shrink.md`    | `a11y-baseline.md`, `story-conventions.md`                                                        | `apps/docs/scripts/lib/a11y-ratchet.test.ts`, `apps/docs/scripts/lib/story-coverage.test.ts` |
+| `muted-on-muted.md`          | `a11y-baseline.md`                                                                                | `packages/ds-rules/rulecheck.mjs`                                                            |
+| `blocks-compose.md`          | `block-build-brief.md`                                                                            | UNGATED                                                                                      |
+| `no-default-state.md`        | `CONTINUE.md` §3.2                                                                                | `apps/docs/scripts/new-component.test.ts`                                                    |
+| `family-g-cut.md`            | `decisions.md` D9                                                                                 | `apps/docs/lib/catalog.manifest.test.ts`                                                     |
+| `contracts-derive.md`        | `2026-09-14-agentic-contracts-design.md`                                                          | `apps/docs/scripts/lib/contract-emit.test.ts`                                                |
+| `token-gate.md`              | the `CLAUDE.md` token gate section, including both documented limitations and the MDS schema note | `packages/ds-rules/rulecheck.mjs`                                                            |
+| `parallel-builds.md`         | the `CLAUDE.md` "Parallel builds" section, `CONTINUE.md` §3.4                                     | UNGATED                                                                                      |
 
 `UNGATED.md` then has four rows, keyed `docs/agent-rules/gate-list-mirrors-ci.md`, `green-proves-nothing.md`, `blocks-compose.md` and `parallel-builds.md`, each keeping or writing its "why nothing enforces it".
 
@@ -145,6 +155,7 @@ Write the bodies from the existing docs. Do not invent incidents.
 ### Task 4: Gate the new tests on the System page
 
 **Files:**
+
 - Modify: `apps/docs/content/system/gates.ts` (the `pnpm test` row's `checks[]` gains `agents-size.test.ts` and `agents-provenance.test.ts`, each with its `protects` sentence)
 
 - [ ] **Step 1: Edit, then run.** `cd apps/docs && pnpm exec vitest run content/system`. PASS: the roster, "cites only files that exist" and the prose rules all pass.
@@ -154,10 +165,12 @@ Write the bodies from the existing docs. Do not invent incidents.
 ### Task 5: Ledger registry and the emitted index
 
 **Files:**
+
 - Create: `apps/docs/scripts/lib/exceptions/registry.ts`, `apps/docs/scripts/lib/exceptions/build.ts`, `apps/docs/scripts/lib/exceptions/reasons.json`, `apps/docs/scripts/lib/exceptions/emit.test.ts`, `apps/docs/index/exceptions.json`
 - Modify: `apps/docs/package.json` (script `"exceptions:emit": "EXCEPTIONS_EMIT=1 vitest run scripts/lib/exceptions/emit.test.ts"`), `.prettierignore`
 
 **Interfaces:**
+
 - Produces the same types and names as the MDS wave-1 plan's Task 1, so the two copies read alike:
   - `RawEntry { key; reason; needle; occurrence }`
   - `LedgerSpec { name; file; gate; about; read(root) }`
@@ -168,20 +181,22 @@ Write the bodies from the existing docs. Do not invent incidents.
 
 The ledgers, in this order:
 
-| name | file | gate | key | entries today |
-|---|---|---|---|---|
-| `RULE_EXEMPT` | `packages/ds-rules/src/{core,local}.ts` | `packages/ds-rules/rulecheck.mjs` | `<ruleId>:<path>` | 9 |
-| `VENDORED_SCOPES` | `packages/ds-rules/src/local.ts` | `packages/ds-rules/rulecheck.mjs` | the scope glob | 2 |
-| `A11Y_EXCLUSIONS` | `apps/storybook/a11y-exclusions.baseline.json` | `apps/docs/scripts/lib/a11y-ratchet.test.ts` | the glob | 5 |
-| `CSSVARS_LIVENESS` | `apps/docs/cssvars-liveness.baseline.json` | `apps/docs/scripts/lib/cssvars-liveness.test.ts` | the string | 9 |
-| `CONTRAST_EXEMPT_FILES` | `packages/ds-rules/src/token-rules.mjs` | `apps/docs/scripts/check-contract.mts` | path | 0 |
-| `UNGATED` | `docs/design-system/UNGATED.md` | `apps/docs/scripts/lib/agents-provenance.test.ts` | body path | 4 |
+| name                    | file                                           | gate                                              | key               | entries today |
+| ----------------------- | ---------------------------------------------- | ------------------------------------------------- | ----------------- | ------------- |
+| `RULE_EXEMPT`           | `packages/ds-rules/src/{core,local}.ts`        | `packages/ds-rules/rulecheck.mjs`                 | `<ruleId>:<path>` | 9             |
+| `VENDORED_SCOPES`       | `packages/ds-rules/src/local.ts`               | `packages/ds-rules/rulecheck.mjs`                 | the scope glob    | 2             |
+| `A11Y_EXCLUSIONS`       | `apps/storybook/a11y-exclusions.baseline.json` | `apps/docs/scripts/lib/a11y-ratchet.test.ts`      | the glob          | 5             |
+| `CSSVARS_LIVENESS`      | `apps/docs/cssvars-liveness.baseline.json`     | `apps/docs/scripts/lib/cssvars-liveness.test.ts`  | the string        | 9             |
+| `CONTRAST_EXEMPT_FILES` | `packages/ds-rules/src/token-rules.mjs`        | `apps/docs/scripts/check-contract.mts`            | path              | 0             |
+| `UNGATED`               | `docs/design-system/UNGATED.md`                | `apps/docs/scripts/lib/agents-provenance.test.ts` | body path         | 4             |
 
 Reasons:
+
 - `UNGATED` carries its own reason column.
 - All other ledgers take their reason from `reasons.json` (`"<LEDGER>#<key>"` mapped to a reason), seeded with `MIGRATED_REASON` for every entry today.
 
 `DECLINED` lists:
+
 - the `.test.` population scope, with the why "a population exclusion, not an allowance";
 - `story-coverage.baseline.json` and `contract-coverage.baseline.json`, with the why "a coverage work list: it may only shrink, and an entry is owed work, not an allowance".
 
@@ -195,12 +210,14 @@ The gate paths above must be checked against the tree. If a cited test sits else
 ### Task 6: Provenance from git, only when emitting
 
 **Files:**
+
 - Create: `apps/docs/scripts/lib/exceptions/provenance.ts`, `apps/docs/scripts/lib/exceptions/provenance.test.ts`
 - Modify: `apps/docs/scripts/lib/exceptions/build.ts`, `apps/docs/scripts/lib/exceptions/emit.test.ts`
 
 Port REBUILD `src/lib/exceptions/provenance.ts` exactly as the MDS plan's Task 2 does. The one difference is the repo root: here it is `resolve(__dirname, "../../../..")` from `apps/docs/scripts/lib/exceptions/`, which is one level deeper than its siblings.
 
 The tests are the five REBUILD CONTROLs plus:
+
 - `it("gate mode never calls git")`;
 - `it("two occurrences of one needle blame two lines")`.
 
@@ -211,6 +228,7 @@ The tests are the five REBUILD CONTROLs plus:
 ### Task 7: The delta on every PR
 
 **Files:**
+
 - Create: `apps/docs/scripts/exceptions-delta.mjs`, `apps/docs/scripts/lib/exceptions-delta.test.ts`
 - Modify:
   - `.github/workflows/ci.yml`: a new job `exceptions-delta`, placed between `gates` and `product` in the file, so the product steps stay last in document order
@@ -224,6 +242,7 @@ Port REBUILD `scripts/exceptions-delta.mjs` and its test with all 21 `it`s. The 
 There is one behaviour change, the same one as in the MDS plan. A base ref without the index file reads as an empty index and exits 0, because `main` has none until this wave merges. "Exits 2 when the base ref cannot be read" becomes `it("a base ref with no index file reads as empty: every head entry is added, exit 0")`. Exit 2 stays for a missing base argument or an unreadable working-tree index.
 
 The job:
+
 - runs on `ubuntu-latest`;
 - has `if: github.event_name == 'pull_request'` and `timeout-minutes: 5`;
 - checks out with `actions/checkout@v7`, `fetch-depth: 0`;
@@ -239,6 +258,7 @@ The job:
 ### Task 8: The exceptions body, then close the wave
 
 **Files:**
+
 - Create: `docs/agent-rules/exceptions-index.md`
 - Modify: `AGENTS.md` (one stub, with gates `apps/docs/scripts/lib/exceptions/emit.test.ts` and `apps/docs/scripts/exceptions-delta.mjs`)
 
