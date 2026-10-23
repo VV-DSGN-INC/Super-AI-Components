@@ -103,7 +103,7 @@ describe("buildCatalog", () => {
     const catalog = buildCatalog(readMetas(REPO));
     const slugs = catalog.components.map((c) => c.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
-    expect(slugs.length).toBe(118);
+    expect(slugs.length).toBe(134);
     const modeTabs = catalog.components.find((c) => c.slug === "mode-tabs");
     expect(modeTabs?.variants.map((v) => v.prop)).toEqual(["variant"]);
     expect(modeTabs?.variants[0]?.values.map((v) => v.value)).toContain("with-tooltip");

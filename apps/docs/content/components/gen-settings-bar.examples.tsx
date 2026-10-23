@@ -1,6 +1,13 @@
 "use client";
 
-import { GenSettingsBar, GenSettingsItem } from "@/registry/super-ai/gen-settings-bar";
+import * as React from "react";
+
+import {
+  GenSettingsBar,
+  GenSettingsItem,
+  GenSettingsQuality,
+  type GenQuality,
+} from "@/registry/super-ai/gen-settings-bar";
 
 /**
  * Live examples for gen-settings-bar.docs.tsx.
@@ -72,5 +79,32 @@ export function SegmentsRepeatTheirOwnLabels() {
         <GenSettingsItem onClick={() => {}}>Resolution: 720p</GenSettingsItem>
       </GenSettingsBar>
     </div>
+  );
+}
+
+export function DraftNamedAsLowerQuality() {
+  const [quality, setQuality] = React.useState<GenQuality>("draft");
+  return (
+    <GenSettingsBar aria-label="Generation settings">
+      <GenSettingsItem onClick={() => {}}>Veo 3.1 Fast</GenSettingsItem>
+      <GenSettingsItem onClick={() => {}}>720p</GenSettingsItem>
+      <GenSettingsQuality quality={quality} onQualityChange={setQuality} />
+    </GenSettingsBar>
+  );
+}
+
+export function DraftNamedOnlyAsCheaper() {
+  // The wrong way: the draft option is sold on price alone, so the lower
+  // quality is a surprise when the result arrives.
+  return (
+    <GenSettingsBar aria-label="Generation settings">
+      <GenSettingsItem onClick={() => {}}>Veo 3.1 Fast</GenSettingsItem>
+      <GenSettingsItem aria-pressed onClick={() => {}}>
+        Cheaper
+      </GenSettingsItem>
+      <GenSettingsItem aria-pressed={false} onClick={() => {}}>
+        Final
+      </GenSettingsItem>
+    </GenSettingsBar>
   );
 }

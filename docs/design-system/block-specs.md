@@ -76,16 +76,19 @@ L1 `empty-state`
 
 ## O2 `chat-shell` — chat / agent workspace
 
-**Regions:** sidebar + task list · topbar · message stream · artifact cards · composer
+**Regions:** sidebar + task list · topbar · message stream · artifact cards · composer · view (docked, optional)
 
 **Filled by:** B1 · B6 `thread-list` · B7 · D1/D3/D4 composer family · J4 `artifact-grid` ·
-N1 `feedback` · N3 `disclaimer-note` · M5 `paywall-message` · L1
+N1 `feedback` · N3 `disclaimer-note` · M5 `paywall-message` · L1 · R3 `view-frame` in the view region
 
 - The sidebar doubles as a job queue: running tasks show spinners in B6, so background work is
   visible without leaving the thread.
 - Artifacts render as cards inside the stream and open into their own surface. The conversation is an
   index, not a container.
 - M5 lives in the stream, which is why monetization cannot be deferred to a late wave in this shell.
+
+- A view the conversation built docks beside it (generated chat, phase 2): from lg the view is the
+  main area and the stream narrows to 24rem; the sidebar collapses to its icon rail meanwhile.
 
 **Evidence:** Manus, Claude, ChatGPT. Composes AI Elements' conversation and message rather than reimplementing them.
 

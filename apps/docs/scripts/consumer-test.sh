@@ -27,6 +27,9 @@ cd "$TMP"
 pnpm dlx create-next-app@latest consumer --ts --tailwind --app --no-src-dir --import-alias "@/*" --eslint --turbopack --use-pnpm --yes --skip-install
 cd consumer
 # pnpm 11 requires allowBuilds in pnpm-workspace.yaml to run postinstall scripts.
+# @openuidev/lang-core (pulled in by generated-body) has a telemetry postinstall.
+# It is denied here as it is in the repo's own pnpm-workspace.yaml; leaving it
+# unlisted makes pnpm 11 stop the install with ERR_PNPM_IGNORED_BUILDS.
 # create-next-app's template owns this file and has already changed shape once:
 # it used to emit an empty file, and now emits its own allowBuilds block with
 # these same packages set to false. Appending blindly produced a second
@@ -46,6 +49,7 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   esbuild: true
+  "@openuidev/lang-core": false
 WSEOF
 # Fail by name rather than letting pnpm report a line number, so the next time
 # the template changes shape this says which assumption broke.

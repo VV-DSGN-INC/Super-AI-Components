@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight, Plus, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Plus, Sparkles, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,14 +11,16 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { Popover, PopoverContent, PopoverTitle, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { PreviewTile } from "@/registry/super-ai/preview-tile";
+import { StatReadout } from "@/registry/super-ai/stat-readout";
 
 /**
  * Reference Strip — Typed attachment slots above the prompt
  *
  * Spec: docs/design-system/component-specs.md#d2-reference-strip
- * States: empty · filled · with-roles
+ * States: empty · filled · with-roles · describe
  *
  * Built on A8 `preview-tile`: each slot is a preview-tile instance (frame,
  * loading/failed state, badge slot for remove) rather than a hand-rolled
@@ -61,6 +63,21 @@ interface ReferenceStripItem {
   onRemove?: () => void;
 }
 
+/**
+ * What a host can say about a reference. `exact` is extracted, not guessed:
+ * a prompt embedded in the file's metadata and the parameters that change
+ * reproduction (seed, sampler, model), never decoration like the file size.
+ * `inferred` is a model's reading of the picture; the strip shows at most
+ * `MAX_INFERRED` of them.
+ */
+interface ReferenceDescription {
+  exact?: { prompt?: string; params?: { label: string; value: string }[] };
+  inferred?: string[];
+}
+
+/** Inferred prompt options shown per description; the rest are dropped. */
+const MAX_INFERRED = 4;
+
 interface ReferenceStripProps extends Omit<React.ComponentProps<"div">, "onSelect"> {
   items?: ReferenceStripItem[];
   /** Called with the slot's role (or undefined for a bare add) when an empty slot or the empty-state CTA is activated. */
@@ -69,6 +86,188 @@ interface ReferenceStripProps extends Omit<React.ComponentProps<"div">, "onSelec
   onMove?: (id: string, direction: "left" | "right") => void;
   emptyTitle?: React.ReactNode;
   emptyDescription?: React.ReactNode;
+  /**
+   * Describes what is likely behind a filled slot. Passing it is what turns
+   * the Describe action on: a host that cannot expose prompts omits it and no
+   * slot offers the action. A rejection is shown as "could not be described".
+   */
+  onDescribe?: (slot: ReferenceStripItem) => Promise<ReferenceDescription>;
+  /** Receives the prompt text the user picked from a description. */
+  onUseDescription?: (text: string) => void;
+}
+
+type DescribePhase =
+  | { status: "idle" }
+  | { status: "pending" }
+  | { status: "failed" }
+  | { status: "done"; description: ReferenceDescription };
+
+function DescribeAction({
+  item,
+  accessibleName,
+  onDescribe,
+  onUseDescription,
+}: {
+  item: ReferenceStripItem;
+  accessibleName: string;
+  onDescribe: (slot: ReferenceStripItem) => Promise<ReferenceDescription>;
+  onUseDescription?: (text: string) => void;
+}) {
+  const [open, setOpen] = React.useState(false);
+  const [phase, setPhase] = React.useState<DescribePhase>({ status: "idle" });
+  // A newer ticket (or a cancel) makes an older in-flight result stale.
+  const ticket = React.useRef(0);
+
+  const start = () => {
+    const mine = ++ticket.current;
+    setPhase({ status: "pending" });
+    new Promise<ReferenceDescription>((resolve) => resolve(onDescribe(item))).then(
+      (description) => {
+        if (ticket.current === mine) setPhase({ status: "done", description });
+      },
+      () => {
+        if (ticket.current === mine) setPhase({ status: "failed" });
+      },
+    );
+  };
+
+  const cancel = () => {
+    ticket.current += 1;
+    setPhase({ status: "idle" });
+    setOpen(false);
+  };
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next) {
+      if (phase.status === "pending") return cancel();
+      setOpen(false);
+      return;
+    }
+    setOpen(true);
+    if (phase.status === "idle" || phase.status === "failed") start();
+  };
+
+  const use = (text: string) => {
+    onUseDescription?.(text);
+    setOpen(false);
+  };
+
+  const statusText =
+    phase.status === "pending"
+      ? `Describing ${accessibleName}`
+      : phase.status === "failed"
+        ? `${accessibleName} could not be described`
+        : "";
+
+  return (
+    <div data-slot="reference-strip-describe" data-state={phase.status}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
+        <PopoverTrigger
+          render={
+            <Button
+              type="button"
+              variant="outline"
+              size="xs"
+              data-slot="reference-strip-describe-trigger"
+              aria-label={`Describe ${accessibleName}`}
+            />
+          }
+        >
+          <Sparkles aria-hidden /> Describe
+        </PopoverTrigger>
+        <PopoverContent
+          data-slot="reference-strip-describe-panel"
+          className="w-80 max-w-[calc(100vw-2rem)] motion-reduce:data-closed:animate-none motion-reduce:data-open:animate-none"
+        >
+          <PopoverTitle>{`About ${accessibleName}`}</PopoverTitle>
+          {phase.status === "pending" ? (
+            <div data-slot="reference-strip-describe-pending" className="flex items-center gap-2 text-sm">
+              <Loader2 aria-hidden className="size-4 shrink-0 animate-spin motion-reduce:animate-none" />
+              <span className="min-w-0 flex-1">Describing this reference…</span>
+              <Button type="button" variant="ghost" size="xs" onClick={cancel}>
+                Cancel
+              </Button>
+            </div>
+          ) : null}
+          {phase.status === "failed" ? (
+            <div data-slot="reference-strip-describe-failed" className="flex items-center gap-2 text-sm">
+              <span className="min-w-0 flex-1">This reference could not be described.</span>
+              <Button type="button" variant="outline" size="xs" onClick={start}>
+                Try again
+              </Button>
+            </div>
+          ) : null}
+          {phase.status === "done" ? <DescriptionResult description={phase.description} onUse={use} /> : null}
+        </PopoverContent>
+      </Popover>
+      {/* Always mounted so the pending and failed changes are announced. */}
+      <span data-slot="reference-strip-describe-status" role="status" className="sr-only">
+        {statusText}
+      </span>
+    </div>
+  );
+}
+
+function DescriptionResult({
+  description,
+  onUse,
+}: {
+  description: ReferenceDescription;
+  onUse: (text: string) => void;
+}) {
+  const prompt = description.exact?.prompt?.trim();
+  const params = (description.exact?.params ?? []).filter((param) => param.value.trim() !== "");
+  const inferred = (description.inferred ?? []).filter((text) => text.trim() !== "").slice(0, MAX_INFERRED);
+
+  if (!prompt && params.length === 0 && inferred.length === 0) {
+    return (
+      <p data-slot="reference-strip-describe-none" className="text-sm">
+        Nothing could be read from this reference.
+      </p>
+    );
+  }
+
+  return (
+    <div data-slot="reference-strip-describe-result" className="flex flex-col gap-3">
+      {prompt || params.length > 0 ? (
+        <section data-slot="reference-strip-describe-exact" className="flex flex-col gap-1.5">
+          <h3 className="text-xs font-medium">Extracted</h3>
+          {prompt ? <DescriptionOption text={prompt} onUse={onUse} /> : null}
+          {params.length > 0 ? <StatReadout items={params} /> : null}
+        </section>
+      ) : null}
+      {inferred.length > 0 ? (
+        <section data-slot="reference-strip-describe-inferred" className="flex flex-col gap-1.5">
+          <h3 className="text-xs font-medium">Inferred, may not match</h3>
+          <ul className="flex flex-col gap-1.5">
+            {inferred.map((text, index) => (
+              <li key={index}>
+                <DescriptionOption text={text} onUse={onUse} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </div>
+  );
+}
+
+function DescriptionOption({ text, onUse }: { text: string; onUse: (text: string) => void }) {
+  return (
+    <div data-slot="reference-strip-describe-option" className="flex items-start gap-2">
+      <p className="min-w-0 flex-1 text-sm">{text}</p>
+      <Button
+        type="button"
+        variant="outline"
+        size="xs"
+        data-slot="reference-strip-describe-use"
+        aria-label={`Use prompt: ${text}`}
+        onClick={() => onUse(text)}
+      >
+        Use
+      </Button>
+    </div>
+  );
 }
 
 function ReferenceSlot({
@@ -78,6 +277,8 @@ function ReferenceSlot({
   showRole,
   onAdd,
   onMove,
+  onDescribe,
+  onUseDescription,
 }: {
   item: ReferenceStripItem;
   index: number;
@@ -85,6 +286,8 @@ function ReferenceSlot({
   showRole: boolean;
   onAdd?: (role?: ReferenceRole) => void;
   onMove?: (id: string, direction: "left" | "right") => void;
+  onDescribe?: ReferenceStripProps["onDescribe"];
+  onUseDescription?: ReferenceStripProps["onUseDescription"];
 }) {
   const roleLabel = item.label ?? (item.role ? ROLE_LABEL[item.role] : undefined);
   const accessibleName = typeof roleLabel === "string" ? roleLabel : "reference";
@@ -167,6 +370,14 @@ function ReferenceSlot({
           ) : null}
         </div>
       ) : null}
+      {onDescribe && !item.state ? (
+        <DescribeAction
+          item={item}
+          accessibleName={accessibleName}
+          onDescribe={onDescribe}
+          onUseDescription={onUseDescription}
+        />
+      ) : null}
     </div>
   );
 }
@@ -175,6 +386,8 @@ function ReferenceStrip({
   items = [],
   onAdd,
   onMove,
+  onDescribe,
+  onUseDescription,
   emptyTitle = "No references yet",
   emptyDescription = "Attach an image, frame or character to guide generation.",
   className,
@@ -225,6 +438,8 @@ function ReferenceStrip({
               showRole={hasRoles}
               onAdd={onAdd}
               onMove={onMove}
+              onDescribe={onDescribe}
+              onUseDescription={onUseDescription}
             />
           </CarouselItem>
         ))}
@@ -236,4 +451,4 @@ function ReferenceStrip({
 }
 
 export { ReferenceStrip };
-export type { ReferenceStripItem, ReferenceStripProps, ReferenceRole };
+export type { ReferenceStripItem, ReferenceStripProps, ReferenceRole, ReferenceDescription };

@@ -59,6 +59,22 @@ export function MultiSelectEnvironments() {
   );
 }
 
+export function UserStylesWithSave() {
+  return (
+    <PresetGrid
+      items={[
+        { id: "neon-noir", label: "Neon noir", source: "personal" },
+        { id: "studio-look", label: "Studio look", source: "team" },
+        ...MANY_STYLE_ITEMS.slice(0, 3),
+      ]}
+      content="style"
+      aria-label="Style presets"
+      defaultValue="neon-noir"
+      onSaveCurrent={() => {}}
+    />
+  );
+}
+
 export function SeeMoreTileInGrid() {
   return <PresetGrid items={MANY_STYLE_ITEMS} content="style" aria-label="Style presets" visibleCount={3} />;
 }
