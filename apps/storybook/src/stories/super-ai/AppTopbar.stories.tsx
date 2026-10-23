@@ -604,31 +604,36 @@ export const LongContent: Story = {
  * 375px, carrying what a real shell hands it: a three-crumb path, a privacy
  * chip, a saved-state string and two trailing actions.
  *
- * **Nothing collapses, because there is no rule that could.** The component
- * has no breakpoint, no `hidden sm:*`, no priority-plus overflow and no
- * mobile branch of any kind — the two contexts are the only configurations
- * it has. What decides the outcome is one pair of classes:
- * `app-topbar-leading` is `min-w-0 flex-1` and `app-topbar-trailing` is
- * `shrink-0`. So the trailing side wins every contest. The saved-state text
- * and both action buttons keep their full width at 375px, the privacy
- * `Badge` keeps its own (`shrink-0` again), and the breadcrumb — the one
- * thing that says which document this is — absorbs the entire deficit.
+ * **Two rules decide what gives way, and this story is where they were found
+ * missing.** As first shipped, nothing in B7 could collapse: `app-topbar-
+ * leading` was `min-w-0 flex-1`, `app-topbar-trailing` was `shrink-0`, the
+ * privacy `Badge` was `shrink-0`, and the breadcrumb absorbed the entire
+ * deficit. Measured here before the fix: the trailing group took 235 of the
+ * bar's 375px, the chip 58 of the 104 left, and all three crumbs rendered at
+ * **zero width** — two chevrons and the word "Private", about a document the
+ * bar could no longer name. O2 `chat-shell` showed the other symptom at the
+ * same width: the chip painting over the saved-state text.
  *
- * **Measured, and it is worse than "cramped".** The trailing group takes
- * 235 of the bar's 375px and the leading group is left with 104, of which
- * the privacy chip alone is 58. What remains for the path is about 34px,
- * and that is entirely its two chevron separators: all three crumbs render
- * at **zero width**. The bar at 375px shows two chevrons and the word
- * "Private", and nowhere on it does the document's name appear. A chip
- * reporting who can see a document the bar can no longer name is the sharp
- * end of `shrink-0` on the wrong side of the row.
+ * Now the current crumb (or the plain `title`) keeps a `min-w-16` floor and
+ * truncates inside it, so the document's name survives; and below `@md`
+ * (28rem) of the bar's own width the saved-state line goes `sr-only` — still
+ * in the read order with its full text, no longer painted. That second rule
+ * is a container query on the bar, not a viewport breakpoint, which is why
+ * this story's `w-[375px]` wrapper is enough to reach it where a `max-sm:`
+ * would have rendered the desktop layout inside the box (mechanical fact 2).
  *
- * **Nothing becomes unreachable, though.** The cut is `truncate`, which is
+ * Asserted as relationships rather than pixels (D21): the current crumb has
+ * width, the chip ends before the trailing group begins, the saved label is
+ * out of paint and still in the tree, and nothing scrolls sideways. Ancestor
+ * crumbs still shrink first and can still reach zero. That is the priority
+ * order rather than a defect, and it is left unpinned so a
+ * `BreadcrumbEllipsis` collapse can land later without failing this story.
+ *
+ * **Nothing becomes unreachable.** The cut is `truncate`, which is
  * `overflow: hidden` and not `display: none`: the ancestor crumbs keep their
  * full accessible names, keep their `href`s and keep their place in the tab
  * order, so a keyboard or screen-reader user loses nothing a sighted pointer
- * user does not. Both halves are asserted below — no horizontal scroll, and
- * the first crumb still reachable by name on the first tab.
+ * user does not. The first crumb is still reachable by name on the first tab.
  */
 export const Mobile: Story = {
   render: () => (
@@ -652,14 +657,37 @@ export const Mobile: Story = {
       `scrollWidth=${bar.clientWidth} clientWidth=${bar.clientWidth}`,
     );
 
+    // Rule 1: the document is still named. The current crumb keeps its floor
+    // and paints an ellipsis inside it rather than vanishing.
+    const current = canvas.getByRole("link", { name: "Q3 Roadmap" });
+    await expect(`current crumb has width: ${current.getBoundingClientRect().width > 0}`).toBe(
+      "current crumb has width: true",
+    );
+
+    // Nothing overlaps: the chip ends before the trailing group starts. This
+    // is the O2 symptom, measured where the fix lives.
+    const chip = bar.querySelector<HTMLElement>('[data-slot="app-topbar-privacy"]')!;
+    const trailing = bar.querySelector<HTMLElement>('[data-slot="app-topbar-trailing"]')!;
+    await expect(
+      `chip clear of trailing: ${chip.getBoundingClientRect().right <= trailing.getBoundingClientRect().left}`,
+    ).toBe("chip clear of trailing: true");
+
+    // Rule 2: the saved-state line is out of paint and still in the tree —
+    // `sr-only` takes it out of flow and clips it to a pixel, and its text is
+    // untouched.
+    const saved = bar.querySelector<HTMLElement>('[data-slot="app-topbar-saved"]')!;
+    await expect(saved).toHaveTextContent("Last saved 5 days ago");
+    await expect(`saved label out of flow: ${getComputedStyle(saved).position === "absolute"}`).toBe(
+      "saved label out of flow: true",
+    );
+    await expect(`saved label painted: ${saved.getBoundingClientRect().width > 1}`).toBe(
+      "saved label painted: false",
+    );
+
     // Truncation is visual only: the path is still named and still reachable.
     const projects = canvas.getByRole("link", { name: "Projects" });
     await userEvent.tab();
     await expect(document.activeElement).toBe(projects);
-
-    // The collapse itself is measured in the description, not asserted: every
-    // crumb renders at zero width today, and any fix that gives the path back
-    // some width would turn an assertion of that into a failure.
   },
 };
 

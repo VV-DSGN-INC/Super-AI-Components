@@ -33,6 +33,36 @@ import { cn } from "@/lib/utils";
  * document's own visibility word ("Team", "Private").
  */
 
+/**
+ * B7 is one row that never wraps (`h-12`), so what gives way when the bar is
+ * narrow is a decision, and until these two constants it was not one. Nothing
+ * could collapse: `app-topbar-trailing` is `shrink-0`, the privacy `Badge` is
+ * `shrink-0`, and the leading group absorbed the whole deficit. Measured at
+ * 375px: every crumb rendered at zero width, and in O2 `chat-shell` the chip
+ * painted over the saved-state text (chip 89..146, label from 136). A bar that
+ * said "Private" about a document it could no longer name.
+ *
+ * Two rules now decide it, in order:
+ *
+ * 1. The document's name keeps a floor and truncates with an ellipsis inside
+ *    it. Ancestor crumbs still shrink first, which is the right priority. The
+ *    floor protects text, so an empty `title` gets none: E5's `EmptyLabel`
+ *    story pins that an unnamed bar paints the title at zero width, and a
+ *    4rem blank there would only push the privacy chip right for nothing.
+ * 2. Below `@md` (28rem) of the bar's own width the saved-state line goes
+ *    `sr-only`: still in the read order with its full text, no longer painted.
+ *    It is the least load-bearing text in the row and the one a phone has no
+ *    room for.
+ *
+ * The second rule is a container query against the root (`@container`), not a
+ * viewport breakpoint, so a bar in a half-width pane behaves like a phone and a
+ * wide pane in a narrow window does not. Same rule J4 and C4 follow (D19). The
+ * variant has to sit on a descendant: a container query never resolves against
+ * the element that establishes it.
+ */
+const TITLE_FLOOR = "min-w-16";
+const SAVED_COLLAPSES = "@max-md:sr-only";
+
 interface AppTopbarCrumb {
   label: string;
   href?: string;
@@ -93,7 +123,7 @@ function AppTopbarBreadcrumb({ crumbs }: { crumbs: AppTopbarCrumb[] }) {
           const isLast = index === crumbs.length - 1;
           return (
             <React.Fragment key={`${crumb.label}-${index}`}>
-              <BreadcrumbItem className="min-w-0">
+              <BreadcrumbItem className={cn("min-w-0", isLast && crumb.label && TITLE_FLOOR)}>
                 {isLast ? (
                   <BreadcrumbPage className="truncate">{crumb.label}</BreadcrumbPage>
                 ) : crumb.href ? (
@@ -133,7 +163,7 @@ function AppTopbar({
   return (
     <header
       data-slot="app-topbar"
-      className={cn("flex h-12 w-full items-center gap-3 border-b bg-background px-3", className)}
+      className={cn("@container flex h-12 w-full items-center gap-3 border-b bg-background px-3", className)}
       {...props}
     >
       <div data-slot="app-topbar-leading" className="flex min-w-0 flex-1 items-center gap-3">
@@ -142,7 +172,10 @@ function AppTopbar({
             {breadcrumb?.length ? (
               <AppTopbarBreadcrumb crumbs={breadcrumb} />
             ) : (
-              <span data-slot="app-topbar-title" className="truncate text-sm font-medium">
+              <span
+                data-slot="app-topbar-title"
+                className={cn("truncate text-sm font-medium", title && TITLE_FLOOR)}
+              >
                 {title}
               </span>
             )}
@@ -166,7 +199,10 @@ function AppTopbar({
                 <Redo2 />
               </Button>
             </ButtonGroup>
-            <span data-slot="app-topbar-title" className="truncate text-sm font-medium">
+            <span
+              data-slot="app-topbar-title"
+              className={cn("truncate text-sm font-medium", title && TITLE_FLOOR)}
+            >
               {title}
             </span>
           </>
@@ -177,7 +213,7 @@ function AppTopbar({
 
       <div data-slot="app-topbar-trailing" className="flex shrink-0 items-center gap-3">
         {savedLabel ? (
-          <span data-slot="app-topbar-saved" className="text-muted-foreground text-xs">
+          <span data-slot="app-topbar-saved" className={cn("text-muted-foreground text-xs", SAVED_COLLAPSES)}>
             {savedLabel}
           </span>
         ) : null}

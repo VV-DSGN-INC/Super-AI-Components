@@ -42,7 +42,7 @@ Not yet recorded.
 - `app-topbar-title`: Document or scene name — shown when there's no breadcrumb, or alongside zoom/history.
 - `app-topbar-privacy`: The bar's own icon + text chip, drawn from the `{ label, icon }` form for the document's visibility. Available in either context. An element passed to `privacy` renders in its place and keeps its own slots, as N15's chip does.
 - `app-topbar-trailing`: Right-aligned group holding saved-state and actions.
-- `app-topbar-saved`: Saved-state as plain readable text, e.g. "Last saved 5 days ago".
+- `app-topbar-saved`: Saved-state as plain readable text, e.g. "Last saved 5 days ago". Below 28rem of bar width it is `sr-only`: read, not painted.
 - `app-topbar-actions`: Consumer-supplied trailing controls (share, export, presence, …).
 
 ## Accessibility
@@ -64,6 +64,7 @@ Not yet recorded.
 - The zoom level is rendered as ordinary text between the two buttons, with no `aria-live` and no relationship to either. Pressing Zoom in changes the number silently, so a screen-reader user gets no feedback that the press did anything.
 - The saved-state line is the same shape: plain text, no live region. "Last saved 5 days ago" becoming "Saving…" is a change nobody is told about.
 - The privacy chip announces as its label text; its optional glyph is wrapped `aria-hidden`, which is what makes the visible word rather than the icon the actual signal.
+- Below 28rem of the bar's own width — a container query on the root, not a viewport breakpoint — the saved-state line is `sr-only`: it keeps its full text and its place in the read order and stops being painted. A sighted phone user loses the saved state before anything else in the row; the document's name keeps a 4rem floor and the privacy chip never shrinks. Nothing about the bar's roles or names changes with its width.
 - An element passed to `privacy` brings its own semantics, and the bar adds none around it. N15's `PrivateSessionChip` is a plain chip read as its words, or a button when you give it `onClick`, which adds a tab stop to the bar. N13's `compact` chip is a `role="status"`, so starting or stopping capture is announced politely from the topbar.
 
 **Focus**
@@ -78,6 +79,7 @@ Not yet recorded.
 - Formatting `savedLabel` as a raw ISO timestamp or Date and letting the component render it verbatim — it renders exactly the string you pass, so compute the relative phrasing ("5 days ago") before handing it over.
 - Writing "Private session" or "Recording" into the `{ label }` form. Those two states have owners, N15 and N13, whose chips carry the fixed copy, the icon and, for capture, the live region; a hand-written label drifts from them and announces nothing. The bar renders their element as given and imports neither.
 - Disabling undo/redo by simply omitting `onUndo`/`onRedo` — the buttons still render enabled by default; pass `canUndo`/`canRedo` explicitly so the disabled state matches real history state.
+- Putting something that must stay visible at every width into `savedLabel` — it is the first thing the row gives up, going `sr-only` below 28rem of bar width. The title keeps a 4rem floor and truncates (an empty title reserves nothing); ancestor breadcrumb crumbs shrink first and can reach zero, since the bar has no `BreadcrumbEllipsis` collapse. Trailing `actions` never shrink, so a wide action row on a narrow pane still costs the path.
 
 ## Composition
 
