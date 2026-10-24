@@ -42,45 +42,90 @@ Violations are findings; apply each record's own `fix`. Then work the
 `unchecked` list: TOK-6 discharges via `pnpm test:stories`; `judgment`-method
 rules are the reading work of the rendered passes.
 
-<!-- unslop-core:start me@1.18.0 sha256:4cecae21f48d349e -->
+<!-- unslop-core:start me@1.26.0 sha256:5686cdc56590fe43 -->
 <!-- Generated from me:unslop by its scripts/sync.mjs. Edit that skill, not this block; this repo's own rules go in Phase 0 above. -->
 <!-- prettier-ignore-start -->
 ## Phase 1: Constraints while generating
 
-Universal hard bans (researched AI tells; any occurrence needs an explicit
-justification, and an exception written in the repo's Phase 0 wins over this
-list):
+Every rule carries a **tier**, which says whether you may disagree with it:
+
+- **Floor** (a repo detector's `blocker`): never waivable. Correctness,
+  access, honesty, and the named defaults no admired product breaks on
+  purpose. A hit is fixed.
+- **Reflex** (`review` / `warning`): a default a model falls into. Waivable
+  on the record, in a comment at the hit:
+  `unslop-waive <RULE> · <guard evidence> · <reason>`. The evidence is what
+  makes this hit not a hit here (the modal scrim sits over the real page);
+  the reason is about this screen and shares a word with it. A reason that
+  is boilerplate, or reused word for word on another waiver, is not a
+  waiver. The same rule waived three times is a house style: write it into
+  Phase 0 and drop the waivers.
+- **Finish**: craft detail invisible at arm's length. Reported and
+  answered, never blocking.
+
+The bans below are Floor unless marked (R). A repo's Phase 0 may move a
+rule between tiers with a reason; it may not delete one.
 
 1. **Effects.** No gradient text (`bg-clip-text`), no gradients on controls
    or text, no indigo→violet gradient anywhere, no glassmorphism without real
    underlying content, no blurred orbs / spotlights / grain layers, no colored
    or glowing shadows, no pure #000/#fff pairs.
 2. **Type.** Only the project's declared families and scale; no new fonts,
-   ad-hoc sizes, or blanket `tracking-tight`; no italic-serif accent words;
-   no caps eyebrow repeated per section; hierarchy = size/weight, never
-   decoration.
+   ad-hoc sizes, or blanket `tracking-tight` (R); no italic-serif accent
+   words (R); hierarchy = size/weight, never decoration. **No eyebrow**:
+   short inert type before a heading, in any geometry (stacked label, pill,
+   ordinal, category tag over a card, TRUSTED BY over logos); delete it and
+   read the section, and if nothing was lost but a name for what comes next
+   it was an eyebrow. A `<figcaption>`, `<th>`, `<label>`, byline, `<time>`
+   or a unit after its figure is not one. **No tracked-caps label**: text at
+   15px or under set uppercase, small-caps, or letter-spaced past 0.03em; a
+   wordmark excepted.
 3. **Layout.** Container nesting ≤1 (no cards in cards); separation ladder:
    spacing → hairline → surface tint → card; radii and gaps only from the
-   project's scale; no exactly-3-equal-cards reflex; no identical stat-card
-   strips; the screen's most important element visibly dominant. **Layout
+   project's scale; no exactly-3-equal-cards reflex (R); no identical
+   stat-card strips (R); no bento mosaic where every cell is the same size
+   (R); the screen's most important element visibly dominant. **No default
+   dashboard shell** (R): sidebar + top bar + four stat cards + chart +
+   table, chosen before anyone named the screen's job and the one decision
+   the user makes on it; if the job is "spot the failing job and retry it",
+   the failing jobs are the page and the stat row is a footnote. **Layout
    does not move on state change**: hover, focus and selection may change
    colour/shadow/ring/opacity, never padding, gap, size, border-width or
    type; space for anything conditional is reserved at rest (disclosure
    components are the declared exception).
 4. **Components.** Compose from the project's library (search before
    creating; no V2 duplicates); no colored left-border accent strips; no
-   "✨ AI-powered" badge theater; unlabeled sparkle icons never.
+   icon in a tinted rounded tile above a heading; no "✨ AI-powered" badge
+   theater; unlabeled sparkle icons never. **Every control does
+   something**: a form that prints "Sent" with no request behind it is an
+   invented outcome (validate, post nowhere, say "Nothing was sent; this
+   form is not connected yet"); a nav link to nowhere and a button with no
+   handler ship labelled "Coming soon" or not at all.
 5. **Icons.** One library, one weight, 2–3 sizes; zero emoji in chrome.
 6. **Motion.** Only on state change; no idle loops, scroll-reveal, marquee,
    typewriter, parallax; never `transition: all`; transform/opacity only;
-   `prefers-reduced-motion` guard whenever keyframes exist.
+   `prefers-reduced-motion` guard whenever keyframes exist. **Nothing
+   hidden at rest**: a reveal class that sets `opacity: 0` or
+   `visibility: hidden` until a script runs ships blank when the script
+   fails; hide only under a `.js` class, or animate from visible with
+   `@starting-style`.
 7. **Copy.** Verb + object labels (never "Get Started"/"Learn More"); banned
    register: elevate/unlock/empower/seamless/effortless/supercharge,
    "not just X, it's Y", exclamation marks in microcopy; zero fabricated
    numbers, names, quotes, logos, or demo data no real system could emit.
+   **No template punctuation**: meta strings joined with middle dots
+   (`A · B · C`), an arrow glued to link or button text (`Learn more →`),
+   a decorative status dot before a label; one dot in a byline, or a dot
+   that marks a live state, is legal. **No filler people**: John Doe,
+   johndoe@example.com, "Sarah Chen updated a document, 2 hours ago"; an
+   empty cell stays empty or carries an honest placeholder (`Your name`,
+   `email@example.com`).
 8. **Charts.** Project palette only (never `#8884d8`/`#82ca9d`); linear/step
    interpolation; no gradient area fills; flat marks; units visible; bars
-   zero-based; <4 data points is a stat, not a chart.
+   zero-based; <4 data points is a stat, not a chart. **The title is the
+   question the chart answers** ("Failed jobs per hour, last 24h"), never
+   "Overview" or "Performance"; a delta ("+12% this week") only with a
+   real, named comparison period behind it.
 9. **States & a11y.** Empty/loading/error/populated all designed; anything
    that fetches also gets an honest offline/stale tell, never fallback or
    mock data rendered as live; visible focus on everything interactive; AA
@@ -115,18 +160,39 @@ survives: `bg-gradient-|bg-clip-text|backdrop-blur` · raw
 `8884d8|82ca9d|strokeDasharray="3 3"` · emoji codepoints in chrome ·
 `elevate|unlock|empower|supercharge|seamless|effortless` in copy.
 
-Rendered passes: **squint** (one thing dominant, no identical section
-anatomy) · **counts** (font sizes ≤7, radii/shadows ⊆ project scale, ≤1
-saturated accent per viewport) · **contrast** (≥4.5:1, every theme) ·
-**keyboard** (focus visible everywhere) · **375px** · **state stability**
-(at rest, hovered, focused, selected: only colour/shadow/ring/opacity
-differ, nothing reflows a neighbour) · **chrome states** (render every
-collapsed/compact/truncating mode; a clipped focus ring still passes the
-DOM, so this pass is a screenshot or it did not happen) · **hostile
-fixtures** (3× strings, empty, error, offline, mixed-sign data) · **motion
-at rest** (idle viewport: nothing animates outside genuine, state-bound
-progress indicators) · **ratchet** (distinct radii/shadows/sizes did not
-grow vs. before the change).
+**Render tier.** `node <skill-dir>/scripts/render.mjs <url|file ...>`
+opens the changed screens in headless Chrome over the DevTools protocol
+(nothing to install beyond Chrome; `CHROME_PATH` overrides the binary) at
+375 and 1280 and measures what the passes below used to eyeball:
+horizontal overflow and elements spilling past the 375 screen · controls
+whose computed style does not change under a forced `:focus-visible` ·
+**state stability** (every visible element's box at rest, then under a
+forced `:hover` and `:focus` on each control; a box that moved or grew is
+the finding, the control that triggered it is named) · **motion at rest**
+(`document.getAnimations()` on the idle page, minus the loaders Phase 0
+sanctions) · text contrast read from the pixels behind the glyphs, so a
+surface painted by a pseudo-element, an absolute layer or an image counts
+as the eye sees it · tap targets under 24px at 375. `--shots <dir>` writes the screenshots the
+chrome-states and squint passes read; `--allow-move` and `--allow-motion`
+take the selectors Phase 0 names (disclosure components, skeletons);
+`--scheme dark` reruns under the other theme. Exit 1 on any FAIL.
+`--selftest` runs it against its own slop and clean fixtures: a check that
+has not caught its planted positive proves nothing, and a clean run is
+read only after the selftest passed.
+
+Rendered passes, after the render tier: **squint** (one thing dominant, no
+identical section anatomy) · **counts** (font sizes ≤7, radii/shadows ⊆
+project scale, ≤1 saturated accent per viewport; browser surfaces themed,
+since selection colour, caret, scrollbar and tabular numerals left at
+browser defaults are the cheapest tell a page was assembled) ·
+**contrast** in every theme the project ships (the script runs one scheme
+at a time) · **chrome states** (render every collapsed/compact/truncating
+mode; a clipped focus ring still passes the DOM, so this pass is a
+screenshot or it did not happen) · **hostile fixtures** (plausible, never
+random: 3× strings, a one-letter name, a count of exactly 1, a missing
+optional field, diacritics, empty, error, offline, mixed-sign data, 200%
+zoom) · **ratchet** (distinct radii/shadows/sizes did not grow vs. before
+the change).
 
 ## Phase 3: Fix ladder
 
@@ -158,7 +224,16 @@ repo's row wins.
 | 375px fails | Mobile-first bases, `dvh`, padded hit areas, kebab menus, table strategy |
 | Duplicate component | Delete new one; extend existing via its variant props |
 | Ratchet growth | Converge onto existing steps; new steps enter via the token system only |
+| Eyebrow / tracked-caps label | Delete it and read the section; a lost fact becomes the heading, a caption or a `<th>`; labels in the body face a step smaller, sentence case, untracked |
+| Fake send / dead control | Validate, post nowhere, say so on screen; a link with no destination is removed or labelled "Coming soon" |
+| Default dashboard shell | Name the screen's job and its one decision; the deciding list or table is the page, the stat row a footnote or gone |
+| Template punctuation | Line breaks, columns, hairlines; a verb as the link label; a dot only where a state is live |
+| Hidden at rest | Visible by default; hide under a `.js` class only, or animate from visible with `@starting-style` |
+| Filler people / data | Empty cell, or an honest placeholder that names what goes there; a feed shows real events or does not ship |
 
-Report as: violation → rule area → fix applied. Re-run Phase 2 until clean.
+Report as: violation → tier → rule area → fix applied, or the waiver with
+its evidence. Each PASS names what was checked ("STA-7 PASS: render tier,
+375 and 1280, 0 overflow"); a fabricated pass is itself slop. Re-run Phase
+2 until clean.
 <!-- prettier-ignore-end -->
 <!-- unslop-core:end -->
