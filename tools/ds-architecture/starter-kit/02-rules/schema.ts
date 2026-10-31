@@ -11,7 +11,7 @@ import { z } from "zod"
  *  unchecked every run without anyone deciding to.
  *
  *  Spec: research/specs/2026-08-20-rule-catalogue-design.md
- *  Rule IDs and rationale: research/specs/2026-08-11-anti-slop-rules.md Part 3 */
+ *  Rule rationale: each record's `why` field; see anti-slop-rules.md beside this file. */
 
 /** Bumped when the record shape changes. Vendored copies (me:unslop) print
  *  this so a stale copy is visible in the transcript instead of silent. */

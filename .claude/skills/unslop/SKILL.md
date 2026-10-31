@@ -31,7 +31,8 @@ to `--severity blocker`; this skill owns the `unchecked` list (TOK-6 →
 fix-as-substitution. Known trap that is also an unslop rule: never pair
 `text-muted-foreground` with `bg-muted`/`bg-accent`/`bg-secondary`.
 Phase 2 here means the full CI gate order in `ci.yml`.
-Taxonomy + fix ladder: `docs/design-system/anti-slop.md`.
+Taxonomy + fix ladder: Phases 1 to 3 below. This repo's decisions on top of
+them, each with its rule: `docs/design-system/anti-slop.md`.
 
 **Mechanical audit.** Phase 2's detector here is the full records run, not
 the blocker-only gate:

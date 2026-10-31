@@ -19,6 +19,11 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   imports `ai`, and the vitest config collects two starter-kit tests). MANUAL.md,
   DESIGN.md, ARCHITECTURE.md, README.md, `gates/` and `harness/` stay upstream — one copy
   of the rule book.
+- **Ahead of upstream `main`, 2026-10-30:** `starter-kit/02-rules/anti-slop-rules.md`,
+  `starter-kit/03-gates/unslop-SKILL.md`, their two rows in `starter-kit/README.md` and one
+  comment in `starter-kit/02-rules/schema.ts` are taken from upstream PR
+  weeeha/ds-architecture#13 (commit `f202073`), which rewrites them as a pointer and a
+  template. The next full refresh replaces this note.
 - **Stage 10 declared 2026-10-21.** `runtime.systemId` is `super-ai`, written onto
   `<html>` by `apps/docs/components/theme-provider.tsx` (added to the `components` role
   for that reason, and exempt from `data-slot` because it renders no DOM of its own). Four

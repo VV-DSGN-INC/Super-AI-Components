@@ -30,7 +30,7 @@ Do not "improve" a harvested file before you have run it. Its comments record wh
 | `core.ts` | **harvested** | Two edits: the `scope` arrays name that system's directories (`src/components`, `prototypes/proto-*`): replace with yours. One `fix` string names its icon adapter module (`lib/icons`): replace with yours or drop that rule. |
 | `core.json` | **harvested** | Regenerate it from your edited `core.ts` rather than hand-editing. The drift gate exists to stop the two disagreeing. |
 | `rulecheck.mjs` | **harvested** | Nothing. Node built-ins only. Check the path it reads rules from matches where you put the JSON. |
-| `anti-slop-rules.md` | **harvested** | Nothing — read it. It is the 47-rule research corpus behind `core.ts`, with the reasoning for each ban. Rules get rationalised away without their why. |
+| `anti-slop-rules.md` | pointer | Nothing. It says where a rule's reasoning lives (its record's `title`, `fix` and `why`) and where the method lives (the unslop skill). Read it before relaxing a rule. |
 
 ## 03-gates
 
@@ -39,7 +39,7 @@ Do not "improve" a harvested file before you have run it. Its comments record wh
 | `settings.json` | template | Merge into your `.claude/settings.json`. It registers `rulecheck-hook.mjs` as a `PostToolUse` hook on every Write/Edit, in **warn mode**: the hook always exits 0. Do not make it blocking until every blocker rule has a passing false-positive fixture. |
 | `rulecheck-hook.mjs` | template | Copy next to `rulecheck.mjs` (it imports `loadRules` and `scan` from it), at `scripts/` in your project. It reads the hook event on stdin, scans only the file just written for blocker-severity rules, reports only the lines the edit changed when git can say which, and says so when it could not check. Edit nothing unless your rules directory is not `rules/` at the project root. |
 | `rulecheck-hook.test.ts` | template | Copy beside the hook. It copies the hook and `rulecheck.mjs` into a temp project with one rule and drives the hook with synthetic events: clean file, violation on a changed line, pre-existing hit left out, scan failure, path outside the project. Fix the `../02-rules/rulecheck.mjs` path if your layout differs. |
-| `unslop-SKILL.md` | **harvested** | Change the package name in its import rule and the system-specific decisions in its opening paragraph. The structure — constraints before generating, audit before done, fix-as-substitution — is the portable part. |
+| `unslop-SKILL.md` | template | Copy to `.claude/skills/unslop/SKILL.md` and fill Phase 0 with your system's decisions and detector commands. The block between the `unslop-core` markers is generated: run the unslop plugin's `scripts/sync.mjs write <your repo>` to fill and stamp it, and `sync.mjs check` to see when it falls behind. |
 
 ## 04-component-meta
 
