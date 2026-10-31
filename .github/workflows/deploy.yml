@@ -42,7 +42,7 @@ jobs:
             echo "::error::VERCEL_TOKEN is not set. Add it under Settings > Secrets and variables > Actions."
             exit 1
           fi
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
       - uses: pnpm/action-setup@v4
