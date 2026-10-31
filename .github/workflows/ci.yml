@@ -28,7 +28,9 @@ jobs:
       - run: pnpm test
 
   product:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is now 26.04, where Playwright 1.60 cannot install
+    # Chromium. Move back once the pinned Playwright supports 26.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
