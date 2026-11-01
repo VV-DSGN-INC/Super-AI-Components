@@ -43,7 +43,7 @@ Violations are findings; apply each record's own `fix`. Then work the
 `unchecked` list: TOK-6 discharges via `pnpm test:stories`; `judgment`-method
 rules are the reading work of the rendered passes.
 
-<!-- unslop-core:start unslop@2.0.0 sha256:011c356a950bad0e -->
+<!-- unslop-core:start unslop@2.1.0 sha256:c029038b95be619e -->
 <!-- Generated from unslop:unslop (weeeha/unslop) by its scripts/sync.mjs. Edit that skill, not this block; this repo's own rules go in Phase 0 above. -->
 <!-- prettier-ignore-start -->
 ## Phase 1: Constraints while generating
@@ -67,119 +67,121 @@ Every rule carries a **tier**, which says whether you may disagree with it:
 The bans below are Floor unless marked (R). A repo's Phase 0 may move a
 rule between tiers with a reason; it may not delete one.
 
-1. **Effects.** No gradient text (`bg-clip-text`), no gradients on controls
-   or text, no indigo→violet gradient anywhere, no glassmorphism without real
-   underlying content, no blurred orbs / spotlights / grain layers, no colored
-   or glowing shadows, no pure #000/#fff pairs. A shadow has an offset and a
+1. **Effects.** No gradient text (`bg-clip-text`) (EFF-1), no gradients on controls
+   or text (R) (EFF-2), no indigo→violet gradient anywhere (EFF-3), no glassmorphism without real
+   underlying content (R) (EFF-4), no blurred orbs / spotlights / grain layers (EFF-5), no colored
+   or glowing shadows (EFF-6), no pure #000/#fff pairs (R) (EFF-7). A shadow has an offset and a
    blur; a hard block shadow (`4px 4px 0`) belongs only to a world that chose
-   neobrutalism (R). No blob or `clip-path` shape standing in for a real
-   cut-out of the subject (R). No cream-paper default (cream page, thin
+   neobrutalism (R) (EFF-8). No blob or `clip-path` shape standing in for a real
+   cut-out of the subject (R) (EFF-9). No cream-paper default (cream page, thin
    serif, italic accent, pill buttons) picked because nothing else was
-   decided (R). Secondary text on a coloured surface is tinted from that
-   surface, never a neutral grey.
+   decided (R) (EFF-10). Secondary text on a coloured surface is tinted from that
+   surface, never a neutral grey (EFF-11).
 2. **Type.** Only the project's declared families and scale; no new fonts,
-   ad-hoc sizes, or blanket `tracking-tight` (R); no italic-serif accent
-   words (R); hierarchy = size/weight, never decoration. **No eyebrow**:
+   ad-hoc sizes (TYP-1), or blanket `tracking-tight` (R) (TYP-2); no italic-serif accent
+   words (R) (TYP-3); hierarchy = size/weight, never decoration (TYP-4). **No eyebrow**:
    short inert type before a heading, in any geometry (stacked label, pill,
    ordinal, category tag over a card, TRUSTED BY over logos); delete it and
    read the section, and if nothing was lost but a name for what comes next
-   it was an eyebrow. A `<figcaption>`, `<th>`, `<label>`, byline, `<time>`
+   it was an eyebrow (TYP-5). A `<figcaption>`, `<th>`, `<label>`, byline, `<time>`
    or a unit after its figure is not one. **No tracked-caps label**: text at
    15px or under set uppercase, small-caps, or letter-spaced past 0.03em; a
-   wordmark excepted. **Readable text**: no text under 12px; headings in
+   wordmark excepted (TYP-6). **Readable text**: no text under 12px (TYP-7); headings in
    outline order (no h1 to h3) and each level a visible size or weight step
-   from the next, never a flat scale; body measure 75ch at most (R), body
-   leading 1.4 or more (R), no justified or all-caps running text (R),
-   display type 6rem at most and tracking no tighter than -0.04em (R).
+   from the next, never a flat scale (TYP-8); body measure 75ch at most (R) (TYP-9), body
+   leading 1.4 or more (R) (TYP-10), no justified or all-caps running text (R) (TYP-11),
+   display type 6rem at most and tracking no tighter than -0.04em (R) (TYP-12).
    Monospace only for code, data and measurement, never as a "technical"
-   costume (R).
-3. **Layout.** Container nesting ≤1 (no cards in cards); separation ladder:
-   spacing → hairline → surface tint → card; radii and gaps only from the
-   project's scale; no exactly-3-equal-cards reflex (R); no identical
-   stat-card strips (R); no bento mosaic where every cell is the same size
-   (R); no hero-metric block (big number, small label, supporting stats)
-   standing in for a headline (R); no section numbers (01 / 02 / 03) unless
-   the order is information (R); no modal for a task that neither interrupts
-   nor needs locked focus (R); the screen's most important element visibly
-   dominant. **Breathing room**: more space above a heading than below it;
+   costume (R) (TYP-13).
+3. **Layout.** Container nesting ≤1 (no cards in cards) (LAY-1); separation ladder:
+   spacing → hairline → surface tint → card (LAY-2); radii and gaps only from the
+   project's scale (LAY-3, LAY-16, LAY-17); no exactly-3-equal-cards reflex (R) (LAY-4); no identical
+   stat-card strips (R) (LAY-5); no bento mosaic where every cell is the same size
+   (R) (LAY-6); no hero-metric block (big number, small label, supporting stats)
+   standing in for a headline (R) (LAY-7); no section numbers (01 / 02 / 03) unless
+   the order is information (R) (LAY-8); no modal for a task that neither interrupts
+   nor needs locked focus (R) (LAY-9); the screen's most important element visibly
+   dominant (LAY-10). **Breathing room**: more space above a heading than below it (LAY-11);
    text and cards never touch the screen edge (a 16px gutter at 375 at
-   least); padding inside a bordered or filled box from the spacing scale,
-   never cramped against its text (R). **No default
+   least) (R) (LAY-12); padding inside a bordered or filled box from the spacing scale,
+   never cramped against its text (R) (LAY-13). **No default
    dashboard shell** (R): sidebar + top bar + four stat cards + chart +
    table, chosen before anyone named the screen's job and the one decision
    the user makes on it; if the job is "spot the failing job and retry it",
-   the failing jobs are the page and the stat row is a footnote. **Layout
+   the failing jobs are the page and the stat row is a footnote (R) (LAY-14). **Layout
    does not move on state change**: hover, focus and selection may change
    colour/shadow/ring/opacity, never padding, gap, size, border-width or
    type; space for anything conditional is reserved at rest (disclosure
-   components are the declared exception).
+   components are the declared exception) (LAY-15).
 4. **Components.** Compose from the project's library (search before
-   creating; no V2 duplicates); no colored left-border accent strips; no
-   icon in a tinted rounded tile above a heading; no "✨ AI-powered" badge
-   theater; unlabeled sparkle icons never. **Every control does
+   creating; no V2 duplicates) (CMP-1); no colored left-border accent strips (R) (CMP-2); no
+   icon in a tinted rounded tile above a heading (CMP-3); no "✨ AI-powered" badge
+   theater (CMP-4); unlabeled sparkle icons never (CMP-5). **Every control does
    something**: a form that prints "Sent" with no request behind it is an
    invented outcome (validate, post nowhere, say "Nothing was sent; this
    form is not connected yet"); a nav link to nowhere and a button with no
-   handler ship labelled "Coming soon" or not at all. **One filled control
+   handler ship labelled "Coming soon" or not at all (CMP-6). **One filled control
    per view**: the primary action is filled, every other control is
-   outlined or plain, so the way forward is the one solid shape (R).
-5. **Icons.** One library, one weight, 2–3 sizes; zero emoji in chrome.
-6. **Motion.** Only on state change; no idle loops, scroll-reveal, marquee,
-   typewriter, parallax; never `transition: all`; transform/opacity only;
-   `prefers-reduced-motion` guard whenever keyframes exist. **Nothing
+   outlined or plain, so the way forward is the one solid shape (R) (CMP-7).
+5. **Icons.** One library, one weight, 2–3 sizes (ICO-1); zero emoji in chrome (R) (ICO-2).
+6. **Motion.** Only on state change; no idle loops (MOT-1, MOT-8), scroll-reveal, marquee,
+   typewriter, parallax (MOT-2); never `transition: all` (MOT-3); transform/opacity only (MOT-4);
+   `prefers-reduced-motion` guard whenever keyframes exist (R) (MOT-5). **Nothing
    hidden at rest**: a reveal class that sets `opacity: 0` or
    `visibility: hidden` until a script runs ships blank when the script
    fails; hide only under a `.js` class, or animate from visible with
-   `@starting-style`. A `setInterval` or animation-frame loop runs only
+   `@starting-style` (R) (MOT-6). A `setInterval` or animation-frame loop runs only
    while its view is visible: gate it on `document.hidden` or the view's
-   own active flag (R).
-7. **Copy.** Verb + object labels (never "Get Started"/"Learn More"); banned
-   register: elevate/unlock/empower/seamless/effortless/supercharge,
-   "not just X, it's Y", exclamation marks in microcopy, aphoristic cadence
+   own active flag (R) (MOT-7).
+7. **Copy.** Verb + object labels (never "Get Started"/"Learn More") (CPY-1); banned
+   register: elevate/unlock/empower/seamless/effortless/supercharge (CPY-2),
+   "not just X, it's Y" (CPY-3), exclamation marks in microcopy (CPY-4), aphoristic cadence
    (a run of two- or three-word fragments, "Fast. Simple. Yours.", standing
-   in for a sentence) (R), cheerleading ("You've got this", "Great job!")
+   in for a sentence) (R) (CPY-5), cheerleading ("You've got this", "Great job!")
    and celebration overlays (confetti, trophies) for a routine action,
-   where the interface should report the result (R); zero fabricated
-   numbers, names, quotes, logos, or demo data no real system could emit.
+   where the interface should report the result (R) (CPY-6); zero fabricated
+   numbers, names, quotes, logos, or demo data no real system could emit (CPY-7).
    **No template punctuation**: meta strings joined with middle dots
-   (`A · B · C`), an arrow glued to link or button text (`Learn more →`),
-   a decorative status dot before a label; one dot in a byline, or a dot
+   (`A · B · C`) (CPY-8), an arrow glued to link or button text (`Learn more →`) (CPY-9),
+   a decorative status dot before a label (CPY-10); one dot in a byline, or a dot
    that marks a live state, is legal. **No filler people**: John Doe,
    johndoe@example.com, "Sarah Chen updated a document, 2 hours ago"; an
    empty cell stays empty or carries an honest placeholder (`Your name`,
-   `email@example.com`).
-8. **Charts.** Project palette only (never `#8884d8`/`#82ca9d`); linear/step
-   interpolation; no gradient area fills; flat marks; units visible; bars
-   zero-based; <4 data points is a stat, not a chart. **The title is the
+   `email@example.com`) (CPY-11).
+8. **Charts.** Project palette only (never `#8884d8`/`#82ca9d`) (CHT-1); linear/step
+   interpolation (CHT-2); no gradient area fills (CHT-3); flat marks (CHT-4); units visible (CHT-5); bars
+   zero-based (CHT-6); <4 data points is a stat, not a chart (CHT-7). **The title is the
    question the chart answers** ("Failed jobs per hour, last 24h"), never
-   "Overview" or "Performance"; a delta ("+12% this week") only with a
-   real, named comparison period behind it. **One channel, one
+   "Overview" or "Performance" (CHT-8); a delta ("+12% this week") only with a
+   real, named comparison period behind it (CHT-9). **One channel, one
    variable**: colour, length, position and size each encode one thing; a
    ring whose colour is the status and whose length is the progress makes
-   the reader decode two scales at once (R).
-9. **States & a11y.** Empty/loading/error/populated all designed; anything
+   the reader decode two scales at once (R) (CHT-10).
+9. **States & a11y.** Empty/loading/error/populated all designed (STA-1); anything
    that fetches also gets an honest offline/stale tell, never fallback or
-   mock data rendered as live; visible focus on everything interactive; AA
-   contrast on the actual surface, in every theme the project ships; a
+   mock data rendered as live (STA-2); visible focus on everything interactive (STA-3); AA
+   contrast on the actual surface, in every theme the project ships (STA-4); a
    surface that keeps its colour in both themes takes text roles that keep
-   theirs too, or its text inverts against it. **Never colour alone**: a
+   theirs too, or its text inverts against it (STA-5). **Never colour alone**: a
    state or reading carried by colour (overdue, failed, done, over budget)
-   also carries a word, an icon, a shape or a position. **Themes flip
+   also carries a word, an icon, a shape or a position (STA-6). **Themes flip
    tokens, not components**: dark mode is the same component reading
-   flipped roles, never a forked dark variant (R). Semantic elements (no
-   onClick divs); accessible names on icon buttons; the page loads with no
-   broken image and no uncaught script error.
+   flipped roles, never a forked dark variant (R) (STA-7). Semantic elements (no
+   onClick divs) (STA-8); accessible names on icon buttons (STA-9); the page loads with no
+   broken image (STA-10) and no uncaught script error (STA-11).
    **Chrome states count too**: every collapsed/compact/truncating mode a
    component declares is designed and checked, and truncation is decided for
-   the tree, not per leaf.
-10. **Responsive.** Verify at 375px: no horizontal scroll, ≥24px tap targets
-    (44px in sticky bars), no hover-only actions, tables get a small-screen
-    strategy, `dvh` not `vh` for shells.
+   the tree, not per leaf (STA-12).
+10. **Responsive.** Verify at 375px: no horizontal scroll (RSP-1), ≥24px tap targets
+    (44px in sticky bars) (RSP-2), no hover-only actions (RSP-3), tables get a small-screen
+    strategy (RSP-4), `dvh` not `vh` for shells (RSP-5).
 
 ## Phase 2: Audit before "done"
 
 Audit what you changed. Older code that already breaks a rule is its own
-scoped task; do not sweep it uninvited.
+scoped task; do not sweep it uninvited. The hook is advisory: the agent still
+runs this Phase in full before calling work done, and a silent hook is not a
+clean audit.
 
 **Mechanical first.** If the project has a rule detector or token gate
 (Phase 0 names it), run it and apply each hit's own `fix` rather than
@@ -189,20 +191,19 @@ that way. Then work the detector's `unchecked` list, the rules no script can
 run. They are reported so they cannot be forgotten, and most of them
 discharge in the rendered passes below.
 
-**Without a detector**, grep the changed files (expect zero, exceptions
-justified), over the same roots the project's gate scans if it has one; a
-grep list that disagrees with the gate's scope is where a violation
-survives. Each effect pattern carries the Tailwind class and the plain-CSS
-spelling, because a repo without Tailwind writes only the second:
-`bg-gradient-|linear-gradient\(|radial-gradient\(|bg-clip-text|background-clip:[[:space:]]*text|backdrop-blur|backdrop-filter`
-· raw `#hex|rgba?(|hsl(` in components when a token system exists ·
-arbitrary `[Npx]` values ·
-`transition-all|transition:[[:space:]]*all|animate-` outside sanctioned
-loaders · `8884d8|82ca9d|strokeDasharray="3 3"` · emoji codepoints in
-chrome · `elevate|unlock|empower|supercharge|seamless|effortless` in copy.
+**Without a detector**, run the registry's grep list over the changed files
+(expect zero, exceptions justified), over the same roots the project's gate
+scans if it has one; a grep list that disagrees with the gate's scope is where
+a violation survives. The list is `<skill-dir>/rules/core.json`: every
+`pattern` and `co-occur` rule in it carries the Tailwind class and the
+plain-CSS spelling, because a repo without Tailwind writes only the second.
+`node <skill-dir>/scripts/rules.mjs check <files>` runs it.
 Before trusting a zero, run the same list over
-`<skill-dir>/fixtures/grep/classic-slop.html`: every pattern hits it, so a
-pattern that comes back empty there is broken, not clean.
+`<skill-dir>/fixtures/grep/classic-slop.html`, the smoke file for the grep list
+a repo without a detector runs: a pattern that comes back empty there is
+broken, not clean. The fixtures cover every rule in `rules/core.json`, some of
+them in per-rule files, and `node <skill-dir>/scripts/rules.mjs selftest`
+proves each rule against its own fixture.
 
 **Second detector, any repo.** Impeccable's CLI (`pbakaus/impeccable`) runs
 62 fixed rules with no model and no key, and catches tells a grep cannot
@@ -252,9 +253,9 @@ read only after the selftest passed.
 
 Rendered passes, after the render tier: **squint** (one thing dominant, no
 identical section anatomy) · **counts** (font sizes ≤7, radii/shadows ⊆
-project scale, ≤1 saturated accent per viewport; browser surfaces themed,
+project scale, ≤1 saturated accent per viewport (LAY-18); browser surfaces themed,
 since selection colour, caret, scrollbar and tabular numerals left at
-browser defaults are the cheapest tell a page was assembled) ·
+browser defaults are the cheapest tell a page was assembled) (STA-13) ·
 **contrast** in every theme the project ships (the script runs one scheme
 at a time) · **chrome states** (render every collapsed/compact/truncating
 mode; a clipped focus ring still passes the DOM, so this pass is a
@@ -265,8 +266,15 @@ strings, a one-letter name, a count of exactly 1, a missing
 optional field, diacritics, empty, error, offline, mixed-sign data, 200%
 zoom, labels 40% longer as a translation makes them, one unbroken
 40-character token such as a URL or email, a right-to-left run, a number
-and date in another locale's format) · **ratchet** (distinct radii/shadows/sizes did not grow vs. before
-the change).
+and date in another locale's format) (STA-14) · **ratchet** (distinct radii/shadows/sizes did not grow vs. before
+the change) (LAY-19).
+
+**Fresh-eyes review.** Last step of Phase 2: hand the evidence (the diff, the
+`rules.mjs --json` report, the `render.mjs --json` report, the screenshots
+directory, Phase 0, `unslop.config.json`, the path of `rules/core.json` and the
+path of this SKILL.md, plugin or vendored copy) to the `unslop-reviewer` agent.
+Its Floor findings are fixed before the report; its Reflex findings are fixed
+or waived with evidence. `reviewer: false` in `unslop.config.json` skips it.
 
 ## Phase 3: Fix ladder
 
@@ -320,7 +328,7 @@ repo's row wins.
 | Forked dark variant / fixed surface with flipping text | One component reading roles; a surface that keeps its colour reads roles that do not invert |
 
 Report as: violation → tier → rule area → fix applied, or the waiver with
-its evidence. Each PASS names what was checked ("STA-7 PASS: render tier,
+its evidence. Each PASS names what was checked ("RSP-1 PASS: render tier,
 375 and 1280, 0 overflow"); a fabricated pass is itself slop. Re-run Phase
 2 until clean.
 <!-- prettier-ignore-end -->

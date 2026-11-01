@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Slop fixture</title>
+<style>
+  /* One planted positive per render-tier check. Each is labelled with the
+     check that must catch it; render.mjs --selftest fails if one is missed. */
+  body { margin: 0; font-family: system-ui, sans-serif; color: #111; background: #fff; }
+  main { padding: 24px; display: grid; gap: 24px; }
+
+  /* overflow: a fixed-width block wider than a 375px phone */
+  .wide { width: 520px; height: 40px; background: #eee; }
+
+  /* state-moves: hover grows the padding, so the badge next to it shifts */
+  .row { display: flex; align-items: center; gap: 8px; }
+  .save { padding: 8px 16px; border: 1px solid #333; background: #fff; color: #111; min-height: 44px; min-width: 44px; }
+  .save:hover { padding: 8px 32px; }
+  .save:focus-visible { outline: 2px solid #0a58ca; outline-offset: 2px; }
+  .badge { padding: 4px 8px; background: #e8e8e8; }
+
+  /* no-focus: outline removed, nothing put back */
+  .nav a { color: #0a58ca; display: inline-block; padding: 12px; }
+  .nav a:focus, .nav a:focus-visible { outline: none; }
+
+  /* motion-rest: an orb that floats forever on the idle page */
+  .orb { width: 80px; height: 80px; border-radius: 50%; background: #c9c9ff; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+  /* contrast: muted grey on white, about 2.8:1 */
+  .muted { color: #9a9a9a; font-size: 14px; }
+
+  /* tap-target: a 20px icon button */
+  .icon { width: 20px; height: 20px; padding: 0; border: 0; background: #333; color: #fff; font-size: 10px; }
+  .icon:focus-visible { outline: 2px solid #0a58ca; }
+  /* tiny-text: a 10px footnote */
+  .fine { font-size: 10px; }
+
+  /* measure + leading: running text the full width of a 1280 screen, set solid */
+  .long { line-height: 1.1; }
+
+  /* edge: on a phone the paragraph is pulled out to the screen edge */
+  .flush { margin: 0 -24px; }
+</style>
+</head>
+<body>
+<main>
+  <div class="wide"></div>
+  <div class="row">
+    <button class="save" type="button">Save</button>
+    <span class="badge">Draft</span>
+  </div>
+  <nav class="nav"><a href="#docs">Docs</a></nav>
+  <div class="orb" aria-hidden="true"></div>
+  <p class="muted">Last synced two hours ago</p>
+  <button class="icon" type="button" aria-label="Close">x</button>
+  <h1>Settings</h1>
+  <h3>Sync</h3>
+  <p class="long">Sync copies every change you make on this device to the server, then pulls down whatever changed elsewhere since the last run. If two devices edit the same field before either syncs, the newer edit wins and the older one is kept in history, where you can restore it from the item's menu at any time.</p>
+  <p class="flush">Changes made offline sync the next time you connect.</p>
+  <small class="fine">Terms apply to paid plans</small>
+  <img src="missing-chart.png" alt="Sync history" width="40" height="40">
+  <script>window.unslopPlanted.boot()</script>
+</main>
+</body>
+</html>
