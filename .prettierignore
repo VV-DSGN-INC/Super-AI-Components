@@ -44,3 +44,12 @@ apps/docs/content/system/facts.json
 # Derived by apps/docs/scripts/lib/openui-catalog.test.ts (`pnpm openui:emit`)
 # and byte-compared by the same test. The emitter owns its shape.
 apps/docs/public/openui/
+
+# Vendored by weeeha/unslop's scripts/sync.mjs, hashed in MANIFEST.json.
+# Formatting them changes the hashes, and `sync.mjs check` then reads the copy
+# as hand-edited. SKILL.md stays formatted: its core block carries its own
+# prettier-ignore markers.
+.claude/skills/unslop/scripts/
+.claude/skills/unslop/rules/
+.claude/skills/unslop/fixtures/
+.claude/skills/unslop/MANIFEST.json
