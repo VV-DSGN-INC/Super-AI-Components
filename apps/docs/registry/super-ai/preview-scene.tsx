@@ -248,7 +248,11 @@ function abstract(v: number): SceneShape[] {
     { kind: "rect", role: "sky", x: 0, y: 0, w: 100, h: 100 },
     { kind: "circle", role: "accent", cx: 36 + wobble(v, 7, 12), cy: 40, r: 27 },
     { kind: "circle", role: "subject", cx: 64 + wobble(v, 8, 10), cy: 58, r: 23 },
-    { kind: "path", role: "highlight", d: `M0 ${72 + wobble(v, 9, 8)} Q 30 52 58 70 T 100 62 L100 100 L0 100 Z` },
+    {
+      kind: "path",
+      role: "highlight",
+      d: `M0 ${72 + wobble(v, 9, 8)} Q 30 52 58 70 T 100 62 L100 100 L0 100 Z`,
+    },
     { kind: "path", role: "shadow", d: "M18 12 Q 52 4 84 18 L84 24 Q 52 12 18 20 Z" },
     { kind: "ellipse", role: "ground", cx: 80, cy: 26, rx: 14, ry: 9 },
   ];
@@ -363,7 +367,9 @@ function shapeElement(shape: SceneShape, index: number, paint: ScenePaint) {
   const key = `${shape.kind}-${index}`;
   switch (shape.kind) {
     case "rect":
-      return <rect key={key} x={shape.x} y={shape.y} width={shape.w} height={shape.h} rx={shape.r} {...paint} />;
+      return (
+        <rect key={key} x={shape.x} y={shape.y} width={shape.w} height={shape.h} rx={shape.r} {...paint} />
+      );
     case "circle":
       return <circle key={key} cx={shape.cx} cy={shape.cy} r={shape.r} {...paint} />;
     case "ellipse":

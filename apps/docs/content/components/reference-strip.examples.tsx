@@ -21,11 +21,15 @@ import { PreviewScene } from "@/registry/super-ai/preview-scene";
 const PLAIN_ITEMS: ReferenceStripItem[] = [
   {
     id: "one",
-    thumbnail: <PreviewScene subject="landscape" treatment="line" variant={1} label="Concept sketch of a lighthouse" />,
+    thumbnail: (
+      <PreviewScene subject="landscape" treatment="line" variant={1} label="Concept sketch of a lighthouse" />
+    ),
   },
   {
     id: "two",
-    thumbnail: <PreviewScene subject="landscape" grade="warm" variant={2} label="Photo of a coastline at dusk" />,
+    thumbnail: (
+      <PreviewScene subject="landscape" grade="warm" variant={2} label="Photo of a coastline at dusk" />
+    ),
   },
 ];
 
