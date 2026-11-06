@@ -50,11 +50,18 @@ function ThreadList({ className, ...props }: React.ComponentProps<"nav">) {
   return <nav data-slot="thread-list" className={cn("flex flex-col gap-3", className)} {...props} />;
 }
 
-function ThreadListSection(props: React.ComponentProps<typeof DateSection>) {
+/**
+ * Inside a sidebar collapsed to its icon rail (`data-collapsible="icon"` on the
+ * sidebar's group root), a section's label has no room, so it becomes
+ * screen-reader text. Outside a sidebar the variant never matches.
+ */
+const RAIL_SECTION_LABEL = "group-data-[collapsible=icon]:[&_[data-slot=date-section-label]]:sr-only";
+
+function ThreadListSection({ className, ...props }: React.ComponentProps<typeof DateSection>) {
   // No data-slot override here: DateSection spreads ...props after its own
   // attributes, so one would erase `date-section` and hide that this is what
   // renders a section (CONTINUE.md §4).
-  return <DateSection {...props} />;
+  return <DateSection className={cn(RAIL_SECTION_LABEL, className)} {...props} />;
 }
 
 interface ThreadListItemProps extends Omit<React.ComponentProps<"div">, "id" | "title" | "onSelect"> {
@@ -63,6 +70,12 @@ interface ThreadListItemProps extends Omit<React.ComponentProps<"div">, "id" | "
   active?: boolean;
   unread?: boolean;
   pinned?: boolean;
+  /**
+   * Decorative mark before the title. In a sidebar collapsed to its icon rail
+   * the row shows only this, its title kept as the accessible name; a row with
+   * no icon is dropped from the rail rather than drawn as an empty button.
+   */
+  icon?: React.ReactNode;
   onSelect?: (id: string) => void;
   onRename?: (id: string, title: string) => void;
   onDelete?: (id: string) => void;
@@ -75,6 +88,7 @@ function ThreadListItem({
   active = false,
   unread = false,
   pinned = false,
+  icon,
   onSelect,
   onRename,
   onDelete,
@@ -131,8 +145,11 @@ function ThreadListItem({
     <div
       data-slot="thread-list-item"
       data-active={active || undefined}
+      data-iconless={icon ? undefined : ""}
       className={cn(
         "group/thread relative flex items-center rounded-md",
+        // The icon rail: a row with no icon has nothing to show there.
+        "group-data-[collapsible=icon]:data-iconless:hidden",
         // Painting a surface rebinds the variable rather than restyling the
         // slot: the pin glyph below carries its own `text-muted-foreground`,
         // which is the same lightness as `bg-accent` in this token set
@@ -151,18 +168,33 @@ function ThreadListItem({
           // Same rebind as the row above, for the surface hover paints.
           "hover:bg-accent hover:[--muted-foreground:var(--accent-foreground)]",
           "flex h-9 flex-1 items-center gap-2 truncate rounded-md px-2 text-start text-sm",
+          "group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0",
           active && "font-medium",
         )}
       >
+        {icon ? (
+          <span
+            data-slot="thread-icon"
+            aria-hidden="true"
+            className="text-muted-foreground flex shrink-0 [&_svg:not([class*='size-'])]:size-4"
+          >
+            {icon}
+          </span>
+        ) : null}
         {unread ? (
           <span
             data-slot="thread-unread"
             aria-label="Unread"
-            className="bg-primary size-2 shrink-0 rounded-full"
+            className="bg-primary size-2 shrink-0 rounded-full group-data-[collapsible=icon]:absolute group-data-[collapsible=icon]:end-1 group-data-[collapsible=icon]:top-1"
           />
         ) : null}
-        {pinned ? <Pin aria-hidden className="text-muted-foreground size-3 shrink-0" /> : null}
-        <span className="truncate">{title}</span>
+        {pinned ? (
+          <Pin
+            aria-hidden
+            className="text-muted-foreground size-3 shrink-0 group-data-[collapsible=icon]:hidden"
+          />
+        ) : null}
+        <span className="truncate group-data-[collapsible=icon]:sr-only">{title}</span>
       </button>
 
       {/* Base UI adaptation: DropdownMenu exposes onOpenChangeComplete on the Root.
@@ -189,7 +221,7 @@ function ThreadListItem({
               // otherwise be ten identically-named buttons in the screen-reader
               // element list. Same shape as record-list's row menu.
               aria-label={`Thread actions for ${title}`}
-              className="size-7 opacity-0 group-hover/thread:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 pointer-coarse:opacity-100"
+              className="size-7 opacity-0 group-hover/thread:opacity-100 focus-visible:opacity-100 data-[state=open]:opacity-100 pointer-coarse:opacity-100 group-data-[collapsible=icon]:hidden"
             />
           }
         >

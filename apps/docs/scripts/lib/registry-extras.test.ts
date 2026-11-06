@@ -101,4 +101,16 @@ describe("deriveExtras", () => {
       "https://registry.ai-sdk.dev/suggestion.json",
     ]);
   });
+  // A bare name installs the latest release. For a 0.x package that can be a
+  // different API from the one the component's tests ran on: generated-body was
+  // measured against @openuidev/react-lang 0.3.2 and a fresh install took 1.0.1.
+  it("pins a dependency to the range it was given, leaving the rest bare", () => {
+    const pinned = deriveExtras(MANIFEST, self, { "@openuidev/react-lang": "^0.3.2" });
+    expect(pinned["generated-body"]?.dependencies).toEqual(["@openuidev/react-lang@^0.3.2", "lucide-react"]);
+    expect(pinned["cost-chip"]?.dependencies).toEqual(["lucide-react"]);
+  });
+
+  it("emits bare names when no pins are given", () => {
+    expect(extras["generated-body"]?.dependencies).toEqual(["@openuidev/react-lang", "lucide-react"]);
+  });
 });

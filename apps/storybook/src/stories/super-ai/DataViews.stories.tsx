@@ -182,10 +182,9 @@ export const Feed: Story = { args: { ...config, viewMode: "list" } };
  * today-anchored fixture, because with the file's fixed August 2026 dates it
  * drew nothing at all — `DataViews` forwards no `initialMonth`, so the grid
  * always opens on the month the test runs in. And the `In review` group is
- * toned `warning`, so its bar paints `bg-warning text-warning-foreground` —
- * **which resolves to nothing in Storybook.** See `GroupTone` below: the bar
- * you are looking at is unpainted, and a green axe pass on this story is not
- * evidence about that surface.
+ * toned `warning`, so its bar paints `bg-warning text-warning-foreground`, a
+ * designed pair that axe measures here now that Storybook defines the token
+ * (see `GroupTone`).
  */
 export const Calendar: Story = { args: { ...config, items: SCHEDULED, viewMode: "calendar" } };
 
@@ -199,7 +198,7 @@ export const Calendar: Story = { args: { ...config, items: SCHEDULED, viewMode: 
  * Same today-anchored fixture and the same reason as `Calendar`: no
  * `initialStart` reaches the shell through `DataViews`, so the visible range
  * always begins on the day the test runs. The `In review` lane's bar is the
- * unpainted warning surface described under `GroupTone`.
+ * same `bg-warning text-warning-foreground` surface as the calendar's.
  */
 export const Timeline: Story = { args: { ...config, items: SCHEDULED, viewMode: "timeline" } };
 
@@ -208,24 +207,18 @@ export const Timeline: Story = { args: { ...config, items: SCHEDULED, viewMode: 
  * surface — the mark is what separates them, and the tone word rides in each
  * column's accessible name.
  *
- * **The warning tone is unpainted in this environment, and no story in this
- * file is evidence about it.** `apps/storybook/src/index.css` defines neither
- * `--warning` nor `--warning-foreground` (only `apps/docs/app/globals.css`
- * does), Tailwind v4 emits no utility for an undefined theme key, and this
- * item declares no `cssVars` in the manifest — so the same surface also
- * arrives colourless in a consumer's app after `shadcn add`. Measured on the
- * calendar bars: the three `secondary` tones compute `oklch(0.97 0 0)`, and
- * the `warning` bar computes `rgba(0, 0, 0, 0)` with the page's inherited
- * foreground rather than `text-warning-foreground`. Both halves of the
- * semantic pair are missing, which is why the bar still clears contrast and
- * why clearing it proves nothing. Recorded, deliberately not fixed here:
- * `CONTINUE.md` §8 ("`--warning` is undefined in Storybook") and §9's wave 1
- * entry ("Two components ship colourless to consumers").
+ * **The warning tone is measured here.** Until 2026-10-16
+ * `apps/storybook/src/index.css` defined no `--warning`, so this surface
+ * rendered colourless and every green run said nothing about it; the item also
+ * declared no `cssVars`, so it arrived colourless after `shadcn add` too. Both
+ * are fixed: Storybook mirrors `apps/docs/app/globals.css`, and the manifest
+ * ships `WARNING_CSS_VARS` (`cssvars-liveness.test.ts` now fails an item that
+ * uses a warning utility without it). The calendar and timeline bars are
+ * `bg-warning text-warning-foreground` at about 7:1.
  *
- * The `warning` mark on a board header is the same story in miniature: the
- * `AlertTriangle` is `text-warning`, so it draws in the inherited colour and
- * is told from `neutral` by shape alone — which is what the tone system claims
- * to be doing anyway, and is why the board above still reads correctly.
+ * The `warning` mark on a board header is `text-warning` on an `AlertTriangle`,
+ * colour on the icon only: the tone word rides in the column's accessible name
+ * and the shape tells it from `neutral`, so the hue is never the signal.
  */
 export const GroupTone: Story = { args: { ...config, viewMode: "kanban" } };
 

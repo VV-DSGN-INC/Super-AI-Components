@@ -43,7 +43,7 @@ export const STRUCTURAL = {
 /** Mirrors VENDORED_SCOPES in src/local.ts — this runtime must stay free of
  *  TypeScript imports, so the value is duplicated and records.test.ts pins
  *  the two lists equal. */
-export const VENDORED_SCOPES = ["apps/docs/components/ui"];
+export const VENDORED_SCOPES = ["apps/docs/components/ui", "apps/docs/components/ai-elements"];
 
 export function loadRules(dir = process.env.DS_RULES_DIR ?? path.join(PKG_ROOT, "rules")) {
   if (!existsSync(dir)) throw new Error(`rules dir not found (${dir}) — run: pnpm --filter ds-rules rules:emit`);

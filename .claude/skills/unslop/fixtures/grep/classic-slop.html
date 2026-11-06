@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classic slop fixture</title>
+<!-- Planted positives for the Phase 2 grep list and the Impeccable detector.
+     Every grep pattern, in its Tailwind and plain-CSS spelling, must hit this
+     file; a pattern that comes back empty here is broken. -->
+<style>
+  /* T1 Inter everywhere */
+  body { margin: 0; font-family: "Inter", sans-serif; background: #fff; color: #111; }
+  /* T2 indigo to violet hero gradient */
+  .hero { padding: 64px 24px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+  /* T3 gradient text */
+  .grad { background: linear-gradient(90deg, #6366f1, #ec4899); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* T4 tracked caps eyebrow */
+  .eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.15em; }
+  /* T5 glassmorphism with nothing behind it */
+  .glass { backdrop-filter: blur(12px); background: rgba(255,255,255,0.2); border-radius: 16px; padding: 16px; }
+  /* T6 coloured glow shadow */
+  .cta { padding: 12px 20px; border: 0; border-radius: 999px; background: #6366f1; color: #fff; box-shadow: 0 0 24px rgba(99,102,241,0.6); transition: all 0.3s; }
+  /* T7 three equal cards, T8 card nested in card */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; padding: 24px; }
+  .card { border: 1px solid #e5e7eb; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .card .card { padding: 12px; }
+  /* T9 icon in tinted rounded tile above heading */
+  .tile { width: 40px; height: 40px; border-radius: 12px; background: #eef2ff; display: grid; place-items: center; }
+  /* T10 coloured left border accent strip */
+  /* T15 radial gradient */
+  .spot { background: radial-gradient(circle, #a78bfa, transparent); }
+  .callout { border-left: 4px solid #8b5cf6; padding: 12px 16px; background: #f5f3ff; margin: 24px; }
+</style>
+</head>
+<body>
+  <section class="hero">
+    <p class="eyebrow">Introducing Flowly</p>
+    <h1>Elevate your workflow with <span class="grad">seamless AI</span></h1>
+    <!-- T11 fabricated stats, T12 banned copy register, T13 emoji in chrome -->
+    <div class="glass">Trusted by 10,000+ teams · 99.9% uptime · 4.9★ rating</div>
+    <button class="cta" type="button">✨ Get Started</button>
+  </section>
+  <div class="cards">
+    <div class="card"><div class="tile">⚡</div><h3>Fast</h3><p>Unlock effortless speed.</p><div class="card">Nested detail</div></div>
+    <div class="card"><div class="tile">🔒</div><h3>Secure</h3><p>Enterprise-grade security.</p></div>
+    <div class="card"><div class="tile">🚀</div><h3>Scalable</h3><p>Empower your team to supercharge growth.</p></div>
+  </div>
+  <!-- T14 arrow glued to link text, filler person -->
+  <div class="callout">"Flowly changed how we work." Sarah Chen, VP Product <a href="#">Learn more →</a></div>
+  <!-- T16 the same tells spelled as Tailwind classes, an arbitrary value and a default chart colour -->
+  <div class="bg-gradient-to-r bg-clip-text backdrop-blur-md transition-all animate-pulse w-[520px]">Tailwind spelling</div>
+  <svg width="80" height="20" aria-hidden="true"><path d="M0 10H80" stroke="#8884d8" stroke-dasharray="3 3"/></svg>
+  <svg width="80" height="20" aria-hidden="true"><path d="M0 10H80" stroke="#82ca9d"/></svg>
+  <code>&lt;Line strokeDasharray="3 3" /&gt;</code>
+  <div class="spot">Spot</div>
+</body>
+</html>

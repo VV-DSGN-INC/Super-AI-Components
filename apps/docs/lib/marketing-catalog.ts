@@ -61,7 +61,8 @@ export const MARKETING_ITEMS: MarketingItem[] = [
   {
     name: "bento-grid",
     title: "Bento Grid",
-    description: "Feature grid of cards with hover-revealed CTAs.",
+    description:
+      "Responsive feature grid of cards with optional links, revealed on hover or focus and always shown on touch.",
     group: "Layout",
   },
   {

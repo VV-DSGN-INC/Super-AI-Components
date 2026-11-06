@@ -597,11 +597,12 @@ export const ReducedMotion: Story = {
  *
  * So the cost of the layout is a number, and this story measures it: even
  * this deliberately small editor — two modalities, two presets, one action,
- * two pages, one property group — is **16 tab stops**, and the inspector's
- * own stop is the fifteenth, 14 presses from the rail through every control
+ * two pages, one property group — is **15 tab stops**, and the inspector's
+ * own stop is the fourteenth, 13 presses from the rail through every control
  * in the middle three regions. That is the fact behind the docs page's "in a
- * full editor that is a long way": with the `Editing` fixture above it is 29
- * stops and the inspector is the twenty-second.
+ * full editor that is a long way", and the `Editing` fixture above is longer
+ * still. (It was 16 until E4 `preset-grid` became a radio group: the two
+ * presets are one stop now, crossed with the arrows.)
  *
  * Three of those stops are the shell's own rather than a composed
  * component's, and they exist because each is a scroll container with nothing
@@ -745,7 +746,7 @@ export const KeyboardOrder: Story = {
     const inspectorStop = stops.findIndex(
       (el) => el === canvasElement.querySelector('[data-region="inspector"]'),
     );
-    await expect(`${stops.length} stops, inspector at ${inspectorStop}`).toBe("16 stops, inspector at 14");
+    await expect(`${stops.length} stops, inspector at ${inspectorStop}`).toBe("15 stops, inspector at 13");
 
     // 5. Nothing but Tab crosses a region. The canvas surface takes arrow keys
     //    for scrolling and keeps focus; the rail's arrows travel inside the

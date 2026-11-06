@@ -59,6 +59,14 @@ describe("renderScaffold", () => {
     expect(test).toContain("expect.fail");
   });
 
+  // A13 ai-label's description carries a double quote; interpolating it raw
+  // into the `whatItIs: "..."` string produced invalid TypeScript.
+  it("escapes a quoted description into a valid whatItIs string", () => {
+    const description = 'Marks content as "AI-generated" with a \\ path.';
+    const docs = renderScaffold({ ...ITEM, description })["content/components/workspace-switcher.docs.tsx"];
+    expect(docs).toContain(`whatItIs: ${JSON.stringify(description)},`);
+  });
+
   it("writes one story per declared state", () => {
     const story = files["../storybook/src/stories/super-ai/WorkspaceSwitcher.stories.tsx"];
     expect(story).toContain("export const WorkspaceList");

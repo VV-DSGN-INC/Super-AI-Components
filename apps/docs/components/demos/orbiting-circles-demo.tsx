@@ -12,9 +12,12 @@ export default function OrbitingCirclesDemo() {
         {icons.map((Icon, i) => (
           <span
             key={i}
-            className="bg-muted text-muted-foreground flex size-8 items-center justify-center rounded-full border"
+            // The painted surface rebinds the variable rather than restyling
+            // the icon: muted content on a muted surface measures 4.34:1
+            // against a 4.5:1 minimum. See docs/design-system/a11y-baseline.md.
+            className="bg-muted flex size-8 items-center justify-center rounded-full border [--muted-foreground:var(--accent-foreground)]"
           >
-            <Icon className="size-4" />
+            <Icon className="text-muted-foreground size-4" />
           </span>
         ))}
       </OrbitingCircles>

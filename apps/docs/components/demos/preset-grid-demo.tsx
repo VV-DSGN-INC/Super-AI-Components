@@ -41,11 +41,19 @@ const ENVIRONMENT_ITEMS: PresetGridItem[] = [
   { id: "golden-hour", label: "Golden hour" },
 ];
 
+const USER_STYLE_ITEMS: PresetGridItem[] = [
+  { id: "neon-noir", label: "Neon noir", source: "personal" },
+  { id: "studio-look", label: "Studio look", source: "team" },
+  ...STYLE_ITEMS.slice(0, 3),
+];
+
 export default function PresetGridDemo() {
   const [style, setStyle] = useState<string | string[] | undefined>("photoreal");
   const [palette, setPalette] = useState<string | string[] | undefined>();
   const [filter, setFilter] = useState<string | string[] | undefined>();
   const [environments, setEnvironments] = useState<string | string[] | undefined>(["studio"]);
+
+  const [userStyle, setUserStyle] = useState<string | string[] | undefined>("neon-noir");
 
   return (
     <div className="flex w-full max-w-2xl flex-col gap-8">
@@ -58,6 +66,18 @@ export default function PresetGridDemo() {
           value={style}
           onValueChange={setStyle}
           visibleCount={4}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-xs font-medium">Your styles</p>
+        <PresetGrid
+          items={USER_STYLE_ITEMS}
+          content="style"
+          aria-label="Saved style presets"
+          value={userStyle}
+          onValueChange={setUserStyle}
+          onSaveCurrent={() => {}}
         />
       </div>
 

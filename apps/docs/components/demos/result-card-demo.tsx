@@ -16,7 +16,7 @@ const CYCLE: ResultCardState[] = ["idle", "queued", "streaming", "done", "failed
 function Media() {
   return (
     <div className="bg-foreground/10 flex h-full w-full items-center justify-center">
-      <Sparkles aria-hidden className="text-foreground/40 size-8" />
+      <Sparkles aria-hidden className="text-foreground/60 size-8" />
     </div>
   );
 }

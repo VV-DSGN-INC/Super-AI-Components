@@ -28,7 +28,7 @@ docs site. What it lacks is the machine half: no per-value variant intent, no
 redirects, no file an agent can read from the installed tree, no published
 corpus, nothing derived from it and nothing that fails when it goes stale.
 
-The sibling `design-system-rebuild` has the machine half and its
+A sibling client design system has the machine half and its
 `ARCHITECTURE.md` states the rule this design adopts: every surface is either
 derived from the source by a script or checked against it by a test. This
 design ports that half onto the guidance modules that already exist, rather

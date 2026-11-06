@@ -1,0 +1,908 @@
+<title>Generated Chat Phases 2–3</title>
+<meta name="claude:viewport-fit-sides" content="cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap"
+/>
+<style>
+  /* Layout: two stacked drafts, each a framed app mock with a short note above it. Tokens are the docs site's neutral set. */
+  :root {
+    --bg: oklch(1 0 0);
+    --fg: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --page: oklch(0.975 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-fg: oklch(0.985 0 0);
+    --muted: oklch(0.96 0 0);
+    --muted-fg: oklch(0.47 0 0);
+    --border: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --destructive: oklch(0.55 0.22 27);
+    --warning: oklch(0.76 0.16 70);
+    --radius: 0.625rem;
+    --font: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --mono: "Geist Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: oklch(0.145 0 0);
+      --fg: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --page: oklch(0.17 0 0);
+      --primary: oklch(0.922 0 0);
+      --primary-fg: oklch(0.205 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-fg: oklch(0.74 0 0);
+      --border: oklch(1 0 0 / 12%);
+      --ring: oklch(0.556 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --warning: oklch(0.82 0.14 72);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: oklch(0.145 0 0);
+    --fg: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --page: oklch(0.17 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-fg: oklch(0.205 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-fg: oklch(0.74 0 0);
+    --border: oklch(1 0 0 / 12%);
+    --ring: oklch(0.556 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --warning: oklch(0.82 0.14 72);
+    color-scheme: dark;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    background: var(--page);
+    color: var(--fg);
+    font: 14px/1.5 var(--font);
+    margin: 0;
+  }
+  button {
+    font: inherit;
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-block: 32px 64px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+  header.top h1 {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  header.top p {
+    margin: 0;
+    color: var(--muted-fg);
+    max-width: 70ch;
+  }
+  section.draft {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .note h2 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .note p {
+    margin: 0;
+    max-width: 72ch;
+  }
+  .note ol {
+    margin: 8px 0 0;
+    padding-left: 20px;
+    max-width: 72ch;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .app {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    height: 640px;
+    min-width: 0;
+  }
+  .rail {
+    width: 232px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 12px 10px;
+    gap: 14px;
+    flex: none;
+    transition: width 0.2s ease-out;
+  }
+  .rail.collapsed {
+    width: 52px;
+    align-items: center;
+  }
+  .rail.collapsed .lbl {
+    display: none;
+  }
+  .ws {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+  }
+  .ws i {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: var(--primary-fg);
+    display: grid;
+    place-items: center;
+    font-style: normal;
+    font-size: 12px;
+    flex: none;
+  }
+  .grp {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+  }
+  .grp .h {
+    font-size: 12px;
+    color: var(--muted-fg);
+    padding: 0 8px 4px;
+  }
+  .th {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .th.on {
+    background: var(--muted);
+  }
+  .th svg {
+    flex: none;
+  }
+  .th .lbl {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .rail.collapsed .th {
+    justify-content: center;
+    width: 36px;
+    padding: 6px 0;
+  }
+  .shell {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar {
+    height: 48px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    flex: none;
+  }
+  .topbar b {
+    font-weight: 500;
+  }
+  .topbar .crumb {
+    color: var(--muted-fg);
+    font-size: 13px;
+  }
+  .body {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+  .stream {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid transparent;
+  }
+  .body.docked .stream {
+    flex: 0 0 360px;
+    border-left-color: var(--border);
+  }
+  .msgs {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .u {
+    align-self: flex-end;
+    background: var(--muted);
+    padding: 7px 13px;
+    border-radius: 16px;
+    font-size: 13px;
+  }
+  .p {
+    margin: 0;
+    font-size: 13.5px;
+    max-width: 64ch;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .card .ch {
+    padding: 12px 14px 4px;
+    font-weight: 600;
+    font-size: 13.5px;
+  }
+  .card .cs {
+    padding: 0 14px;
+    color: var(--muted-fg);
+    font-size: 12.5px;
+  }
+  .card .cb {
+    padding: 8px 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+  .row .t {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .row .r {
+    color: var(--muted-fg);
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .done {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 12.5px;
+    padding: 4px 14px 12px;
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .tile {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px;
+    min-height: 96px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: var(--card);
+  }
+  .tile small {
+    color: var(--muted-fg);
+    font-size: 12px;
+  }
+  .tile b {
+    font-size: 24px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 12.5px;
+    background: var(--card);
+  }
+  .composer {
+    border-top: 1px solid var(--border);
+    padding: 10px 14px;
+    flex: none;
+  }
+  .composer div {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 12px;
+    color: var(--muted-fg);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .send {
+    background: var(--primary);
+    color: var(--primary-fg);
+    border-radius: 8px;
+    padding: 3px 10px;
+    font-size: 12px;
+  }
+  .view {
+    flex: 1;
+    min-width: 0;
+    display: none;
+    padding: 12px;
+    background: var(--page);
+  }
+  .body.docked .view {
+    display: flex;
+  }
+  .frame {
+    flex: 1;
+    min-width: 0;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .fh {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .fh .tt {
+    flex: 1 1 12rem;
+    min-width: 0;
+  }
+  .fh .tt b {
+    display: block;
+    font-weight: 600;
+  }
+  .fh .tt span {
+    color: var(--muted-fg);
+    font-size: 12.5px;
+  }
+  .fc {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ff {
+    border-top: 1px solid var(--border);
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--muted-fg);
+    font-size: 12px;
+  }
+  .btn {
+    border: 1px solid var(--border);
+    background: var(--card);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .btn.primary {
+    background: var(--primary);
+    color: var(--primary-fg);
+    border-color: var(--primary);
+  }
+  .btn:hover {
+    background: var(--muted);
+  }
+  .btn.primary:hover {
+    opacity: 0.9;
+    background: var(--primary);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    color: var(--muted-fg);
+    font-weight: 500;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  td.n,
+  th.n {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .stat {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+  }
+  .stat small {
+    color: var(--muted-fg);
+    font-size: 12px;
+    display: block;
+  }
+  .stat b {
+    font-size: 20px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .callout {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    display: flex;
+    gap: 8px;
+  }
+  .alert {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .alert b {
+    font-weight: 600;
+  }
+  .code {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--muted);
+    border-radius: 10px;
+    padding: 10px 12px;
+    white-space: pre;
+    overflow: auto;
+    color: var(--fg);
+    max-height: 150px;
+  }
+  .pending {
+    opacity: 0.35;
+  }
+  .ctrl {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .skel {
+    height: 12px;
+    border-radius: 6px;
+    background: var(--muted);
+  }
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 14px;
+    height: 100%;
+  }
+  .side {
+    border-left: 1px solid var(--border);
+    padding-left: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .side h3 {
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0;
+    color: var(--muted-fg);
+  }
+  @media (max-width: 900px) {
+    .app {
+      height: auto;
+      min-height: 560px;
+      flex-direction: column;
+    }
+    .rail {
+      display: none;
+    }
+    .body.docked {
+      flex-direction: column;
+    }
+    .body.docked .stream {
+      flex: 1 1 auto;
+      border-left: 0;
+      border-top: 1px solid var(--border);
+      min-height: 300px;
+    }
+    .view {
+      min-height: 420px;
+    }
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .side {
+      border-left: 0;
+      padding-left: 0;
+    }
+    .stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition: none !important;
+    }
+  }
+</style>
+
+<main>
+  <header class="top">
+    <h1>Generated chat, phases 2 and 3</h1>
+    <p>
+      Draft for review. Phase 1 is built: a chat that answers in registry components, with a view that opens
+      beside it. These two drafts show what comes next. Click the buttons to switch states.
+    </p>
+  </header>
+
+  <section class="draft" aria-labelledby="p2">
+    <div class="note">
+      <h2 id="p2">Phase 2. The chat shell answers in parts</h2>
+      <p>
+        O2 <code>chat-shell</code> renders a reply's parts itself and owns the docked view. Opening a view
+        collapses the sidebar to a rail of icons, the view takes the main area and the conversation narrows
+        beside it. In phase 1 the demo had to build this around the shell.
+      </p>
+      <ol>
+        <li>The rail shows icons only, with no clipped labels or empty states.</li>
+        <li>The Artifacts region shows only once there is an artifact.</li>
+        <li>A reply that is only a card fills the column.</li>
+      </ol>
+    </div>
+    <div class="ctrl" role="group" aria-label="Phase 2 state">
+      <button class="btn primary" type="button" id="p2-chat" aria-pressed="true">Conversation</button>
+      <button class="btn" type="button" id="p2-view" aria-pressed="false">View docked</button>
+    </div>
+    <div class="app" id="p2-app">
+      <nav class="rail" id="p2-rail" aria-label="Threads">
+        <div class="ws"><i>W</i><span class="lbl">Studio workspace</span></div>
+        <div class="grp">
+          <div class="h lbl">Today</div>
+          <div class="th on">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+              <path d="M12 9v4" /></svg
+            ><span class="lbl">What failed overnight</span>
+          </div>
+          <div class="th">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <circle cx="8" cy="8" r="6" />
+              <path d="M18.09 10.37A6 6 0 1 1 10.34 18" /></svg
+            ><span class="lbl">Credits this week</span>
+          </div>
+        </div>
+        <div class="grp">
+          <div class="h lbl">Last 7 days</div>
+          <div class="th">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <circle cx="9" cy="9" r="2" />
+              <path d="m21 15-3-3-9 9" /></svg
+            ><span class="lbl">Spring campaign posters</span>
+          </div>
+        </div>
+      </nav>
+      <div class="shell">
+        <div class="topbar"><b>What failed overnight</b><span class="crumb">Studio workspace</span></div>
+        <div class="body" id="p2-body">
+          <div class="view">
+            <div class="frame">
+              <div class="fh">
+                <div class="tt"><b>Failed runs this week</b><span>All projects · updated just now</span></div>
+                <span class="btn">Table</span><span class="btn">Board</span>
+              </div>
+              <div class="fc">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>When</th>
+                      <th>Project</th>
+                      <th>Prompt</th>
+                      <th>Reason</th>
+                      <th class="n">Credits</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Tue 02:14</td>
+                      <td>Onboarding video</td>
+                      <td>Scene 3: dashboard tour</td>
+                      <td>Timed out</td>
+                      <td class="n">40</td>
+                    </tr>
+                    <tr>
+                      <td>Tue 02:31</td>
+                      <td>Onboarding video</td>
+                      <td>Scene 4: settings walkthrough</td>
+                      <td>Timed out</td>
+                      <td class="n">40</td>
+                    </tr>
+                    <tr>
+                      <td>Mon 23:05</td>
+                      <td>Spring campaign</td>
+                      <td>Poster variant B</td>
+                      <td>Content filter</td>
+                      <td class="n">4</td>
+                    </tr>
+                    <tr>
+                      <td>Mon 14:40</td>
+                      <td>Spring campaign</td>
+                      <td>Hero banner</td>
+                      <td>Timed out</td>
+                      <td class="n">4</td>
+                    </tr>
+                    <tr>
+                      <td>Mon 10:12</td>
+                      <td>Podcast intro</td>
+                      <td>Voice take 2</td>
+                      <td>Provider error</td>
+                      <td class="n">6</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="ff"><span>Made in chat: Track failed runs</span><span>v1 · table</span></div>
+            </div>
+          </div>
+          <div class="stream">
+            <div class="msgs">
+              <div class="u">What failed overnight?</div>
+              <p class="p">
+                3 of 26 runs failed overnight. Both video runs timed out on Video HD, and one image was
+                blocked by the content filter.
+              </p>
+              <div class="card">
+                <div class="ch">Failed overnight</div>
+                <div class="cs">3 of 26 runs</div>
+                <div class="cb">
+                  <div class="row">
+                    <span class="t">Scene 3: dashboard tour, slow pan</span><span class="r">Timed out</span>
+                  </div>
+                  <div class="row">
+                    <span class="t">Scene 4: settings walkthrough</span><span class="r">Timed out</span>
+                  </div>
+                  <div class="row">
+                    <span class="t">Poster variant B, crowd at night</span
+                    ><span class="r">Content filter</span>
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="ch">Retry 2 video runs?</div>
+                <div class="cs">Queues both runs again on Video HD. 80 credits.</div>
+                <div class="done">✓ Confirmed</div>
+              </div>
+              <div class="u">What's my day?</div>
+              <div class="tiles">
+                <div class="tile"><small>Credits left</small><b>280</b><small>of 2,000</small></div>
+                <div class="tile"><small>Running now</small><b>5</b><small>2 retries queued</small></div>
+              </div>
+              <div class="card" style="padding: 12px 14px; display: flex; align-items: center; gap: 10px">
+                <span style="flex: 1"
+                  ><b style="font-weight: 500">Failed runs this week</b><br /><small
+                    style="color: var(--muted-fg)"
+                    >All projects · v1 · table</small
+                  ></span
+                ><span class="btn" id="p2-card-btn">Show</span>
+              </div>
+              <div class="chips">
+                <span class="chip">Make it a board</span><span class="chip">How much have we spent?</span>
+              </div>
+            </div>
+            <div class="composer">
+              <div>Ask about runs, credits or the queue <span class="send">Send</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="draft" aria-labelledby="p3">
+    <div class="note">
+      <h2 id="p3">Phase 3. A view whose body is generated</h2>
+      <p>
+        The view frame stays fixed. Only the body is written, as OpenUI Lang over this registry's own catalog,
+        the same one <code>/openui</code> uses. It renders one line at a time. If a new version fails to
+        render, the frame keeps the last good version, says what failed, and offers Retry.
+      </p>
+      <ol>
+        <li>The model can only name components the catalog exposes.</li>
+        <li>Each version is kept, so Undo and Retry are always possible.</li>
+        <li>The program can be shown beside the view, for anyone checking what the model wrote.</li>
+      </ol>
+    </div>
+    <div class="ctrl" role="group" aria-label="Phase 3 state">
+      <button class="btn primary" type="button" id="p3-stream">Stream version 2</button>
+      <button class="btn" type="button" id="p3-fail">Version 3 fails</button>
+      <button class="btn" type="button" id="p3-reset">Reset</button>
+    </div>
+    <div class="app" style="height: auto; min-height: 560px">
+      <div class="shell">
+        <div class="body docked" style="min-height: 560px">
+          <div class="view" style="display: flex">
+            <div class="frame">
+              <div class="fh">
+                <div class="tt">
+                  <b>Spend by project this week</b><span id="p3-status">All projects · generated · v2</span>
+                </div>
+                <span class="btn">Undo</span><span class="btn">Rerun</span>
+              </div>
+              <div class="fc">
+                <div class="split">
+                  <div
+                    style="display: flex; flex-direction: column; gap: 12px; min-width: 0"
+                    id="p3-body"
+                  ></div>
+                  <aside class="side" aria-label="Program">
+                    <h3>What the model wrote</h3>
+                    <div class="code" id="p3-code"></div>
+                  </aside>
+                </div>
+              </div>
+              <div class="ff">
+                <span>Made in chat: Show spend by project</span><span id="p3-ver">v2 · generated</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  function setP2(docked) {
+    $("p2-body").classList.toggle("docked", docked);
+    $("p2-rail").classList.toggle("collapsed", docked);
+    $("p2-chat").setAttribute("aria-pressed", String(!docked));
+    $("p2-view").setAttribute("aria-pressed", String(docked));
+    $("p2-chat").classList.toggle("primary", !docked);
+    $("p2-view").classList.toggle("primary", docked);
+    $("p2-card-btn").textContent = docked ? "Showing" : "Show";
+  }
+  $("p2-chat").onclick = () => setP2(false);
+  $("p2-view").onclick = () => setP2(true);
+  $("p2-card-btn").onclick = () => setP2(true);
+
+  const LINES = [
+    ["root = Page([kpis, byProject, note])", null],
+    ["kpis = StatGroup([s1, s2, s3, s4])", null],
+    ['s1 = Stat("Video", "420 credits")', () => stats()],
+    ['s2 = Stat("Image", "150 credits")', null],
+    ['s3 = Stat("Audio", "40 credits")', null],
+    ['s4 = Stat("Total", "610 credits")', null],
+    ['byProject = Table(["Project", "Runs", "Credits"], rows)', () => table()],
+    ['note = Callout("Video is two thirds of this week\'s spend.")', () => callout()],
+  ];
+  function stats() {
+    return `<div class="stats"><div class="stat"><small>Video</small><b>420</b></div><div class="stat"><small>Image</small><b>150</b></div><div class="stat"><small>Audio</small><b>40</b></div><div class="stat"><small>Total</small><b>610</b></div></div>`;
+  }
+  function table() {
+    return `<table><thead><tr><th>Project</th><th class="n">Runs</th><th class="n">Credits</th></tr></thead><tbody><tr><td>Onboarding video</td><td class="n">9</td><td class="n">380</td></tr><tr><td>Spring campaign</td><td class="n">18</td><td class="n">170</td></tr><tr><td>Podcast intro</td><td class="n">8</td><td class="n">60</td></tr></tbody></table>`;
+  }
+  function callout() {
+    return `<div class="callout">Video is two thirds of this week's spend.</div>`;
+  }
+  let timer = null;
+  function reset() {
+    clearInterval(timer);
+    $("p3-body").innerHTML =
+      `<div class="skel" style="width:60%"></div><div class="skel"></div><div class="skel" style="width:80%"></div>`;
+    $("p3-code").textContent = "";
+    $("p3-status").textContent = "All projects · generated · v2";
+    $("p3-ver").textContent = "v2 · generated";
+  }
+  function streamV2(done) {
+    clearInterval(timer);
+    $("p3-body").innerHTML = "";
+    $("p3-code").textContent = "";
+    let i = 0;
+    timer = setInterval(() => {
+      const [line, render] = LINES[i];
+      $("p3-code").textContent += line + "\n";
+      if (render) $("p3-body").insertAdjacentHTML("beforeend", render());
+      i++;
+      if (i >= LINES.length) {
+        clearInterval(timer);
+        done && done();
+      }
+    }, 380);
+  }
+  function fail() {
+    const showFailure = () => {
+      $("p3-code").textContent += 'chart = Chart("line", spendByDay)\n';
+      $("p3-body").insertAdjacentHTML(
+        "afterbegin",
+        `<div class="alert" role="status"><b>Version 3 did not render.</b><span>It used Chart, which this catalog does not expose yet. Showing version 2.</span><span><button class="btn primary" type="button" id="p3-retry">Retry version 3</button></span></div>`,
+      );
+      $("p3-status").textContent = "All projects · generated · v2, v3 failed";
+      $("p3-retry").onclick = () => streamV2();
+    };
+    if ($("p3-body").children.length < 3) streamV2(showFailure);
+    else showFailure();
+  }
+  $("p3-stream").onclick = () => streamV2();
+  $("p3-fail").onclick = fail;
+  $("p3-reset").onclick = reset;
+  reset();
+</script>

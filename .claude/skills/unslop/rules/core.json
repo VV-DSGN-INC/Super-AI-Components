@@ -1,0 +1,1795 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "id": "EFF-1",
+      "title": "No gradient text",
+      "tier": "floor",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "bg-clip-text|(-webkit-)?background-clip:\\s*text",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use a flat text token. Carry emphasis with size, weight or position, and allow one accent word at most.",
+      "why": "Gradient text fakes hierarchy with decoration and is the most copied tell of a generated page.",
+      "fixtures": [
+        "EFF-1"
+      ]
+    },
+    {
+      "id": "EFF-2",
+      "title": "No gradients on controls or text",
+      "tier": "reflex",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "bg-gradient-|linear-gradient\\(|radial-gradient\\(",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Fill with a flat token. If the gradient was separating a region, separate it with spacing, a hairline or a surface tint.",
+      "why": "A gradient on a control is decoration standing in for a decision about emphasis.",
+      "fixtures": [
+        "EFF-2"
+      ]
+    },
+    {
+      "id": "EFF-3",
+      "title": "No indigo to violet gradient",
+      "tier": "floor",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "(?:^|[^\\w-])(?:from|via|to)-(?:indigo|violet|purple)-\\d+|(?:linear|radial)-gradient\\([^)]*(?:indigo|violet|purple|#6366f1|#4f46e5|#7c3aed|#8b5cf6)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Take the colour from the project palette and drop the gradient.",
+      "why": "The indigo to violet sweep is the single most recognisable default of generated interfaces.",
+      "fixtures": [
+        "EFF-3"
+      ]
+    },
+    {
+      "id": "EFF-4",
+      "title": "No glassmorphism without real content behind it",
+      "tier": "reflex",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "backdrop-blur|backdrop-filter",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Delete the blur layer. Separate the surface with spacing, a hairline, a tint or a card.",
+      "why": "Frosted glass over an empty background blurs nothing and only signals polish.",
+      "fixtures": [
+        "EFF-4"
+      ]
+    },
+    {
+      "id": "EFF-5",
+      "title": "No blurred orbs, spotlights or grain layers",
+      "tier": "floor",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "(?:^|[^\\w-])blur-(?:2xl|3xl|\\[\\d{2,}px\\])|(?<![\\w-])filter:\\s*blur\\(\\s*\\d{2,}px|feTurbulence|noise\\.(?:png|svg)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Delete the layer. If the page needs depth, use the project's elevation token.",
+      "why": "Ambient blobs and grain are atmosphere with no information in it.",
+      "fixtures": [
+        "EFF-5"
+      ]
+    },
+    {
+      "id": "EFF-6",
+      "title": "No coloured or glowing shadows",
+      "tier": "floor",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "shadow-(?:indigo|violet|purple|fuchsia|pink|rose|blue|sky|cyan|emerald)-\\d+|box-shadow:\\s*0(?:px)?\\s+0(?:px)?\\s+(?!0(?:px)?[\\s;,])\\d+px",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use the project's elevation token. Show focus with the focus ring and attention with hierarchy.",
+      "why": "A shadow with no offset is a glow, and a glow signals emphasis nobody chose.",
+      "fixtures": [
+        "EFF-6"
+      ]
+    },
+    {
+      "id": "EFF-7",
+      "title": "No pure black and pure white pair",
+      "tier": "reflex",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "(?:#000(?:000)?\\b|\\b(?:text|bg)-black\\b)[^}]{0,200}(?:#fff(?:fff)?\\b|\\b(?:text|bg)-white\\b)|(?:#fff(?:fff)?\\b|\\b(?:text|bg)-white\\b)[^}]{0,200}(?:#000(?:000)?\\b|\\b(?:text|bg)-black\\b)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Take both roles from the project's text and surface tokens.",
+      "why": "Pure black on pure white is a default value, and it reads as harsh against every tinted token around it.",
+      "fixtures": [
+        "EFF-7"
+      ]
+    },
+    {
+      "id": "EFF-8",
+      "title": "Hard block shadow only in a neobrutalist world",
+      "tier": "reflex",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "box-shadow:\\s*-?\\d+px\\s+-?\\d+px\\s+0(?:px)?\\s+[^,;]*;|shadow-\\[\\d+px_\\d+px_0",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use the project's elevation token. Keep a block shadow only where the product chose neobrutalism and says so in Phase 0.",
+      "why": "A 4px 4px 0 shadow imports a whole visual style without anyone deciding to.",
+      "fixtures": [
+        "EFF-8"
+      ]
+    },
+    {
+      "id": "EFF-9",
+      "title": "No blob or clip-path shape standing in for a cut-out",
+      "tier": "reflex",
+      "area": "EFF",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "clip-path:|\\bblob\\b|border-radius:\\s*[\\d.]+%\\s+[\\d.]+%\\s+[\\d.]+%\\s+[\\d.]+%\\s*/",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use a real cut-out asset of the subject, or a plain rectangle.",
+      "why": "A random organic mask pretends the image was art directed.",
+      "fixtures": [
+        "EFF-9"
+      ]
+    },
+    {
+      "id": "EFF-10",
+      "title": "No cream-paper default",
+      "tier": "reflex",
+      "area": "EFF",
+      "detect": {
+        "kind": "judgment",
+        "how": "Look for a cream page with a thin serif, an italic accent and pill buttons. Ask whether the product's world picked them or nothing was decided."
+      },
+      "fix": "Name the product's world in Phase 0 and take palette and type from it. Without one, use the system's neutral tokens.",
+      "why": "Cream paper is the current statistical median of a designed look."
+    },
+    {
+      "id": "EFF-11",
+      "title": "Secondary text on a coloured surface is tinted from it",
+      "tier": "floor",
+      "area": "EFF",
+      "detect": {
+        "kind": "judgment",
+        "how": "On every coloured surface, check that secondary text is a tint of that surface and not a neutral grey."
+      },
+      "fix": "Derive the secondary role from the surface colour.",
+      "why": "Neutral grey on a coloured surface looks pasted on and loses contrast unevenly."
+    },
+    {
+      "id": "TYP-1",
+      "title": "Only the declared families and scale",
+      "tier": "floor",
+      "area": "TYP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Compare every font family and size in the diff against the project's declared type tokens."
+      },
+      "fix": "Use the nearest declared style. Express emphasis as a weight step, not a new size.",
+      "why": "A new font or one-off size is a value invented at emission time that the next generation will not repeat."
+    },
+    {
+      "id": "TYP-2",
+      "title": "No blanket tracking-tight",
+      "tier": "reflex",
+      "area": "TYP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "tracking-tight|letter-spacing:\\s*-",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Remove it, or set tracking per style in the type scale.",
+      "why": "Applied everywhere, tight tracking is a reflex and not a decision about any one style.",
+      "fixtures": [
+        "TYP-2"
+      ]
+    },
+    {
+      "id": "TYP-3",
+      "title": "No italic-serif accent words",
+      "tier": "reflex",
+      "area": "TYP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "italic[^}]{0,200}serif|serif[^}]{0,200}italic",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Carry emphasis with weight or size in the project's face.",
+      "why": "An italic serif word inside a sans heading is the second most copied accent device.",
+      "fixtures": [
+        "TYP-3"
+      ]
+    },
+    {
+      "id": "TYP-4",
+      "title": "Hierarchy is size and weight, not decoration",
+      "tier": "floor",
+      "area": "TYP",
+      "detect": {
+        "kind": "judgment",
+        "how": "For each heading and label, check that rank comes from size or weight and not from colour, underline, badge or effect."
+      },
+      "fix": "Move rank onto the type scale.",
+      "why": "Decoration faking hierarchy is one of the four root causes of slop."
+    },
+    {
+      "id": "TYP-5",
+      "title": "No eyebrow",
+      "tier": "floor",
+      "area": "TYP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Delete any short inert line before a heading, in any geometry, and reread the section. If only a name for what follows was lost, it was an eyebrow. Figcaptions, th, labels, bylines, time and units are not eyebrows."
+      },
+      "fix": "Delete it. A lost fact becomes the heading, a caption or a th.",
+      "why": "An eyebrow labels what the heading already says."
+    },
+    {
+      "id": "TYP-6",
+      "title": "No tracked-caps label",
+      "tier": "floor",
+      "area": "TYP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "(?:uppercase|small-caps)[^}]{0,200}(?:tracking-(?:wide|wider|widest)|letter-spacing:\\s*0?\\.(?:0[3-9]|[1-9])\\d*em)|(?:tracking-(?:wide|wider|widest)|letter-spacing:\\s*0?\\.(?:0[3-9]|[1-9])\\d*em)[^}]{0,200}(?:uppercase|small-caps)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Set body-face labels one step smaller, sentence case, untracked.",
+      "why": "Small tracked capitals are the stock look of a label with nothing to say. A wordmark is excepted.",
+      "fixtures": [
+        "TYP-6"
+      ]
+    },
+    {
+      "id": "TYP-7",
+      "title": "No text under 12px",
+      "tier": "floor",
+      "area": "TYP",
+      "detect": {
+        "kind": "render",
+        "check": "tiny-text"
+      },
+      "fix": "Take the size from the type scale's smallest legible step.",
+      "why": "Text under 12px fails readers before it fails any contrast check."
+    },
+    {
+      "id": "TYP-8",
+      "title": "Headings in outline order with a visible step between levels",
+      "tier": "floor",
+      "area": "TYP",
+      "detect": {
+        "kind": "render",
+        "check": "headings"
+      },
+      "fix": "Re-level headings to the page outline. Make each level one scale step or one weight step from the next.",
+      "why": "A skipped level or a flat scale removes the structure the headings exist to give."
+    },
+    {
+      "id": "TYP-9",
+      "title": "Body measure 75ch at most",
+      "tier": "reflex",
+      "area": "TYP",
+      "detect": {
+        "kind": "render",
+        "check": "measure"
+      },
+      "fix": "Set max-width in ch on the text block.",
+      "why": "Lines past about 75 characters lose the reader's place."
+    },
+    {
+      "id": "TYP-10",
+      "title": "Body leading 1.4 or more",
+      "tier": "reflex",
+      "area": "TYP",
+      "detect": {
+        "kind": "render",
+        "check": "leading"
+      },
+      "fix": "Take line-height from the type scale's body step.",
+      "why": "Tight leading in running text blocks the eye from finding the next line."
+    },
+    {
+      "id": "TYP-11",
+      "title": "No justified or all-caps running text",
+      "tier": "reflex",
+      "area": "TYP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "text-justify|text-align:\\s*justify",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Left-align running text and keep capitals to short labels.",
+      "why": "Justified and all-caps paragraphs open rivers of space and slow reading.",
+      "fixtures": [
+        "TYP-11"
+      ]
+    },
+    {
+      "id": "TYP-12",
+      "title": "Display type 6rem at most, tracking no tighter than -0.04em",
+      "tier": "reflex",
+      "area": "TYP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "text-(?:8xl|9xl)|font-size:\\s*(?:6\\.\\d*[1-9]|[7-9](?:\\.\\d+)?|\\d{2,}(?:\\.\\d+)?)rem|letter-spacing:\\s*-0?\\.0[5-9]\\d*em",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use the display step of the type scale.",
+      "why": "Oversized, crushed headlines are a poster costume on a product screen.",
+      "fixtures": [
+        "TYP-12"
+      ]
+    },
+    {
+      "id": "TYP-13",
+      "title": "Monospace only for code, data and measurement",
+      "tier": "reflex",
+      "area": "TYP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Find every monospace run and check it holds code, data or a measurement."
+      },
+      "fix": "Use the body face and tabular numerals where alignment matters.",
+      "why": "Monospace as a technical costume signals a theme, not content."
+    },
+    {
+      "id": "LAY-1",
+      "title": "Container nesting at most one deep",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Count bordered or filled containers inside bordered or filled containers. More than one level is a violation."
+      },
+      "fix": "Dissolve the inner boundaries down the ladder and keep the content.",
+      "why": "A card inside a card shows the page was assembled rather than structured."
+    },
+    {
+      "id": "LAY-2",
+      "title": "Separation ladder",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check that each separation uses the lightest device that works: spacing, then hairline, then surface tint, then card."
+      },
+      "fix": "Step down the ladder until the grouping still reads.",
+      "why": "Reaching for a card first turns every group into a box."
+    },
+    {
+      "id": "LAY-3",
+      "title": "Radii and gaps only from the project's scale",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Compare every radius and gap in the diff to the project's scale tokens."
+      },
+      "fix": "Snap to the nearest scale step.",
+      "why": "Off-scale values drift with each generation."
+    },
+    {
+      "id": "LAY-4",
+      "title": "No exactly-three-equal-cards reflex",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "grid-cols-3\\b|repeat\\(\\s*3\\s*,\\s*(?:1fr|minmax)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Rank the content. Give the answering item the dominant cell and move the rest to a row or table.",
+      "why": "Three equal cards are the default shape of content nobody ranked.",
+      "fixtures": [
+        "LAY-4"
+      ]
+    },
+    {
+      "id": "LAY-5",
+      "title": "No identical stat-card strips",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Look for a row of same-sized cards each holding a number and a label."
+      },
+      "fix": "Rank the stats. Lead with the one that answers the screen's question and demote the rest.",
+      "why": "A strip of equal stats ranks nothing."
+    },
+    {
+      "id": "LAY-6",
+      "title": "No bento mosaic of same-sized cells",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Look for a grid where every cell has the same size and weight."
+      },
+      "fix": "Size cells by the importance of their content.",
+      "why": "A bento with uniform cells keeps the look and loses the point."
+    },
+    {
+      "id": "LAY-7",
+      "title": "No hero-metric block standing in for a headline",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Look for a big number with a small label and supporting stats where a headline belongs."
+      },
+      "fix": "Lead with the real headline. A number gets size only as the answer to the screen's question.",
+      "why": "A hero metric is a template layout filled with invented weight."
+    },
+    {
+      "id": "LAY-8",
+      "title": "No section numbers unless order is information",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": ">\\s*0[1-9]\\.?\\s*<|(?:number|step|index|num)[\"']?\\s*[:=]\\s*\\{?\\s*[\"']0[1-9][\"']",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Remove the ordinals, or keep them where the order matters.",
+      "why": "01 / 02 / 03 decorates sections that have no sequence.",
+      "fixtures": [
+        "LAY-8"
+      ]
+    },
+    {
+      "id": "LAY-9",
+      "title": "No modal for a task that neither interrupts nor needs locked focus",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "For each modal, check the task interrupts the user or needs focus locked. If not, it belongs inline or in a panel."
+      },
+      "fix": "Move the task inline or into a panel.",
+      "why": "A modal takes the whole screen for something that did not need it."
+    },
+    {
+      "id": "LAY-10",
+      "title": "The most important element is visibly dominant",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Squint at the screen: one element should win, and sections should not share one anatomy."
+      },
+      "fix": "Rank the content and make one element larger, heavier or higher than the rest.",
+      "why": "Equal weight everywhere means no hierarchy was decided."
+    },
+    {
+      "id": "LAY-11",
+      "title": "More space above a heading than below it",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Measure the space above and below each heading; above must be larger."
+      },
+      "fix": "Raise the space above or lower the space below, from the spacing scale.",
+      "why": "A heading closer to its content than to the previous block reads as belonging to it."
+    },
+    {
+      "id": "LAY-12",
+      "title": "Text and cards stay off the screen edge",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "render",
+        "check": "edge"
+      },
+      "fix": "Add a gutter from the spacing scale, 16px at 375 at least.",
+      "why": "Text touching the screen edge reads as clipped."
+    },
+    {
+      "id": "LAY-13",
+      "title": "Padding inside a bordered or filled box is from the spacing scale",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check each bordered or filled box for padding taken from the scale and not squeezed against its text."
+      },
+      "fix": "Use a spacing-scale step for the padding.",
+      "why": "Cramped boxes make a screen feel unfinished."
+    },
+    {
+      "id": "LAY-14",
+      "title": "No default dashboard shell",
+      "tier": "reflex",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Ask what the screen's job is and the one decision the user makes on it. A shell of sidebar, top bar, four stat cards, chart and table chosen first is a hit."
+      },
+      "fix": "Name the job and the decision. The deciding list or table is the page and the stat row is a footnote or gone.",
+      "why": "The default shell is picked before anyone knows what the screen is for."
+    },
+    {
+      "id": "LAY-15",
+      "title": "Layout does not move on state change",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "render",
+        "check": "state-moves"
+      },
+      "fix": "Reserve the space at rest, with invisible or opacity-0 or the same border in transparent. Put the signal on colour, shadow, ring or opacity.",
+      "why": "A box that shifts on hover or focus makes the page jump under the pointer."
+    },
+    {
+      "id": "LAY-16",
+      "title": "No raw colour values where tokens exist",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "(?<!^[^\\n]*--[\\w-]+\\s*:[^\\n]*)(?:(?<=[:=(,]\\s*[\"'`{]{0,2})(?<!(?:href|src|to|id|for|xlinkHref)\\s*=\\s*[\"'{]{0,2}|url\\()#[0-9a-fA-F]{3,8}\\b|\\b(?:rgba?|hsla?)\\((?!\\s*var\\())",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ],
+        "requires": "tokens"
+      },
+      "fix": "Use the project's token matched by usage. If none fits, propose a token and do not inline a value.",
+      "why": "A raw value is a colour decided at emission time that will drift.",
+      "fixtures": [
+        "LAY-16"
+      ]
+    },
+    {
+      "id": "LAY-17",
+      "title": "No arbitrary pixel values",
+      "tier": "floor",
+      "area": "LAY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "\\[-?\\d+(?:\\.\\d+)?px\\]",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ],
+        "requires": "scale"
+      },
+      "fix": "Snap to the nearest step of the project's scale.",
+      "why": "Arbitrary values escape the scale and multiply.",
+      "fixtures": [
+        "LAY-17"
+      ]
+    },
+    {
+      "id": "LAY-18",
+      "title": "Counts stay inside the scale",
+      "tier": "finish",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Count distinct font sizes (7 at most), radii and shadows (a subset of the project's scale) and saturated accents (1 per viewport)."
+      },
+      "fix": "Converge onto existing steps.",
+      "why": "A count that grows shows decisions being remade each generation."
+    },
+    {
+      "id": "LAY-19",
+      "title": "Ratchet: distinct radii, shadows and sizes did not grow",
+      "tier": "finish",
+      "area": "LAY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Compare the number of distinct radii, shadows and sizes before and after the change."
+      },
+      "fix": "Converge onto existing steps. New steps enter through the token system only.",
+      "why": "A ratchet that only turns one way keeps drift visible."
+    },
+    {
+      "id": "CMP-1",
+      "title": "Compose from the project's library",
+      "tier": "floor",
+      "area": "CMP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Search the library before creating a component. Flag any new component that duplicates an existing one, such as a V2."
+      },
+      "fix": "Delete the new one and extend the existing one through its variant props.",
+      "why": "Duplicate components are per-emission amnesia made visible."
+    },
+    {
+      "id": "CMP-2",
+      "title": "No coloured left-border accent strip",
+      "tier": "reflex",
+      "area": "CMP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "(?<!blockquote[^{}]*\\{[^{}]*|^[^\\n]*blockquote[^\\n]*)(?:border-l-[2-8]\\b|border-left:\\s*[2-9]\\d*px\\s+solid)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Dissolve the strip. If it carries meaning, give that meaning a word or an icon.",
+      "why": "A coloured edge on a callout is a decoration standing in for a label.",
+      "fixtures": [
+        "CMP-2"
+      ]
+    },
+    {
+      "id": "CMP-3",
+      "title": "No icon in a tinted rounded tile above a heading",
+      "tier": "floor",
+      "area": "CMP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Look for a small icon in a tinted rounded square directly above a heading."
+      },
+      "fix": "Delete the tile. Lead with the heading, or set the icon inline at its normal size.",
+      "why": "The tile is the stock opener of generated feature cards."
+    },
+    {
+      "id": "CMP-4",
+      "title": "No AI-powered badge theater",
+      "tier": "floor",
+      "area": "CMP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "AI-powered|AI powered|Powered by AI",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "State what the feature does in a plain sentence.",
+      "why": "A badge about the technology tells the reader nothing about the product.",
+      "fixtures": [
+        "CMP-4"
+      ]
+    },
+    {
+      "id": "CMP-5",
+      "title": "No unlabeled sparkle icons",
+      "tier": "floor",
+      "area": "CMP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "✨|\\bSparkles?\\b|sparkle",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use the project's icon for the action, with an accessible name, or nothing.",
+      "why": "A sparkle replaces the name of the feature with a mood.",
+      "fixtures": [
+        "CMP-5"
+      ]
+    },
+    {
+      "id": "CMP-6",
+      "title": "Every control does something",
+      "tier": "floor",
+      "area": "CMP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Trace each form, link and button to a handler or a destination. A form that prints Sent without a request, or a link to nowhere, is a hit."
+      },
+      "fix": "Validate and post nowhere, and say on screen that nothing was sent. Remove the dead link or label it Coming soon.",
+      "why": "A control that appears to work invents an outcome."
+    },
+    {
+      "id": "CMP-7",
+      "title": "One filled control per view",
+      "tier": "reflex",
+      "area": "CMP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Count filled controls in the viewport. More than one is a hit."
+      },
+      "fix": "Demote the others to outlined or plain.",
+      "why": "One solid shape marks the way forward."
+    },
+    {
+      "id": "ICO-1",
+      "title": "One icon library, one weight, two or three sizes",
+      "tier": "floor",
+      "area": "ICO",
+      "detect": {
+        "kind": "judgment",
+        "how": "List the icon sources, stroke weights and sizes in the diff."
+      },
+      "fix": "Use the project's icon set at its sizes, or nothing.",
+      "why": "Mixed sets make the interface look stitched together."
+    },
+    {
+      "id": "ICO-2",
+      "title": "No emoji in chrome",
+      "tier": "reflex",
+      "area": "ICO",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "[\\u{1F300}-\\u{1FAFF}\\u{2600}-\\u{27BF}\\u{2B50}]",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use the project icon set at its sizes, or nothing.",
+      "why": "Emoji render differently on every platform and read as filler.",
+      "fixtures": [
+        "ICO-2"
+      ]
+    },
+    {
+      "id": "MOT-1",
+      "title": "No idle loops",
+      "tier": "floor",
+      "area": "MOT",
+      "detect": {
+        "kind": "render",
+        "check": "motion-rest"
+      },
+      "fix": "Bind the motion to a real state change or render it static.",
+      "why": "Motion that runs on an idle page asks for attention with nothing to say."
+    },
+    {
+      "id": "MOT-2",
+      "title": "No scroll-reveal, marquee, typewriter or parallax",
+      "tier": "floor",
+      "area": "MOT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "<marquee|marquee|typewriter|parallax|data-aos|aos-animate|scroll-reveal|ScrollReveal",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro",
+          "**/*.js",
+          "**/*.ts"
+        ]
+      },
+      "fix": "Render the content static. Use a named transition for a real state change.",
+      "why": "These effects are a catalogue of motion tricks, each unrelated to what the screen does.",
+      "fixtures": [
+        "MOT-2"
+      ]
+    },
+    {
+      "id": "MOT-3",
+      "title": "Never transition all",
+      "tier": "floor",
+      "area": "MOT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "transition-all|transition:\\s*all",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Name the properties and use ease-out.",
+      "why": "transition all animates properties nobody meant to animate.",
+      "fixtures": [
+        "MOT-3"
+      ]
+    },
+    {
+      "id": "MOT-4",
+      "title": "Transition transform and opacity only",
+      "tier": "floor",
+      "area": "MOT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "transition(?:-property)?:\\s*(?:[^;}\\n,]|,(?!\\s*[A-Za-z-]+\\s*:))*\\b(?:width|height|top|left|right|bottom|margin|padding)\\b|transition-\\[[^\\]]*(?:width|height|top|left|margin|padding)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Animate transform or opacity.",
+      "why": "Layout properties force reflow on every frame.",
+      "fixtures": [
+        "MOT-4"
+      ]
+    },
+    {
+      "id": "MOT-5",
+      "title": "A prefers-reduced-motion guard wherever keyframes exist",
+      "tier": "reflex",
+      "area": "MOT",
+      "detect": {
+        "kind": "co-occur",
+        "when": "@keyframes|animation:|animate-",
+        "must": "prefers-reduced-motion|motion-reduce:|motion-safe:",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Add a reduced-motion override that disables or shortens the animation.",
+      "why": "Motion without a guard ignores a setting the user already made.",
+      "fixtures": [
+        "MOT-5"
+      ]
+    },
+    {
+      "id": "MOT-6",
+      "title": "Nothing hidden at rest",
+      "tier": "reflex",
+      "area": "MOT",
+      "detect": {
+        "kind": "co-occur",
+        "when": "opacity:\\s*0(?![.\\d])|visibility:\\s*hidden",
+        "must": "\\.js\\s[.#a-z]|html\\.js|\\.js\\s*\\{|@starting-style",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Keep it visible by default. Hide under a .js class only, or animate from visible with @starting-style.",
+      "why": "A reveal class that waits for a script ships a blank page when the script fails.",
+      "fixtures": [
+        "MOT-6"
+      ]
+    },
+    {
+      "id": "MOT-7",
+      "title": "Interval and frame loops run only while visible",
+      "tier": "reflex",
+      "area": "MOT",
+      "detect": {
+        "kind": "co-occur",
+        "when": "setInterval\\(|requestAnimationFrame\\(",
+        "must": "document\\.hidden|visibilityState|IntersectionObserver",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro",
+          "**/*.js",
+          "**/*.ts"
+        ]
+      },
+      "fix": "Gate the loop on document.hidden or the view's own active flag.",
+      "why": "A loop that runs in a hidden view burns battery and does nothing.",
+      "fixtures": [
+        "MOT-7"
+      ]
+    },
+    {
+      "id": "MOT-8",
+      "title": "No animate- classes outside sanctioned loaders",
+      "tier": "floor",
+      "area": "MOT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "animate-",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ],
+        "requires": "loaders"
+      },
+      "fix": "Bind the animation to a state change, or remove it. Loaders named in Phase 0 are exempt.",
+      "why": "Stock animate- utilities are the usual source of idle motion.",
+      "fixtures": [
+        "MOT-8"
+      ]
+    },
+    {
+      "id": "CPY-1",
+      "title": "Verb and object labels",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "[Gg]et [Ss]tarted|[Ll]earn [Mm]ore|[Rr]ead [Mm]ore|[Cc]lick [Hh]ere",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Say what the control does, with a verb and an object.",
+      "why": "A generic label hides the action behind it.",
+      "fixtures": [
+        "CPY-1"
+      ]
+    },
+    {
+      "id": "CPY-2",
+      "title": "No banned register",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "[Ee]levate|[Uu]nlock|[Ee]mpower|[Ss]upercharge|[Ss]eamless|[Ee]ffortless",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Say what the thing does in a plain sentence. Delete an unprovable adjective.",
+      "why": "These words make a claim the interface cannot back.",
+      "fixtures": [
+        "CPY-2"
+      ]
+    },
+    {
+      "id": "CPY-3",
+      "title": "No not-just-X-it's-Y construction",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "[Nn]ot just\\b[^.<]{0,60}\\bit['’]s|isn['’]t just|[Nn]ot only\\b[^.<]{0,60}\\bbut",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "State the positive claim directly.",
+      "why": "The construction is a recognised model rhythm and it hedges.",
+      "fixtures": [
+        "CPY-3"
+      ]
+    },
+    {
+      "id": "CPY-4",
+      "title": "No exclamation marks in microcopy",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "(?<!=)>[^<>{}=;]*[A-Za-z]!(?:\\s|<)",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "End the sentence with a full stop, or report the result.",
+      "why": "Enthusiasm in microcopy is cheerleading.",
+      "fixtures": [
+        "CPY-4"
+      ]
+    },
+    {
+      "id": "CPY-5",
+      "title": "No aphoristic cadence",
+      "tier": "reflex",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": ">\\s*[A-Z][a-z]+\\.\\s+[A-Z][a-z]+\\.(?:\\s+[A-Z][a-z]+\\.)?\\s*<",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Write one plain sentence with a verb that says what the thing does.",
+      "why": "A run of short fragments stands in for a sentence.",
+      "fixtures": [
+        "CPY-5"
+      ]
+    },
+    {
+      "id": "CPY-6",
+      "title": "No cheerleading or celebration for a routine action",
+      "tier": "reflex",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "You['’]ve got this|Great job|Well done|[Cc]onfetti|[Tt]rophy",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "State the result plainly with the next small action. A celebration becomes the result plus Undo.",
+      "why": "The interface should report what happened and not applaud.",
+      "fixtures": [
+        "CPY-6"
+      ]
+    },
+    {
+      "id": "CPY-7",
+      "title": "No fabricated numbers, names, quotes, logos or demo data",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check every number, name, quote, logo and row against a real source. Anything no real system could emit is a hit."
+      },
+      "fix": "Delete the claim or use an honest placeholder that names what goes there.",
+      "why": "Fabrication pressure is one of the four root causes of slop."
+    },
+    {
+      "id": "CPY-8",
+      "title": "No middle-dot meta strings",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "\\S\\s·\\s[^·<>]{1,40}\\s·\\s\\S",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use line breaks, columns or hairlines. A single dot in a byline is fine.",
+      "why": "Dot-joined strings are a template for metadata nobody structured.",
+      "fixtures": [
+        "CPY-8"
+      ]
+    },
+    {
+      "id": "CPY-9",
+      "title": "No arrow glued to link or button text",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "[A-Za-z]\\s*(?:→|&rarr;|&#8594;)\\s*<",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use a verb as the label. The arrow adds nothing.",
+      "why": "Learn more with an arrow is the stock call to action.",
+      "fixtures": [
+        "CPY-9"
+      ]
+    },
+    {
+      "id": "CPY-10",
+      "title": "No decorative status dot before a label",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check each dot before a label. A dot that marks a live state is legal; a decorative one is a hit."
+      },
+      "fix": "Remove the dot, or tie it to a real state.",
+      "why": "A dot with no state behind it implies liveness that is not there."
+    },
+    {
+      "id": "CPY-11",
+      "title": "No filler people",
+      "tier": "floor",
+      "area": "CPY",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "John Doe|Jane Doe|johndoe@|Sarah Chen|Jane Smith|John Smith|Lorem ipsum",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Leave the cell empty or use an honest placeholder such as Your name.",
+      "why": "Invented people make the data look real and are not.",
+      "fixtures": [
+        "CPY-11"
+      ]
+    },
+    {
+      "id": "CHT-1",
+      "title": "Project chart palette only",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "8884d8|82ca9d|strokeDasharray=\"3 3\"",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro",
+          "**/*.js",
+          "**/*.ts"
+        ]
+      },
+      "fix": "Take series colours from the project palette. Use a plain line with direct labels.",
+      "why": "These are the library defaults every generated chart shares.",
+      "fixtures": [
+        "CHT-1"
+      ]
+    },
+    {
+      "id": "CHT-2",
+      "title": "Linear or step interpolation",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "type=\"monotone\"|type=\"basis\"|curve(?:Basis|Natural|CatmullRom|Monotone\\w*)|smooth:\\s*true",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro",
+          "**/*.js",
+          "**/*.ts"
+        ]
+      },
+      "fix": "Use linear or step.",
+      "why": "A smoothed curve draws values that were never measured.",
+      "fixtures": [
+        "CHT-2"
+      ]
+    },
+    {
+      "id": "CHT-3",
+      "title": "No gradient area fills",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "<linearGradient|createLinearGradient",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro",
+          "**/*.js",
+          "**/*.ts"
+        ]
+      },
+      "fix": "Fill with a flat token at a fixed opacity, or no fill.",
+      "why": "A gradient under a line is decoration.",
+      "fixtures": [
+        "CHT-3"
+      ]
+    },
+    {
+      "id": "CHT-4",
+      "title": "Flat marks",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check chart marks for shadows, glows, 3D and rounded caps that carry no data."
+      },
+      "fix": "Draw plain flat marks.",
+      "why": "Effects on marks compete with the data."
+    },
+    {
+      "id": "CHT-5",
+      "title": "Units visible",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check that every axis, value and legend shows its unit."
+      },
+      "fix": "Add the unit to the axis label or value.",
+      "why": "A number without a unit cannot be read."
+    },
+    {
+      "id": "CHT-6",
+      "title": "Bars are zero-based",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check each bar chart's axis starts at zero."
+      },
+      "fix": "Start the axis at zero, or use a different mark.",
+      "why": "A truncated bar axis misstates the ratio between bars."
+    },
+    {
+      "id": "CHT-7",
+      "title": "Fewer than four data points is a stat, not a chart",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "judgment",
+        "how": "Count the data points in each chart."
+      },
+      "fix": "Show a stat with its comparison.",
+      "why": "A chart of three points shows less than the three numbers."
+    },
+    {
+      "id": "CHT-8",
+      "title": "The chart title is the question it answers",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "<(?:h[1-6]|CardTitle)[^>]*>\\s*(?:Overview|Performance|Analytics|Statistics)\\s*<",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro",
+          "**/*.js",
+          "**/*.ts"
+        ]
+      },
+      "fix": "Write the question, such as Failed jobs per hour, last 24h.",
+      "why": "A generic title leaves the reader to guess the chart's job.",
+      "fixtures": [
+        "CHT-8"
+      ]
+    },
+    {
+      "id": "CHT-9",
+      "title": "A delta needs a named comparison period",
+      "tier": "floor",
+      "area": "CHT",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check every change figure such as +12% names what it compares against and over what period."
+      },
+      "fix": "Name the comparison or delete the delta.",
+      "why": "An unanchored delta is an invented claim."
+    },
+    {
+      "id": "CHT-10",
+      "title": "One channel, one variable",
+      "tier": "reflex",
+      "area": "CHT",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check that colour, length, position and size each encode one thing."
+      },
+      "fix": "Give the second variable its own channel: position, length or a label.",
+      "why": "A mark whose colour and length mean different things asks the reader to decode two scales at once."
+    },
+    {
+      "id": "STA-1",
+      "title": "Empty, loading, error and populated states are all designed",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Render each of the four states for every data-driven view."
+      },
+      "fix": "Empty is a sentence plus the creating action, loading a matched skeleton, error a cause plus retry.",
+      "why": "A happy-path-only screen breaks on the first real day."
+    },
+    {
+      "id": "STA-2",
+      "title": "Anything that fetches carries an honest offline or stale tell",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check each fetching view for a visible offline or stale indicator and no mock data shown as live."
+      },
+      "fix": "Add the offline or stale tell. Never fall back silently.",
+      "why": "Fallback data rendered as live is fabrication."
+    },
+    {
+      "id": "STA-3",
+      "title": "Visible focus on everything interactive",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "render",
+        "check": "no-focus"
+      },
+      "fix": "Add a visible focus style from the project's ring token.",
+      "why": "Keyboard users cannot see where they are without it."
+    },
+    {
+      "id": "STA-4",
+      "title": "AA contrast on the actual surface in every theme",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "render",
+        "check": "contrast"
+      },
+      "fix": "Move up the text ramp or lighten the surface. Do not use a one-off darker hex.",
+      "why": "Contrast read against the real pixels is what the eye sees."
+    },
+    {
+      "id": "STA-5",
+      "title": "A surface that keeps its colour in both themes keeps its text roles",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check surfaces that do not flip with the theme. Their text must not invert against them."
+      },
+      "fix": "Read roles that do not invert for that surface.",
+      "why": "Inverting text on a fixed surface fails in one theme."
+    },
+    {
+      "id": "STA-6",
+      "title": "Never colour alone",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check each state carried by colour, such as overdue, failed or over budget, also carries a word, icon, shape or position."
+      },
+      "fix": "Add the word, icon, shape or position. Keep the colour as reinforcement.",
+      "why": "Colour-only state fails colour-blind users and greyscale prints."
+    },
+    {
+      "id": "STA-7",
+      "title": "Themes flip tokens, not components",
+      "tier": "reflex",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check dark mode is the same component reading flipped roles and not a forked variant."
+      },
+      "fix": "Read one component against role tokens.",
+      "why": "Forked dark variants drift apart."
+    },
+    {
+      "id": "STA-8",
+      "title": "Semantic elements, no onClick divs",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "<(?:div|span)\\b[^>]*\\bon[Cc]lick",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use a button or a link.",
+      "why": "A div with a click handler has no keyboard behaviour or role.",
+      "fixtures": [
+        "STA-8"
+      ]
+    },
+    {
+      "id": "STA-9",
+      "title": "Accessible names on icon buttons",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check each icon-only button has an accessible name."
+      },
+      "fix": "Add aria-label or visible text, and a tooltip for sighted users.",
+      "why": "An icon without a name is silent to a screen reader."
+    },
+    {
+      "id": "STA-10",
+      "title": "No broken image on load",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "render",
+        "check": "broken-image"
+      },
+      "fix": "Fix the path. An image that may be missing gets a sized placeholder and alt text.",
+      "why": "A broken image is the first thing the eye catches."
+    },
+    {
+      "id": "STA-11",
+      "title": "No uncaught script error on load",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "render",
+        "check": "script-error"
+      },
+      "fix": "Fix the error.",
+      "why": "An uncaught error means part of the page may not run."
+    },
+    {
+      "id": "STA-12",
+      "title": "Chrome states are designed and checked",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Render every collapsed, compact and truncating mode and look at a screenshot. Check truncation is decided for the whole tree."
+      },
+      "fix": "Design the collapsed mode as its own state. Icons keep labels as tooltips or accessible names.",
+      "why": "A clipped focus ring passes the DOM check and fails the eye."
+    },
+    {
+      "id": "STA-13",
+      "title": "Browser surfaces are themed",
+      "tier": "finish",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check selection colour, caret, scrollbar and tabular numerals are set and not left at browser defaults."
+      },
+      "fix": "Set accent-color, caret-color, ::selection, scrollbar styling and tabular numerals from the tokens.",
+      "why": "Default browser surfaces are the cheapest tell of an assembled page."
+    },
+    {
+      "id": "STA-14",
+      "title": "Hostile fixtures",
+      "tier": "floor",
+      "area": "STA",
+      "detect": {
+        "kind": "judgment",
+        "how": "Run the screen against the worst real day, 3x strings, a one-letter name, a count of one, missing fields, diacritics, empty, error, offline, mixed-sign data, 200% zoom, 40% longer labels, one 40-character token, a right-to-left run and another locale's number and date format."
+      },
+      "fix": "Design for the worst real day and fix what breaks.",
+      "why": "The demo's good day hides the failures real data shows."
+    },
+    {
+      "id": "RSP-1",
+      "title": "No horizontal scroll at 375px",
+      "tier": "floor",
+      "area": "RSP",
+      "detect": {
+        "kind": "render",
+        "check": "overflow"
+      },
+      "fix": "Use mobile-first bases and let content wrap or scroll inside its own container.",
+      "why": "Sideways scroll on a phone breaks the page."
+    },
+    {
+      "id": "RSP-2",
+      "title": "Tap targets of at least 24px, 44px in sticky bars",
+      "tier": "floor",
+      "area": "RSP",
+      "detect": {
+        "kind": "render",
+        "check": "tap-target"
+      },
+      "fix": "Pad the hit area.",
+      "why": "Small targets cause mis-taps."
+    },
+    {
+      "id": "RSP-3",
+      "title": "No hover-only actions",
+      "tier": "floor",
+      "area": "RSP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check every action revealed on hover is also reachable by focus and on touch."
+      },
+      "fix": "Show the action at rest, or add a kebab menu.",
+      "why": "Touch has no hover."
+    },
+    {
+      "id": "RSP-4",
+      "title": "Tables get a small-screen strategy",
+      "tier": "floor",
+      "area": "RSP",
+      "detect": {
+        "kind": "judgment",
+        "how": "Check each table at 375px for a stacked, scrolling or reduced layout."
+      },
+      "fix": "Choose a strategy: stacked rows, horizontal scroll in a container, or fewer columns.",
+      "why": "A table at 375px otherwise overflows."
+    },
+    {
+      "id": "RSP-5",
+      "title": "dvh, not vh, for shells",
+      "tier": "floor",
+      "area": "RSP",
+      "detect": {
+        "kind": "pattern",
+        "pattern": "\\d(?:\\.\\d+)?vh\\b|(?:min-|max-)?h-screen",
+        "files": [
+          "**/*.css",
+          "**/*.scss",
+          "**/*.html",
+          "**/*.tsx",
+          "**/*.jsx",
+          "**/*.vue",
+          "**/*.svelte",
+          "**/*.astro"
+        ]
+      },
+      "fix": "Use dvh.",
+      "why": "vh ignores the mobile browser toolbar and overflows.",
+      "fixtures": [
+        "RSP-5"
+      ]
+    }
+  ]
+}

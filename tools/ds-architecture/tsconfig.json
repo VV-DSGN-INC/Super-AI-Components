@@ -11,5 +11,8 @@
     "skipLibCheck": true
   },
   "include": ["src", "scripts", "stages"],
-  "exclude": ["node_modules", "**/__fixtures__/**"]
+  // record-streams.ts imports `ai`, which this repo never installs: it is a
+  // template a target runs where `ai` already is. It typechecks clean there
+  // (strict, ai@6.0.235); checking it here would only report the missing module.
+  "exclude": ["node_modules", "**/__fixtures__/**", "stages/10-runtime-identity-and-streams/reference/record-streams.ts"]
 }

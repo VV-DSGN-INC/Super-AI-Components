@@ -8,6 +8,7 @@ import { StatReadout, type StatReadoutItem } from "./stat-readout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { AiLabel } from "@/registry/super-ai/ai-label";
 
 type EscalationTrigger = "user" | "budget-exhausted" | "low-confidence" | "policy";
 type EscalationState = "preview" | "queued" | "accepted" | "unavailable";
@@ -49,6 +50,17 @@ const TRIGGER_COPY: Record<EscalationTrigger, string> = {
   "low-confidence": "I'm not confident enough about this one to act on it. Passing it to a person.",
   policy: "This needs a person to review before anything happens.",
 };
+
+/**
+ * The packet is the AI's summary of the conversation, so it carries A13
+ * `ai-label`. Until a person accepts it reads `summarized`; once one has, it
+ * reads `after-handoff`, so the reader can see where the AI stopped (Intercom
+ * Fin keeps the mark for the same reason). The host's thread applies the same
+ * switch to the AI's earlier turns, which this card does not render.
+ */
+function packetLabel(state: EscalationState) {
+  return state === "accepted" ? "after-handoff" : "summarized";
+}
 
 function EscalationHandoff({
   trigger,
@@ -101,7 +113,7 @@ function EscalationHandoff({
             conversation being forwarded, which makes this the privacy control
             as much as the accuracy one. */}
         <section data-slot="escalation-handoff-packet" className="flex flex-col gap-2">
-          <SectionHeader title="What they'll see" />
+          <SectionHeader title="What they'll see" action={<AiLabel variant={packetLabel(state)} />} />
           <p className="text-sm">{packet.summary}</p>
 
           {packet.slots && packet.slots.length > 0 ? <StatReadout items={packet.slots} /> : null}

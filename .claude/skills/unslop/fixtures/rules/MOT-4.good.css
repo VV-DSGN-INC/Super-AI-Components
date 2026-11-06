@@ -1,0 +1,4 @@
+.bar { transition: transform 0.2s; }
+.chip { transition: opacity 0.2s; }
+.box { width: 200px; }
+.row { transition: opacity 0.2s, transform 0.2s; }

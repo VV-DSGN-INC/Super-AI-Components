@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 
 allowBuilds:
+  "@openuidev/lang-core": false
   esbuild: true
   sharp: true
   unrs-resolver: true

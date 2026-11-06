@@ -4,6 +4,7 @@ import {
   LockedKeepsTheShape,
   SameBoxEveryState,
   SelectModeWithHoverActions,
+  WatermarkOpensCredentials,
 } from "./result-card.examples";
 
 /**
@@ -44,6 +45,10 @@ export const ResultCardDocs: ComponentDocs = {
       note: "Hover actions, revealed on hover or keyboard focus. Suppressed whenever the checkbox is present.",
     },
     {
+      slot: "result-card-watermark",
+      note: "The `watermarked` mark: A13 `ai-label` at the frame's bottom-end corner, over the media and outside the tile button. Rendered in `done` only. Holds whatever `renderWatermark` returns, which is where N16 `content-credentials` goes.",
+    },
+    {
       slot: "result-card-retry",
       note: "Retry, rendered inside the failed treatment rather than anywhere else.",
     },
@@ -57,7 +62,7 @@ export const ResultCardDocs: ComponentDocs = {
     },
   ],
   usage:
-    "Render the card the moment a generation is requested, in `idle` or `queued`, so the slot exists at its final aspect ratio before any pixels do — then move it through `streaming` to `done`, `failed` or `locked` by updating `state`. Pass the media as children; the card treats it as opaque, so an image, a video, a waveform or a block of generated text all work without a variant. Put the prompt excerpt in `label` (it renders as an overlay, costing no layout) and cost, provenance and per-result actions in `footer`. Supply `onRetry` for failures and `lockedAction` for paywalled results. Leave `selectable` off for ordinary browsing; F2 `generation-grid` turns it on for every card at once when the user enters select mode.",
+    "Render the card the moment a generation is requested, in `idle` or `queued`, so the slot exists at its final aspect ratio before any pixels do — then move it through `streaming` to `done`, `failed` or `locked` by updating `state`. Pass the media as children; the card treats it as opaque, so an image, a video, a waveform or a block of generated text all work without a variant. Put the prompt excerpt in `label` (it renders as an overlay, costing no layout) and cost, provenance and per-result actions in `footer`. Supply `onRetry` for failures and `lockedAction` for paywalled results. Set `watermark` to draw A13 `ai-label` on a finished asset, `generated` or `edited`; to open the provenance panel from it, pass `renderWatermark={(mark) => <ContentCredentials credentials={record}>{mark}</ContentCredentials>}`. The card cannot import N16 `content-credentials` itself, because components in this registry never depend on each other, so the host does the wrapping. Leave `selectable` off for ordinary browsing; F2 `generation-grid` turns it on for every card at once when the user enters select mode.",
   dos: [
     {
       text: "Change `state` on one card rather than swapping components — the box is identical in every state, which is the whole point.",
@@ -66,6 +71,10 @@ export const ResultCardDocs: ComponentDocs = {
     {
       text: "Give `locked` the shape of what would have been made plus a CTA, never an empty box with a padlock.",
       example: <LockedKeepsTheShape />,
+    },
+    {
+      text: "Mark generated media on the asset with `watermark`, and hand N16 `content-credentials` in through `renderWatermark` so the panel opens from that same mark.",
+      example: <WatermarkOpensCredentials />,
     },
   ],
   donts: [
@@ -84,6 +93,7 @@ export const ResultCardDocs: ComponentDocs = {
       "So the tab order rearranges itself under a keyboard user as results resolve — a focusable tile becomes an inert frame with a Retry button the instant a generation fails.",
       "Hover actions are mounted at `opacity-0` and revealed by `group-focus-within`, so Tab reaches them and they become visible when it does. They are suppressed outright in select mode, which is the intended exclusivity rather than a keyboard gap.",
       'The tile is focusable and pressable while `streaming`, before there is any result. If `onSelect` opens a lightbox, guard it on `state === "done"` yourself.',
+      "`watermark` alone adds no tab stop: the A13 chip is a note, not a control. With `renderWatermark` the chip takes `tabIndex={0}`, after the tile and any actions in DOM order, so a hover-card trigger such as N16's opens on focus as well as on hover.",
       "Space and Enter activate everything; Space toggles the checkbox. There is no Escape, no Delete, and no arrow-key movement — anything grid-shaped belongs to F2 `generation-grid`.",
     ],
     screenReader: [
@@ -93,6 +103,7 @@ export const ResultCardDocs: ComponentDocs = {
       'Each card renders its own sr-only `role="status"` region carrying the lifecycle word: "Queued", "Generating", "Result ready", "Generation failed", "Locked". A grid of twenty is twenty polite live regions competing as results land.',
       'While `streaming` with a numeric `progress`, that region reads "Generating, 42%" and its text changes on every update you push, so every tick is queued for announcement. M6 `rate-limit-banner` solves the same problem by bucketing its live text to whole minutes; this one does not, so the throttling has to happen in your polling.',
       'The progress bar is a real `progressbar` named "Generation progress" by an sr-only label — the same name on every card — and it is not a live region, so its value stays silent until navigated to.',
+      'The watermark is A13 `ai-label`: a `role="note"` named "Generated by AI" or "Edited by AI", with its glyph `aria-hidden`. It sits outside the tile button, so it never joins the tile\'s name. N16 adds an `aria-describedby` carrying its verdict when it wraps the mark.',
       'The failed treatment is an `aria-hidden` icon plus the words "Generation failed", so nothing rests on colour. The Retry button inside it is named "Retry" and nothing more, identically across the grid.',
     ],
     focus: [
@@ -107,5 +118,7 @@ export const ResultCardDocs: ComponentDocs = {
     "`onSelect` means two different things depending on `selectable`: with it off, the tile itself becomes a button and reports `aria-pressed`; with it on, the tile stays inert and the checkbox is the only control. Passing `selectable` without `onSelect` gives you a checkbox that cannot be checked.",
     "The footer inherits `text-foreground`, not muted text, on purpose. Dropping a component in that sets its own muted foreground over a muted background reintroduces the 4.34:1 contrast failure this registry keeps hitting — A2 `cost-chip` currently still does exactly that.",
     "`progress` is ignored outside `streaming`. If your bar never appears, check the state before checking the number.",
+    "`watermark` is ignored outside `done`: the mark is a claim about an asset that exists, so a queued, failed or locked card never carries it. Set it with the result rather than toggling it on later.",
+    "Don't import N16 into a fork of this card to wire credentials. `renderWatermark` is the boundary: the card owns the mark and its place on the asset, the host owns the panel. Returning something that drops the `mark` you were handed removes the A13 chip and with it the visible half of the Watermark pattern.",
   ],
 };

@@ -2,7 +2,18 @@ import { defineConfig } from "vitest/config"
 
 export default defineConfig({
   test: {
-    include: ["src/**/*.test.ts", "scripts/**/*.test.ts", "stages/**/*.test.ts"],
+    include: [
+      "src/**/*.test.ts",
+      "scripts/**/*.test.ts",
+      "stages/**/*.test.ts",
+      // The one kit test that reads nothing of a target's layout: it feeds
+      // synthetic diffs to the script beside it. The rest of starter-kit/ is
+      // written against a target tree and stays uncollected here.
+      "starter-kit/09-conventions/test-changes.test.ts",
+      // Same shape: it copies the hook and its sibling into a temp project of its
+      // own and drives `main` with synthetic events.
+      "starter-kit/03-gates/rulecheck-hook.test.ts",
+    ],
     // Neither fixtures nor reference templates are tests OF THIS REPO.
     //
     // `__fixtures__` are input to the probes. Stage 01's fixtures carry

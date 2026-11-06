@@ -75,6 +75,36 @@ describe("loadConfig", () => {
     expect(loadConfig(targetWith(JSON.stringify(valid))).ok).toBe(true)
   })
 
+  it("accepts a class axis", () => {
+    const withClass = { ...valid, axes: [{ attribute: "class", values: ["dark"] }] }
+    expect(loadConfig(targetWith(JSON.stringify(withClass))).ok).toBe(true)
+  })
+
+  it("accepts an explicit empty axes list", () => {
+    expect(loadConfig(targetWith(JSON.stringify({ ...valid, axes: [] }))).ok).toBe(true)
+  })
+
+  it("rejects a config that omits axes and names the key", () => {
+    const { axes, ...bad } = valid
+    const result = loadConfig(targetWith(JSON.stringify(bad)))
+    expect(result.ok).toBe(false)
+    expect(result.reason).toMatch(/axes is required/)
+  })
+
+  // The shipped schema and the zod schema are two statements of one contract.
+  // Every axis shape this change touched must get the same verdict from both.
+  it.each([
+    ["a class axis", [{ attribute: "class", values: ["dark"] }], true],
+    ["zero axes", [], true],
+    ["className", [{ attribute: "className", values: ["dark"] }], false],
+    ["a bare data-", [{ attribute: "data-", values: ["dark"] }], false],
+  ] as const)("agrees with the zod schema on %s", async (_label, axes, ok) => {
+    const { configSchema } = await import("../../src/config/schema")
+    const config = { ...valid, axes }
+    expect(configSchema.safeParse(config).success).toBe(ok)
+    expect(loadConfig(targetWith(JSON.stringify(config))).ok).toBe(ok)
+  })
+
   it("reports an unreadable schema file rather than throwing", () => {
     const result = loadConfig(
       targetWith(JSON.stringify(valid)),

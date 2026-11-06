@@ -17,13 +17,14 @@ function readIfPresent(file) {
   }
 }
 
-/** Shipped component source only — stories and tests are excluded because a
- *  story writing a utility proves the utility can be typed, not that anything
- *  ships it. That distinction is the whole point of the liveness walk. */
-function componentSources(targetRoot, config) {
-  const globs = config.scopeRoles?.components ?? []
+/** Shipped source only — stories and tests are excluded because a story
+ *  writing a utility proves the utility can be typed, not that anything ships
+ *  it. That distinction is the whole point of the liveness walk. `exclude`
+ *  holds absolute paths to drop after the globs resolve. */
+function shippedSources(targetRoot, globs, exclude = new Set()) {
   return resolveRole(targetRoot, globs)
     .filter((f) => !/\.(stories|test|spec)\.[jt]sx?$/.test(f))
+    .filter((f) => !exclude.has(f))
     .map((f) => readIfPresent(f))
     .filter((s) => s !== null)
 }
@@ -98,10 +99,11 @@ export default function probe(targetRoot, config) {
   // axis cell needs the target's own runner, which a dependency-free probe must
   // never invoke. Reporting met here would let one token-pair assertion look
   // identical to nine cells of coverage.
+  const cells = config.axes.reduce((n, a) => n * (a.values.length + 1), 1)
   results.push(
     unchecked(
       "01.4c",
-      `coverage across all ${config.axes.reduce((n, a) => n * (a.values.length + 1), 1)} axis cells needs the target's own test runner — run \`${testCommand}\``
+      `coverage across all ${cells} axis ${cells === 1 ? "cell" : "cells"} needs the target's own test runner — run \`${testCommand}\``
     )
   )
 
@@ -115,7 +117,17 @@ export default function probe(targetRoot, config) {
         )
   )
 
-  const sources = componentSources(targetRoot, config)
+  // Consumers are component and app code. A page writing `text-brand` ships it
+  // as surely as a component does. The style entry points are dropped even when
+  // a role's glob covers them (`src/app/**` covers `src/app/globals.css`),
+  // because an alias chain there reads a token with var() and paints nothing.
+  const roles = config.scopeRoles ?? {}
+  const styleEntries = new Set(config.paths.styleEntry.map((rel) => path.resolve(targetRoot, rel)))
+  const consumers = shippedSources(
+    targetRoot,
+    [...(roles.components ?? []), ...(roles.app ?? [])],
+    styleEntries
+  )
 
   // Only tokens carrying an `@theme inline` alias are walked. Two kinds of name
   // are excluded because neither CAN own a utility, so demanding one would fail
@@ -127,7 +139,7 @@ export default function probe(targetRoot, config) {
   // written down where a reader will see it.
   const themed = new Set(themeAliases(css).values())
   const walked = declared.filter((t) => themed.has(t))
-  const dead = deadTokens(css, walked, sources)
+  const dead = deadTokens(css, walked, consumers)
 
   results.push(
     dead.length === 0
@@ -135,7 +147,7 @@ export default function probe(targetRoot, config) {
       : unmet(
           "01.6",
           `token(s) reaching no consumer: ${dead.join(", ")}`,
-          "Either a component must write the utility, or the token should be deleted. A token declared, themed and mirrored but read by nothing is decoration."
+          "Either component or app code must write the utility or read the token with var(), or the token should be deleted. Nothing inside the style entry points counts. A token declared, themed and mirrored but read by nothing is decoration."
         )
   )
 

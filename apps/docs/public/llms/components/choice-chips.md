@@ -1,6 +1,6 @@
 # Choice Chips
 
-> A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, style, artifact type. The group is a real radiogroup and each chip a real radio, so the selection is in the accessibility tree rather than implied by a colour. Selection is drawn as a ring outside the chip, which means moving it never changes any chip's size and never reflows the row underneath.
+> A row of tap-to-pick chips that holds one selected value — aspect ratio, batch size, quality tier, style, artifact type. The group is a real radiogroup and each chip a real radio, so the selection is in the accessibility tree rather than implied by a colour. Selection is drawn as a fill and a border colour, never a ring, so moving it never changes any chip's size and the ring stays free to mean keyboard focus.
 
 Layer: primitive · Family: A · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/choice-chips.json` · Contract: `components/super-ai/choice-chips.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/choice-chips
 
@@ -18,7 +18,7 @@ None: There is no design-decision prop here — `value`, `defaultValue` and `onV
 
 ## Instead use
 
-- **preset-grid**: More than one option needs to be selected at once, the options are pictures rather than short labels, or there are more than about eight of them. preset-grid is the same ring-selected model built on the same preview-tile frame, with a see-more affordance and the `multiple` prop — every tile switches to a checkbox — that this component's own spec describes but never shipped.
+- **preset-grid**: More than one option needs to be selected at once, the options are pictures rather than short labels, or there are more than about eight of them. preset-grid is the same one-of-many selection model built on the preview-tile frame, with a see-more affordance and the `multiple` prop — every tile switches to a checkbox — that this component's own spec describes but never shipped.
 - **filter-bar**: The chips are filters already applied to an existing list, not options being chosen from. filter-bar's chips carry their own remove button beside the toggle and the row can start and stay empty; choice-chips always shows every option and always has exactly one selected, with no way to remove a choice once it is made.
 
 ## Do
@@ -41,10 +41,10 @@ None: There is no design-decision prop here — `value`, `defaultValue` and `onV
 
 **Keyboard**
 
-- One tab stop per chip. v1 ships Tab-per-chip rather than the roving tabindex the ARIA radiogroup pattern specifies — there is a TODO in the source saying so — which means a ten-option group is ten stops between whatever precedes and follows it.
-- Arrow keys do nothing. Neither do Home and End. Tab and Shift+Tab are the only way to move within the group, which is the one behavioural difference from a real radiogroup that a keyboard user will notice immediately.
-- Space and Enter select the focused chip, because each chip is a native `<button>` with `role="radio"` on it. Selection follows activation only — moving focus never changes the value, unlike a standard radio group where arrowing selects as it goes.
-- `disabled` reaches the underlying button and removes the chip from the tab order, but changes nothing visually: the chip carries no disabled styling of its own, so a skipped option looks exactly like an available one.
+- The group is one tab stop, landing on the checked chip, or on the first chip when nothing is checked. The group is built on the vendored radio-group (Base UI), so a ten-option row costs one Tab to cross, not ten.
+- All four arrow keys move to the previous or next chip and wrap at the ends, and moving selects: arrowing changes the value as it goes, as in any radio group, so each press fires `onValueChange`. Home and End do nothing.
+- Space selects the focused chip; each chip renders a native `<button>`, so Enter activates it too.
+- `disabled` reaches the underlying button: the chip is drawn at half opacity, takes no pointer events, and the arrow keys step over it.
 
 **Screen reader**
 
@@ -56,22 +56,21 @@ None: There is no design-decision prop here — `value`, `defaultValue` and `onV
 
 **Focus**
 
-- The selection ring and the focus ring are the same `ring-ring ring-2`, so a focused-but-unselected chip is drawn identically to the selected one. `aria-checked` keeps assistive tech correct; sighted keyboard users are the ones this misleads, and it is worst in groups of three or four visually similar chips.
+- Focus is the only thing drawn with the ring (`focus-visible:ring-2`); selection is a fill and a border colour. A focused chip and a selected chip are different pictures.
 - Nothing here unmounts, so nothing moves focus. Changing the value re-renders the same buttons and focus stays exactly where it was — including on a chip that has just become disabled, if your handler disables it.
 
 ## Pitfalls
 
 - `value={undefined}` does not mean "nothing is selected" — the component reads it as "this group is uncontrolled" and falls back to its own internal state. A controlled group that needs an unselected position needs a sentinel chip to point at, which is what the All chip in artifact-grid is for.
-- Selection and keyboard focus are drawn with the same ring, so a focused-but-unselected chip looks like a selected one. `aria-checked` keeps assistive tech correct; sighted keyboard users are the ones this can mislead, which matters most in groups of three or four visually similar chips.
-- v1 traverses with Tab, one stop per chip, rather than the roving tabindex the ARIA radiogroup pattern specifies — arrow keys do not move the selection. A ten-chip row is ten tab stops between whatever precedes and follows it, so keep rows short and put them near the control they configure.
-- `disabled` reaches the underlying button and does stop the click, but the chip carries no disabled styling of its own, so a disabled option is visually identical to an available one. Until that ships, pass your own disabled classes, or leave the option out and say why elsewhere.
+- Arrowing selects. A handler that does real work on `onValueChange` (fetching, re-pricing) runs once per arrow press as a keyboard user walks the row, so keep that work cheap or defer it to the control that commits the run.
+- A disabled chip is drawn at half opacity and skipped by the arrows, which says it is unavailable but not why. When the reason matters (a plan gate, an exhausted quota), say it next to the row, or leave the option out.
 - Chips that append a count after the label need a logical margin (`ms-*`), not a physical one (`ml-*`), or the gap lands on the wrong side of the count under an RTL locale.
 
 ## Composition
 
 - States: `numeric`, `text`, `preview-content`, `disabled-chip`
 - Composes from this registry: nothing
-- shadcn primitives: none
+- shadcn primitives: radio-group
 - npm: none
 
 ## Evidence

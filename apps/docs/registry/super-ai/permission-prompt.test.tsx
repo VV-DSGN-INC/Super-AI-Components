@@ -165,4 +165,48 @@ describe("PermissionPrompt", () => {
     render(<PermissionPrompt open action="X" className="test-class" />);
     expect(document.querySelector('[data-slot="permission-prompt"]')!.className).toContain("test-class");
   });
+
+  it("uncontrolled: every terminal verb closes the dialog it was opened from", async () => {
+    const user = userEvent.setup();
+    const onAllowOnce = vi.fn();
+    const onAlwaysAllow = vi.fn();
+    const onEditFirst = vi.fn();
+    const onOpenChange = vi.fn();
+    render(
+      <PermissionPrompt
+        trigger={<button type="button">Review request</button>}
+        action="Send email to finance@acme.com"
+        args={ARGS}
+        onAllowOnce={onAllowOnce}
+        onAlwaysAllow={onAlwaysAllow}
+        onEditFirst={onEditFirst}
+        onOpenChange={onOpenChange}
+      />,
+    );
+    const open = async () => {
+      await user.click(screen.getByRole("button", { name: "Review request" }));
+      return screen.findByRole("alertdialog");
+    };
+
+    await open();
+    await user.click(screen.getByRole("button", { name: "Allow once" }));
+    expect(onAllowOnce).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+    expect(onOpenChange).toHaveBeenLastCalledWith(false);
+
+    await open();
+    await user.click(screen.getByRole("button", { name: "Always allow" }));
+    expect(onAlwaysAllow).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+
+    await open();
+    await user.click(screen.getByRole("button", { name: "Edit first" }));
+    await user.click(screen.getByRole("button", { name: "Approve edited" }));
+    expect(onEditFirst).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("alertdialog")).toBeNull();
+
+    // Reopens at the four verbs, not inside the editor it was closed from.
+    await open();
+    expect(screen.getByRole("button", { name: "Allow once" })).toBeInTheDocument();
+  });
 });

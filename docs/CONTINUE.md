@@ -31,10 +31,12 @@ ledgers moved out to `design-system/wave-history.md` — see §9.
 > pinned by a gate or a test, and this table is prose. Treat it as prose, and
 > re-derive it from `git log origin/main` rather than believing it.
 
-**Catalog progress: 118 shipped. Nothing is planned, nothing is building.**
+**Catalog progress: 130 shipped. Nothing is planned, nothing is building.**
+Wave 14 (2026-10-21, D28) added the Shape of AI trust slice: A13 `ai-label` and N13–N16.
+Waves 15 and 16 (D30, D31) added D8, D9, N17, E11, K9, N18 and P3, plus seven states on six shipped items.
 11 cut (family G's 10 + O5, per decision D9 — do not revive them).
-_(`check:contract` counts **118**, and the two numbers are already reconciled:
-the 114 is the frozen A–O count, and family P's 2 and family Q's 2 are counted
+_(`check:contract` counts **130**, and the numbers are already reconciled:
+the 125 is the A–O count, the 114 freeze plus D28's five, D30's three and D31's three, and family P's 3 and family Q's 2 are counted
 alongside it rather than reopening it — `catalog.manifest.test.ts`'s "holds the A–O freeze
 at 114 while later families grow separately" asserts each figure, which is
 what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
@@ -43,7 +45,7 @@ what keeps "frozen at 114" a checkable claim rather than a comment. See §5.9.)_
 carried it were folded into the full contract by wave 0 of the story-guarantees
 program (`superpowers/specs/2026-08-14-story-guarantees-retrofit-design.md`,
 step 2): states normalized and declared, one story per declared state, a docs
-module, the flag dropped. `check:contract` reports **118 checked / 0 exempt**,
+module, the flag dropped. `check:contract` reports **130 checked / 0 exempt**,
 from 91 / 25 at the program's start. `catalog.manifest.test.ts` pins the empty
 set as a ratchet, so re-exempting any of them fails a dedicated assertion. The
 flag's own branches in `check-contract.mts` and its stale "the 14 pre-Wave-1.5
@@ -390,8 +392,11 @@ for n in <names>; do
 done
 
 # 2. Set shadcn / consumes / npm from that output, flip status to "shipped".
-# 3. Regenerate wiring and run every gate.
+# 3. Regenerate wiring, re-emit the derived files, and run every gate.
 pnpm gen:wiring
+pnpm contract:emit
+pnpm facts:emit
+pnpm openui:emit   # public/openui/catalog.json goes stale when the catalog changes, and `pnpm test` fails on it
 pnpm check:contract
 cd ../.. && pnpm typecheck && pnpm lint && pnpm check:tokens && pnpm test && pnpm build
 cd apps/storybook && rm -rf node_modules/.cache/storybook && pnpm test:stories
@@ -457,6 +462,53 @@ vendored primitive's state styling from a call site, restate its modifier chain
 exactly — tailwind-merge keys on the modifier set, so a bare `focus:` version
 replaces nothing and leaves source order to decide.
 
+**Turbo cannot see the storybook → docs edge, and a cache hit reads as a pass.**
+`apps/storybook/tsconfig.json` maps five `paths` into `../docs` and `include`s
+`../docs/registry/super-ai` and `../docs/components/demos` wholesale;
+`vite.config.ts` mirrors the same five as bundler aliases. A `paths` mapping is
+a TypeScript resolution alias, not a package edge, so turbo hashed
+`storybook#typecheck` and `storybook#build` from files inside `apps/storybook`
+alone. Any `apps/docs` change left the hash untouched, turbo replayed
+`cache hit, replaying logs`, and the task never ran — root `pnpm typecheck`
+exited 0 over code that does not compile. That is how the i18n branch made
+`locale` required on `ComponentDocsView` and went a whole session green before
+`pnpm test:stories` finally ran and 127 of 131 story files failed to import.
+Fixed by `apps/storybook/turbo.json`, which adds the four reachable `apps/docs`
+directories to `typecheck`, `build` and `lint` `inputs`. Four things worth knowing
+before you touch it:
+
+<!-- prettier-ignore -->
+- **Declaring `"docs": "workspace:*"` does not fix it.** Measured, not assumed:
+  the hash moved once (package.json changed) and then went straight back to
+  being stable across `apps/docs` edits. Turbo mixes an internal dependency's
+  files into a task hash only through a `dependsOn: ["^task"]` edge, and
+  `typecheck` has none. It would incidentally fix `build` — via `^build` — at
+  the price of making storybook's build wait on docs' full `next build`, an
+  ordering it does not need, since it consumes docs _source_, not docs _output_.
+- **The blanket `$TURBO_ROOT$/apps/docs/**` is a trap, and was tried first.** A
+  `$TURBO_ROOT$` glob does **not** respect `.gitignore`, and turbo 2.9.17
+  **silently ignores `!`-negations** against it. With
+  `!$TURBO_ROOT$/apps/docs/node_modules/**` and friends written out, probing
+  still showed `tsconfig.tsbuildinfo`, `.next/**` and `node_modules/**` each
+  moving the hash. Blanket inputs would invalidate storybook on every docs
+  typecheck, every build and every install — caching dead, for real this time.
+  Hence the precise four-directory list.
+- **Precision costs maintenance, so it is gated.** The list has to stay in step
+  with `tsconfig.json`'s `paths`/`include` and `vite.config.ts`'s aliases — the
+  hand-maintained-list failure mode this repo already knows. `apps/docs/scripts/turbo-inputs.test.ts`
+  fails if a `../docs` directory is reachable from either config and missing
+  from `inputs`, if the blanket glob comes back, or if storybook gains a
+  `test` script. It rides `pnpm test`; it is not a new CI step.
+- **CI was never exposed**, and that is not reassurance. No remote cache is
+  configured (`TURBO_TOKEN`/`TURBO_TEAM`/`remoteCache` are all absent), so a
+  fresh runner always starts cold. This was purely a local hazard — which is
+  exactly where the damage happened, because local is where you decide whether
+  the work is finished.
+
+`lint` is a real eslint run over files that import `apps/docs`, so it carries the
+same four inputs in `apps/storybook/turbo.json`. `storybook` has no `test` script;
+give it one and add the task there in the same commit.
+
 **Guidance modules and the server/client boundary.** `<name>.docs.tsx` is read
 by a Server Component. Marking it `"use client"` breaks the server read; putting
 JSX with event handlers in it breaks the static export. Interactive examples go
@@ -473,11 +525,15 @@ composing Base UI directly is sometimes correct — say so when you do.
 session's stash. Use `git show HEAD:path > /tmp/copy` instead. Agents are told
 never to run git write commands at all.
 
-**Vercel project linking.** A fresh worktree has no `.vercel`, and
-`vercel deploy` will silently create a _new_ project. Ensure
-`apps/docs/.vercel/project.json` contains:
-`{"projectId":"prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy","orgId":"team_a028ZfIo8cWgn1t63MHMUVfw"}`.
-A stray project named `docs` exists from this mistake and can be deleted.
+**Vercel project linking.** With the project's root directory set to
+`apps/docs`, `vercel deploy` from `apps/docs` fails with a doubled path, and
+from the repo root it uploads the local `.claude/worktrees` folders (about
+31,000 files, over the 15,000 limit) and has no `.vercel` link. Deploy from a
+clean checkout instead, naming the project by environment variable, so no link
+file is needed and no new project gets created (§7):
+`VERCEL_ORG_ID=team_a028ZfIo8cWgn1t63MHMUVfw VERCEL_PROJECT_ID=prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy vercel deploy --yes`.
+A stray project named `docs` exists from the old link-in-`apps/docs` mistake and
+can be deleted.
 
 **`react/no-unescaped-entities` is an error here, not a warning.** Guidance prose
 quotes things; every literal `'`/`"` in JSX text must be escaped. Broke the lint
@@ -639,6 +695,16 @@ and check any new failure against the base commit before calling it
 pre-existing.
 
 ---
+
+### Why `format:check` is safe to run repo-wide (moved from CLAUDE.md, 2026-10-23)
+
+`format:check` joined the list on 2026-09-07, when the tree was made
+prettier-clean. The bash hook used to deny a repo-wide format on the grounds
+that `check-contract.mts`'s guidance regexes could not survive re-wrapping;
+measured, they can — `\s*` spans newlines and prettier never splits a string
+literal. The only real breakage was the two `gen-wiring.mts` outputs being
+reformatted out of byte-agreement with their generator, and they are now
+prettier-ignored.
 
 ## 5. Open decisions — these need a human, don't guess
 
@@ -842,10 +908,19 @@ unless everything is identical, so it doubles as the post-deploy check.
 `PROD_URL=<preview url>` points it at a preview. The rules are in
 `scripts/lib/prod-diff.ts` and unit-tested; `--report-only` always exits 0.
 
-Deploys are manual, from `apps/docs`, with the `weeeha` GitHub account:
-`vercel --prod`. The Vercel project is `super-ai-components`, root directory
-`apps/docs`, and `.vercel/project.json` must already name it (§4, "Vercel project
-linking") or the CLI creates a new project.
+Deploys are manual, with the `weeeha` GitHub account. The Vercel project is
+`super-ai-components` with root directory `apps/docs`, so deploy from the root
+of a clean checkout, not from `apps/docs` (doubled path) and not from a working
+checkout (it uploads `.claude/worktrees`, over the file limit):
+
+```bash
+git worktree add --detach ../deploy-tmp <commit>
+cd ../deploy-tmp
+VERCEL_ORG_ID=team_a028ZfIo8cWgn1t63MHMUVfw VERCEL_PROJECT_ID=prj_Z0ri0CNPMxq5LJawVq8z9y3FQdmy vercel deploy --yes   # add --prod for production
+```
+
+The two IDs stand in for a `.vercel` link, which a fresh checkout lacks (§4,
+"Vercel project linking").
 
 Last measurement, 2026-09-20, against `main` at `530ebba`. The registry items
 compared are byte-identical to `main`'s; the `llms*.txt` corpus compared is this
@@ -909,8 +984,9 @@ quotes a script and a date instead of a sentence.
 >
 > **Still open here:** the vendored sidebar's RTL mirroring, the tooltip that eats
 > an Escape, the notebook chat pane's scroll container (a dependency limit — see
-> below), and roving tabIndex in `choice-chips` / `preset-grid` /
-> `gen-settings-bar`. The roving tabIndex was deliberately **not** attempted at
+> below), and ~~roving tabIndex in `choice-chips` / `preset-grid` /
+> `gen-settings-bar`~~ (landed 2026-10-16 by composing Base UI's `RadioGroup`
+> and `Toolbar`). The roving tabIndex was deliberately **not** attempted at
 > the end of a long session: it has RTL, wrapping and disabled-item edge cases,
 > and half-shipping a keyboard pattern into a published registry is worse than
 > leaving it recorded. **The logical-direction sweep landed on 2026-09-10**, run
@@ -936,7 +1012,8 @@ quotes a script and a date instead of a sentence.
 > carrying a real `lint`, `typecheck`, `test:stories` and `addon-a11y`. Two were
 > already recorded here and stay open: the Base UI vs Radix consumer contract
 > (§5, "no registry mechanism expresses '…but adapted'") and the roving
-> tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar` (below).
+> tabIndex in `choice-chips` / `preset-grid` / `gen-settings-bar` (below;
+> landed 2026-10-16).
 >
 > - **~~`thread-list`'s delete confirmation never closed~~ — fixed 2026-09-11.**
 >   `AlertDialogAction` is a plain `Button` in this Base UI adaptation, not
@@ -1145,8 +1222,11 @@ story who could not write it honestly without noticing. These are not
 composition gaps — they are divergences with no owner, filed here because
 that is where the backlog lives.
 
-- **`--warning` is undefined in Storybook, so no warning surface has ever been
-  measured.** `apps/storybook/src/index.css` carries no `--color-warning` and
+- **~~`--warning` is undefined in Storybook, so no warning surface has ever been
+  measured.~~ Closed 2026-10-16:** Storybook defines the token with the docs
+  app's values, the three amber-as-text sites it exposed are fixed, and
+  `rate-limit-banner` / `data-views` ship `cssVars`. History follows.
+  **Original entry:** `apps/storybook/src/index.css` carries no `--color-warning` and
   no `--warning`; `apps/docs/app/globals.css` carries both. Tailwind v4 emits
   nothing for an undefined utility, so every `bg-warning` / `text-warning` in
   the registry renders **unpainted** under the axe gate — the stories that
@@ -1437,13 +1517,6 @@ that stayed open, plus what the wave learned about the primitives underneath.
   under RTL. The array semantics stay correct; the label and icon mislead. H5
   `frame-strip`'s `onReorder(id, "left" | "right")` has the same shape. An API
   naming decision (`"start" | "end"`, or index deltas), not a class swap.
-- **A keyboard-focused menu row in I4 `ai-tools-menu` has no perceptible focus
-  treatment.** `focus:bg-transparent` on the `DropdownMenuItem` overrides the
-  primitive's `focus:bg-accent` — presumably to keep A9's muted description off
-  an accent surface — and leaves the focused row distinguishable only by title
-  colour (oklch 0.205 vs 0.145). F4 `action-stack` carries the identical
-  override on the identical row, so it is one decision for both and belongs
-  with the shared row the I4 docs module's last pitfall already asks for.
 - **Two more accessible-name collapses in the empty-string class.** D3
   `context-chips` with `label=""` names its remove control bare "Remove" (its
   docs module says the name cannot collapse — that sentence has a hole); I2
@@ -1867,9 +1940,10 @@ lg:columns-3` off the viewport, so any 375px container on a desktop page gets
 - **Neither focus helper can see a menu row's treatment.** `DropdownMenuItem`
   marks focus with `focus:bg-accent`, and `focusTreatmentSignature` reads
   outline, box-shadow and border colour only. K4 `selection-toolbar` takes its
-  own signature including `background-color`, which doubles as the regression
-  guard for the `focus:bg-transparent` override F7 and I4 carry — a candidate
-  for the shared helper.
+  own signature including `background-color`, and F4 `action-stack` and I4
+  `ai-tools-menu` read `background-color` directly since their
+  `focus:bg-transparent` override was removed — a candidate for the shared
+  helper.
 
 - **`check:tokens` false-positives on prose.** L6 `onboarding-wizard` found that
   writing the literal class name `transition-all` inside a source _comment_

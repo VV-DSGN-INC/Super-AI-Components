@@ -43,7 +43,24 @@ type Item = {
   cssVars?: CssVars;
 };
 
-const extras = deriveExtras(MANIFEST, self);
+// Packages whose behaviour a component's contract was measured against. The
+// range comes from this app's package.json, so the registry ships the version
+// the tests ran on and moves when that range moves.
+const PINNED = ["@openuidev/react-lang"];
+const docsPkg = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), "../package.json"), "utf8"),
+) as {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+};
+const pins = Object.fromEntries(
+  PINNED.map((name) => {
+    const range = docsPkg.dependencies?.[name] ?? docsPkg.devDependencies?.[name];
+    if (!range) throw new Error(`gen-registry: ${name} is pinned but not in apps/docs/package.json`);
+    return [name, range];
+  }),
+);
+const extras = deriveExtras(MANIFEST, self, pins);
 // CATALOG_ITEMS (built from MANIFEST) doesn't carry `layer` itself, so the
 // item-type derivation below looks it back up through MANIFEST by name.
 const layerByName = new Map(MANIFEST.map((m) => [m.name, m.layer]));

@@ -84,3 +84,23 @@ Handled at our two call sites (`parameter-panel`, `run-inspector`) by rebinding
 components and takes a stock `TabsList` at its default variant gets the failing
 pairing. Fixing that means diverging from upstream, which is the open decision
 this file exists to hold.
+
+## `components/ai-elements/**` joins the warn tier (2026-10-01)
+
+The local token rules had been skipping AI Elements entirely, with no reason
+recorded anywhere: an undocumented hole rather than a decision. It is vendored
+on the same terms as `components/ui/**`, so it now sits in `VENDORED_SCOPES` and
+is scanned on the same warn tier. First written on 2026-08-12 for the old
+`check-tokens.mjs` (PR #79, closed unmerged) and carried into ds-rules when the
+gate's scope widened to the docs site's own `app/` and `components/`.
+
+### `message.tsx` — `MessageAttachment`, non-image fallback
+
+`bg-muted` with `text-muted-foreground` on the one `div` that renders as the
+tooltip trigger for an attachment with no preview, the paperclip square: 4.34:1
+against a 4.5:1 minimum, single-element shape (TOK-4). A consumer hits it on
+the default path for any non-image attachment. **CONSUMER-FACING.** Not fixed,
+for the same reason as everything above: fixing it means diverging from
+upstream, and nobody has decided that.
+
+That is the only warning the directory produces.

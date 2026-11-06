@@ -2,15 +2,54 @@
   "profile": "component-library",
   "adoption": "retrofit",
   "scopeRoles": {
-    "components": ["apps/docs/registry/super-ai/**", "apps/docs/registry/marketing/**"],
+    "components": [
+      "apps/docs/registry/super-ai/**",
+      "apps/docs/registry/marketing/**",
+      "apps/docs/components/ui/**",
+      "apps/docs/components/theme-provider.tsx"
+    ],
     "styles": ["apps/docs/app/**"]
   },
   "paths": {
-    "nameContract": "packages/ds-rules/src/local.ts",
+    "nameContract": "packages/ds-rules/src/tokens.ts",
     "styleEntry": ["apps/docs/app/globals.css"]
   },
-  "axes": [{ "attribute": "data-theme", "values": ["light", "dark"] }],
+  "axes": [
+    {
+      "attribute": "data-theme",
+      "values": ["light", "dark"]
+    }
+  ],
   "commands": {
     "test": "pnpm lint && pnpm typecheck && pnpm check:tokens && pnpm check:contract && pnpm test"
+  },
+  "runtime": {
+    "systemId": "super-ai",
+    "slotExempt": [
+      {
+        "file": "apps/docs/components/theme-provider.tsx",
+        "reason": "renders no DOM of its own; sets data-ds on <html> for the census"
+      },
+      {
+        "file": "apps/docs/registry/super-ai/cost.tsx",
+        "reason": "context provider and hook; renders no DOM of its own"
+      },
+      {
+        "file": "apps/docs/registry/super-ai/initials.tsx",
+        "reason": "string helper that derives initials from a name; no JSX"
+      },
+      {
+        "file": "apps/docs/registry/super-ai/use-container-width.tsx",
+        "reason": "hook measuring a container; renders nothing"
+      },
+      {
+        "file": "apps/docs/registry/super-ai/use-view-mode.tsx",
+        "reason": "hook holding the view-mode state; renders nothing"
+      },
+      {
+        "file": "apps/docs/components/ui/badge.tsx",
+        "reason": "Base UI useRender writes the slot from state: { slot: \"badge\" }, so no literal attribute in source"
+      }
+    ]
   }
 }

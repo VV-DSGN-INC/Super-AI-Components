@@ -1,10 +1,11 @@
-import { existsSync, readdirSync } from "node:fs"
+#!/usr/bin/env node
+import { existsSync, readdirSync, realpathSync } from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
 
 import { appliesToProfile, readAppliesTo, readClaims } from "./lib/applicability.mjs"
 import { loadConfig } from "./lib/validate-config.mjs"
-import { formatStamp, readVendorStamp } from "./vendor-stamp.mjs"
+import { formatStamp, readInstalledPackage, readVendorStamp } from "./vendor-stamp.mjs"
 import { STATUS, exitCodeFor, notApplicable, unchecked } from "../src/probe-kit/result.mjs"
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
@@ -24,7 +25,14 @@ const empty = () => ({ met: [], unmet: [], unchecked: [], notApplicable: [] })
  *  Its comment promises it prints on every run, and `--json` is a run. A stamp
  *  that appears in one output mode and not the other is a stale copy that is
  *  visible to a human and invisible to a script. */
-const withStamp = (out) => ({ ...out, vendored: readVendorStamp(REPO_ROOT) })
+const withStamp = (out) => {
+  // Installed from npm, VENDOR.md is this package's own upstream record, not a
+  // statement that the tool was vendored into the target. Say which it is.
+  const installed = readInstalledPackage(REPO_ROOT)
+  return installed
+    ? { ...out, vendored: [], installed }
+    : { ...out, vendored: readVendorStamp(REPO_ROOT) }
+}
 
 export async function runConformance(targetRoot, opts = {}) {
   const loaded = loadConfig(targetRoot)
@@ -208,7 +216,7 @@ export function formatReport(out) {
       : `summary: profile=${out.summary.profile} adoption=${out.summary.adoption} ` +
         `highestContiguous=${out.summary.highestContiguous}`
   )
-  lines.push(formatStamp(out.vendored ?? readVendorStamp(REPO_ROOT)))
+  lines.push(formatStamp(out.vendored ?? readVendorStamp(REPO_ROOT), out.installed))
   return lines
 }
 
@@ -217,14 +225,56 @@ function render(out) {
   for (const line of formatReport(out)) console.log(line)
 }
 
-const invokedDirectly =
-  process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+// The bin runs through a symlink (node_modules/.bin/ds-architecture), so argv[1]
+// is the link and import.meta.url is the target. Compare real paths, or the
+// installed command silently does nothing.
+const real = (p) => {
+  try {
+    return realpathSync(p)
+  } catch {
+    return path.resolve(p)
+  }
+}
+const invokedDirectly = process.argv[1] && real(process.argv[1]) === real(fileURLToPath(import.meta.url))
+
+const USAGE = [
+  "usage: ds-architecture <targetRoot> [--stage NN] [--json]",
+  "       ds-architecture census <page.html | url> [--target <repoRoot>] [--json]",
+].join("\n")
 
 if (invokedDirectly) {
   const args = process.argv.slice(2)
+
+  // `census` reads a rendered page rather than a repo, so it is a subcommand
+  // with its own arguments; everything else is the conformance run.
+  if (args[0] === "census") {
+    const { formatCensus, runCensus } = await import("./lib/census.mjs")
+    const rest = args.slice(1)
+    const targetAt = rest.indexOf("--target")
+    // The value after --target is not the page. Without --target, targetAt is
+    // -1 and nothing is excluded; testing `i !== targetAt + 1` alone excluded
+    // index 0, which is the page itself.
+    const source = rest.find((a, i) => !a.startsWith("--") && (targetAt < 0 || i !== targetAt + 1))
+    if (!source || (targetAt >= 0 && !rest[targetAt + 1])) {
+      console.error(USAGE)
+      process.exit(2)
+    }
+    try {
+      const out = await runCensus(source, {
+        target: targetAt >= 0 ? path.resolve(rest[targetAt + 1]) : undefined,
+      })
+      if (rest.includes("--json")) console.log(JSON.stringify(out, null, 2))
+      else for (const line of formatCensus(out)) console.log(line)
+      process.exit(0)
+    } catch (err) {
+      console.error(`could not tell: ${err.message}`)
+      process.exit(2)
+    }
+  }
+
   const target = args.find((a) => !a.startsWith("--"))
   if (!target) {
-    console.error("usage: node scripts/conformance.mjs <targetRoot> [--stage NN] [--json]")
+    console.error(USAGE)
     process.exit(2)
   }
   const stageArg = args.indexOf("--stage")

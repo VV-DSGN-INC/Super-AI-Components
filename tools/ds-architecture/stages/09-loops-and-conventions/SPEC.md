@@ -9,8 +9,8 @@ each time.
 ## What this stage establishes
 
 The build loop, the audit loop, the human gate, the five co-located files a component
-change produces, a review-round budget, and worktree discipline. All recorded in the
-instructions file that stage 00's claim `00.1` located.
+change produces, a review-round budget with its blocker taxonomy, and worktree
+discipline. All recorded in the instructions file that stage 00's claim `00.1` located.
 
 ## Decisions
 
@@ -18,7 +18,9 @@ instructions file that stage 00's claim `00.1` located.
 |---|---|---|
 | Checks are coarse | Presence, not prose quality | A convention nobody wrote down is re-litigated every session; one written badly at least has a place to be argued with |
 | Where it lives | The instructions file, not a second document | It has to be in context whenever work happens, and a second file is a second thing to drift |
-| Round budget | Rounds 1–2 fix everything; round 3+ non-blockers become follow-ups | Measured basis: median 6 rounds, max 15, 7 of 10 pull requests reaching round 3+ |
+| Round budget | Rounds 1–2 fix everything; round 3+ non-blockers become follow-ups | Review loops do not end on their own; a cap on what a PR must absorb keeps them finite |
+| Blocker classes | Two named beyond defects: a weakened existing test or gate, and contract prose the change made false | A reviewer that reads only for defects approves both: a test that keeps its name and passes while pinning less, and prose that now says something the code no longer does. |
+| Test-change report | A script lists every line a change removed or changed in tests that existed before it, with the author's reasons from the PR body | Adding a test is free; taking a line from an existing one is how a regression passes its own suite. Checking that a review reads it is `unchecked` (`09.6`) |
 | Worktree rule | One session, one worktree, one install each | One checkout has one HEAD; switching branches carries other sessions' uncommitted files onto your branch |
 | Missing file | Every claim `unchecked`, not `unmet` | "I could not look" is not "I looked and it is missing" — the same ruling stage 00 makes |
 

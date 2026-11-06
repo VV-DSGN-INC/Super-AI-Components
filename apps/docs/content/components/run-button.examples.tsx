@@ -61,3 +61,13 @@ export function SeparateLockBanner() {
     </div>
   );
 }
+
+export function DraftLabelWithDelta() {
+  return <RunButton draft cost={2} finalCost={8} onRun={() => {}} />;
+}
+
+export function DraftLookingLikeFinal() {
+  // The wrong way: a draft run under the plain label, with no hint of what
+  // the final run would cost.
+  return <RunButton cost={2} onRun={() => {}} />;
+}

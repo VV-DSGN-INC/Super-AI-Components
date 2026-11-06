@@ -1,0 +1,4 @@
+.alert { color: var(--danger); }
+:root { --danger: #ff0000; --shade: hsl(0 0% 50%); }
+.wash { background: rgb(var(--ink-rgb) / 0.4); border-color: hsl(var(--line)); }
+#faded { color: var(--fg); }

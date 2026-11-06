@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
-import { expect, userEvent, within } from "storybook/test";
+import { expect, fn, userEvent, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { HeroOmnibox } from "@/registry/super-ai/hero-omnibox";
@@ -113,6 +113,51 @@ export const NegativePrompt: Story = {
     settings: SETTINGS,
     cost: 5,
     onSubmit: () => {},
+  },
+};
+
+/**
+ * `onRandomize` passed: a dice button joins the action row, after attach. One
+ * click asks the host for a starter and fills the prompt with it. The fill is a
+ * draft, so the person edits it or generates it; the dice never generates, and
+ * the play function asserts `onSubmit` stayed silent. Focus stays on the dice
+ * and the fill is announced politely through the status region. Audio and image
+ * generators roll a seed as often as a prompt, so `randomizeTarget="seed"` aims
+ * the same dice at a seed field in the action row instead; the story shows both.
+ */
+export const Randomize: Story = {
+  args: {
+    settings: SETTINGS,
+    cost: 5,
+    onSubmit: fn(),
+    onRandomize: fn(() => "A slow dolly-in on a rain-soaked neon alley at night"),
+  },
+  render: (args) => (
+    <div className="flex w-full max-w-2xl flex-col gap-6">
+      <MediaPromptBar {...args} />
+      <MediaPromptBar
+        {...args}
+        randomizeTarget="seed"
+        onSubmit={fn()}
+        onRandomize={fn(() => "482913")}
+        settings={undefined}
+      />
+    </div>
+  ),
+  play: async ({ canvasElement, args }) => {
+    const canvas = within(canvasElement);
+    const dice = canvas.getByRole("button", { name: "Random prompt" });
+    await userEvent.click(dice);
+    await expect(canvas.getAllByRole("textbox", { name: "Prompt" })[0]).toHaveValue(
+      "A slow dolly-in on a rain-soaked neon alley at night",
+    );
+    await expect(args.onSubmit).not.toHaveBeenCalled();
+    await expect(dice).toHaveFocus();
+
+    const seedDice = canvas.getByRole("button", { name: "Random seed" });
+    await userEvent.click(seedDice);
+    await expect(canvas.getByRole("textbox", { name: "Seed" })).toHaveValue("482913");
+    await expect(seedDice).toHaveFocus();
   },
 };
 

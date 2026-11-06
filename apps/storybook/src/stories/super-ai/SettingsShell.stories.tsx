@@ -569,15 +569,12 @@ export const RTL: Story = {
  *   still slides. Another component's file, so it is recorded here rather than
  *   fixed.
  *
- * **And a third thing this story is the only place to see: neither warning
- * surface is painted at all.** `--warning` is undefined in Storybook
- * (CONTINUE §8, wave 0), so the near-limit quota bar computes
- * `background-color: rgba(0, 0, 0, 0)` over a `bg-muted` track — 820 of 1,000
- * generations used, and the fill that says so is transparent. M4's "Save 20%"
- * badge is the same: transparent ground, inherited ink. The numbers survive in
- * both cases, which is the reason the page is still usable, and is also
- * exactly the point — a state carried by fill alone is a state nobody in this
- * build has ever seen.
+ * **A third thing, now measured: both warning surfaces paint.** Until
+ * 2026-10-16 `--warning` was undefined in Storybook, so the near-limit quota
+ * bar and M4's "Save 20%" badge rendered transparent here. The token is defined
+ * now, mirroring the docs app, so the bar is amber over its `bg-muted` track,
+ * the badge is `bg-warning text-warning-foreground`, and M3's near-limit
+ * readout is the same solid pair rather than amber text.
  */
 export const ReducedMotion: Story = {
   args: { ...FULL_ARGS, sections: PRICED_SECTIONS, sectionId: "plans" },

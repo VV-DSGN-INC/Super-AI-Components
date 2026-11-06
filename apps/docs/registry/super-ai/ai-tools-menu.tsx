@@ -335,7 +335,12 @@ function AiToolsMenu({
                       // label, by the row's own icon and by `data-destructive`
                       // — never by colour, which the a11y baseline forbids as
                       // a sole signal in any case.
-                      className="p-0 focus:bg-transparent"
+                      //
+                      // The primitive's `focus:bg-accent` is the row's only
+                      // focus indicator, so it stays; the muted description is
+                      // kept legible on it by rebinding the variable, A9's own
+                      // hover idiom, not by dropping the surface.
+                      className="p-0 focus:[--muted-foreground:var(--accent-foreground)]"
                     >
                       <ToolRow action={action} destructive={group.destructive} interactive={false} />
                     </DropdownMenuItem>

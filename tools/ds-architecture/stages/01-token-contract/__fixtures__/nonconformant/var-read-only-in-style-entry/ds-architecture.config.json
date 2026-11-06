@@ -1,0 +1,12 @@
+{
+  "profile": "component-library",
+  "adoption": "greenfield",
+  "scopeRoles": {
+    "components": ["src/components/**"],
+    "styles": ["src/app/globals.css"],
+    "app": ["src/app/**"]
+  },
+  "paths": { "nameContract": "src/tokens.ts", "styleEntry": ["src/app/globals.css"] },
+  "axes": [{ "attribute": "data-theme", "values": ["default", "warm"] }],
+  "commands": { "test": "vitest run src/test/contrast.test.ts src/test/liveness.test.ts" }
+}

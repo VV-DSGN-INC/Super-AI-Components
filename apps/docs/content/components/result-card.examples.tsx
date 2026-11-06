@@ -3,6 +3,7 @@
 import { Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { ContentCredentials } from "@/registry/super-ai/content-credentials";
 import { ResultCard } from "@/registry/super-ai/result-card";
 
 /**
@@ -100,6 +101,40 @@ export function SelectModeWithHoverActions() {
         actions={<Button size="sm">Download</Button>}
       >
         <Media label="Selected result" />
+      </ResultCard>
+    </div>
+  );
+}
+
+/**
+ * DO — mark the asset, and hand the panel in from the host. The card draws
+ * A13 `ai-label` on the media; N16 `content-credentials` wraps it through
+ * `renderWatermark`, because the card cannot import N16. Hover or focus the
+ * mark to open the panel. The issuer is a placeholder name on purpose.
+ */
+export function WatermarkOpensCredentials() {
+  return (
+    <div className="w-48">
+      <ResultCard
+        state="done"
+        aspect="square"
+        label="A lighthouse at dusk, long exposure"
+        watermark="generated"
+        renderWatermark={(mark) => (
+          <ContentCredentials
+            credentials={{
+              status: "verified",
+              origin: "ai-generated",
+              issuer: "Example Issuer CA",
+              model: "Flux 1.1 Pro",
+              generatedAt: "2026-10-12T09:30:00Z",
+            }}
+          >
+            {mark}
+          </ContentCredentials>
+        )}
+      >
+        <Media label="A generated lighthouse" />
       </ResultCard>
     </div>
   );

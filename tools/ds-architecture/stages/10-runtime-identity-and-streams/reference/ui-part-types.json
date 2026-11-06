@@ -1,0 +1,7 @@
+{
+  "$comment": "The UI message part types a parts renderer must name for claim 10.3. Read off the `ai` package's UIMessage part union; re-verify when the SDK major changes.",
+  "sdk": "ai@6",
+  "verifiedAgainst": "ai@6.0.235",
+  "types": ["text", "reasoning", "source-url", "source-document", "file", "step-start", "dynamic-tool"],
+  "prefixes": ["tool-", "data-"]
+}

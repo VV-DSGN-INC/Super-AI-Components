@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Paperclip, Square } from "lucide-react";
+import { ArrowUp, Dices, Paperclip, Square } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import { ModeTabs } from "@/registry/super-ai/mode-tabs";
  * Hero Omnibox — The centred "What can I help you with?" prompt
  *
  * Spec: docs/design-system/component-specs.md#c1-hero-omnibox
- * States: idle · focused · generating · locked
+ * States: idle · focused · generating · locked · randomize
  */
 
 type HeroOmniboxState = "idle" | "focused" | "generating" | "locked";
@@ -44,6 +44,15 @@ interface HeroOmniboxProps extends Omit<React.ComponentProps<"div">, "onSubmit">
   cost?: number | string;
   onAttach?: () => void;
   attachLabel?: string;
+  /**
+   * The randomize state (D30). When passed, a dice button joins the action row. Click calls this
+   * and fills the field with the string it returns, so the host owns the pool. The fill is only a
+   * draft: it never submits, and returning nothing leaves the field alone.
+   */
+  onRandomize?: () => string | undefined;
+  randomizeLabel?: string;
+  /** Announced politely through the status region after the dice fills the field. */
+  randomizedLabel?: string;
   onSubmit?: (value: string) => void;
   submitLabel?: string;
   onStop?: () => void;
@@ -72,6 +81,9 @@ function HeroOmnibox({
   cost,
   onAttach,
   attachLabel = "Attach file",
+  onRandomize,
+  randomizeLabel = "Random prompt",
+  randomizedLabel = "Random prompt added",
   onSubmit,
   submitLabel = "Send message",
   onStop,
@@ -86,12 +98,16 @@ function HeroOmnibox({
 }: HeroOmniboxProps) {
   const inputId = React.useId();
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const randomizeRef = React.useRef<HTMLButtonElement>(null);
   const [internalValue, setInternalValue] = React.useState("");
+  // Counter keys the announcement so a second roll with the same label is announced again.
+  const [randomized, setRandomized] = React.useState(0);
   const currentValue = value ?? internalValue;
   const isGenerating = state === "generating";
   const isLocked = state === "locked";
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setRandomized(0);
     setInternalValue(event.target.value);
     onValueChange?.(event.target.value);
   };
@@ -99,6 +115,16 @@ function HeroOmnibox({
   const handleSubmit = () => {
     if (isGenerating || isLocked || currentValue.trim() === "") return;
     onSubmit?.(currentValue);
+  };
+
+  // Fills, never submits. Focus is held on the dice so a person can keep rolling from the keyboard.
+  const handleRandomize = () => {
+    const starter = onRandomize?.();
+    if (!starter) return;
+    setInternalValue(starter);
+    onValueChange?.(starter);
+    setRandomized((n) => n + 1);
+    randomizeRef.current?.focus();
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -189,6 +215,21 @@ function HeroOmnibox({
                 <Paperclip aria-hidden />
               </Button>
 
+              {onRandomize ? (
+                <Button
+                  ref={randomizeRef}
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={randomizeLabel}
+                  data-slot="hero-omnibox-randomize"
+                  onClick={handleRandomize}
+                  disabled={isGenerating}
+                >
+                  <Dices aria-hidden />
+                </Button>
+              ) : null}
+
               {models && models.length > 0 ? (
                 <div data-slot="hero-omnibox-model">
                   <Select value={model} onValueChange={(next) => onModelChange?.(String(next))}>
@@ -246,9 +287,15 @@ function HeroOmnibox({
         </div>
       )}
 
-      {/* Generating is announced, not just shown by a spinner. */}
+      {/* Generating and a randomize fill are announced, not just shown. */}
       <span data-slot="hero-omnibox-status" role="status" aria-live="polite" className="sr-only">
-        {isGenerating ? generatingLabel : ""}
+        {isGenerating ? (
+          generatingLabel
+        ) : randomized > 0 ? (
+          <span key={randomized}>{randomizedLabel}</span>
+        ) : (
+          ""
+        )}
       </span>
     </div>
   );

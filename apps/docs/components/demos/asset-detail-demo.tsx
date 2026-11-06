@@ -30,7 +30,7 @@ export default function AssetDetailDemo() {
         onSpanSelect={(text) => setRemixing(text)}
         media={
           <div className="bg-foreground/10 flex aspect-video w-full items-center justify-center">
-            <Sparkles aria-hidden className="text-foreground/40 size-10" />
+            <Sparkles aria-hidden className="text-foreground/60 size-10" />
           </div>
         }
         params={[

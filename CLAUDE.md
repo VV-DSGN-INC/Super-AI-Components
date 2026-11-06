@@ -9,7 +9,7 @@ apps/docs        Next.js docs site — owns registry/super-ai/**, the token gate
 apps/storybook   Storybook workspace — and the accessibility gate (see CI)
 ```
 
-`pnpm-workspace.yaml` also globs `packages/*`; `packages/ds-rules` (the rule records + detector behind `check:tokens`) is its first member — `apps/docs`, `apps/storybook`, and `packages/ds-rules` are the workspaces today.
+`pnpm-workspace.yaml` also globs `packages/*`; `packages/ds-rules` (rule records + detector behind `check:tokens`) is the third workspace.
 
 Design specs live under `docs/superpowers/specs/` and implementation plans under `docs/superpowers/plans/`, one file per initiative.
 
@@ -21,7 +21,7 @@ Repo: `github.com/VV-DSGN-INC/Super-AI-Components`.
 
 The real contracts are written down, in one copy each, under `docs/`. **This file points at them and must never restate them** — a second copy is how instructions drift, which is why `CONTINUE.md` §3.4 also forbids pasting them into subagent prompts.
 
-Read these before writing any component code. The first two are contracts, not suggestions:
+Read these before writing component code. The first two are contracts:
 
 1. **[`docs/design-system/component-build-brief.md`](docs/design-system/component-build-brief.md)** — the house contract every component is built to. The single most important file in the repo, and what each build agent gets handed.
 2. **[`docs/design-system/block-build-brief.md`](docs/design-system/block-build-brief.md)** — family O (blocks) only. Supplements the above, never replaces it.
@@ -29,11 +29,11 @@ Read these before writing any component code. The first two are contracts, not s
 4. **[`docs/CONTINUE.md`](docs/CONTINUE.md)** — where things stand, how a component gets built end to end, traps that have actually bitten, and the composition-gap backlog (§8).
 5. **[`docs/design-system/decisions.md`](docs/design-system/decisions.md)** — especially D9 (family G cut), D12, D13.
 6. **[`docs/design-system/a11y-baseline.md`](docs/design-system/a11y-baseline.md)** — the measured accessibility posture, the recurring contrast failure, and what is excluded from the gate and why.
-7. **[`docs/design-system/anti-slop.md`](docs/design-system/anti-slop.md)** — the anti-slop taxonomy, audit, and fix ladder for generated UI; the runnable version is the `unslop` skill (`.claude/skills/unslop/`), used before building and again before "done".
+7. **[`docs/design-system/anti-slop.md`](docs/design-system/anti-slop.md)** — this repo's anti-slop decisions and the rule that enforces each. The taxonomy, audit and fix ladder are the `unslop` skill (`.claude/skills/unslop/`), used before building and again before "done".
 
-Specs are normative **including their prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
+Specs are normative **including prose**: [`catalog.md`](docs/design-system/catalog.md) · [`component-specs.md`](docs/design-system/component-specs.md) · [`block-specs.md`](docs/design-system/block-specs.md).
 
-**Catalog status: 118 of 118 shipped**, nothing `building`. There is no next batch. The `contractExempt` retrofit is **done** — the flag has since been deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
+**Catalog status: 137 of 137 shipped**, nothing `building`, no next batch. The `contractExempt` flag is deleted (D20), so every shipped item is under the full story-state and documentation contract. The remaining work is the gaps in `CONTINUE.md` §8.
 
 ## IMPORTANT: The registry is the product
 
@@ -49,6 +49,7 @@ Each has cost a real debugging session. The reasoning is in the linked file — 
 - **`consumes` / `shadcn` / `npm` are reconciled from real imports** — never from the catalog's assumed bases (it names primitives this repo does not vendor) and never from a builder's own list. → `CONTINUE.md` §3.5. Gate: `apps/docs/scripts/reconcile-deps.mts`.
 - **A gate list must mirror `ci.yml`, in `ci.yml`'s order.** A gate missing from a written list goes unrun for a whole phase, and because CI stops at the first failure, one red gate hides every gate behind it. This has already happened here. → `CONTINUE.md` §1
 - **A green run can prove nothing.** `playwright.config.ts` runs `pnpm start`, and `next start` serves the _prebuilt_ output — editing source without rebuilding tests a stale app. Rebuild, then run.
+- **`apps/storybook` compiles `apps/docs` source; turbo can't see it.** Pin new tasks in its `turbo.json`. → `CONTINUE.md` §4. Gate: `apps/docs/scripts/turbo-inputs.test.ts`.
 - **The a11y exclusion list may only shrink, never grow.** Adding a file to silence a new failure defeats the gate; fix the component instead. → `a11y-baseline.md`. The same rule holds for `story-coverage.baseline.json`: regenerate it with `pnpm story-coverage:baseline`, which refuses to grow it. → `story-conventions.md`. Gates: `apps/docs/scripts/lib/a11y-ratchet.test.ts`, `apps/docs/scripts/lib/story-coverage.test.ts`.
 - **Never pair `text-muted-foreground` with `bg-muted` / `bg-accent` / `bg-secondary`** — same lightness in this token set, 4.34:1 against a 4.5:1 minimum. When a component paints a surface, **rebind the variable** (`[--muted-foreground:var(--accent-foreground)]`) rather than restyling slots: composed children carry their own muted classes and a slot-level override cannot reach them. → `a11y-baseline.md`. Gate: `packages/ds-rules/rulecheck.mjs`.
 - **Blocks compose; they do not implement.** When a composed component does not fit, use a labelled sibling or a documented override and _report the gap_ — never fork or reimplement it. A reimplemented row passes every gate and is still wrong. → `block-build-brief.md`
@@ -63,7 +64,7 @@ Parallel agents are the throughput mechanism, not an optimization — one agent 
 - **Give each agent its own git worktree.** They otherwise share a working tree and each runs a repo-root `pnpm typecheck`; concurrent runs race on `tsbuildinfo` and typecheck against each other's half-written files. Take your own port and browser tab too — a sibling worktree's dev server on the same port will serve _its_ build while your preview reports success.
 - **Check the worktree's base commit.** An isolated worktree may be cut from `main` rather than from your integration branch, so it will not carry your prep. Verify rather than assume, and check incoming files against any in-flight refactor before landing them.
 
-→ `CONTINUE.md` §3.4, and §8 for the current gap backlog.
+→ `CONTINUE.md` §3.4.
 
 ## Commands
 
@@ -87,7 +88,7 @@ Use `pnpm`, not npm — the lockfile is `pnpm-lock.yaml` and CI installs with `-
 
 ## The token gate
 
-`packages/ds-rules/rulecheck.mjs` (invoked by `pnpm check:tokens`) enforces the design spec's token contract across `registry/super-ai/**/*.tsx`. It fails the build on:
+`packages/ds-rules/rulecheck.mjs` (invoked by `pnpm check:tokens`) enforces the design spec's token contract across `CATALOG_SCOPES`. It fails the build on:
 
 - raw hex colours (`#1a1a1a`)
 - raw `oklch(...)`
@@ -120,14 +121,6 @@ in the PR body, and say which schema it assumes.
 
 Twelve steps. The last three are the ones that actually exercise the product; they run in their own job so a red `gates` step no longer hides them, and within a job a red step still hides every step after it. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
 
-`format:check` joined the list on 2026-09-07, when the tree was made
-prettier-clean. The bash hook used to deny a repo-wide format on the grounds
-that `check-contract.mts`'s guidance regexes could not survive re-wrapping;
-measured, they can — `\s*` spans newlines and prettier never splits a string
-literal. The only real breakage was the two `gen-wiring.mts` outputs being
-reformatted out of byte-agreement with their generator, and they are now
-prettier-ignored.
-
 One quirk worth knowing: `docs/design-system/story-conventions.md` needs three
 `--write` passes to converge, because reformatting its widest table changes the
 column widths that decide the wrapping. If `format:check` fails immediately
@@ -140,6 +133,12 @@ after a format, run the format again before assuming something else is wrong.
 - Semantic roles over presentation: prefer a correct `role`/`aria-*` on a primitive to a visually equivalent div. Past fixes in this repo have been exactly this (`pin role="note"` so a checkbox story stops reading as an open gate).
 - Branch per task; never commit to `main` directly. Deploys are manual, from `apps/docs`, and need the `weeeha` GitHub account — nothing deploys on merge.
 - Review budget: rounds 1-2 fix everything; from round 3 only a blocker holds the PR. → `docs/design-system/review-rounds.md`
+
+## Loops
+
+- **Build loop**, on a component change: manifest, scaffold, then the co-located files (implementation, story, registry entry, tests), then the gates. `build-component` runs it.
+- **Audit loop**, on every pull request and again on merge: the token gate, the contract check, the story run. `gate-run` runs it locally.
+- **Human gate**: review approves judgment, not syntax. A rejection is finished only once it is a rule in `packages/ds-rules`, so it cannot recur.
 
 ## Open decisions — flag, don't silently pick
 
