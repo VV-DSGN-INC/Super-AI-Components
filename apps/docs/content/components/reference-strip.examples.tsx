@@ -59,8 +59,7 @@ export function ColorOnlyRoleBadge() {
       {["bg-chart-1", "bg-chart-2"].map((swatch) => (
         <div key={swatch} className="flex flex-col items-center gap-1">
           <div className="bg-muted relative size-20 overflow-hidden rounded-lg">
-            <img
-              />
+            <PreviewScene subject="landscape" variant={3} label="Reference image" />
             <span className={`absolute top-1 right-1 size-2 rounded-full ${swatch}`} aria-hidden />
           </div>
         </div>
