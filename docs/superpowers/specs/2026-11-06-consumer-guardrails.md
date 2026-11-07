@@ -1,6 +1,6 @@
 # Consumer guardrails: the rules travel with the kit
 
-**Date:** 2026-11-06 · **Owner:** Nick · **Status:** Draft, for Nick's review, nothing built · **Baseline:** `origin/main` at `76cc8910`
+**Date:** 2026-11-06 · **Owner:** Nick · **Status:** Approved 2026-11-06 (1A, 2A, 3A), nothing built; plan in `docs/superpowers/plans/2026-11-06-consumer-guardrails.md` · **Baseline:** `origin/main` at `76cc8910`
 **Related:** [agent surfaces ledger spec](2026-10-15-agent-surfaces-ledger-design.md) §3.5 (the `agent-kit` item this extends) · [agentic layer spec](2026-08-11-agentic-layer-design.md) §3 (gates, hooks, skills) · [agentic contracts spec](2026-09-14-agentic-contracts-design.md) · `concept-model.md` §4 (the contracts) · `decisions.md` D23, D24, D25
 
 **TL;DR.** After `npx shadcn add`, a consumer's agent gets the component and its `.meta.json`,
@@ -125,12 +125,14 @@ Stop and ask the human before you:
 
 ### 6. Run the check before calling UI done
 
-Run `node scripts/super-ai-validate.mjs <changed files>` and fix every blocker. Exit 0 is the
+Run `node scripts/super-ai/validate.mjs <changed files>` and fix every blocker. Exit 0 is the
 bar. Exit 3 means the diff changes the system (rule 5): show it to the human.
 Why: a sentence asks, a check that runs is what actually changes the result.
 ```
 
-About 3.4 KB, which leaves the ledger spec's 8 KB budget room for the routing index.
+About 3.4 KB. The routing index does not go in this file: `index/components.toon` is 27.9 KB on
+`origin/main`, over the ledger spec's 8 KB budget on its own, so the file points at the
+installed `components/super-ai/index.toon` instead of inlining it.
 
 ## 4. How it ships
 
@@ -142,13 +144,23 @@ separate `super-ai-rules` item was considered and is option B in open decision 1
 
 Files the kit installs, all `registry:file`:
 
-| Target                                        | Source                                                          | Kind |
-| --------------------------------------------- | --------------------------------------------------------------- | ---- |
-| `AGENTS.super-ai.md`                          | emitted: §3 rules, then the routing index, then retrieval       | soft |
-| `components/super-ai/index.toon`              | copy of `index/components.toon`                                 | soft |
-| `scripts/super-ai-validate.mjs`               | emitted: the blocker subset of `packages/ds-rules`, stdlib only | hard |
-| `scripts/check-tokens.mjs` (optional)         | a five-line shim re-exporting `lintText` from the above         | hard |
-| `.claude/hooks/super-ai-guard.mjs` (optional) | a PreToolUse hook that runs `lintText` on Write and Edit        | hard |
+| Target            | Source                                 | Kind                                                                 |
+| ----------------- | -------------------------------------- | -------------------------------------------------------------------- | ---- |
+| Item              | Target                                 | Source                                                               | Kind |
+| ----------------- | -------------------------------------- | -------------------------------------------------------------------- | ---- |
+| `agent-kit`       | `AGENTS.super-ai.md`                   | emitted: §3 rules, then the pointer to the index and retrieval order | soft |
+| `agent-kit`       | `components/super-ai/index.toon`       | copy of `index/components.toon`                                      | soft |
+| `agent-kit`       | `scripts/super-ai/validate.mjs`        | `packages/ds-rules/consumer/validate.mjs`, byte copy                 | hard |
+| `agent-kit`       | `scripts/super-ai/rulecheck.mjs`       | `packages/ds-rules/rulecheck.mjs`, byte copy                         | hard |
+| `agent-kit`       | `scripts/super-ai/src/token-rules.mjs` | `packages/ds-rules/src/token-rules.mjs`, byte copy                   | hard |
+| `agent-kit`       | `scripts/super-ai/system-diff.mjs`     | `packages/ds-rules/consumer/system-diff.mjs`, byte copy              | hard |
+| `agent-kit`       | `scripts/super-ai/rules.json`          | emitted: static rules from `rules/*.json`, scopes rewritten          | hard |
+| `agent-kit-hooks` | `scripts/check-tokens.mjs`             | shim re-exporting `lintText` from `super-ai/validate.mjs`            | hard |
+| `agent-kit-hooks` | `.claude/hooks/super-ai-guard.mjs`     | PreToolUse hook that runs `lintText` on Write and Edit               | hard |
+
+Decision 2A is carried by the second item: `agent-kit-hooks` declares `agent-kit` as a
+registry dependency, so opting in is one more `shadcn add`, and `agent-kit` alone never
+writes a hook or a file that Nick's global hook would pick up.
 
 Two things the kit must not do:
 
@@ -157,23 +169,27 @@ Two things the kit must not do:
   `docs` string tells the human the one line to add: `@AGENTS.super-ai.md` in `CLAUDE.md`
   (Claude Code follows the import), or a pointer sentence in `AGENTS.md` (which has no import
   syntax). The hook is the same: the kit installs the script, the human adds the matcher.
-- **Ship `rulecheck.mjs` as is.** It reads this repo's scopes and records directory. The emitted
-  validate script is self-contained, takes paths as arguments, and carries the rules inlined at
-  build time.
+- **Carry a second copy of the engine.** `rulecheck.mjs` ships byte for byte; what differs in
+  a consumer is data (the rules with consumer scopes) and a thin CLI. The one engine change is
+  that `scan` takes the vendored scopes as a parameter instead of a module constant.
 
 ### 4.2 One authored source
 
 The rules prose is authored once in `apps/docs/lib/consumer-rules.ts` and emitted by
-`gen-registry.mts`. A drift test holds the emitted file to the module, the same arrangement as
-D23 for component guidance. The rule list in R2 and R3 is checked against the blocker ids in
+`pnpm contract:emit` beside the metas, so the existing drift test in `contract-emit.test.ts`
+holds the emitted files to their sources, the same arrangement as D23 for component guidance. The rule list in R2 and R3 is checked against the blocker ids in
 `packages/ds-rules/rules/*.json`, so a rule added to the gate and missing from the prose turns
 the test red rather than going unsaid.
 
 ### 4.3 The two `validate` additions
 
 - **Motion pairing.** Flag an `animate-*` or `transition-*` class with no `motion-reduce:` pair
-  in the same class string. It is a new rule record with bad and good fixtures, like every
-  other, and it would also run on this repo, where 204 pairs already exist.
+  in the same class string. It is a new rule record, MOT-3, with bad and good fixtures, like
+  every other. Measured on `origin/main`: 37 of 50 movement class strings (`animate-*` other
+  than `none` and `spin`, `transition`, `transition-transform`) across 24 files have no pair
+  in the same string. So MOT-3 lands at severity `review`: reported here and in consumers,
+  never an exit 1. Fixing the 24 files and promoting it to `blocker` is a follow-up, not this
+  initiative.
 - **`--system`.** Given a git range (default: the working tree against `HEAD`), list hunks that
   add a file under `components/ui/` or `components/super-ai/`, modify an installed registry
   file, or change a custom property inside `:root` or `.dark` in `globals.css`. Exit 3 when any
@@ -211,7 +227,7 @@ positive before it counts.
 - Any rule about git, branching or deploys in the consumer. Those are the consumer's own house
   rules, not the kit's.
 
-## 6. Open decisions
+## 6. Decisions (Nick, 2026-11-06: 1A, 2A, 3A)
 
 1. **Packaging.**
    A. Rules section inside `agent-kit` (recommended): one install, one file, matches the ledger spec.
@@ -231,3 +247,6 @@ positive before it counts.
 ## Changelog
 
 - 2026-11-06: first draft, from `origin/main` at `76cc8910`.
+- 2026-11-06: approved 1A, 2A, 3A. Planning found three corrections: the index is too large to
+  inline, MOT-3 lands as `review` because 37 strings are unpaired today, and the opt-in hook
+  layer is its own item, `agent-kit-hooks`.
