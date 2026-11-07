@@ -32,8 +32,16 @@ interface FeatureCardRowItem {
   id: string;
   /** Small glyph in the card's leading slot. Mutually exclusive with `thumbnail`. */
   icon?: React.ReactNode;
-  /** Full-bleed media above the text. Drives the with-thumbnail state. */
-  thumbnail?: { src: string; alt: string };
+  /**
+   * Full-bleed media above the text. Drives the with-thumbnail state.
+   *
+   * `{ src, alt }` renders an `<img>` and makes alt text non-optional, which
+   * is why that form is kept rather than replaced. A node covers everything an
+   * `<img>` cannot be — a video poster, a canvas, a blurhash, a rendered
+   * placeholder — and carries its own accessible name or, more often, is
+   * decorative beside the card's real title.
+   */
+  thumbnail?: { src: string; alt: string } | React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
   /** Badge, shortcut, or affordance rendered after the description. */
@@ -45,18 +53,34 @@ interface FeatureCardRowProps extends React.ComponentProps<"div"> {
   items: FeatureCardRowItem[];
 }
 
+/**
+ * Distinguishes the `{ src, alt }` form from a node. A React element is also
+ * an object with keys, so `"src" in value` on its own would misread
+ * `<img src=… />` as an image source and try to read `.src` off the element
+ * rather than its props.
+ */
+function isImageSource(value: unknown): value is { src: string; alt: string } {
+  return typeof value === "object" && value !== null && !React.isValidElement(value) && "src" in value;
+}
+
 function FeatureCard({ item }: { item: FeatureCardRowItem }) {
   const { icon, thumbnail, title, description, trailing, onSelect } = item;
 
   return (
     <Card data-slot="feature-card-row-card" className="h-full gap-3 py-0">
       {thumbnail ? (
-        <img
-          data-slot="feature-card-row-thumbnail"
-          src={thumbnail.src}
-          alt={thumbnail.alt}
-          className="aspect-video w-full object-cover"
-        />
+        isImageSource(thumbnail) ? (
+          <img
+            data-slot="feature-card-row-thumbnail"
+            src={thumbnail.src}
+            alt={thumbnail.alt}
+            className="aspect-video w-full object-cover"
+          />
+        ) : (
+          <div data-slot="feature-card-row-thumbnail" className="aspect-video w-full overflow-hidden">
+            {thumbnail}
+          </div>
+        )
       ) : null}
       <EntityRow
         icon={icon}
