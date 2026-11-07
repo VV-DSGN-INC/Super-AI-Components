@@ -8,11 +8,20 @@ import { expectLoadingTwin, LoadingTwin } from "@/lib/loading-twin";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChatShell, type ChatShellProps } from "@/registry/super-ai/chat-shell";
 import { NotebookShell } from "@/registry/super-ai/notebook-shell";
 import { ApprovalCard } from "@/registry/super-ai/approval-card";
 import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
 import { RateLimitBanner } from "@/registry/super-ai/rate-limit-banner";
+import {
+  ViewFrame,
+  ViewFrameContent,
+  ViewFrameDescription,
+  ViewFrameFooter,
+  ViewFrameHeader,
+  ViewFrameTitle,
+} from "@/registry/super-ai/view-frame";
 import { ChatShellDocs } from "@/content/components/chat-shell.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
 
@@ -1205,6 +1214,15 @@ export const LongContent: Story = {
  * in both copies; the play below asserts `transition-property: none` on both
  * halves, which is the value the fix changes.
  *
+ * **A second thing it found, in B7 rather than here.** At 375px the topbar's
+ * title collapsed to zero width and the privacy chip painted over the
+ * saved-state text, because nothing in `app-topbar` could give way: trailing
+ * `shrink-0`, chip `shrink-0`, the leading group absorbing the deficit. Fixed
+ * at the source with a floor on the title and a container query that takes the
+ * saved label out of paint below 28rem of bar width; `AppTopbar.stories.tsx`'s
+ * `Mobile` carries the breadcrumb half, and the play below reads the plain-title
+ * half back in the shell.
+ *
  * The resize does not leak: `LongContent` above and `Boundary` below both read
  * 1200px back, and `LongContent`'s own assertions depend on it.
  */
@@ -1250,6 +1268,26 @@ export const Mobile: Story = {
         `stream ${stream.scrollWidth <= stream.clientWidth}`,
       ].join(" · "),
     ).toBe("document true · shell true · stream true");
+
+    // B7's narrow rules, measured in the shell that found the defect: the
+    // title keeps its floor, the privacy chip ends before the trailing group
+    // begins, and the saved label is `sr-only` — out of paint, still read.
+    // Before the fix the title collapsed to zero width and the chip painted
+    // over "Saved just now" (chip 89..146, label from 136).
+    const title = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-title"]')!;
+    const chip = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-privacy"]')!;
+    const trailing = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-trailing"]')!;
+    const saved = canvasElement.querySelector<HTMLElement>('[data-slot="app-topbar-saved"]')!;
+    await expect(
+      [
+        `title has width: ${title.getBoundingClientRect().width > 0}`,
+        `chip clear of trailing: ${chip.getBoundingClientRect().right <= trailing.getBoundingClientRect().left}`,
+        `saved label painted: ${saved.getBoundingClientRect().width > 1}`,
+        `saved label read: ${saved.textContent === "Saved just now"}`,
+      ].join(" · "),
+    ).toBe(
+      "title has width: true · chip clear of trailing: true · saved label painted: false · saved label read: true",
+    );
 
     // The topbar trigger is the only way into the history now, so it had
     // better open something.
@@ -1500,5 +1538,105 @@ export const Status: Story = {
     await expect(status).not.toBeNull();
     await expect(status!.previousElementSibling).toHaveAttribute("data-region", "topbar");
     await expect(within(status!).getByText("The model is at capacity")).toBeVisible();
+  },
+};
+
+/* -------------------------------------------------------------------------
+ * Docked view (generated chat, phase 2)
+ * ---------------------------------------------------------------------- */
+
+const VOICE_VIEW = (
+  <ViewFrame title="Voice comparison">
+    <ViewFrameHeader>
+      <ViewFrameTitle>Voice comparison</ViewFrameTitle>
+      <ViewFrameDescription>Northwind and three competitors · updated just now</ViewFrameDescription>
+    </ViewFrameHeader>
+    <ViewFrameContent>
+      <ul className="flex flex-col gap-2 text-sm">
+        <li>Northwind opens on reassurance.</li>
+        <li>All three competitors open on speed.</li>
+      </ul>
+    </ViewFrameContent>
+    <ViewFrameFooter origin="Made in chat: Brand audit for Northwind" version="v1" />
+  </ViewFrame>
+);
+
+/** A reply that is only a card: no text to stretch the turn. */
+const CARD_ONLY_MESSAGES: ChatShellProps["messages"] = [
+  ...(MESSAGES ?? []),
+  {
+    id: "m3",
+    role: "assistant",
+    content: (
+      <Card data-testid="card-only">
+        <CardHeader>
+          <CardTitle>Voice comparison</CardTitle>
+        </CardHeader>
+        <CardContent>Two lines.</CardContent>
+      </Card>
+    ),
+  },
+];
+
+/**
+ * A view the conversation built, docked. From `lg` the view is the main area and
+ * the conversation narrows to 24rem beside it; the sidebar collapses to its icon
+ * rail while the view is open, each thread drawn as its icon with the title kept
+ * as its name. A reply that is only a card fills its turn rather than shrinking
+ * to the card's content.
+ */
+export const DockedView: Story = {
+  args: { ...FULL_ARGS, messages: CARD_ONLY_MESSAGES, view: VOICE_VIEW },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvasElement.querySelector('[data-slot="sidebar"]')).toHaveAttribute(
+      "data-state",
+      "collapsed",
+    );
+
+    const view = canvasElement.querySelector<HTMLElement>('[data-region="view"]')!;
+    const conversation = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell-conversation"]')!;
+    // lg:w-96 is the class's own number (D21), so it is pinnable.
+    await expect(getComputedStyle(conversation).width).toBe("384px");
+    await expect(view.getBoundingClientRect().right).toBeLessThanOrEqual(
+      conversation.getBoundingClientRect().left,
+    );
+    await expect(canvas.getByRole("region", { name: "Voice comparison" })).toBeVisible();
+
+    const card = canvas.getByTestId("card-only");
+    const body = card.closest<HTMLElement>('[data-slot="chat-shell-turn-body"]')!;
+    const turn = body.parentElement!;
+    await expect(Math.round(body.getBoundingClientRect().width)).toBe(
+      Math.round(turn.getBoundingClientRect().width),
+    );
+
+    const row = canvas.getByRole("button", { name: "Brand audit for Northwind" });
+    await expect(getComputedStyle(within(row).getByText("Brand audit for Northwind")).width).toBe("1px");
+  },
+};
+
+/**
+ * The same docked view on a phone. Below `lg` the view sits above the
+ * conversation and both take the full width; nothing scrolls sideways.
+ */
+export const DockedViewMobile: Story = {
+  args: { ...FULL_ARGS, messages: CARD_ONLY_MESSAGES, view: VOICE_VIEW },
+  play: async ({ canvasElement }) => {
+    const { page } = await import("vitest/browser");
+    await page.viewport(375, 812);
+    const view = canvasElement.querySelector<HTMLElement>('[data-region="view"]')!;
+    const conversation = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell-conversation"]')!;
+    await waitFor(() =>
+      expect(view.getBoundingClientRect().bottom).toBeLessThanOrEqual(
+        conversation.getBoundingClientRect().top + 1,
+      ),
+    );
+    // Below lg the two split the body evenly (basis-1/2), so the conversation
+    // keeps room for the latest reply and its chips while a view is open.
+    await expect(
+      Math.abs(view.getBoundingClientRect().height - conversation.getBoundingClientRect().height),
+    ).toBeLessThanOrEqual(1);
+    const shell = canvasElement.querySelector<HTMLElement>('[data-slot="chat-shell"]')!;
+    await expect(shell.scrollWidth).toBeLessThanOrEqual(shell.clientWidth);
   },
 };

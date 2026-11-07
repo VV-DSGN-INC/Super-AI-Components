@@ -1,7 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { expect, fn, userEvent, within } from "storybook/test";
 
-import { EscalationHandoff, type EscalationPacket } from "@/registry/super-ai/escalation-handoff";
+import { AiLabel, type AiLabelVariant } from "@/registry/super-ai/ai-label";
+import {
+  EscalationHandoff,
+  type EscalationPacket,
+  type EscalationState,
+} from "@/registry/super-ai/escalation-handoff";
 import { SafetyBlock } from "@/registry/super-ai/safety-block";
 import { EscalationHandoffDocs } from "@/content/components/escalation-handoff.docs";
 import { componentDocsPage } from "@/lib/component-docs-page";
@@ -107,12 +112,88 @@ export const QueuedWaitUnknown: Story = {
  * prop for resuming the conversation with state intact or closing it
  * explicitly. `accepted` is where this component stops and the host takes
  * over. Recorded rather than faked.
+ *
+ * What it does mark is where the AI stopped. The packet's A13 `ai-label`
+ * reads `summarized` in every earlier state and switches to `after-handoff`
+ * here ("Handed off", named "AI replies ended here, a person took over"), the
+ * Intercom Fin rule: the AI's identity stays visible after a person takes
+ * over. `HandoffThread` below shows the host's thread making the same switch.
  */
 export const Accepted: Story = {
   args: {
     trigger: "user",
     state: "accepted",
     packet: deliveryPacket,
+  },
+  play: async ({ canvasElement }) => {
+    const chip = within(canvasElement).getByRole("note", {
+      name: "AI replies ended here, a person took over",
+    });
+    await expect(chip.closest('[data-slot="escalation-handoff-packet"]')).not.toBeNull();
+  },
+};
+
+/** The host's rule for its own thread: the AI's turns follow the card's state. */
+const TURN_LABEL: Record<EscalationState, AiLabelVariant> = {
+  preview: "sender",
+  queued: "sender",
+  unavailable: "sender",
+  accepted: "after-handoff",
+};
+
+/**
+ * The thread half of the after-handoff rule, which this card cannot draw: it
+ * renders the packet, never the conversation. The host's message list labels
+ * the AI's turns with A13 `ai-label`, `sender` before the handoff and
+ * `after-handoff` once the card reaches `accepted`, driven by the same
+ * `state`. The person's reply carries no chip, so the reader sees exactly
+ * where the AI stopped and a person began. The thread markup here is a
+ * stand-in for the host's own list, kept to plain text and tokens the card
+ * already uses.
+ */
+export const HandoffThread: Story = {
+  render: () => {
+    const state: EscalationState = "accepted";
+    const aiTurn = TURN_LABEL[state];
+    return (
+      <div className="flex w-full max-w-lg flex-col gap-4">
+        <ol aria-label="Conversation" className="text-foreground flex flex-col gap-3 text-sm">
+          <li className="flex flex-col gap-1">
+            <span className="flex items-center gap-2 font-medium">
+              Assistant <AiLabel variant={aiTurn} />
+            </span>
+            <span>That order left the warehouse on 12 Aug, so I can no longer change the address.</span>
+          </li>
+          <li className="flex flex-col gap-1">
+            <span className="flex items-center gap-2 font-medium">
+              Assistant <AiLabel variant={aiTurn} />
+            </span>
+            <span>I&apos;m bringing in someone with courier access.</span>
+          </li>
+          <li className="flex flex-col gap-1">
+            <span className="font-medium">Sam, support</span>
+            <span>Hi, I&apos;ve got your order up. Let me try a redirect with the courier now.</span>
+          </li>
+        </ol>
+        <EscalationHandoff trigger="user" state={state} packet={deliveryPacket} />
+      </div>
+    );
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const turns = within(canvas.getByRole("list", { name: "Conversation" })).getAllByRole("listitem");
+    await expect(turns[0].querySelector('[data-slot="ai-label"]')).toHaveAttribute(
+      "data-variant",
+      "after-handoff",
+    );
+    await expect(turns[1].querySelector('[data-slot="ai-label"]')).toHaveAttribute(
+      "data-variant",
+      "after-handoff",
+    );
+    await expect(turns[2].querySelector('[data-slot="ai-label"]')).toBeNull();
+    await expect(
+      canvasElement.querySelector('[data-slot="escalation-handoff-packet"] [data-slot="ai-label"]'),
+    ).toHaveAttribute("data-variant", "after-handoff");
   },
 };
 

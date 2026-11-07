@@ -50,6 +50,13 @@ export default function RunButtonDemo() {
 
       <div className="space-y-2">
         <p className="text-muted-foreground text-xs font-medium">
+          Draft — cheaper click, delta to a final run
+        </p>
+        <RunButton draft cost={2} finalCost={8} onRun={() => console.log("draft run clicked")} />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-xs font-medium">
           Insufficient credits — at the point of spend
         </p>
         <RunButton

@@ -26,22 +26,25 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 
 - Lock the whole strip with the bar's `disabled` while a run is in flight, instead of disabling each segment — the bar shares one flag through context, so five segments cannot drift out of step with each other.
 - Let the selected model decide which segments exist, and drop the ones it does not have rather than leaving a dead segment on the strip.
+- Name the draft option as lower quality in its text ("Draft, lower quality"), and re-estimate cost from `onQualityChange` the way you do for any other segment.
 
 ## Don't
 
 - Don't use it to narrow something already on screen. A segment here changes the next run, not the current view — a strip whose clicks filter a library is a `filter-bar` wearing the wrong component.
 - Don't prefix each segment with the parameter it sets. The value names itself, the strip has no room for both, and nothing here truncates — the labels just push the bar past the edge of whatever holds it.
+- Don't sell the draft option on price alone. A label such as "Cheaper" hides the trade, and the lower quality arrives as a surprise.
 
 ## Anatomy
 
 - `gen-settings-bar`: The strip. Renders role="toolbar", so give it an aria-label naming what it configures — "Generation settings" — because nothing inside it names the group. Carries data-disabled while the bar is locked, which is what to style against.
 - `gen-settings-item`: One segment. A real button whose children are the current value — that text is also its entire accessible name. It reads `disabled` from the bar through context, and takes its own `disabled` to override that either way.
+- `gen-settings-quality`: Optional draft or final segment (`GenSettingsQuality`). Renders only when you pass both `quality` and `onQualityChange`; otherwise it is absent from the DOM. A labelled group of two toggle items, `gen-settings-quality-draft` and `gen-settings-quality-final`, each a `GenSettingsItem` with `aria-pressed`.
 
 ## Accessibility
 
 **Keyboard**
 
-- Every segment is its own tab stop. The bar renders role="toolbar" but has not implemented the roving tabindex that role promises — there is a TODO in the source — so crossing a five-segment strip costs five Tabs, and Left/Right do nothing.
+- The bar is one tab stop. It renders role="toolbar" on Base UI's Toolbar, so Left and Right move between segments and wrap. A disabled segment is natively disabled and the arrows step over it.
 - Segments are real buttons, so Space and Enter open whatever control the segment fronts. There is no Escape handler here; dismissing that control is the control's own business.
 - `disabled` on the bar reaches every segment through context and removes all of them from the tab order at once, which is what makes it safe to lock the strip during a run. A segment opts back in with `disabled={false}` on itself — omitting the prop falls through to the bar's value.
 
@@ -50,6 +53,7 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 - The bar announces as a toolbar with no name unless you give it one — nothing inside it says what is being configured. Pass an `aria-label` such as "Generation settings", and note that the announced role then promises arrow-key navigation this component does not have.
 - A segment's accessible name is its children and nothing else, so the value is the name: a segment reads "1080p", never "Resolution, 1080p". An icon-only segment ships an unlabeled button unless you add an `aria-label`.
 - Changing a parameter rewrites a button's own label under the user. The bar owns no live region, so nothing announces "resolution is now 1080p" — and a name that changes while its element still holds focus is not reliably re-announced.
+- The quality segment is a named group ("Quality") of two buttons whose state is `aria-pressed`, so "Draft, lower quality, pressed" is spoken. Like every segment it relabels nothing and announces nothing on change.
 - `data-disabled` on the bar is a styling hook only. The programmatic state lives on the segments' own `disabled` attributes; the toolbar element itself carries no `aria-disabled`.
 
 **Focus**
@@ -59,7 +63,8 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 
 ## Pitfalls
 
-- The bar announces role="toolbar" but does not yet implement the arrow-key roving tabindex that role promises — see the TODO in the source. Today every segment is its own tab stop, so a keyboard user pays one Tab per segment to cross the strip and arrow keys do nothing. Keep the strip to the five or six segments the pattern was drawn for until that lands.
+- `GenSettingsQuality` is controlled and optional. Pass `quality` ("draft" or "final") together with `onQualityChange`; with either missing it renders nothing, so a host that does not support drafts shows no dead segment. The bar does not re-estimate cost itself, so `onQualityChange` is where you update the settings and request the new estimate, exactly as for any other segment.
+- Only `GenSettingsItem`s join the arrow walk. A plain `<button>` placed inside the bar is not a toolbar item, so it keeps a tab stop of its own and the arrows pass it by; wrap any segment in `GenSettingsItem` (or render it through one) to keep the strip one stop.
 - There is no value API. `GenSettingsItem` is a plain button: the value it shows is its `children`, and `onClick` hands you a MouseEvent rather than a new value, so each segment needs its own handler and the values are owned entirely upstream. Nothing here can report "resolution changed to 1080p" generically — the catalog naming Select and Toggle-group as the base describes the controls you open, not what this component ships.
 - `disabled` travels through React context, so a segment inside a disabled bar is disabled even though nothing in its own JSX says so. To keep one segment live during a run, pass `disabled={false}` on it explicitly — leaving it off falls through to the bar's value.
 - Nothing wraps, truncates or scrolls. The strip is an inline-flex that grows to fit, so a long model name widens it until it overruns its parent; in a composer's settings slot the caller owns the decision about what gives, and the honest fix is usually a shorter label rather than a wider bar.
@@ -69,10 +74,10 @@ None: Neither GenSettingsBar nor GenSettingsItem takes a variant prop. The spec 
 
 ## Composition
 
-- States: `video-model`, `image-model`, `running`, `partially-locked`
+- States: `video-model`, `image-model`, `running`, `partially-locked`, `draft`
 - Composes from this registry: nothing
 - shadcn primitives: none
-- npm: none
+- npm: @base-ui/react
 
 ## Evidence
 

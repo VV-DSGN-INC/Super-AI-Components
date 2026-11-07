@@ -38,8 +38,26 @@ describe("configSchema", () => {
     expect(() => configSchema.parse({ ...valid, scopeRole: {} })).toThrow()
   })
 
-  it("rejects zero axes — a one-cell system should say so, not hide it", () => {
-    expect(() => configSchema.parse({ ...valid, axes: [] })).toThrow()
+  it("accepts a class axis, because .dark is the single-attribute selector [class~=dark]", () => {
+    const withClass = { ...valid, axes: [{ attribute: "class", values: ["dark"] }] }
+    expect(configSchema.parse(withClass).axes[0].attribute).toBe("class")
+  })
+
+  it.each(["className", "classes", "class-name", "data-", "style", "id"])(
+    "rejects %s as an axis attribute",
+    (attribute) => {
+      const bad = { ...valid, axes: [{ attribute, values: ["a"] }] }
+      expect(() => configSchema.parse(bad)).toThrow()
+    }
+  )
+
+  it("accepts an explicit empty axes list, which is how a one-cell system states it", () => {
+    expect(configSchema.parse({ ...valid, axes: [] }).axes).toEqual([])
+  })
+
+  it("still requires the axes key, so a one-cell system cannot state it by omission", () => {
+    const { axes, ...bad } = valid
+    expect(() => configSchema.parse(bad)).toThrow()
   })
 
   it("exposes the closed sets", () => {
@@ -61,5 +79,13 @@ describe("cellCount", () => {
 
   it("is three for a single two-value axis", () => {
     expect(cellCount([{ attribute: "data-theme", values: ["a", "b"] }])).toBe(3)
+  })
+
+  it("is two for a class axis with one class: the class set and the class absent", () => {
+    expect(cellCount([{ attribute: "class", values: ["dark"] }])).toBe(2)
+  })
+
+  it("is one for zero axes", () => {
+    expect(cellCount([])).toBe(1)
   })
 })

@@ -35,8 +35,12 @@ Set `shadcn` / `consumes` / `npm` from the real column, flip `status` to
 `"shipped"`, then:
 
 ```bash
-cd apps/docs && pnpm gen:wiring && pnpm check:contract
+cd apps/docs && pnpm gen:wiring && pnpm contract:emit && pnpm facts:emit && pnpm openui:emit && pnpm check:contract
 ```
+
+`openui:emit` rewrites `public/openui/catalog.json`; skipping it leaves the file
+stale and `pnpm test` fails on it. `contract:emit` and `facts:emit` do the same
+for the `.meta.json` / `llms*` layer and `content/system/facts.json`.
 
 ## 3. Run every gate
 

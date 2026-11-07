@@ -1,0 +1,75 @@
+# Widget Grid
+
+> A grid that places fixed-size widget tiles two columns wide in a narrow space and four columns wide in a roomy one. It answers to its own width through a container query, so the same code lays out a widget row in a chat column and on a full-width home page. Rows are as tall as the columns are wide, which keeps a small tile square and makes a large one four squares.
+
+Layer: component · Family: R · Install: `npx shadcn@latest add https://super-ai-components.vercel.app/r/widget-grid.json` · Contract: `components/super-ai/widget-grid.meta.json` (installed beside the component; version-locked to the code, so it outranks this page) · Docs: https://super-ai-components.vercel.app/components/widget-grid
+
+## Why it matters
+
+Home-screen widget systems such as WidgetKit define a size family as a whole number of grid cells, so a tile's size is a layout you can reason about and test, not a measurement each screen negotiates. The grid is what holds that promise: spans come from the tile's size, and the row height is derived from the same spacing value as the gap, so the two cannot drift apart and leave tiles out of square. Keying the columns off the grid's own width, not the window's, is what lets one component serve both a chat thread and a page.
+
+## When to reach for it
+
+Wrap the tiles in WidgetGrid and give each one a WidgetGridItem with a size: small is 1 column by 1 row, medium is 2 by 1, large is 2 by 2. Below 43.5rem of the grid's own width there are two columns, from there four. Put one tile directly inside each item and let it fill the cell. Tiles flow in DOM order, so put the ones that matter first; the grid does not reorder to close gaps, because a visual order that differs from the reading order breaks keyboard navigation.
+
+## Variants
+
+### WidgetGridItem · size
+
+- `small`: Choose small for a single figure or status that reads at a glance, like a count or a balance. It is 1 column by 1 row, always square.
+- `medium`: Choose medium for a tile that needs a line of text or a short list beside its figure. It is 2 columns by 1 row and takes a full row in the two-column layout.
+- `large`: Choose large for the one tile on the page that carries a body of content, like a live list of running work. It is 2 columns by 2 rows, four squares.
+
+## Instead use
+
+- **recent-grid**: The items are thumbnails of things to reopen, each with a title and recency text, rather than fixed-size glanceable tiles.
+- **artifact-grid**: The items are documents grouped under the session that produced them and need a type filter, not a uniform tile size.
+
+## Do
+
+- Pick each tile's size from the three-size family and let the grid do the sizing. A tile that needs a different shape is a different tile, not a custom span.
+- Name each grid's region yourself when a page has more than one, with a heading or an aria-label on a wrapper you own.
+
+## Don't
+
+- Don't add horizontal padding or margin to the grid. The row height is worked out from the container's width, so a narrower grid inside it leaves every tile taller than it is wide. Pad the parent instead.
+- Don't put content taller than its cell inside an item. The cell is fixed by the grid; content that ignores it spills over the row below.
+
+## Anatomy
+
+- `widget-grid`: The grid itself, inside an unnamed container wrapper. className and other props land here.
+- `widget-grid-item`: The span for one tile. Carries data-size, and sets the column and row span from size.
+
+## Accessibility
+
+**Keyboard**
+
+- The grid adds no tab stops. Tab order is the DOM order of whatever interactive controls the tiles contain, so a tile with one button is one stop.
+- Arrow keys do nothing: this is a layout, not a role="grid", and there is no roving tabindex.
+- Because tiles are not reordered visually, the order a keyboard user tabs in matches the order a sighted user reads in, one row at a time.
+- Nothing here can be disabled. Disabled state belongs to the tile.
+
+**Screen reader**
+
+- Plain divs with no role and no aria attributes. There is no list semantics, so a screen reader does not announce a count of tiles; they read in DOM order like any other content.
+- data-size is a styling and test hook only and is not exposed to assistive technology.
+- The grid has no accessible name. A page with more than one grid names each region itself, for example with role="region" and an aria-label, or a section labelled by a heading, as the second Do shows.
+- Resizing across the 43.5rem threshold changes columns, not order or content, so nothing is announced and nothing needs to be.
+
+## Pitfalls
+
+- Reading the columns from the viewport. The switch is a container query on the grid's own wrapper, so a grid in a narrow chat column stays at two columns on a wide window.
+- Putting padding on the grid and wondering why tiles are no longer square. Pad the parent.
+- Expecting a medium or large tile to fill a hole. A medium tile after three small ones in a four-column row moves to the next row and leaves a gap. Order the tiles for the four-column case, since two columns never leaves one.
+- Rebuilding the threshold in your own CSS. Import FOUR_COLUMN_MIN_REM when a test or sibling layout needs the number; it is a literal because it is the size model's contract, not a design token.
+
+## Composition
+
+- States: `two-column`, `four-column`, `mixed-sizes`
+- Composes from this registry: nothing
+- shadcn primitives: none
+- npm: none
+
+## Evidence
+
+WidgetKit

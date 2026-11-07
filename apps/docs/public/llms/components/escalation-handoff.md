@@ -10,7 +10,7 @@ Handoff is the strongest result in the agent slice of the reference board: five 
 
 ## When to reach for it
 
-Reach for it at the moment the agent stops and a person starts: the user asked for someone, the repair loop has run out of road, confidence is too low for a high-stakes action, or policy requires a human review. Pick the `trigger` that is actually true — the four reasons produce four different messages, and "you asked for a person" and "policy requires a person" are not interchangeable claims about the conversation. Keep `state` in your own state and advance it as the handoff progresses; the component renders what you give it and never moves itself. Show `preview` first so the user can read and edit the packet before it travels, because it is their conversation being forwarded.
+Reach for it at the moment the agent stops and a person starts: the user asked for someone, the repair loop has run out of road, confidence is too low for a high-stakes action, or policy requires a human review. Pick the `trigger` that is actually true — the four reasons produce four different messages, and "you asked for a person" and "policy requires a person" are not interchangeable claims about the conversation. Keep `state` in your own state and advance it as the handoff progresses; the component renders what you give it and never moves itself. Show `preview` first so the user can read and edit the packet before it travels, because it is their conversation being forwarded. The packet carries A13 `ai-label`, summarized until `accepted` and after-handoff from then on; give the earlier AI turns in your own thread the same switch, sender before the handoff and after-handoff after, so the reader can see where the AI stopped.
 
 ## Variants
 
@@ -39,6 +39,7 @@ Not yet recorded.
 - `escalation-handoff-wait`: Queue copy, in the `queued` state only. Prints an honest fallback when `wait` is absent.
 - `escalation-handoff-availability`: The closed-door message, in the `unavailable` state only. `availability` appends the window people are back.
 - `escalation-handoff-packet`: The packet section — summary, the resolved frame, what was already tried. Rendered in every state.
+- `ai-label`: A13 `ai-label` on the packet's header: summarized while the packet is the AI's summary waiting for a person, after-handoff once one has accepted. Not overridable, because the switch is the point.
 - `escalation-handoff-request`: The specific ask. Optional in the API, but an escalation without one is just a forward.
 
 ## Accessibility
@@ -53,6 +54,7 @@ Not yet recorded.
 **Screen reader**
 
 - The card has no heading anywhere. "Handing this to a person" renders through `CardTitle`, which is a `div`, and "What they'll see" comes from `SectionHeader` in its non-collapsible shape, which is a `span` — so neither is reachable by heading navigation and the packet is a block of text with nothing to jump to inside it.
+- The packet header carries A13 `ai-label`, a `role="note"` named "Summarized by AI" until `accepted` and "AI replies ended here, a person took over" from then on, so the packet says who wrote it. The switch is not a live region either: it is read when the reader reaches it.
 - The trigger copy is ordinary text, announced in reading order after the title. All four strings are module constants, so what is announced is exactly one of the four and nothing here is assembled from your props.
 - `state` is reflected only as `data-state`. Moving from `preview` to `queued` to `accepted` swaps the card's content with no live region anywhere in the component, so the transition this card exists to model — the moment the handoff is actually sent — is announced as nothing at all. Put a live region on the surface hosting the card.
 - Every copy button in the packet is named "Copy" and nothing more. Four copyable slots means four identically-named buttons, and which is which is carried only by the label sitting beside it.
@@ -71,13 +73,14 @@ Not yet recorded.
 - In `preview` and `unavailable` the footer element renders even when you pass no handlers at all, leaving an empty action bar under the packet. Pass at least one action, or the card ends in a blank strip.
 - `wait` being absent is not the same as passing an empty string: the component prints "We don't have a wait time yet." on purpose. That fallback is the honest answer when queue depth is unknown — don't pass an invented estimate to avoid it.
 - The four trigger strings are a module constant, not props. You cannot reword them per surface; if none of the four fits, the situation probably is not an escalation.
+- Switching the packet's label without switching the thread. The card marks the packet after-handoff on `accepted`, but it does not render the conversation: if your message list keeps the AI's turns at sender, the thread still reads as if the AI were answering. Drive both from the same `state`.
 - The component models no return path. `accepted` is where it stops — there is no prop for resuming the conversation or closing it out, so the host owns whatever happens after a person picks it up.
 - Under `dir="rtl"` the card mirrors correctly, but the "Already tried" bullets use a right-pointing arrow that does not flip. Cosmetic rather than blocking, and tracked as a gap.
 
 ## Composition
 
 - States: `packet-preview`, `queued`, `accepted`, `unavailable`
-- Composes from this registry: section-header, stat-readout
+- Composes from this registry: ai-label, section-header, stat-readout
 - shadcn primitives: card, button
 - npm: lucide-react
 

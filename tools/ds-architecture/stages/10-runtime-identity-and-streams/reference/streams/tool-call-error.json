@@ -1,0 +1,129 @@
+{
+  "id": "tool-call-error",
+  "title": "A tool call that fails, then an answer that says so",
+  "recordedWith": "ai@6.0.235: streamText + toUIMessageStream over a scripted MockLanguageModelV3. The chunk protocol is the SDK's; the words are written.",
+  "partTypes": [
+    "step-start",
+    "text",
+    "tool-find_component"
+  ],
+  "chunks": [
+    {
+      "type": "start",
+      "messageId": "msg-tool-call-error"
+    },
+    {
+      "type": "start-step"
+    },
+    {
+      "type": "tool-input-start",
+      "toolCallId": "call-2",
+      "toolName": "find_component"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-2",
+      "inputTextDelta": "{\"need\":\"ask the"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-2",
+      "inputTextDelta": " user to approve"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-2",
+      "inputTextDelta": " a destructive t"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-2",
+      "inputTextDelta": "ool call\"}"
+    },
+    {
+      "type": "tool-input-available",
+      "toolCallId": "call-2",
+      "toolName": "find_component",
+      "input": {
+        "need": "ask the user to approve a destructive tool call"
+      }
+    },
+    {
+      "type": "tool-output-error",
+      "toolCallId": "call-2",
+      "errorText": "the contracts index could not be read"
+    },
+    {
+      "type": "finish-step"
+    },
+    {
+      "type": "start-step"
+    },
+    {
+      "type": "text-start",
+      "id": "tx-3"
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-3",
+      "delta": "The contract search "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-3",
+      "delta": "failed, so I can't point "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-3",
+      "delta": "to the kit's guidance "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-3",
+      "delta": "yet. Run the search "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-3",
+      "delta": "again."
+    },
+    {
+      "type": "text-end",
+      "id": "tx-3"
+    },
+    {
+      "type": "finish-step"
+    },
+    {
+      "type": "finish",
+      "finishReason": "stop"
+    }
+  ],
+  "message": {
+    "id": "msg-tool-call-error",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "tool-find_component",
+        "toolCallId": "call-2",
+        "state": "output-error",
+        "input": {
+          "need": "ask the user to approve a destructive tool call"
+        },
+        "errorText": "the contracts index could not be read"
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "The contract search failed, so I can't point to the kit's guidance yet. Run the search again.",
+        "state": "done"
+      }
+    ]
+  }
+}

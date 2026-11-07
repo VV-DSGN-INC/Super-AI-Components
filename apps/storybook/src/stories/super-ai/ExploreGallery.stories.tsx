@@ -255,14 +255,14 @@ export const RTL: Story = {
 /**
  * The whole tab sequence, and the answer to the question `infinite-scroll`
  * raises: **yes, a keyboard user can reach page two — but only after every
- * control on page one.** Fourteen stops here, in this order:
+ * control on page one.** Twelve stops here, in this order:
  *
  * 1–4 the docked prompt (textarea, Attach, Add negative prompt, Create),
  * 5 the sort tablist — *one* stop, because Base UI's `Tabs` is a composite
- * with a roving index, 6–8 the three type pills, which are *three* stops
- * because A4 `choice-chips` ships `role="radiogroup"` with a `TODO: roving
- * tabIndex` and none, 9 the feed itself (`Tabs.Panel`, `tabIndex=0`),
- * 10–13 the two tiles' Open and Remix buttons, and 14 Load more.
+ * with a roving index, 6 the type pills — also *one* stop, now that A4
+ * `choice-chips` is a real radio group (they were three stops, one per pill,
+ * until it was), 7 the feed itself (`Tabs.Panel`, `tabIndex=0`), 8–11 the
+ * two tiles' Open and Remix buttons, and 12 Load more.
  *
  * So the cost of reaching page two is linear in the page you already have:
  * two tiles put four stops in front of the button, and the docs module's
@@ -270,18 +270,12 @@ export const RTL: Story = {
  * fourth decision holding, and it is the only route — nothing binds a
  * shortcut to it.
  *
- * **Two exclusions from the focus-treatment check, both measured, neither
- * asserted in either direction.**
+ * **One exclusion from the focus-treatment check, measured and not asserted
+ * in either direction.** (There used to be a second: the selected type pill
+ * painted the same ring focused and unfocused, because `choice-chip` drew
+ * selection with the focus ring. Selection is a fill now, so the pill is held
+ * to both checks like every other stop.)
  *
- * - *The selected type pill paints the same treatment focused and
- *   unfocused.* `choice-chip` gives a selected chip a permanent
- *   `ring-ring border-ring ring-2` and its focus style is `focus-visible:ring-ring
- *   focus-visible:ring-2` — the same colour at the same width. Read back, the
- *   two `box-shadow` strings are byte-identical (`oklch(0.708 0 0) 0px 0px 0px
- *   2px`); only `outline-width` moves, from 3px to 1px, under an
- *   `outline-style: none` that paints neither. This is H6 `waveform-editor`'s
- *   "permanent shadow reading as a ring" in a shared component, so it reaches
- *   every `choice-chips` consumer, not only this feed.
  * - *The prompt textarea paints nothing, and here the differential is the
  *   weaker check.* `media-prompt-bar` sets `border-none
  *   focus-visible:ring-0`, which wave 1 recorded. What is new is the shape:
@@ -328,8 +322,6 @@ export const KeyboardOrder: Story = {
       "media-prompt-bar-submit",
       "explore-gallery-sort",
       "choice-chip",
-      "choice-chip",
-      "choice-chip",
       "explore-gallery-feed",
       "explore-gallery-item-open",
       "explore-gallery-item-remix",
@@ -338,19 +330,21 @@ export const KeyboardOrder: Story = {
       "explore-gallery-load-more",
     ]);
 
-    // One stop for three sort tabs — the composite half of the contract that
-    // the three separate pill stops above are the counter-example to.
+    // One stop for three sort tabs, and one for the three type pills: both
+    // halves of the strip are composites.
     const tabList = root.querySelector<HTMLElement>('[data-slot="explore-gallery-sorts"]')!;
     await expect(tabList.querySelectorAll("button")).toHaveLength(3);
     await expect(
       Array.from(tabList.querySelectorAll<HTMLElement>("button")).filter((b) => b.tabIndex === 0),
     ).toHaveLength(1);
+    const pills = Array.from(root.querySelectorAll<HTMLElement>('[data-slot="choice-chip"]'));
+    await expect(pills).toHaveLength(3);
+    await expect(pills.filter((p) => p.tabIndex === 0)).toHaveLength(1);
 
     // 2. A second lap, this time asserting the focus treatment at each stop.
-    //    Indices 0 (the textarea) and 5 (the selected pill) are excluded — see
-    //    this story's description; both are measured there, neither is
-    //    asserted here.
-    const excluded = new Set([0, 5]);
+    //    Index 0 (the textarea) is excluded — see this story's description;
+    //    it is measured there, not asserted here.
+    const excluded = new Set([0]);
     (document.activeElement as HTMLElement | null)?.blur?.();
     const resting = stops.map((s) => focusTreatmentSignature(s));
     for (const [i, stop] of stops.entries()) {

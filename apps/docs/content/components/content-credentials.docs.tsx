@@ -1,0 +1,137 @@
+import type { ComponentDocs } from "@/lib/component-docs";
+import {
+  HoverCardOnlyOnTouch,
+  PlainBadgeForStripped,
+  StrippedSaysRemoved,
+  UnverifiedKeepsItsDetails,
+} from "./content-credentials.examples";
+
+/**
+ * Plain data read by a Server Component, so no "use client" here. The live
+ * renders open a panel on interaction and live in the sibling
+ * ./content-credentials.examples client module, referenced as zero-prop
+ * elements.
+ */
+export const ContentCredentialsDocs: ComponentDocs = {
+  whatItIs:
+    "The provenance panel that opens from an AI mark. It takes one typed `credentials` record, modelled on C2PA Content Credentials, and shows who published the content, which model made it, when, and an ordered list of edits with each step attributed. Three signature outcomes are kept apart: `verified`, `unverified` (metadata present, signature failed) and `stripped` (credentials removed). It renders a record you already hold and never parses a file.",
+  whyItMatters:
+    "A label that says only 'AI' asks to be trusted. The panel behind it is where a reader, a creator or a researcher can check the claim: the model, the time, the edit trail and whether the signature holds. Adobe Content Credentials, TikTok, Shutterstock, Snap and Google SynthID all converge on a mark that opens a fuller record, and the Shape of AI Watermark and Footprints patterns describe the same pair. The honesty is in the three states. Content whose credentials were removed is a different claim from content a person made, and a failed signature is a different claim from a missing one. Collapsing any two of them into one badge is how a provenance feature starts misleading people.",
+  evidence: ["Adobe Content Credentials", "TikTok", "Shutterstock", "Snap", "Google SynthID"],
+  anatomy: [
+    {
+      slot: "content-credentials",
+      note: "The wrapper span. Holds the mark and an sr-only verdict that describes it. Carries `data-trigger`.",
+    },
+    {
+      slot: "content-credentials-mark",
+      note: "The built-in status chip, used when no `children` are passed. Pass your own mark (an `ai-label`, for example) to replace it.",
+    },
+    {
+      slot: "content-credentials-panel",
+      note: "The panel body inside the hover-card or popover. Carries `data-status`.",
+    },
+    {
+      slot: "content-credentials-title",
+      note: "The heading that names the verdict. In the popover form it also names the dialog.",
+    },
+    {
+      slot: "content-credentials-note",
+      note: "The plain-language sentence for the current status. Different text for each of the three.",
+    },
+    {
+      slot: "stat-readout",
+      note: "The key-value grid (AI use, publisher, model, generated). Absent when the record has none of those fields or is stripped.",
+    },
+    {
+      slot: "content-credentials-history",
+      note: "The ordered edit list. Present only when `edits` is non-empty.",
+    },
+  ],
+  usage:
+    'Wrap the AI mark on a result with `trigger="hover-card"` so the panel opens on hover and on keyboard focus, or use `trigger="popover"` where the mark is a click target. Build the `credentials` record from your verifier\'s output: set `status` from the signature check, `origin` to `ai-generated` or `ai-edited`, and pass `edits` oldest first, because the list is rendered in the order given. Pass the actual publisher string your verifier returned. When credentials are absent, still render the component with `status: "stripped"` rather than hiding the mark, so the reader sees that nothing could be checked. For the whole-asset lightbox with a provenance rail use `asset-detail`; this is the panel that rail and the result tile share.',
+  dos: [
+    {
+      text: "Render content with no credentials as `stripped`, and let the panel say the credentials are gone. It reports an absence of evidence in both directions.",
+      example: <StrippedSaysRemoved />,
+    },
+    {
+      text: "Keep the details visible when the signature fails and mark them as unverified. The reader can still see what was claimed, and the publisher row relabels itself 'Claimed publisher'.",
+      example: <UnverifiedKeepsItsDetails />,
+    },
+  ],
+  donts: [
+    {
+      text: "Don't badge missing credentials as human-made. Stripping is routine (screenshots, re-uploads, social platforms), so absence says nothing about who made the content.",
+      example: <PlainBadgeForStripped />,
+    },
+    {
+      text: "Don't use the hover-card form as the only route to the record on a touch-first surface. Hover does not exist there, and the keyboard focus path only helps keyboard users.",
+      example: <HoverCardOnlyOnTouch />,
+    },
+  ],
+  accessibility: {
+    keyboard: [
+      "The built-in mark is one tab stop, a real button. In the `hover-card` form, focusing it opens the panel after the primitive's delay and blurring closes it; Escape also closes it.",
+      "In the `popover` form, Enter or Space opens the panel and focus moves into it. Escape closes it and returns focus to the mark. The panel itself holds no controls, so there is no second tab stop inside it; the A10 copy button is not enabled on these rows.",
+      "The hover-card panel cannot be entered from the keyboard, so its text cannot be selected or copied that way. Use `popover` where the record needs to be read at leisure.",
+      "A custom mark passed as `children` must itself be focusable. A non-focusable element opens the panel for pointer users only.",
+      "The component adds no `disabled` handling; a disabled custom mark cannot receive hover or focus, so its panel is unreachable.",
+    ],
+    screenReader: [
+      "The mark is described by an sr-only sentence rendered next to it, for example 'Content credentials: verified. Generated by AI.', so the verdict is announced without opening anything. The panel is a portal that does not exist while closed, which is why the verdict lives outside it.",
+      "The built-in mark is named by its visible chip text (Verified, Unverified or No credentials). A custom `children` mark keeps whatever name you gave it; only the description is added.",
+      "The popover panel is a dialog named by its heading ('Credentials verified'). The hover-card panel has no role and no labelled-by link, so a screen reader reaches it only if it browses to the portal; the description on the mark carries the essential verdict for that case.",
+      "Status is never colour alone: each verdict has its own shield icon (hidden from assistive tech) and its own heading text.",
+      "Opening or closing the panel is not announced by a live region. The edit list is a real ordered list, so list position is exposed.",
+    ],
+    focus: [
+      "`popover`: focus moves into the panel on open and returns to the mark on close.",
+      "`hover-card`: focus stays on the mark; the card never takes focus.",
+    ],
+  },
+  pitfalls: [
+    "A `stripped` record ignores every other field. If you pass an issuer or model alongside `status: 'stripped'` they are not shown, because a record that was removed cannot vouch for them.",
+    "`origin` and `status` are independent. A verified signature on `ai-generated` content means the issuer vouches that it is AI-made; it does not mean the content is accurate.",
+    "Edits render in array order and are never re-sorted. Pass them oldest first or the list will read backwards.",
+    "Timestamps are shown in UTC in a fixed en-US format so the same record reads the same everywhere. A string that is not a valid date is shown as given.",
+    "The component renders a record. It does not read, verify or fetch C2PA manifests, so a `verified` status is only as honest as the verifier you ran before it.",
+    "The panel has a fixed width of 20rem, capped to the viewport. Long publisher or model names wrap rather than truncate.",
+  ],
+  variants: [
+    {
+      prop: "trigger",
+      default: "hover-card",
+      values: [
+        {
+          value: "hover-card",
+          intent:
+            "The mark sits on a result tile or inline label that readers pass over, and a glance should be enough. It opens on hover and on keyboard focus, and cannot be entered.",
+        },
+        {
+          value: "popover",
+          intent:
+            "The mark is a deliberate click target (a type badge, a rail entry) or the record needs to be read, selected or reached by touch. It opens on click and takes focus.",
+        },
+      ],
+    },
+  ],
+  insteadUse: [
+    {
+      component: "asset-detail",
+      when: "The reader wants the whole asset at full size with its prompt, parameters and provenance rail. This panel is one section of that view and the hover state on the tile; it does not show the media.",
+    },
+    {
+      component: "stat-readout",
+      when: "You only have plain key-value facts with no verification status and no edit trail. This component composes that grid and adds the trust verdict on top.",
+    },
+    {
+      component: "run-inspector",
+      when: "The detail is a trace span: input, output, tokens and cost for a model call. Credentials describe the produced asset, not the run that produced it.",
+    },
+    {
+      component: "citation-ref",
+      when: "The popover backs a claim in text with a quoted source passage. Credentials back a piece of media with who made it and how.",
+    },
+  ],
+};

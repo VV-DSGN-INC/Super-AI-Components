@@ -2,8 +2,7 @@ import type { SystemPage } from "@/lib/system-page";
 
 /**
  * NICK: `ONE_LINER` and the rest of `LEDE` are yours to write. What is here is
- * a stand-in so the page renders. Everything else in this file is a draft for
- * your final pass. Remove `draft: true` when you have done it.
+ * a stand-in so the page renders.
  *
  * Rules for every string here, enforced by pages.test.ts: numbers only as
  * `{facts.key}` placeholders, backticked repo paths must exist, no em dash, no
@@ -23,7 +22,6 @@ export const harnessPage: SystemPage = {
   title: "Harness",
   description:
     "What surrounds the components: the instructions, rules, contracts and tests that hold an agent's work to the system.",
-  draft: true,
   lede: LEDE,
   sections: [
     {

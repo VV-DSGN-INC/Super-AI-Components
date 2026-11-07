@@ -72,4 +72,25 @@ describe("EscalationHandoff", () => {
     expect(screen.getByText("Someone's with you")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Send to a person" })).not.toBeInTheDocument();
   });
+
+  it("marks the packet as the AI's summary with A13 ai-label until a person takes over", () => {
+    for (const state of ["preview", "queued", "unavailable"] as const) {
+      const { unmount } = render(<EscalationHandoff trigger="user" state={state} packet={PACKET} />);
+      const packet = document.querySelector<HTMLElement>('[data-slot="escalation-handoff-packet"]')!;
+      const chip = packet.querySelector('[data-slot="ai-label"]');
+      expect(chip, state).toHaveAttribute("data-variant", "summarized");
+      expect(screen.getByRole("note", { name: "Summarized by AI" })).toBe(chip);
+      unmount();
+    }
+  });
+
+  it("switches the packet's label to after-handoff once accepted, so the reader sees where the AI stopped", () => {
+    const { rerender } = render(<EscalationHandoff trigger="user" state="queued" packet={PACKET} />);
+    rerender(<EscalationHandoff trigger="user" state="accepted" packet={PACKET} />);
+
+    const chip = screen.getByRole("note", { name: "AI replies ended here, a person took over" });
+    expect(chip).toHaveAttribute("data-variant", "after-handoff");
+    expect(document.querySelector('[data-slot="escalation-handoff-packet"]')).toContainElement(chip);
+    expect(screen.queryByRole("note", { name: "Summarized by AI" })).toBeNull();
+  });
 });

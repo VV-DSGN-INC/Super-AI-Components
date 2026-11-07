@@ -54,10 +54,10 @@ describe("AccountMenu", () => {
     const defaultSwatch = await screen.findByRole("radio", { name: "Default" });
     expect(defaultSwatch).toHaveAttribute("aria-checked", "true");
 
-    const slateSwatch = screen.getByRole("radio", { name: "Slate" });
-    expect(slateSwatch).toHaveAttribute("aria-checked", "false");
-    await userEvent.click(slateSwatch);
-    expect(onBackgroundChange).toHaveBeenCalledWith("slate");
+    const greySwatch = screen.getByRole("radio", { name: "Grey 2" });
+    expect(greySwatch).toHaveAttribute("aria-checked", "false");
+    await userEvent.click(greySwatch);
+    expect(onBackgroundChange).toHaveBeenCalledWith("grey-2");
   });
 
   it("renders the shortcut-hints state as real <kbd> elements", async () => {

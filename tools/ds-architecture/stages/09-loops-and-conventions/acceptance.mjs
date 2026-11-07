@@ -35,7 +35,23 @@ const CHECKS = [
     why: "worktree isolation and per-checkout install discipline are not written down",
     fix: "State that concurrent sessions each work in their own worktree, and that every checkout needs its own dependency install.",
   },
+  {
+    claim: "09.5",
+    all: [/weakens?\s+an\s+existing\s+test/i, /contract\s+prose/i],
+    why: "the blocker taxonomy does not name a weakened test or gate, or contract prose the change made false",
+    fix: "Add both to the blocker list: a change that weakens an existing test or gate without a reason the requirements support, and one that leaves contract prose (a meta field, a rule body, a docs page, a comment beside the changed code) stating something the code no longer does.",
+  },
 ]
+
+/** Declared, not silent. Whether a review actually reads a report of what the
+ *  change took away from existing tests is behaviour of the review process, not
+ *  a property of any file a probe can read, so it is emitted unchecked on every
+ *  run. The same shape as stage 01's `01.4c`. */
+const REVIEW_READS_TEST_CHANGES = {
+  claim: "09.6",
+  reason:
+    "whether each review reads a report of the lines the change took away from existing tests is review-process behaviour; no static probe can check it, so it is declared unchecked",
+}
 
 export default function probe(targetRoot, config) {
   const file = INSTRUCTION_FILES.map((f) => path.join(targetRoot, f)).find(existsSync)
@@ -46,15 +62,21 @@ export default function probe(targetRoot, config) {
   if (!file) {
     return {
       stage: "09",
-      results: CHECKS.map((c) => unchecked(c.claim, "no instructions file to read")),
+      results: [
+        ...CHECKS.map((c) => unchecked(c.claim, "no instructions file to read")),
+        unchecked(REVIEW_READS_TEST_CHANGES.claim, REVIEW_READS_TEST_CHANGES.reason),
+      ],
     }
   }
 
   const text = readFileSync(file, "utf8")
   return {
     stage: "09",
-    results: CHECKS.map((c) =>
-      c.all.every((re) => re.test(text)) ? met(c.claim) : unmet(c.claim, c.why, c.fix)
-    ),
+    results: [
+      ...CHECKS.map((c) =>
+        c.all.every((re) => re.test(text)) ? met(c.claim) : unmet(c.claim, c.why, c.fix)
+      ),
+      unchecked(REVIEW_READS_TEST_CHANGES.claim, REVIEW_READS_TEST_CHANGES.reason),
+    ],
   }
 }

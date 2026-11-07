@@ -80,6 +80,8 @@ function useReorderableItems(initial: DemoItem[]) {
 export default function ReferenceStripDemo() {
   const filled = useReorderableItems(FILLED_ITEMS);
   const withRoles = useReorderableItems(ROLE_ITEMS);
+  const described = useReorderableItems(FILLED_ITEMS);
+  const [prompt, setPrompt] = useState("");
 
   return (
     <div className="flex flex-col gap-6">
@@ -96,6 +98,37 @@ export default function ReferenceStripDemo() {
       <div className="space-y-2">
         <p className="text-muted-foreground text-xs font-medium">With roles</p>
         <ReferenceStrip items={withRoles.items} onAdd={withRoles.fill} onMove={withRoles.move} />
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-muted-foreground text-xs font-medium">Describe</p>
+        <ReferenceStrip
+          items={described.items}
+          onMove={described.move}
+          onDescribe={() =>
+            new Promise((resolve) =>
+              setTimeout(
+                () =>
+                  resolve({
+                    exact: {
+                      prompt: "Lighthouse on a basalt headland at dusk, long exposure",
+                      params: [
+                        { label: "Seed", value: "48213" },
+                        { label: "Sampler", value: "euler a" },
+                      ],
+                    },
+                    inferred: [
+                      "Weathered lighthouse above a rough sea, golden hour light",
+                      "Moody coastal landscape, low sun, film grain",
+                    ],
+                  }),
+                600,
+              ),
+            )
+          }
+          onUseDescription={setPrompt}
+        />
+        <p className="text-foreground text-xs">{prompt ? `Prompt: ${prompt}` : "Prompt is empty"}</p>
       </div>
     </div>
   );

@@ -19,6 +19,7 @@ import TerminalDemo from "@/components/demos/terminal-demo";
 import TextAnimateDemo from "@/components/demos/text-animate-demo";
 import TypingAnimationDemo from "@/components/demos/typing-animation-demo";
 import { ComponentDocsView } from "@/components/component-docs";
+import { PatternChips } from "@/components/pattern-chips";
 import { PreviewTabs } from "@/components/preview-tabs";
 import { CATALOG, CATALOG_ITEMS, type CatalogName } from "@/lib/catalog";
 import { demos } from "@/lib/demos.generated";
@@ -79,6 +80,11 @@ export default async function ComponentPage({ params }: { params: Promise<{ name
             {item.title}
           </h1>
           <p className="text-muted-foreground mt-2">{item.description}</p>
+          {"patterns" in item ? (
+            <div className="mt-3">
+              <PatternChips patterns={item.patterns} />
+            </div>
+          ) : null}
         </div>
 
         <PreviewTabs preview={<Demo />} code={demoSource} fullBleed={isBlock} />

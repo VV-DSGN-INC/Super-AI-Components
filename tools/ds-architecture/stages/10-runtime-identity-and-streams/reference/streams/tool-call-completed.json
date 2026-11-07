@@ -1,0 +1,129 @@
+{
+  "id": "tool-call-completed",
+  "title": "A tool call that completes, then an answer in a second step",
+  "recordedWith": "ai@6.0.235: streamText + toUIMessageStream over a scripted MockLanguageModelV3. The chunk protocol is the SDK's; the words are written.",
+  "partTypes": [
+    "step-start",
+    "text",
+    "tool-find_component"
+  ],
+  "chunks": [
+    {
+      "type": "start",
+      "messageId": "msg-tool-call-completed"
+    },
+    {
+      "type": "start-step"
+    },
+    {
+      "type": "tool-input-start",
+      "toolCallId": "call-1",
+      "toolName": "find_component"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-1",
+      "inputTextDelta": "{\"need\":\"ask the"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-1",
+      "inputTextDelta": " user to approve"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-1",
+      "inputTextDelta": " a destructive t"
+    },
+    {
+      "type": "tool-input-delta",
+      "toolCallId": "call-1",
+      "inputTextDelta": "ool call\"}"
+    },
+    {
+      "type": "tool-input-available",
+      "toolCallId": "call-1",
+      "toolName": "find_component",
+      "input": {
+        "need": "ask the user to approve a destructive tool call"
+      }
+    },
+    {
+      "type": "tool-output-available",
+      "toolCallId": "call-1",
+      "output": "1. confirmation: The model asking permission without leaving the log. Reaching for it instead of an AlertDialog is a decision about who started the act, the reader or the model.\n   Pairs with: tool\n   Instead, for the cases it rules out: alert-dialog"
+    },
+    {
+      "type": "finish-step"
+    },
+    {
+      "type": "start-step"
+    },
+    {
+      "type": "text-start",
+      "id": "tx-2"
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-2",
+      "delta": "Use a Confirmation "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-2",
+      "delta": "mounted beside the Tool "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-2",
+      "delta": "block, and only while "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-2",
+      "delta": "the call waits on a "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-2",
+      "delta": "person."
+    },
+    {
+      "type": "text-end",
+      "id": "tx-2"
+    },
+    {
+      "type": "finish-step"
+    },
+    {
+      "type": "finish",
+      "finishReason": "stop"
+    }
+  ],
+  "message": {
+    "id": "msg-tool-call-completed",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "tool-find_component",
+        "toolCallId": "call-1",
+        "state": "output-available",
+        "input": {
+          "need": "ask the user to approve a destructive tool call"
+        },
+        "output": "1. confirmation: The model asking permission without leaving the log. Reaching for it instead of an AlertDialog is a decision about who started the act, the reader or the model.\n   Pairs with: tool\n   Instead, for the cases it rules out: alert-dialog"
+      },
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "text",
+        "text": "Use a Confirmation mounted beside the Tool block, and only while the call waits on a person.",
+        "state": "done"
+      }
+    ]
+  }
+}

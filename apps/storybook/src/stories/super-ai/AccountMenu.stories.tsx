@@ -38,14 +38,14 @@ export const ThemeRadio: Story = {
 };
 
 /**
- * `background="forest"` selected in the swatch row of the same Appearance
+ * `background="grey-4"` selected in the swatch row of the same Appearance
  * submenu, with a light theme. Background and theme are separate controlled
  * props because a user changes one without the other.
  */
 export const BackgroundSwatches: Story = {
   args: {
     theme: "light",
-    background: "forest",
+    background: "grey-4",
   },
 };
 
@@ -521,9 +521,9 @@ export const Controlled: Story = {
 
     // Background: the standalone Radio primitive, same contract.
     await expect(sub.getByRole("radio", { name: "Default" })).toHaveAttribute("aria-checked", "true");
-    await userEvent.click(sub.getByRole("radio", { name: "Forest" }));
-    await waitFor(() => expect(canvas.getByTestId("background-change-calls")).toHaveTextContent("forest"));
-    await expect(sub.getByRole("radio", { name: "Forest" })).toHaveAttribute("aria-checked", "false");
+    await userEvent.click(sub.getByRole("radio", { name: "Grey 4" }));
+    await waitFor(() => expect(canvas.getByTestId("background-change-calls")).toHaveTextContent("grey-4"));
+    await expect(sub.getByRole("radio", { name: "Grey 4" })).toHaveAttribute("aria-checked", "false");
     await expect(sub.getByRole("radio", { name: "Default" })).toHaveAttribute("aria-checked", "true");
 
     // Two requests, two callbacks, and the menu is still up on the values it

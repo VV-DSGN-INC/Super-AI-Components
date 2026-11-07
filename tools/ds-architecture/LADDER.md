@@ -13,7 +13,8 @@ Run: `node <path-to>/ds-architecture/scripts/conformance.mjs .`
 | 06 story coverage | pending | |
 | 07 docs generation | pending | |
 | 08 design-tool sync | pending | |
-| 09 loops and conventions | built | |
+| 09 loops and conventions | built | `09.6` is always `unchecked`: whether a review reads the test-change report is review-process behaviour |
+| 10 runtime identity and stream rendering | built | `component-library` only; `10.3` and `10.4` are not applicable until the config declares `runtime.partsRenderer`. Spec: `stages/10-runtime-identity-and-streams/SPEC.md` |
 
 `highestContiguous` from the runner is the honest number: stage 06 conformance with
 stage 04 unmet is not "reached stage 6".

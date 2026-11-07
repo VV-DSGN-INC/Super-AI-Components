@@ -1,0 +1,144 @@
+{
+  "id": "reasoning-and-sources",
+  "title": "Reasoning, then a cited answer with a URL source and a document source",
+  "recordedWith": "ai@6.0.235: streamText + toUIMessageStream over a scripted MockLanguageModelV3. The chunk protocol is the SDK's; the words are written.",
+  "partTypes": [
+    "reasoning",
+    "source-document",
+    "source-url",
+    "step-start",
+    "text"
+  ],
+  "chunks": [
+    {
+      "type": "start",
+      "messageId": "msg-reasoning-and-sources"
+    },
+    {
+      "type": "start-step"
+    },
+    {
+      "type": "reasoning-start",
+      "id": "rs-1"
+    },
+    {
+      "type": "reasoning-delta",
+      "id": "rs-1",
+      "delta": "The reader asks which "
+    },
+    {
+      "type": "reasoning-delta",
+      "id": "rs-1",
+      "delta": "tokens a button reads. "
+    },
+    {
+      "type": "reasoning-delta",
+      "id": "rs-1",
+      "delta": "The contract and the "
+    },
+    {
+      "type": "reasoning-delta",
+      "id": "rs-1",
+      "delta": "token docs both answer "
+    },
+    {
+      "type": "reasoning-delta",
+      "id": "rs-1",
+      "delta": "it."
+    },
+    {
+      "type": "reasoning-end",
+      "id": "rs-1"
+    },
+    {
+      "type": "source-url",
+      "sourceId": "src-1",
+      "url": "https://ds.vyhouski.com/components/button",
+      "title": "Button"
+    },
+    {
+      "type": "source-document",
+      "sourceId": "src-2",
+      "mediaType": "application/json",
+      "title": "button.meta.json",
+      "filename": "button.meta.json"
+    },
+    {
+      "type": "text-start",
+      "id": "tx-1"
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-1",
+      "delta": "A primary button reads "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-1",
+      "delta": "the accent pair through "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-1",
+      "delta": "the button-primary "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-1",
+      "delta": "token, and its focus "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-1",
+      "delta": "ring reads "
+    },
+    {
+      "type": "text-delta",
+      "id": "tx-1",
+      "delta": "border-focus-ring."
+    },
+    {
+      "type": "text-end",
+      "id": "tx-1"
+    },
+    {
+      "type": "finish-step"
+    },
+    {
+      "type": "finish",
+      "finishReason": "stop"
+    }
+  ],
+  "message": {
+    "id": "msg-reasoning-and-sources",
+    "role": "assistant",
+    "parts": [
+      {
+        "type": "step-start"
+      },
+      {
+        "type": "reasoning",
+        "text": "The reader asks which tokens a button reads. The contract and the token docs both answer it.",
+        "state": "done"
+      },
+      {
+        "type": "source-url",
+        "sourceId": "src-1",
+        "url": "https://ds.vyhouski.com/components/button",
+        "title": "Button"
+      },
+      {
+        "type": "source-document",
+        "sourceId": "src-2",
+        "mediaType": "application/json",
+        "title": "button.meta.json",
+        "filename": "button.meta.json"
+      },
+      {
+        "type": "text",
+        "text": "A primary button reads the accent pair through the button-primary token, and its focus ring reads border-focus-ring.",
+        "state": "done"
+      }
+    ]
+  }
+}

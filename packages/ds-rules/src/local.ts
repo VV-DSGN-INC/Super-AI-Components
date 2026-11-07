@@ -98,7 +98,7 @@ export const LOCAL_RULES: Rule[] = [
         "A string that discusses a colour function (docs copy, comments) rather than applying one. None known in the current tree; every hit needs a look before dismissal.",
     },
     fix: "Use a shadcn CSS variable; if a computed colour is genuinely needed, color-mix() over variables inside globals.css.",
-    why: "anti-slop.md Phase 2 bans raw colour functions in components when a token system exists; the old gate covered hex and oklch but not these.",
+    why: "anti-slop.md bans raw colour functions in components when a token system exists; the old gate covered hex and oklch but not these.",
   },
   {
     id: "TOK-4",
@@ -163,7 +163,7 @@ export const LOCAL_RULES: Rule[] = [
         "A non-icon package with 'icon' in its name, or a local module named icons. lucide-react contains no 'icon' substring, so the sanctioned library never matches.",
     },
     fix: "Import the equivalent glyph from lucide-react at the size the component already uses (16/20/24).",
-    why: "One library, one stroke weight (anti-slop Part 2.6 / Part 3.5): mixed icon sets read as unguided assembly. Closes the zero-homes gap left when the prose grep (old anti-slop Part 4 ICO-1) was retired. Inverted from a four-library denylist (final review): any icon-ish import that is not lucide-react now needs a look.",
+    why: "One library, one stroke weight (anti-slop.md): mixed icon sets read as unguided assembly. Closes the zero-homes gap left when the prose grep (old anti-slop Part 4 ICO-1) was retired. Inverted from a four-library denylist (final review): any icon-ish import that is not lucide-react now needs a look.",
   },
   {
     id: "LAY-1",

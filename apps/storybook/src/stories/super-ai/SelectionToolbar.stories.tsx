@@ -309,11 +309,11 @@ export const ReducedMotion: Story = {
  *   marks focus with `focus:bg-accent`, a background change neither helper
  *   reads, since `focusTreatmentSignature` covers outline, box-shadow and
  *   border colour only. So the row walk takes its own signature including
- *   `background-color`. That is also the regression guard for the
- *   `focus:bg-transparent` override F7 `approval-card` and I4 `ai-tools-menu`
- *   both carry on their menu rows, which leaves the focused row distinguishable
- *   by title colour alone: this component does not carry that override, and if
- *   anyone adds one here the assertion below fails.
+ *   `background-color`. That is also the regression guard against a
+ *   `focus:bg-transparent` override like the one F4 `action-stack` and I4
+ *   `ai-tools-menu` carried on their menu rows until it was removed, which left
+ *   the focused row distinguishable by title colour alone: if anyone adds one
+ *   here the assertion below fails.
  *
  * The submit button in the popover is `disabled` while the instruction is
  * empty, and Base UI still leaves `tabindex="0"` on it — so the walk types

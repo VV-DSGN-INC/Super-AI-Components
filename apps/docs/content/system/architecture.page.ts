@@ -1,8 +1,6 @@
 import type { SystemPage } from "@/lib/system-page";
 
 /**
- * A draft for Nick's final pass. Remove `draft: true` when he has done it.
- *
  * Rules for every string here, enforced by pages.test.ts: numbers only as
  * `{facts.key}` placeholders, backticked repo paths must exist, no em dash, no
  * exclamation mark, none of the banned words.
@@ -12,7 +10,6 @@ export const architecturePage: SystemPage = {
   title: "Architecture",
   description:
     "The machinery behind the components: where each kind of file lives, what is generated from what, and which check fails when any of it goes out of step.",
-  draft: true,
   lede: [
     "This page is the machinery behind the components: where each kind of file lives, what is generated from what, and which check fails when any of it goes out of step.",
     "The short version: the catalog manifest is the one list of what exists, every component ships with a story and a written contract, generated files are compared with their sources on every run, and {facts.ciSteps} gate steps hold all of that in place. Read as far as you need. Every section adds detail to that paragraph and none of them changes it.",

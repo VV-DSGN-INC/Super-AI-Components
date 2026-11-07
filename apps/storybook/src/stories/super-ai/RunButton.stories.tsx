@@ -35,6 +35,28 @@ export const Idle: Story = {
 };
 
 /**
+ * A draft run. The label says so ("Generate draft") and the cost chip is
+ * followed by the delta to a final run, so the cheaper click is never
+ * mistaken for the real one. The delta is a second `CostChip` (A2), the same
+ * way the base cost is shown. Both numbers come from the host's estimator;
+ * this component only formats them.
+ */
+export const Draft: Story = {
+  args: {
+    state: "idle",
+    draft: true,
+    cost: 2,
+    finalCost: 8,
+    onRun: () => {},
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByRole("button", { name: "Generate draft" })).toBeEnabled();
+    await expect(canvas.getByText("+6 credits for final")).toBeVisible();
+  },
+};
+
+/**
  * The estimate is still being computed, so there is nothing honest to charge
  * for yet: the cost chip is gone and an estimate line stands in its place.
  * The trigger is natively `disabled`, and Cancel does not exist yet, so for

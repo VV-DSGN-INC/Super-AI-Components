@@ -341,26 +341,21 @@ const paintedFocus = (el: Element) => {
  * costs nothing here because the next stop is read while focus still sits on
  * the previous one — no blur, so nothing about the sequence is disturbed.
  *
- * Thirteen of the fourteen stops pass both. **The selected view chip passes the
- * first and fails the second, so it is excluded by name and recorded rather
- * than asserted.** `choice-chips` paints `ring-ring border-ring ring-2` on a
- * selected chip permanently, and its `focus-visible:ring-2
- * focus-visible:ring-ring` is the same 2px at the same `oklch(0.708 0 0)`.
- * Measured across the tab that focuses it, the box-shadow reads
- * `oklch(0.708 0 0) 0px 0px 0px 2px` before and after and the border-colour is
- * `oklch(0.708 0 0)` both times — byte-identical. `focus-visible:outline-none`
- * then removes the user-agent outline that would otherwise have distinguished
- * it. So a keyboard user landing on the already-selected chip gets no signal
- * that focus arrived; the fix belongs to `choice-chips`, and pinning the
- * measurement here would make that fix a failure in this file.
+ * All thirteen stops pass both. The view-options group is one of them: A4
+ * `choice-chips` is a real radio group now, so Newest and Oldest are a single
+ * stop on the checked chip. That chip used to be the one exclusion here,
+ * because `choice-chips` drew selection with the same 2px `ring-ring` as its
+ * focus ring and focus changed nothing measurable on it. Selection is a fill
+ * and a border colour now, so focus is what paints the ring, and the
+ * differential holds on every stop.
  *
  * A second finding fell out of the same measurement, and it is about the
  * shared helper rather than this rail. `focusTreatmentSignature` includes
  * `outlineWidth`, which on every control here flips 3px → 1px on focus while
  * `outline-style` reads `none` throughout — so the signature differential
- * reports "changed" on all fourteen stops, the selected chip included. It is
- * the fourth hole in that helper's series and the reason `paintedFocus` above
- * is narrower.
+ * reported "changed" on every stop, including the selected chip back when focus
+ * painted nothing new on it. It is the fourth hole in that helper's series and
+ * the reason `paintedFocus` above is narrower.
  *
  * Recorded and not asserted for the same reason: pressing clear-all clears the
  * selection, which is the state that disables clear-all, so focus drops to
@@ -399,8 +394,9 @@ export const KeyboardOrder: Story = {
 
     const stops = [
       clear,
+      // One stop for the view options: the checked radio. Oldest is reached
+      // with the arrows, not with Tab.
       canvas.getByRole("radio", { name: "Newest" }),
-      canvas.getByRole("radio", { name: "Oldest" }),
       canvas.getByRole("button", { name: /Upscales this month/ }),
       canvas.getByRole("button", { name: /Liked v7 cinematic/ }),
       canvas.getByRole("button", { name: /^Type/ }),
@@ -416,9 +412,9 @@ export const KeyboardOrder: Story = {
     ];
     await expect(new Set(stops).size).toBe(stops.length);
 
-    // The one stop whose treatment focus does not change; see the description.
     const selectedChip = stops[1];
     await expect(selectedChip).toHaveAttribute("aria-checked", "true");
+    await expect(canvas.getByRole("radio", { name: "Oldest" })).toHaveAttribute("tabindex", "-1");
 
     for (const stop of stops) {
       // The baseline is taken while focus is still on the *previous* stop, so
@@ -436,10 +432,8 @@ export const KeyboardOrder: Story = {
       await settledFocusRing(focused, waitFor);
 
       // …and then the stronger claim, which the absolute check cannot make:
-      // focus *caused* the treatment. Every stop but one satisfies it.
-      if (stop !== selectedChip) {
-        await expect(paintedFocus(stop)).not.toBe(before);
-      }
+      // focus *caused* the treatment. Every stop satisfies it.
+      await expect(paintedFocus(stop)).not.toBe(before);
     }
 
     // The facet's ring belongs to the 16px checkbox, not to the `<label>` that
@@ -448,8 +442,8 @@ export const KeyboardOrder: Story = {
     const facetRow = canvasElement.querySelector<HTMLElement>(
       '[data-slot="filter-panel-facet"][data-value="image"]',
     )!;
-    await expect(facetRow.contains(stops[6])).toBe(true);
-    await expect(stops[6].getBoundingClientRect().width).toBeLessThan(
+    await expect(facetRow.contains(stops[5])).toBe(true);
+    await expect(stops[5].getBoundingClientRect().width).toBeLessThan(
       facetRow.getBoundingClientRect().width / 2,
     );
 

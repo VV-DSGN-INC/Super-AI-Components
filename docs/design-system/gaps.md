@@ -230,3 +230,36 @@ first, and Empty changed more surfaces than any single component in the catalog.
 discarding it. "Absent because unsampled" (→ go sample), "absent because genuinely rare" (→ discard),
 and "absent because it is behaviour, not UI" (→ it is a contract) are three different results, and
 only the middle one is a drop. The original inclusion test conflated all three.
+
+---
+
+## 9. V — Trust builders · 5 items · PASSED, NOT YET PREPPED — 2026-10-20
+
+The fourth source is [Shape of AI](https://www.shapeof.ai), read in
+[shape-of-ai-board-analysis.md](shape-of-ai-board-analysis.md). Its six categories were audited
+against the whole catalog; only one came back with Covered in the minority, and it is the one
+family N's name claims: Trust builders. §3's T items were Governors in Shape of AI's terms
+(oversight), and they are done. These are reassurance surfaces, and the catalog has one, N3.
+
+| #   | Component                | What it does                                                                                                                              |
+| --- | ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| V1  | `ai-label`               | The "AI acted here" chip: generated · edited · summarized · sender · after-handoff · text-tint. Proposed as primitive A13, four consumers |
+| V2  | `capture-consent`        | Pre-notice gate, persistent recording indicator, participants notified, a participant's decline as a first-class state                    |
+| V3  | `data-controls`          | Training and retention as separate rows with the default stated in the UI; plan-locked, none-collected and admin-managed are states       |
+| V4  | `private-session-notice` | Incognito: one fixed sentence above the input, a persistent chip B7 renders, the list of connectors running reduced, what exit does       |
+| V5  | `content-credentials`    | The panel behind V1: model, time, edits, publisher; verified · unverified · stripped; the Footprints media form                           |
+
+Plus three states on shipped items: F1 `result-card` `watermarked`, N11 `escalation-handoff`
+carrying V1 after the handoff, B7 `app-topbar`'s privacy chip taking its vocabulary from V4.
+
+Every count passed D1 at five or more named products, and every one carries the agent slice's ⚠:
+this read was of the pattern text, and the screenshot cards are to be checked before a spec is
+settled. Four further passes outside Trust builders (`prompt-enhancer`, `prompt-template-form`,
+`memory-manager`, `shared-vision`) are recorded in the analysis §4 for their own slices and are not
+part of this batch.
+
+**Method note, continuing §8.** This slice found a fourth result the inclusion test can return:
+"present in the catalog, but under a different name for the need". Family N covers oversight and
+is labelled as covering trust; the components were never missing from the population, they were
+missing from the family that the label promised. A category audit against an outside taxonomy is
+what catches that, and the primary board, cut by surface, structurally cannot.

@@ -13,6 +13,10 @@ export default defineConfig({
     alias: [
       { find: /^@\/registry\/(.*)/, replacement: resolve(__dirname, "../docs/registry/$1") },
       { find: /^@\/components\/demos\/(.*)/, replacement: resolve(__dirname, "../docs/components/demos/$1") },
+      {
+        find: /^@\/components\/openui\/(.*)/,
+        replacement: resolve(__dirname, "../docs/components/openui/$1"),
+      },
       { find: /^@\/content\/(.*)/, replacement: resolve(__dirname, "../docs/content/$1") },
       { find: /^@\/lib\/component-docs$/, replacement: resolve(__dirname, "../docs/lib/component-docs.ts") },
       {

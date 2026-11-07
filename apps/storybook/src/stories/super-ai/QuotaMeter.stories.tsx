@@ -64,17 +64,12 @@ export const Normal: Story = {
  * mixed row is the point, because it is what an aggregate would have averaged
  * away.
  *
- * **This state is under-rendered by this gate.** `--warning` is defined in
- * `apps/docs/app/globals.css` but *not* in `apps/storybook/src/index.css`, and
- * Tailwind v4 emits no rule at all for an undefined utility rather than
- * failing. So under Storybook the amber bar renders unpainted and the amber
- * readout falls back to inherited text — axe measures the fallback, not the
- * shipped colour. In the docs app, where the token exists, that readout is
- * `text-warning` on the page background at roughly 2.2:1, under the 4.5:1
- * normal-text minimum. Recorded rather than repainted: the same bare
- * `text-warning` body text appears in `env-status`, `usage-dashboard` and
- * `data-views-shared`, so it is a registry-wide token decision, not a
- * one-component fix.
+ * The near-limit readout is solid `bg-warning text-warning-foreground` (about
+ * 7:1), the pricing-table save badge's idiom. It used to be `text-warning` on
+ * the page background, which measures 2.2:1, and nothing caught it because
+ * Storybook defined no `--warning` and axe measured the inherited fallback.
+ * Storybook mirrors the docs app's token now, so this story's axe pass is a
+ * measurement of the shipped colour, and it failed on the old readout.
  */
 export const NearLimit: Story = {
   args: {

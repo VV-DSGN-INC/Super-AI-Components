@@ -475,12 +475,13 @@ export const ReducedMotion: Story = {
  * The whole tab sequence of a page-sized shell, and the three things it says
  * that no anatomy table can.
  *
- * **Fifteen stops with two feed tiles, in this order:** the rail (*one* stop —
+ * **Thirteen stops with two feed tiles, in this order:** the rail (*one* stop —
  * B4 is a Base UI toggle group with a roving index), the pinned rail group
  * (*a second* stop, because B4 renders settings as its own group), the prompt
  * textarea, Attach, "Add negative prompt", the sort tablist (one stop, arrows
- * move between sorts), three type pills as *three* stops, the feed, then per
- * tile an Open and a Remix, then Load more.
+ * move between sorts), the type pills (one stop, now that A4 `choice-chips`
+ * is a real radio group; it was one stop per pill until it was), the feed,
+ * then per tile an Open and a Remix, then Load more.
  *
  * **1. The primary action is not in the tab order.** "Create" never appears
  * above, because D1 disables its submit while the field is empty — and an
@@ -503,8 +504,8 @@ export const ReducedMotion: Story = {
  * **3. Reaching page two costs every control on page one.** Load more is the
  * last stop and there is no shortcut onto it, so two tiles put four stops in
  * front of it and the docs module's thirty-tile figure puts sixty. J3 records
- * this for the component; in the shell it is worse by five, because the rail,
- * the prompt band and the type pills all sit in front of the feed as well.
+ * this for the component; in the shell it is worse, because the rail, the
+ * prompt band and the type pills all sit in front of the feed as well.
  *
  * **One stop is excluded from the focus check, measured and not asserted in
  * either direction.** D1's textarea sets `border-none focus-visible:ring-0`,
@@ -535,9 +536,10 @@ export const KeyboardOrder: Story = {
       bySlot("media-prompt-bar-attach"),
       bySlot("media-prompt-bar-negative-toggle"),
       canvas.getByRole("tab", { name: "Hot" }),
-      bySlot("choice-chip", 0),
-      bySlot("choice-chip", 1),
-      bySlot("choice-chip", 2),
+      // One stop for the pill group: the radio holding the roving tabindex.
+      Array.from(root.querySelectorAll<HTMLElement>('[data-slot="choice-chip"]')).find(
+        (chip) => chip.tabIndex === 0,
+      )!,
       bySlot("explore-gallery-feed"),
       bySlot("explore-gallery-item-open", 0),
       bySlot("explore-gallery-item-remix", 0),

@@ -68,16 +68,16 @@ sits on rather than as a fixed grey.
 
 ## The chart set is five neutral greys
 
-Measured 2026-09-09: `--chart-1` through `--chart-5` are `0.87`, `0.556`, `0.439`, `0.371` and
-`0.269` lightness at zero chroma, and the `.dark` block repeats those five values unchanged. The
-chart palette is the one family in this theme that does not respond to the theme at all.
+`--chart-1` through `--chart-5` are `0.87`, `0.556`, `0.439`, `0.371` and `0.269` lightness at zero
+chroma in light. The `.dark` block inverts that order at `0.556`, `0.648`, `0.739`, `0.831` and
+`0.922`, so each step keeps its distance from the page background and every dark step clears 3:1
+against it. (Until 2026-10-16 the dark block repeated the light values unchanged.)
 
 <TokenTable tokens={["--chart-1", "--chart-2", "--chart-3", "--chart-4", "--chart-5"]} />
 
-Two of the five collide with other roles. `--chart-2` equals `--muted-foreground` in light and
-equals `--ring` in dark; `--chart-5` equals `--muted`, `--accent` and `--secondary` in dark. A
-series drawn at those steps sits on a value the chrome around it is also using, so separation has
-to come from the mark, not the hue. **Foundations → Data Visualization** carries `CHT-1` and
+Two steps share a value with another role: `--chart-2` equals `--muted-foreground` in light, and
+`--chart-1` equals `--ring` in dark. A series drawn at those steps sits on a value the chrome
+around it is also using, so separation has to come from the mark, not the hue. **Foundations → Data Visualization** carries `CHT-1` and
 `CHT-3` and what follows from an all-neutral chart set.
 
 ## The sidebar carries its own eight

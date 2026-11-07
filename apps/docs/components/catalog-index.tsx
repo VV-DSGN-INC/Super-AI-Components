@@ -4,23 +4,33 @@ import Link from "next/link";
 import * as React from "react";
 
 import { Input } from "@/components/ui/input";
-import type { CatalogFamily } from "@/lib/catalog";
+import { describePattern, type CatalogFamily } from "@/lib/catalog";
+import { SHAPE_OF_AI_CATEGORY_TITLES, type ShapeOfAiCategory } from "@/lib/manifest-types";
 
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
-/** Family sections with a text filter. Filtering is by name, title and
- *  description; a family with no match disappears rather than showing an empty
+const CATEGORIES = Object.keys(SHAPE_OF_AI_CATEGORY_TITLES) as ShapeOfAiCategory[];
+
+/** Family sections with a text filter and a Shape of AI category filter.
+ *  Families stay the primary axis (D29): the category filter narrows items
+ *  inside their family sections instead of regrouping. Text filtering is by
+ *  name, title, description and pattern, so "caveat" finds `disclaimer-note`; a family with no match disappears rather than showing an empty
  *  heading. The count line is live so a screen reader hears the narrowing. */
 export function CatalogIndex({ families }: { families: CatalogFamily[] }) {
   const [query, setQuery] = React.useState("");
+  const [category, setCategory] = React.useState<ShapeOfAiCategory | null>(null);
   const q = query.trim().toLowerCase();
   const total = families.reduce((n, f) => n + f.items.length, 0);
   const visible = families
     .map((f) => ({
       ...f,
-      items: q
-        ? f.items.filter((i) => `${i.name} ${i.title} ${i.description}`.toLowerCase().includes(q))
-        : f.items,
+      items: f.items.filter((i) => {
+        const patterns = i.patterns ?? [];
+        if (category && !patterns.some((p) => p.startsWith(`${category}/`))) return false;
+        if (!q) return true;
+        const labels = patterns.map((p) => describePattern(p).label).join(" ");
+        return `${i.name} ${i.title} ${i.description} ${labels}`.toLowerCase().includes(q);
+      }),
     }))
     .filter((f) => f.items.length > 0);
   const shown = visible.reduce((n, f) => n + f.items.length, 0);
@@ -36,14 +46,41 @@ export function CatalogIndex({ families }: { families: CatalogFamily[] }) {
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Name, title or description"
+          placeholder="Name, title, description or pattern"
         />
+        <div
+          role="group"
+          aria-label="Shape of AI category"
+          className="flex flex-wrap items-center gap-1.5 pt-2"
+        >
+          <span className="text-muted-foreground text-xs">Shape of AI</span>
+          {CATEGORIES.map((c) => (
+            <button
+              key={c}
+              type="button"
+              aria-pressed={category === c}
+              onClick={() => setCategory(category === c ? null : c)}
+              className="hover:bg-accent aria-pressed:bg-primary aria-pressed:text-primary-foreground focus-visible:ring-ring rounded-md border px-2 py-0.5 text-xs focus-visible:outline-none focus-visible:ring-2"
+            >
+              {SHAPE_OF_AI_CATEGORY_TITLES[c]}
+            </button>
+          ))}
+        </div>
         <p className="text-muted-foreground text-xs" aria-live="polite">
           {shown} of {total} items
         </p>
       </div>
 
-      {visible.length === 0 ? (
+      {category === "identifiers" ? (
+        <p data-slot="category-note" className="rounded-md border px-3 py-2 text-sm">
+          Identifiers are brand decisions the consuming product makes, so this registry ships no component for
+          them. It has no AI colour on purpose (anti-slop.md bans the purple gradient) and no named persona
+          (D22 keeps the registry voice-neutral). The one shared rule is a single glyph for AI actions, owned
+          by <code className="text-xs">ai-label</code>.
+        </p>
+      ) : null}
+
+      {visible.length === 0 && category !== "identifiers" ? (
         <p data-slot="catalog-empty" className="text-muted-foreground text-sm">
           Nothing matches. Try a shorter word.
         </p>
@@ -66,6 +103,14 @@ export function CatalogIndex({ families }: { families: CatalogFamily[] }) {
                   >
                     <span className="font-medium">{item.title}</span>
                     <span className="text-muted-foreground mt-0.5 block text-xs">{item.description}</span>
+                    {category && item.patterns ? (
+                      <span className="mt-1 block text-xs">
+                        {item.patterns
+                          .filter((p) => p.startsWith(`${category}/`))
+                          .map((p) => describePattern(p).label)
+                          .join(" · ")}
+                      </span>
+                    ) : null}
                   </Link>
                 </li>
               ))}
