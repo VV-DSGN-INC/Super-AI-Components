@@ -26,7 +26,10 @@ import { findCvaViolations, findSingleStringViolations } from "./src/token-rules
  *   6. `unchecked` entries carry the rule's `how` (the discharge pointer TOK-6
  *      prints on every run; upstream drops it).
  *   7. `DS_RULES_DIR` env override on loadRules — the test seam the exit-code
- *      control tests use. */
+ *      control tests use.
+ *   8. `scan` takes the vendored scopes as a parameter so the consumer kit
+ *      (`npx shadcn add @super-ai/agent-kit`) can reuse this file byte for
+ *      byte; the default keeps every existing caller unchanged. */
 
 const PKG_ROOT = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(PKG_ROOT, "..", "..");
@@ -92,7 +95,7 @@ function structuralFindings(rule, targets, root) {
   return out;
 }
 
-export function scan(rules, files, root = REPO_ROOT) {
+export function scan(rules, files, root = REPO_ROOT, vendored = VENDORED_SCOPES) {
   const violations = [];
   const unchecked = [];
 
@@ -143,7 +146,7 @@ export function scan(rules, files, root = REPO_ROOT) {
   }
 
   for (const v of violations) {
-    if (VENDORED_SCOPES.some((s) => v.file === s || v.file.startsWith(`${s}/`))) {
+    if (vendored.some((s) => v.file === s || v.file.startsWith(`${s}/`))) {
       v.severity = "warning";
     }
   }
