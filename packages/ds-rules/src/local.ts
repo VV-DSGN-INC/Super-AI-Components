@@ -176,4 +176,21 @@ export const LOCAL_RULES: Rule[] = [
     fix: "Snap to the nearest scale step; a value the scale genuinely lacks is a proposal for the token system, not an inline literal.",
     why: "Off-scale values are the quiet ratchet. Was anti-slop Part 4's LAY-4 grep; retired to judgment method because its false-positive rate is structural — declared unchecked beats silently dropped.",
   },
+  {
+    id: "MOT-3",
+    title: "Movement always carries a motion-reduce pair",
+    severity: "review",
+    detect: {
+      method: "heuristic",
+      pattern: "animate-|transition",
+      flags: "",
+      scope: ["apps/docs/registry/super-ai", "apps/docs/registry/marketing"],
+      include: [".tsx"],
+      exempt: [".test."],
+      falsePositives:
+        "A pair set in a sibling cn() argument or in CSS under prefers-reduced-motion is not seen. The pattern is only a pre-filter; rulecheck routes this id to motion-rules.mjs.",
+    },
+    fix: "Pair the animation with motion-reduce:animate-none or motion-reduce:transition-none in the same class string.",
+    why: "Movement that ignores the OS reduced-motion setting fails the users who asked for less of it.",
+  },
 ];

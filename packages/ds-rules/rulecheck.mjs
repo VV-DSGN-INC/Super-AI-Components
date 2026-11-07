@@ -3,6 +3,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
+import { findUnpairedMotion } from "./src/motion-rules.mjs";
 import { findCvaViolations, findSingleStringViolations } from "./src/token-rules.mjs";
 
 /** Forked from the ds-architecture starter kit's 02-rules/rulecheck.mjs
@@ -41,6 +42,7 @@ const SEVERITY_RANK = { blocker: 0, review: 1, warning: 2 };
 export const STRUCTURAL = {
   "TOK-4": findSingleStringViolations,
   "TOK-5": findCvaViolations,
+  "MOT-3": findUnpairedMotion,
 };
 
 /** Mirrors VENDORED_SCOPES in src/local.ts — this runtime must stay free of
