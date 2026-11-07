@@ -7,6 +7,7 @@ import { COMPAT_NOTE } from "@/lib/install";
 import type { ManifestItem } from "@/lib/manifest-types";
 
 import { deriveMeta, derivedFiles, renderComponentPage, renderLlmsTxt, renderToon } from "./contract-emit";
+import { agentKitFiles, KIT_DIR, loadKitInput } from "./agent-kit-emit";
 import { validateContract } from "./contract-schema";
 import { loadDocs } from "./contract-source";
 
@@ -187,6 +188,14 @@ describe("contract emit and drift", () => {
       ).toEqual([]);
 
       const files = derivedFiles(metas);
+      // The agent-kit files ride the same write/compare, so the kit cannot
+      // drift from the rules prose, the rule records or the engine it copies.
+      for (const [rel, content] of agentKitFiles({
+        toon: files.get("index/components.toon")!,
+        ...loadKitInput(),
+      })) {
+        files.set(rel, content);
+      }
       if (EMIT) {
         for (const [rel, content] of files) {
           mkdirSync(dirname(join(ROOT, rel)), { recursive: true });
@@ -206,7 +215,14 @@ describe("contract emit and drift", () => {
 
       // The derived set is exactly the shipped set: a meta or a page with no
       // shipped item behind it is deleted on emit and fails the gate otherwise.
+      const kitFiles = (dir: string): string[] =>
+        existsSync(join(ROOT, dir))
+          ? readdirSync(join(ROOT, dir), { withFileTypes: true }).flatMap((e) =>
+              e.isDirectory() ? kitFiles(`${dir}/${e.name}`) : [`${dir}/${e.name}`],
+            )
+          : [];
       const orphans = [
+        ...kitFiles(KIT_DIR).filter((rel) => !files.has(rel)),
         ...readdirSync(join(ROOT, "registry/super-ai"))
           .filter((f) => f.endsWith(".meta.json"))
           .map((f) => `registry/super-ai/${f}`)

@@ -53,3 +53,7 @@ apps/docs/public/openui/
 .claude/skills/unslop/rules/
 .claude/skills/unslop/fixtures/
 .claude/skills/unslop/MANIFEST.json
+
+# Emitted by pnpm contract:emit and byte-compared by its drift test; the
+# runtime copies must match packages/ds-rules exactly, which is itself ignored.
+apps/docs/registry/agent-kit/
