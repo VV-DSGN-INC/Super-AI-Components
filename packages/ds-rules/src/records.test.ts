@@ -45,7 +45,7 @@ describe("structural routing", () => {
       expect(rule, `${id} is in STRUCTURAL but has no record`).toBeDefined();
       expect(rule?.detect.method).toBe("heuristic");
     }
-    expect(Object.keys(STRUCTURAL).sort()).toEqual(["TOK-4", "TOK-5"]);
+    expect(Object.keys(STRUCTURAL).sort()).toEqual(["MOT-3", "TOK-4", "TOK-5"]);
   });
 
   it("rulecheck's vendored-scope mirror equals the source of truth", () => {

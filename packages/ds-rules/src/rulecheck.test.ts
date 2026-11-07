@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -75,5 +76,18 @@ describe("CLI contract", () => {
       env: { ...process.env, DS_RULES_DIR: "/nonexistent-ds-rules" },
     });
     expect(out.status).toBe(2);
+  });
+});
+
+describe("scan vendored scopes", () => {
+  it("demotes findings under a caller-supplied vendored scope", () => {
+    const tmp = mkdtempSync(path.join(tmpdir(), "rulecheck-vendored-"));
+    mkdirSync(path.join(tmp, "components/ui"), { recursive: true });
+    writeFileSync(path.join(tmp, "components/ui/x.tsx"), 'export const X = () => <div className="bg-[#123456]" />;\n');
+    const tok1 = loadRules().find((r) => r.id === "TOK-1")!;
+    const rule = { ...tok1, detect: { ...tok1.detect, scope: ["components"] } };
+    const report = scan([rule], ["components/ui/x.tsx"], tmp, ["components/ui"]);
+    expect(report.violations[0].severity).toBe("warning");
+    expect(report.summary.blocker).toBe(0);
   });
 });

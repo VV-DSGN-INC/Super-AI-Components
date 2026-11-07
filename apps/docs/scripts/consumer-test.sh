@@ -78,7 +78,42 @@ fi
 echo "==> Installing all ${#ITEMS[@]} items from the local registry: ${ITEMS[*]}"
 URLS=()
 for item in "${ITEMS[@]}"; do URLS+=("http://127.0.0.1:$PORT/r/$item.json"); done
+# The kit must never write the consumer's own agent files. Hash whatever
+# create-next-app left (or a sentinel) before install, compare after.
+[ -f CLAUDE.md ] || printf '# consumer sentinel\n' > CLAUDE.md
+AGENT_FILES_BEFORE="$(cat CLAUDE.md AGENTS.md 2>/dev/null | shasum)"
 pnpm dlx shadcn@latest add --yes --overwrite "${URLS[@]}"
+
+echo "==> Verifying the agent kit installed and its checks can fail"
+kit_fail() { printf 'CONSUMER INSTALL TEST: FAIL \xe2\x80\x94 %s\n' "$1" >&2; exit 1; }
+[ "$(cat CLAUDE.md AGENTS.md 2>/dev/null | shasum)" = "$AGENT_FILES_BEFORE" ] || kit_fail "the kit changed CLAUDE.md or AGENTS.md"
+[ -f AGENTS.super-ai.md ] || kit_fail "AGENTS.super-ai.md did not land at the project root"
+[ -f scripts/super-ai/validate.mjs ] || kit_fail "scripts/super-ai/validate.mjs did not install"
+if ! kit_out="$(node scripts/super-ai/validate.mjs components)"; then
+  printf '%s\n' "$kit_out" | grep -F '[blocker]' | head -40 >&2
+  kit_fail "validate is not clean on the installed components"
+fi
+printf 'export const P = () => <div className="bg-[#ff0000]" />;\n' > app/planted.tsx
+set +e; node scripts/super-ai/validate.mjs app/planted.tsx > /dev/null; code=$?; set -e
+rm app/planted.tsx
+[ "$code" -eq 1 ] || kit_fail "validate exited $code on a planted raw hex, expected 1"
+git init -q 2>/dev/null || true
+git add -A && git -c user.email=t@t -c user.name=t commit -qm "consumer base" --no-verify
+printf ':root {\n  --planted: 1px;\n}\n' >> app/globals.css
+set +e; node scripts/super-ai/validate.mjs components --system > /dev/null; code=$?; set -e
+git checkout -- app/globals.css
+[ "$code" -eq 3 ] || kit_fail "validate --system exited $code on a new token, expected 3"
+[ -f scripts/check-tokens.mjs ] || kit_fail "agent-kit-hooks did not install scripts/check-tokens.mjs"
+node --input-type=module -e "
+const { lintText } = await import(process.cwd() + '/scripts/check-tokens.mjs');
+const n = lintText('app/x.tsx', '<div className=\"bg-[#fff]\" />').length;
+if (n !== 1) { console.error('lintText returned ' + n + ' findings, expected 1'); process.exit(1); }
+" || kit_fail "the check-tokens.mjs shim does not lint"
+hook_payload() { node -e 'console.log(JSON.stringify({ tool_name: "Write", tool_input: { file_path: process.argv[1], content: process.argv[2] } }))' "$PWD/app/x.tsx" "$1"; }
+set +e; hook_payload '<div className="bg-[#fff]" />' | node .claude/hooks/super-ai-guard.mjs 2>/dev/null; code=$?; set -e
+[ "$code" -eq 2 ] || kit_fail "the hook exited $code on a raw hex, expected 2"
+hook_payload '<div className="bg-background" />' | node .claude/hooks/super-ai-guard.mjs || kit_fail "the hook blocked a clean edit"
+echo "  agent kit: rules file, validate (0, 1, 3), shim and hook all behave"
 
 echo "==> Verifying the usage contract installed beside its component"
 META="components/super-ai/mode-tabs.meta.json"
