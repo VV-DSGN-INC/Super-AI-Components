@@ -14,7 +14,7 @@
  *  kit's own, or any hook that loads scripts/check-tokens.mjs) calls with the
  *  text an edit is about to write. */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -53,6 +53,25 @@ export function resolveDirs(cwd) {
 }
 
 const posix = (p) => p.split(path.sep).join("/");
+
+/** Real path, for a file that may not exist yet too. process.cwd() is already
+ *  real; an argument spelled through a symlink (macOS /tmp is /private/tmp)
+ *  would otherwise relativise to ../.. and fall outside every scope. */
+function real(p) {
+  if (existsSync(p)) return realpathSync(p);
+  const parent = path.dirname(p);
+  return parent === p ? p : path.join(real(parent), path.basename(p));
+}
+
+/** Whether any rule would read this file at all. */
+function covered(rules, file) {
+  return rules.some(
+    (r) =>
+      r.detect.scope.some((s) => file === s || file.startsWith(`${s}/`)) &&
+      r.detect.include.includes(path.extname(file)) &&
+      !(r.detect.exempt ?? []).some((e) => file.includes(e)),
+  );
+}
 
 function lint(rules, files, root) {
   return scan(rules, files, root, [...new Set([...resolveDirs(root).vendored, ...loadVendored()])]);
@@ -94,14 +113,17 @@ function systemReport(cwd, base) {
   } catch {
     throw new Error("--system needs a git work tree; run it from the project root of a git repository");
   }
-  const diff = git(cwd, ["diff", "--unified=0", base]);
+  // --relative: paths come back relative to the app folder and only its own
+  // changes, as ls-files and resolveDirs already are. Without it an app in a
+  // monorepo subfolder never matches its own components/ui.
+  const diff = git(cwd, ["diff", "--relative", "--unified=0", base, "--"]);
   const untracked = git(cwd, ["ls-files", "--others", "--exclude-standard"]).split("\n").filter(Boolean);
   const { ui, kit } = resolveDirs(cwd);
   return systemChanges({ diff, untracked, dirs: { ui, kit } });
 }
 
 function main(argv) {
-  const cwd = process.cwd();
+  const cwd = real(process.cwd());
   const flag = (name) => argv.includes(name);
   const baseAt = argv.indexOf("--base");
   const base = baseAt === -1 ? "HEAD" : argv[baseAt + 1];
@@ -113,12 +135,20 @@ function main(argv) {
   // A directory argument expands to the files under it, so `validate components`
   // checks what was installed without tripping on a scaffold's own page.
   const expand = (p) => {
-    const rel = posix(path.relative(cwd, path.resolve(cwd, p)));
+    const rel = posix(path.relative(cwd, real(path.resolve(cwd, p))));
     return existsSync(path.join(cwd, rel)) && statSync(path.join(cwd, rel)).isDirectory()
       ? walk(cwd, [rel], extensions).map(posix)
       : [rel];
   };
-  const files = [...new Set(paths.length ? paths.flatMap(expand) : walk(cwd, scopes, extensions).map(posix))];
+  const candidates = [...new Set(paths.length ? paths.flatMap(expand) : walk(cwd, scopes, extensions).map(posix))];
+  // A file no rule reads is never "checked": name it, and when nothing given
+  // was covered, say so with exit 2 instead of a clean 0.
+  const files = candidates.filter((f) => covered(rules, f));
+  const uncovered = candidates.filter((f) => !covered(rules, f));
+  for (const f of uncovered) process.stderr.write(`not covered by any rule: ${f}\n`);
+  if (paths.length && files.length === 0 && uncovered.length) {
+    throw new Error(`no rule covers the files given (${uncovered.join(", ")}); the kit checks components/, app/ and their src/ twins`);
+  }
 
   const report = lint(rules, files, cwd);
   const system = flag("--system") ? systemReport(cwd, base) : [];

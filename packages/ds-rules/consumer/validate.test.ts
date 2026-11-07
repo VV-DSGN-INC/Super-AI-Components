@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -20,8 +20,10 @@ const SCOPE_MAP: Record<string, string> = {
 };
 
 /** A temp consumer with the kit installed exactly as agent-kit lays it out. */
-function consumer(opts: { src?: boolean } = {}) {
-  const root = mkdtempSync(path.join(tmpdir(), "super-ai-consumer-"));
+function consumer(opts: { src?: boolean; sub?: string } = {}) {
+  const repo = mkdtempSync(path.join(tmpdir(), "super-ai-consumer-"));
+  const root = opts.sub ? path.join(repo, opts.sub) : repo;
+  mkdirSync(root, { recursive: true });
   const kit = path.join(root, "scripts/super-ai");
   mkdirSync(path.join(kit, "src"), { recursive: true });
   copyFileSync(path.join(PKG, "rulecheck.mjs"), path.join(kit, "rulecheck.mjs"));
@@ -49,8 +51,8 @@ function consumer(opts: { src?: boolean } = {}) {
   const run = (...args: string[]) =>
     spawnSync("node", ["scripts/super-ai/validate.mjs", ...args], { cwd: root, encoding: "utf8" });
   const git = (...args: string[]) =>
-    spawnSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", ...args], { cwd: root, encoding: "utf8" });
-  return { root, put, run, git };
+    spawnSync("git", ["-c", "user.email=t@t", "-c", "user.name=t", ...args], { cwd: repo, encoding: "utf8" });
+  return { root, repo, put, run, git };
 }
 
 const cls = (c: string) => `export const X = () => <div className="${c}" />;\n`;
@@ -128,6 +130,39 @@ describe("consumer validate", () => {
     expect(r.stdout).toContain("SYSTEM token-change app/globals.css");
     c.put("app/x.tsx", cls("bg-[#ff0000]"));
     expect(c.run("--system").status).toBe(1);
+  });
+
+  it("--system sees installed edits when the app is a subfolder of the repository", () => {
+    const c = consumer({ sub: "apps/web" });
+    c.put("components/ui/button.tsx", cls("bg-primary"));
+    c.git("init", "-q");
+    c.git("add", "-A");
+    c.git("commit", "-qm", "base");
+    c.put("components/ui/button.tsx", cls("bg-primary text-primary-foreground"));
+    const r = c.run("components", "--system");
+    expect(r.status).toBe(3);
+    expect(r.stdout).toContain("SYSTEM installed-edit components/ui/button.tsx");
+  });
+
+  it("never counts a file no rule covers as checked", () => {
+    const c = consumer();
+    c.put("features/chat/panel.tsx", cls("bg-[#ff0000]"));
+    c.put("app/ok.tsx", cls("bg-background"));
+    const alone = c.run("features/chat/panel.tsx");
+    expect(alone.status).toBe(2);
+    expect(alone.stderr).toContain("features/chat/panel.tsx");
+    const mixed = c.run("features/chat/panel.tsx", "app/ok.tsx");
+    expect(mixed.status).toBe(0);
+    expect(mixed.stderr).toContain("not covered by any rule: features/chat/panel.tsx");
+    expect(mixed.stdout).toContain("1 file(s) checked");
+  });
+
+  it("follows an absolute path through a symlink", () => {
+    const c = consumer();
+    c.put("app/x.tsx", cls("bg-[#ff0000]"));
+    const link = `${c.root}-link`;
+    symlinkSync(c.root, link);
+    expect(c.run(path.join(link, "app/x.tsx")).status).toBe(1);
   });
 
   it("--system without git exits 2 and says git is required", () => {

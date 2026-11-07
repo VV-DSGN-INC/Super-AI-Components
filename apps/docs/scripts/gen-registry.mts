@@ -328,14 +328,14 @@ const kitItems = [
       ...Object.keys(KIT_SOURCES).map((rel) => kitFile(rel, `~/${rel}`)),
       kitFile("scripts/super-ai/rules.json", "~/scripts/super-ai/rules.json"),
     ],
-    docs: "Add `@AGENTS.super-ai.md` to your CLAUDE.md, or point AGENTS.md at it. Run `node scripts/super-ai/validate.mjs` before calling UI done.",
+    docs: "Add `@AGENTS.super-ai.md` to your CLAUDE.md, or point AGENTS.md at it. Before calling UI done, run `node scripts/super-ai/validate.mjs <changed files or folders>` (for example `components`); a bare run also checks your own app/ pages.",
   },
   {
     name: "agent-kit-hooks",
     type: "registry:item" as const,
     title: "Agent Kit Hooks",
     description:
-      "Opt-in edit-time token gate: a PreToolUse hook and a scripts/check-tokens.mjs shim that run the Agent Kit's rules before an edit is written.",
+      "Opt-in edit-time token gate: a PreToolUse hook and a scripts/check-tokens.mjs shim that run the Agent Kit's rules before an edit is written. Installing it replaces an existing scripts/check-tokens.mjs.",
     dependencies: [],
     registryDependencies: [self("agent-kit")],
     files: [
