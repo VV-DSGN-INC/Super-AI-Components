@@ -250,3 +250,7 @@ positive before it counts.
 - 2026-11-06: approved 1A, 2A, 3A. Planning found three corrections: the index is too large to
   inline, MOT-3 lands as `review` because 37 strings are unpaired today, and the opt-in hook
   layer is its own item, `agent-kit-hooks`.
+- 2026-11-06: built on `claude/guardrails-rules-file-7f91be` (commits `4a43be2` to `732844e` and
+  the review fixes after them). The consumer run found two gaps the plan did not foresee:
+  vendored `ai-elements` must stay warnings in consumers (`rules.json` carries the vendored
+  list), and the hook must compare real paths (it failed open on a symlinked project).

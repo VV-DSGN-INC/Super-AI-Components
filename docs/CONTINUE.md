@@ -2516,6 +2516,13 @@ What stays open:
   are class arithmetic, not measurements.
 - **A region-level wait goes through the empty-override slots.** Chat's history-pending
   case is `empty` plus `ShellSkeletonLines`; no shell has per-region loading.
+- **MOT-3 lands as `review`, not `blocker`.** On 2026-11-06, 37 movement class strings
+  in 24 registry files had no `motion-reduce:` pair in the same string. Pair them, then
+  promote MOT-3 to `blocker` so consumers' `validate` fails on it too
+  (`docs/superpowers/specs/2026-11-06-consumer-guardrails.md` §4.3).
+- **Local `pnpm check:tokens` can replay a stale pass.** Turbo's `check:tokens` inputs do
+  not include `packages/ds-rules`, so a rule change can come back FULL TURBO. CI has no
+  cache; locally, run `node packages/ds-rules/rulecheck.mjs` after touching the rules.
 
 ## 9. What each wave found
 
