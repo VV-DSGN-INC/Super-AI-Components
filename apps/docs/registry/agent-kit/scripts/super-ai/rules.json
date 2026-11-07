@@ -1,5 +1,11 @@
 {
   "version": 1,
+  "vendored": [
+    "components/ui",
+    "src/components/ui",
+    "components/ai-elements",
+    "src/components/ai-elements"
+  ],
   "rules": [
     {
       "id": "COL-1",

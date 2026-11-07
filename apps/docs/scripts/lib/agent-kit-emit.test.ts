@@ -1,3 +1,8 @@
+import { spawnSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { CONSUMER_RULES } from "@/lib/consumer-rules";
@@ -75,6 +80,16 @@ describe("agentKitFiles", () => {
     expect(JSON.parse(files.get("registry/agent-kit/scripts/super-ai/rules.json")!).version).toBe(1);
   });
 
+  it("carries rulecheck's vendored scopes into rules.json, mapped to the consumer", () => {
+    const files = agentKitFiles({ toon: "", ...loadKitInput() });
+    expect(JSON.parse(files.get("registry/agent-kit/scripts/super-ai/rules.json")!).vendored).toEqual([
+      "components/ui",
+      "src/components/ui",
+      "components/ai-elements",
+      "src/components/ai-elements",
+    ]);
+  });
+
   it("ships a shim and a hook that point at the installed validate", () => {
     const files = agentKitFiles({ toon: "", ...loadKitInput() });
     expect(files.get("registry/agent-kit/scripts/check-tokens.mjs")).toContain(
@@ -83,5 +98,39 @@ describe("agentKitFiles", () => {
     expect(files.get("registry/agent-kit/hooks/super-ai-guard.mjs")).toContain(
       "../../scripts/super-ai/validate.mjs",
     );
+  });
+});
+
+describe("the emitted hook", () => {
+  /** Lays the emitted kit out as agent-kit-hooks installs it, under a real
+   *  directory reached through a symlink (macOS tmp, or any linked project). */
+  function installed() {
+    const real = mkdtempSync(join(tmpdir(), "kit-real-"));
+    const link = `${real}-link`;
+    symlinkSync(real, link);
+    const files = agentKitFiles({ toon: "", ...loadKitInput() });
+    for (const [rel, content] of files) {
+      const at = rel.replace("registry/agent-kit/", "").replace(/^hooks\//, ".claude/hooks/");
+      mkdirSync(dirname(join(real, at)), { recursive: true });
+      writeFileSync(join(real, at), content);
+    }
+    const run = (filePath: string, content: string) =>
+      spawnSync("node", [join(link, ".claude/hooks/super-ai-guard.mjs")], {
+        input: JSON.stringify({ tool_name: "Write", tool_input: { file_path: filePath, content } }),
+        encoding: "utf8",
+      });
+    return { real, link, run };
+  }
+
+  it("blocks a raw hex when the project path goes through a symlink", () => {
+    const k = installed();
+    expect(k.run(join(k.link, "app/x.tsx"), '<div className="bg-[#fff]" />').status).toBe(2);
+    expect(k.run(join(k.real, "app/x.tsx"), '<div className="bg-[#fff]" />').status).toBe(2);
+  });
+
+  it("lets a clean edit through, and ignores files outside the project", () => {
+    const k = installed();
+    expect(k.run(join(k.link, "app/x.tsx"), '<div className="bg-background" />').status).toBe(0);
+    expect(k.run(join(tmpdir(), "elsewhere.tsx"), '<div className="bg-[#fff]" />').status).toBe(0);
   });
 });

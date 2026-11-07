@@ -35,7 +35,8 @@ function consumer(opts: { src?: boolean } = {}) {
       ...r,
       detect: { ...r.detect, scope: r.detect.scope.flatMap((s: string) => [SCOPE_MAP[s], `src/${SCOPE_MAP[s]}`]) },
     }));
-  writeFileSync(path.join(kit, "rules.json"), JSON.stringify({ version: 1, rules }, null, 2));
+  const vendored = ["components/ui", "src/components/ui", "components/ai-elements", "src/components/ai-elements"];
+  writeFileSync(path.join(kit, "rules.json"), JSON.stringify({ version: 1, vendored, rules }, null, 2));
   writeFileSync(
     path.join(root, "components.json"),
     JSON.stringify({ aliases: { components: "@/components", ui: "@/components/ui" } }),
@@ -77,6 +78,14 @@ describe("consumer validate", () => {
     expect(r.stdout).toMatch(/^WARN components\/ui\/x\.tsx/m);
   });
 
+  it("demotes every vendored scope rules.json names, not only the ui alias", () => {
+    const c = consumer();
+    c.put("components/ai-elements/message.tsx", cls("bg-muted text-muted-foreground"));
+    const r = c.run("components");
+    expect(r.status).toBe(0);
+    expect(r.stdout).toMatch(/^WARN components\/ai-elements\/message\.tsx/m);
+  });
+
   it("scans src/ when the consumer uses a src directory", () => {
     const c = consumer({ src: true });
     c.put("src/components/super-ai/b.tsx", cls("bg-zinc-400"));
@@ -97,6 +106,14 @@ describe("consumer validate", () => {
     c.put("app/y.tsx", cls("bg-background"));
     expect(c.run("app/y.tsx").status).toBe(0);
     expect(c.run("app/x.tsx").status).toBe(1);
+  });
+
+  it("expands a directory argument to the files under it", () => {
+    const c = consumer();
+    c.put("app/nested/x.tsx", cls("bg-[#ff0000]"));
+    c.put("components/super-ai/a.tsx", cls("bg-background"));
+    expect(c.run("components").status).toBe(0);
+    expect(c.run("app").status).toBe(1);
   });
 
   it("--system exits 3 on a token change, and 1 when a blocker is present too", () => {

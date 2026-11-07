@@ -14,7 +14,7 @@
  *  kit's own, or any hook that loads scripts/check-tokens.mjs) calls with the
  *  text an edit is about to write. */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -24,6 +24,12 @@ import { systemChanges } from "./system-diff.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(HERE, "..", "..");
+
+/** Vendored scopes from rules.json: the repo's own vendored list mapped to
+ *  consumer folders. Findings there report as warnings, as they do upstream. */
+export function loadVendored(file = path.join(HERE, "rules.json")) {
+  return JSON.parse(readFileSync(file, "utf8")).vendored ?? [];
+}
 
 export function loadConsumerRules(file = path.join(HERE, "rules.json")) {
   return JSON.parse(readFileSync(file, "utf8")).rules.filter(
@@ -49,7 +55,7 @@ export function resolveDirs(cwd) {
 const posix = (p) => p.split(path.sep).join("/");
 
 function lint(rules, files, root) {
-  return scan(rules, files, root, resolveDirs(root).vendored);
+  return scan(rules, files, root, [...new Set([...resolveDirs(root).vendored, ...loadVendored()])]);
 }
 
 /** One entry per rule, blockers only: a hook blocks on any entry, and a
@@ -104,9 +110,15 @@ function main(argv) {
   const rules = loadConsumerRules();
   const scopes = [...new Set(rules.flatMap((r) => r.detect.scope))];
   const extensions = [...new Set(rules.flatMap((r) => r.detect.include))];
-  const files = paths.length
-    ? paths.map((p) => posix(path.relative(cwd, path.resolve(cwd, p))))
-    : [...new Set(walk(cwd, scopes, extensions).map(posix))];
+  // A directory argument expands to the files under it, so `validate components`
+  // checks what was installed without tripping on a scaffold's own page.
+  const expand = (p) => {
+    const rel = posix(path.relative(cwd, path.resolve(cwd, p)));
+    return existsSync(path.join(cwd, rel)) && statSync(path.join(cwd, rel)).isDirectory()
+      ? walk(cwd, [rel], extensions).map(posix)
+      : [rel];
+  };
+  const files = [...new Set(paths.length ? paths.flatMap(expand) : walk(cwd, scopes, extensions).map(posix))];
 
   const report = lint(rules, files, cwd);
   const system = flag("--system") ? systemReport(cwd, base) : [];

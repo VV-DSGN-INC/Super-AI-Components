@@ -10,6 +10,7 @@ import { MANIFEST } from "../lib/catalog.manifest";
 import { LIB_MANIFEST } from "../lib/lib.manifest";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
 import type { CssVars } from "../lib/manifest-types";
+import { KIT_DIR, KIT_SOURCES } from "./lib/agent-kit-emit";
 import { deriveExtras } from "./lib/registry-extras";
 
 const REGISTRY_URL = (process.env.REGISTRY_URL ?? "https://super-ai-components.vercel.app").replace(
@@ -303,7 +304,49 @@ const libItems = LIB_MANIFEST.filter((i) => i.status === "shipped").map((i) => (
   ],
 }));
 
-const allItems = [...superAiItems, ...libItems, ...marketingItems];
+// The consumer kit: agent rules, the routing index and the token gate,
+// emitted into registry/agent-kit/ by `pnpm contract:emit` (agent-kit-emit.ts).
+// `~/` targets the consumer's project root. agent-kit-hooks is the opt-in
+// edit-time layer (spec decision 2A) and pulls agent-kit in as a dependency.
+const kitFile = (rel: string, target: string) => ({
+  path: `${KIT_DIR}/${rel}`,
+  type: "registry:file" as const,
+  target,
+});
+const kitItems = [
+  {
+    name: "agent-kit",
+    type: "registry:item" as const,
+    title: "Agent Kit",
+    description:
+      "Rules for coding agents, the routing index and the token gate, installed into your project so the kit's rules travel with its components.",
+    dependencies: [],
+    registryDependencies: [],
+    files: [
+      kitFile("AGENTS.super-ai.md", "~/AGENTS.super-ai.md"),
+      kitFile("index.toon", "components/super-ai/index.toon"),
+      ...Object.keys(KIT_SOURCES).map((rel) => kitFile(rel, `~/${rel}`)),
+      kitFile("scripts/super-ai/rules.json", "~/scripts/super-ai/rules.json"),
+    ],
+    docs: "Add `@AGENTS.super-ai.md` to your CLAUDE.md, or point AGENTS.md at it. Run `node scripts/super-ai/validate.mjs` before calling UI done.",
+  },
+  {
+    name: "agent-kit-hooks",
+    type: "registry:item" as const,
+    title: "Agent Kit Hooks",
+    description:
+      "Opt-in edit-time token gate: a PreToolUse hook and a scripts/check-tokens.mjs shim that run the Agent Kit's rules before an edit is written.",
+    dependencies: [],
+    registryDependencies: [self("agent-kit")],
+    files: [
+      kitFile("scripts/check-tokens.mjs", "~/scripts/check-tokens.mjs"),
+      kitFile("hooks/super-ai-guard.mjs", "~/.claude/hooks/super-ai-guard.mjs"),
+    ],
+    docs: "Replaces scripts/check-tokens.mjs if you have one. To enable the hook, add a PreToolUse entry for Write|Edit|MultiEdit running `node .claude/hooks/super-ai-guard.mjs` to .claude/settings.json.",
+  },
+];
+
+const allItems = [...superAiItems, ...libItems, ...marketingItems, ...kitItems];
 const allNames = allItems.map((i) => i.name);
 const allDupes = allNames.filter((n, i) => allNames.indexOf(n) !== i);
 if (allDupes.length) throw new Error(`Duplicate item names: ${allDupes.join(", ")}`);
