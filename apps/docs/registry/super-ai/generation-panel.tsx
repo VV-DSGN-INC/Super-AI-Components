@@ -38,7 +38,16 @@ interface GenerationPanelFile {
   id: string;
   name: string;
   /** Thumbnail for image-like uploads. Omit to render the filename instead. */
-  preview?: string;
+  /**
+   * A string is a URL (an object URL, usually) and renders as an `<img>`.
+   * Widened to take an element too, for previews that are not fetchable
+   * images — a canvas, a rendered placeholder, a document glyph.
+   *
+   * Deliberately NOT `React.ReactNode`: a bare string is itself a valid
+   * ReactNode, so that wider type would make every existing caller's URL
+   * render as literal text instead of an image.
+   */
+  preview?: string | React.ReactElement;
 }
 
 type GenerationPanelSectionKey = "dropzone" | "directions" | "presets" | "settings";
@@ -241,7 +250,11 @@ function GenerationPanelDropzone({
               }
             >
               {file.preview ? (
-                <img src={file.preview} alt={file.name} className="h-full w-full object-cover" />
+                typeof file.preview === "string" ? (
+                  <img src={file.preview} alt={file.name} className="h-full w-full object-cover" />
+                ) : (
+                  file.preview
+                )
               ) : (
                 <span className="text-foreground flex h-full items-center justify-center p-1 text-center text-[0.65rem] break-all">
                   {file.name}
