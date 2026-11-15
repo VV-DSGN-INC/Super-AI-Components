@@ -118,13 +118,13 @@ Both ship with tests and a case story each (`story-conventions.md`). The declare
 - `npx shadcn add .../r/ag-ui-chat.json` into a fresh app installs one file and `@ag-ui/core`, and nothing else.
 - All twelve CI steps pass.
 - On `/copilotkit` in Chrome and Safari: text streams, the read tool's rows render, the gate opens, an edited approval retries only the chosen runs, Escape reports a deny, the presence chip moves through needs you, acting and idle, and the console is clean.
-- No CopilotKit telemetry request leaves the deployed page (checked in the network panel).
+- CopilotKit telemetry is off in every process that serves `/api/copilotkit`, local or deployed. Telemetry is sent by the runtime on the server, so a browser network panel cannot see it; the check is that the runtime's own gate (`isTelemetryDisabled()` in `@copilotkit/runtime`'s telemetry client, which reads `COPILOTKIT_TELEMETRY_DISABLED` and `DO_NOT_TRACK` at call time) returns true, pinned by a unit test.
 
 ## 10. Left to the builder
 
 - Exact export names beyond those above, and whether the hook lives in the same file (the contract allows one file per lib item, so it does unless that breaks a gate).
 - The demo folder name and its nav placement, following `/generated-chat`.
-- How telemetry is switched off for deploys (env in the Vercel project, `next.config.ts`, or the runtime's own option), as long as section 9's network check passes.
+- How telemetry is switched off for deploys (env in the Vercel project, `next.config.ts`, or the runtime's own option), as long as section 9's telemetry check passes.
 - The `@ag-ui/core` version range in the emitted registry item.
 
 ## 11. Follow-ups, not in this work
@@ -137,3 +137,4 @@ Both ship with tests and a case story each (`story-conventions.md`). The declare
 
 - 2026-11-15: first draft.
 - 2026-11-15: after the builder check. Added call 6 (no sibling imports, compile-time drift checks) and the import-only test; recorded that `node@24` runs while the default `node` is broken.
+- 2026-11-15: while planning. The telemetry success check moved from the browser network panel to the runtime's own gate, because CopilotKit sends telemetry from the server.
