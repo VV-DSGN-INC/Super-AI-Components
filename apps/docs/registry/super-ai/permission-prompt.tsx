@@ -139,6 +139,16 @@ function PermissionPrompt({
   const [editedValues, setEditedValues] = React.useState<Record<string, string>>(() =>
     Object.fromEntries(args.map((arg) => [arg.key, arg.value])),
   );
+  // A paused call's arguments can still be arriving when the prompt opens.
+  // Until the human starts editing, the editor follows the latest arguments;
+  // once they do, their edits win. Keyed on the values, not the array's
+  // identity, so a parent re-render with equal arguments resets nothing.
+  const argsKey = JSON.stringify(args.map((arg) => [arg.key, arg.value]));
+  const [syncedArgsKey, setSyncedArgsKey] = React.useState(argsKey);
+  if (!isEditing && syncedArgsKey !== argsKey) {
+    setSyncedArgsKey(argsKey);
+    setEditedValues(Object.fromEntries(args.map((arg) => [arg.key, arg.value])));
+  }
 
   const toggleArgsExpanded = () => {
     const next = !isArgsExpanded;

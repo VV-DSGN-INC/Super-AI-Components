@@ -284,3 +284,66 @@ describe("PermissionPrompt: every dismissal answers", () => {
     expect(h.onDeny).toHaveBeenCalledTimes(2);
   });
 });
+
+describe("PermissionPrompt: arguments follow the call", () => {
+  const verbs = { onAllowOnce: vi.fn(), onAlwaysAllow: vi.fn(), onDeny: vi.fn() };
+
+  it("arguments that change before editing show their latest values", async () => {
+    const user = userEvent.setup();
+    const onEditFirst = vi.fn();
+    const { rerender } = render(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r1" }]}
+        onEditFirst={onEditFirst}
+        {...verbs}
+      />,
+    );
+    await screen.findByRole("alertdialog");
+
+    rerender(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r1, r2" }]}
+        onEditFirst={onEditFirst}
+        {...verbs}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Edit first" }));
+
+    expect(screen.getByLabelText("runs")).toHaveValue("r1, r2");
+    await user.click(screen.getByRole("button", { name: "Approve edited" }));
+    expect(onEditFirst).toHaveBeenCalledWith({ runs: "r1, r2" });
+  });
+
+  it("the human's edits win over later argument changes", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r1" }]}
+        onEditFirst={vi.fn()}
+        {...verbs}
+      />,
+    );
+    await user.click(await screen.findByRole("button", { name: "Edit first" }));
+    const field = screen.getByLabelText("runs");
+    await user.clear(field);
+    await user.type(field, "r2");
+
+    rerender(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r3" }]}
+        onEditFirst={vi.fn()}
+        {...verbs}
+      />,
+    );
+
+    expect(screen.getByLabelText("runs")).toHaveValue("r2");
+  });
+});

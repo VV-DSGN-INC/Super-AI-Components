@@ -1066,3 +1066,37 @@ export const Boundary: Story = {
     await waitFor(() => expect(canvas.getByRole("button", { name: "Confirm" })).toBeVisible());
   },
 };
+
+/** An agent's paused call: the prompt opens on the first run id, and the second arrives while it is open. */
+function StreamingRetryPrompt(props: React.ComponentProps<typeof PermissionPrompt>) {
+  const [runs, setRuns] = React.useState("r1");
+  React.useEffect(() => {
+    const timer = setTimeout(() => setRuns("r1, r3"), 150);
+    return () => clearTimeout(timer);
+  }, []);
+  return <PermissionPrompt {...props} args={[{ key: "runs", value: runs }]} />;
+}
+
+/**
+ * The arguments of a paused agent call can still be streaming when the prompt
+ * opens. Until the person opens Edit first, the editor follows the latest
+ * arguments, so they edit the call the agent actually made rather than the
+ * half of it that had arrived. Once they start editing, their edits win.
+ *
+ * The play waits for the second run id to reach the summary, then opens the
+ * editor and checks the field holds both.
+ */
+export const ArgumentsArriveWhileOpen: Story = {
+  args: {
+    action: "Retry 2 timed-out runs",
+    reason: "This spends 44 credits from this month's plan.",
+    defaultArgsExpanded: true,
+  },
+  render: (args) => <StreamingRetryPrompt {...args} />,
+  play: async () => {
+    const dialog = await within(document.body).findByRole("alertdialog");
+    await waitFor(() => expect(within(dialog).getByText("r1, r3")).toBeInTheDocument());
+    await userEvent.click(within(dialog).getByRole("button", { name: "Edit first" }));
+    await expect(within(dialog).getByLabelText("runs")).toHaveValue("r1, r3");
+  },
+};
