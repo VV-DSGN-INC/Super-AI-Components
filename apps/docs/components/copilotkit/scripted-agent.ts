@@ -5,7 +5,7 @@ import { Observable } from "rxjs";
 import { fmt, retryCost, RUNS, timedOutOvernight, type Run } from "@/components/generated-chat/fixtures";
 
 /**
- * SPIKE. A scripted AG-UI agent: no model, no key, no cost.
+ * A scripted AG-UI agent for the /copilotkit demo: no model, no key, no cost.
  *
  * It answers over the same fixture workspace as /generated-chat, so the two
  * demos tell one story through two runtimes. The script is a pure function of

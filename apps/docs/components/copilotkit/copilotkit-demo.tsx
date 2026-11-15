@@ -19,16 +19,17 @@ import { AgentPresence } from "@/registry/super-ai/agent-presence";
 import { ChatShell } from "@/registry/super-ai/chat-shell";
 import { EntityRow } from "@/registry/super-ai/entity-row";
 import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
+import { pendingToolCall, presenceFor, toTurns, useAnswerOnce } from "@/registry/super-ai/ag-ui-chat";
 import { SuggestionChip, SuggestionChips } from "@/registry/super-ai/suggestion-chips";
 
-import { pendingRetry, presenceFor, toTurns } from "./adapter";
 import { LIST_TOOL, RETRY_TOOL, type AgentState, type RetryDecision } from "./scripted-agent";
 
 /**
- * SPIKE. CopilotKit's headless hooks driving this registry's components.
- * CopilotKit supplies the agent connection, the run loop and the approval
- * pause; every pixel is a registry component. None of CopilotKit's own chat UI
- * or stylesheet is imported.
+ * The /copilotkit demo: CopilotKit's headless hooks driving this registry's
+ * components through the `ag-ui-chat` lib item. CopilotKit supplies the agent
+ * connection, the run loop and the approval pause; `ag-ui-chat` turns AG-UI
+ * messages into component props; every pixel is a registry component. None of
+ * CopilotKit's own chat UI or stylesheet is imported.
  */
 
 const THREAD_ID = "what-failed-overnight";
@@ -78,12 +79,12 @@ type RetryGateProps = React.ComponentProps<ReactHumanInTheLoop<RetryParams>["ren
 /**
  * The paused call. AG-UI hands over the tool name, its arguments and a
  * `respond`; N8 `permission-prompt` takes an action, its arguments and four
- * verbs. The two line up one to one, with two things the host has to add:
- * every way of closing the dialog must answer (Escape closes it without
- * firing `onDeny`), and `respond` must fire once.
+ * verbs. The two line up one to one. The prompt answers every way it can be
+ * closed (Escape is a Deny), and `useAnswerOnce` makes sure the agent hears
+ * one answer.
  */
 function RetryGate(props: RetryGateProps) {
-  const settled = React.useRef(false);
+  const answer = useAnswerOnce<RetryDecision>(props.respond);
 
   if (props.result !== undefined) {
     const decision = parse<RetryDecision>(props.result);
@@ -97,32 +98,24 @@ function RetryGate(props: RetryGateProps) {
   // Arguments still streaming: a gate over half a call would be a gate over nothing.
   if (!props.respond) return null;
 
-  const { respond, args } = props;
-  const decide = (decision: RetryDecision) => {
-    if (settled.current) return;
-    settled.current = true;
-    void respond(decision);
-  };
+  const { args } = props;
 
   return (
     <>
       <p role="status">Waiting for your OK to retry {plural(args.runIds.length, "run")}.</p>
       <PermissionPrompt
         open
-        onOpenChange={(next) => {
-          if (!next) decide({ approved: false });
-        }}
         action={`Retry ${plural(args.runIds.length, "timed-out run")}`}
         reason={`This spends ${fmt(args.credits)} credits from this month's plan.`}
         args={[{ key: "runs", value: args.runIds.join(", ") }]}
-        onAllowOnce={() => decide({ approved: true })}
-        // A standing grant needs somewhere to live and be revoked (N9). The
-        // spike has no such store, so it approves this one call and says so in
-        // the write-up rather than pretending to remember.
-        onAlwaysAllow={() => decide({ approved: true })}
-        onDeny={() => decide({ approved: false })}
+        onAllowOnce={() => answer({ approved: true })}
+        // A standing grant needs somewhere to live and be revoked (N9). This
+        // demo has no such store, so it approves this one call and the page
+        // says so, rather than pretending to remember.
+        onAlwaysAllow={() => answer({ approved: true })}
+        onDeny={() => answer({ approved: false })}
         onEditFirst={(edited) =>
-          decide({
+          answer({
             approved: true,
             runIds: (edited.runs ?? "")
               .split(",")
@@ -153,7 +146,7 @@ function Conversation({ className, error }: { className?: string; error: string 
   );
 
   const busy = agent.isRunning;
-  const waiting = pendingRetry(agent.messages);
+  const waiting = pendingToolCall(agent.messages, [RETRY_TOOL]);
   const phase = (agent.state as Partial<AgentState> | undefined)?.phase;
 
   const submit = (value: string) => {
@@ -181,7 +174,11 @@ function Conversation({ className, error }: { className?: string; error: string 
       topbar={{
         actions: (
           <AgentPresence
-            state={presenceFor({ running: busy, awaitingApproval: Boolean(waiting), phase })}
+            state={presenceFor({
+              running: busy,
+              awaitingApproval: Boolean(waiting),
+              acting: phase === "retrying",
+            })}
             agentName="Runs agent"
             scope="Can read runs. Retries only with your OK."
             need={waiting ? "Approve or deny the retry" : undefined}

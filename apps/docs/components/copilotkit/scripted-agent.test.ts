@@ -82,6 +82,14 @@ describe("scriptFor", () => {
     expect(said(events)).toContain(`${first.credits} credits`);
   });
 
+  it("spends nothing on an edit that names only unknown runs", () => {
+    const events = scriptFor({
+      ...ids,
+      messages: answered(JSON.stringify({ approved: true, runIds: ["not-a-run"] })),
+    });
+    expect(said(events)).toBe("Left them as they are. Nothing was spent.");
+  });
+
   it("spends nothing on a refusal, an empty edit or an unreadable answer", () => {
     for (const content of ['{"approved":false}', '{"approved":true,"runIds":[]}', "not json"]) {
       const events = scriptFor({ ...ids, messages: answered(content) });
