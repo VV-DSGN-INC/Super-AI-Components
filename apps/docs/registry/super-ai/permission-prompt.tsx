@@ -49,7 +49,10 @@ import { cn } from "@/lib/utils";
  *
  * Deny is modeled as the dialog's own Close path (AlertDialogCancel): it is
  * the safest verb to press because pressing it does nothing but end the
- * surface and report the refusal — nothing routes around it.
+ * surface and report the refusal — nothing routes around it. Every other way
+ * a person dismisses the dialog (Escape today) answers as Deny too, once per
+ * opening, so an agent paused on this prompt always hears an answer. A parent
+ * setting `open` to false is not a person refusing, and stays silent.
  *
  * Edit-first does not reopen a second dialog. It swaps the arguments block
  * for an inline editor (one field per argument) and swaps the four verbs for
@@ -96,7 +99,7 @@ interface PermissionPromptProps extends Omit<React.ComponentProps<"div">, "title
   onAllowOnce?: () => void;
   /** Writes a standing grant. See rule 3 above — this only emits the choice. */
   onAlwaysAllow?: () => void;
-  /** Terminal, and the dialog's own Close path — see the safety note above. */
+  /** Terminal, and the dialog's own Close path. Escape answers here too. See the safety note above. */
   onDeny?: () => void;
   /** Fires with the edited arguments once the human approves the edited version. */
   onEditFirst?: (args: Record<string, string>) => void;
@@ -164,18 +167,36 @@ function PermissionPrompt({
     if (!next && editing === undefined) setUncontrolledEditing(false);
     onOpenChange?.(next);
   };
-  const resolveWith = (decide?: () => void) => () => {
+  // Whether this opening has been answered. Reset each time the dialog opens;
+  // set by every verb, so a dismissal after a verb never adds a second answer.
+  const answered = React.useRef(false);
+  React.useEffect(() => {
+    if (isOpen) answered.current = false;
+  }, [isOpen]);
+  const answer = (decide?: () => void) => {
+    answered.current = true;
     decide?.();
+  };
+
+  const resolveWith = (decide?: () => void) => {
+    answer(decide);
     setOpenState(false);
   };
 
   const handleApproveEdited = () => {
-    onEditFirst?.(editedValues);
+    answer(() => onEditFirst?.(editedValues));
     setOpenState(false);
   };
 
+  // Base UI reports a person's dismissal here (Escape, Deny's own Close). A
+  // dismissal that no verb answered is a refusal.
+  const handleDialogOpenChange = (next: boolean) => {
+    if (!next && !answered.current) answer(onDeny);
+    setOpenState(next);
+  };
+
   return (
-    <AlertDialog open={isOpen} onOpenChange={(next) => setOpenState(next)}>
+    <AlertDialog open={isOpen} onOpenChange={handleDialogOpenChange}>
       {trigger ? <AlertDialogTrigger render={trigger} /> : null}
       {/* Overriding a vendored ui/ primitive's data-slot is house idiom — see
           trust-dialog.tsx for the same move.
@@ -297,14 +318,14 @@ function PermissionPrompt({
             </>
           ) : (
             <>
-              <AlertDialogCancel data-slot="permission-prompt-deny" onClick={onDeny}>
+              <AlertDialogCancel data-slot="permission-prompt-deny" onClick={() => answer(onDeny)}>
                 {denyLabel}
               </AlertDialogCancel>
               <Button
                 data-slot="permission-prompt-always-allow"
                 type="button"
                 variant="outline"
-                onClick={resolveWith(onAlwaysAllow)}
+                onClick={() => resolveWith(onAlwaysAllow)}
               >
                 {alwaysAllowLabel}
               </Button>
@@ -322,7 +343,7 @@ function PermissionPrompt({
               <AlertDialogAction
                 data-slot="permission-prompt-allow-once"
                 variant="default"
-                onClick={resolveWith(onAllowOnce)}
+                onClick={() => resolveWith(onAllowOnce)}
               >
                 {allowOnceLabel}
               </AlertDialogAction>

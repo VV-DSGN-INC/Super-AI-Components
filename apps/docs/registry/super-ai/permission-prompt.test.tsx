@@ -210,3 +210,77 @@ describe("PermissionPrompt", () => {
     expect(screen.getByRole("button", { name: "Allow once" })).toBeInTheDocument();
   });
 });
+
+describe("PermissionPrompt: every dismissal answers", () => {
+  const handlers = () => ({
+    onAllowOnce: vi.fn(),
+    onAlwaysAllow: vi.fn(),
+    onDeny: vi.fn(),
+    onEditFirst: vi.fn(),
+  });
+
+  it("Escape answers as a deny, once", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(<PermissionPrompt open action="Retry 2 runs" args={ARGS} {...h} />);
+    await screen.findByRole("alertdialog");
+
+    await user.keyboard("{Escape}");
+
+    expect(h.onDeny).toHaveBeenCalledTimes(1);
+    expect(h.onAllowOnce).not.toHaveBeenCalled();
+    expect(h.onAlwaysAllow).not.toHaveBeenCalled();
+    expect(h.onEditFirst).not.toHaveBeenCalled();
+  });
+
+  it("a verb that answered does not also deny", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(<PermissionPrompt defaultOpen action="Retry 2 runs" {...h} />);
+
+    await user.click(await screen.findByRole("button", { name: "Allow once" }));
+
+    expect(h.onAllowOnce).toHaveBeenCalledTimes(1);
+    expect(h.onDeny).not.toHaveBeenCalled();
+  });
+
+  it("Deny fires once, not once per close path", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(<PermissionPrompt defaultOpen action="Retry 2 runs" {...h} />);
+
+    await user.click(await screen.findByRole("button", { name: "Deny" }));
+
+    expect(h.onDeny).toHaveBeenCalledTimes(1);
+  });
+
+  it("a parent closing the prompt is not a refusal", async () => {
+    const h = handlers();
+    const { rerender } = render(<PermissionPrompt open action="Retry 2 runs" {...h} />);
+    await screen.findByRole("alertdialog");
+
+    rerender(<PermissionPrompt open={false} action="Retry 2 runs" {...h} />);
+
+    expect(h.onDeny).not.toHaveBeenCalled();
+  });
+
+  it("each opening can answer again", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(
+      <PermissionPrompt
+        trigger={<button type="button">Review request</button>}
+        action="Retry 2 runs"
+        {...h}
+      />,
+    );
+
+    for (let i = 0; i < 2; i++) {
+      await user.click(screen.getByRole("button", { name: "Review request" }));
+      await screen.findByRole("alertdialog");
+      await user.keyboard("{Escape}");
+    }
+
+    expect(h.onDeny).toHaveBeenCalledTimes(2);
+  });
+});

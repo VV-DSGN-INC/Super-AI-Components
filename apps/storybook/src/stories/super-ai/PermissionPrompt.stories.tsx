@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
-import { expect, userEvent, waitFor, within } from "storybook/test";
+import { expect, fn, userEvent, waitFor, within } from "storybook/test";
 
 import { Button } from "@/components/ui/button";
 import { ApprovalCard } from "@/registry/super-ai/approval-card";
@@ -286,9 +286,11 @@ export const ReducedMotion: Story = {
  *   it. The differential is taken by reading the *next* stop's signature while
  *   focus is still on the previous one, so nothing has to be blurred and the
  *   sequence under test is undisturbed.
- * - **Escape closes and returns focus to the trigger**, and the play waits for
- *   the dialog to be gone before it reads anything — a popup caught
- *   mid-dismissal is what hands axe a transitional opacity.
+ * - **Escape closes, answers as Deny, and returns focus to the trigger.**
+ *   `onDeny` fires exactly once, so an agent paused on this prompt hears a
+ *   refusal rather than nothing. The play waits for the dialog to be gone
+ *   before it reads anything — a popup caught mid-dismissal is what hands axe
+ *   a transitional opacity.
  *
  * Each read waits for focus to *leave* the previous stop rather than for focus
  * to be on *some* expected stop: inside a portal the trailing focus guard
@@ -302,9 +304,7 @@ export const ReducedMotion: Story = {
  * here, focus lands back on the dialog panel itself, so the person who just
  * asked to edit has to Tab into the editor they opened, and Back has the same
  * shape in reverse. The docs module already carries the sentence; this is the
- * measurement behind it. Also unasserted: Escape closes without calling
- * `onDeny`, so the agent's call ends neither approved nor refused — an API
- * decision (`onOpenChange(false)` as a refusal) rather than a class swap.
+ * measurement behind it.
  */
 export const KeyboardOrder: Story = {
   args: {
@@ -313,8 +313,9 @@ export const KeyboardOrder: Story = {
     args: EMAIL_ARGS,
     open: undefined,
     trigger: <button type="button">Review the paused call</button>,
+    onDeny: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play: async ({ args, canvasElement }) => {
     const canvas = within(canvasElement);
     const body = within(document.body);
     const trigger = canvas.getByRole("button", { name: "Review the paused call" });
@@ -388,11 +389,12 @@ export const KeyboardOrder: Story = {
     await userEvent.tab();
     await expect(nameOf(await settledStop(previous))).toBe(nameOf(start));
 
-    // 5. Escape closes and hands focus back to the trigger. Wait for the
-    //    dialog to be gone before reading, so axe is never given a surface
-    //    caught mid-dismissal.
+    // 5. Escape closes, answers as Deny exactly once, and hands focus back
+    //    to the trigger. Wait for the dialog to be gone before reading, so axe
+    //    is never given a surface caught mid-dismissal.
     await userEvent.keyboard("{Escape}");
     await waitFor(() => expect(body.queryByRole("alertdialog")).toBeNull());
+    await expect(args.onDeny).toHaveBeenCalledTimes(1);
     await waitFor(() => expect(document.activeElement).toBe(trigger));
   },
 };
@@ -956,8 +958,8 @@ export const Mobile: Story = {
     ).toBe("page scrolls=false");
 
     // All four verbs are present and none is cut off by the panel's edge.
-    const verbs = ["deny", "always-allow", "edit-first", "allow-once"].map(
-      (name) => document.querySelector<HTMLElement>(`[data-slot="permission-prompt-${name}"]`)!,
+    const verbs = ["deny", "always-allow", "edit-first", "allow-once"].map((name) =>
+      document.querySelector<HTMLElement>(`[data-slot="permission-prompt-${name}"]`)!,
     );
     await expect(verbs.filter(Boolean)).toHaveLength(4);
     for (const verb of verbs) {
