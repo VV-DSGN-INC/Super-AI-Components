@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 
+import { timedOutOvernight } from "../components/generated-chat/fixtures";
 import { CATALOG_ITEMS } from "../lib/catalog";
 import { COMPAT_NOTE } from "../lib/install";
 import { MARKETING_ITEMS } from "../lib/marketing-catalog";
@@ -216,4 +217,45 @@ test.describe("/generated-chat generated view", () => {
       expect(errors).toEqual([]);
     });
   }
+});
+
+test.describe("/copilotkit", () => {
+  const start = async (page: import("@playwright/test").Page) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
+    await page.goto("/copilotkit");
+    await expect(page.locator('[data-slot="copilotkit-page-title"]')).toHaveText(
+      "AG-UI chat with CopilotKit",
+    );
+    await page.getByRole("button", { name: "What failed overnight?" }).click();
+    const gate = page.getByRole("alertdialog");
+    await expect(gate).toBeVisible();
+    return { errors, gate };
+  };
+
+  test("approves an edited retry", async ({ page }) => {
+    const [first] = timedOutOvernight();
+    const { errors, gate } = await start(page);
+
+    await gate.getByRole("button", { name: "Edit first" }).click();
+    await gate.getByLabel("runs").fill(first.id);
+    await gate.getByRole("button", { name: "Approve edited" }).click();
+
+    await expect(page.getByText("Retrying 1 run now")).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
+  test("Escape on the gate is a deny", async ({ page }) => {
+    const { errors, gate } = await start(page);
+
+    await page.keyboard.press("Escape");
+
+    await expect(gate).toBeHidden();
+    await expect(page.getByText("You denied the retry.")).toBeVisible();
+    await expect(page.getByText("Left them as they are. Nothing was spent.")).toBeVisible();
+    expect(errors).toEqual([]);
+  });
 });
