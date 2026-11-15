@@ -19,7 +19,13 @@ import { AgentPresence } from "@/registry/super-ai/agent-presence";
 import { ChatShell } from "@/registry/super-ai/chat-shell";
 import { EntityRow } from "@/registry/super-ai/entity-row";
 import { PermissionPrompt } from "@/registry/super-ai/permission-prompt";
-import { pendingToolCall, presenceFor, toTurns, useAnswerOnce } from "@/registry/super-ai/ag-ui-chat";
+import {
+  answerPendingCalls,
+  pendingToolCall,
+  presenceFor,
+  toTurns,
+  useAnswerOnce,
+} from "@/registry/super-ai/ag-ui-chat";
 import { SuggestionChip, SuggestionChips } from "@/registry/super-ai/suggestion-chips";
 
 import { LIST_TOOL, RETRY_TOOL, type AgentState, type RetryDecision } from "./scripted-agent";
@@ -84,7 +90,7 @@ type RetryGateProps = React.ComponentProps<ReactHumanInTheLoop<RetryParams>["ren
  * one answer.
  */
 function RetryGate(props: RetryGateProps) {
-  const answer = useAnswerOnce<RetryDecision>(props.respond);
+  const answer = useAnswerOnce<RetryDecision>(props.respond, props.toolCallId);
 
   if (props.result !== undefined) {
     const decision = parse<RetryDecision>(props.result);
@@ -149,9 +155,26 @@ function Conversation({ className, error }: { className?: string; error: string 
   const waiting = pendingToolCall(agent.messages, [RETRY_TOOL]);
   const phase = (agent.state as Partial<AgentState> | undefined)?.phase;
 
+  // Stopping is a refusal. CopilotKit skips the approval step on a stopped
+  // run, and a retry call can still arrive after Stop is pressed (measured:
+  // it lands after the click). So once the person stops, any retry call left
+  // waiting is answered with a refusal, until they send the next message.
+  // Without this the call waits forever with no prompt, and the composer with it.
+  const stopped = React.useRef(false);
+  const stop = () => {
+    stopped.current = true;
+    void copilotkit.stopAgent({ agent });
+  };
+  React.useEffect(() => {
+    if (busy || !stopped.current) return;
+    const refusal = JSON.stringify({ approved: false } satisfies RetryDecision);
+    for (const answer of answerPendingCalls(agent.messages, [RETRY_TOOL], refusal)) agent.addMessage(answer);
+  }, [agent, agent.messages, busy]);
+
   const submit = (value: string) => {
     const content = value.trim();
     if (!content || busy || waiting || !isReady) return;
+    stopped.current = false;
     agent.addMessage({ id: crypto.randomUUID(), role: "user", content });
     setDraft("");
     void copilotkit.runAgent({ agent });
@@ -227,7 +250,7 @@ function Conversation({ className, error }: { className?: string; error: string 
         value: draft,
         onValueChange: setDraft,
         generating: busy,
-        onStop: () => copilotkit.stopAgent({ agent }),
+        onStop: stop,
         onSubmit: submit,
       }}
       disclaimer="A scripted agent over a fixture workspace, served through CopilotKit's runtime. No model is called."

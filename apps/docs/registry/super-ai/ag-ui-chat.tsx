@@ -15,11 +15,15 @@
  *
  *   const { agent } = useAgent();
  *   useHumanInTheLoop({ name: "retry_runs", parameters, render: (props) => {
- *     const answer = useAnswerOnce(props.respond);
+ *     const answer = useAnswerOnce(props.respond, props.toolCallId);
  *     return <PermissionPrompt open onAllowOnce={() => answer({ approved: true })}
  *       onDeny={() => answer({ approved: false })} ... />;
  *   } });
  *   const waiting = pendingToolCall(agent.messages, ["retry_runs"]);
+ *   // After the person stops, refuse any gated call still waiting, including
+ *   // one that arrives after the click, until they send the next message:
+ *   if (stoppedByPerson && !agent.isRunning)
+ *     for (const m of answerPendingCalls(agent.messages, ["retry_runs"], refusal)) agent.addMessage(m);
  *   <ChatShell messages={toTurns(agent.messages).map(renderTurn)} ... />
  *   <AgentPresence state={presenceFor({ running: agent.isRunning,
  *     awaitingApproval: Boolean(waiting) })} ... />
@@ -98,22 +102,50 @@ const isComplete = (json: string) => {
   }
 };
 
-/**
- * The newest gated tool call still waiting on a person. A call whose
- * arguments never finished streaming (the run was stopped mid-call) cannot be
- * approved, so it never counts as waiting and never locks the composer.
- */
-export function pendingToolCall(
-  messages: Message[],
-  gated: readonly string[] | ((call: ToolCall) => boolean),
-): ToolCall | undefined {
+type Gated = readonly string[] | ((call: ToolCall) => boolean);
+
+/** Gated calls with no result yet, oldest first. */
+function unansweredGated(messages: Message[], gated: Gated): ToolCall[] {
   const isGated =
     typeof gated === "function" ? gated : (call: ToolCall) => gated.includes(call.function.name);
   const answered = new Set(messages.flatMap((m) => (m.role === "tool" ? [m.toolCallId] : [])));
   return messages
     .flatMap((m) => (m.role === "assistant" ? (m.toolCalls ?? []) : []))
-    .filter((call) => isGated(call) && !answered.has(call.id) && isComplete(call.function.arguments))
+    .filter((call) => isGated(call) && !answered.has(call.id));
+}
+
+/**
+ * The newest gated tool call still waiting on a person. A call whose
+ * arguments never finished streaming (the run was stopped mid-call) cannot be
+ * approved, so it never counts as waiting.
+ *
+ * A call whose arguments did finish can still be stranded: a client may skip
+ * the approval step on a stopped run (CopilotKit does), so no prompt ever
+ * appears for it. After the person stops a run, answer what is pending with
+ * `answerPendingCalls`, or the composer stays locked on a call nobody can
+ * answer. Do it once the run has ended, not at the click: a call can still
+ * arrive after Stop is pressed.
+ */
+export function pendingToolCall(messages: Message[], gated: Gated): ToolCall | undefined {
+  return unansweredGated(messages, gated)
+    .filter((call) => isComplete(call.function.arguments))
     .at(-1);
+}
+
+/**
+ * One tool message per gated call still waiting, carrying `content` as the
+ * answer. Add them to the conversation after the person stops a run: stopping
+ * is a refusal, in the same way dismissing `permission-prompt` is a Deny, so
+ * the agent's history ends with an answer instead of a dangling call. Calls
+ * whose arguments never finished are answered too, so the history stays whole.
+ */
+export function answerPendingCalls(messages: Message[], gated: Gated, content: string): ToolMessage[] {
+  return unansweredGated(messages, gated).map((call) => ({
+    id: `${call.id}-stopped`,
+    role: "tool",
+    toolCallId: call.id,
+    content,
+  }));
 }
 
 /**
@@ -135,17 +167,25 @@ export function presenceFor(input: {
 /**
  * Wraps a client's respond function so a paused call is answered exactly
  * once. A dialog can report more than one way of closing, and the agent must
- * hear one answer, not two. A new `respond` (the next paused call) can be
- * answered again.
+ * hear one answer, not two.
+ *
+ * Pass the paused call's id. Some clients (CopilotKit's `useHumanInTheLoop`
+ * among them) hand every paused call the same stable `respond`, so the call
+ * id, not the function, is what tells one call from the next. A new call id,
+ * or a new `respond`, can be answered again.
  */
-export function useAnswerOnce<T>(respond: ((value: T) => unknown) | undefined): (value: T) => void {
-  const answeredFor = React.useRef<unknown>(null);
+export function useAnswerOnce<T>(
+  respond: ((value: T) => unknown) | undefined,
+  callId?: string,
+): (value: T) => void {
+  const answeredFor = React.useRef<{ respond: unknown; callId: string | undefined } | null>(null);
   return React.useCallback(
     (value: T) => {
-      if (!respond || answeredFor.current === respond) return;
-      answeredFor.current = respond;
+      const last = answeredFor.current;
+      if (!respond || (last?.respond === respond && last.callId === callId)) return;
+      answeredFor.current = { respond, callId };
       void respond(value);
     },
-    [respond],
+    [respond, callId],
   );
 }

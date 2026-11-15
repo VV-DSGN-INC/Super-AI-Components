@@ -184,6 +184,9 @@ function PermissionPrompt({
     if (isOpen) answered.current = false;
   }, [isOpen]);
   const answer = (decide?: () => void) => {
+    // One answer per opening: a second verb, a double click, or Deny after a
+    // verb while a controlled parent still holds the dialog open is dropped.
+    if (answered.current) return;
     answered.current = true;
     decide?.();
   };

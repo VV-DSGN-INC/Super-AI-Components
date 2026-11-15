@@ -347,3 +347,19 @@ describe("PermissionPrompt: arguments follow the call", () => {
     expect(screen.getByLabelText("runs")).toHaveValue("r2");
   });
 });
+
+describe("PermissionPrompt: one answer per opening", () => {
+  it("a second verb in the same opening is dropped", async () => {
+    const user = userEvent.setup();
+    const h = { onAllowOnce: vi.fn(), onAlwaysAllow: vi.fn(), onDeny: vi.fn(), onEditFirst: vi.fn() };
+    // Controlled and held open, the way an agent host keeps it until its own state moves on.
+    render(<PermissionPrompt open action="Retry 2 runs" {...h} />);
+
+    await user.click(await screen.findByRole("button", { name: "Allow once" }));
+    await user.click(screen.getByRole("button", { name: "Allow once" }));
+    await user.click(screen.getByRole("button", { name: "Deny" }));
+
+    expect(h.onAllowOnce).toHaveBeenCalledTimes(1);
+    expect(h.onDeny).not.toHaveBeenCalled();
+  });
+});
