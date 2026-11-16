@@ -210,3 +210,156 @@ describe("PermissionPrompt", () => {
     expect(screen.getByRole("button", { name: "Allow once" })).toBeInTheDocument();
   });
 });
+
+describe("PermissionPrompt: every dismissal answers", () => {
+  const handlers = () => ({
+    onAllowOnce: vi.fn(),
+    onAlwaysAllow: vi.fn(),
+    onDeny: vi.fn(),
+    onEditFirst: vi.fn(),
+  });
+
+  it("Escape answers as a deny, once", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(<PermissionPrompt open action="Retry 2 runs" args={ARGS} {...h} />);
+    await screen.findByRole("alertdialog");
+
+    await user.keyboard("{Escape}");
+
+    expect(h.onDeny).toHaveBeenCalledTimes(1);
+    expect(h.onAllowOnce).not.toHaveBeenCalled();
+    expect(h.onAlwaysAllow).not.toHaveBeenCalled();
+    expect(h.onEditFirst).not.toHaveBeenCalled();
+  });
+
+  it("a verb that answered does not also deny", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(<PermissionPrompt defaultOpen action="Retry 2 runs" {...h} />);
+
+    await user.click(await screen.findByRole("button", { name: "Allow once" }));
+
+    expect(h.onAllowOnce).toHaveBeenCalledTimes(1);
+    expect(h.onDeny).not.toHaveBeenCalled();
+  });
+
+  it("Deny fires once, not once per close path", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(<PermissionPrompt defaultOpen action="Retry 2 runs" {...h} />);
+
+    await user.click(await screen.findByRole("button", { name: "Deny" }));
+
+    expect(h.onDeny).toHaveBeenCalledTimes(1);
+  });
+
+  it("a parent closing the prompt is not a refusal", async () => {
+    const h = handlers();
+    const { rerender } = render(<PermissionPrompt open action="Retry 2 runs" {...h} />);
+    await screen.findByRole("alertdialog");
+
+    rerender(<PermissionPrompt open={false} action="Retry 2 runs" {...h} />);
+
+    expect(h.onDeny).not.toHaveBeenCalled();
+  });
+
+  it("each opening can answer again", async () => {
+    const user = userEvent.setup();
+    const h = handlers();
+    render(
+      <PermissionPrompt
+        trigger={<button type="button">Review request</button>}
+        action="Retry 2 runs"
+        {...h}
+      />,
+    );
+
+    for (let i = 0; i < 2; i++) {
+      await user.click(screen.getByRole("button", { name: "Review request" }));
+      await screen.findByRole("alertdialog");
+      await user.keyboard("{Escape}");
+    }
+
+    expect(h.onDeny).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("PermissionPrompt: arguments follow the call", () => {
+  const verbs = { onAllowOnce: vi.fn(), onAlwaysAllow: vi.fn(), onDeny: vi.fn() };
+
+  it("arguments that change before editing show their latest values", async () => {
+    const user = userEvent.setup();
+    const onEditFirst = vi.fn();
+    const { rerender } = render(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r1" }]}
+        onEditFirst={onEditFirst}
+        {...verbs}
+      />,
+    );
+    await screen.findByRole("alertdialog");
+
+    rerender(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r1, r2" }]}
+        onEditFirst={onEditFirst}
+        {...verbs}
+      />,
+    );
+    await user.click(screen.getByRole("button", { name: "Edit first" }));
+
+    expect(screen.getByLabelText("runs")).toHaveValue("r1, r2");
+    await user.click(screen.getByRole("button", { name: "Approve edited" }));
+    expect(onEditFirst).toHaveBeenCalledWith({ runs: "r1, r2" });
+  });
+
+  it("the human's edits win over later argument changes", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r1" }]}
+        onEditFirst={vi.fn()}
+        {...verbs}
+      />,
+    );
+    await user.click(await screen.findByRole("button", { name: "Edit first" }));
+    const field = screen.getByLabelText("runs");
+    await user.clear(field);
+    await user.type(field, "r2");
+
+    rerender(
+      <PermissionPrompt
+        open
+        action="Retry runs"
+        args={[{ key: "runs", value: "r3" }]}
+        onEditFirst={vi.fn()}
+        {...verbs}
+      />,
+    );
+
+    expect(screen.getByLabelText("runs")).toHaveValue("r2");
+  });
+});
+
+describe("PermissionPrompt: one answer per opening", () => {
+  it("a second verb in the same opening is dropped", async () => {
+    const user = userEvent.setup();
+    const h = { onAllowOnce: vi.fn(), onAlwaysAllow: vi.fn(), onDeny: vi.fn(), onEditFirst: vi.fn() };
+    // Controlled and held open, the way an agent host keeps it until its own state moves on.
+    render(<PermissionPrompt open action="Retry 2 runs" {...h} />);
+
+    await user.click(await screen.findByRole("button", { name: "Allow once" }));
+    await user.click(screen.getByRole("button", { name: "Allow once" }));
+    await user.click(screen.getByRole("button", { name: "Deny" }));
+
+    expect(h.onAllowOnce).toHaveBeenCalledTimes(1);
+    expect(h.onDeny).not.toHaveBeenCalled();
+  });
+});

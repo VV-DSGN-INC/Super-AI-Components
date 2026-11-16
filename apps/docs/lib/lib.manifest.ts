@@ -58,6 +58,16 @@ export const LIB_MANIFEST: LibManifestItem[] = [
     npm: ["ai"],
     target: "lib/generated-chat.tsx",
   },
+  {
+    name: "ag-ui-chat",
+    title: "AG-UI chat",
+    description:
+      "AG-UI protocol messages to chat-shell turns, the gated tool call waiting on a person, an agent-presence state, and a once-only answer for a paused call. Works with any AG-UI client, CopilotKit included.",
+    status: "shipped",
+    shadcn: [],
+    npm: ["@ag-ui/core"],
+    target: "lib/ag-ui-chat.tsx",
+  },
 ];
 
 export const LIB_NAMES = LIB_MANIFEST.map((i) => i.name);

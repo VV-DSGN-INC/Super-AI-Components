@@ -4,6 +4,7 @@ packages:
 
 allowBuilds:
   "@openuidev/lang-core": false
+  "@scarf/scarf": false
   esbuild: true
   sharp: true
   unrs-resolver: true
