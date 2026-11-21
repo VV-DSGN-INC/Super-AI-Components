@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -105,5 +105,48 @@ describe("readUngated", () => {
 
   it("returns an empty map for text with no table", () => {
     expect(readUngated("no table here").size).toBe(0);
+  });
+});
+
+const MIN_COST_PROSE_CHARS = 40;
+const COST_HEADING = "## What it costs";
+
+/** Pure: a body's text in, the reasons it fails the cost contract out. */
+function costViolations(text: string): string[] {
+  const lines = text.split("\n");
+  const at = lines.findIndex((l) => l.trim() === COST_HEADING);
+  if (at === -1) return [`missing the "${COST_HEADING}" heading`];
+  const prose = lines
+    .slice(at + 1)
+    .filter((l) => l.trim() !== "" && !l.startsWith("#"))
+    .join(" ")
+    .trim();
+  return prose.length < MIN_COST_PROSE_CHARS
+    ? [`cost prose is ${prose.length} chars, under ${MIN_COST_PROSE_CHARS}`]
+    : [];
+}
+
+describe("every rule body states what it costs", () => {
+  it("each body under docs/agent-rules has the heading and real prose", () => {
+    const dir = join(REPO, "docs/agent-rules");
+    const bodies = readdirSync(dir).filter((f) => f.endsWith(".md"));
+    expect(bodies.length).toBeGreaterThan(0);
+    const problems = bodies.flatMap((f) =>
+      costViolations(readFileSync(join(dir, f), "utf8")).map((v) => `${f}: ${v}`),
+    );
+    expect(problems).toEqual([]);
+  });
+
+  it("CONTROL: a body with no heading fails", () => {
+    expect(costViolations("# T\n\nThis rule protects x.\n")).not.toEqual([]);
+  });
+
+  it("CONTROL: a heading with too-short prose fails", () => {
+    expect(costViolations("# T\n\n## What it costs\n\nToo short.\n")).not.toEqual([]);
+  });
+
+  it("CONTROL: a well-formed body passes", () => {
+    const body = `# T\n\n## What it costs\n\n${"It prevents a real failure and costs an author a rebuild. ".repeat(2)}\n`;
+    expect(costViolations(body)).toEqual([]);
   });
 });
