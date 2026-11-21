@@ -7,8 +7,7 @@ import { UNGATED_MD, parseAgentStubs, readUngated } from "./agents-stubs";
 
 const REPO = resolve(__dirname, "../../../..");
 
-// Task 2 creates AGENTS.md and removes the .skip.
-describe.skip("AGENTS.md stub provenance", () => {
+describe("AGENTS.md stub provenance", () => {
   // Read lazily: describe bodies run even when skipped, and AGENTS.md does not exist yet.
   const load = () => {
     const agentsMd = readFileSync(join(REPO, "AGENTS.md"), "utf8");

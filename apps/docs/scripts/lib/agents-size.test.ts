@@ -13,7 +13,7 @@ const REPO = resolve(__dirname, "../../../..");
  *
  *  Deliberately not sufficient on its own: agents-provenance.test.ts is the
  *  other half, since ungated prose weighs bytes too. */
-const CEILING = 14_500;
+const CEILING = 11_500;
 /** The file must sit within this many bytes of the ceiling, so the ceiling
  *  ratchets down as the file shrinks instead of sitting idle. */
 const HEADROOM = 2_000;
@@ -22,9 +22,7 @@ const HEADROOM = 2_000;
  *  asserts the pre-split file would fail the ceiling. */
 const PRE_SPLIT_BYTES = 14_499;
 
-// Task 2 creates AGENTS.md, lowers CEILING below PRE_SPLIT_BYTES (so the
-// CONTROL holds) and removes the .skip.
-describe.skip("AGENTS.md size", () => {
+describe("AGENTS.md size", () => {
   const size = () => Buffer.byteLength(readFileSync(join(REPO, "AGENTS.md")));
 
   it(`is under the ceiling (${CEILING} bytes; the constant may only go down)`, () => {

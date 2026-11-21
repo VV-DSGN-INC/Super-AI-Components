@@ -62,7 +62,7 @@ export const harnessPage: SystemPage = {
         },
         {
           kind: "p",
-          text: "The instructions file is short on purpose. `CLAUDE.md` is a map under a byte ceiling, and a test fails when it grows past it, because every line there competes with the task for the agent's attention.",
+          text: "The instructions file is short on purpose. `AGENTS.md` is a map under a byte ceiling, and a test fails when it grows past it, because every line there competes with the task for the agent's attention.",
         },
       ],
     },

@@ -31,7 +31,7 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   `10.3` and `10.4` are not applicable: no `runtime.partsRenderer` is declared.
 - **Stage 01 and 09 at the 2026-09-14 refresh: unmet, recorded rather than fixed.**
   (`01.2` and `09.1` closed on 2026-10-21 with the flat name contract in
-  `packages/ds-rules/src/tokens.ts` and the Loops section of `CLAUDE.md`; `01.3` and
+  `packages/ds-rules/src/tokens.ts` and the Loops section of `AGENTS.md`; `01.3` and
   `01.6` stay open, see that PR.) The refresh is what made these visible; closing them is separate work, sized in
   `CONTINUE.md` §8. `highestContiguous` is therefore **00**, which is the
   honest number and not the one the agentic-contracts spec first predicted.
@@ -41,11 +41,11 @@ normal sweep — an automatic sync would let an unexercised stage travel.
   | `01.2` | every token declared in the style entry is in the name contract | 72 stock shadcn tokens live in `apps/docs/app/globals.css`; `packages/ds-rules/src/local.ts` names only the ones it bans. The contract here is a ban list, not a roster. |
   | `01.3` | an alias points at a semantic token, never a literal            | six `--radius-*` aliases carry literals, which is how stock shadcn ships its radius scale.                                                                               |
   | `01.6` | every token reaches a consumer                                  | eight `--sidebar-*` tokens are declared and read by nothing in `registry/super-ai/**`.                                                                                   |
-  | `09.1` | the instructions file describes both loops and the human gate   | `CLAUDE.md` is deliberately a map (see its own second heading); the loops live in `CONTINUE.md` §3.                                                                      |
+  | `09.1` | the instructions file describes both loops and the human gate   | `AGENTS.md` is deliberately a map (see its own second heading); the loops live in `CONTINUE.md` §3.                                                                      |
 
 - **`09.3` closed 2026-09-18.** The review-round budget is
   `docs/design-system/review-rounds.md`, with a one-line pointer under
-  Conventions in `CLAUDE.md` because the probe reads only that file. Four
+  Conventions in `AGENTS.md` because the probe reads only that file. Four
   claims stay unmet, so `highestContiguous` is still **00**.
 
 - **Local changes:** `@types/node` added to devDependencies (its typecheck
