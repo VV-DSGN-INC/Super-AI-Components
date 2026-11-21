@@ -59,6 +59,7 @@ Each has cost a real debugging session. The body holds the reasoning; this is on
 - **`apps/storybook` compiles `apps/docs` source and turbo can't see it; pin new tasks in its `turbo.json`.** Read `docs/agent-rules/storybook-compiles-docs.md`. Gate: `apps/docs/scripts/turbo-inputs.test.ts`.
 - **The a11y exclusion list and `story-coverage.baseline.json` may only shrink, never grow.** Read `docs/agent-rules/ratchets-only-shrink.md`. Gate: `apps/docs/scripts/lib/a11y-ratchet.test.ts`, `apps/docs/scripts/lib/story-coverage.test.ts`.
 - **The token gate (`pnpm check:tokens`) bans raw colours, palette classes and the core blockers; its contrast rule misses cross-component cases.** Read `docs/agent-rules/token-gate.md`. Gate: `packages/ds-rules/rulecheck.mjs`.
+- **Every gate allowance is indexed with a reason; add one in its own list, add its reason, then run `pnpm exceptions:emit`.** Read `docs/agent-rules/exceptions-index.md`. Gate: `apps/docs/scripts/lib/exceptions/emit.test.ts`, `apps/docs/scripts/exceptions-delta.mjs`.
 
 ### Component code
 
