@@ -92,12 +92,13 @@ Use `pnpm`, not npm — the lockfile is `pnpm-lock.yaml` and CI installs with `-
 
 ## CI
 
-`.github/workflows/ci.yml`, two parallel jobs, each in this order:
+`.github/workflows/ci.yml`, three parallel jobs, each in this order:
 
 `gates`: `install --frozen-lockfile` → `lint` → `format:check` → `typecheck` → `check:tokens` → `check:contract` → `test`
+`exceptions-delta` (pull requests only, a report that never fails): `Exceptions delta report`
 `product`: `install --frozen-lockfile` → `build:registry` → `build` → **Playwright smoke** → **Storybook a11y + interaction** → **consumer install test**
 
-Twelve steps. The last three are the ones that actually exercise the product; they run in their own job so a red `gates` step no longer hides them, and within a job a red step still hides every step after it. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
+Thirteen steps. The last three are the ones that actually exercise the product; they run in their own job so a red `gates` step no longer hides them, and within a job a red step still hides every step after it. Do not add a step that duplicates one of these, and do not disable a step to get a PR green: the consumer test, the a11y gate and the token gate are the three that protect people downstream.
 
 One quirk worth knowing: `docs/design-system/story-conventions.md` needs three
 `--write` passes to converge, because reformatting its widest table changes the

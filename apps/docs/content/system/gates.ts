@@ -35,7 +35,12 @@ export interface GateRow {
 }
 
 /** ci.yml `run:` steps that are not gates, each with its reason. */
-export const PLUMBING: { ciStep: string; reason: string }[] = [];
+export const PLUMBING: { ciStep: string; reason: string }[] = [
+  {
+    ciStep: "Exceptions delta report",
+    reason: "a report that never fails: it lists the allowances a PR adds",
+  },
+];
 
 export const GATE_ROWS: GateRow[] = [
   {

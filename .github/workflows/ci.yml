@@ -3,12 +3,12 @@ on:
   push: { branches: [main] }
   pull_request:
 
-# Two jobs from the same checkout. `gates` is the static and unit layer;
+# Three jobs from the same checkout. `gates` is the static and unit layer;
 # `product` is the three steps that exercise what consumers install, plus the
 # builds they need. They run in parallel so a red lint no longer hides a red
 # consumer test (CLAUDE.md records that this happened). Both must pass. Within a
 # job a red step still hides every step after it, which is why the order inside
-# each job is the same as before the split. The local mirror,
+# each job is the same as before the split. `exceptions-delta` only reports. The local mirror,
 # .claude/skills/gate-run/run-gates.sh, runs `gates` then `product` sequentially.
 jobs:
   gates:
@@ -26,6 +26,22 @@ jobs:
       - run: pnpm check:tokens
       - run: pnpm check:contract
       - run: pnpm test
+
+  exceptions-delta:
+    # A report that never fails: it lists the allowances a PR adds. No install,
+    # because the script is plain Node. fetch-depth 0 so the base sha is present.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with: { fetch-depth: 0 }
+      - uses: actions/setup-node@v7
+        with: { node-version: 24 }
+      - name: Exceptions delta report
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: node apps/docs/scripts/exceptions-delta.mjs "$BASE_SHA"
 
   product:
     # Pinned: ubuntu-latest is now 26.04, where Playwright 1.60 cannot install
