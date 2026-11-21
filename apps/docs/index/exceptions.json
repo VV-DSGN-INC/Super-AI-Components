@@ -1,0 +1,301 @@
+{
+  "generatedBy": "pnpm exceptions:emit (apps/docs/scripts/lib/exceptions/emit.test.ts reads the ledgers apps/docs/scripts/lib/exceptions/registry.ts names); never edit by hand",
+  "ledgers": [
+    {
+      "name": "RULE_EXEMPT",
+      "file": "packages/ds-rules/src/{core,local}.ts",
+      "gate": "packages/ds-rules/rulecheck.mjs",
+      "about": "Per-rule files the token and slop detector skips entirely, whole-file.",
+      "entries": [
+        {
+          "key": "COL-1:hero-video-dialog.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "COL-1:preview-tile.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "STA-3:field-row.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "STA-3:generation-wizard.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "STA-3:onboarding-wizard.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "TOK-1:components/demos/preset-grid-demo.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "TOK-1:components/demos/hero-video-dialog-demo.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "TOK-7:components/demos/drawing-tools-demo.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "TOK-8:dot-pattern.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        }
+      ]
+    },
+    {
+      "name": "VENDORED_SCOPES",
+      "file": "packages/ds-rules/src/local.ts",
+      "gate": "packages/ds-rules/rulecheck.mjs",
+      "about": "Vendored upstream trees whose hits are demoted below blocker.",
+      "entries": [
+        {
+          "key": "apps/docs/components/ui",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "apps/docs/components/ai-elements",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        }
+      ]
+    },
+    {
+      "name": "A11Y_EXCLUSIONS",
+      "file": "apps/storybook/a11y-exclusions.baseline.json",
+      "gate": "apps/docs/scripts/lib/a11y-ratchet.test.ts",
+      "about": "Story globs the axe gate does not run. The list may only shrink.",
+      "entries": [
+        {
+          "key": "**/stories/ui/**",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "**/stories/ai-elements/**",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "**/stories/ai-elements/Context.stories.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "**/stories/ui/DropdownMenu.stories.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "**/stories/ui/MessageScroller.stories.tsx",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        }
+      ]
+    },
+    {
+      "name": "CSSVARS_LIVENESS",
+      "file": "apps/docs/cssvars-liveness.baseline.json",
+      "gate": "apps/docs/scripts/lib/cssvars-liveness.test.ts",
+      "about": "CSS variables a component reads or declares that nothing resolves or reads.",
+      "entries": [
+        {
+          "key": "generation-panel:--card-spacing (read, resolves nowhere)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "result-card:--card-spacing (read, resolves nowhere)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "time-ruler:--time-ruler-playhead-height (read, resolves nowhere)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "inline-generate-popup:--transform-origin (read, resolves nowhere)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "trust-dialog:color-warning-foreground (declared in cssVars, read by nothing)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "trust-dialog:warning-foreground (declared in cssVars, read by nothing)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "usage-dashboard:--color-spend (read, resolves nowhere)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "usage-dashboard:color-warning-foreground (declared in cssVars, read by nothing)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "usage-dashboard:warning-foreground (declared in cssVars, read by nothing)",
+          "reason": "migrated 2026-10",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        }
+      ]
+    },
+    {
+      "name": "CONTRAST_EXEMPT_FILES",
+      "file": "packages/ds-rules/src/token-rules.mjs",
+      "gate": "apps/docs/scripts/check-contract.mts",
+      "about": "Files the single-element contrast rule skips.",
+      "entries": []
+    },
+    {
+      "name": "UNGATED",
+      "file": "docs/design-system/UNGATED.md",
+      "gate": "apps/docs/scripts/lib/agents-provenance.test.ts",
+      "about": "Agent rules with no gate, each with the reason nothing enforces it.",
+      "entries": [
+        {
+          "key": "docs/agent-rules/gate-list-mirrors-ci.md",
+          "reason": "The `gate-run` skill is the discharge. A test that parsed skill prose against `ci.yml` would be a fourth copy of the list it protects.",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "docs/agent-rules/green-proves-nothing.md",
+          "reason": "Procedural: it says to rebuild before `playwright test`. The Playwright config runs `pnpm start`, and nothing in the tree can tell a stale build from source.",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "docs/agent-rules/blocks-compose.md",
+          "reason": "A judgment. `block-build-brief.md` and review discharge it; a reimplemented row passes every mechanical gate, which is precisely what the rule exists to say.",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        },
+        {
+          "key": "docs/agent-rules/parallel-builds.md",
+          "reason": "Procedural: it says to give each agent its own worktree and to check the base commit. Nothing in the tree can tell which checkout an agent was handed.",
+          "commit": null,
+          "by": null,
+          "on": null,
+          "pr": null
+        }
+      ]
+    }
+  ],
+  "declined": [
+    {
+      "name": ".test. exempt entries",
+      "file": "packages/ds-rules/src/local.ts",
+      "why": "a population exclusion, not an allowance"
+    },
+    {
+      "name": "story-coverage.baseline.json",
+      "file": "apps/docs/scripts/lib/story-coverage.baseline.json",
+      "why": "a coverage work list: it may only shrink, and an entry is owed work, not an allowance"
+    },
+    {
+      "name": "contract-coverage.baseline.json",
+      "file": "apps/docs/scripts/lib/contract-coverage.baseline.json",
+      "why": "a coverage work list: it may only shrink, and an entry is owed work, not an allowance"
+    }
+  ]
+}
