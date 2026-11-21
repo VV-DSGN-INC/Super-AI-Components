@@ -33,6 +33,10 @@ const finished = (t: Turn): Turn => (t.role === "assistant" ? { ...t, count: t.l
 
 const THREAD_ID = "openui";
 
+// react-lang 1.x logs render errors unless onError is passed; a bad recorded line
+// is shown by the surface itself, so nothing needs to reach the console.
+const ownedError = () => {};
+
 /** The reveal is state, not a ref'd interval: each in-flight turn schedules
  *  its next line from an effect, so StrictMode's dev remount (which runs the
  *  cleanup and keeps the state) resumes the stream instead of freezing it. */
@@ -132,6 +136,7 @@ export function OpenUIConversation({ streamMs = 120, className }: { streamMs?: n
               response={t.lines.slice(0, t.count).join("\n")}
               library={openuiLibrary}
               isStreaming={isStreaming(t)}
+              onError={ownedError}
               onAction={onAction}
             />
           ),

@@ -130,6 +130,18 @@ describe("GeneratedBody", () => {
     });
   });
 
+  it("renders the failed state for an unknown component without logging to console.error", () => {
+    // react-lang 1.x console.errors every render error unless onError is passed.
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      render(<GeneratedBody program={UNKNOWN_COMPONENT} library={library} />);
+      expect(screen.getByRole("status")).toHaveTextContent("This version did not render.");
+      expect(spy).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
   it("treats an unknown root component as failed (root is null)", () => {
     const onRender = vi.fn();
     render(<GeneratedBody program={UNKNOWN_ROOT} library={library} onRender={onRender} />);

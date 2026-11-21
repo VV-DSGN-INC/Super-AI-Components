@@ -51,6 +51,11 @@ interface GeneratedBodyProps extends Omit<React.ComponentProps<"div">, "children
 
 const MAX_REASONS_SHOWN = 2;
 
+// react-lang 1.x logs every render error to console.error unless an onError is
+// passed. This component reports failure itself (onParseResult, meta.errors), so
+// the handler is deliberately a no-op: the failed state owns the error.
+const ownedError = () => {};
+
 /** Every reason a finished parse should not be shown, in words. Empty means it rendered. */
 function failuresOf(result: ParseResult | null): string[] {
   if (!result) return ["Nothing in the program could be read."];
@@ -142,6 +147,7 @@ function GeneratedBody({
             response={text}
             library={library}
             isStreaming={streaming}
+            onError={ownedError}
             onParseResult={(result) => setParsed({ program: text, result })}
           />
         </div>
@@ -174,7 +180,7 @@ function GeneratedBody({
           {hasFallback ? (
             <div data-slot="generated-body-fallback" className="flex min-w-0 flex-col gap-2">
               <p className="text-foreground text-xs font-medium">Last version that rendered</p>
-              <Renderer response={fallbackProgram} library={library} />
+              <Renderer response={fallbackProgram} library={library} onError={ownedError} />
             </div>
           ) : null}
         </>
