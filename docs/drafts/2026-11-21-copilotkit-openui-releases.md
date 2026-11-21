@@ -47,3 +47,23 @@ Repo: https://github.com/ag-ui-protocol/ag-ui, release tags release/<date>. 1.0.
 - 1.0.4 BREAKING (release/2026-11-05): `threadId` is now a lazy accessor on AbstractAgent; subclasses declaring or overriding `threadId` as a field fail with TS2610, assign it in the constructor. threadId no longer an own property (missing from Object.keys, spread, JSON.stringify until read). `zod` moved from dependency to required peer ^3.25.18 || ^4.0.0, so install zod. `AbstractAgent.middlewares` is now protected. Tool-result ordering and re-pairing changed. Emitted messages are read-only.
 - 1.0.5 BREAKING (release/2026-11-17): event enforcement rejects missing, non-string or inherited union discriminators; compactEvents ordering and reasoning-delta compaction changed. Also fixes clone() to copy resolvingPeerCeiling.
   Action for an AbstractAgent subclass: check for a `threadId` field, fix with constructor assignment; make sure every emitted event has a string `type`.
+
+## Verified here (2026-11-21, branch build/copilotkit-openui-update)
+
+Run by the controller from the repo root on `eb6bf5b1`, after a fresh `pnpm build`. Machine load was 26 to 51 throughout.
+
+| step                           | result                                                                                                      |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| lint                           | pass                                                                                                        |
+| format:check                   | fail, 18 files, all failing identically on `origin/main`; none touched here                                 |
+| typecheck                      | pass                                                                                                        |
+| check:tokens, check:contract   | pass (run on `7c13ab81`; the later fix touches no tokens or contracts)                                      |
+| test                           | pass, docs 210 files and 2675 tests                                                                         |
+| build:registry, build          | pass                                                                                                        |
+| Playwright smoke               | pass, 169 of 169, including `/copilotkit` approve and Escape and every `/generated-chat` and `/openui` case |
+| Storybook a11y and interaction | pass, 154 files and 1700 tests (run on `7c13ab81`; the fix touches no stories)                              |
+| consumer install               | pass                                                                                                        |
+
+The first smoke run on `7c13ab81` failed 3 tests: OpenUI 1.x `Renderer` writes every error to `console.error` unless `onError` is passed, and the failed-version demos render an unknown component on purpose. `eb6bf5b1` passes a no-op `onError` where the component owns its failed state, and a unit test now catches the log without Playwright.
+
+Not checked: Safari, a real model behind `/copilotkit`, the zod 4 override under any CopilotKit path the smoke does not drive.

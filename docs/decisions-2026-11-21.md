@@ -8,3 +8,5 @@ Each line is a choice made without Nick, with its reason. Nick asked for recomme
 4. AG-UI moves to `1.0.5` exactly, because CopilotKit 1.90 pins `@ag-ui/client` 1.0.5 and mixed versions gave duplicate `Observable` types in the spike.
 5. Version facts come from npm and the official changelogs read on 2026-11-21 (`docs/drafts/2026-11-21-copilotkit-openui-releases.md`), not from memory.
 6. The product check (build, smoke, consumer install) is run by the controller rather than an executor, so its verdict is first-hand.
+7. The CopilotKit runtime, core and shared packages are overridden to zod 4.4.3 in `pnpm-workspace.yaml`, with `@ag-ui/*` held at 1.0.5 and rxjs at 7.8.1. Without it the tree held two `@ag-ui/client` builds and the agent types stopped matching. The smoke drives `/copilotkit` end to end on this override. Remove it when the runtime accepts zod 4. Overrides do not reach consumers.
+8. OpenUI 1.x errors are owned by the component: `Renderer` gets a no-op `onError` where the component already shows its failed state, rather than letting 1.x log to the console. No public prop was added.
