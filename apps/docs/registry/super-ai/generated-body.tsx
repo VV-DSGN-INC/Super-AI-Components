@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
  * `program` in, keeps the history, and hands back the last good version as
  * `fallbackProgram`.
  *
- * What counts as a failure (measured against @openuidev/react-lang 0.3.2):
+ * What counts as a failure (measured against @openuidev/react-lang 1.1.1):
  * an unknown component name does NOT null the root unless it is the root
  * itself. It lands in `result.meta.errors` (code `unknown-component`) and the
  * rest of the program still renders. A dangling reference lands in

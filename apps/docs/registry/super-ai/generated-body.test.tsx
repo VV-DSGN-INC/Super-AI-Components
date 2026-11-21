@@ -118,7 +118,7 @@ describe("GeneratedBody", () => {
   });
 
   it("treats a finished program with an unknown component as failed through meta.errors", () => {
-    // Pinned by experiment on @openuidev/react-lang 0.3.2: an unknown component
+    // Pinned by experiment on @openuidev/react-lang 0.3.2, rechecked on 1.1.1: an unknown component
     // leaves result.root set and result.meta.unresolved empty. Only
     // meta.errors carries it, so a check on root or unresolved alone would let
     // this program through and paint the rest of it.

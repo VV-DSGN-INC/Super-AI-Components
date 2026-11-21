@@ -53,8 +53,8 @@
     "use-stick-to-bottom": "^1.1.6"
   },
   "devDependencies": {
-    "@openuidev/lang-core": "^0.3.2",
-    "@openuidev/react-lang": "^0.3.2",
+    "@openuidev/lang-core": "^1.1.1",
+    "@openuidev/react-lang": "^1.1.1",
     "@playwright/test": "^1.65.0",
     "@tailwindcss/postcss": "4.3.4",
     "@testing-library/jest-dom": "^6.9.1",
