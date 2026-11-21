@@ -8,3 +8,16 @@ allowBuilds:
   esbuild: true
   sharp: true
   unrs-resolver: true
+
+# CopilotKit 1.90 pins @ag-ui/client 1.0.5 exactly, and that package needs zod
+# as a peer. The runtime asks for zod ^3.25 while the docs app uses zod 4, so
+# without this the tree holds two client builds and AbstractAgent types stop
+# matching (private _threadId). rxjs is held to the version the ag-ui packages
+# pin, so there is one Observable type. Remove when the runtime accepts zod 4.
+overrides:
+  "@copilotkit/runtime>zod": 4.4.3
+  "@copilotkit/core>zod": 4.4.3
+  "@copilotkit/shared>zod": 4.4.3
+  "@ag-ui/client": 1.0.5
+  "@ag-ui/core": 1.0.5
+  rxjs: 7.8.1
