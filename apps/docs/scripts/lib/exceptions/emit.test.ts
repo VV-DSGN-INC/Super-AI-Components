@@ -6,18 +6,27 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import {
   buildIndex,
+  type ExceptionsIndex,
   EXCEPTIONS_FILE,
   loadReasons,
   NO_PROVENANCE,
   reasonProblems,
   renderIndex,
 } from "./build";
+import { blameProvenance, provenanceFromCommitted } from "./provenance";
 import { DECLINED, LEDGERS, MIGRATED_CEILING, MIGRATED_REASON, type LedgerSpec } from "./registry";
 
 const REPO = resolve(__dirname, "../../../../..");
 const EMIT = process.env.EXCEPTIONS_EMIT === "1";
 
 const live = () => buildIndex(REPO, () => NO_PROVENANCE);
+
+/** Git runs only when emitting. Gate mode reads the committed index, so a
+ *  shallow clone in CI cannot break `pnpm test`. */
+const committed = (): ExceptionsIndex =>
+  JSON.parse(readFileSync(join(REPO, EXCEPTIONS_FILE), "utf8")) as ExceptionsIndex;
+const withProvenance = () =>
+  buildIndex(REPO, EMIT ? blameProvenance(REPO) : provenanceFromCommitted(committed()));
 
 const roots: string[] = [];
 afterAll(() => {
@@ -26,7 +35,7 @@ afterAll(() => {
 
 describe("emitted exceptions index", () => {
   it(EMIT ? "writes the exceptions index" : "matches the ledgers in the gate files", () => {
-    const want = renderIndex(live());
+    const want = renderIndex(withProvenance());
     const abs = join(REPO, EXCEPTIONS_FILE);
     if (EMIT) {
       mkdirSync(dirname(abs), { recursive: true });
@@ -39,6 +48,15 @@ describe("emitted exceptions index", () => {
       readFileSync(abs, "utf8"),
       `${EXCEPTIONS_FILE} is stale. Run: cd apps/docs && pnpm exceptions:emit`,
     ).toBe(want);
+  });
+
+  it("every entry carries provenance, and an A11Y_EXCLUSIONS entry has a commit and a PR", () => {
+    const index = committed();
+    const a11y = index.ledgers.find((l) => l.name === "A11Y_EXCLUSIONS")!;
+    expect(a11y.entries.some((e) => /^[0-9a-f]{40}$/.test(e.commit ?? "") && e.pr !== null)).toBe(true);
+    for (const l of index.ledgers) {
+      for (const e of l.entries) expect(e.commit, `${l.name}#${e.key}`).toMatch(/^[0-9a-f]{40}$/);
+    }
   });
 
   it("keys are unique within a ledger", () => {

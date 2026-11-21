@@ -10,74 +10,74 @@
         {
           "key": "COL-1:hero-video-dialog.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "bdba4f42406528012d56b11fcaf603538304e1fd",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 37
         },
         {
           "key": "COL-1:preview-tile.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "bdba4f42406528012d56b11fcaf603538304e1fd",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 37
         },
         {
           "key": "STA-3:field-row.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "bdba4f42406528012d56b11fcaf603538304e1fd",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 37
         },
         {
           "key": "STA-3:generation-wizard.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "bdba4f42406528012d56b11fcaf603538304e1fd",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 37
         },
         {
           "key": "STA-3:onboarding-wizard.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "bdba4f42406528012d56b11fcaf603538304e1fd",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 37
         },
         {
           "key": "TOK-1:components/demos/preset-grid-demo.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "91404ac909c24f95ae5e70a6326977e0462836c0",
+          "by": "Nick Vyhouski",
+          "on": "2026-10-01",
+          "pr": 88
         },
         {
           "key": "TOK-1:components/demos/hero-video-dialog-demo.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "91404ac909c24f95ae5e70a6326977e0462836c0",
+          "by": "Nick Vyhouski",
+          "on": "2026-10-01",
+          "pr": 88
         },
         {
           "key": "TOK-7:components/demos/drawing-tools-demo.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "91404ac909c24f95ae5e70a6326977e0462836c0",
+          "by": "Nick Vyhouski",
+          "on": "2026-10-01",
+          "pr": 88
         },
         {
           "key": "TOK-8:dot-pattern.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "da55f63edbd4a75b34ad8cb05c0b369c9ae2c525",
+          "by": "weeeha",
+          "on": "2026-08-23",
+          "pr": 44
         }
       ]
     },
@@ -90,18 +90,18 @@
         {
           "key": "apps/docs/components/ui",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "91404ac909c24f95ae5e70a6326977e0462836c0",
+          "by": "Nick Vyhouski",
+          "on": "2026-10-01",
+          "pr": 88
         },
         {
           "key": "apps/docs/components/ai-elements",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "91404ac909c24f95ae5e70a6326977e0462836c0",
+          "by": "Nick Vyhouski",
+          "on": "2026-10-01",
+          "pr": 88
         }
       ]
     },
@@ -114,42 +114,42 @@
         {
           "key": "**/stories/ui/**",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "a1ba2dca3f738c99dfef1f0aa601b20060e68f56",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "**/stories/ai-elements/**",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "a1ba2dca3f738c99dfef1f0aa601b20060e68f56",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "**/stories/ai-elements/Context.stories.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "a1ba2dca3f738c99dfef1f0aa601b20060e68f56",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "**/stories/ui/DropdownMenu.stories.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "a1ba2dca3f738c99dfef1f0aa601b20060e68f56",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "**/stories/ui/MessageScroller.stories.tsx",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "a1ba2dca3f738c99dfef1f0aa601b20060e68f56",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         }
       ]
     },
@@ -162,74 +162,74 @@
         {
           "key": "generation-panel:--card-spacing (read, resolves nowhere)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "result-card:--card-spacing (read, resolves nowhere)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "time-ruler:--time-ruler-playhead-height (read, resolves nowhere)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "inline-generate-popup:--transform-origin (read, resolves nowhere)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "trust-dialog:color-warning-foreground (declared in cssVars, read by nothing)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "trust-dialog:warning-foreground (declared in cssVars, read by nothing)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "usage-dashboard:--color-spend (read, resolves nowhere)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "usage-dashboard:color-warning-foreground (declared in cssVars, read by nothing)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "5ba4db7db5ee7d7f172990353385ee2661920195",
+          "by": "weeeha",
+          "on": "2026-08-22",
+          "pr": 41
         },
         {
           "key": "usage-dashboard:warning-foreground (declared in cssVars, read by nothing)",
           "reason": "migrated 2026-10",
-          "commit": null,
-          "by": null,
-          "on": null,
-          "pr": null
+          "commit": "a773e20d11428c3c95c38d96346dd7b8ad0bd244",
+          "by": "Nick Vyhouski",
+          "on": "2026-10-17",
+          "pr": 96
         }
       ]
     },
@@ -249,33 +249,33 @@
         {
           "key": "docs/agent-rules/gate-list-mirrors-ci.md",
           "reason": "The `gate-run` skill is the discharge. A test that parsed skill prose against `ci.yml` would be a fourth copy of the list it protects.",
-          "commit": null,
-          "by": null,
-          "on": null,
+          "commit": "e34a13e1cb263a6d8b868dc141557c20a8e8c6b8",
+          "by": "weeeha",
+          "on": "2026-11-21",
           "pr": null
         },
         {
           "key": "docs/agent-rules/green-proves-nothing.md",
           "reason": "Procedural: it says to rebuild before `playwright test`. The Playwright config runs `pnpm start`, and nothing in the tree can tell a stale build from source.",
-          "commit": null,
-          "by": null,
-          "on": null,
+          "commit": "e34a13e1cb263a6d8b868dc141557c20a8e8c6b8",
+          "by": "weeeha",
+          "on": "2026-11-21",
           "pr": null
         },
         {
           "key": "docs/agent-rules/blocks-compose.md",
           "reason": "A judgment. `block-build-brief.md` and review discharge it; a reimplemented row passes every mechanical gate, which is precisely what the rule exists to say.",
-          "commit": null,
-          "by": null,
-          "on": null,
+          "commit": "e34a13e1cb263a6d8b868dc141557c20a8e8c6b8",
+          "by": "weeeha",
+          "on": "2026-11-21",
           "pr": null
         },
         {
           "key": "docs/agent-rules/parallel-builds.md",
           "reason": "Procedural: it says to give each agent its own worktree and to check the base commit. Nothing in the tree can tell which checkout an agent was handed.",
-          "commit": null,
-          "by": null,
-          "on": null,
+          "commit": "e34a13e1cb263a6d8b868dc141557c20a8e8c6b8",
+          "by": "weeeha",
+          "on": "2026-11-21",
           "pr": null
         }
       ]
