@@ -1,6 +1,6 @@
 "use client";
 
-import { Renderer, type Library, type ParseResult } from "@openuidev/react-lang";
+import { Renderer, type Library, type OpenUIError, type ParseResult } from "@openuidev/react-lang";
 import { CircleAlert } from "lucide-react";
 import * as React from "react";
 
@@ -51,10 +51,32 @@ interface GeneratedBodyProps extends Omit<React.ComponentProps<"div">, "children
 
 const MAX_REASONS_SHOWN = 2;
 
-// react-lang 1.x logs every render error to console.error unless an onError is
-// passed. This component reports failure itself (onParseResult, meta.errors), so
-// the handler is deliberately a no-op: the failed state owns the error.
-const ownedError = () => {};
+// react-lang 1.x console.errors every render error unless an onError is passed.
+// The parser's own errors (source "parser": unknown component, bad argument, no
+// root, unreadable program) already reach `failuresOf` through meta.errors and
+// show as the failed state, so those stay quiet. Anything else (a runtime or
+// render error, a query error) is shown nowhere, so it is logged in the format
+// 1.x would have used. Logged, not thrown: Renderer calls this from an effect,
+// where a throw would take the page down. Module-level and pure.
+const OWNED_SOURCE = "parser";
+
+function formatErrors(errors: OpenUIError[]): string {
+  return [
+    `[openui] Rendered with ${errors.length} error${errors.length === 1 ? "" : "s"}:`,
+    ...errors.map((error) => `  - ${error.source}/${error.code}: ${error.message}`),
+  ].join("\n");
+}
+
+function logUnowned(errors: OpenUIError[]): void {
+  const unowned = errors.filter((error) => error.source !== OWNED_SOURCE);
+  if (unowned.length > 0) console.error(formatErrors(unowned));
+}
+
+// The fallback is the last version that rendered, so it owns no failures: any
+// error from it is unexpected and is logged.
+function logAll(errors: OpenUIError[]): void {
+  if (errors.length > 0) console.error(formatErrors(errors));
+}
 
 /** Every reason a finished parse should not be shown, in words. Empty means it rendered. */
 function failuresOf(result: ParseResult | null): string[] {
@@ -147,7 +169,7 @@ function GeneratedBody({
             response={text}
             library={library}
             isStreaming={streaming}
-            onError={ownedError}
+            onError={logUnowned}
             onParseResult={(result) => setParsed({ program: text, result })}
           />
         </div>
@@ -180,7 +202,7 @@ function GeneratedBody({
           {hasFallback ? (
             <div data-slot="generated-body-fallback" className="flex min-w-0 flex-col gap-2">
               <p className="text-foreground text-xs font-medium">Last version that rendered</p>
-              <Renderer response={fallbackProgram} library={library} onError={ownedError} />
+              <Renderer response={fallbackProgram} library={library} onError={logAll} />
             </div>
           ) : null}
         </>

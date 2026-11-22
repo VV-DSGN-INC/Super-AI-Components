@@ -29,6 +29,21 @@ const Markdown = defineComponent({
 });
 const library = createLibrary({ root: "Page", components: [Page, Markdown] });
 
+// A component that throws while rendering: a runtime error the failed state
+// does not own, since the program parses cleanly.
+const Boom = defineComponent({
+  name: "Boom",
+  description: "Throws on render.",
+  props: z.object({ text: z.string() }),
+  component: () => {
+    throw new Error("boom");
+  },
+});
+const boomLibrary = createLibrary({ root: "Page", components: [Page, Markdown, Boom] });
+const BOOM = ["root = Page([bad])", 'bad = Boom("x")'].join("\n");
+const openuiLogs = (spy: { mock: { calls: unknown[][] } }) =>
+  spy.mock.calls.map((c) => String(c[0])).filter((m) => m.startsWith("[openui]"));
+
 const GOOD = ["root = Page([intro])", 'intro = Markdown("Spend by project")'].join("\n");
 const GOOD_V2 = ["root = Page([intro])", 'intro = Markdown("Spend by project, newest")'].join("\n");
 const UNKNOWN_COMPONENT = [
@@ -137,6 +152,33 @@ describe("GeneratedBody", () => {
       render(<GeneratedBody program={UNKNOWN_COMPONENT} library={library} />);
       expect(screen.getByRole("status")).toHaveTextContent("This version did not render.");
       expect(spy).not.toHaveBeenCalled();
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it("an unexpected error kind still reaches console.error", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      render(<GeneratedBody program={BOOM} library={boomLibrary} />);
+      const logged = openuiLogs(spy);
+      expect(logged).toHaveLength(1);
+      expect(logged[0]).toMatch(/- runtime\/render-error: .*boom/);
+      expect(logged[0]).not.toContain("parser/");
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it("logs every error from the fallback, which has no failure of its own to show", () => {
+    const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      render(
+        <GeneratedBody program={UNKNOWN_COMPONENT} library={library} fallbackProgram={UNKNOWN_COMPONENT} />,
+      );
+      const logged = openuiLogs(spy);
+      expect(logged).toHaveLength(1);
+      expect(logged[0]).toContain("parser/unknown-component");
     } finally {
       spy.mockRestore();
     }
