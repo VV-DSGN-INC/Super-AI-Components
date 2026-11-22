@@ -10,3 +10,12 @@ Each line is a choice made without Nick, with its reason. Nick asked for recomme
 6. The product check (build, smoke, consumer install) is run by the controller rather than an executor, so its verdict is first-hand.
 7. The CopilotKit runtime, core and shared packages are overridden to zod 4.4.3 in `pnpm-workspace.yaml`, with `@ag-ui/*` held at 1.0.5 and rxjs at 7.8.1. Without it the tree held two `@ag-ui/client` builds and the agent types stopped matching. The smoke drives `/copilotkit` end to end on this override. Remove it when the runtime accepts zod 4. Overrides do not reach consumers.
 8. OpenUI 1.x errors are owned by the component: `Renderer` gets a no-op `onError` where the component already shows its failed state, rather than letting 1.x log to the console. No public prop was added.
+9. The `onError` handlers own only parser errors (`source` `parser`), the kinds `failuresOf` already shows as the failed state; every other error is logged in the 1.x format. The fallback renderer logs every error, because the last good version should have none. Logging rather than rethrowing, because `Renderer` calls the handler from an effect and a throw there takes the page down.
+
+## Postponed
+
+- `format:check`: 18 files fail identically on `origin/main`; a format-only change, separate from this update.
+- CopilotKit 2.0: wait for a release, not a release candidate.
+- Removing the zod 4 override in `pnpm-workspace.yaml`, once the CopilotKit runtime accepts zod 4.
+- A real model behind `/copilotkit` and a Safari pass: not run here.
+- Push, PR and merge order (`feat/ag-ui-chat` first, this branch on top): Nick's call.
