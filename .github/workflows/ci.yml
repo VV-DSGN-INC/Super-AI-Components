@@ -3,6 +3,15 @@ on:
   push: { branches: [main] }
   pull_request:
 
+# One run per pull request at a time: a new push cancels the run it supersedes.
+# A push to main is keyed by its commit, so every merge keeps its own verdict and
+# nothing on main is cancelled or queued behind another run. Keying main by ref
+# would not do that: a concurrency group holds one pending run, so three quick
+# merges would silently drop the middle one even with cancel-in-progress off.
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
 # Three jobs from the same checkout. `gates` is the static and unit layer;
 # `product` is the three steps that exercise what consumers install, plus the
 # builds they need. They run in parallel so a red lint no longer hides a red
@@ -49,18 +58,48 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
+        # Two commits: on a pull request HEAD is GitHub's merge commit, and its
+        # first parent is the base, so HEAD^1..HEAD is exactly what the PR changes.
+        with: { fetch-depth: 2 }
+      - name: Scope
+        id: scope
+        # A docs-only pull request cannot change anything this job exercises, so
+        # every later step is skipped and the job still reports green. Guards sit
+        # on steps, never on the workflow: a required check whose workflow never
+        # starts never reports, and the PR waits forever. Fails open: a push, an
+        # empty diff, a git or node error all leave heavy=true, and the guards
+        # below skip only on an explicit 'false'. `gates` is never scoped; it is
+        # the job that reads docs/ (check:contract, claude-md.test.ts).
+        run: |
+          heavy=true
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            files=$(git diff --name-only --no-renames HEAD^1 HEAD) \
+              && heavy=$(printf '%s\n' "$files" | node apps/docs/scripts/lib/ci-scope.mjs) \
+              || heavy=true
+          fi
+          [ "$heavy" = "false" ] || heavy=true
+          echo "scope: heavy=$heavy"
+          echo "heavy=$heavy" >> "$GITHUB_OUTPUT"
+          [ "$heavy" = "true" ] || echo "Docs-only change: product steps skipped (apps/docs/scripts/lib/ci-scope.mjs)." >> "$GITHUB_STEP_SUMMARY"
+      - if: steps.scope.outputs.heavy != 'false'
+        uses: pnpm/action-setup@v6
         with: { version: 11.1.0 }
-      - uses: actions/setup-node@v7
+      - if: steps.scope.outputs.heavy != 'false'
+        uses: actions/setup-node@v7
         with: { node-version: 24, cache: pnpm }
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build:registry
-      - run: pnpm build
+      - if: steps.scope.outputs.heavy != 'false'
+        run: pnpm install --frozen-lockfile
+      - if: steps.scope.outputs.heavy != 'false'
+        run: pnpm build:registry
+      - if: steps.scope.outputs.heavy != 'false'
+        run: pnpm build
       - name: Playwright smoke
+        if: steps.scope.outputs.heavy != 'false'
         run: |
           pnpm --filter docs exec playwright install --with-deps chromium
           pnpm --filter docs exec playwright test
       - name: Storybook a11y + interaction
+        if: steps.scope.outputs.heavy != 'false'
         # Blocking. Covers what this repo owns and publishes — super-ai and
         # marketing stories — not vendored ports (shadcn/ui, AI Elements) it
         # merely displays. Exclusions are in
@@ -71,4 +110,5 @@ jobs:
           pnpm --filter storybook exec playwright install --with-deps chromium
           pnpm --filter storybook test:stories
       - name: Consumer install test
+        if: steps.scope.outputs.heavy != 'false'
         run: apps/docs/scripts/consumer-test.sh

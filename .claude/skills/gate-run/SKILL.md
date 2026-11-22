@@ -9,10 +9,12 @@ description: Run every CI gate locally in ci.yml's exact order. Use before claim
 .claude/skills/gate-run/run-gates.sh
 ```
 
-Thirteen steps, in `.github/workflows/ci.yml`'s order: the `gates` job's seven,
+Fourteen steps, in `.github/workflows/ci.yml`'s order: the `gates` job's seven,
 the `exceptions-delta` report (not run here: it never fails and needs a base
-ref), then the `product` job's five. CI runs the jobs in parallel; this script
-runs the other two back to back and stops at the first failure, as each job does.
+ref), then the `product` job's `Scope` step (not run here: it only decides
+whether CI skips the rest) and its five. CI runs the jobs in parallel; this
+script runs the other two back to back and stops at the first failure, as each
+job does.
 
 ## Why the order is the point
 

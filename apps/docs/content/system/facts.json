@@ -1,6 +1,6 @@
 {
   "generated": "Derived by `cd apps/docs && pnpm facts:emit`. Do not edit by hand.",
-  "ciSteps": 13,
+  "ciSteps": 14,
   "contracts": 137,
   "ledgers": 4,
   "prosePages": 34,

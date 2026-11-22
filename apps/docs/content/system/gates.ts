@@ -40,6 +40,11 @@ export const PLUMBING: { ciStep: string; reason: string }[] = [
     ciStep: "Exceptions delta report",
     reason: "a report that never fails: it lists the allowances a PR adds",
   },
+  {
+    ciStep: "Scope",
+    reason:
+      "decides whether the product job's later steps run (apps/docs/scripts/lib/ci-scope.mjs); it checks nothing itself",
+  },
 ];
 
 export const GATE_ROWS: GateRow[] = [
