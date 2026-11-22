@@ -17,7 +17,7 @@ export const HARNESS_PARTS: HarnessPart[] = [
     label: "Instructions",
     job: "Standing orders every session reads before anything else.",
     items: [
-      "`CLAUDE.md` is a map. It points at the contracts and restates none of them.",
+      "`AGENTS.md` is a map. It points at the contracts and restates none of them.",
       "It sits under a byte ceiling with a test behind it, because context is the scarce resource.",
       "The build briefs under `docs/design-system` are the contracts themselves.",
     ],

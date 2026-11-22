@@ -38,7 +38,7 @@ A blocker holds a pull request at any round.
 | A runtime defect                    | The component throws, shows the wrong state, or loses input, in a story or on its docs page.                                                                                                                                                      |
 | An accessibility regression         | A new axe failure, or a growing a11y exclusion list or `story-coverage.baseline.json`. Both lists may only shrink.                                                                                                                                |
 | Wrong semantics                     | A `role` or `aria-*` that misdescribes the element.                                                                                                                                                                                               |
-| Breaks a mandatory rule             | A `blocker`-severity record in `packages/ds-rules/rules/*.json`, or a bullet under "Rules that are easy to break by accident" in `CLAUDE.md`.                                                                                                     |
+| Breaks a mandatory rule             | A `blocker`-severity record in `packages/ds-rules/rules/*.json`, or a bullet under "Rules that are easy to break by accident" in `AGENTS.md`.                                                                                                     |
 
 ## Not blockers
 
@@ -61,5 +61,5 @@ is right, fix it and say what you checked.
 ## What enforces this
 
 Nothing mechanical. `pnpm check:ladder` claim `09.3` checks that the budget is
-written into `CLAUDE.md`, and it cannot see a pull request. The line in `CLAUDE.md`
+written into `AGENTS.md`, and it cannot see a pull request. The line in `AGENTS.md`
 is a pointer under Conventions; this file is the only full copy.
