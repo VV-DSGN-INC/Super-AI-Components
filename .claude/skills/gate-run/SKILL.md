@@ -16,6 +16,10 @@ whether CI skips the rest) and its five. CI runs the jobs in parallel; this
 script runs the other two back to back and stops at the first failure, as each
 job does.
 
+On a docs-only pull request CI skips the `product` job's steps
+(`apps/docs/scripts/lib/ci-scope.mjs` decides). This script never skips
+anything, so a green run here always means every step that can run here ran.
+
 ## Why the order is the point
 
 CI stops at the first failing step, so **a red gate early in the pipeline hides

@@ -69,7 +69,7 @@ jobs:
         # starts never reports, and the PR waits forever. Fails open: a push, an
         # empty diff, a git or node error all leave heavy=true, and the guards
         # below skip only on an explicit 'false'. `gates` is never scoped; it is
-        # the job that reads docs/ (check:contract, claude-md.test.ts).
+        # the job that reads docs/ (check:contract and the agents tests).
         run: |
           heavy=true
           if [ "${{ github.event_name }}" = "pull_request" ]; then

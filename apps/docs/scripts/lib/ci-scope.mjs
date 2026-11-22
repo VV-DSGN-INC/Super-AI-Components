@@ -13,8 +13,8 @@ import { fileURLToPath } from "node:url";
 /** Paths that cannot reach build:registry, build, Playwright, the Storybook
  *  gate or the consumer install test. Every entry is a claim that the product
  *  job reads nothing under it, so the list stays short. `docs/**` IS read by
- *  check:contract and claude-md.test.ts, and both run in the `gates` job, which
- *  is never scoped. Nested markdown (`apps/docs/content/x.md`) is not light:
+ *  check:contract and the agents-size and agents-provenance tests, and all run
+ *  in the `gates` job, which is never scoped. Nested markdown (`apps/docs/content/x.md`) is not light:
  *  only a root-level `*.md` is. */
 export const LIGHT = [/^docs\//, /^\.claude\//, /^[^/]+\.md$/];
 
