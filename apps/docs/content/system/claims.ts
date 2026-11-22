@@ -46,13 +46,13 @@ export function claimedNumber(raw: string): number {
 
 export const CLAIMS: Claim[] = [
   {
-    file: "CLAUDE.md",
+    file: "AGENTS.md",
     pattern: /^(\w+) steps\. The last three/m,
     fact: "ciSteps",
     note: "the CI section's step count",
   },
   {
-    file: "CLAUDE.md",
+    file: "AGENTS.md",
     pattern: /Catalog status: (\d+) of \d+ shipped/,
     fact: "shipped",
     note: "the catalog status line",

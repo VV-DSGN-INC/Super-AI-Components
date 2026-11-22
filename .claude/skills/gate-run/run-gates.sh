@@ -4,6 +4,9 @@
 # them back to back and stops at the first failure, as each job does — which is
 # why order matters: a red gate hides every gate behind it in the same job, and
 # that has already happened here (CONTINUE.md §1).
+#
+# CI skips the `product` job's steps on a docs-only pull request
+# (apps/docs/scripts/lib/ci-scope.mjs decides). This script never skips anything.
 set -uo pipefail
 cd "$(git rev-parse --show-toplevel)"
 

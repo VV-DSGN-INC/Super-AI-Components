@@ -6,12 +6,12 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 Work here is gated rather than reviewed into shape: a change is done when the twelve CI steps say
 so, and the last three of those exercise the product a consumer actually gets. This page is the
-standing rules from `CLAUDE.md` and `docs/CONTINUE.md`, in the order they apply, with the gate list
+standing rules from `AGENTS.md` and `docs/CONTINUE.md`, in the order they apply, with the gate list
 taken from `.github/workflows/ci.yml` on 2026-09-09.
 
 ## Confirm the repository before you push
 
-The remote is `VV-DSGN-INC/Super-AI-Components`. `CLAUDE.md` flags this in bold because sibling
+The remote is `VV-DSGN-INC/Super-AI-Components`. `AGENTS.md` flags this in bold because sibling
 design repositories live under a different org and the two have been mixed up before. Check the
 remote, then branch: a branch per task, never a commit to `main`. Commit authorship is pinned in
 `docs/CONTINUE.md` §3.6.
@@ -22,7 +22,7 @@ fails at step one.
 
 ## Parallel work needs a worktree each
 
-`CLAUDE.md` calls parallel agents the throughput mechanism, one per component, each writing only
+`AGENTS.md` calls parallel agents the throughput mechanism, one per component, each writing only
 its own five files. Two consequences are load-bearing:
 
 - **Give each agent its own git worktree and its own port.** They otherwise share a working tree,
@@ -81,7 +81,7 @@ Three of them are worth knowing in more detail:
 
 ## A red consumer install test is a shipping bug
 
-`CLAUDE.md` states it plainly: a component that looks right in Storybook but breaks on
+`AGENTS.md` states it plainly: a component that looks right in Storybook but breaks on
 `shadcn add` has failed. Step 12 scaffolds a fresh Next app, installs every item derived from
 `registry.json`, asserts the marketing keyframes, the `--marketing-*` variables and the `--warning`
 pair reached the consumer's stylesheet, then builds a page that imports four components. Treat it
@@ -103,6 +103,6 @@ locally and broken for consumers.
 
 Design specs live in `docs/superpowers/specs/` and implementation plans in
 `docs/superpowers/plans/`, one dated file per initiative. The contracts themselves live in
-`docs/design-system/`, in one copy each, and `CLAUDE.md` exists to point at them rather than to
+`docs/design-system/`, in one copy each, and `AGENTS.md` exists to point at them rather than to
 restate them. A rule added to a doc but not to a record in `packages/ds-rules/` is not enforced by
 anything.

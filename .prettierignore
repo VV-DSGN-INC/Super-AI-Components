@@ -57,3 +57,6 @@ apps/docs/public/openui/
 # Emitted by pnpm contract:emit and byte-compared by its drift test; the
 # runtime copies must match packages/ds-rules exactly, which is itself ignored.
 apps/docs/registry/agent-kit/
+
+# derived: pnpm exceptions:emit
+apps/docs/index/exceptions.json

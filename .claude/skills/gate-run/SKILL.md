@@ -9,9 +9,16 @@ description: Run every CI gate locally in ci.yml's exact order. Use before claim
 .claude/skills/gate-run/run-gates.sh
 ```
 
-Twelve steps, in `.github/workflows/ci.yml`'s order: the `gates` job's seven,
-then the `product` job's five. CI runs the two jobs in parallel; this script
-runs them back to back and stops at the first failure, as each job does.
+Fourteen steps, in `.github/workflows/ci.yml`'s order: the `gates` job's seven,
+the `exceptions-delta` report (not run here: it never fails and needs a base
+ref), then the `product` job's `Scope` step (not run here: it only decides
+whether CI skips the rest) and its five. CI runs the jobs in parallel; this
+script runs the other two back to back and stops at the first failure, as each
+job does.
+
+On a docs-only pull request CI skips the `product` job's steps
+(`apps/docs/scripts/lib/ci-scope.mjs` decides). This script never skips
+anything, so a green run here always means every step that can run here ran.
 
 ## Why the order is the point
 

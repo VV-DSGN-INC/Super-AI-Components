@@ -72,7 +72,7 @@ Two private sibling repos are referenced from this one:
 - **ds-architecture**: the conformance checker vendored in `tools/ds-architecture/` and run by
   `pnpm check:ladder`. `packages/ds-rules` started from its starter kit.
 - **Minimal Design System** (`@weeeha/ui`): a token-driven React component library that also defines
-  AI-interface components, which is why `CLAUDE.md` says to check it before adding one here.
+  AI-interface components, which is why `AGENTS.md` says to check it before adding one here.
 
 ## License
 

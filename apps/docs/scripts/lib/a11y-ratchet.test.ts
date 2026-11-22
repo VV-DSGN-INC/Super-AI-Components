@@ -18,7 +18,7 @@ describe("a11y exclusion ratchet", () => {
     const grown = live!.filter((e) => !baseline.includes(e));
     expect(
       grown,
-      "New a11y exclusions. The list may only shrink (CLAUDE.md, a11y-baseline.md). Fix the story instead; a genuine new exemption is a hand edit to a11y-exclusions.baseline.json in a reviewed commit, with its reason in a11y-baseline.md.",
+      "New a11y exclusions. The list may only shrink (AGENTS.md, a11y-baseline.md). Fix the story instead; a genuine new exemption is a hand edit to a11y-exclusions.baseline.json in a reviewed commit, with its reason in a11y-baseline.md.",
     ).toEqual([]);
   });
 

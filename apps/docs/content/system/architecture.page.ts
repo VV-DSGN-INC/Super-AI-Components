@@ -47,7 +47,7 @@ export const architecturePage: SystemPage = {
             [
               "Instructions",
               "A map every session reads first. It points at the contracts and restates none of them.",
-              "`CLAUDE.md`",
+              "`AGENTS.md`",
             ],
             [
               "Build briefs",
@@ -176,7 +176,7 @@ export const architecturePage: SystemPage = {
         {
           kind: "list",
           items: [
-            "Read the map in `CLAUDE.md`, then the build brief, then the routing table, so nothing gets built twice.",
+            "Read the map in `AGENTS.md`, then the build brief, then the routing table, so nothing gets built twice.",
             "Scaffold the component with `pnpm new:component`. The files it writes move together.",
             "Write the judgment into the guidance module: when to use it and what to avoid, each with a reason.",
             "Run the anti-slop audit before building and again before calling it done.",
