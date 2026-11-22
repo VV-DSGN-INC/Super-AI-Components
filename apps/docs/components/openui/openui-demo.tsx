@@ -2,7 +2,7 @@
 
 import "./no-devtools";
 
-import { Renderer, type ActionEvent } from "@openuidev/react-lang";
+import { Renderer, type ActionEvent, type OpenUIError } from "@openuidev/react-lang";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -32,6 +32,18 @@ const isStreaming = (t: Turn) => t.role === "assistant" && t.count < t.lines.len
 const finished = (t: Turn): Turn => (t.role === "assistant" ? { ...t, count: t.lines.length } : t);
 
 const THREAD_ID = "openui";
+
+// react-lang 1.x console.errors render errors unless onError is passed. This demo
+// has no failed state of its own, so it owns no error: every one is logged in the
+// format 1.x uses. Logged, not thrown: Renderer calls this from an effect, where
+// a throw would take the page down.
+function logErrors(errors: OpenUIError[]): void {
+  if (errors.length === 0) return;
+  const lines = errors.map((e) => `  - ${e.source}/${e.code}: ${e.message}`);
+  console.error(
+    [`[openui] Rendered with ${errors.length} error${errors.length === 1 ? "" : "s"}:`, ...lines].join("\n"),
+  );
+}
 
 /** The reveal is state, not a ref'd interval: each in-flight turn schedules
  *  its next line from an effect, so StrictMode's dev remount (which runs the
@@ -132,6 +144,7 @@ export function OpenUIConversation({ streamMs = 120, className }: { streamMs?: n
               response={t.lines.slice(0, t.count).join("\n")}
               library={openuiLibrary}
               isStreaming={isStreaming(t)}
+              onError={logErrors}
               onAction={onAction}
             />
           ),

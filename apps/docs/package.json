@@ -25,12 +25,12 @@
     "build:registry": "tsx scripts/gen-wiring.mts && tsx scripts/gen-registry.mts && shadcn build --output public/r"
   },
   "dependencies": {
-    "@ag-ui/client": "^1.0.2",
-    "@ag-ui/core": "^1.0.2",
+    "@ag-ui/client": "1.0.5",
+    "@ag-ui/core": "1.0.5",
     "@ai-sdk/react": "4.0.167",
     "@base-ui/react": "^1.5.0",
-    "@copilotkit/react-core": "^1.87.0",
-    "@copilotkit/runtime": "^1.87.0",
+    "@copilotkit/react-core": "^1.90.0",
+    "@copilotkit/runtime": "^1.90.0",
     "ai": "^7.0.163",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
@@ -53,8 +53,8 @@
     "use-stick-to-bottom": "^1.1.6"
   },
   "devDependencies": {
-    "@openuidev/lang-core": "^0.3.2",
-    "@openuidev/react-lang": "^0.3.2",
+    "@openuidev/lang-core": "^1.1.1",
+    "@openuidev/react-lang": "^1.1.1",
     "@playwright/test": "^1.65.0",
     "@tailwindcss/postcss": "4.3.4",
     "@testing-library/jest-dom": "^6.9.1",
