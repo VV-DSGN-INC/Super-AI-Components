@@ -597,12 +597,10 @@ function NotebookShell({
             </h3>
             <FeatureCardRow
               aria-labelledby={outputTypesLabelId}
-              items={outputTypes.map(
-                (type): FeatureCardRowItem => ({
-                  ...type,
-                  onSelect: onGenerateOutput ? () => onGenerateOutput(type.id) : undefined,
-                }),
-              )}
+              items={outputTypes.map((type): FeatureCardRowItem => ({
+                ...type,
+                onSelect: onGenerateOutput ? () => onGenerateOutput(type.id) : undefined,
+              }))}
               className={OUTPUT_TYPES_IN_PANE}
             />
           </div>

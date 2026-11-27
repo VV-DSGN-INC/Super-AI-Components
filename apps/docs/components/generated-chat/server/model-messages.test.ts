@@ -54,12 +54,10 @@ describe("toModelMessages", () => {
   });
 
   it("keeps the last 12 messages and starts with the person's message", () => {
-    const messages = Array.from(
-      { length: 20 },
-      (_, i): GeneratedChatMessage =>
-        i % 2 === 0
-          ? user(`u${i}`, `q${i}`)
-          : { id: `a${i}`, role: "assistant", parts: [{ type: "text", text: `a${i}` }] },
+    const messages = Array.from({ length: 20 }, (_, i): GeneratedChatMessage =>
+      i % 2 === 0
+        ? user(`u${i}`, `q${i}`)
+        : { id: `a${i}`, role: "assistant", parts: [{ type: "text", text: `a${i}` }] },
     );
     const out = toModelMessages(messages);
     expect(out.length).toBeLessThanOrEqual(12);

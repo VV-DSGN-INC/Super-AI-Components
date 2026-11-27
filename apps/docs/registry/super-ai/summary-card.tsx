@@ -12,12 +12,7 @@ import { cn } from "@/lib/utils";
 type SummaryDepth = "short" | "detailed" | "key-points";
 
 type SummaryCardState =
-  | "generating"
-  | "ready"
-  | "attributed"
-  | "quote-and-condense"
-  | "collapsed"
-  | "turned-off";
+  "generating" | "ready" | "attributed" | "quote-and-condense" | "collapsed" | "turned-off";
 
 type SummaryScopeKind = "document" | "thread" | "section" | "selection";
 

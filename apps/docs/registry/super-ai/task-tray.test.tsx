@@ -14,8 +14,8 @@ const rows = () =>
   // EntityRow's own slot, not a task-tray override — task-tray no longer
   // renames it (G2: overriding it would erase EntityRow's identity in the
   // DOM). Rows are addressed by data-task-id; sorted here by data-status.
-  Array.from(document.querySelectorAll('[data-slot="entity-row"]')).map(
-    (el) => el.getAttribute("data-status")!,
+  Array.from(document.querySelectorAll('[data-slot="entity-row"]')).map((el) =>
+    el.getAttribute("data-status")!,
   );
 
 describe("TaskTray", () => {

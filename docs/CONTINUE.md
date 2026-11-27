@@ -1716,10 +1716,10 @@ top-2 right-2` — the byte-identical `end-2` swap, flagged independently by
 ### Added by the H case-story wave (2026-09-06)
 
 - **`components/ui/**`exists twice, and only one copy is what the gate
-renders.**`apps/docs/components/ui`has 39 primitives;`apps/storybook/src/components/ui`has 60. Storybook's Vite alias sends`@/components/ui/\*`to its own copy, so a
-registry component renders against the docs copy on the docs site and against
-the storybook copy under the a11y gate. Today the overlap differs only
-cosmetically —`"use client"` directives the Next app needs and Vite does not,
+  renders.**`apps/docs/components/ui`has 39 primitives;`apps/storybook/src/components/ui`has 60. Storybook's Vite alias sends`@/components/ui/\*`to its own copy, so a
+  registry component renders against the docs copy on the docs site and against
+  the storybook copy under the a11y gate. Today the overlap differs only
+  cosmetically —`"use client"` directives the Next app needs and Vite does not,
   plus semicolon formatting — so nothing is broken, **but a substantive fix has
   to be made in both and nothing checks that.** Found the hard way: the fix for
   the unnamed select listbox went into the docs copy, the gate kept failing

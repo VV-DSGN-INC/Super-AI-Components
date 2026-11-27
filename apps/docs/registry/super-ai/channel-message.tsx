@@ -10,13 +10,7 @@ import { cn } from "@/lib/utils";
 type Channel = "app" | "push" | "chat" | "email" | "phone" | "sms";
 type MessageKind = "ask" | "due" | "ready" | "receipt" | "notice";
 type ChannelMessageState =
-  | "pending"
-  | "sent"
-  | "answered"
-  | "withdrawn"
-  | "expired"
-  | "failed-check"
-  | "not-routed";
+  "pending" | "sent" | "answered" | "withdrawn" | "expired" | "failed-check" | "not-routed";
 
 interface ChannelMessageData {
   kind: MessageKind;

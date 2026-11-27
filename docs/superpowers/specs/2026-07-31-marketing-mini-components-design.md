@@ -137,9 +137,7 @@ export interface MarketingItem {
   description: string;
   group: "Layout" | "Text" | "Buttons" | "Effects";
 }
-export const MARKETING_ITEMS: MarketingItem[] = [
-  /* 15 entries */
-];
+export const MARKETING_ITEMS: MarketingItem[] = [/* 15 entries */];
 ```
 
 plus a merged `ALL_ITEMS` (name-uniqueness asserted) used by:

@@ -18,13 +18,7 @@ import { CostChip } from "@/registry/super-ai/cost-chip";
  */
 
 type RunButtonState =
-  | "idle"
-  | "estimating"
-  | "running"
-  | "done"
-  | "failed"
-  | "insufficient-credits"
-  | "locked";
+  "idle" | "estimating" | "running" | "done" | "failed" | "insufficient-credits" | "locked";
 
 interface RunButtonProps extends Omit<React.ComponentProps<"div">, "onError"> {
   /**

@@ -239,8 +239,8 @@ export const RTL: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const frames = ["ltr", "rtl"].map(
-      (dir) => canvasElement.querySelector<HTMLElement>(`[data-testid="${dir}"]`)!,
+    const frames = ["ltr", "rtl"].map((dir) =>
+      canvasElement.querySelector<HTMLElement>(`[data-testid="${dir}"]`)!,
     );
 
     for (const frame of frames) {
@@ -621,11 +621,10 @@ export const LongContent: Story = {
     </div>
   ),
   play: async ({ canvasElement }) => {
-    const rulers = ["timecode", "slate"].map(
-      (id) =>
-        canvasElement
-          .querySelector<HTMLElement>(`[data-testid="${id}"]`)!
-          .querySelector<HTMLElement>('[data-slot="time-ruler"]')!,
+    const rulers = ["timecode", "slate"].map((id) =>
+      canvasElement
+        .querySelector<HTMLElement>(`[data-testid="${id}"]`)!
+        .querySelector<HTMLElement>('[data-slot="time-ruler"]')!,
     );
 
     // 1. The formatter is not an input to the density ladder. Same zoom, same

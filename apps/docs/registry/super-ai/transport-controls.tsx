@@ -51,13 +51,7 @@ import { cn } from "@/lib/utils";
 type TransportControlsVariant = "simple" | "frame-accurate";
 
 type TransportControlKey =
-  | "skip-back"
-  | "play"
-  | "skip-forward"
-  | "step-back"
-  | "step-forward"
-  | "mark-in"
-  | "mark-out";
+  "skip-back" | "play" | "skip-forward" | "step-back" | "step-forward" | "mark-in" | "mark-out";
 
 interface TransportControlsProps extends React.ComponentProps<"div"> {
   /** Declared state from the spec. `frame-accurate` adds; it never reorders. */
