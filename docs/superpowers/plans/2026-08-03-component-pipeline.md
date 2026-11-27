@@ -310,21 +310,7 @@ Create `apps/docs/lib/manifest-types.ts`:
 
 ```ts
 export type FamilyId =
-  | "A"
-  | "B"
-  | "C"
-  | "D"
-  | "E"
-  | "F"
-  | "G"
-  | "H"
-  | "I"
-  | "J"
-  | "K"
-  | "L"
-  | "M"
-  | "N"
-  | "O";
+  "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O";
 
 export type ManifestStatus = "planned" | "building" | "shipped" | "cut";
 

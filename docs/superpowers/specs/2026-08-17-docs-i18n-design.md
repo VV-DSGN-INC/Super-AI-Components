@@ -120,9 +120,7 @@ English rather than blank.
 // @source-hash: 3f9a…
 import type { DocsTranslation } from "@/lib/i18n/types";
 
-export const EmptyStateRu: DocsTranslation = {
-  /* … */
-};
+export const EmptyStateRu: DocsTranslation = {/* … */};
 ```
 
 Typed TS rather than JSON, so a malformed emit fails `pnpm typecheck` as well as the gate.

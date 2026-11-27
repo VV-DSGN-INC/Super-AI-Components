@@ -196,12 +196,10 @@ describe("createChatHandler", () => {
 
   it("sends the model the system prompt, at most 12 messages and the output cap", async () => {
     const { model, calls } = scriptedModel([...text("t1", "Ok."), finish("stop")]);
-    const history = Array.from(
-      { length: 20 },
-      (_, i): GeneratedChatMessage =>
-        i % 2 === 0
-          ? { id: `u${i}`, role: "user", parts: [{ type: "text", text: `q${i}` }] }
-          : { id: `a${i}`, role: "assistant", parts: [{ type: "text", text: `a${i}` }] },
+    const history = Array.from({ length: 20 }, (_, i): GeneratedChatMessage =>
+      i % 2 === 0
+        ? { id: `u${i}`, role: "user", parts: [{ type: "text", text: `q${i}` }] }
+        : { id: `a${i}`, role: "assistant", parts: [{ type: "text", text: `a${i}` }] },
     );
     await chunksOf(await createChatHandler({ model, limiter: open() })(ask("last", history)));
     const prompt = calls[0]!.prompt as { role: string }[];

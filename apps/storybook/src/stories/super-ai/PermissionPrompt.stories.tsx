@@ -956,8 +956,8 @@ export const Mobile: Story = {
     ).toBe("page scrolls=false");
 
     // All four verbs are present and none is cut off by the panel's edge.
-    const verbs = ["deny", "always-allow", "edit-first", "allow-once"].map(
-      (name) => document.querySelector<HTMLElement>(`[data-slot="permission-prompt-${name}"]`)!,
+    const verbs = ["deny", "always-allow", "edit-first", "allow-once"].map((name) =>
+      document.querySelector<HTMLElement>(`[data-slot="permission-prompt-${name}"]`)!,
     );
     await expect(verbs.filter(Boolean)).toHaveLength(4);
     for (const verb of verbs) {

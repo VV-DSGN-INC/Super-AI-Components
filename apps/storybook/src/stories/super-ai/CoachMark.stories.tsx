@@ -436,8 +436,8 @@ export const KeyboardOrder: Story = {
     await expect(anchored.hasAttribute("disabled")).toBe(false);
     await expect(anchored.closest('[aria-hidden="true"]')).toBeNull();
 
-    const stops = ["coach-mark-skip", "coach-mark-back", "coach-mark-next"].map(
-      (slot) => popup.querySelector<HTMLElement>(`[data-slot="${slot}"]`)!,
+    const stops = ["coach-mark-skip", "coach-mark-back", "coach-mark-next"].map((slot) =>
+      popup.querySelector<HTMLElement>(`[data-slot="${slot}"]`)!,
     );
     const nameOf = (el: Element | null) =>
       el === null ? "nothing" : `stop#${stops.indexOf(el as HTMLElement)} ${el.textContent?.trim()}`;

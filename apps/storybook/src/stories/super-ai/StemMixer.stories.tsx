@@ -216,9 +216,8 @@ export const RTL: Story = {
 
     // 1. The mute/solo cluster is flush to the logical end in both. Before
     //    the `ms-auto` swap the RTL cluster sat 49px short of the end.
-    const [soloLtr, soloRtl] = gapsFor(
-      "solo",
-      (l) => l.querySelector<HTMLElement>('[data-slot="stem-mixer-solo"]')!,
+    const [soloLtr, soloRtl] = gapsFor("solo", (l) =>
+      l.querySelector<HTMLElement>('[data-slot="stem-mixer-solo"]')!,
     );
     await expect(`solo end ltr=${soloLtr.end.toFixed(1)} rtl=${soloRtl.end.toFixed(1)}`).toBe(
       `solo end ltr=${soloLtr.end.toFixed(1)} rtl=${soloLtr.end.toFixed(1)}`,
@@ -227,18 +226,16 @@ export const RTL: Story = {
     // 2. The stem name still leads, so the cluster and the name sit at
     //    opposite ends of the row — flush, which is the lane's own padding on
     //    both sides rather than a number invented for the test.
-    const [nameLtr, nameRtl] = gapsFor(
-      "name",
-      (l) => l.querySelector<HTMLElement>('[data-slot="stem-mixer-lane-name"]')!,
+    const [nameLtr, nameRtl] = gapsFor("name", (l) =>
+      l.querySelector<HTMLElement>('[data-slot="stem-mixer-lane-name"]')!,
     );
     await expect(close(nameLtr.start, nameRtl.start)).toBe(true);
     await expect(close(soloLtr.end, nameLtr.start)).toBe(true);
     await expect(nameLtr.start < soloLtr.start).toBe(true);
 
     // 3. The lineage glyph leads its sentence, so it swaps edges with it.
-    const [iconLtr, iconRtl] = gapsFor(
-      "lineage-icon",
-      (l) => l.querySelector<HTMLElement>('[data-slot="stem-mixer-lineage"] svg')!,
+    const [iconLtr, iconRtl] = gapsFor("lineage-icon", (l) =>
+      l.querySelector<HTMLElement>('[data-slot="stem-mixer-lineage"] svg')!,
     );
     await expect(close(iconLtr.start, iconRtl.start)).toBe(true);
 

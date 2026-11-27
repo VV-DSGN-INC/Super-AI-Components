@@ -144,8 +144,6 @@ separate `super-ai-rules` item was considered and is option B in open decision 1
 
 Files the kit installs, all `registry:file`:
 
-| Target            | Source                                 | Kind                                                                 |
-| ----------------- | -------------------------------------- | -------------------------------------------------------------------- | ---- |
 | Item              | Target                                 | Source                                                               | Kind |
 | ----------------- | -------------------------------------- | -------------------------------------------------------------------- | ---- |
 | `agent-kit`       | `AGENTS.super-ai.md`                   | emitted: §3 rules, then the pointer to the index and retrieval order | soft |
